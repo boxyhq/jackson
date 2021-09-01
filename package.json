@@ -1,0 +1,18 @@
+{
+  "name": "jackson",
+  "version": "0.1.0",
+  "license": "Apache 2.0",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "@boxyhq/saml20": "0.1.5",
+    "@prisma/client": "2.30.2",
+    "express": "4.17.1",
+    "xml2js": "0.4.23"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12",
+    "prisma": "2.30.2"
+  }
+}
