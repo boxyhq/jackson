@@ -1,6 +1,6 @@
 const express = require('express');
 const saml = require('./saml.js');
-const memDB = require('./db/mem.js').new();
+const db = require('./db/db.js').new('mem', {});
 
 // const { PrismaClient } = require('@prisma/client');
 // const prisma = new PrismaClient();
@@ -21,7 +21,7 @@ app.post(`/auth/saml`, async (req, res) => {
   const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
   console.log('rawResponse=', rawResponse);
 
-  const idpMeta = memDB.get('record');
+  const idpMeta = db.get('record');
 
   // if origin is not null check if it is allowed and then validate against config
 
@@ -34,7 +34,7 @@ app.post(`/auth/saml`, async (req, res) => {
 
   // store details against a code
 
-  memDB.put('code', profile);
+  db.put('code', profile);
 
   var url = new URL(idpMeta.appRedirectUrl);
   url.searchParams.set('code', 'code');
@@ -50,7 +50,7 @@ app.post(`/auth/saml/config`, async (req, res) => {
 
   console.log('idpMeta=', JSON.stringify(idpMeta, null, 2));
 
-  memDB.put('record', idpMeta);
+  db.put('record', idpMeta);
 
   res.send('OK');
 });
@@ -58,7 +58,7 @@ app.post(`/auth/saml/config`, async (req, res) => {
 app.get(`/auth/saml/profile`, async (req, res) => {  
   const { code } = req.query;
 
-  const profile = memDB.get(code);
+  const profile = db.get(code);
 
   res.json(profile);
 });

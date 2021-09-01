@@ -1,5 +1,5 @@
 class Mem {
-  constructor() {
+  constructor(options) {
     this.records = {};
   }
 
@@ -13,7 +13,7 @@ class Mem {
 }
 
 module.exports = {
-  new: function () {
-    return new Mem();
+  new: function (options) {
+    return new Mem(options);
   },
 };
