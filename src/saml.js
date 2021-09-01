@@ -1,6 +1,7 @@
 var saml = require('@boxyhq/saml20');
 var xml2js = require('xml2js');
 var rambda = require('rambda');
+var thumbprint = require('thumbprint');
 
 module.exports = {
   parse: async function (rawAssertion) {
@@ -74,7 +75,7 @@ module.exports = {
           ret.entityID = entityID;
         }
         if (X509Certificate) {
-          ret.X509Certificate = X509Certificate;
+          ret.thumbprint = thumbprint.calculate(X509Certificate);
         }
         if (ssoPostUrl) {
           ret.sso.postUrl = ssoPostUrl;

@@ -13,7 +13,7 @@ const hostPort = (process.env.HOST_PORT || '5000') * 1;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post(`/auth/saml`, async (req, res) => {
+app.post('/auth/saml', async (req, res) => {
   const { SAMLResponse } = req.body;
 
   console.log('headers.origin=', req.headers.origin);
@@ -26,7 +26,7 @@ app.post(`/auth/saml`, async (req, res) => {
   // if origin is not null check if it is allowed and then validate against config
 
   const profile = await saml.validate(rawResponse, {
-    publicKey: idpMeta.X509Certificate,
+    thumbprint: idpMeta.thumbprint,
     audience: 'http://localhost:5000/auth/saml',
   });
 
@@ -42,7 +42,7 @@ app.post(`/auth/saml`, async (req, res) => {
   res.redirect(url);
 });
 
-app.post(`/auth/saml/config`, async (req, res) => {
+app.post('/auth/saml/config', async (req, res) => {
   const { idpMetadata, appRedirectUrl } = req.body;
 
   const idpMeta = await saml.parseMetadata(idpMetadata);
@@ -55,7 +55,7 @@ app.post(`/auth/saml/config`, async (req, res) => {
   res.send('OK');
 });
 
-app.get(`/auth/saml/profile`, async (req, res) => {  
+app.get('/auth/saml/profile', async (req, res) => {
   const { code } = req.query;
 
   const profile = db.get(code);
