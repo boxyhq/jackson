@@ -55,6 +55,14 @@ app.post(`/auth/saml/config`, async (req, res) => {
   res.send('OK');
 });
 
+app.get(`/auth/saml/profile`, async (req, res) => {  
+  const { code } = req.query;
+
+  const profile = memDB.get(code);
+
+  res.json(profile);
+});
+
 const server = app.listen(hostPort, () =>
   console.log(
     `🚀 The path of the righteous server: http://${hostUrl}:${hostPort}`
