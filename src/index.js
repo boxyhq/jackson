@@ -1,9 +1,12 @@
 const express = require('express');
 const saml = require('./saml.js');
-const db = require('./db/db.js').new('mem', {});
+const DB = require('./db/db.js');
 
 // const { PrismaClient } = require('@prisma/client');
 // const prisma = new PrismaClient();
+
+let configStore;
+let sessionStore;
 
 const app = express();
 
@@ -13,6 +16,15 @@ const hostPort = (process.env.HOST_PORT || '5000') * 1;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// quasi oauth flow: response_type, client_id, redirect_uri, state
+app.get('/auth/saml/authorize', async (req, res) => {
+  const { response_type, client_id, redirect_uri, state } = req.query;
+
+  const idpMeta = await configStore.get('record');
+
+  res.redirect(idpMeta.sso.redirectUrl);
+});
+
 app.post('/auth/saml', async (req, res) => {
   const { SAMLResponse } = req.body;
 
@@ -21,7 +33,7 @@ app.post('/auth/saml', async (req, res) => {
   const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
   console.log('rawResponse=', rawResponse);
 
-  const idpMeta = db.get('record');
+  const idpMeta = await configStore.get('record');
 
   // if origin is not null check if it is allowed and then validate against config
 
@@ -34,7 +46,7 @@ app.post('/auth/saml', async (req, res) => {
 
   // store details against a code
 
-  db.put('code', profile);
+  await sessionStore.put('code', profile);
 
   var url = new URL(idpMeta.appRedirectUrl);
   url.searchParams.set('code', 'code');
@@ -50,7 +62,7 @@ app.post('/auth/saml/config', async (req, res) => {
 
   console.log('idpMeta=', JSON.stringify(idpMeta, null, 2));
 
-  db.put('record', idpMeta);
+  await configStore.put('record', idpMeta);
 
   res.send('OK');
 });
@@ -58,13 +70,17 @@ app.post('/auth/saml/config', async (req, res) => {
 app.get('/auth/saml/profile', async (req, res) => {
   const { code } = req.query;
 
-  const profile = db.get(code);
+  const profile = await sessionStore.get(code);
 
   res.json(profile);
 });
 
-const server = app.listen(hostPort, () =>
+const server = app.listen(hostPort, async () => {
   console.log(
     `🚀 The path of the righteous server: http://${hostUrl}:${hostPort}`
-  )
-);
+  );
+
+  const db = await DB.new('redis', {});
+  configStore = db.store('saml:config');
+  sessionStore = db.store('saml:session', 10);
+});

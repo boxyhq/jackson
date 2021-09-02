@@ -1,11 +1,13 @@
-const mem = require("./mem");
+const mem = require('./mem');
+const redis = require('./redis.js');
 
 module.exports = {
-  new: function (engine, options) {
+  new: async function (engine, options) {
     switch (engine) {
       case 'mem':
-        return mem.new(options);
-        break;
+        return await mem.new(options);
+      case 'redis':
+        return await redis.new(options);
     }
   },
 };
