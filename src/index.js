@@ -1,6 +1,7 @@
 const express = require('express');
 const saml = require('./saml.js');
 const DB = require('./db/db.js');
+const env = require('./env.js');
 
 // const { PrismaClient } = require('@prisma/client');
 // const prisma = new PrismaClient();
@@ -9,9 +10,6 @@ let configStore;
 let sessionStore;
 
 const app = express();
-
-const hostUrl = process.env.HOST_URL || 'localhost';
-const hostPort = (process.env.HOST_PORT || '5000') * 1;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -39,7 +37,7 @@ app.post('/auth/saml', async (req, res) => {
 
   const profile = await saml.validate(rawResponse, {
     thumbprint: idpMeta.thumbprint,
-    audience: 'http://localhost:5000/auth/saml',
+    audience: env.samlAudience,
   });
 
   console.log('profile=', profile);
@@ -75,12 +73,14 @@ app.get('/auth/saml/profile', async (req, res) => {
   res.json(profile);
 });
 
-const server = app.listen(hostPort, async () => {
+const server = app.listen(env.hostPort, async () => {
   console.log(
-    `🚀 The path of the righteous server: http://${hostUrl}:${hostPort}`
+    `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
   const db = await DB.new('redis', {});
   configStore = db.store('saml:config');
   sessionStore = db.store('saml:session', 10);
 });
+
+module.exports = server;
