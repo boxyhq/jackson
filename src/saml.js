@@ -36,56 +36,70 @@ module.exports = {
 
   parseMetadata: async function (idpMeta) {
     return new Promise(function (resolve, reject) {
-      xml2js.parseString(idpMeta, { tagNameProcessors: [ xml2js.processors.stripPrefix ] }, function (err, res) {
-        if (err) {
-          reject(err);
-          return;
-        }
+      xml2js.parseString(
+        idpMeta,
+        { tagNameProcessors: [xml2js.processors.stripPrefix] },
+        function (err, res) {
+          if (err) {
+            reject(err);
+            return;
+          }
 
-        const entityID = rambda.path('EntityDescriptor.$.entityID', res);
-        let X509Certificate = null;
-        let ssoPostUrl = null;
-        let ssoRedirectUrl = null;
+          const entityID = rambda.path('EntityDescriptor.$.entityID', res);
+          let X509Certificate = null;
+          let ssoPostUrl = null;
+          let ssoRedirectUrl = null;
 
-        const ssoDes = rambda.pathOr([], 'EntityDescriptor.IDPSSODescriptor', res);
-        for (let i = 0; i < ssoDes.length; ++i) {
-          const keyDes = ssoDes[i]['KeyDescriptor'];
-          for (let j = 0; j < keyDes.length; ++j) {
-            if (keyDes[j]['$'] && keyDes[j]['$'].use === 'signing') {
-              const ki = keyDes[j]['KeyInfo'][0];
-              const cd = ki['X509Data'][0];
-              X509Certificate = cd['X509Certificate'][0];
+          const ssoDes = rambda.pathOr(
+            [],
+            'EntityDescriptor.IDPSSODescriptor',
+            res
+          );
+          for (let i = 0; i < ssoDes.length; ++i) {
+            const keyDes = ssoDes[i]['KeyDescriptor'];
+            for (let j = 0; j < keyDes.length; ++j) {
+              if (keyDes[j]['$'] && keyDes[j]['$'].use === 'signing') {
+                const ki = keyDes[j]['KeyInfo'][0];
+                const cd = ki['X509Data'][0];
+                X509Certificate = cd['X509Certificate'][0];
+              }
+            }
+
+            const ssoSvc = ssoDes[i]['SingleSignOnService'] || [];
+            for (let i = 0; i < ssoSvc.length; ++i) {
+              if (
+                rambda.pathOr('', '$.Binding', ssoSvc[i]).endsWith('HTTP-POST')
+              ) {
+                ssoPostUrl = rambda.path('$.Location', ssoSvc[i]);
+              } else if (
+                rambda
+                  .pathOr('', '$.Binding', ssoSvc[i])
+                  .endsWith('HTTP-Redirect')
+              ) {
+                ssoRedirectUrl = rambda.path('$.Location', ssoSvc[i]);
+              }
             }
           }
 
-          const ssoSvc = ssoDes[i]['SingleSignOnService'] || [];
-          for (let i = 0; i < ssoSvc.length; ++i) {
-            if (rambda.pathOr('', '$.Binding', ssoSvc[i]).endsWith('HTTP-POST')) {
-              ssoPostUrl = rambda.path('$.Location', ssoSvc[i]);
-            } else if (rambda.pathOr('', '$.Binding', ssoSvc[i]).endsWith('HTTP-Redirect')) {
-              ssoRedirectUrl = rambda.path('$.Location', ssoSvc[i]);
-            }
-          }  
-        }
+          const ret = {
+            sso: {},
+          };
+          if (entityID) {
+            ret.entityID = entityID;
+          }
+          if (X509Certificate) {
+            ret.thumbprint = thumbprint.calculate(X509Certificate);
+          }
+          if (ssoPostUrl) {
+            ret.sso.postUrl = ssoPostUrl;
+          }
+          if (ssoRedirectUrl) {
+            ret.sso.redirectUrl = ssoRedirectUrl;
+          }
 
-        const ret = {
-          sso: {},
-        };
-        if (entityID) {
-          ret.entityID = entityID;
+          resolve(ret);
         }
-        if (X509Certificate) {
-          ret.thumbprint = thumbprint.calculate(X509Certificate);
-        }
-        if (ssoPostUrl) {
-          ret.sso.postUrl = ssoPostUrl;
-        }
-        if (ssoRedirectUrl) {
-          ret.sso.redirectUrl = ssoRedirectUrl;
-        }
-
-        resolve(ret);
-      });
+      );
     });
   },
 };

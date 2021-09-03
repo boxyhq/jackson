@@ -11,7 +11,7 @@ class Redis {
       await this.client.connect();
 
       return this; // Return the newly-created instance
-    })(); 
+    })();
   }
 
   async _get(namespace, key) {
@@ -22,7 +22,7 @@ class Redis {
     const k = store.key(namespace, key);
     await this.client.set(k, JSON.stringify(val));
     if (ttl) {
-      await this.client.expire(k, ttl)
+      await this.client.expire(k, ttl);
     }
   }
 
