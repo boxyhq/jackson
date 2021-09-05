@@ -11,6 +11,7 @@
     "express": "4.17.1",
     "rambda": "6.9.0",
     "redis": "^4.0.0-rc.0",
+    "ripemd160": "2.0.2",
     "thumbprint": "0.0.1",
     "xml2js": "0.4.23"
   },

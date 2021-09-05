@@ -18,11 +18,28 @@ class Redis {
     return JSON.parse(await this.client.get(store.key(namespace, key)));
   }
 
-  async _put(namespace, key, val, ttl = 0) {
+  async _getByIndex(namespace, idx) {
+    const dbKeys = await this.client.sMembers(store.keyForIndex(namespace, idx));
+
+    const ret = [];
+    for (const dbKey of (dbKeys || [])) {
+      ret.push(await this._get(namespace, dbKey));
+    }
+
+    return ret;
+  }
+
+  async _put(namespace, key, val, ttl = 0, ...indexes) {
+    // TODO: Use multi/exec
     const k = store.key(namespace, key);
     await this.client.set(k, JSON.stringify(val));
     if (ttl) {
       await this.client.expire(k, ttl);
+    }
+
+    // no ttl support for secondary indexes
+    for (const idx of (indexes || [])) {
+      await this.client.sAdd(store.keyForIndex(idx), key);
     }
   }
 

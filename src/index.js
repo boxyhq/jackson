@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/auth/saml/authorize', async (req, res) => {
   const { response_type, client_id, redirect_uri, state } = req.query;
 
-  const idpMeta = await configStore.get('record');
+  const idpMeta = await configStore.get(client_id);
 
   res.redirect(idpMeta.sso.redirectUrl);
 });
@@ -31,10 +31,20 @@ app.post('/auth/saml', async (req, res) => {
   const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
   console.log('rawResponse=', rawResponse);
 
-  const idpMeta = await configStore.get('record');
+  // if origin is not null, check if it is allowed and then validate against config
 
-  // if origin is not null check if it is allowed and then validate against config
+  const parsedResp = await saml.parse(rawResponse);
+  console.log('parsedResp=', parsedResp);
 
+  const idpMetas = await configStore.getByIndex({
+    name: DB.indexNames.entityID,
+    value: DB.keyDigest(parsedResp.issuer),
+  });
+
+  // TODO: Support multiple matches
+  const idpMeta = idpMetas[0];
+  
+  console.log('idpMeta: /auth/saml: ', idpMeta);
   const profile = await saml.validate(rawResponse, {
     thumbprint: idpMeta.thumbprint,
     audience: env.samlAudience,
@@ -53,16 +63,33 @@ app.post('/auth/saml', async (req, res) => {
 });
 
 app.post('/auth/saml/config', async (req, res) => {
-  const { idpMetadata, appRedirectUrl } = req.body;
-
+  const { idpMetadata, appRedirectUrl, tenant, product } = req.body;
   const idpMeta = await saml.parseMetadata(idpMetadata);
   idpMeta.appRedirectUrl = appRedirectUrl;
 
   console.log('idpMeta=', JSON.stringify(idpMeta, null, 2));
 
-  await configStore.put('record', idpMeta);
+  let clientID = DB.keyDigest(tenant, product, idpMeta.entityID);
 
-  res.send('OK');
+  console.log('clientID=', clientID);
+
+  // store secondary index on entityID and tenant + product
+  await configStore.put(
+    clientID,
+    idpMeta,
+    {
+      name: DB.indexNames.entityID,
+      value: DB.keyDigest(idpMeta.entityID),
+    },
+    {
+      name: DB.indexNames.tenantProduct,
+      value: DB.keyDigest(tenant, product),
+    }
+  );
+
+  res.json({
+    client_id: clientID,
+  });
 });
 
 app.get('/auth/saml/profile', async (req, res) => {
