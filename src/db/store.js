@@ -15,11 +15,11 @@ class Store {
 }
 
 module.exports = {
-  new: function (namespace, db, ttl = 0) {
+  new: (namespace, db, ttl = 0) => {
     return new Store(namespace, db, ttl);
   },
 
-  key: function (namespace, key) {
+  key: (namespace, key) => {
     return namespace + ':' + key;
   },
 };

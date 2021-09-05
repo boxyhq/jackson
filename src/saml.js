@@ -4,8 +4,8 @@ var rambda = require('rambda');
 var thumbprint = require('thumbprint');
 
 module.exports = {
-  parse: async function (rawAssertion) {
-    return new Promise(function (resolve, reject) {
+  parse: async (rawAssertion) => {
+    return new Promise((resolve, reject) => {
       saml.parse(rawAssertion, function onParseAsync(err, profile) {
         if (err) {
           reject(err);
@@ -17,8 +17,8 @@ module.exports = {
     });
   },
 
-  validate: async function (rawAssertion, options) {
-    return new Promise(function (resolve, reject) {
+  validate: async (rawAssertion, options) => {
+    return new Promise((resolve, reject) => {
       saml.validate(
         rawAssertion,
         options,
@@ -34,12 +34,12 @@ module.exports = {
     });
   },
 
-  parseMetadata: async function (idpMeta) {
-    return new Promise(function (resolve, reject) {
+  parseMetadata: async (idpMeta) => {
+    return new Promise((resolve, reject) => {
       xml2js.parseString(
         idpMeta,
         { tagNameProcessors: [xml2js.processors.stripPrefix] },
-        function (err, res) {
+        (err, res) => {
           if (err) {
             reject(err);
             return;

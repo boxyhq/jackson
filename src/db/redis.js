@@ -32,7 +32,7 @@ class Redis {
 }
 
 module.exports = {
-  new: async function (options) {
+  new: async (options) => {
     return new Redis(options);
   },
 };
