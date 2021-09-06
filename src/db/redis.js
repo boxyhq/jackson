@@ -39,7 +39,7 @@ class Redis {
 
     // no ttl support for secondary indexes
     for (const idx of (indexes || [])) {
-      await this.client.sAdd(store.keyForIndex(idx), key);
+      await this.client.sAdd(store.keyForIndex(namespace, idx), key);
     }
   }
 

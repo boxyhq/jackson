@@ -1,5 +1,4 @@
 const redis = require('./redis.js');
-const ripemd160 = require('ripemd160');
 
 module.exports = {
   new: async (engine, options) => {
@@ -9,13 +8,12 @@ module.exports = {
     }
   },
 
-  keyDigest: (...parts) => {
-    let key = parts.join(':');
-    return new ripemd160().update(key).digest('hex');
+  keyFromParts: (...parts) => {
+    return parts.join(':');
   },
 
   indexNames: {
     entityID: 'entityID',
     tenantProduct: 'tenantProduct',
-  }
+  },  
 };

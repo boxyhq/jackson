@@ -1,6 +1,7 @@
 const express = require('express');
 const saml = require('./saml.js');
 const DB = require('./db/db.js');
+const store = require('./db/store.js');
 const env = require('./env.js');
 
 // const { PrismaClient } = require('@prisma/client');
@@ -38,12 +39,12 @@ app.post('/auth/saml', async (req, res) => {
 
   const idpMetas = await configStore.getByIndex({
     name: DB.indexNames.entityID,
-    value: DB.keyDigest(parsedResp.issuer),
+    value: parsedResp.issuer,
   });
 
   // TODO: Support multiple matches
   const idpMeta = idpMetas[0];
-  
+
   console.log('idpMeta: /auth/saml: ', idpMeta);
   const profile = await saml.validate(rawResponse, {
     thumbprint: idpMeta.thumbprint,
@@ -69,7 +70,7 @@ app.post('/auth/saml/config', async (req, res) => {
 
   console.log('idpMeta=', JSON.stringify(idpMeta, null, 2));
 
-  let clientID = DB.keyDigest(tenant, product, idpMeta.entityID);
+  let clientID = store.keyDigest(DB.keyFromParts(tenant, product, idpMeta.entityID));
 
   console.log('clientID=', clientID);
 
@@ -79,11 +80,11 @@ app.post('/auth/saml/config', async (req, res) => {
     idpMeta,
     {
       name: DB.indexNames.entityID,
-      value: DB.keyDigest(idpMeta.entityID),
+      value: idpMeta.entityID,
     },
     {
       name: DB.indexNames.tenantProduct,
-      value: DB.keyDigest(tenant, product),
+      value: DB.keyFromParts(tenant, product),
     }
   );
 
