@@ -15,27 +15,46 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// quasi oauth flow: response_type, client_id, redirect_uri, state
+// quasi oauth flow: response_type = code, client_id, redirect_uri, state
 app.get('/auth/saml/authorize', async (req, res) => {
-  const { response_type, client_id, redirect_uri, state } = req.query;
+  const {
+    response_type = 'code',
+    client_id,
+    redirect_uri,
+    state,
+    tenant,
+    product,
+  } = req.query;
+  let idpMeta;
 
-  const idpMeta = await configStore.get(client_id);
+  if (client_id) {
+    idpMeta = await configStore.get(client_id);
+  } else {
+    idpMetas = await configStore.getByIndex({
+      name: DB.indexNames.tenantProduct,
+      value: DB.keyFromParts(tenant, product),
+    });
 
-  res.redirect(idpMeta.sso.redirectUrl);
+    // TODO: Support multiple matches
+    idpMeta = idpMetas[0];
+  }
+
+  var url = new URL(idpMeta.sso.redirectUrl);
+  url.searchParams.set('RelayState', `state=${state}&redirect_uri=${redirect_uri}&response_type=${response_type}`);
+
+  res.redirect(url);
 });
 
 app.post('/auth/saml', async (req, res) => {
-  const { SAMLResponse } = req.body;
+  const { SAMLResponse, RelayState } = req.body;
 
-  console.log('headers.origin=', req.headers.origin);
+  var parseRelayState = new URLSearchParams(RelayState);
 
   const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
-  console.log('rawResponse=', rawResponse);
 
   // if origin is not null, check if it is allowed and then validate against config
 
   const parsedResp = await saml.parse(rawResponse);
-  console.log('parsedResp=', parsedResp);
 
   const idpMetas = await configStore.getByIndex({
     name: DB.indexNames.entityID,
@@ -45,13 +64,10 @@ app.post('/auth/saml', async (req, res) => {
   // TODO: Support multiple matches
   const idpMeta = idpMetas[0];
 
-  console.log('idpMeta: /auth/saml: ', idpMeta);
   const profile = await saml.validate(rawResponse, {
     thumbprint: idpMeta.thumbprint,
     audience: env.samlAudience,
   });
-
-  console.log('profile=', profile);
 
   // store details against a code
 
@@ -59,6 +75,7 @@ app.post('/auth/saml', async (req, res) => {
 
   var url = new URL(idpMeta.appRedirectUrl);
   url.searchParams.set('code', 'code');
+  url.searchParams.set('state', parseRelayState.get('state'));
 
   res.redirect(url);
 });
@@ -68,11 +85,9 @@ app.post('/auth/saml/config', async (req, res) => {
   const idpMeta = await saml.parseMetadata(idpMetadata);
   idpMeta.appRedirectUrl = appRedirectUrl;
 
-  console.log('idpMeta=', JSON.stringify(idpMeta, null, 2));
-
-  let clientID = store.keyDigest(DB.keyFromParts(tenant, product, idpMeta.entityID));
-
-  console.log('clientID=', clientID);
+  let clientID = store.keyDigest(
+    DB.keyFromParts(tenant, product, idpMeta.entityID)
+  );
 
   // store secondary index on entityID and tenant + product
   await configStore.put(
