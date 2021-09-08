@@ -30,17 +30,21 @@ class Redis {
   }
 
   async _put(namespace, key, val, ttl = 0, ...indexes) {
-    // TODO: Use multi/exec
+    let tx = this.client.multi();
     const k = store.key(namespace, key);
-    await this.client.set(k, JSON.stringify(val));
+
+    tx = tx.set(k, JSON.stringify(val));
+
     if (ttl) {
-      await this.client.expire(k, ttl);
+      tx = tx.expire(k, ttl);
     }
 
     // no ttl support for secondary indexes
     for (const idx of (indexes || [])) {
-      await this.client.sAdd(store.keyForIndex(namespace, idx), key);
+      tx = tx.sAdd(store.keyForIndex(namespace, idx), key);
     }
+
+    await tx.exec()
   }
 
   store(namespace, ttl = 0) {
