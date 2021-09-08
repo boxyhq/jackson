@@ -7,6 +7,8 @@ const env = require('./env.js');
 // const { PrismaClient } = require('@prisma/client');
 // const prisma = new PrismaClient();
 
+const samlPath = '/auth/saml';
+
 let configStore;
 let sessionStore;
 
@@ -15,8 +17,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// quasi oauth flow: response_type = code, client_id, redirect_uri, state
-app.get('/auth/saml/authorize', async (req, res) => {
+app.get(samlPath + '/authorize', async (req, res) => {
   const {
     response_type = 'code',
     client_id,
@@ -40,12 +41,25 @@ app.get('/auth/saml/authorize', async (req, res) => {
   }
 
   var url = new URL(idpMeta.sso.redirectUrl);
-  url.searchParams.set('RelayState', `state=${state}&redirect_uri=${redirect_uri}&response_type=${response_type}`);
+  url.searchParams.set(
+    'RelayState',
+    `state=${state}&redirect_uri=${redirect_uri}&response_type=${response_type}`
+  );
+
+  const authnRequest = saml.request({
+    entityID: idpMeta.entityID,
+    callbackUrl: env.externalUrl + samlPath,
+  });
+
+  url.searchParams.set(
+    'SAMLRequest',
+    Buffer.from(authnRequest).toString('base64')
+  );
 
   res.redirect(url);
 });
 
-app.post('/auth/saml', async (req, res) => {
+app.post(samlPath, async (req, res) => {
   const { SAMLResponse, RelayState } = req.body;
 
   var parseRelayState = new URLSearchParams(RelayState);
@@ -80,7 +94,7 @@ app.post('/auth/saml', async (req, res) => {
   res.redirect(url);
 });
 
-app.post('/auth/saml/config', async (req, res) => {
+app.post(samlPath + '/config', async (req, res) => {
   const { idpMetadata, appRedirectUrl, tenant, product } = req.body;
   const idpMeta = await saml.parseMetadata(idpMetadata);
   idpMeta.appRedirectUrl = appRedirectUrl;
@@ -108,7 +122,7 @@ app.post('/auth/saml/config', async (req, res) => {
   });
 });
 
-app.get('/auth/saml/profile', async (req, res) => {
+app.get(samlPath + '/profile', async (req, res) => {
   const { code } = req.query;
 
   const profile = await sessionStore.get(code);

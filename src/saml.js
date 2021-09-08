@@ -1,9 +1,60 @@
-var saml = require('@boxyhq/saml20');
-var xml2js = require('xml2js');
-var rambda = require('rambda');
-var thumbprint = require('thumbprint');
+const saml = require('@boxyhq/saml20');
+const xml2js = require('xml2js');
+const rambda = require('rambda');
+const thumbprint = require('thumbprint');
+const xmlbuilder = require('xmlbuilder');
+const crypto = require('crypto');
 
 module.exports = {
+  request: ({
+    ssoUrl,
+    entityID,
+    callbackUrl,
+    isPassive = false,
+    forceAuthn = false,
+    identifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+    providerName = 'BoxyHQ',
+  }) => {
+    const id = '_' + crypto.randomBytes(10).toString('hex');
+    const date = new Date().toISOString();
+
+    const samlReq = {
+      'samlp:AuthnRequest': {
+        '@xmlns:samlp': 'urn:oasis:names:tc:SAML:2.0:protocol',
+        '@ID': id,
+        '@Version': '2.0',
+        '@IssueInstant': date,
+        '@ProtocolBinding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+        '@Destination': ssoUrl,
+        'saml:Issuer': {
+          '@xmlns:saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
+          '#text': entityID,
+        },
+      },
+    };
+
+    if (isPassive) samlReq['samlp:AuthnRequest']['@IsPassive'] = true;
+
+    if (forceAuthn) {
+      samlReq['samlp:AuthnRequest']['@ForceAuthn'] = true;
+    }
+
+    samlReq['samlp:AuthnRequest']['@AssertionConsumerServiceURL'] = callbackUrl;
+
+    samlReq['samlp:AuthnRequest']['samlp:NameIDPolicy'] = {
+      '@xmlns:samlp': 'urn:oasis:names:tc:SAML:2.0:protocol',
+      '@Format': identifierFormat,
+      '@AllowCreate': 'true',
+    };
+
+    if (providerName != null) {
+      samlReq['samlp:AuthnRequest']['@ProviderName'] = providerName;
+    }
+
+    // TODO: Sign the request
+    return xmlbuilder.create(samlReq).end({});
+  },
+
   parse: async (rawAssertion) => {
     return new Promise((resolve, reject) => {
       saml.parse(rawAssertion, function onParseAsync(err, profile) {
