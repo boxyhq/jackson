@@ -27,22 +27,22 @@ app.get(samlPath + '/authorize', async (req, res) => {
     tenant,
     product,
   } = req.query;
-  let idpMeta;
+  let samlConfig;
 
   if (client_id) {
-    idpMeta = await configStore.getAsync(client_id);
+    samlConfig = await configStore.getAsync(client_id);
   } else {
-    idpMetas = await configStore.getByIndexAsync({
+    samlConfigs = await configStore.getByIndexAsync({
       name: DB.indexNames.tenantProduct,
       value: DB.keyFromParts(tenant, product),
     });
 
     // TODO: Support multiple matches
-    idpMeta = idpMetas[0];
+    samlConfig = samlConfigs[0];
   }
 
   const samlReq = saml.request({
-    entityID: idpMeta.entityID,
+    entityID: samlConfig.idpMetadata.entityID,
     callbackUrl: env.externalUrl + samlPath,
   });
 
@@ -55,7 +55,7 @@ app.get(samlPath + '/authorize', async (req, res) => {
     })
   );
 
-  return redirect.success(res, idpMeta.sso.redirectUrl, {
+  return redirect.success(res, samlConfig.idpMetadata.sso.redirectUrl, {
     RelayState: state,
     SAMLRequest: Buffer.from(samlReq.request).toString('base64'),
   });
@@ -63,8 +63,6 @@ app.get(samlPath + '/authorize', async (req, res) => {
 
 app.post(samlPath, async (req, res) => {
   const { SAMLResponse, RelayState } = req.body; // RelayState will contain the state from earlier quasi-oauth flow
-
-  var parseRelayState = new URLSearchParams(RelayState);
 
   const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
 
@@ -84,16 +82,16 @@ app.post(samlPath, async (req, res) => {
     }
   }
 
-  const idpMetas = await configStore.getByIndexAsync({
+  const samlConfigs = await configStore.getByIndexAsync({
     name: DB.indexNames.entityID,
     value: parsedResp.issuer,
   });
 
   // TODO: Support multiple matches
-  const idpMeta = idpMetas[0];
+  const samlConfig = samlConfigs[0];
 
   const profile = await saml.validateAsync(rawResponse, {
-    thumbprint: idpMeta.thumbprint,
+    thumbprint: samlConfig.idpMetadata.thumbprint,
     audience: env.samlAudience,
   });
 
@@ -102,30 +100,34 @@ app.post(samlPath, async (req, res) => {
 
   await codeStore.putAsync(code, profile);
 
-  return redirect.success(res, idpMeta.appRedirectUrl, {
+  return redirect.success(res, samlConfig.appRedirectUrl, {
     code,
-    state: parseRelayState.get('state'),
+    state: RelayState,
   });
 });
 
 app.post(samlPath + '/config', async (req, res) => {
   const { rawMetadata, appRedirectUrl, tenant, product } = req.body;
-  const idpMeta = await saml.parseMetadataAsync(rawMetadata);
-  idpMeta.appRedirectUrl = appRedirectUrl;
+  const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
   let clientID = store.keyDigest(
-    DB.keyFromParts(tenant, product, idpMeta.entityID)
+    DB.keyFromParts(tenant, product, idpMetadata.entityID)
   );
 
-  // store secondary index on entityID and tenant + product
   await configStore.putAsync(
     clientID,
-    idpMeta,
     {
-      name: DB.indexNames.entityID,
-      value: idpMeta.entityID,
+      idpMetadata,
+      appRedirectUrl,
+      tenant,
+      product,
+      clientID,
     },
-    {
+    { // secondary index on entityID
+      name: DB.indexNames.entityID,
+      value: idpMetadata.entityID,
+    },
+    { // secondary index on tenant + product
       name: DB.indexNames.tenantProduct,
       value: DB.keyFromParts(tenant, product),
     }
