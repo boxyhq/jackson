@@ -6,13 +6,14 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
-    "@boxyhq/saml20": "0.1.5",
+    "@boxyhq/saml20": "0.1.7",
     "@prisma/client": "3.0.1",
     "express": "4.17.1",
     "rambda": "6.9.0",
     "redis": "^4.0.0-rc.1",
     "ripemd160": "2.0.2",
     "thumbprint": "0.0.1",
+    "uuid": "8.3.2",
     "xml2js": "0.4.23",
     "xmlbuilder": "15.1.1"
   },

@@ -5,6 +5,8 @@ const thumbprint = require('thumbprint');
 const xmlbuilder = require('xmlbuilder');
 const crypto = require('crypto');
 
+const idPrefix = '_';
+
 module.exports = {
   request: ({
     ssoUrl,
@@ -15,7 +17,7 @@ module.exports = {
     identifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
     providerName = 'BoxyHQ',
   }) => {
-    const id = '_' + crypto.randomBytes(10).toString('hex');
+    const id = idPrefix + crypto.randomBytes(10).toString('hex');
     const date = new Date().toISOString();
 
     const samlReq = {
@@ -52,10 +54,13 @@ module.exports = {
     }
 
     // TODO: Sign the request
-    return xmlbuilder.create(samlReq).end({});
+    return {
+      id,
+      request: xmlbuilder.create(samlReq).end({}),
+    };
   },
 
-  parse: async (rawAssertion) => {
+  parseAsync: async (rawAssertion) => {
     return new Promise((resolve, reject) => {
       saml.parse(rawAssertion, function onParseAsync(err, profile) {
         if (err) {
@@ -68,7 +73,7 @@ module.exports = {
     });
   },
 
-  validate: async (rawAssertion, options) => {
+  validateAsync: async (rawAssertion, options) => {
     return new Promise((resolve, reject) => {
       saml.validate(
         rawAssertion,
@@ -85,7 +90,7 @@ module.exports = {
     });
   },
 
-  parseMetadata: async (idpMeta) => {
+  parseMetadataAsync: async (idpMeta) => {
     return new Promise((resolve, reject) => {
       xml2js.parseString(
         idpMeta,
