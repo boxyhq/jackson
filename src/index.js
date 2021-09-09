@@ -86,7 +86,7 @@ app.post(samlPath, async (req, res) => {
     name: DB.indexNames.entityID,
     value: parsedResp.issuer,
   });
-
+  
   // TODO: Support multiple matches
   const samlConfig = samlConfigs[0];
 
@@ -106,7 +106,42 @@ app.post(samlPath, async (req, res) => {
   });
 });
 
-app.post(samlPath + '/config', async (req, res) => {
+app.post(samlPath + '/me', async (req, res) => {
+  const token = extractBearerToken(req);
+
+  const profile = await tokenStore.getAsync(token);
+
+  res.json(profile);
+});
+
+const server = app.listen(env.hostPort, async () => {
+  console.log(
+    `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
+  );
+
+  const db = await DB.newAsync('redis', {});
+  configStore = db.store('saml:config');
+  sessionStore = db.store('saml:session', 300);
+  tokenStore = db.store('saml:token', 300);
+});
+
+const extractBearerToken = (req) => {
+  const authHeader = req.get('authorization');
+  const parts = (authHeader || '').split(' ');
+  if (parts.length > 1) {
+    return parts[1];
+  }
+
+  return null;
+}
+
+// Internal routes, recommnded not to expose this to the public interface though it would be guarded by API key(s)
+const internalApp = express();
+
+internalApp.use(express.json());
+internalApp.use(express.urlencoded({ extended: true }));
+
+internalApp.post(samlPath + '/config', async (req, res) => {
   const { rawMetadata, appRedirectUrl, tenant, product } = req.body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
@@ -138,33 +173,13 @@ app.post(samlPath + '/config', async (req, res) => {
   });
 });
 
-app.post(samlPath + '/me', async (req, res) => {
-  const token = extractBearerToken(req);
-console.log('token=', token);
-  const profile = await tokenStore.getAsync(token);
-
-  res.json(profile);
-});
-
-const server = app.listen(env.hostPort, async () => {
+const internalServer = internalApp.listen(env.internalPort, async () => {
   console.log(
-    `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
+    `🚀 The path of the righteous internal server: http://${env.internalUrl}:${env.internalPort}`
   );
-
-  const db = await DB.newAsync('redis', {});
-  configStore = db.store('saml:config');
-  sessionStore = db.store('saml:session', 300);
-  tokenStore = db.store('saml:token', 300);
 });
 
-const extractBearerToken = (req) => {
-  const authHeader = req.get('authorization');
-  const parts = (authHeader || '').split(' ');
-  if (parts.length > 1) {
-    return parts[1];
-  }
-
-  return null;
-}
-
-module.exports = server;
+module.exports = {
+  server,
+  internalServer,
+};

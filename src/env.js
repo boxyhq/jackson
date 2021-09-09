@@ -4,9 +4,14 @@ const externalUrl =
   process.env.EXTRNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const samlAudience = process.env.SAML_AUDIENCE || 'https://auth.boxyhq.com';
 
+const internalUrl = process.env.HOST_URL || 'localhost';
+const internalPort = (process.env.HOST_PORT || '6000') * 1;
+
 module.exports = {
   hostUrl,
   hostPort,
   externalUrl,
   samlAudience,
+  internalUrl,
+  internalPort,
 };
