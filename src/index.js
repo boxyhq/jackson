@@ -1,5 +1,5 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 const saml = require('./saml.js');
 const DB = require('./db/db.js');
@@ -11,7 +11,7 @@ const samlPath = '/auth/saml';
 
 let configStore;
 let sessionStore;
-let codeStore;
+let tokenStore;
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(samlPath + '/authorize', async (req, res) => {
   const {
-    response_type = 'code',
+    response_type = 'token',
     client_id,
     redirect_uri,
     state,
@@ -95,13 +95,13 @@ app.post(samlPath, async (req, res) => {
     audience: env.samlAudience,
   });
 
-  // store details against a code
-  const code = uuidv4();
+  // store details against a token
+  const token = crypto.randomBytes(20).toString('hex');
 
-  await codeStore.putAsync(code, profile);
+  await tokenStore.putAsync(token, profile);
 
   return redirect.success(res, samlConfig.appRedirectUrl, {
-    code,
+    token,
     state: RelayState,
   });
 });
@@ -138,10 +138,10 @@ app.post(samlPath + '/config', async (req, res) => {
   });
 });
 
-app.get(samlPath + '/me', async (req, res) => {
-  const { code } = req.query;
-
-  const profile = await codeStore.getAsync(code);
+app.post(samlPath + '/me', async (req, res) => {
+  const token = extractBearerToken(req);
+console.log('token=', token);
+  const profile = await tokenStore.getAsync(token);
 
   res.json(profile);
 });
@@ -154,7 +154,17 @@ const server = app.listen(env.hostPort, async () => {
   const db = await DB.newAsync('redis', {});
   configStore = db.store('saml:config');
   sessionStore = db.store('saml:session', 300);
-  codeStore = db.store('saml:code', 300);
+  tokenStore = db.store('saml:token', 300);
 });
+
+const extractBearerToken = (req) => {
+  const authHeader = req.get('authorization');
+  const parts = (authHeader || '').split(' ');
+  if (parts.length > 1) {
+    return parts[1];
+  }
+
+  return null;
+}
 
 module.exports = server;
