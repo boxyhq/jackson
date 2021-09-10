@@ -7,6 +7,8 @@ const samlAudience = process.env.SAML_AUDIENCE || 'https://auth.boxyhq.com';
 const internalUrl = process.env.HOST_URL || 'localhost';
 const internalPort = (process.env.HOST_PORT || '6000') * 1;
 
+const idpEnabled = process.env.IDP_ENABLED === 'true';
+
 module.exports = {
   hostUrl,
   hostPort,
@@ -14,4 +16,5 @@ module.exports = {
   samlAudience,
   internalUrl,
   internalPort,
+  idpEnabled,
 };

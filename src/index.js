@@ -8,6 +8,7 @@ const env = require('./env.js');
 const redirect = require('./redirect.js');
 
 const samlPath = '/auth/saml';
+const relayStatePrefix = 'boxyhq_jackson_';
 
 let configStore;
 let sessionStore;
@@ -47,22 +48,35 @@ app.get(samlPath + '/authorize', async (req, res) => {
   });
 
   await sessionStore.putAsync(
-    samlReq.id,
+    state,
     JSON.stringify({
-      state,
+      id: samlReq.id,
       redirect_uri,
       response_type,
     })
   );
 
   return redirect.success(res, samlConfig.idpMetadata.sso.redirectUrl, {
-    RelayState: state,
+    RelayState: relayStatePrefix + state,
     SAMLRequest: Buffer.from(samlReq.request).toString('base64'),
   });
 });
 
 app.post(samlPath, async (req, res) => {
-  const { SAMLResponse, RelayState } = req.body; // RelayState will contain the state from earlier quasi-oauth flow
+  const { SAMLResponse } = req.body; // RelayState will contain the state from earlier quasi-oauth flow
+
+  let RelayState = req.body.RelayState || '';
+
+  if (!env.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
+    // IDP is disabled so block the request
+    return res
+      .status(403)
+      .send(
+        'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.'
+      );
+  }
+
+  RelayState = RelayState.replace(relayStatePrefix, '');
 
   const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
 
@@ -70,30 +84,41 @@ app.post(samlPath, async (req, res) => {
 
   const parsedResp = await saml.parseAsync(rawResponse);
 
-  if (parsedResp.inResponseTo) {
-    // validate InResponseTo and state
-    const id = await sessionStore.getAsync(parsedResp.inResponseTo);
-    if (!id) {
-      //return redirect.error(res, )
-    }
-
-    if (id.state !== RelayState) {
-      //return redirect.error(res, )
-    }
-  }
-
   const samlConfigs = await configStore.getByIndexAsync({
     name: DB.indexNames.entityID,
     value: parsedResp.issuer,
   });
-  
+
+  if (!samlConfigs || samlConfigs.length == 0) {
+    return res.status(403).send('SAML configuration not found.');
+  }
+
   // TODO: Support multiple matches
   const samlConfig = samlConfigs[0];
 
-  const profile = await saml.validateAsync(rawResponse, {
+  let session;
+
+  if (RelayState) {
+    session = await sessionStore.getAsync(RelayState);
+    if (!session) {
+      return redirect.error(
+        res,
+        samlConfig.appRedirectUrl,
+        'Unable to validate state from the origin request.'
+      );
+    }
+  }
+
+  let validateOpts = {
     thumbprint: samlConfig.idpMetadata.thumbprint,
     audience: env.samlAudience,
-  });
+  };
+
+  if (session && session.id) {
+    validateOpts.inResponseTo = session.id;
+  }
+
+  const profile = await saml.validateAsync(rawResponse, validateOpts);
 
   // store details against a token
   const token = crypto.randomBytes(20).toString('hex');
@@ -133,7 +158,7 @@ const extractBearerToken = (req) => {
   }
 
   return null;
-}
+};
 
 // Internal routes, recommnded not to expose this to the public interface though it would be guarded by API key(s)
 const internalApp = express();
@@ -158,11 +183,13 @@ internalApp.post(samlPath + '/config', async (req, res) => {
       product,
       clientID,
     },
-    { // secondary index on entityID
+    {
+      // secondary index on entityID
       name: DB.indexNames.entityID,
       value: idpMetadata.entityID,
     },
-    { // secondary index on tenant + product
+    {
+      // secondary index on tenant + product
       name: DB.indexNames.tenantProduct,
       value: DB.keyFromParts(tenant, product),
     }
