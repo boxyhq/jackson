@@ -103,7 +103,7 @@ app.post(samlPath, async (req, res) => {
     if (!session) {
       return redirect.error(
         res,
-        samlConfig.appRedirectUrl,
+        samlConfig.idpRedirectUrl,
         'Unable to validate state from the origin request.'
       );
     }
@@ -125,7 +125,7 @@ app.post(samlPath, async (req, res) => {
 
   await tokenStore.putAsync(token, profile);
 
-  return redirect.success(res, samlConfig.appRedirectUrl, {
+  return redirect.success(res, samlConfig.idpRedirectUrl, {
     token,
     state: RelayState,
   });
@@ -160,14 +160,14 @@ const extractBearerToken = (req) => {
   return null;
 };
 
-// Internal routes, recommnded not to expose this to the public interface though it would be guarded by API key(s)
+// Internal routes, recommended not to expose this to the public interface though it would be guarded by API key(s)
 const internalApp = express();
 
 internalApp.use(express.json());
 internalApp.use(express.urlencoded({ extended: true }));
 
 internalApp.post(samlPath + '/config', async (req, res) => {
-  const { rawMetadata, appRedirectUrl, tenant, product } = req.body;
+  const { rawMetadata, idpRedirectUrl, tenant, product } = req.body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
   let clientID = store.keyDigest(
@@ -178,7 +178,7 @@ internalApp.post(samlPath + '/config', async (req, res) => {
     clientID,
     {
       idpMetadata,
-      appRedirectUrl,
+      idpRedirectUrl,
       tenant,
       product,
       clientID,
