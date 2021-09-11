@@ -15,5 +15,5 @@ module.exports = {
   indexNames: {
     entityID: 'entityID',
     tenantProduct: 'tenantProduct',
-  },  
+  },
 };

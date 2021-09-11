@@ -17,11 +17,17 @@ class Store {
   }
 
   async putAsync(key, val, ...indexes) {
-    indexes = (indexes || []).map(idx => {
+    indexes = (indexes || []).map((idx) => {
       idx.value = keyDigest(idx.value);
       return idx;
     });
-    this.db._putAsync(this.namespace, keyDigest(key), val, this.ttl, ...indexes);
+    this.db._putAsync(
+      this.namespace,
+      keyDigest(key),
+      val,
+      this.ttl,
+      ...indexes
+    );
   }
 }
 
@@ -41,9 +47,9 @@ module.exports = {
   new: (namespace, db, ttl = 0) => {
     return new Store(namespace, db, ttl);
   },
-  
+
   key,
-  
+
   keyForIndex,
 
   keyDigest,

@@ -17,16 +17,18 @@ class Redis {
   async _getAsync(namespace, key) {
     let res = await this.client.get(store.key(namespace, key));
     if (res) {
-      res = JSON.parse(res);
+      return JSON.parse(res);
     }
     return res;
   }
 
   async _getByIndexAsync(namespace, idx) {
-    const dbKeys = await this.client.sMembers(store.keyForIndex(namespace, idx));
+    const dbKeys = await this.client.sMembers(
+      store.keyForIndex(namespace, idx)
+    );
 
     const ret = [];
-    for (const dbKey of (dbKeys || [])) {
+    for (const dbKey of dbKeys || []) {
       ret.push(await this._getAsync(namespace, dbKey));
     }
 
@@ -44,11 +46,11 @@ class Redis {
     }
 
     // no ttl support for secondary indexes
-    for (const idx of (indexes || [])) {
+    for (const idx of indexes || []) {
       tx = tx.sAdd(store.keyForIndex(namespace, idx), key);
     }
 
-    await tx.exec()
+    await tx.exec();
   }
 
   store(namespace, ttl = 0) {

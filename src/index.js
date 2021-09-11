@@ -6,6 +6,7 @@ const DB = require('./db/db.js');
 const store = require('./db/store.js');
 const env = require('./env.js');
 const redirect = require('./redirect.js');
+const allowed = require('./allowed.js');
 
 const samlPath = '/auth/saml';
 const relayStatePrefix = 'boxyhq_jackson_';
@@ -28,6 +29,11 @@ app.get(samlPath + '/authorize', async (req, res) => {
     tenant,
     product,
   } = req.query;
+
+  if (!redirect_uri) {
+    return res.status(403).send('Please specify a redirect URL.');
+  }
+
   let samlConfig;
 
   if (client_id) {
@@ -38,8 +44,20 @@ app.get(samlPath + '/authorize', async (req, res) => {
       value: DB.keyFromParts(tenant, product),
     });
 
+    if (!samlConfigs || samlConfigs.length == 0) {
+      return res.status(403).send('SAML configuration not found.');
+    }
+
     // TODO: Support multiple matches
     samlConfig = samlConfigs[0];
+  }
+
+  if (!samlConfig) {
+    return res.status(403).send('SAML configuration not found.');
+  }
+
+  if (!allowed.redirect(redirect_uri, samlConfig.redirectUrl)) {
+    return res.status(403).send('Redirect URL is not allowed.');
   }
 
   const samlReq = saml.request({
@@ -47,14 +65,11 @@ app.get(samlPath + '/authorize', async (req, res) => {
     callbackUrl: env.externalUrl + samlPath,
   });
 
-  await sessionStore.putAsync(
-    state,
-    JSON.stringify({
-      id: samlReq.id,
-      redirect_uri,
-      response_type,
-    })
-  );
+  await sessionStore.putAsync(state, {
+    id: samlReq.id,
+    redirect_uri,
+    response_type,
+  });
 
   return redirect.success(res, samlConfig.idpMetadata.sso.redirectUrl, {
     RelayState: relayStatePrefix + state,
@@ -79,8 +94,6 @@ app.post(samlPath, async (req, res) => {
   RelayState = RelayState.replace(relayStatePrefix, '');
 
   const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
-
-  // if origin is not null, check if it is allowed and then validate against config
 
   const parsedResp = await saml.parseAsync(rawResponse);
 
@@ -125,10 +138,14 @@ app.post(samlPath, async (req, res) => {
 
   await tokenStore.putAsync(token, profile);
 
-  return redirect.success(res, samlConfig.idpRedirectUrl, {
-    token,
-    state: RelayState,
-  });
+  return redirect.success(
+    res,
+    session.redirect_uri || samlConfig.idpRedirectUrl,
+    {
+      token,
+      state: RelayState,
+    }
+  );
 });
 
 app.post(samlPath + '/me', async (req, res) => {
@@ -167,7 +184,8 @@ internalApp.use(express.json());
 internalApp.use(express.urlencoded({ extended: true }));
 
 internalApp.post(samlPath + '/config', async (req, res) => {
-  const { rawMetadata, idpRedirectUrl, tenant, product } = req.body;
+  const { rawMetadata, idpRedirectUrl, redirectUrl, tenant, product } =
+    req.body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
   let clientID = store.keyDigest(
@@ -179,6 +197,7 @@ internalApp.post(samlPath + '/config', async (req, res) => {
     {
       idpMetadata,
       idpRedirectUrl,
+      redirectUrl: JSON.parse(redirectUrl),
       tenant,
       product,
       clientID,
