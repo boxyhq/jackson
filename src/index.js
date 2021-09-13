@@ -35,7 +35,9 @@ app.get(samlPath + '/authorize', async (req, res) => {
   }
 
   if (!state) {
-    return res.status(403).send('Please specify a state to safeguard against XRSF attacks.');
+    return res
+      .status(403)
+      .send('Please specify a state to safeguard against XRSF attacks.');
   }
 
   let samlConfig;
@@ -69,20 +71,23 @@ app.get(samlPath + '/authorize', async (req, res) => {
     callbackUrl: env.externalUrl + samlPath,
   });
 
-  await sessionStore.putAsync(state, {
+  const sessionId = crypto.randomBytes(16).toString('hex');
+
+  await sessionStore.putAsync(sessionId, {
     id: samlReq.id,
     redirect_uri,
     response_type,
+    state,
   });
 
   return redirect.success(res, samlConfig.idpMetadata.sso.redirectUrl, {
-    RelayState: relayStatePrefix + state,
+    RelayState: relayStatePrefix + sessionId,
     SAMLRequest: Buffer.from(samlReq.request).toString('base64'),
   });
 });
 
 app.post(samlPath, async (req, res) => {
-  const { SAMLResponse } = req.body; // RelayState will contain the state from earlier quasi-oauth flow
+  const { SAMLResponse } = req.body; // RelayState will contain the sessionId from earlier quasi-oauth flow
 
   let RelayState = req.body.RelayState || '';
 
@@ -150,13 +155,18 @@ app.post(samlPath, async (req, res) => {
     return res.status(403).send('Redirect URL is not allowed.');
   }
 
+  let params = {
+    token,
+  };
+
+  if (session.state) {
+    params.state = session.state;
+  }
+
   return redirect.success(
     res,
     session.redirect_uri || samlConfig.defaultRedirectUrl,
-    {
-      token,
-      state: RelayState,
-    }
+    params
   );
 });
 
