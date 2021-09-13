@@ -34,6 +34,10 @@ app.get(samlPath + '/authorize', async (req, res) => {
     return res.status(403).send('Please specify a redirect URL.');
   }
 
+  if (!state) {
+    return res.status(403).send('Please specify a state to safeguard against XRSF attacks.');
+  }
+
   let samlConfig;
 
   if (client_id) {
@@ -111,12 +115,12 @@ app.post(samlPath, async (req, res) => {
 
   let session;
 
-  if (RelayState) {
+  if (RelayState !== '') {
     session = await sessionStore.getAsync(RelayState);
     if (!session) {
       return redirect.error(
         res,
-        samlConfig.idpRedirectUrl,
+        samlConfig.defaultRedirectUrl,
         'Unable to validate state from the origin request.'
       );
     }
@@ -138,9 +142,17 @@ app.post(samlPath, async (req, res) => {
 
   await tokenStore.putAsync(token, profile);
 
+  if (
+    session &&
+    session.redirect_uri &&
+    !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)
+  ) {
+    return res.status(403).send('Redirect URL is not allowed.');
+  }
+
   return redirect.success(
     res,
-    session.redirect_uri || samlConfig.idpRedirectUrl,
+    session.redirect_uri || samlConfig.defaultRedirectUrl,
     {
       token,
       state: RelayState,
@@ -184,7 +196,7 @@ internalApp.use(express.json());
 internalApp.use(express.urlencoded({ extended: true }));
 
 internalApp.post(samlPath + '/config', async (req, res) => {
-  const { rawMetadata, idpRedirectUrl, redirectUrl, tenant, product } =
+  const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } =
     req.body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
@@ -196,7 +208,7 @@ internalApp.post(samlPath + '/config', async (req, res) => {
     clientID,
     {
       idpMetadata,
-      idpRedirectUrl,
+      defaultRedirectUrl,
       redirectUrl: JSON.parse(redirectUrl),
       tenant,
       product,
