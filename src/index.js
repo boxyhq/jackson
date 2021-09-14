@@ -45,9 +45,9 @@ app.get(samlPath + '/authorize', async (req, res) => {
   let samlConfig;
 
   if (client_id) {
-    samlConfig = await configStore.getAsync(client_id);
+    samlConfig = await configStore.get(client_id);
   } else {
-    samlConfigs = await configStore.getByIndexAsync({
+    samlConfigs = await configStore.getByIndex({
       name: DB.indexNames.tenantProduct,
       value: DB.keyFromParts(tenant, product),
     });
@@ -75,7 +75,7 @@ app.get(samlPath + '/authorize', async (req, res) => {
 
   const sessionId = crypto.randomBytes(16).toString('hex');
 
-  await sessionStore.putAsync(sessionId, {
+  await sessionStore.put(sessionId, {
     id: samlReq.id,
     redirect_uri,
     response_type,
@@ -108,7 +108,7 @@ app.post(samlPath, async (req, res) => {
 
   const parsedResp = await saml.parseAsync(rawResponse);
 
-  const samlConfigs = await configStore.getByIndexAsync({
+  const samlConfigs = await configStore.getByIndex({
     name: DB.indexNames.entityID,
     value: parsedResp.issuer,
   });
@@ -123,7 +123,7 @@ app.post(samlPath, async (req, res) => {
   let session;
 
   if (RelayState !== '') {
-    session = await sessionStore.getAsync(RelayState);
+    session = await sessionStore.get(RelayState);
     if (!session) {
       return redirect.error(
         res,
@@ -147,7 +147,7 @@ app.post(samlPath, async (req, res) => {
   // store details against a token
   const token = crypto.randomBytes(20).toString('hex');
 
-  await tokenStore.putAsync(token, profile);
+  await tokenStore.put(token, profile);
 
   if (
     session &&
@@ -175,7 +175,7 @@ app.post(samlPath, async (req, res) => {
 app.post(samlPath + '/me', async (req, res) => {
   const token = extractBearerToken(req);
 
-  const profile = await tokenStore.getAsync(token);
+  const profile = await tokenStore.get(token);
 
   res.json(profile);
 });
@@ -185,7 +185,7 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  const db = await DB.newAsync('redis', {});
+  const db = await DB.new('redis', {});
   configStore = db.store('saml:config');
   sessionStore = db.store('saml:session', 300);
   tokenStore = db.store('saml:token', 300);
@@ -217,14 +217,14 @@ internalApp.post(apiPath + '/config', async (req, res) => {
   );
   let clientSecret;
 
-  let exists = await configStore.getAsync(clientID);
+  let exists = await configStore.get(clientID);
   if (exists) {
     clientSecret = exists.clientSecret;
   } else {
     clientSecret = crypto.randomBytes(24).toString('hex');
   }
 
-  await configStore.putAsync(
+  await configStore.put(
     clientID,
     {
       idpMetadata,

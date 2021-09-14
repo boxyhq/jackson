@@ -1,10 +1,10 @@
 const redis = require('./redis.js');
 
 module.exports = {
-  newAsync: async (engine, options) => {
+  new: async (engine, options) => {
     switch (engine) {
       case 'redis':
-        return await redis.newAsync(options);
+        return await redis.new(options);
     }
   },
 

@@ -7,27 +7,21 @@ class Store {
     this.ttl = ttl;
   }
 
-  async getAsync(key) {
-    return this.db._getAsync(this.namespace, keyDigest(key));
+  async get(key) {
+    return this.db._get(this.namespace, keyDigest(key));
   }
 
-  async getByIndexAsync(idx) {
+  async getByIndex(idx) {
     idx.value = keyDigest(idx.value);
-    return this.db._getByIndexAsync(this.namespace, idx);
+    return this.db._getByIndex(this.namespace, idx);
   }
 
-  async putAsync(key, val, ...indexes) {
+  async put(key, val, ...indexes) {
     indexes = (indexes || []).map((idx) => {
       idx.value = keyDigest(idx.value);
       return idx;
     });
-    this.db._putAsync(
-      this.namespace,
-      keyDigest(key),
-      val,
-      this.ttl,
-      ...indexes
-    );
+    this.db._put(this.namespace, keyDigest(key), val, this.ttl, ...indexes);
   }
 }
 

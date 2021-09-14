@@ -14,7 +14,7 @@ class Redis {
     })();
   }
 
-  async _getAsync(namespace, key) {
+  async _get(namespace, key) {
     let res = await this.client.get(store.key(namespace, key));
     if (res) {
       return JSON.parse(res);
@@ -22,20 +22,20 @@ class Redis {
     return res;
   }
 
-  async _getByIndexAsync(namespace, idx) {
+  async _getByIndex(namespace, idx) {
     const dbKeys = await this.client.sMembers(
       store.keyForIndex(namespace, idx)
     );
 
     const ret = [];
     for (const dbKey of dbKeys || []) {
-      ret.push(await this._getAsync(namespace, dbKey));
+      ret.push(await this._get(namespace, dbKey));
     }
 
     return ret;
   }
 
-  async _putAsync(namespace, key, val, ttl = 0, ...indexes) {
+  async _put(namespace, key, val, ttl = 0, ...indexes) {
     let tx = this.client.multi();
     const k = store.key(namespace, key);
 
@@ -59,7 +59,7 @@ class Redis {
 }
 
 module.exports = {
-  newAsync: async (options) => {
+  new: async (options) => {
     return new Redis(options);
   },
 };
