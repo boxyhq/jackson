@@ -9,6 +9,8 @@ const redirect = require('./redirect.js');
 const allowed = require('./allowed.js');
 
 const samlPath = '/auth/saml';
+const apiPath = '/api/v1/saml';
+
 const relayStatePrefix = 'boxyhq_jackson_';
 
 let configStore;
@@ -205,15 +207,14 @@ const internalApp = express();
 internalApp.use(express.json());
 internalApp.use(express.urlencoded({ extended: true }));
 
-internalApp.post(samlPath + '/config', async (req, res) => {
+internalApp.post(apiPath + '/config', async (req, res) => {
   const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } =
     req.body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
-  let clientID = store.keyDigest(
-    DB.keyFromParts(tenant, product, idpMetadata.entityID)
-  );
-
+  let clientID = crypto.randomBytes(20).toString('hex');
+  let clientSecret = crypto.randomBytes(40).toString('hex');
+  
   await configStore.putAsync(
     clientID,
     {
@@ -223,6 +224,7 @@ internalApp.post(samlPath + '/config', async (req, res) => {
       tenant,
       product,
       clientID,
+      clientSecret,
     },
     {
       // secondary index on entityID
@@ -238,6 +240,7 @@ internalApp.post(samlPath + '/config', async (req, res) => {
 
   res.json({
     client_id: clientID,
+    client_secret: clientSecret,
   });
 });
 
