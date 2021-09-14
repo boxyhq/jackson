@@ -3,7 +3,7 @@ const crypto = require('crypto');
 
 const saml = require('./saml.js');
 const DB = require('./db/db.js');
-const store = require('./db/store.js');
+const dbutils = require('./db/db-utils.js');
 const env = require('./env.js');
 const redirect = require('./redirect.js');
 const allowed = require('./allowed.js');
@@ -212,7 +212,7 @@ internalApp.post(apiPath + '/config', async (req, res) => {
     req.body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
-  let clientID = store.keyDigest(
+  let clientID = dbutils.keyDigest(
     DB.keyFromParts(tenant, product, idpMetadata.entityID)
   );
   let clientSecret;

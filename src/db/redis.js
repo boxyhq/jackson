@@ -1,5 +1,5 @@
-const store = require('./store.js');
 const redis = require('redis');
+const dbutils = require('./db-utils.js');
 
 class Redis {
   constructor(options) {
@@ -14,30 +14,30 @@ class Redis {
     })();
   }
 
-  async _get(namespace, key) {
-    let res = await this.client.get(store.key(namespace, key));
+  async get(namespace, key) {
+    let res = await this.client.get(dbutils.key(namespace, key));
     if (res) {
       return JSON.parse(res);
     }
     return res;
   }
 
-  async _getByIndex(namespace, idx) {
+  async getByIndex(namespace, idx) {
     const dbKeys = await this.client.sMembers(
-      store.keyForIndex(namespace, idx)
+      dbutils.keyForIndex(namespace, idx)
     );
 
     const ret = [];
     for (const dbKey of dbKeys || []) {
-      ret.push(await this._get(namespace, dbKey));
+      ret.push(await this.get(namespace, dbKey));
     }
 
     return ret;
   }
 
-  async _put(namespace, key, val, ttl = 0, ...indexes) {
+  async put(namespace, key, val, ttl = 0, ...indexes) {
     let tx = this.client.multi();
-    const k = store.key(namespace, key);
+    const k = dbutils.key(namespace, key);
 
     tx = tx.set(k, JSON.stringify(val));
 
@@ -47,14 +47,10 @@ class Redis {
 
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
-      tx = tx.sAdd(store.keyForIndex(namespace, idx), key);
+      tx = tx.sAdd(dbutils.keyForIndex(namespace, idx), key);
     }
 
     await tx.exec();
-  }
-
-  store(namespace, ttl = 0) {
-    return store.new(namespace, this, ttl);
   }
 }
 
