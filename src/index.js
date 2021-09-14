@@ -212,9 +212,18 @@ internalApp.post(apiPath + '/config', async (req, res) => {
     req.body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
-  let clientID = crypto.randomBytes(10).toString('hex');
-  let clientSecret = crypto.randomBytes(20).toString('hex');
-  
+  let clientID = store.keyDigest(
+    DB.keyFromParts(tenant, product, idpMetadata.entityID)
+  );
+  let clientSecret;
+
+  let exists = await configStore.getAsync(clientID);
+  if (exists) {
+    clientSecret = exists.clientSecret;
+  } else {
+    clientSecret = crypto.randomBytes(24).toString('hex');
+  }
+
   await configStore.putAsync(
     clientID,
     {
