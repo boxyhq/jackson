@@ -212,8 +212,8 @@ internalApp.post(apiPath + '/config', async (req, res) => {
     req.body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
-  let clientID = crypto.randomBytes(20).toString('hex');
-  let clientSecret = crypto.randomBytes(40).toString('hex');
+  let clientID = crypto.randomBytes(10).toString('hex');
+  let clientSecret = crypto.randomBytes(20).toString('hex');
   
   await configStore.putAsync(
     clientID,
