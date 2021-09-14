@@ -7,6 +7,8 @@
   },
   "dependencies": {
     "@boxyhq/saml20": "0.1.7",
+    "@peculiar/webcrypto": "1.1.7",
+    "@peculiar/x509": "1.4.1",
     "@prisma/client": "3.0.1",
     "express": "4.17.1",
     "rambda": "6.9.0",
