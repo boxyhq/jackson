@@ -4,8 +4,39 @@ const rambda = require('rambda');
 const thumbprint = require('thumbprint');
 const xmlbuilder = require('xmlbuilder');
 const crypto = require('crypto');
+const xmlcrypto = require('xml-crypto');
 
 const idPrefix = '_';
+const authnXPath =
+  '/*[local-name(.)="AuthnRequest" and namespace-uri(.)="urn:oasis:names:tc:SAML:2.0:protocol"]';
+const issuerXPath =
+  '/*[local-name(.)="Issuer" and namespace-uri(.)="urn:oasis:names:tc:SAML:2.0:assertion"]';
+
+const signRequest = (xml, signingKey) => {
+  if (!xml) {
+    throw new Error('Please specify xml');
+  }
+  if (!signingKey) {
+    throw new Error('Please specify signingKey');
+  }
+
+  const sig = new xmlcrypto.SignedXml();
+  sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
+  sig.signingKey = signingKey;
+  sig.addReference(
+    authnXPath,
+    [
+      'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
+      'http://www.w3.org/2001/10/xml-exc-c14n#',
+    ],
+    'http://www.w3.org/2001/04/xmlenc#sha256'
+  );
+  sig.computeSignature(xml, {
+    location: { reference: authnXPath + issuerXPath, action: 'after' },
+  });
+
+  return sig.getSignedXml();
+};
 
 module.exports = {
   request: ({
@@ -16,6 +47,7 @@ module.exports = {
     forceAuthn = false,
     identifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
     providerName = 'BoxyHQ',
+    signingKey,
   }) => {
     const id = idPrefix + crypto.randomBytes(10).toString('hex');
     const date = new Date().toISOString();
@@ -53,10 +85,14 @@ module.exports = {
       samlReq['samlp:AuthnRequest']['@ProviderName'] = providerName;
     }
 
-    // TODO: Sign the request
+    let xml = xmlbuilder.create(samlReq).end({});
+    if (signingKey) {
+      xml = signRequest(xml, signingKey);
+    }
+
     return {
       id,
-      request: xmlbuilder.create(samlReq).end({}),
+      request: xml,
     };
   },
 

@@ -7,6 +7,7 @@ const dbutils = require('./db/db-utils.js');
 const env = require('./env.js');
 const redirect = require('./redirect.js');
 const allowed = require('./allowed.js');
+const x509 = require('./x509.js');
 
 const samlPath = '/auth/saml';
 const apiPath = '/api/v1/saml';
@@ -71,6 +72,7 @@ app.get(samlPath + '/authorize', async (req, res) => {
   const samlReq = saml.request({
     entityID: samlConfig.idpMetadata.entityID,
     callbackUrl: env.externalUrl + samlPath,
+    signingKey: samlConfig.certs.privateKey,
   });
 
   const sessionId = crypto.randomBytes(16).toString('hex');
@@ -224,6 +226,11 @@ internalApp.post(apiPath + '/config', async (req, res) => {
     clientSecret = crypto.randomBytes(24).toString('hex');
   }
 
+  const certs = await x509.generate();
+  if (!certs) {
+    throw new Error('Error generating x59 certs');
+  }
+
   await configStore.put(
     clientID,
     {
@@ -234,6 +241,7 @@ internalApp.post(apiPath + '/config', async (req, res) => {
       product,
       clientID,
       clientSecret,
+      certs,
     },
     {
       // secondary index on entityID
