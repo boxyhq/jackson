@@ -163,7 +163,7 @@ app.post(samlPath, async (req, res) => {
     token,
   };
 
-  if (session.state) {
+  if (session && session.state) {
     params.state = session.state;
   }
 
