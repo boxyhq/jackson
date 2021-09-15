@@ -11,7 +11,8 @@ const redirect = require('./redirect.js');
 const allowed = require('./oauth/allowed.js');
 const codeverifier = require('./oauth/code-verifier.js');
 
-const samlPath = '/auth/saml';
+const oauthPath = '/oauth';
+const samlPath = '/oauth/saml';
 const apiPath = '/api/v1/saml';
 
 const relayStatePrefix = 'boxyhq_jackson_';
@@ -26,7 +27,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get(samlPath + '/authorize', async (req, res) => {
+app.get(oauthPath + '/authorize', async (req, res) => {
   const {
     response_type = 'code',
     client_id,
@@ -197,7 +198,7 @@ app.post(samlPath, async (req, res) => {
   );
 });
 
-app.post(samlPath + '/token', cors(), async (req, res) => {
+app.post(oauthPath + '/token', cors(), async (req, res) => {
   const {
     client_id,
     client_secret,
@@ -253,7 +254,7 @@ app.post(samlPath + '/token', cors(), async (req, res) => {
   });
 });
 
-app.post(samlPath + '/me', async (req, res) => {
+app.post(oauthPath + '/me', async (req, res) => {
   const token = extractBearerToken(req);
 
   const profile = await tokenStore.get(token);
@@ -268,9 +269,9 @@ const server = app.listen(env.hostPort, async () => {
 
   const db = await DB.new('redis', {});
   configStore = db.store('saml:config');
-  sessionStore = db.store('saml:session', 300);
-  codeStore = db.store('saml:code', 300);
-  tokenStore = db.store('saml:token', 300);
+  sessionStore = db.store('oauth:session', 300);
+  codeStore = db.store('oauth:code', 300);
+  tokenStore = db.store('oauth:token', 300);
 });
 
 const extractBearerToken = (req) => {
