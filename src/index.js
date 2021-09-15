@@ -1,14 +1,14 @@
 const express = require('express');
 const crypto = require('crypto');
 
-const saml = require('./saml.js');
+const saml = require('./saml/saml.js');
+const x509 = require('./saml/x509.js');
 const DB = require('./db/db.js');
 const dbutils = require('./db/db-utils.js');
 const env = require('./env.js');
 const redirect = require('./redirect.js');
-const allowed = require('./allowed.js');
-const x509 = require('./x509.js');
-const codeverifier = require('./code-verifier.js');
+const allowed = require('./oauth/allowed.js');
+const codeverifier = require('./oauth/code-verifier.js');
 
 const samlPath = '/auth/saml';
 const apiPath = '/api/v1/saml';
