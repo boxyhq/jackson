@@ -18,6 +18,10 @@ class DB {
     this.db.put(namespace, key, val, ttl, ...indexes);
   }
 
+  async delete(namespace, key) {
+    return this.db.delete(namespace, key);
+  }
+
   store(namespace, ttl = 0) {
     return store.new(namespace, this, ttl);
   }

@@ -52,6 +52,10 @@ class Redis {
 
     await tx.exec();
   }
+
+  async delete(namespace, key) {
+    return this.client.del(dbutils.key(namespace, key));
+  }
 }
 
 module.exports = {

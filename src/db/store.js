@@ -23,6 +23,10 @@ class Store {
     });
     this.db.put(this.namespace, dbutils.keyDigest(key), val, this.ttl, ...indexes);
   }
+
+  async delete(key) {
+    return this.db.delete(this.namespace, dbutils.keyDigest(key));
+  }
 }
 
 module.exports = {

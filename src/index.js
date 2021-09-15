@@ -35,6 +35,7 @@ app.get(samlPath + '/authorize', async (req, res) => {
     product,
     code_challenge,
     code_challenge_method = '',
+    provider = 'saml',
   } = req.query;
 
   if (!redirect_uri) {
@@ -49,7 +50,7 @@ app.get(samlPath + '/authorize', async (req, res) => {
 
   let samlConfig;
 
-  if (client_id) {
+  if (client_id && client_id !== '' && client_d !== 'undefined' && client_id !== 'null') {
     samlConfig = await configStore.get(client_id);
   } else {
     const samlConfigs = await configStore.getByIndex({
