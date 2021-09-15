@@ -147,28 +147,28 @@ module.exports = {
             'EntityDescriptor.IDPSSODescriptor',
             res
           );
-          for (let i = 0; i < ssoDes.length; ++i) {
-            const keyDes = ssoDes[i]['KeyDescriptor'];
-            for (let j = 0; j < keyDes.length; ++j) {
-              if (keyDes[j]['$'] && keyDes[j]['$'].use === 'signing') {
-                const ki = keyDes[j]['KeyInfo'][0];
+          for (const ssoDesRec of ssoDes) {
+            const keyDes = ssoDesRec['KeyDescriptor'];
+            for (const keyDesRec of keyDes) {
+              if (keyDesRec['$'] && keyDesRec['$'].use === 'signing') {
+                const ki = keyDesRec['KeyInfo'][0];
                 const cd = ki['X509Data'][0];
                 X509Certificate = cd['X509Certificate'][0];
               }
             }
 
-            const ssoSvc = ssoDes[i]['SingleSignOnService'] || [];
-            for (let i = 0; i < ssoSvc.length; ++i) {
+            const ssoSvc = ssoDesRec['SingleSignOnService'] || [];
+            for (const ssoSvcRec of ssoSvc) {
               if (
-                rambda.pathOr('', '$.Binding', ssoSvc[i]).endsWith('HTTP-POST')
+                rambda.pathOr('', '$.Binding', ssoSvcRec).endsWith('HTTP-POST')
               ) {
-                ssoPostUrl = rambda.path('$.Location', ssoSvc[i]);
+                ssoPostUrl = rambda.path('$.Location', ssoSvcRec);
               } else if (
                 rambda
-                  .pathOr('', '$.Binding', ssoSvc[i])
+                  .pathOr('', '$.Binding', ssoSvcRec)
                   .endsWith('HTTP-Redirect')
               ) {
-                ssoRedirectUrl = rambda.path('$.Location', ssoSvc[i]);
+                ssoRedirectUrl = rambda.path('$.Location', ssoSvcRec);
               }
             }
           }
