@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const crypto = require('crypto');
 
 const saml = require('./saml/saml.js');
@@ -50,7 +51,12 @@ app.get(samlPath + '/authorize', async (req, res) => {
 
   let samlConfig;
 
-  if (client_id && client_id !== '' && client_d !== 'undefined' && client_id !== 'null') {
+  if (
+    client_id &&
+    client_id !== '' &&
+    client_d !== 'undefined' &&
+    client_id !== 'null'
+  ) {
     samlConfig = await configStore.get(client_id);
   } else {
     const samlConfigs = await configStore.getByIndex({
@@ -82,17 +88,13 @@ app.get(samlPath + '/authorize', async (req, res) => {
 
   const sessionId = crypto.randomBytes(16).toString('hex');
 
-  let code_verifier = code_challenge;
-  if (code_challenge_method.toLowerCase() === 's256') {
-    code_verifier = codeverifier.encode(code_challenge);
-  }
-  
   await sessionStore.put(sessionId, {
     id: samlReq.id,
     redirect_uri,
     response_type,
     state,
-    code_verifier,
+    code_challenge,
+    code_challenge_method,
   });
 
   return redirect.success(res, samlConfig.idpMetadata.sso.redirectUrl, {
@@ -195,7 +197,7 @@ app.post(samlPath, async (req, res) => {
   );
 });
 
-app.post(samlPath + '/token', async (req, res) => {
+app.post(samlPath + '/token', cors(), async (req, res) => {
   const {
     client_id,
     client_secret,
@@ -227,7 +229,12 @@ app.post(samlPath + '/token', async (req, res) => {
     }
   } else if (code_verifier) {
     // PKCE flow
-    if (codeVal.session.code_verifier !== code_verifier) {
+    let cv = code_verifier;
+    if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
+      cv = codeverifier.encode(code_verifier);
+    }
+  
+    if (codeVal.session.code_challenge !== cv) {
       return res.send('Invalid code_verifier');
     }
   } else if (codeVal && codeVal.session) {
