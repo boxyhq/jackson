@@ -254,7 +254,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
   });
 });
 
-app.post(oauthPath + '/me', async (req, res) => {
+app.post(oauthPath + '/me', cors(), async (req, res) => {
   const token = extractBearerToken(req);
 
   const profile = await tokenStore.get(token);
