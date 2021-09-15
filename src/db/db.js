@@ -15,7 +15,7 @@ class DB {
   }
 
   async put(namespace, key, val, ttl = 0, ...indexes) {
-    this.db.put(namespace, key, val, ttl = 0, ...indexes);
+    this.db.put(namespace, key, val, ttl, ...indexes);
   }
 
   store(namespace, ttl = 0) {
@@ -29,6 +29,8 @@ module.exports = {
       case 'redis':
         const rdb = await redis.new(options);
         return new DB(rdb);
+      default:
+        throw new Error('unsupported db engine: ' + engine);
     }
   },
 

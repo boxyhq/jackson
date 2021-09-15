@@ -17,6 +17,7 @@ const relayStatePrefix = 'boxyhq_jackson_';
 
 let configStore;
 let sessionStore;
+let codeStore;
 let tokenStore;
 
 const app = express();
@@ -51,7 +52,7 @@ app.get(samlPath + '/authorize', async (req, res) => {
   if (client_id) {
     samlConfig = await configStore.get(client_id);
   } else {
-    samlConfigs = await configStore.getByIndex({
+    const samlConfigs = await configStore.getByIndex({
       name: DB.indexNames.tenantProduct,
       value: DB.keyFromParts(tenant, product),
     });
