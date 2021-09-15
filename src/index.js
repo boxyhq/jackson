@@ -8,6 +8,7 @@ const env = require('./env.js');
 const redirect = require('./redirect.js');
 const allowed = require('./allowed.js');
 const x509 = require('./x509.js');
+const codeverifier = require('./code-verifier.js');
 
 const samlPath = '/auth/saml';
 const apiPath = '/api/v1/saml';
@@ -25,12 +26,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(samlPath + '/authorize', async (req, res) => {
   const {
-    response_type = 'token',
+    response_type = 'code',
     client_id,
     redirect_uri,
     state,
     tenant,
     product,
+    code_challenge,
+    code_challenge_method = '',
   } = req.query;
 
   if (!redirect_uri) {
@@ -77,11 +80,17 @@ app.get(samlPath + '/authorize', async (req, res) => {
 
   const sessionId = crypto.randomBytes(16).toString('hex');
 
+  let code_verifier = code_challenge;
+  if (code_challenge_method.toLowerCase() === 'sha256') {
+    code_verifier = codeverifier.encode(code_challenge);
+  }
+  
   await sessionStore.put(sessionId, {
     id: samlReq.id,
     redirect_uri,
     response_type,
     state,
+    code_verifier,
   });
 
   return redirect.success(res, samlConfig.idpMetadata.sso.redirectUrl, {
@@ -146,10 +155,20 @@ app.post(samlPath, async (req, res) => {
 
   const profile = await saml.validateAsync(rawResponse, validateOpts);
 
-  // store details against a token
-  const token = crypto.randomBytes(20).toString('hex');
+  // store details against a code
+  const code = crypto.randomBytes(20).toString('hex');
 
-  await tokenStore.put(token, profile);
+  let codeVal = {
+    profile,
+    clientID: samlConfig.clientID,
+    clientSecret: samlConfig.clientSecret,
+  };
+
+  if (session) {
+    codeVal.session = session;
+  }
+
+  await codeStore.put(code, codeVal);
 
   if (
     session &&
@@ -160,7 +179,7 @@ app.post(samlPath, async (req, res) => {
   }
 
   let params = {
-    token,
+    code,
   };
 
   if (session && session.state) {
@@ -172,6 +191,57 @@ app.post(samlPath, async (req, res) => {
     session.redirect_uri || samlConfig.defaultRedirectUrl,
     params
   );
+});
+
+app.post(samlPath + '/token', async (req, res) => {
+  const {
+    client_id,
+    client_secret,
+    code_verifier,
+    code,
+    grant_type = 'authorization_code',
+  } = req.body;
+
+  if (grant_type !== 'authorization_code') {
+    return res.send('Unsupported grant_type');
+  }
+
+  if (!code) {
+    return res.send('Please specify code');
+  }
+
+  const codeVal = await codeStore.get(code);
+  if (!codeVal || !codeVal.profile) {
+    return res.send('Invalid code');
+  }
+
+  if (client_id && client_secret) {
+    // OAuth flow
+    if (
+      client_id !== codeVal.clientID ||
+      client_secret !== codeVal.clientSecret
+    ) {
+      return res.send('Invalid client_id or client_secret');
+    }
+  } else if (code_verifier) {
+    // PKCE flow
+    if (codeVal.session.code_verifier !== code_verifier) {
+      return res.send('Invalid code_verifier');
+    }
+  } else if (codeVal && codeVal.session) {
+    return res.send('Please specify client_secret or code_verifier');
+  }
+
+  // store details against a token
+  const token = crypto.randomBytes(20).toString('hex');
+
+  await tokenStore.put(token, codeVal.profile);
+
+  res.json({
+    access_token: token,
+    token_type: 'bearer',
+    expires_in: 300,
+  });
 });
 
 app.post(samlPath + '/me', async (req, res) => {
@@ -190,6 +260,7 @@ const server = app.listen(env.hostPort, async () => {
   const db = await DB.new('redis', {});
   configStore = db.store('saml:config');
   sessionStore = db.store('saml:session', 300);
+  codeStore = db.store('saml:code', 300);
   tokenStore = db.store('saml:token', 300);
 });
 
