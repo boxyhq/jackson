@@ -81,7 +81,7 @@ app.get(samlPath + '/authorize', async (req, res) => {
   const sessionId = crypto.randomBytes(16).toString('hex');
 
   let code_verifier = code_challenge;
-  if (code_challenge_method.toLowerCase() === 'sha256') {
+  if (code_challenge_method.toLowerCase() === 's256') {
     code_verifier = codeverifier.encode(code_challenge);
   }
   
