@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "license": "Apache 2.0",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start": "node src/jackson.js",
+    "dev": "nodemon src/jackson.js"
   },
   "dependencies": {
     "@boxyhq/saml20": "0.1.7",
