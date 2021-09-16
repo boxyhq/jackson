@@ -4,7 +4,13 @@ const dbutils = require('./db-utils.js');
 class Redis {
   constructor(options) {
     return (async () => {
-      this.client = redis.createClient();
+      let opts = {};
+      if (options && options.url) {
+        opts.socket = {
+          url: options.url,
+        };
+      }
+      this.client = redis.createClient(opts);
 
       this.client.on('error', (err) => console.log('Redis Client Error', err));
 

@@ -267,7 +267,9 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  const db = await DB.new('redis', {});
+  const db = await DB.new(env.dbEngine, {
+    url: env.dbUrl,
+  });
   configStore = db.store('saml:config');
   sessionStore = db.store('oauth:session', 300);
   codeStore = db.store('oauth:code', 300);
