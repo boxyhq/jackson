@@ -234,7 +234,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
     if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
       cv = codeverifier.encode(code_verifier);
     }
-  
+
     if (codeVal.session.code_challenge !== cv) {
       return res.send('Invalid code_verifier');
     }
@@ -287,10 +287,14 @@ const extractBearerToken = (req) => {
 };
 
 // Internal routes, recommended not to expose this to the public interface though it would be guarded by API key(s)
-const internalApp = express();
+let internalApp = app;
 
-internalApp.use(express.json());
-internalApp.use(express.urlencoded({ extended: true }));
+if (env.useInternalServer) {
+  internalApp = express();
+
+  internalApp.use(express.json());
+  internalApp.use(express.urlencoded({ extended: true }));
+}
 
 internalApp.post(apiPath + '/config', async (req, res) => {
   const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } =
@@ -344,11 +348,14 @@ internalApp.post(apiPath + '/config', async (req, res) => {
   });
 });
 
-const internalServer = internalApp.listen(env.internalPort, async () => {
-  console.log(
-    `🚀 The path of the righteous internal server: http://${env.internalUrl}:${env.internalPort}`
-  );
-});
+let internalServer = server;
+if (env.useInternalServer) {
+  internalServer = internalApp.listen(env.internalPort, async () => {
+    console.log(
+      `🚀 The path of the righteous internal server: http://${env.internalUrl}:${env.internalPort}`
+    );
+  });
+}
 
 module.exports = {
   server,

@@ -4,8 +4,8 @@ const externalUrl =
   process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const samlAudience = process.env.SAML_AUDIENCE || 'https://auth.boxyhq.com';
 
-const internalUrl = process.env.HOST_URL || 'localhost';
-const internalPort = (process.env.HOST_PORT || '6000') * 1;
+const internalUrl = process.env.INTERNAL_HOST_URL || 'localhost';
+const internalPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
 
 const idpEnabled = process.env.IDP_ENABLED === 'true';
 
@@ -22,4 +22,5 @@ module.exports = {
   idpEnabled,
   dbEngine,
   dbUrl,
+  useInternalServer: !(hostUrl === internalUrl && hostPort === internalPort),
 };
