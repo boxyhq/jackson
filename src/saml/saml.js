@@ -141,12 +141,24 @@ module.exports = {
           let X509Certificate = null;
           let ssoPostUrl = null;
           let ssoRedirectUrl = null;
+          let loginType = 'idp';
 
-          const ssoDes = rambda.pathOr(
-            [],
+          let ssoDes = rambda.pathOr(
+            null,
             'EntityDescriptor.IDPSSODescriptor',
             res
           );
+          if (!ssoDes) {
+            ssoDes = rambda.pathOr(
+              [],
+              'EntityDescriptor.SPSSODescriptor',
+              res
+            );
+            if (!ssoDes) {
+              loginType = 'sp';
+            }
+          }
+
           for (const ssoDesRec of ssoDes) {
             const keyDes = ssoDesRec['KeyDescriptor'];
             for (const keyDesRec of keyDes) {
@@ -157,7 +169,7 @@ module.exports = {
               }
             }
 
-            const ssoSvc = ssoDesRec['SingleSignOnService'] || [];
+            const ssoSvc = ssoDesRec['SingleSignOnService'] || ssoDesRec['AssertionConsumerService'] || [];
             for (const ssoSvcRec of ssoSvc) {
               if (
                 rambda.pathOr('', '$.Binding', ssoSvcRec).endsWith('HTTP-POST')
@@ -188,6 +200,7 @@ module.exports = {
           if (ssoRedirectUrl) {
             ret.sso.redirectUrl = ssoRedirectUrl;
           }
+          ret.loginType = loginType;
 
           resolve(ret);
         }
