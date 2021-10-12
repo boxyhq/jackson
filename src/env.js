@@ -11,6 +11,8 @@ const idpEnabled = process.env.IDP_ENABLED === 'true';
 
 const dbEngine = process.env.DB_ENGINE || 'redis';
 const dbUrl = process.env.DB_URL;
+const dbUserName = process.env.DB_USER_NAME;
+const dbUserPassword = process.env.DB_USER_PASSWORD;
 
 module.exports = {
   hostUrl,
@@ -22,5 +24,7 @@ module.exports = {
   idpEnabled,
   dbEngine,
   dbUrl,
+  dbUserName,
+  dbUserPassword,
   useInternalServer: !(hostUrl === internalUrl && hostPort === internalPort),
 };

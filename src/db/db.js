@@ -1,5 +1,6 @@
 const redis = require('./redis.js');
-const store = require('./store.js');
+const mysql = require('./mysql');
+const storeFactory = require('./store');
 
 class DB {
   constructor(db) {
@@ -22,8 +23,8 @@ class DB {
     return this.db.delete(namespace, key);
   }
 
-  store(namespace, ttl = 0) {
-    return store.new(namespace, this, ttl);
+  store(engine, namespace, ttl = 0) {
+    return storeFactory(engine).new(namespace, this, ttl);
   }
 }
 
@@ -33,6 +34,9 @@ module.exports = {
       case 'redis':
         const rdb = await redis.new(options);
         return new DB(rdb);
+    case 'mysql':
+        const sqldb = await mysql.new(options);
+        return new DB(sqldb);
       default:
         throw new Error('unsupported db engine: ' + engine);
     }

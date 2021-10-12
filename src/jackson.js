@@ -269,11 +269,13 @@ const server = app.listen(env.hostPort, async () => {
 
   const db = await DB.new(env.dbEngine, {
     url: env.dbUrl,
+    username: env.dbUserName,
+    password: env.dbUserPassword
   });
-  configStore = db.store('saml:config');
-  sessionStore = db.store('oauth:session', 300);
-  codeStore = db.store('oauth:code', 300);
-  tokenStore = db.store('oauth:token', 300);
+  configStore = db.store(env.dbEngine, 'saml:config');
+  sessionStore = db.store(env.dbEngine, 'oauth:session', 300);
+  codeStore = db.store(env.dbEngine, 'oauth:code', 300);
+  tokenStore = db.store(env.dbEngine, 'oauth:token', 300);
 });
 
 const extractBearerToken = (req) => {

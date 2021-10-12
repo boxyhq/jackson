@@ -1,6 +1,6 @@
-const dbutils = require('./db-utils.js');
+const dbutils = require('../db-utils.js');
 
-class Store {
+class RedisStore {
   constructor(namespace, db, ttl = 0) {
     this.namespace = namespace;
     this.db = db;
@@ -31,6 +31,6 @@ class Store {
 
 module.exports = {
   new: (namespace, db, ttl = 0) => {
-    return new Store(namespace, db, ttl);
+    return new RedisStore(namespace, db, ttl);
   },
 };
