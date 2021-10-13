@@ -1,4 +1,4 @@
-const ripemd160 = require('ripemd160');
+const Ripemd160 = require('ripemd160');
 
 const key = (namespace, k) => {
   return namespace + ':' + k;
@@ -9,7 +9,7 @@ const keyForIndex = (namespace, idx) => {
 };
 
 const keyDigest = (k) => {
-  return new ripemd160().update(k).digest('hex');
+  return new Ripemd160().update(k).digest('hex');
 };
 
 module.exports = {

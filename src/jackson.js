@@ -9,7 +9,7 @@ const dbutils = require('./db/db-utils.js');
 const env = require('./env.js');
 const redirect = require('./redirect.js');
 const allowed = require('./oauth/allowed.js');
-const codeverifier = require('./oauth/code-verifier.js');
+const codeVerifier = require('./oauth/code-verifier.js');
 
 const oauthPath = '/oauth';
 const samlPath = '/oauth/saml';
@@ -47,7 +47,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
   if (!state) {
     return res
       .status(403)
-      .send('Please specify a state to safeguard against XRSF attacks.');
+      .send('Please specify a state to safeguard against XSRF attacks.');
   }
 
   let samlConfig;
@@ -55,7 +55,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
   if (
     client_id &&
     client_id !== '' &&
-    client_d !== 'undefined' &&
+    client_id !== 'undefined' &&
     client_id !== 'null'
   ) {
     samlConfig = await configStore.get(client_id);
@@ -65,7 +65,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
       value: DB.keyFromParts(tenant, product),
     });
 
-    if (!samlConfigs || samlConfigs.length == 0) {
+    if (!samlConfigs || samlConfigs.length === 0) {
       return res.status(403).send('SAML configuration not found.');
     }
 
@@ -129,7 +129,7 @@ app.post(samlPath, async (req, res) => {
     value: parsedResp.issuer,
   });
 
-  if (!samlConfigs || samlConfigs.length == 0) {
+  if (!samlConfigs || samlConfigs.length === 0) {
     return res.status(403).send('SAML configuration not found.');
   }
 
@@ -232,7 +232,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
     // PKCE flow
     let cv = code_verifier;
     if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
-      cv = codeverifier.encode(code_verifier);
+      cv = codeVerifier.encode(code_verifier);
     }
 
     if (codeVal.session.code_challenge !== cv) {
