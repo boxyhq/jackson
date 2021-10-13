@@ -69,7 +69,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
         value: DB.keyFromParts(t, p),
       });
   
-      if (!samlConfigs || samlConfigs.length == 0) {
+      if (!samlConfigs || samlConfigs.length === 0) {
         return res.status(403).send('SAML configuration not found.');
       }
   
