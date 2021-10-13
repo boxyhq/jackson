@@ -58,7 +58,27 @@ app.get(oauthPath + '/authorize', async (req, res) => {
     client_id !== 'undefined' &&
     client_id !== 'null'
   ) {
-    samlConfig = await configStore.get(client_id);
+    // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
+    try {
+      const sp = new URLSearchParams(client_id);
+      const t = sp.get('tenant');
+      const p = sp.get('product');
+
+      const samlConfigs = await configStore.getByIndex({
+        name: DB.indexNames.tenantProduct,
+        value: DB.keyFromParts(t, p),
+      });
+  
+      if (!samlConfigs || samlConfigs.length == 0) {
+        return res.status(403).send('SAML configuration not found.');
+      }
+  
+      // TODO: Support multiple matches
+      samlConfig = samlConfigs[0];
+    } catch (err) {
+      samlConfig = await configStore.get(client_id);
+    }
+
   } else {
     const samlConfigs = await configStore.getByIndex({
       name: DB.indexNames.tenantProduct,
