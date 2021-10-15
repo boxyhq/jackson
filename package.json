@@ -10,7 +10,7 @@
     "@boxyhq/saml20": "0.1.7",
     "@peculiar/webcrypto": "1.1.7",
     "@peculiar/x509": "1.4.1",
-    "@prisma/client": "3.0.1",
+    "@prisma/client": "3.2.1",
     "cors": "2.8.5",
     "express": "4.17.1",
     "rambda": "6.9.0",
@@ -22,7 +22,7 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.12",
-    "prisma": "2.30.2"
+    "nodemon": "^2.0.13",
+    "prisma": "3.2.1"
   }
 }
