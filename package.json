@@ -2,6 +2,9 @@
   "name": "jackson",
   "version": "0.1.0",
   "license": "Apache 2.0",
+  "engines": {
+    "node": ">=14.18.1"
+  },
   "scripts": {
     "start": "node src/jackson.js",
     "dev": "nodemon src/jackson.js"
