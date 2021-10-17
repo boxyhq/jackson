@@ -10,7 +10,7 @@
     "dev": "nodemon src/jackson.js"
   },
   "dependencies": {
-    "@boxyhq/saml20": "0.1.7",
+    "@boxyhq/saml20": "0.2.0",
     "@peculiar/webcrypto": "1.1.7",
     "@peculiar/x509": "1.4.1",
     "@prisma/client": "3.2.1",
@@ -25,7 +25,7 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.13",
+    "nodemon": "2.0.13",
     "prisma": "3.2.1"
   }
 }
