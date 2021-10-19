@@ -68,17 +68,16 @@ app.get(oauthPath + '/authorize', async (req, res) => {
         name: DB.indexNames.tenantProduct,
         value: DB.keyFromParts(t, p),
       });
-  
+
       if (!samlConfigs || samlConfigs.length === 0) {
         return res.status(403).send('SAML configuration not found.');
       }
-  
+
       // TODO: Support multiple matches
       samlConfig = samlConfigs[0];
     } catch (err) {
       samlConfig = await configStore.get(client_id);
     }
-
   } else {
     const samlConfigs = await configStore.getByIndex({
       name: DB.indexNames.tenantProduct,
@@ -275,7 +274,12 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
 });
 
 app.post(oauthPath + '/userinfo', cors(), async (req, res) => {
-  const token = extractBearerToken(req);
+  let token = extractBearerToken(req);
+
+  // check for query param
+  if (!token) {
+    token = req.query.access_token;
+  }
 
   const profile = await tokenStore.get(token);
 
