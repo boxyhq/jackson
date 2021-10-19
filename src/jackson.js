@@ -27,6 +27,16 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+function getEncodedClientId(client_id) {
+  try {
+    const sp = new URLSearchParams(client_id);
+    return {
+      tenant: sp.get('tenant'),
+      product: sp.get('product'),
+    };
+  } catch (err) {}
+}
+
 app.get(oauthPath + '/authorize', async (req, res) => {
   const {
     response_type = 'code',
@@ -59,14 +69,11 @@ app.get(oauthPath + '/authorize', async (req, res) => {
     client_id !== 'null'
   ) {
     // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
-    try {
-      const sp = new URLSearchParams(client_id);
-      const t = sp.get('tenant');
-      const p = sp.get('product');
-
+    const sp = getEncodedClientId(client_id);
+    if (sp) {
       const samlConfigs = await configStore.getByIndex({
         name: DB.indexNames.tenantProduct,
-        value: DB.keyFromParts(t, p),
+        value: DB.keyFromParts(sp.tenant, sp.product),
       });
 
       if (!samlConfigs || samlConfigs.length === 0) {
@@ -75,7 +82,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
 
       // TODO: Support multiple matches
       samlConfig = samlConfigs[0];
-    } catch (err) {
+    } else {
       samlConfig = await configStore.get(client_id);
     }
   } else {
@@ -240,12 +247,16 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
   }
 
   if (client_id && client_secret) {
-    // OAuth flow
-    if (
-      client_id !== codeVal.clientID ||
-      client_secret !== codeVal.clientSecret
-    ) {
-      return res.send('Invalid client_id or client_secret');
+    // check if we have an encoded client_id
+    const sp = getEncodedClientId(client_id);
+    if (!sp) {
+      // OAuth flow
+      if (
+        client_id !== codeVal.clientID ||
+        client_secret !== codeVal.clientSecret
+      ) {
+        return res.send('Invalid client_id or client_secret');
+      }
     }
   } else if (code_verifier) {
     // PKCE flow
@@ -273,7 +284,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
   });
 });
 
-app.post(oauthPath + '/userinfo', cors(), async (req, res) => {
+app.get(oauthPath + '/userinfo', cors(), async (req, res) => {
   let token = extractBearerToken(req);
 
   // check for query param
