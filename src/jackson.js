@@ -144,6 +144,10 @@ app.post(samlPath, async (req, res) => {
       );
   }
 
+  if (!RelayState.startsWith(relayStatePrefix)) {
+    RelayState = '';
+  }
+
   RelayState = RelayState.replace(relayStatePrefix, '');
 
   const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
@@ -219,7 +223,7 @@ app.post(samlPath, async (req, res) => {
 
   return redirect.success(
     res,
-    session.redirect_uri || samlConfig.defaultRedirectUrl,
+    session && session.redirect_uri || samlConfig.defaultRedirectUrl,
     params
   );
 });
