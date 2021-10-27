@@ -5,23 +5,9 @@ const JacksonIndex = require('../model/JacksonIndex.js');
 module.exports = new EntitySchema({
   name: 'JacksonStore',
   target: JacksonStore,
-  indices: [
-    {
-      name: 'namespace_key_store',
-      columns: ['namespace', 'key'],
-      unique: true,
-    },
-  ],
   columns: {
-    id: {
-      primary: true,
-      type: 'int',
-      generated: true,
-    },
-    namespace: {
-      type: 'varchar',
-    },
     key: {
+      primary: true,
       type: 'varchar',
     },
     value: {

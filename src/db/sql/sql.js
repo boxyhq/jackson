@@ -35,7 +35,7 @@ class Sql {
   }
 
   async get(namespace, key) {
-    let res = await this.connection.get(dbutils.key(namespace, key));
+    let res = await this.connection.manager.findOne(dbutils.key(namespace, key));
     if (res) {
       return JSON.parse(res);
     }
