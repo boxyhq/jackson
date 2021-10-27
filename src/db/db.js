@@ -1,4 +1,5 @@
 const redis = require('./redis.js');
+const sql = require('./sql/sql.js');
 const store = require('./store.js');
 
 class DB {
@@ -33,13 +34,16 @@ module.exports = {
       case 'redis':
         const rdb = await redis.new(options);
         return new DB(rdb);
+      case 'sql':
+        const sdb = await sql.new(options);
+        return new DB(sdb);
       default:
         throw new Error('unsupported db engine: ' + engine);
     }
   },
 
   keyFromParts: (...parts) => {
-    return parts.join(':');
+    return parts.join(':'); // TODO: pick a better strategy, keys can collide now
   },
 
   indexNames: {
