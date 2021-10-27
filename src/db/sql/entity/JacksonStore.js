@@ -1,10 +1,17 @@
 const EntitySchema = require('typeorm').EntitySchema;
-const JacksonStore = require('../model/JacksonStore.js').JacksonStore;
+const JacksonStore = require('../model/JacksonStore.js');
+const JacksonIndex = require('../model/JacksonIndex.js');
 
 module.exports = new EntitySchema({
   name: 'JacksonStore',
   target: JacksonStore,
-  uniques: [{ name: 'namespace_key', columns: ['namespace', 'key'] }],
+  indices: [
+    {
+      name: 'namespace_key_store',
+      columns: ['namespace', 'key'],
+      unique: true,
+    },
+  ],
   columns: {
     id: {
       primary: true,
@@ -19,6 +26,13 @@ module.exports = new EntitySchema({
     },
     value: {
       type: 'varchar',
+    },
+  },
+  relations: {
+    indexes: {
+      target: () => JacksonIndex,
+      type: 'one-to-many',
+      inverseSide: 'store',
     },
   },
 });

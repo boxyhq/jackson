@@ -15,7 +15,7 @@ class Sql {
         };
       }
 
-      await typeorm.createConnection({
+      this.connection = await typeorm.createConnection({
         type: 'postgres',
         host: 'localhost',
         port: 5450,
@@ -35,7 +35,7 @@ class Sql {
   }
 
   async get(namespace, key) {
-    let res = await this.client.get(dbutils.key(namespace, key));
+    let res = await this.connection.get(dbutils.key(namespace, key));
     if (res) {
       return JSON.parse(res);
     }
