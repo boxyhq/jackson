@@ -62,22 +62,29 @@ class Sql {
   }
 
   async put(namespace, key, val, ttl = 0, ...indexes) {
-    const store = new JacksonStore(
-      dbutils.key(namespace, key),
-      JSON.stringify(val)
-    );
-    await this.connection.manager.save(store);
+    await typeorm
+      .getManager()
+      .transaction(async (transactionalEntityManager) => {
+        const store = new JacksonStore(
+          dbutils.key(namespace, key),
+          JSON.stringify(val)
+        );
+        await transactionalEntityManager.save(store);
 
-    // TODO: ttl
-    // if (ttl) {
-    //   tx = tx.expire(k, ttl);
-    // }
+        // TODO: ttl
+        // if (ttl) {
+        //   tx = tx.expire(k, ttl);
+        // }
 
-    // no ttl support for secondary indexes
-    for (const idx of indexes || []) {
-      const index = new JacksonIndex(dbutils.keyForIndex(namespace, idx), store);
-      await this.connection.manager.save(index);
-    }
+        // no ttl support for secondary indexes
+        for (const idx of indexes || []) {
+          const index = new JacksonIndex(
+            dbutils.keyForIndex(namespace, idx),
+            store
+          );
+          await transactionalEntityManager.save(index);
+        }
+      });
   }
 
   async delete(namespace, key) {
