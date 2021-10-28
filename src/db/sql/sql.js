@@ -30,12 +30,18 @@ class Sql {
         ],
       });
 
+      this.storeRepository = this.connection.getRepository(JacksonStore);
+      this.indexRepository = this.connection.getRepository(JacksonIndex);
+
       return this; // Return the newly-created instance
     })();
   }
 
   async get(namespace, key) {
-    let res = await this.connection.manager.findOne(dbutils.key(namespace, key));
+    let res = await this.storeRepository.findOne(
+      new JacksonStore(dbutils.key(namespace, key))
+    );
+
     if (res) {
       return JSON.parse(res);
     }
@@ -56,21 +62,22 @@ class Sql {
   }
 
   async put(namespace, key, val, ttl = 0, ...indexes) {
-    let tx = this.client.multi();
-    const k = dbutils.key(namespace, key);
+    const store = new JacksonStore(
+      dbutils.key(namespace, key),
+      JSON.stringify(val)
+    );
+    await this.connection.manager.save(store);
 
-    tx = tx.set(k, JSON.stringify(val));
-
-    if (ttl) {
-      tx = tx.expire(k, ttl);
-    }
+    // TODO: ttl
+    // if (ttl) {
+    //   tx = tx.expire(k, ttl);
+    // }
 
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
-      tx = tx.sAdd(dbutils.keyForIndex(namespace, idx), key);
+      const index = new JacksonIndex(dbutils.keyForIndex(namespace, idx), store);
+      await this.connection.manager.save(index);
     }
-
-    await tx.exec();
   }
 
   async delete(namespace, key) {
