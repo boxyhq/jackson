@@ -1,8 +1,6 @@
 const redis = require('redis');
 const dbutils = require('./db-utils.js');
 
-const indexPrefix = '_index';
-
 class Redis {
   constructor(options) {
     return (async () => {
@@ -58,7 +56,7 @@ class Redis {
     for (const idx of indexes || []) {
       const idxKey = dbutils.keyForIndex(namespace, idx);
       tx = tx.sAdd(idxKey, key);
-      tx = tx.sAdd(dbutils.keyFromParts(indexPrefix, k), idxKey);
+      tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, k), idxKey);
     }
 
     await tx.exec();
@@ -69,7 +67,7 @@ class Redis {
     const k = dbutils.key(namespace, key);
     tx = tx.del(k);
 
-    const idxKey = dbutils.keyFromParts(indexPrefix, k);
+    const idxKey = dbutils.keyFromParts(dbutils.indexPrefix, k);
     // delete secondary indexes and then the mapping of the seconary indexes
     const dbKeys = await this.client.sMembers(idxKey);
 

@@ -24,4 +24,6 @@ module.exports = {
   keyDigest,
 
   keyFromParts,
+
+  indexPrefix: '_index',
 };

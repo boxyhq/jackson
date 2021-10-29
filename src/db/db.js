@@ -1,3 +1,4 @@
+const mem = require('./mem.js');
 const redis = require('./redis.js');
 const sql = require('./sql/sql.js');
 const store = require('./store.js');
@@ -38,6 +39,9 @@ module.exports = {
       case 'sql':
         const sdb = await sql.new(options);
         return new DB(sdb);
+      case 'mem':
+        const memdb = await mem.new(options);
+        return new DB(memdb);
       default:
         throw new Error('unsupported db engine: ' + engine);
     }
