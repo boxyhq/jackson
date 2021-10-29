@@ -74,7 +74,7 @@ class Redis {
     const dbKeys = await this.client.sMembers(idxKey);
 
     for (const dbKey of dbKeys || []) {
-      tx.del(dbKey);
+      tx.sRem(dbKey, key);
     }
 
     tx.del(idxKey);

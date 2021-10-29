@@ -97,13 +97,33 @@ t.test('dbs', ({ end }) => {
 
     t.test('delete(): ' + dbEngine, async (t) => {
       await configStore.delete(record1.id);
+
+      const ret0 = await configStore.getByIndex({
+        name: 'city',
+        value: record1.city,
+      });
+
+      t.same(ret0, [record2], 'unable to get index "city" after delete');
+
       await configStore.delete(record2.id);
 
       const ret1 = await configStore.get('1');
       const ret2 = await configStore.get('2');
 
+      const ret3 = await configStore.getByIndex({
+        name: 'name',
+        value: record1.name,
+      });
+      const ret4 = await configStore.getByIndex({
+        name: 'city',
+        value: record1.city,
+      });
+
       t.same(ret1, null, 'delete for record1 failed');
       t.same(ret2, null, 'delete for record2 failed');
+
+      t.same(ret3, [], 'delete for record1 failed');
+      t.same(ret4, [], 'delete for record2 failed');
 
       t.end();
     });
