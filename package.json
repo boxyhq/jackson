@@ -7,7 +7,11 @@
   },
   "scripts": {
     "start": "node IDP_ENABLED=true src/jackson.js",
-    "dev": "nodemon IDP_ENABLED=true src/jackson.js"
+    "dev": "nodemon IDP_ENABLED=true src/jackson.js",
+    "test": "tap src/**/*.test.js"
+  },
+  "tap": {
+    "coverage-map": "map.js"
   },
   "dependencies": {
     "@boxyhq/saml20": "0.2.0",
@@ -27,6 +31,7 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "nodemon": "2.0.13"
+    "nodemon": "2.0.13",
+    "tap": "15.0.10"
   }
 }

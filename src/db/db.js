@@ -8,19 +8,20 @@ class DB {
   }
 
   async get(namespace, key) {
-    return this.db.get(namespace, key);
+    return await this.db.get(namespace, key);
   }
 
   async getByIndex(namespace, idx) {
-    return this.db.getByIndex(namespace, idx);
+    return await this.db.getByIndex(namespace, idx);
   }
 
+  // ttl is in seconds
   async put(namespace, key, val, ttl = 0, ...indexes) {
-    this.db.put(namespace, key, val, ttl, ...indexes);
+    return await this.db.put(namespace, key, val, ttl, ...indexes);
   }
 
   async delete(namespace, key) {
-    return this.db.delete(namespace, key);
+    return await this.db.delete(namespace, key);
   }
 
   store(namespace, ttl = 0) {

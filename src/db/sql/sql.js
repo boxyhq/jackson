@@ -38,57 +38,63 @@ class Sql {
   }
 
   async get(namespace, key) {
-    let res = await this.storeRepository.findOne(
-      new JacksonStore(dbutils.key(namespace, key))
-    );
+    let res = await this.storeRepository.findOne({
+      key: dbutils.key(namespace, key),
+    });
 
     if (res) {
-      return JSON.parse(res);
+      return JSON.parse(res.value);
     }
-    return res;
+
+    return null;
   }
 
   async getByIndex(namespace, idx) {
-    const dbKeys = await this.client.sMembers(
-      dbutils.keyForIndex(namespace, idx)
-    );
+    const res = await this.indexRepository.find({
+      key: dbutils.keyForIndex(namespace, idx),
+    });
 
     const ret = [];
-    for (const dbKey of dbKeys || []) {
-      ret.push(await this.get(namespace, dbKey));
+
+    if (res) {
+      res.forEach((r) => {
+        ret.push(JSON.parse(r.store.value));
+      });
+    }
+
+    if (res && res.store) {
+      return JSON.parse(res.store.value);
     }
 
     return ret;
   }
 
   async put(namespace, key, val, ttl = 0, ...indexes) {
-    await typeorm
-      .getManager()
-      .transaction(async (transactionalEntityManager) => {
-        const store = new JacksonStore(
-          dbutils.key(namespace, key),
-          JSON.stringify(val)
+    await this.connection.transaction(async (transactionalEntityManager) => {
+      const store = new JacksonStore(
+        dbutils.key(namespace, key),
+        JSON.stringify(val)
+      );
+      await transactionalEntityManager.save(store);
+
+      // TODO: ttl with an expiredAt column
+      // if (ttl) {
+      //   tx = tx.expire(k, ttl);
+      // }
+
+      // no ttl support for secondary indexes
+      for (const idx of indexes || []) {
+        await transactionalEntityManager.save(
+          new JacksonIndex(dbutils.keyForIndex(namespace, idx), store)
         );
-        await transactionalEntityManager.save(store);
-
-        // TODO: ttl
-        // if (ttl) {
-        //   tx = tx.expire(k, ttl);
-        // }
-
-        // no ttl support for secondary indexes
-        for (const idx of indexes || []) {
-          const index = new JacksonIndex(
-            dbutils.keyForIndex(namespace, idx),
-            store
-          );
-          await transactionalEntityManager.save(index);
-        }
-      });
+      }
+    });
   }
 
   async delete(namespace, key) {
-    return this.client.del(dbutils.key(namespace, key));
+    return this.storeRepository.remove(
+      new JacksonStore(dbutils.key(namespace, key))
+    );
   }
 }
 

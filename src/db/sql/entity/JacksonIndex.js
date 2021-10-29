@@ -16,6 +16,7 @@ module.exports = new EntitySchema({
       target: () => JacksonStore,
       type: 'many-to-one',
       inverseSide: 'indexes',
+      eager: true,
     },
   },
 });
