@@ -84,9 +84,16 @@ class Sql {
 
       // no ttl support for secondary indexes
       for (const idx of indexes || []) {
-        await transactionalEntityManager.save(
-          new JacksonIndex(dbutils.keyForIndex(namespace, idx), store)
-        );
+        const key = dbutils.keyForIndex(namespace, idx);
+        const rec = await this.indexRepository.findOne({
+          key,
+          storeKey: store.key,
+        });
+        if (!rec) {
+          await transactionalEntityManager.save(
+            new JacksonIndex(0, key, store)
+          );
+        }
       }
     });
   }

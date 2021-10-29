@@ -89,11 +89,11 @@ t.test('db test', ({ end }) => {
       [record1],
       `expected ${JSON.stringify[record1]} but got ${ret1}`
     );
-    // t.same(
-    //   ret2,
-    //   [record1, record2],
-    //   `expected ${[record1, record2]} but got ${ret2}`
-    // );
+    t.same(
+      ret2,
+      [record1, record2],
+      `expected ${[record1, record2]} but got ${ret2}`
+    );
 
     t.end();
   });

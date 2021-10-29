@@ -1,5 +1,6 @@
 /*export */ class JacksonIndex {
-  constructor(key, store) {
+  constructor(id, key, store) {
+    this.id = id;
     this.key = key;
     this.store = store;
   }
