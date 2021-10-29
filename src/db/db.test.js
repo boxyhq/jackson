@@ -1,5 +1,4 @@
 const t = require('tap');
-const { dbEngine } = require('../env.js');
 
 const DB = require('./db.js');
 
@@ -109,17 +108,6 @@ t.test('dbs', ({ end }) => {
       t.end();
     });
   }
-
-  t.test('keyFromParts()', async (t) => {
-    const key1 = 'key1';
-    const key2 = 'key2';
-
-    const key = DB.keyFromParts(key1, key2);
-
-    t.same(key, key1 + ':' + key2, "keyParts don't match");
-
-    t.end();
-  });
 
   t.test('db.new() error', async (t) => {
     try {

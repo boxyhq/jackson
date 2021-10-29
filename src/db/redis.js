@@ -1,6 +1,8 @@
 const redis = require('redis');
 const dbutils = require('./db-utils.js');
 
+const indexPrefix = '_index';
+
 class Redis {
   constructor(options) {
     return (async () => {
@@ -54,14 +56,30 @@ class Redis {
 
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
-      tx = tx.sAdd(dbutils.keyForIndex(namespace, idx), key);
+      const idxKey = dbutils.keyForIndex(namespace, idx);
+      tx = tx.sAdd(idxKey, key);
+      tx = tx.sAdd(dbutils.keyFromParts(indexPrefix, k), idxKey);
     }
 
     await tx.exec();
   }
 
   async delete(namespace, key) {
-    return await this.client.del(dbutils.key(namespace, key));
+    let tx = this.client.multi();
+    const k = dbutils.key(namespace, key);
+    tx = tx.del(k);
+
+    const idxKey = dbutils.keyFromParts(indexPrefix, k);
+    // delete secondary indexes and then the mapping of the seconary indexes
+    const dbKeys = await this.client.sMembers(idxKey);
+
+    for (const dbKey of dbKeys || []) {
+      tx.del(dbKey);
+    }
+
+    tx.del(idxKey);
+
+    return await tx.exec();
   }
 }
 

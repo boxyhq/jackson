@@ -42,13 +42,4 @@ module.exports = {
         throw new Error('unsupported db engine: ' + engine);
     }
   },
-
-  keyFromParts: (...parts) => {
-    return parts.join(':'); // TODO: pick a better strategy, keys can collide now
-  },
-
-  indexNames: {
-    entityID: 'entityID',
-    tenantProduct: 'tenantProduct',
-  },
 };
