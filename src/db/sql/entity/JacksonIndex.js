@@ -25,6 +25,7 @@ module.exports = new EntitySchema({
       type: 'many-to-one',
       inverseSide: 'indexes',
       eager: true,
+      onDelete: 'CASCADE',
     },
   },
   indices: [

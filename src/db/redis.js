@@ -25,7 +25,8 @@ class Redis {
     if (res) {
       return JSON.parse(res);
     }
-    return res;
+
+    return null;
   }
 
   async getByIndex(namespace, idx) {
@@ -60,7 +61,7 @@ class Redis {
   }
 
   async delete(namespace, key) {
-    return this.client.del(dbutils.key(namespace, key));
+    return await this.client.del(dbutils.key(namespace, key));
   }
 }
 

@@ -73,8 +73,8 @@ t.test('dbs', ({ end }) => {
       const ret1 = await configStore.get('1');
       const ret2 = await configStore.get('2');
 
-      t.same(ret1, record1, `expected ${record1} but got ${ret1}`);
-      t.same(ret2, record2, `expected ${record2} but got ${ret2}`);
+      t.same(ret1, record1, 'unable to get record1');
+      t.same(ret2, record2, 'unable to get record2');
 
       t.end();
     });
@@ -90,19 +90,47 @@ t.test('dbs', ({ end }) => {
         value: record1.city,
       });
 
-      t.same(
-        ret1,
-        [record1],
-        `expected ${JSON.stringify[record1]} but got ${ret1}`
-      );
-      t.same(
-        ret2,
-        [record1, record2],
-        `expected ${[record1, record2]} but got ${ret2}`
-      );
+      t.same(ret1, [record1], 'unable to get index "name"');
+      t.same(ret2, [record1, record2], 'unable to get index "city"');
+
+      t.end();
+    });
+
+    t.test('delete(): ' + dbEngine, async (t) => {
+      await configStore.delete(record1.id);
+      await configStore.delete(record2.id);
+
+      const ret1 = await configStore.get('1');
+      const ret2 = await configStore.get('2');
+
+      t.same(ret1, null, 'delete for record1 failed');
+      t.same(ret2, null, 'delete for record2 failed');
 
       t.end();
     });
   }
+
+  t.test('keyFromParts()', async (t) => {
+    const key1 = 'key1';
+    const key2 = 'key2';
+
+    const key = DB.keyFromParts(key1, key2);
+
+    t.same(key, key1 + ':' + key2, "keyParts don't match");
+
+    t.end();
+  });
+
+  t.test('db.new() error', async (t) => {
+    try {
+      await DB.new('somedb');
+      t.fail('expecting an unsupported db error');
+    } catch (err) {
+      t.ok(err, 'got expected error');
+    }
+
+    t.end();
+  });
+
   end();
 });

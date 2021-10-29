@@ -99,7 +99,7 @@ class Sql {
   }
 
   async delete(namespace, key) {
-    return this.storeRepository.remove(
+    return await this.storeRepository.remove(
       new JacksonStore(dbutils.key(namespace, key))
     );
   }
