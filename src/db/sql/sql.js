@@ -79,7 +79,6 @@ class Sql {
 
       // TODO: ttl with an expiredAt column
       // if (ttl) {
-      //   tx = tx.expire(k, ttl);
       // }
 
       // no ttl support for secondary indexes

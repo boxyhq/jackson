@@ -16,7 +16,7 @@ class Redis {
 
       await this.client.connect();
 
-      return this; // Return the newly-created instance
+      return this;
     })();
   }
 
