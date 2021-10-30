@@ -12,5 +12,9 @@ module.exports = new EntitySchema({
     value: {
       type: 'varchar',
     },
+    expiresAt: {
+      type: 'bigint',
+      nullable: true,
+    }
   },
 });

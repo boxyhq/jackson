@@ -8,13 +8,6 @@ const dbutils = require('../db-utils.js');
 class Sql {
   constructor(options) {
     return (async () => {
-      let opts = {};
-      if (options && options.url) {
-        opts.socket = {
-          url: options.url,
-        };
-      }
-
       this.connection = await typeorm.createConnection({
         type: 'postgres',
         host: 'localhost',
@@ -73,7 +66,8 @@ class Sql {
     await this.connection.transaction(async (transactionalEntityManager) => {
       const store = new JacksonStore(
         dbutils.key(namespace, key),
-        JSON.stringify(val)
+        JSON.stringify(val),
+        ttl > 0 ? Date.now() + ttl * 1000 : null
       );
       await transactionalEntityManager.save(store);
 
@@ -98,9 +92,9 @@ class Sql {
   }
 
   async delete(namespace, key) {
-    return await this.storeRepository.remove(
-      new JacksonStore(dbutils.key(namespace, key))
-    );
+    return await this.storeRepository.remove({
+      key: dbutils.key(namespace, key),
+    });
   }
 }
 

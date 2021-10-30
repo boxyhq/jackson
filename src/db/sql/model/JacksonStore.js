@@ -1,7 +1,8 @@
 /*export */ class JacksonStore {
-  constructor(key, value) {
+  constructor(key, value, expiresAt) {
     this.key = key;
     this.value = value;
+    this.expiresAt = expiresAt;
   }
 }
 
