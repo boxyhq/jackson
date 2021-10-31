@@ -71,10 +71,6 @@ class Sql {
       );
       await transactionalEntityManager.save(store);
 
-      // TODO: ttl with an expiredAt column
-      // if (ttl) {
-      // }
-
       // no ttl support for secondary indexes
       for (const idx of indexes || []) {
         const key = dbutils.keyForIndex(namespace, idx);

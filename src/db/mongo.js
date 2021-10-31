@@ -16,6 +16,10 @@ class Mongo {
       this.collection = this.db.collection('jacksonStore');
 
       await this.collection.createIndex({ indexes: 1 });
+      await this.collection.createIndex(
+        { expiresAt: 1 },
+        { expireAfterSeconds: 1 }
+      );
 
       return this;
     })();
@@ -52,9 +56,9 @@ class Mongo {
       value: JSON.stringify(val),
     };
 
-    // TODO: support ttl
-    // if (ttl) {
-    // }
+    if (ttl) {
+      doc.expiresAt = new Date(Date.now() + ttl * 1000);
+    }
 
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
