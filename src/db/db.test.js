@@ -15,7 +15,7 @@ const record2 = {
   city: 'London',
 };
 
-const dbs = ['mem', 'redis', 'sql'];
+const dbs = ['mem', 'redis', 'sql', 'mongo'];
 
 t.before(async () => {
   for (const idx in dbs) {
