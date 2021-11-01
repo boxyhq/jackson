@@ -9,12 +9,8 @@ class Sql {
   constructor(options) {
     return (async () => {
       this.connection = await typeorm.createConnection({
-        type: 'postgres',
-        host: 'localhost',
-        port: 5450,
-        username: 'postgres',
-        password: 'postgres',
-        database: 'calendso',
+        type: options.type,
+        url: options.url,
         synchronize: true,
         logging: false,
         entities: [
@@ -70,10 +66,6 @@ class Sql {
         ttl > 0 ? Date.now() + ttl * 1000 : null
       );
       await transactionalEntityManager.save(store);
-
-      // TODO: ttl with an expiredAt column
-      // if (ttl) {
-      // }
 
       // no ttl support for secondary indexes
       for (const idx of indexes || []) {

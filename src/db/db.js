@@ -1,4 +1,5 @@
 const mem = require('./mem.js');
+const mongo = require('./mongo.js');
 const redis = require('./redis.js');
 const sql = require('./sql/sql.js');
 const store = require('./store.js');
@@ -35,14 +36,17 @@ class DB {
 }
 
 module.exports = {
-  new: async (engine, options) => {
-    switch (engine) {
+  new: async (options) => {
+    switch (options.engine) {
       case 'redis':
         const rdb = await redis.new(options);
         return new DB(rdb);
       case 'sql':
         const sdb = await sql.new(options);
         return new DB(sdb);
+      case 'mongo':
+        const mdb = await mongo.new(options);
+        return new DB(mdb);
       case 'mem':
         const memdb = await mem.new(options);
         return new DB(memdb);

@@ -15,15 +15,23 @@ const record2 = {
   city: 'London',
 };
 
-const dbs = ['mem', 'redis', 'sql'];
+const dbs = {
+  mem: {},
+  redis: { url: 'redis://localhost:6379' },
+  sql: {
+    url: 'postgresql://postgres:postgres@localhost:5450/calendso',
+    type: 'postgres',
+  },
+  mongo: { url: 'mongodb://localhost:27017/jackson' },
+};
 
 t.before(async () => {
-  for (const idx in dbs) {
-    const db = await DB.new(dbs[idx], {
-      url: null,
-    });
+  for (const engine in dbs) {
+    const opts = dbs[engine];
+    opts.engine = engine;
+    const db = await DB.new(opts);
 
-    configStoreMap[dbs[idx]] = db.store('saml:config');
+    configStoreMap[engine] = db.store('saml:config');
   }
 });
 
@@ -90,7 +98,11 @@ t.test('dbs', ({ end }) => {
       });
 
       t.same(ret1, [record1], 'unable to get index "name"');
-      t.same(ret2, [record1, record2], 'unable to get index "city"');
+      t.same(
+        ret2.sort((a, b) => a.id.localeCompare(b.id)),
+        [record1, record2].sort((a, b) => a.id.localeCompare(b.id)),
+        'unable to get index "city"'
+      );
 
       t.end();
     });
