@@ -36,8 +36,8 @@ class DB {
 }
 
 module.exports = {
-  new: async (engine, options) => {
-    switch (engine) {
+  new: async (options) => {
+    switch (options.engine) {
       case 'redis':
         const rdb = await redis.new(options);
         return new DB(rdb);

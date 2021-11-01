@@ -311,13 +311,13 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  const db = await DB.new(env.dbEngine, {
-    url: env.dbUrl,
-  });
+  const db = await DB.new(env.db);
   configStore = db.store('saml:config');
   sessionStore = db.store('oauth:session', 300);
   codeStore = db.store('oauth:code', 300);
   tokenStore = db.store('oauth:token', 300);
+
+  console.log(`Using engine: ${env.db.engine}`);
 });
 
 const extractBearerToken = (req) => {

@@ -9,12 +9,8 @@ class Sql {
   constructor(options) {
     return (async () => {
       this.connection = await typeorm.createConnection({
-        type: 'postgres',
-        host: 'localhost',
-        port: 5450,
-        username: 'postgres',
-        password: 'postgres',
-        database: 'calendso',
+        type: options.type,
+        url: options.url,
         synchronize: true,
         logging: false,
         entities: [

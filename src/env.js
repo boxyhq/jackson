@@ -8,9 +8,11 @@ const internalUrl = process.env.INTERNAL_HOST_URL || 'localhost';
 const internalPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
 
 const idpEnabled = process.env.IDP_ENABLED === 'true';
-
-const dbEngine = process.env.DB_ENGINE || 'sql';
-const dbUrl = process.env.DB_URL;
+const db = {
+  engine: process.env.DB_ENGINE || 'sql', // Supported values: redis, sql, mongo, mem. Keep comment in sync with db.js
+  url: process.env.DB_URL || 'postgres://postgres:postgres@localhost:5450/jackson',
+  type: process.env.DB_TYPE || 'postgres', // Only needed if DB_ENGINE is sql. Supported values: postgres, cockroachdb, mysql, mariadb
+};
 
 module.exports = {
   hostUrl,
@@ -20,7 +22,6 @@ module.exports = {
   internalUrl,
   internalPort,
   idpEnabled,
-  dbEngine,
-  dbUrl,
+  db,
   useInternalServer: !(hostUrl === internalUrl && hostPort === internalPort),
 };

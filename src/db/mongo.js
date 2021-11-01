@@ -4,15 +4,10 @@ const dbutils = require('./db-utils.js');
 class Mongo {
   constructor(options) {
     return (async () => {
-      // Connection URL
-      const url = 'mongodb://localhost:27017';
-      this.client = new MongoClient(url);
-
-      // Database Name
-      const dbName = 'jackson';
+      this.client = new MongoClient(options.url);
 
       await this.client.connect();
-      this.db = this.client.db(dbName);
+      this.db = this.client.db();
       this.collection = this.db.collection('jacksonStore');
 
       await this.collection.createIndex({ indexes: 1 });
