@@ -16,7 +16,7 @@ class Redis {
 
       await this.client.connect();
 
-      return this; // Return the newly-created instance
+      return this;
     })();
   }
 
@@ -25,7 +25,8 @@ class Redis {
     if (res) {
       return JSON.parse(res);
     }
-    return res;
+
+    return null;
   }
 
   async getByIndex(namespace, idx) {
@@ -53,14 +54,30 @@ class Redis {
 
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
-      tx = tx.sAdd(dbutils.keyForIndex(namespace, idx), key);
+      const idxKey = dbutils.keyForIndex(namespace, idx);
+      tx = tx.sAdd(idxKey, key);
+      tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, k), idxKey);
     }
 
     await tx.exec();
   }
 
   async delete(namespace, key) {
-    return this.client.del(dbutils.key(namespace, key));
+    let tx = this.client.multi();
+    const k = dbutils.key(namespace, key);
+    tx = tx.del(k);
+
+    const idxKey = dbutils.keyFromParts(dbutils.indexPrefix, k);
+    // delete secondary indexes and then the mapping of the seconary indexes
+    const dbKeys = await this.client.sMembers(idxKey);
+
+    for (const dbKey of dbKeys || []) {
+      tx.sRem(dbKey, key);
+    }
+
+    tx.del(idxKey);
+
+    return await tx.exec();
   }
 }
 

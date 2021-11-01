@@ -12,10 +12,18 @@ const keyDigest = (k) => {
   return new Ripemd160().update(k).digest('hex');
 };
 
+const keyFromParts = (...parts) => {
+  return parts.join(':'); // TODO: pick a better strategy, keys can collide now
+};
+
 module.exports = {
   key,
 
   keyForIndex,
 
   keyDigest,
+
+  keyFromParts,
+
+  indexPrefix: '_index',
 };

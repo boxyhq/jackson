@@ -8,12 +8,12 @@ class Store {
   }
 
   async get(key) {
-    return this.db.get(this.namespace, dbutils.keyDigest(key));
+    return await this.db.get(this.namespace, dbutils.keyDigest(key));
   }
 
   async getByIndex(idx) {
     idx.value = dbutils.keyDigest(idx.value);
-    return this.db.getByIndex(this.namespace, idx);
+    return await this.db.getByIndex(this.namespace, idx);
   }
 
   async put(key, val, ...indexes) {
@@ -21,11 +21,11 @@ class Store {
       idx.value = dbutils.keyDigest(idx.value);
       return idx;
     });
-    this.db.put(this.namespace, dbutils.keyDigest(key), val, this.ttl, ...indexes);
+    return await this.db.put(this.namespace, dbutils.keyDigest(key), val, this.ttl, ...indexes);
   }
 
   async delete(key) {
-    return this.db.delete(this.namespace, dbutils.keyDigest(key));
+    return await this.db.delete(this.namespace, dbutils.keyDigest(key));
   }
 }
 

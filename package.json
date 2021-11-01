@@ -6,26 +6,36 @@
     "node": ">=14.18.1"
   },
   "scripts": {
-    "start": "node src/jackson.js",
-    "dev": "nodemon src/jackson.js"
+    "start": "node IDP_ENABLED=true src/jackson.js",
+    "dev": "nodemon IDP_ENABLED=true src/jackson.js",
+    "test": "tap src/**/*.test.js"
+  },
+  "tap": {
+    "coverage-map": "map.js",
+    "branches": 50,
+    "functions": 70,
+    "lines": 70,
+    "statements": 70
   },
   "dependencies": {
     "@boxyhq/saml20": "0.2.0",
     "@peculiar/webcrypto": "1.1.7",
     "@peculiar/x509": "1.4.1",
-    "@prisma/client": "3.2.1",
     "cors": "2.8.5",
     "express": "4.17.1",
+    "pg": "8.7.1",
     "rambda": "6.9.0",
-    "redis": "^4.0.0-rc.1",
+    "redis": "4.0.0-rc.3",
+    "reflect-metadata": "0.1.13",
     "ripemd160": "2.0.2",
     "thumbprint": "0.0.1",
+    "typeorm": "0.2.38",
     "xml-crypto": "2.1.3",
     "xml2js": "0.4.23",
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
     "nodemon": "2.0.13",
-    "prisma": "3.2.1"
+    "tap": "15.0.10"
   }
 }

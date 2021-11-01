@@ -9,7 +9,7 @@ const internalPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
 
 const idpEnabled = process.env.IDP_ENABLED === 'true';
 
-const dbEngine = process.env.DB_ENGINE || 'redis';
+const dbEngine = process.env.DB_ENGINE || 'sql';
 const dbUrl = process.env.DB_URL;
 
 module.exports = {

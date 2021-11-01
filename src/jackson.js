@@ -22,6 +22,11 @@ let sessionStore;
 let codeStore;
 let tokenStore;
 
+const indexNames = {
+  entityID: 'entityID',
+  tenantProduct: 'tenantProduct',
+};
+
 const app = express();
 
 app.use(express.json());
@@ -72,8 +77,8 @@ app.get(oauthPath + '/authorize', async (req, res) => {
     const sp = getEncodedClientId(client_id);
     if (sp) {
       const samlConfigs = await configStore.getByIndex({
-        name: DB.indexNames.tenantProduct,
-        value: DB.keyFromParts(sp.tenant, sp.product),
+        name: indexNames.tenantProduct,
+        value: dbutils.keyFromParts(sp.tenant, sp.product),
       });
 
       if (!samlConfigs || samlConfigs.length === 0) {
@@ -87,8 +92,8 @@ app.get(oauthPath + '/authorize', async (req, res) => {
     }
   } else {
     const samlConfigs = await configStore.getByIndex({
-      name: DB.indexNames.tenantProduct,
-      value: DB.keyFromParts(tenant, product),
+      name: indexNames.tenantProduct,
+      value: dbutils.keyFromParts(tenant, product),
     });
 
     if (!samlConfigs || samlConfigs.length === 0) {
@@ -155,7 +160,7 @@ app.post(samlPath, async (req, res) => {
   const parsedResp = await saml.parseAsync(rawResponse);
 
   const samlConfigs = await configStore.getByIndex({
-    name: DB.indexNames.entityID,
+    name: indexNames.entityID,
     value: parsedResp.issuer,
   });
 
@@ -223,7 +228,7 @@ app.post(samlPath, async (req, res) => {
 
   return redirect.success(
     res,
-    session && session.redirect_uri || samlConfig.defaultRedirectUrl,
+    (session && session.redirect_uri) || samlConfig.defaultRedirectUrl,
     params
   );
 });
@@ -341,7 +346,7 @@ internalApp.post(apiPath + '/config', async (req, res) => {
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
   let clientID = dbutils.keyDigest(
-    DB.keyFromParts(tenant, product, idpMetadata.entityID)
+    dbutils.keyFromParts(tenant, product, idpMetadata.entityID)
   );
   let clientSecret;
 
@@ -371,13 +376,13 @@ internalApp.post(apiPath + '/config', async (req, res) => {
     },
     {
       // secondary index on entityID
-      name: DB.indexNames.entityID,
+      name: indexNames.entityID,
       value: idpMetadata.entityID,
     },
     {
       // secondary index on tenant + product
-      name: DB.indexNames.tenantProduct,
-      value: DB.keyFromParts(tenant, product),
+      name: indexNames.tenantProduct,
+      value: dbutils.keyFromParts(tenant, product),
     }
   );
 

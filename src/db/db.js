@@ -1,4 +1,6 @@
+const mem = require('./mem.js');
 const redis = require('./redis.js');
+const sql = require('./sql/sql.js');
 const store = require('./store.js');
 
 class DB {
@@ -7,19 +9,24 @@ class DB {
   }
 
   async get(namespace, key) {
-    return this.db.get(namespace, key);
+    return await this.db.get(namespace, key);
   }
 
   async getByIndex(namespace, idx) {
-    return this.db.getByIndex(namespace, idx);
+    return await this.db.getByIndex(namespace, idx);
   }
 
+  // ttl is in seconds
   async put(namespace, key, val, ttl = 0, ...indexes) {
-    this.db.put(namespace, key, val, ttl, ...indexes);
+    if (this.ttl > 0 && indexes && indexes.length > 0) {
+      throw new Error('secondary indexes not allow on a store with ttl');
+    }
+
+    return await this.db.put(namespace, key, val, ttl, ...indexes);
   }
 
   async delete(namespace, key) {
-    return this.db.delete(namespace, key);
+    return await this.db.delete(namespace, key);
   }
 
   store(namespace, ttl = 0) {
@@ -33,17 +40,14 @@ module.exports = {
       case 'redis':
         const rdb = await redis.new(options);
         return new DB(rdb);
+      case 'sql':
+        const sdb = await sql.new(options);
+        return new DB(sdb);
+      case 'mem':
+        const memdb = await mem.new(options);
+        return new DB(memdb);
       default:
         throw new Error('unsupported db engine: ' + engine);
     }
-  },
-
-  keyFromParts: (...parts) => {
-    return parts.join(':');
-  },
-
-  indexNames: {
-    entityID: 'entityID',
-    tenantProduct: 'tenantProduct',
   },
 };
