@@ -2,7 +2,7 @@ const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = (process.env.HOST_PORT || '5000') * 1;
 const externalUrl =
   process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
-const samlAudience = process.env.SAML_AUDIENCE || 'https://auth.boxyhq.com';
+const samlAudience = process.env.SAML_AUDIENCE || 'https://saml.boxyhq.com';
 
 const internalUrl = process.env.INTERNAL_HOST_URL || 'localhost';
 const internalPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
