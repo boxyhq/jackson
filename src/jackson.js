@@ -3,13 +3,16 @@ const cors = require('cors');
 const crypto = require('crypto');
 
 const saml = require('./saml/saml.js');
-const x509 = require('./saml/x509.js');
 const DB = require('./db/db.js');
-const dbutils = require('./db/db-utils.js');
+const dbutils = require('./db/utils.js');
 const env = require('./env.js');
 const redirect = require('./redirect.js');
 const allowed = require('./oauth/allowed.js');
 const codeVerifier = require('./oauth/code-verifier.js');
+const readConfig = require('./read-config.js');
+
+// controllers
+const configController = require('./controller/config.js');
 
 const oauthPath = '/oauth';
 const samlPath = '/oauth/saml';
@@ -17,15 +20,12 @@ const apiPath = '/api/v1/saml';
 
 const relayStatePrefix = 'boxyhq_jackson_';
 
+const { indexNames } = require('./controller/utils.js');
+
 let configStore;
 let sessionStore;
 let codeStore;
 let tokenStore;
-
-const indexNames = {
-  entityID: 'entityID',
-  tenantProduct: 'tenantProduct',
-};
 
 const app = express();
 
@@ -317,6 +317,16 @@ const server = app.listen(env.hostPort, async () => {
   codeStore = db.store('oauth:code', 300);
   tokenStore = db.store('oauth:token', 300);
 
+  // write pre-loaded config if present
+  if (env.preLoadedConfig && env.preLoadedConfig.length > 0) {
+    const configs = await readConfig(env.preLoadedConfig);
+
+    for (const config of configs) {
+      const ret = await configController(config, configStore);
+      console.log(`loaded config for tenant "${config.tenant}" and product "${config.product}": `, ret);
+    }
+  }
+
   console.log(`Using engine: ${env.db.engine}`);
 });
 
@@ -341,55 +351,13 @@ if (env.useInternalServer) {
 }
 
 internalApp.post(apiPath + '/config', async (req, res) => {
-  const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } =
-    req.body;
-  const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
-
-  let clientID = dbutils.keyDigest(
-    dbutils.keyFromParts(tenant, product, idpMetadata.entityID)
-  );
-  let clientSecret;
-
-  let exists = await configStore.get(clientID);
-  if (exists) {
-    clientSecret = exists.clientSecret;
-  } else {
-    clientSecret = crypto.randomBytes(24).toString('hex');
+  try {
+    res.json(await configController(req.body, configStore));
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
   }
-
-  const certs = await x509.generate();
-  if (!certs) {
-    throw new Error('Error generating x59 certs');
-  }
-
-  await configStore.put(
-    clientID,
-    {
-      idpMetadata,
-      defaultRedirectUrl,
-      redirectUrl: JSON.parse(redirectUrl),
-      tenant,
-      product,
-      clientID,
-      clientSecret,
-      certs,
-    },
-    {
-      // secondary index on entityID
-      name: indexNames.entityID,
-      value: idpMetadata.entityID,
-    },
-    {
-      // secondary index on tenant + product
-      name: indexNames.tenantProduct,
-      value: dbutils.keyFromParts(tenant, product),
-    }
-  );
-
-  res.json({
-    client_id: clientID,
-    client_secret: clientSecret,
-  });
 });
 
 let internalServer = server;

@@ -1,4 +1,4 @@
-const dbutils = require('./db-utils.js');
+const dbutils = require('./utils.js');
 
 class Store {
   constructor(namespace, db, ttl = 0) {

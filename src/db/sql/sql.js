@@ -3,7 +3,7 @@ const typeorm = require('typeorm');
 const JacksonStore = require('./model/JacksonStore.js');
 const JacksonIndex = require('./model/JacksonIndex.js');
 
-const dbutils = require('../db-utils.js');
+const dbutils = require('../utils.js');
 
 class Sql {
   constructor(options) {

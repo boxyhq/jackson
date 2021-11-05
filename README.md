@@ -31,6 +31,29 @@ Configuration is done via env vars. The following options are supported and will
 - DB_URL: The database URL to connect to, for example `postgres://postgres:postgres@localhost:5450/jackson`
 - DB_TYPE: Only needed when DB_ENGINE is `sql`. Supported values are `postgres`, `cockroachdb`, `mysql`, `mariadb`. Defaults to `postgres`
 
+- PRELOADED_CONFIG: If you only need a single tenant or a handful of pre-configured tenants then this config will help you red and load SAMl configs. It works well with the mem db engine so you don't have to configure any external databases for this to work (though it works with those as well). This is a path (absolute or relative) to a direct that contains files organized in the format described in the next section.
+
+# Pre-loaded SAML Configuration
+If PRELOADED_CONFIG is set then it should point to a directory with the following structure (example below):-
+```
+boxyhq.js
+boxyhq.xml
+anothertenant.js
+anothertenant.xml
+```
+The JS file has the following structure:-
+```
+module.exports = {
+  defaultRedirectUrl: 'http://localhost:3000/login/saml',
+  redirectUrl: '["http://localhost:3000/*", "http://localhost:5000/*"]',
+  tenant: 'boxyhq.com',
+  product: 'demo',
+};
+```
+The XML file (should share the name with the .js file) is the raw XML metadata file you receive from your Identity Provider. Please ensure it is saved in the `utf-8` encoding.
+
+The config and XML above correspond to the `SAML API config` (see below).
+
 # SAML Login flows
 There are two kinds of SAML login flows - SP-initiated and IdP-initiated. We highly recommend sticking to the SP-initiated flow since it is more secure but Jackson also support the IdP-initiated flow if you enable it. For in-depth understand of SAML and the two flows please refer to Okta's comprehensive guide - https://developer.okta.com/docs/concepts/saml/.
 
