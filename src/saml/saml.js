@@ -149,11 +149,7 @@ module.exports = {
             res
           );
           if (!ssoDes) {
-            ssoDes = rambda.pathOr(
-              [],
-              'EntityDescriptor.SPSSODescriptor',
-              res
-            );
+            ssoDes = rambda.pathOr([], 'EntityDescriptor.SPSSODescriptor', res);
             if (!ssoDes) {
               loginType = 'sp';
             }
@@ -169,7 +165,10 @@ module.exports = {
               }
             }
 
-            const ssoSvc = ssoDesRec['SingleSignOnService'] || ssoDesRec['AssertionConsumerService'] || [];
+            const ssoSvc =
+              ssoDesRec['SingleSignOnService'] ||
+              ssoDesRec['AssertionConsumerService'] ||
+              [];
             for (const ssoSvcRec of ssoSvc) {
               if (
                 rambda.pathOr('', '$.Binding', ssoSvcRec).endsWith('HTTP-POST')
