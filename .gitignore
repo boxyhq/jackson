@@ -1,3 +1,4 @@
 .vscode
 node_modules/**
 .nyc_output
+_config

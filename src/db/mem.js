@@ -1,5 +1,5 @@
-// This is an in-mmeory implementation to be used with testing and prototyping only
-const dbutils = require('./db-utils.js');
+// This is an in-memory implementation to be used with testing and prototyping only
+const dbutils = require('./utils.js');
 
 class Mem {
   constructor(options) {
