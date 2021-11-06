@@ -39,19 +39,15 @@ module.exports = {
   new: async (options) => {
     switch (options.engine) {
       case 'redis':
-        const rdb = await redis.new(options);
-        return new DB(rdb);
+        return new DB(await redis.new(options));
       case 'sql':
-        const sdb = await sql.new(options);
-        return new DB(sdb);
+        return new DB(await sql.new(options));
       case 'mongo':
-        const mdb = await mongo.new(options);
-        return new DB(mdb);
+        return new DB(await mongo.new(options));
       case 'mem':
-        const memdb = await mem.new(options);
-        return new DB(memdb);
+        return new DB(await mem.new(options));
       default:
-        throw new Error('unsupported db engine: ' + engine);
+        throw new Error('unsupported db engine: ' + options.engine);
     }
   },
 };

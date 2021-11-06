@@ -21,7 +21,13 @@ class Store {
       idx.value = dbutils.keyDigest(idx.value);
       return idx;
     });
-    return await this.db.put(this.namespace, dbutils.keyDigest(key), val, this.ttl, ...indexes);
+    return await this.db.put(
+      this.namespace,
+      dbutils.keyDigest(key),
+      val,
+      this.ttl,
+      ...indexes
+    );
   }
 
   async delete(key) {

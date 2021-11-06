@@ -7,7 +7,7 @@ module.exports = async function (preLoadedConfig) {
   }
   const files = await fs.promises.readdir(preLoadedConfig);
   const configs = [];
-  for (idx in files) {
+  for (let idx in files) {
     const file = files[idx];
     if (file.endsWith('.js')) {
       const config = require(path.join(preLoadedConfig, file));

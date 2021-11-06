@@ -2,7 +2,7 @@
 const dbutils = require('./utils.js');
 
 class Mem {
-  constructor(options) {
+  constructor(/*options*/) {
     return (async () => {
       this.store = {}; // map of key, value
       this.indexes = {}; // map of key, Set
@@ -35,7 +35,7 @@ class Mem {
   async put(namespace, key, val, ttl = 0, ...indexes) {
     const k = dbutils.key(namespace, key);
 
-    this.store[k] = JSON.stringify(val); 
+    this.store[k] = JSON.stringify(val);
 
     // TODO: ttl expiry
     // if (ttl) {
