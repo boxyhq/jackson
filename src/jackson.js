@@ -26,10 +26,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
 
 app.post(samlPath, async (req, res) => {
   try {
-    await oauthController.samlResponse(
-      req,
-      res,
-    );
+    await oauthController.samlResponse(req, res);
   } catch (err) {
     res.status(500).send(err.message);
   }
