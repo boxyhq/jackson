@@ -8,6 +8,12 @@ const redirect = require('./oauth/redirect.js');
 const allowed = require('./oauth/allowed.js');
 const env = require('../env.js');
 
+let configStore;
+let sessionStore;
+let codeStore;
+let tokenStore;
+let samlPath;
+
 const relayStatePrefix = 'boxyhq_jackson_';
 
 const extractBearerToken = (req) => {
@@ -32,7 +38,7 @@ function getEncodedClientId(client_id) {
   }
 }
 
-const authorize = async (req, res, configStore, sessionStore, samlPath) => {
+const authorize = async (req, res) => {
   const {
     response_type = 'code',
     client_id,
@@ -126,7 +132,7 @@ const authorize = async (req, res, configStore, sessionStore, samlPath) => {
   });
 };
 
-const samlResponse = async (req, res, configStore, codeStore, sessionStore) => {
+const samlResponse = async (req, res) => {
   const { SAMLResponse } = req.body; // RelayState will contain the sessionId from earlier quasi-oauth flow
 
   let RelayState = req.body.RelayState || '';
@@ -224,7 +230,7 @@ const samlResponse = async (req, res, configStore, codeStore, sessionStore) => {
   );
 };
 
-const token = async (req, res, tokenStore, codeStore) => {
+const token = async (req, res) => {
   const {
     client_id,
     client_secret,
@@ -269,7 +275,9 @@ const token = async (req, res, tokenStore, codeStore) => {
       return res.status(401).send('Invalid code_verifier');
     }
   } else if (codeVal && codeVal.session) {
-    return res.status(401).send('Please specify client_secret or code_verifier');
+    return res
+      .status(401)
+      .send('Please specify client_secret or code_verifier');
   }
 
   // store details against a token
@@ -284,7 +292,7 @@ const token = async (req, res, tokenStore, codeStore) => {
   });
 };
 
-const userInfo = async (req, res, tokenStore) => {
+const userInfo = async (req, res) => {
   let token = extractBearerToken(req);
 
   // check for query param
@@ -297,9 +305,17 @@ const userInfo = async (req, res, tokenStore) => {
   res.json(profile.claims);
 };
 
-module.exports = {
-  authorize,
-  samlResponse,
-  token,
-  userInfo,
+module.exports = (opts) => {
+  configStore = opts.configStore;
+  sessionStore = opts.sessionStore;
+  codeStore = opts.codeStore;
+  tokenStore = opts.tokenStore;
+  samlPath = opts.samlPath;
+
+  return {
+    authorize,
+    samlResponse,
+    token,
+    userInfo,
+  };
 };
