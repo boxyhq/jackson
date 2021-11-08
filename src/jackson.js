@@ -55,10 +55,9 @@ const server = app.listen(env.hostPort, async () => {
     const configs = await readConfig(env.preLoadedConfig);
 
     for (const config of configs) {
-      const ret = await configController(config, configStore);
+      await configController(config, configStore);
       console.log(
-        `loaded config for tenant "${config.tenant}" and product "${config.product}": `,
-        ret
+        `loaded config for tenant "${config.tenant}" and product "${config.product}"`
       );
     }
   }

@@ -1,11 +1,11 @@
 const crypto = require('crypto');
 
 const saml = require('../saml/saml.js');
-const codeVerifier = require('../oauth/code-verifier.js');
+const codeVerifier = require('./oauth/code-verifier.js');
 const { indexNames } = require('./utils.js');
 const dbutils = require('../db/utils.js');
-const redirect = require('../redirect.js');
-const allowed = require('../oauth/allowed.js');
+const redirect = require('./oauth/redirect.js');
+const allowed = require('./oauth/allowed.js');
 const env = require('../env.js');
 
 const relayStatePrefix = 'boxyhq_jackson_';
@@ -42,6 +42,7 @@ const authorize = async (req, res, configStore, sessionStore, samlPath) => {
     product,
     code_challenge,
     code_challenge_method = '',
+    // eslint-disable-next-line no-unused-vars
     provider = 'saml',
   } = req.query;
 
