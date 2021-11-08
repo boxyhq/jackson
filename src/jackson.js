@@ -24,19 +24,41 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get(oauthPath + '/authorize', async (req, res) => {
-  oauthController.authorize(req, res, configStore, sessionStore, samlPath);
+  try {
+    oauthController.authorize(req, res, configStore, sessionStore, samlPath);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 app.post(samlPath, async (req, res) => {
-  oauthController.samlResponse(req, res, configStore, codeStore, sessionStore);
+  try {
+    oauthController.samlResponse(
+      req,
+      res,
+      configStore,
+      codeStore,
+      sessionStore
+    );
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 app.post(oauthPath + '/token', cors(), async (req, res) => {
-  oauthController.token(req, res, tokenStore, codeStore);
+  try {
+    oauthController.token(req, res, tokenStore, codeStore);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 app.get(oauthPath + '/userinfo', cors(), async (req, res) => {
-  oauthController.userInfo(req, res, tokenStore);
+  try {
+    oauthController.userInfo(req, res, tokenStore);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 const server = app.listen(env.hostPort, async () => {
