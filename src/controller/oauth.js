@@ -47,12 +47,12 @@ const authorize = async (req, res, configStore, sessionStore, samlPath) => {
   } = req.query;
 
   if (!redirect_uri) {
-    return res.status(403).send('Please specify a redirect URL.');
+    return res.status(400).send('Please specify a redirect URL.');
   }
 
   if (!state) {
     return res
-      .status(403)
+      .status(400)
       .send('Please specify a state to safeguard against XSRF attacks.');
   }
 
@@ -234,16 +234,16 @@ const token = async (req, res, tokenStore, codeStore) => {
   } = req.body;
 
   if (grant_type !== 'authorization_code') {
-    return res.send('Unsupported grant_type');
+    return res.status(400).send('Unsupported grant_type');
   }
 
   if (!code) {
-    return res.send('Please specify code');
+    return res.status(400).send('Please specify code');
   }
 
   const codeVal = await codeStore.get(code);
   if (!codeVal || !codeVal.profile) {
-    return res.send('Invalid code');
+    return res.status(403).send('Invalid code');
   }
 
   if (client_id && client_secret) {
@@ -255,7 +255,7 @@ const token = async (req, res, tokenStore, codeStore) => {
         client_id !== codeVal.clientID ||
         client_secret !== codeVal.clientSecret
       ) {
-        return res.send('Invalid client_id or client_secret');
+        return res.status(401).send('Invalid client_id or client_secret');
       }
     }
   } else if (code_verifier) {
@@ -266,10 +266,10 @@ const token = async (req, res, tokenStore, codeStore) => {
     }
 
     if (codeVal.session.code_challenge !== cv) {
-      return res.send('Invalid code_verifier');
+      return res.status(401).send('Invalid code_verifier');
     }
   } else if (codeVal && codeVal.session) {
-    return res.send('Please specify client_secret or code_verifier');
+    return res.status(401).send('Please specify client_secret or code_verifier');
   }
 
   // store details against a token
