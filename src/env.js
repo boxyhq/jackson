@@ -7,7 +7,7 @@ const internalUrl = process.env.INTERNAL_HOST_URL || 'localhost';
 const internalPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
 
 const samlAudience = process.env.SAML_AUDIENCE || 'https://saml.boxyhq.com';
-const preLoadedConfig = process.env.PRELOADED_CONFIG || './_config'; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
+const preLoadedConfig = process.env.PRELOADED_CONFIG || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
 
 const idpEnabled = process.env.IDP_ENABLED === 'true';
 const db = {
