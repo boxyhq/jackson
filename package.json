@@ -1,11 +1,19 @@
 {
-  "name": "jackson",
+  "name": "saml-jackson",
   "version": "0.1.0",
   "license": "Apache 2.0",
+  "description": "SAML 2.0 service",
   "main": "src/index.js",
   "engines": {
     "node": ">=14.18.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boxyhq/jackson.git"
+  },
+  "keywords": [
+    "SAML 2.0"
+  ],
   "scripts": {
     "start": "cross-env IDP_ENABLED=true node src/jackson.js",
     "dev": "cross-env IDP_ENABLED=true nodemon src/jackson.js",
