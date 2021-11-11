@@ -8,7 +8,6 @@ let configController;
 let oauthController;
 
 const oauthPath = '/oauth';
-const samlPath = '/oauth/saml';
 const apiPath = '/api/v1/saml';
 
 const app = express();
@@ -24,7 +23,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
   }
 });
 
-app.post(samlPath, async (req, res) => {
+app.post(env.samlPath, async (req, res) => {
   try {
     await oauthController.samlResponse(req, res);
   } catch (err) {
@@ -53,7 +52,7 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  const ret = await controllers(samlPath);
+  const ret = await controllers(env);
   configController = ret.configController;
   oauthController = ret.oauthController;
 });

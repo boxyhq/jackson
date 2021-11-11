@@ -1,8 +1,7 @@
 const DB = require('./db/db.js');
-const env = require('./env.js');
 const readConfig = require('./read-config.js');
 
-module.exports = async function (samlPath) {
+module.exports = async function (env) {
   const db = await DB.new(env.db);
   const configStore = db.store('saml:config');
   const sessionStore = db.store('oauth:session', 300);
@@ -15,7 +14,7 @@ module.exports = async function (samlPath) {
     sessionStore,
     codeStore,
     tokenStore,
-    samlPath,
+    env,
   });
   // write pre-loaded config if present
   if (env.preLoadedConfig && env.preLoadedConfig.length > 0) {

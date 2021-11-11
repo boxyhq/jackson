@@ -6,13 +6,12 @@ const { indexNames } = require('./utils.js');
 const dbutils = require('../db/utils.js');
 const redirect = require('./oauth/redirect.js');
 const allowed = require('./oauth/allowed.js');
-const env = require('../env.js');
 
 let configStore;
 let sessionStore;
 let codeStore;
 let tokenStore;
-let samlPath;
+let env;
 
 const relayStatePrefix = 'boxyhq_jackson_';
 
@@ -111,7 +110,7 @@ const authorize = async (req, res) => {
 
   const samlReq = saml.request({
     entityID: samlConfig.idpMetadata.entityID,
-    callbackUrl: env.externalUrl + samlPath,
+    callbackUrl: env.externalUrl + env.samlPath,
     signingKey: samlConfig.certs.privateKey,
   });
 
@@ -310,7 +309,7 @@ module.exports = (opts) => {
   sessionStore = opts.sessionStore;
   codeStore = opts.codeStore;
   tokenStore = opts.tokenStore;
-  samlPath = opts.samlPath;
+  env = opts.env;
 
   return {
     authorize,
