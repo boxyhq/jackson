@@ -14,7 +14,7 @@ const idpEnabled = process.env.IDP_ENABLED === 'true';
 const db = {
   engine: process.env.DB_ENGINE || 'sql', // Supported values: redis, sql, mongo, mem. Keep comment in sync with db.js
   url:
-    process.env.DB_URL || 'postgres://postgres:postgres@localhost:5450/jackson',
+    process.env.DB_URL || 'postgres://postgres:postgres@localhost:5432/jackson',
   type: process.env.DB_TYPE || 'postgres', // Only needed if DB_ENGINE is sql. Supported values: postgres, cockroachdb, mysql, mariadb
 };
 

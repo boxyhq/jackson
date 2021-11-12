@@ -19,7 +19,7 @@ const dbs = {
   mem: {},
   redis: { url: 'redis://localhost:6379' },
   sql: {
-    url: 'postgresql://postgres:postgres@localhost:5450/calendso',
+    url: 'postgresql://postgres:postgres@localhost:5432/postgres',
     type: 'postgres',
   },
   mongo: { url: 'mongodb://localhost:27017/jackson' },
