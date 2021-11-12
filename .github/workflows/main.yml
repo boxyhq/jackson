@@ -24,6 +24,23 @@ jobs:
         node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: "trust"
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:6.2.5-alpine
+      mongo:
+        image: mongo:4.4.10
+
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -35,6 +52,7 @@ jobs:
         scope: '@boxyhq'
         cache: 'npm'
     - run: npm ci
+    - run: npm test
     - run: |
         publishTag="latest"
         if [[ "$GITHUB_REF" == *\/release ]]
@@ -50,6 +68,7 @@ jobs:
         npm publish --tag $publishTag --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        CI_TEST: "true"
   build:
     needs: publish
     runs-on: ubuntu-latest
