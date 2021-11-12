@@ -27,6 +27,8 @@ jobs:
     services:
       postgres:
         image: postgres:13
+        ports:
+          - 5432:5432
         env:
           POSTGRES_PASSWORD: ""
           POSTGRES_HOST_AUTH_METHOD: "trust"
@@ -38,8 +40,12 @@ jobs:
           --health-retries 5
       redis:
         image: redis:6.2.5-alpine
+        ports:
+          - 6379:6379
       mongo:
         image: mongo:4.4.10
+        ports:
+          - 27017:27017
 
     steps:
     - uses: actions/checkout@v2
