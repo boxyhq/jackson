@@ -2,10 +2,6 @@ const t = require('tap');
 
 const DB = require('./db.js');
 
-let redisHost = 'localhost';
-let postgresHost = 'localhost';
-let mongoHost = 'localhost';
-
 let configStoreMap = {};
 
 const record1 = {
@@ -21,12 +17,12 @@ const record2 = {
 
 const dbs = {
   mem: {},
-  redis: { url: `redis://${redisHost}:6379` },
+  redis: { url: 'redis://localhost:6379' },
   sql: {
-    url: `postgresql://postgres:postgres@${postgresHost}:5432/postgres`,
+    url: 'postgresql://postgres:postgres@localhost:5432/postgres',
     type: 'postgres',
   },
-  mongo: { url: `mongodb://${mongoHost}:27017/jackson` },
+  mongo: { url: 'mongodb://localhost:27017/jackson' },
 };
 
 t.before(async () => {
