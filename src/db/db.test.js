@@ -63,7 +63,10 @@ t.teardown(async () => {
 t.test('dbs', ({ end }) => {
   for (const idx in configStores) {
     const configStore = configStores[idx];
-    const dbEngine = dbs[idx].engine;
+    let dbEngine = dbs[idx].engine;
+    if (dbs[idx].options.type) {
+      dbEngine += ': ' + dbs[idx].options.type;
+    }
     t.test('put(): ' + dbEngine, async (t) => {
       await configStore.put(
         record1.id,
