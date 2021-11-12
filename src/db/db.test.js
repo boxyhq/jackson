@@ -42,6 +42,13 @@ const dbs = [
       type: 'mysql',
     },
   },
+  {
+    engine: 'sql',
+    options: {
+      url: 'mariadb://root@localhost:3306/mysql',
+      type: 'mariadb',
+    },
+  },
 ];
 
 t.before(async () => {
