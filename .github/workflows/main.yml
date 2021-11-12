@@ -46,7 +46,21 @@ jobs:
         image: mongo:4.4.10
         ports:
           - 27017:27017
-
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3307:3306
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: mysql
+      maria:
+        image: mariadb:10.4.22
+        ports:
+          - 3306:3306
+        env:
+          MARIADB_DATABASE: mysql
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+          
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}

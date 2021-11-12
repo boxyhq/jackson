@@ -19,3 +19,19 @@ services:
     ports:
       - "27017:27017"
     restart: always
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: mysql
+      MYSQL_ROOT_PASSWORD: mysql
+  maria:
+    image: mariadb:10.4.22
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MARIADB_DATABASE: mysql
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
