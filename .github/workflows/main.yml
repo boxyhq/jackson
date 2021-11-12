@@ -53,6 +53,8 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm test
+      env:
+        CI_TEST: "true"
     - run: |
         publishTag="latest"
         if [[ "$GITHUB_REF" == *\/release ]]
@@ -68,7 +70,6 @@ jobs:
         npm publish --tag $publishTag --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        CI_TEST: "true"
   build:
     needs: publish
     runs-on: ubuntu-latest
