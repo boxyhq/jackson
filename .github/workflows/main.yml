@@ -52,7 +52,7 @@ jobs:
         scope: '@boxyhq'
         cache: 'npm'
     - run: npm ci
-    - run: npm run test-ci
+    - run: npm run test
     - run: |
         publishTag="latest"
         if [[ "$GITHUB_REF" == *\/release ]]
