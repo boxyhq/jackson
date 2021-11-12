@@ -20,7 +20,8 @@
     "calendso": "cross-env DB_URL=postgresql://postgres:postgres@localhost:5450/calendso nodemon src/jackson.js",
     "mongo": "cross-env DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson nodemon src/jackson.js",
     "pre-loaded": "cross-env DB_ENGINE=mem PRELOADED_CONFIG='./_config' nodemon src/jackson.js",
-    "test": "tap src/**/*.test.js"
+    "test": "tap src/**/*.test.js",
+    "test-ci": "CI=true tap src/**/*.test.js"
   },
   "tap": {
     "coverage-map": "map.js",
