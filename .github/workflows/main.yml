@@ -53,8 +53,6 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm test
-      env:
-        CI_TEST: "true"
     - run: |
         publishTag="latest"
         if [[ "$GITHUB_REF" == *\/release ]]

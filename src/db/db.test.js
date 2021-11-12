@@ -6,7 +6,7 @@ let redisHost = 'localhost';
 let postgresHost = 'localhost';
 let mongoHost = 'localhost';
 
-if (process.env.CI_TEST) {
+if (process.env.CI) {
   redisHost = 'redis';
   postgresHost = 'postgres';
   mongoHost = 'mongo';
