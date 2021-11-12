@@ -5,7 +5,9 @@ const { indexNames } = require('./utils.js');
 
 const crypto = require('crypto');
 
-module.exports = async (body, configStore) => {
+let configStore;
+
+const config = async (body) => {
   const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } =
     body;
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
@@ -55,4 +57,9 @@ module.exports = async (body, configStore) => {
     client_id: clientID,
     client_secret: clientSecret,
   };
+};
+
+module.exports = (opts) => {
+  configStore = opts.configStore;
+  return config;
 };

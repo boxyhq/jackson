@@ -2,11 +2,12 @@
 const dbutils = require('./utils.js');
 
 class Mem {
-  constructor(options) {
+  constructor(/*options*/) {
     return (async () => {
       this.store = {}; // map of key, value
       this.indexes = {}; // map of key, Set
       this.cleanup = {}; // map of indexes for cleanup when store key is deleted
+      this.ttlStore = {}; // map of key to ttl
 
       return this; // Return the newly-created instance
     })();
@@ -35,11 +36,12 @@ class Mem {
   async put(namespace, key, val, ttl = 0, ...indexes) {
     const k = dbutils.key(namespace, key);
 
-    this.store[k] = JSON.stringify(val); 
+    this.store[k] = JSON.stringify(val);
 
-    // TODO: ttl expiry
-    // if (ttl) {
-    // }
+    if (ttl) {
+      // TODO: implement cleanup of TTL
+      this.ttlStore[k] = Date.now() + ttl * 1000;
+    }
 
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {

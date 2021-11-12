@@ -1,17 +1,27 @@
 {
-  "name": "jackson",
+  "name": "saml-jackson",
   "version": "0.1.0",
   "license": "Apache 2.0",
+  "description": "SAML 2.0 service",
+  "main": "src/index.js",
   "engines": {
     "node": ">=14.18.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boxyhq/jackson.git"
+  },
+  "keywords": [
+    "SAML 2.0"
+  ],
   "scripts": {
     "start": "cross-env IDP_ENABLED=true node src/jackson.js",
     "dev": "cross-env IDP_ENABLED=true nodemon src/jackson.js",
     "calendso": "cross-env DB_URL=postgresql://postgres:postgres@localhost:5450/calendso nodemon src/jackson.js",
     "mongo": "cross-env DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson nodemon src/jackson.js",
-    "pre-loaded": "cross-env DB_ENGINE=mem nodemon src/jackson.js",
-    "test": "tap src/**/*.test.js"
+    "pre-loaded": "cross-env DB_ENGINE=mem PRELOADED_CONFIG='./_config' nodemon src/jackson.js",
+    "test": "tap src/**/*.test.js",
+    "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d"
   },
   "tap": {
     "coverage-map": "map.js",
@@ -40,6 +50,7 @@
   },
   "devDependencies": {
     "cross-env": "7.0.3",
+    "eslint": "^8.2.0",
     "nodemon": "2.0.13",
     "tap": "15.0.10"
   }
