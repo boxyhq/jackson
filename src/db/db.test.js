@@ -2,7 +2,7 @@ const t = require('tap');
 
 const DB = require('./db.js');
 
-let configStoreMap = {};
+let configStores = [];
 
 const record1 = {
   id: '1',
@@ -15,23 +15,44 @@ const record2 = {
   city: 'London',
 };
 
-const dbs = {
-  mem: {},
-  redis: { url: 'redis://localhost:6379' },
-  sql: {
-    url: 'postgresql://postgres:postgres@localhost:5432/postgres',
-    type: 'postgres',
+const dbs = [
+  {
+    engine: 'mem',
+    options: {},
   },
-  mongo: { url: 'mongodb://localhost:27017/jackson' },
-};
+  {
+    engine: 'redis',
+    options: { url: 'redis://localhost:6379' },
+  },
+  {
+    engine: 'sql',
+    options: {
+      url: 'postgresql://postgres:postgres@localhost:5432/postgres',
+      type: 'postgres',
+    },
+  },
+  {
+    engine: 'mongo',
+    options: { url: 'mongodb://localhost:27017/jackson' },
+  },
+  {
+    engine: 'sql',
+    options: {
+      url: 'mysql://root:mysql@localhost:3307/mysql',
+      type: 'mysql',
+    },
+  },
+];
 
 t.before(async () => {
-  for (const engine in dbs) {
-    const opts = dbs[engine];
+  for (const idx in dbs) {
+    const config = dbs[idx];
+    const engine = config.engine;
+    const opts = config.options;
     opts.engine = engine;
     const db = await DB.new(opts);
 
-    configStoreMap[engine] = db.store('saml:config');
+    configStores.push(db.store('saml:config'));
   }
 });
 
@@ -40,8 +61,9 @@ t.teardown(async () => {
 });
 
 t.test('dbs', ({ end }) => {
-  for (const dbEngine in configStoreMap) {
-    const configStore = configStoreMap[dbEngine];
+  for (const idx in configStores) {
+    const configStore = configStores[idx];
+    const dbEngine = dbs[idx].engine;
     t.test('put(): ' + dbEngine, async (t) => {
       await configStore.put(
         record1.id,

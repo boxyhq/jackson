@@ -9,6 +9,7 @@ class Sql {
   constructor(options) {
     return (async () => {
       this.connection = await typeorm.createConnection({
+        name: options.type,
         type: options.type,
         url: options.url,
         synchronize: true,

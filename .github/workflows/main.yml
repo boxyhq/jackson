@@ -46,6 +46,13 @@ jobs:
         image: mongo:4.4.10
         ports:
           - 27017:27017
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3307:3306
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: mysql
 
     steps:
     - uses: actions/checkout@v2
