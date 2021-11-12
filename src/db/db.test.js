@@ -6,9 +6,12 @@ let redisHost = 'localhost';
 let postgresHost = 'localhost';
 let mongoHost = 'localhost';
 
+console.log('Testing:', process.env);
+console.log('Testing CI:', process.env.CI);
+
 if (process.env.CI) {
   console.log('We are in the CIverse');
-  
+
   redisHost = 'redis';
   postgresHost = 'postgres';
   mongoHost = 'mongo';
