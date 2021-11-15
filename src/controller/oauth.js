@@ -11,7 +11,7 @@ let configStore;
 let sessionStore;
 let codeStore;
 let tokenStore;
-let env;
+let options;
 
 const relayStatePrefix = 'boxyhq_jackson_';
 
@@ -110,7 +110,7 @@ const authorize = async (req, res) => {
 
   const samlReq = saml.request({
     entityID: samlConfig.idpMetadata.entityID,
-    callbackUrl: env.externalUrl + env.samlPath,
+    callbackUrl: options.externalUrl + options.samlPath,
     signingKey: samlConfig.certs.privateKey,
   });
 
@@ -136,7 +136,7 @@ const samlResponse = async (req, res) => {
 
   let RelayState = req.body.RelayState || '';
 
-  if (!env.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
+  if (!options.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
     // IDP is disabled so block the request
     return res
       .status(403)
@@ -182,7 +182,7 @@ const samlResponse = async (req, res) => {
 
   let validateOpts = {
     thumbprint: samlConfig.idpMetadata.thumbprint,
-    audience: env.samlAudience,
+    audience: options.samlAudience,
   };
 
   if (session && session.id) {
@@ -309,7 +309,7 @@ module.exports = (opts) => {
   sessionStore = opts.sessionStore;
   codeStore = opts.codeStore;
   tokenStore = opts.tokenStore;
-  env = opts.env;
+  options = opts.opts;
 
   return {
     authorize,

@@ -4,18 +4,17 @@ const externalUrl =
   process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const samlPath = process.env.SAML_PATH || '/oauth/saml';
 
-const internalUrl = process.env.INTERNAL_HOST_URL || 'localhost';
-const internalPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
+const internalHostUrl = process.env.INTERNAL_HOST_URL || 'localhost';
+const internalHostPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
 
-const samlAudience = process.env.SAML_AUDIENCE || 'https://saml.boxyhq.com';
-const preLoadedConfig = process.env.PRELOADED_CONFIG || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
+const samlAudience = process.env.SAML_AUDIENCE;
+const preLoadedConfig = process.env.PRE_LOADED_CONFIG;
 
-const idpEnabled = process.env.IDP_ENABLED === 'true';
+const idpEnabled = process.env.IDP_ENABLED;
 const db = {
-  engine: process.env.DB_ENGINE || 'sql', // Supported values: redis, sql, mongo, mem. Keep comment in sync with db.js
-  url:
-    process.env.DB_URL || 'postgres://postgres:postgres@localhost:5432/jackson',
-  type: process.env.DB_TYPE || 'postgres', // Only needed if DB_ENGINE is sql. Supported values: postgres, cockroachdb, mysql, mariadb
+  engine: process.env.DB_ENGINE,
+  url: process.env.DB_URL,
+  type: process.env.DB_TYPE,
 };
 
 module.exports = {
@@ -25,9 +24,11 @@ module.exports = {
   samlPath,
   samlAudience,
   preLoadedConfig,
-  internalUrl,
-  internalPort,
+  internalHostUrl,
+  internalHostPort,
   idpEnabled,
   db,
-  useInternalServer: !(hostUrl === internalUrl && hostPort === internalPort),
+  useInternalServer: !(
+    hostUrl === internalHostUrl && hostPort === internalHostPort
+  ),
 };
