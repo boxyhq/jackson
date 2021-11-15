@@ -61,5 +61,7 @@ const config = async (body) => {
 
 module.exports = (opts) => {
   configStore = opts.configStore;
-  return config;
+  return {
+    config,
+  };
 };

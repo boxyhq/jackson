@@ -3,8 +3,7 @@ const cors = require('cors');
 
 const env = require('./env.js');
 
-const controllers = require('./index.js');
-let configController;
+let apiController;
 let oauthController;
 
 const oauthPath = '/oauth';
@@ -52,8 +51,8 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  const ret = await controllers(env);
-  configController = ret.configController;
+  const ret = await require('./index.js')(env);
+  apiController = ret.apiController;
   oauthController = ret.oauthController;
 });
 
@@ -69,7 +68,7 @@ if (env.useInternalServer) {
 
 internalApp.post(apiPath + '/config', async (req, res) => {
   try {
-    res.json(await configController(req.body));
+    res.json(await apiController.config(req.body));
   } catch (err) {
     res.status(500).json({
       error: err.message,
@@ -81,7 +80,7 @@ let internalServer = server;
 if (env.useInternalServer) {
   internalServer = internalApp.listen(env.internalPort, async () => {
     console.log(
-      `🚀 The path of the righteous internal server: http://${env.internalUrl}:${env.internalPort}`
+      `🚀 The path of the righteous internal server: http://${env.internalHostUrl}:${env.internalHostPort}`
     );
   });
 }
