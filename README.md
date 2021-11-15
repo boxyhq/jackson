@@ -60,9 +60,6 @@ There are two kinds of SAML login flows - SP-initiated and IdP-initiated. We hig
 # Setting up SAML with your customer's Identity Provider
 Please follow the instructions here to guide your customer's in setting up SAML correctly for your product(s). You should create a copy of the doc and modify it with your custom settings, we have used the values that work for our demo apps - https://docs.google.com/document/d/1fk---Z9Ln59u-2toGKUkyO3BF6Dh3dscT2u4J2xHANE.
 
-# OAuth 2.0 Flow
-Jackson has been designed to abstract the SAML login flow as a pure OAuth 2.0 flow. This means it's compatible with any standard OAuth 2.0 library out there, both client side and server side. It is important to remember that SAML is configured per customer unlike OAuth 2.0 where you can have a single OAuth app supporting logins for all customers.
-
 # SAML config API
 Once your customer has setup the SAML app on their Identity Provider, they Identity Provider will generate an IdP or SP metadata file. Some Identity Providers only generate an IdP metadata file but it usually works for the SP login flow as well. It is an XML file that contains various attributes Jackson needs in order to validate incoming SAML login requests. This step is the equivalent of setting an OAuth 2.0 app and generating a client ID and client Secret that will be used in the login flow.
 
@@ -83,4 +80,11 @@ curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 - defaultRedirectUrl: The redirect URL to use in the IdP login flow. Jackson will call this URL after completing an IdP login flow.
 - redirectUrl: JSON encoded array containing a list of allowed redicrect URLs. Jackson will disallow any redirects not on this list (or not the default URL above).
 - tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id or user id.
-product: Jackson support multiple products, this is a uniqie identifier you set from your side that relates back to the product your customer is using.
+- product: Jackson support multiple products, this is a uniqie identifier you set from your side that relates back to the product your customer is using.
+
+The response returns a json with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow.
+
+# OAuth 2.0 Flow
+Jackson has been designed to abstract the SAML login flow as a pure OAuth 2.0 flow. This means it's compatible with any standard OAuth 2.0 library out there, both client side and server side. It is important to remember that SAML is configured per customer unlike OAuth 2.0 where you can have a single OAuth app supporting logins for all customers.
+
+Jackson also supports the PKCE authorization flow (https://oauth.net/2/pkce/), so you can protect your SPAs.
