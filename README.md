@@ -15,7 +15,12 @@ Refer to https://github.com/boxyhq/jackson#configuration for the configuration o
 Here's how to use the npm library:
 ```
 const opts = {
-
+  externalUrl: 'https://my-cool-app.com',
+  samlAudience: 'https://my-cool-app.com',
+  db: {
+    engine: 'mongo',
+    url: 'mongodb://localhost:27017/my-cool-app',
+  }  
 };
 
 const ret = await require('@boxyhq/saml-jackson')(opts);
@@ -26,9 +31,13 @@ const oauthController = ret.oauthController;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// SAML config API
+// SAML config API. You should pass this route through your authentication checks, do not expose this on the public interface without proper authentication in place.
 app.post('/api/v1/saml/config', async (req, res) => {
   try {
+    // apply your authentication flow (or ensure this route has passed through your auth middleware)
+    ...
+
+    // only when properly authenticated, call the config function
     res.json(await apiController.config(req.body));
   } catch (err) {
     res.status(500).json({
@@ -95,8 +104,7 @@ Configuration is done via env vars (and in the case of the npm library via an op
 - DB_ENGINE (npm: db.engine): Supported values are `redis`, `sql`, `mongo`, `mem`. Defaults to `sql`
 - DB_URL (npm: db.url): The database URL to connect to, for example `postgres://postgres:postgres@localhost:5450/jackson`
 - DB_TYPE (npm: db.type): Only needed when DB_ENGINE is `sql`. Supported values are `postgres`, `cockroachdb`, `mysql`, `mariadb`. Defaults to `postgres`
-
-- PRE_LOADED_CONFIG: If you only need a single tenant or a handful of pre-configured tenants then this config will help you red and load SAMl configs. It works well with the mem db engine so you don't have to configure any external databases for this to work (though it works with those as well). This is a path (absolute or relative) to a direct that contains files organized in the format described in the next section.
+- PRE_LOADED_CONFIG: If you only need a single tenant or a handful of pre-configured tenants then this config will help you read and load SAML configs. It works well with the mem db engine so you don't have to configure any external databases for this to work (though it works with those as well). This is a path (absolute or relative) to a direct that contains files organized in the format described in the next section.
 
 # Pre-loaded SAML Configuration
 If PRE_LOADED_CONFIG is set then it should point to a directory with the following structure (example below):-
