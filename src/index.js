@@ -21,6 +21,7 @@ const defaultOpts = (opts) => {
   newOpts.db.url =
     newOpts.db.url || 'postgres://postgres:postgres@localhost:5432/jackson';
   newOpts.db.type = newOpts.db.type || 'postgres'; // Only needed if DB_ENGINE is sql. Supported values: postgres, cockroachdb, mysql, mariadb
+  newOpts.db.ttl = (newOpts.db.ttl || 300) * 1; // TTL for the code, session and token stores (in seconds)
 
   return newOpts;
 };
@@ -30,9 +31,9 @@ module.exports = async function (opts) {
 
   const db = await DB.new(opts.db);
   const configStore = db.store('saml:config');
-  const sessionStore = db.store('oauth:session', 300);
-  const codeStore = db.store('oauth:code', 300);
-  const tokenStore = db.store('oauth:token', 300);
+  const sessionStore = db.store('oauth:session', opts.db.ttl);
+  const codeStore = db.store('oauth:code', opts.db.ttl);
+  const tokenStore = db.store('oauth:token', opts.db.ttl);
 
   const apiController = require('./controller/api.js')({ configStore });
   const oauthController = require('./controller/oauth.js')({

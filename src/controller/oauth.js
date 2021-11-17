@@ -287,7 +287,7 @@ const token = async (req, res) => {
   res.json({
     access_token: token,
     token_type: 'bearer',
-    expires_in: 300,
+    expires_in: options.db.ttl,
   });
 };
 

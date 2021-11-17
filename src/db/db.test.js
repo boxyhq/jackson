@@ -20,7 +20,7 @@ const record2 = {
 const dbs = [
   {
     engine: 'mem',
-    options: {},
+    options: { ttlCleanup: 1 },
   },
   {
     engine: 'redis',
@@ -220,14 +220,14 @@ t.test('dbs', ({ end }) => {
     });
 
     t.test('ttl expiry: ' + dbEngine, async (t) => {
-      if (dbEngine.startsWith('sql') || dbEngine.startsWith('mem')) {
+      // mongo runs ttl task every 60 seconds
+      if (dbEngine.startsWith('sql') || dbEngine.startsWith('mongo')) {
         t.end();
         return;
       }
 
-      // mongo runs ttl task every 60 seconds
       await new Promise((resolve) =>
-        setTimeout(resolve, (dbEngine === 'mongo' ? 60 : 0 + ttl + 0.5) * 1000)
+        setTimeout(resolve, ((dbEngine === 'mem' ? 5 : 0) + ttl + 0.5) * 1000)
       );
 
       const ret1 = await ttlStore.get(record1.id);
