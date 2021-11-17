@@ -12,7 +12,6 @@ module.exports = new EntitySchema({
       type: 'int',
     },
     key: {
-      primary: true,
       type: 'varchar',
     },
     storeKey: {
