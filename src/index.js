@@ -27,7 +27,6 @@ const defaultOpts = (opts) => {
 
 module.exports = async function (opts) {
   opts = defaultOpts(opts);
-  console.log('opts=', opts);
 
   const db = await DB.new(opts.db);
   const configStore = db.store('saml:config');
