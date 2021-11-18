@@ -20,45 +20,36 @@ const record2 = {
 const dbs = [
   {
     engine: 'mem',
-    options: { ttlCleanup: 1 },
+    ttlCleanup: 1,
   },
   {
     engine: 'redis',
-    options: { url: 'redis://localhost:6379' },
+    url: 'redis://localhost:6379',
   },
   {
     engine: 'sql',
-    options: {
-      url: 'postgresql://postgres:postgres@localhost:5432/postgres',
-      type: 'postgres',
-    },
+    url: 'postgresql://postgres:postgres@localhost:5432/postgres',
+    type: 'postgres',
   },
   {
     engine: 'mongo',
-    options: { url: 'mongodb://localhost:27017/jackson' },
+    url: 'mongodb://localhost:27017/jackson',
   },
   {
     engine: 'sql',
-    options: {
-      url: 'mysql://root:mysql@localhost:3307/mysql',
-      type: 'mysql',
-    },
+    url: 'mysql://root:mysql@localhost:3307/mysql',
+    type: 'mysql',
   },
   {
     engine: 'sql',
-    options: {
-      url: 'mariadb://root@localhost:3306/mysql',
-      type: 'mariadb',
-    },
+    url: 'mariadb://root@localhost:3306/mysql',
+    type: 'mariadb',
   },
 ];
 
 t.before(async () => {
   for (const idx in dbs) {
-    const config = dbs[idx];
-    const engine = config.engine;
-    const opts = config.options;
-    opts.engine = engine;
+    const opts = dbs[idx];
     const db = await DB.new(opts);
 
     configStores.push(db.store('saml:config'));
@@ -75,8 +66,8 @@ t.test('dbs', ({ end }) => {
     const configStore = configStores[idx];
     const ttlStore = ttlStores[idx];
     let dbEngine = dbs[idx].engine;
-    if (dbs[idx].options.type) {
-      dbEngine += ': ' + dbs[idx].options.type;
+    if (dbs[idx].type) {
+      dbEngine += ': ' + dbs[idx].type;
     }
     t.test('put(): ' + dbEngine, async (t) => {
       await configStore.put(
