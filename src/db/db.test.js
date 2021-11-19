@@ -3,6 +3,8 @@ const t = require('tap');
 const DB = require('./db.js');
 
 let configStores = [];
+let ttlStores = [];
+const ttl = 3;
 
 const record1 = {
   id: '1',
@@ -18,48 +20,46 @@ const record2 = {
 const dbs = [
   {
     engine: 'mem',
-    options: {},
+    ttl: 1,
   },
   {
     engine: 'redis',
-    options: { url: 'redis://localhost:6379' },
+    url: 'redis://localhost:6379',
   },
   {
     engine: 'sql',
-    options: {
-      url: 'postgresql://postgres:postgres@localhost:5432/postgres',
-      type: 'postgres',
-    },
+    url: 'postgresql://postgres:postgres@localhost:5432/postgres',
+    type: 'postgres',
+    ttl: 1,
+    limit: 1,
   },
   {
     engine: 'mongo',
-    options: { url: 'mongodb://localhost:27017/jackson' },
+    url: 'mongodb://localhost:27017/jackson',
   },
   {
     engine: 'sql',
-    options: {
-      url: 'mysql://root:mysql@localhost:3307/mysql',
-      type: 'mysql',
-    },
+    url: 'mysql://root:mysql@localhost:3307/mysql',
+    type: 'mysql',
+    ttl: 1,
+    limit: 1,
   },
   {
     engine: 'sql',
-    options: {
-      url: 'mariadb://root@localhost:3306/mysql',
-      type: 'mariadb',
-    },
+    url: 'mariadb://root@localhost:3306/mysql',
+    type: 'mariadb',
+    ttl: 1,
+    limit: 1,
   },
 ];
 
 t.before(async () => {
   for (const idx in dbs) {
-    const config = dbs[idx];
-    const engine = config.engine;
-    const opts = config.options;
-    opts.engine = engine;
+    const opts = dbs[idx];
     const db = await DB.new(opts);
 
     configStores.push(db.store('saml:config'));
+    ttlStores.push(db.store('oauth:session', ttl));
   }
 });
 
@@ -70,9 +70,10 @@ t.teardown(async () => {
 t.test('dbs', ({ end }) => {
   for (const idx in configStores) {
     const configStore = configStores[idx];
+    const ttlStore = ttlStores[idx];
     let dbEngine = dbs[idx].engine;
-    if (dbs[idx].options.type) {
-      dbEngine += ': ' + dbs[idx].options.type;
+    if (dbs[idx].type) {
+      dbEngine += ': ' + dbs[idx].type;
     }
     t.test('put(): ' + dbEngine, async (t) => {
       await configStore.put(
@@ -109,8 +110,8 @@ t.test('dbs', ({ end }) => {
     });
 
     t.test('get(): ' + dbEngine, async (t) => {
-      const ret1 = await configStore.get('1');
-      const ret2 = await configStore.get('2');
+      const ret1 = await configStore.get(record1.id);
+      const ret2 = await configStore.get(record2.id);
 
       t.same(ret1, record1, 'unable to get record1');
       t.same(ret2, record2, 'unable to get record2');
@@ -151,8 +152,8 @@ t.test('dbs', ({ end }) => {
 
       await configStore.delete(record2.id);
 
-      const ret1 = await configStore.get('1');
-      const ret2 = await configStore.get('2');
+      const ret1 = await configStore.get(record1.id);
+      const ret2 = await configStore.get(record2.id);
 
       const ret3 = await configStore.getByIndex({
         name: 'name',
@@ -168,6 +169,69 @@ t.test('dbs', ({ end }) => {
 
       t.same(ret3, [], 'delete for record1 failed');
       t.same(ret4, [], 'delete for record2 failed');
+
+      t.end();
+    });
+
+    t.test('ttl indexes: ' + dbEngine, async (t) => {
+      try {
+        await ttlStore.put(
+          record1.id,
+          record1,
+          {
+            // secondary index on city
+            name: 'city',
+            value: record1.city,
+          },
+          {
+            // secondary index on name
+            name: 'name',
+            value: record1.name,
+          }
+        );
+
+        t.fail('expecting a secondary indexes not allow on a store with ttl');
+      } catch (err) {
+        t.ok(err, 'got expected error');
+      }
+
+      t.end();
+    });
+
+    t.test('ttl put(): ' + dbEngine, async (t) => {
+      await ttlStore.put(record1.id, record1);
+
+      await ttlStore.put(record2.id, record2);
+
+      t.end();
+    });
+
+    t.test('ttl get(): ' + dbEngine, async (t) => {
+      const ret1 = await ttlStore.get(record1.id);
+      const ret2 = await ttlStore.get(record2.id);
+
+      t.same(ret1, record1, 'unable to get record1');
+      t.same(ret2, record2, 'unable to get record2');
+
+      t.end();
+    });
+
+    t.test('ttl expiry: ' + dbEngine, async (t) => {
+      // mongo runs ttl task every 60 seconds
+      if (dbEngine.startsWith('mongo')) {
+        t.end();
+        return;
+      }
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, ((dbEngine === 'mem' ? 5 : 0) + ttl + 0.5) * 1000)
+      );
+
+      const ret1 = await ttlStore.get(record1.id);
+      const ret2 = await ttlStore.get(record2.id);
+
+      t.same(ret1, null, 'ttl for record1 failed');
+      t.same(ret2, null, 'ttl for record2 failed');
 
       t.end();
     });

@@ -15,6 +15,7 @@ const db = {
   engine: process.env.DB_ENGINE,
   url: process.env.DB_URL,
   type: process.env.DB_TYPE,
+  ttl: process.env.DB_TTL,
 };
 
 module.exports = {

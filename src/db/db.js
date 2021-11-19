@@ -19,7 +19,7 @@ class DB {
 
   // ttl is in seconds
   async put(namespace, key, val, ttl = 0, ...indexes) {
-    if (this.ttl > 0 && indexes && indexes.length > 0) {
+    if (ttl > 0 && indexes && indexes.length > 0) {
       throw new Error('secondary indexes not allow on a store with ttl');
     }
 
