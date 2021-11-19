@@ -9,20 +9,25 @@ class Mem {
       this.cleanup = {}; // map of indexes for cleanup when store key is deleted
       this.ttlStore = {}; // map of key to ttl
 
-      this.ttlCleanup = async () => {
-        const now = Date.now();
-        for (const k in this.ttlStore) {
-          if (this.ttlStore[k].expiresAt < now) {
-            await this.delete(this.ttlStore[k].namespace, this.ttlStore[k].key);
+      if (options.ttl) {
+        this.ttlCleanup = async () => {
+          const now = Date.now();
+          for (const k in this.ttlStore) {
+            if (this.ttlStore[k].expiresAt < now) {
+              await this.delete(
+                this.ttlStore[k].namespace,
+                this.ttlStore[k].key
+              );
+            }
           }
-        }
+
+          this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
+        };
 
         this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
-      };
+      }
 
-      this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
-
-      return this; // Return the newly-created instance
+      return this;
     })();
   }
 

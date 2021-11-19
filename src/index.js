@@ -22,6 +22,7 @@ const defaultOpts = (opts) => {
     newOpts.db.url || 'postgres://postgres:postgres@localhost:5432/jackson';
   newOpts.db.type = newOpts.db.type || 'postgres'; // Only needed if DB_ENGINE is sql. Supported values: postgres, cockroachdb, mysql, mariadb
   newOpts.db.ttl = (newOpts.db.ttl || 300) * 1; // TTL for the code, session and token stores (in seconds)
+  newOpts.db.limit = (newOpts.db.limit || 1000) * 1; // Limit ttl cleanup to this many items at a time
 
   return newOpts;
 };

@@ -23,7 +23,32 @@ class Sql {
       this.storeRepository = this.connection.getRepository(JacksonStore);
       this.indexRepository = this.connection.getRepository(JacksonIndex);
 
-      return this; // Return the newly-created instance
+      if (options.ttl && options.limit) {
+        this.ttlCleanup = async () => {
+          const now = Date.now();
+
+          while (true) {
+            const ids = await this.storeRepository.find({
+              expiresAt: typeorm.MoreThan(now),
+              take: options.limit,
+            });
+
+            if (ids.length <= 0) {
+              break;
+            }
+
+            await this.storeRepository.remove(ids);
+          }
+
+          this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
+        };
+
+        this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
+      } else {
+        console.log('Warning: ttl cleanup not enabled, set both "ttl" and "limit" options to enable it!')
+      }
+
+      return this;
     })();
   }
 

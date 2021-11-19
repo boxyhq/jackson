@@ -20,7 +20,7 @@ const record2 = {
 const dbs = [
   {
     engine: 'mem',
-    ttlCleanup: 1,
+    ttl: 1,
   },
   {
     engine: 'redis',
@@ -30,6 +30,8 @@ const dbs = [
     engine: 'sql',
     url: 'postgresql://postgres:postgres@localhost:5432/postgres',
     type: 'postgres',
+    ttl: 1,
+    limit: 1,
   },
   {
     engine: 'mongo',
@@ -39,11 +41,15 @@ const dbs = [
     engine: 'sql',
     url: 'mysql://root:mysql@localhost:3307/mysql',
     type: 'mysql',
+    ttl: 1,
+    limit: 1,
   },
   {
     engine: 'sql',
     url: 'mariadb://root@localhost:3306/mysql',
     type: 'mariadb',
+    ttl: 1,
+    limit: 1,
   },
 ];
 
@@ -212,7 +218,7 @@ t.test('dbs', ({ end }) => {
 
     t.test('ttl expiry: ' + dbEngine, async (t) => {
       // mongo runs ttl task every 60 seconds
-      if (dbEngine.startsWith('sql') || dbEngine.startsWith('mongo')) {
+      if (dbEngine.startsWith('mongo')) {
         t.end();
         return;
       }
