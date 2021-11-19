@@ -14,25 +14,36 @@ Refer to https://github.com/boxyhq/jackson#configuration for the configuration o
 
 Here's how to use the npm library:
 ```
+// express
+const express = require('express');
+const router = express.Router();
+const cors = require('cors'); // needed if you are calling the token userinfo endpoints from the frontend
+
+// Set the required options
 const opts = {
   externalUrl: 'https://my-cool-app.com',
   samlAudience: 'https://my-cool-app.com',
+  samlPath: '/sso/oauth/saml',
   db: {
     engine: 'mongo',
     url: 'mongodb://localhost:27017/my-cool-app',
   }  
 };
 
-const ret = await require('@boxyhq/saml-jackson')(opts);
-const apiController = ret.apiController;
-const oauthController = ret.oauthController;
+// Please note that the initialization of @boxyhq/saml-jackson is async, you cannot run it at the top level
+// Run this in a function where you initialise the express server.
+asyn function init() {
+  const ret = await require('@boxyhq/saml-jackson')(opts);
+  const apiController = ret.apiController;
+  const oauthController = ret.oauthController;
+}
 
-// express.js middlewares needed
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// express.js middlewares needed to parse json and x-www-form-urlencoded
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
 
 // SAML config API. You should pass this route through your authentication checks, do not expose this on the public interface without proper authentication in place.
-app.post('/api/v1/saml/config', async (req, res) => {
+router.post('/api/v1/saml/config', async (req, res) => {
   try {
     // apply your authentication flow (or ensure this route has passed through your auth middleware)
     ...
@@ -47,7 +58,7 @@ app.post('/api/v1/saml/config', async (req, res) => {
 });
 
 // OAuth 2.0 flow
-app.get('/oauth/authorize', async (req, res) => {
+router.get('/oauth/authorize', async (req, res) => {
   try {
     await oauthController.authorize(req, res);
   } catch (err) {
@@ -55,7 +66,7 @@ app.get('/oauth/authorize', async (req, res) => {
   }
 });
 
-app.post('/oauth/saml', async (req, res) => {
+router.post('/oauth/saml', async (req, res) => {
   try {
     await oauthController.samlResponse(req, res);
   } catch (err) {
@@ -63,7 +74,7 @@ app.post('/oauth/saml', async (req, res) => {
   }
 });
 
-app.post('/oauth/token', cors(), async (req, res) => {
+router.post('/oauth/token', cors(), async (req, res) => {
   try {
     await oauthController.token(req, res);
   } catch (err) {
@@ -71,13 +82,17 @@ app.post('/oauth/token', cors(), async (req, res) => {
   }
 });
 
-app.get('/oauth/userinfo', cors(), async (req, res) => {
+router.get('/oauth/userinfo', cors(), async (req, res) => {
   try {
     await oauthController.userInfo(req, res);
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
+
+// set the router
+app.user('/sso', router);
+
 ```
 You can also refer to our usage of the library internally in the Jackson service here - https://github.com/boxyhq/jackson/blob/main/src/jackson.js
 
