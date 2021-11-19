@@ -8,7 +8,7 @@ You need someone like Jules Winnfield to save you from the vagaries of SAML logi
 [CodeSee codebase visualizer](https://app.codesee.io/maps/public/53e91640-23b5-11ec-a724-79d7dd589517)
 
 # npm library
-Jackson is available as an npm library (https://www.npmjs.com/package/@boxyhq/saml-jackson) that can be integrated into express.js routes. In theory the library should be usable with other node.js we application frameworks but is currently untested. Please file an issue or submit a PR if you encounter any issues.
+Jackson is available as an npm library (https://www.npmjs.com/package/@boxyhq/saml-jackson) that can be integrated into express.js routes. In theory, the library should be usable with other node.js web application frameworks but is currently untested. Please file an issue or submit a PR if you encounter any issues.
 
 Refer to https://github.com/boxyhq/jackson#configuration for the configuration options to pass to the library.
 
@@ -32,7 +32,7 @@ const opts = {
 
 // Please note that the initialization of @boxyhq/saml-jackson is async, you cannot run it at the top level
 // Run this in a function where you initialise the express server.
-asyn function init() {
+async function init() {
   const ret = await require('@boxyhq/saml-jackson')(opts);
   const apiController = ret.apiController;
   const oauthController = ret.oauthController;
@@ -119,7 +119,7 @@ Configuration is done via env vars (and in the case of the npm library via an op
 - DB_ENGINE (npm: db.engine): Supported values are `redis`, `sql`, `mongo`, `mem`. Defaults to `sql`
 - DB_URL (npm: db.url): The database URL to connect to, for example `postgres://postgres:postgres@localhost:5450/jackson`
 - DB_TYPE (npm: db.type): Only needed when DB_ENGINE is `sql`. Supported values are `postgres`, `cockroachdb`, `mysql`, `mariadb`. Defaults to `postgres`
-- PRE_LOADED_CONFIG: If you only need a single tenant or a handful of pre-configured tenants then this config will help you read and load SAML configs. It works well with the mem db engine so you don't have to configure any external databases for this to work (though it works with those as well). This is a path (absolute or relative) to a direct that contains files organized in the format described in the next section.
+- PRE_LOADED_CONFIG: If you only need a single tenant or a handful of pre-configured tenants then this config will help you read and load SAML configs. It works well with the mem DB engine so you don't have to configure any external databases for this to work (though it works with those as well). This is a path (absolute or relative) to a directory that contains files organized in the format described in the next section.
 
 # Pre-loaded SAML Configuration
 If PRE_LOADED_CONFIG is set then it should point to a directory with the following structure (example below):-
@@ -143,13 +143,13 @@ The XML file (should share the name with the .js file) is the raw XML metadata f
 The config and XML above correspond to the `SAML API config` (see below).
 
 # SAML Login flows
-There are two kinds of SAML login flows - SP-initiated and IdP-initiated. We highly recommend sticking to the SP-initiated flow since it is more secure but Jackson also support the IdP-initiated flow if you enable it. For in-depth understand of SAML and the two flows please refer to Okta's comprehensive guide - https://developer.okta.com/docs/concepts/saml/.
+There are two kinds of SAML login flows - SP-initiated and IdP-initiated. We highly recommend sticking to the SP-initiated flow since it is more secure but Jackson also supports the IdP-initiated flow if you enable it. For an in-depth understanding of SAML and the two flows please refer to Okta's comprehensive guide - https://developer.okta.com/docs/concepts/saml/.
 
 # Setting up SAML with your customer's Identity Provider
 Please follow the instructions here to guide your customer's in setting up SAML correctly for your product(s). You should create a copy of the doc and modify it with your custom settings, we have used the values that work for our demo apps - https://docs.google.com/document/d/1fk---Z9Ln59u-2toGKUkyO3BF6Dh3dscT2u4J2xHANE.
 
 # SAML config API
-Once your customer has setup the SAML app on their Identity Provider, they Identity Provider will generate an IdP or SP metadata file. Some Identity Providers only generate an IdP metadata file but it usually works for the SP login flow as well. It is an XML file that contains various attributes Jackson needs in order to validate incoming SAML login requests. This step is the equivalent of setting an OAuth 2.0 app and generating a client ID and client Secret that will be used in the login flow.
+Once your customer has set up the SAML app on their Identity Provider, the Identity Provider will generate an IdP or SP metadata file. Some Identity Providers only generate an IdP metadata file but it usually works for the SP login flow as well. It is an XML file that contains various attributes Jackson needs in order to validate incoming SAML login requests. This step is the equivalent of setting an OAuth 2.0 app and generating a client ID and client secret that will be used in the login flow.
 
 You will need to provide a place in the UI for your customers (The account settings page is usually a good place for this) to configure this and then call the API below.
 
@@ -166,14 +166,14 @@ curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 
 - rawMetadata: The XML metadata file your customer gets from their Identity Provider
 - defaultRedirectUrl: The redirect URL to use in the IdP login flow. Jackson will call this URL after completing an IdP login flow
-- redirectUrl: JSON encoded array containing a list of allowed redicrect URLs. Jackson will disallow any redirects not on this list (or not the default URL above)
-- tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id or user id
-- product: Jackson support multiple products, this is a uniqie identifier you set from your side that relates back to the product your customer is using
+- redirectUrl: JSON encoded array containing a list of allowed redirect URLs. Jackson will disallow any redirects not on this list (or not the default URL above)
+- tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id, or user id
+- product: Jackson support multiple products, this is a unique identifier you set from your side that relates back to the product your customer is using
 
 The response returns a JSON with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow. If you do not want to store the `client_id` and `client_secret` you can alternatively use `client_id=tentant=<tenantID>&product=<productID>` and any arbitrary value for `client_secret` when setting up the OAuth 2.0 flow.
 
 # OAuth 2.0 Flow
-Jackson has been designed to abstract the SAML login flow as a pure OAuth 2.0 flow. This means it's compatible with any standard OAuth 2.0 library out there, both client side and server side. It is important to remember that SAML is configured per customer unlike OAuth 2.0 where you can have a single OAuth app supporting logins for all customers.
+Jackson has been designed to abstract the SAML login flow as a pure OAuth 2.0 flow. This means it's compatible with any standard OAuth 2.0 library out there, both client-side and server-side. It is important to remember that SAML is configured per customer unlike OAuth 2.0 where you can have a single OAuth app supporting logins for all customers.
 
 Jackson also supports the PKCE authorization flow (https://oauth.net/2/pkce/), so you can protect your SPAs.
 
@@ -188,13 +188,13 @@ https://localhost:5000/oauth/authorize
   &state=<randomly generated state id>
 ```
 
-- response_type=code: This is the only supported type for now but may be extended in the future
+- response_type=code: This is the only supported type for now but maybe extended in the future
 - client_id: Use the client_id returned by the SAML config API or use `tentant=<tenantID>&product=<productID>` to use the tenant and product IDs instead
 - redirect_uri: This is where the user will be taken back once the authorization flow is complete
 - state: Use a randomly generated string as the state, this will be echoed back as a query parameter when taking the user back to the `redirect_uri` above. You should validate the state to prevent XSRF attacks
 
 ## Code exchange
-After successful authorization the user is redirected back the `redirect_uri`. The query parameters will include the `code` and `state` parameters. You should validate that the state matches the one you sent in the authorize request.
+After successful authorization, the user is redirected back to the `redirect_uri`. The query parameters will include the `code` and `state` parameters. You should validate that the state matches the one you sent in the authorize request.
 
 The code can then be exchanged for a token by making the following request:
 ```
@@ -207,12 +207,12 @@ curl --request POST \
   --data 'redirect_uri=<redirect URL>' \
   --data code=<code from the query parameter above>
 ```
-- grant_type=authorization_code: This is the only supported flow for now, we might extend this in the future
+- grant_type=authorization_code: This is the only supported flow, for now. We might extend this in the future
 - client_id: Use the client_id returned by the SAML config API or use `tentant=<tenantID>&product=<productID>` to use the tenant and product IDs instead
 - client_secret: Use the client_secret returned by the SAML config API or any arbitrary value if using the tenant and product in the clientID
 - redirect_uri: This is where the user will be taken back once the authorization flow is complete. Use the same redirect_uri as the previous request
 
-If everything goes well you should receive a JSON response which include the access token. This token is needed for the next step where we fetch the user profile.
+If everything goes well you should receive a JSON response that includes the access token. This token is needed for the next step where we fetch the user profile.
 ```
 {
   "access_token": <access token>,
