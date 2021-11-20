@@ -28,10 +28,16 @@ const extractBearerToken = (req) => {
 function getEncodedClientId(client_id) {
   try {
     const sp = new URLSearchParams(client_id);
-    return {
-      tenant: sp.get('tenant'),
-      product: sp.get('product'),
-    };
+    const tenant = sp.get('tenant');
+    const product = sp.get('product');
+    if (tenant && product) {
+      return {
+        tenant: sp.get('tenant'),
+        product: sp.get('product'),
+      };
+    }
+
+    return null;
   } catch (err) {
     return null;
   }
