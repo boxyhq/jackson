@@ -78,7 +78,7 @@ internalApp.post(apiPath + '/config', async (req, res) => {
 
 let internalServer = server;
 if (env.useInternalServer) {
-  internalServer = internalApp.listen(env.internalPort, async () => {
+  internalServer = internalApp.listen(env.internalHostPort, async () => {
     console.log(
       `🚀 The path of the righteous internal server: http://${env.internalHostUrl}:${env.internalHostPort}`
     );
