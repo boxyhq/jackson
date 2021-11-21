@@ -105,7 +105,7 @@ docker run -p 5000:5000 -p 6000:6000 boxyhq/jackson:78e9099d
 ```
 
 # Database Support
-Jackson currently supports SQL databases (Postgres, CockroachDB, MySQL and MariaDB), MongoDB and Redis.
+Jackson currently supports SQL databases (Postgres, CockroachDB, MySQL, and MariaDB), MongoDB, and Redis.
 
 # Configuration
 Configuration is done via env vars (and in the case of the npm library via an options object). The following options are supported and will have to be configured during deployment:
@@ -114,7 +114,7 @@ Configuration is done via env vars (and in the case of the npm library via an op
 - EXTERNAL_URL (npm: externalUrl): The public URL to reach this service, used internally for documenting the SAML configuration instructions. Defaults to `http://{HOST_URL}:{HOST_PORT}` for Jackson service, required for npm library
 - INTERNAL_HOST_URL: The URL to bind to expose the internal APIs, defaults to `localhost`. Do not configure this to a public network
 - INTERNAL_HOST_PORT: The port to bind to for the internal APIs, defaults to `6000`
-- SAML_AUDIENCE (npm: samlAudience): This is just an identitifer to validate the SAML audience, this value will also get configured in the SAML apps created by your customers. Once set do not change this value unless you get your customers to reconfigure their SAML again. Defaults to `https://saml.boxyhq.com` and is case sensitive. This does not have be a real URL
+- SAML_AUDIENCE (npm: samlAudience): This is just an identifier to validate the SAML audience, this value will also get configured in the SAML apps created by your customers. Once set do not change this value unless you get your customers to reconfigure their SAML again. Defaults to `https://saml.boxyhq.com` and is case sensitive. This does not have to be a real URL
 - IDP_ENABLED (npm: idpEnabled): Set to `true` to enable IdP initiated login for SAML. SP initiated login is the only recommended flow but you might have to support IdP login at times. Defaults to `false`
 - DB_ENGINE (npm: db.engine): Supported values are `redis`, `sql`, `mongo`, `mem`. Defaults to `sql`
 - DB_URL (npm: db.url): The database URL to connect to, for example `postgres://postgres:postgres@localhost:5450/jackson`
@@ -167,7 +167,7 @@ curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 - rawMetadata: The XML metadata file your customer gets from their Identity Provider
 - defaultRedirectUrl: The redirect URL to use in the IdP login flow. Jackson will call this URL after completing an IdP login flow
 - redirectUrl: JSON encoded array containing a list of allowed redirect URLs. Jackson will disallow any redirects not on this list (or not the default URL above)
-- tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id, or user id
+- tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id, or user-id
 - product: Jackson support multiple products, this is a unique identifier you set from your side that relates back to the product your customer is using
 
 The response returns a JSON with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow. If you do not want to store the `client_id` and `client_secret` you can alternatively use `client_id=tentant=<tenantID>&product=<productID>` and any arbitrary value for `client_secret` when setting up the OAuth 2.0 flow.
