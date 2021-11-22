@@ -32,27 +32,27 @@
   },
   "dependencies": {
     "@boxyhq/saml20": "0.2.0",
-    "@peculiar/webcrypto": "1.1.7",
-    "@peculiar/x509": "1.4.1",
+    "@peculiar/webcrypto": "1.2.2",
+    "@peculiar/x509": "1.6.0",
     "cors": "2.8.5",
     "express": "4.17.1",
-    "mongodb": "4.1.3",
-    "mysql2": "^2.3.3-rc.0",
+    "mongodb": "4.2.0",
+    "mysql2": "2.3.3",
     "pg": "8.7.1",
     "rambda": "6.9.0",
-    "redis": "4.0.0-rc.3",
+    "redis": "4.0.0-rc.4",
     "reflect-metadata": "0.1.13",
     "ripemd160": "2.0.2",
     "thumbprint": "0.0.1",
-    "typeorm": "0.2.38",
+    "typeorm": "0.2.41",
     "xml-crypto": "2.1.3",
     "xml2js": "0.4.23",
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
     "cross-env": "7.0.3",
-    "eslint": "^8.2.0",
-    "nodemon": "2.0.13",
-    "tap": "15.0.10"
+    "eslint": "8.3.0",
+    "nodemon": "2.0.15",
+    "tap": "15.1.2"
   }
 }
