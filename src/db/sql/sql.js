@@ -8,17 +8,32 @@ const dbutils = require('../utils.js');
 class Sql {
   constructor(options) {
     return (async () => {
-      this.connection = await typeorm.createConnection({
-        name: options.type,
-        type: options.type,
-        url: options.url,
-        synchronize: true,
-        logging: false,
-        entities: [
-          require('./entity/JacksonStore.js'),
-          require('./entity/JacksonIndex.js'),
-        ],
-      });
+      while (true) {
+        try {
+          this.connection = await typeorm.createConnection({
+            name: options.type,
+            type: options.type,
+            url: options.url,
+            synchronize: true,
+            migrationsTableName: '_jackson_migrations',
+            logging: false,
+            entities: [
+              require('./entity/JacksonStore.js'),
+              require('./entity/JacksonIndex.js'),
+            ],
+            extra: {
+              connectionTimeoutMillis: 1000,
+              idleTimeoutMillis: 1500,
+            },
+          });
+
+          break;
+        } catch (err) {
+          console.error(`error connecting to ${options.type} db: ${err}`);
+          await dbutils.sleep(1000);
+          continue;
+        }
+      }
 
       this.storeRepository = this.connection.getRepository(JacksonStore);
       this.indexRepository = this.connection.getRepository(JacksonIndex);
@@ -45,7 +60,9 @@ class Sql {
 
         this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
       } else {
-        console.log('Warning: ttl cleanup not enabled, set both "ttl" and "limit" options to enable it!')
+        console.log(
+          'Warning: ttl cleanup not enabled, set both "ttl" and "limit" options to enable it!'
+        );
       }
 
       return this;

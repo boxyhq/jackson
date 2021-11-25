@@ -16,14 +16,15 @@ const keyFromParts = (...parts) => {
   return parts.join(':'); // TODO: pick a better strategy, keys can collide now
 };
 
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 module.exports = {
   key,
-
   keyForIndex,
-
   keyDigest,
-
   keyFromParts,
-
+  sleep,
   indexPrefix: '_index',
 };
