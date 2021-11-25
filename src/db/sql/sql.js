@@ -18,13 +18,9 @@ class Sql {
             migrationsTableName: '_jackson_migrations',
             logging: false,
             entities: [
-              require('./entity/JacksonStore.js'),
+              require('./entity/JacksonStore.js')(options.type),
               require('./entity/JacksonIndex.js'),
             ],
-            extra: {
-              connectionTimeoutMillis: 1000,
-              idleTimeoutMillis: 1500,
-            },
           });
 
           break;

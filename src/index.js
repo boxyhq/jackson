@@ -56,7 +56,8 @@ module.exports = async function (opts) {
     }
   }
 
-  console.log(`Using engine: ${opts.db.engine}`);
+  const type = opts.db.type ? ' Type: ' + opts.db.type : '';
+  console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
     apiController,
