@@ -287,7 +287,8 @@ Please try to create bug reports that are:
  
 ## Support
 Reach out to the maintainer at one of the following places:
- 
+
+- [GitHub Discussions](https://github.com/boxyhq/jackson/discussions)
 - [GitHub Issues](https://github.com/boxyhq/jackson/issues)
 - The email which is located [in GitHub profile](https://github.com/deepakprabhakara)
  
