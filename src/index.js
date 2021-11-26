@@ -56,7 +56,7 @@ module.exports = async function (opts) {
     }
   }
 
-  const type = opts.db.type ? ' Type: ' + opts.db.type : '';
+  const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
