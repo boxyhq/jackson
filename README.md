@@ -284,4 +284,4 @@ Reach out to the maintainer at one of the following places:
 - The email which is located [in GitHub profile](https://github.com/deepakprabhakara)
 
 ## License
-[The MIT License](http://opensource.org/licenses/MIT)
+[Apache 2.0 License](https://github.com/boxyhq/jackson/blob/main/LICENSE)
