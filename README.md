@@ -9,7 +9,11 @@ You need someone like Jules Winnfield to save you from the vagaries of SAML logi
 
 ## Getting Started
 
-### Install
+There are two ways to use this repo.
+- As an npm library
+- As a separate service
+
+### Install as an npm library
 Jackson is available as an [npm package](https://www.npmjs.com/package/@boxyhq/saml-jackson) that can be integrated into Express.js routes. library should be usable with other node.js web application frameworks but is currently untested. Please file an issue or submit a PR if you encounter any issues.
 
 ```
