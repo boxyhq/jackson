@@ -199,7 +199,7 @@ const samlResponse = async (req, res) => {
   
   // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
   if (profile && profile.claims && !profile.claims.id) {
-    profile.claims.id = crypto.createHash('sha256').update(profile.email).digest('hex');
+    profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
   }
 
   // store details against a code
