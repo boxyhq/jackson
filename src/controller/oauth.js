@@ -188,8 +188,8 @@ const samlResponse = async (req, res) => {
   const profile = await saml.validateAsync(rawResponse, validateOpts);
   
   // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
-  if (profile && profile.claims && !profile.claims.id) {
-    profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
+  if (profile && profile.claims && !profile.claims['user.id']) {
+    profile.claims['user.id'] = crypto.createHash('sha256').update(profile.claims['user.email']).digest('hex');
   }
 
   // store details against a code
