@@ -7,6 +7,8 @@ const samlPath = process.env.SAML_PATH || '/oauth/saml';
 const internalHostUrl = process.env.INTERNAL_HOST_URL || 'localhost';
 const internalHostPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
 
+const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
+
 const samlAudience = process.env.SAML_AUDIENCE;
 const preLoadedConfig = process.env.PRE_LOADED_CONFIG;
 
@@ -27,6 +29,7 @@ module.exports = {
   preLoadedConfig,
   internalHostUrl,
   internalHostPort,
+  apiKeys,
   idpEnabled,
   db,
   useInternalServer: !(
