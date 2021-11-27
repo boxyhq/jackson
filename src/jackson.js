@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const env = require('./env.js');
+const { extractAuthToken } = require('./controller/utils.js');
 
 let apiController;
 let oauthController;
@@ -66,8 +67,18 @@ if (env.useInternalServer) {
   internalApp.use(express.urlencoded({ extended: true }));
 }
 
+const validateApiKey = (token) => {
+  return env.apiKeys.includes(token);
+};
+
 internalApp.post(apiPath + '/config', async (req, res) => {
   try {
+    const apiKey = extractAuthToken(req);
+    if (!validateApiKey(apiKey)) {
+      res.status(401).send('Unauthorized');
+      return;
+    }
+
     res.json(await apiController.config(req.body));
   } catch (err) {
     res.status(500).json({

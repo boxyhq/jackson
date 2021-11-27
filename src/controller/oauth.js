@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const saml = require('../saml/saml.js');
 const codeVerifier = require('./oauth/code-verifier.js');
-const { indexNames } = require('./utils.js');
+const { indexNames, extractAuthToken } = require('./utils.js');
 const dbutils = require('../db/utils.js');
 const redirect = require('./oauth/redirect.js');
 const allowed = require('./oauth/allowed.js');
@@ -14,16 +14,6 @@ let tokenStore;
 let options;
 
 const relayStatePrefix = 'boxyhq_jackson_';
-
-const extractBearerToken = (req) => {
-  const authHeader = req.get('authorization');
-  const parts = (authHeader || '').split(' ');
-  if (parts.length > 1) {
-    return parts[1];
-  }
-
-  return null;
-};
 
 function getEncodedClientId(client_id) {
   try {
@@ -303,7 +293,7 @@ const token = async (req, res) => {
 };
 
 const userInfo = async (req, res) => {
-  let token = extractBearerToken(req);
+  let token = extractAuthToken(req);
 
   // check for query param
   if (!token) {
