@@ -5,6 +5,7 @@ const thumbprint = require('thumbprint');
 const xmlbuilder = require('xmlbuilder');
 const crypto = require('crypto');
 const xmlcrypto = require('xml-crypto');
+const claims = require('./claims');
 
 const idPrefix = '_';
 const authnXPath =
@@ -118,6 +119,19 @@ module.exports = {
           if (err) {
             reject(err);
             return;
+          }
+
+          if (profile && profile.claims) {
+            // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
+            profile.claims = claims.map(profile.claims);
+
+            // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
+            if (!profile.claims.id) {
+              profile.claims.id = crypto
+                .createHash('sha256')
+                .update(profile.claims.email)
+                .digest('hex');
+            }
           }
 
           resolve(profile);
