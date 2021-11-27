@@ -152,7 +152,7 @@ curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 - tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id, or user-id
 - product: Jackson support multiple products, this is a unique identifier you set from your side that relates back to the product your customer is using
 
-The response returns a JSON with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow. If you do not want to store the `client_id` and `client_secret` you can alternatively use `client_id=tentant=<tenantID>&product=<productID>` and any arbitrary value for `client_secret` when setting up the OAuth 2.0 flow.
+The response returns a JSON with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow. If you do not want to store the `client_id` and `client_secret` you can alternatively use `client_id=tenant=<tenantID>&product=<productID>` and any arbitrary value for `client_secret` when setting up the OAuth 2.0 flow.
 
 ### 3. OAuth 2.0 Flow
 
@@ -175,7 +175,7 @@ https://localhost:5000/oauth/authorize
 ```
 
 - response_type=code: This is the only supported type for now but maybe extended in the future
-- client_id: Use the client_id returned by the SAML config API or use `tentant=<tenantID>&product=<productID>` to use the tenant and product IDs instead
+- client_id: Use the client_id returned by the SAML config API or use `tenant=<tenantID>&product=<productID>` to use the tenant and product IDs instead. **Note:** Please don't forget to URL encode the query parameters including `client_id`.
 - redirect_uri: This is where the user will be taken back once the authorization flow is complete
 - state: Use a randomly generated string as the state, this will be echoed back as a query parameter when taking the user back to the `redirect_uri` above. You should validate the state to prevent XSRF attacks
 
@@ -197,7 +197,7 @@ curl --request POST \
 ```
 
 - grant_type=authorization_code: This is the only supported flow, for now. We might extend this in the future
-- client_id: Use the client_id returned by the SAML config API or use `tentant=<tenantID>&product=<productID>` to use the tenant and product IDs instead
+- client_id: Use the client_id returned by the SAML config API or use `tenant=<tenantID>&product=<productID>` to use the tenant and product IDs instead. **Note:** Please don't forget to URL encode the query parameters including `client_id`.
 - client_secret: Use the client_secret returned by the SAML config API or any arbitrary value if using the tenant and product in the clientID
 - redirect_uri: This is where the user will be taken back once the authorization flow is complete. Use the same redirect_uri as the previous request
 
