@@ -100,7 +100,7 @@ router.get('/oauth/userinfo', cors(), async (req, res) => {
 });
  
 // set the router
-app.user('/sso', router);
+app.use('/sso', router);
  
 ```
  
