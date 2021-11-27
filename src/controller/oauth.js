@@ -115,7 +115,7 @@ const authorize = async (req, res) => {
   }
 
   const samlReq = saml.request({
-    entityID: samlConfig.idpMetadata.entityID,
+    entityID: options.samlAudience,
     callbackUrl: options.externalUrl + options.samlPath,
     signingKey: samlConfig.certs.privateKey,
   });
@@ -196,6 +196,11 @@ const samlResponse = async (req, res) => {
   }
 
   const profile = await saml.validateAsync(rawResponse, validateOpts);
+  
+  // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
+  if (profile && profile.claims && !profile.claims.id) {
+    profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
+  }
 
   // store details against a code
   const code = crypto.randomBytes(20).toString('hex');

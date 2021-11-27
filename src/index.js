@@ -19,7 +19,7 @@ const defaultOpts = (opts) => {
   newOpts.db = newOpts.db || {};
   newOpts.db.engine = newOpts.db.engine || 'sql'; // Supported values: redis, sql, mongo, mem. Keep comment in sync with db.js
   newOpts.db.url =
-    newOpts.db.url || 'postgres://postgres:postgres@localhost:5432/jackson';
+    newOpts.db.url || 'postgresql://postgres:postgres@localhost:5432/postgres';
   newOpts.db.type = newOpts.db.type || 'postgres'; // Only needed if DB_ENGINE is sql. Supported values: postgres, cockroachdb, mysql, mariadb
   newOpts.db.ttl = (newOpts.db.ttl || 300) * 1; // TTL for the code, session and token stores (in seconds)
   newOpts.db.limit = (newOpts.db.limit || 1000) * 1; // Limit ttl cleanup to this many items at a time
@@ -56,7 +56,7 @@ module.exports = async function (opts) {
     }
   }
 
-  const type = opts.db.type ? ' Type: ' + opts.db.type : '';
+  const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
