@@ -39,12 +39,15 @@ const opts = {
   }  
 };
  
+
+let apiController;
+let oauthController;
 // Please note that the initialization of @boxyhq/saml-jackson is async, you cannot run it at the top level
 // Run this in a function where you initialise the express server.
 async function init() {
   const ret = await require('@boxyhq/saml-jackson')(opts);
-  const apiController = ret.apiController;
-  const oauthController = ret.oauthController;
+  apiController = ret.apiController;
+  oauthController = ret.oauthController;
 }
  
 // express.js middlewares needed to parse json and x-www-form-urlencoded
