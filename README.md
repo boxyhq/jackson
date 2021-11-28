@@ -129,14 +129,15 @@ Kubernetes and docker-compose deployment files will be coming soon.
 Please follow the instructions [here](https://docs.google.com/document/d/1fk---Z9Ln59u-2toGKUkyO3BF6Dh3dscT2u4J2xHANE) to guide your customers in setting up SAML correctly for your product(s). You should create a copy of the doc and modify it with your custom settings, we have used the values that work for our demo apps.
 
 ### 1.1 SAML profile/claims/attributes mapping
+
 As outlined in the guide above we try and support 4 attributes in the SAML claims - `id`, `email`, `firstName`, `lastName`. This is how the common SAML aattributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.
 
-| SAML Attribute | Jackson mapping |
-|----------------|-----------------|
-|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier|id|
-|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress|email|
-|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname|firstName|
-|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname|lastName|
+| SAML Attribute                                                       | Jackson mapping |
+| -------------------------------------------------------------------- | --------------- |
+| http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier | id              |
+| http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress   | email           |
+| http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname      | firstName       |
+| http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname        | lastName        |
 
 ### 2. SAML config API
 
@@ -148,6 +149,7 @@ The following API call sets up the configuration in Jackson:
 
 ```
 curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'rawMetadata=<IdP/SP metadata XML>' \
 --data-urlencode 'defaultRedirectUrl=http://localhost:3000/login/saml' \
@@ -276,6 +278,7 @@ The following options are supported and will have to be configured during deploy
 | EXTERNAL_URL (npm: externalUrl)   | The public URL to reach this service, used internally for documenting the SAML configuration instructions.                                                                                                                                                                                                                                                                                                           | `http://{HOST_URL}:{HOST_PORT}` |
 | INTERNAL_HOST_URL                 | The URL to bind to expose the internal APIs. Do not configure this to a public network.                                                                                                                                                                                                                                                                                                                              | `localhost`                     |
 | INTERNAL_HOST_PORT                | The port to bind to for the internal APIs.                                                                                                                                                                                                                                                                                                                                                                           | `6000`                          |
+| JACKSON_API_KEYS                  | A comma separated list of API keys that will be validated when serving the Config API requests                                                                                                                                                                                                                                                                                                                                                  |                                 |
 | SAML_AUDIENCE (npm: samlAudience) | This is just an identifier to validate the SAML audience, this value will also get configured in the SAML apps created by your customers. Once set do not change this value unless you get your customers to reconfigure their SAML again. It is case-sensitive. This does not have to be a real URL.                                                                                                                | `https://saml.boxyhq.com`       |
 | IDP_ENABLED (npm: idpEnabled)     | Set to `true` to enable IdP initiated login for SAML. SP initiated login is the only recommended flow but you might have to support IdP login at times.                                                                                                                                                                                                                                                              | `false`                         |
 | DB_ENGINE (npm: db.engine)        | Supported values are `redis`, `sql`, `mongo`, `mem`.                                                                                                                                                                                                                                                                                                                                                                 | `sql`                           |
