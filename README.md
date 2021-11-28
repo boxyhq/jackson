@@ -128,6 +128,16 @@ Kubernetes and docker-compose deployment files will be coming soon.
 
 Please follow the instructions [here](https://docs.google.com/document/d/1fk---Z9Ln59u-2toGKUkyO3BF6Dh3dscT2u4J2xHANE) to guide your customers in setting up SAML correctly for your product(s). You should create a copy of the doc and modify it with your custom settings, we have used the values that work for our demo apps.
 
+### 1.1 SAML profile/claims/attributes mapping
+As outlined in the guide above we try and support 4 attributes in the SAML claims - `id`, `email`, `firstName`, `lastName`. This is how the common SAML aattributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.
+
+| SAML Attribute | Jackson mapping |
+|----------------|-----------------|
+|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier|id|
+|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress|email|
+|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname|firstName|
+|http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname|lastName|
+
 ### 2. SAML config API
 
 Once your customer has set up the SAML app on their Identity Provider, the Identity Provider will generate an IdP or SP metadata file. Some Identity Providers only generate an IdP metadata file but it usually works for the SP login flow as well. It is an XML file that contains various attributes Jackson needs to validate incoming SAML login requests. This step is the equivalent of setting an OAuth 2.0 app and generating a client ID and client secret that will be used in the login flow.
