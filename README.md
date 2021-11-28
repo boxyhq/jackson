@@ -199,11 +199,11 @@ The code can then be exchanged for a token by making the following request:
 curl --request POST \
   --url 'http://localhost:5000/oauth/token' \
   --header 'content-type: application/x-www-form-urlencoded' \
-  --data grant_type=authorization_code \
+  --data 'grant_type=authorization_code' \
   --data 'client_id=<clientID or tenant and product query params as described in the SAML config API section above>' \
-  --data client_secret=<clientSecret or any arbitrary value if using the tenant and product in the clientID> \
+  --data 'client_secret=<clientSecret or any arbitrary value if using the tenant and product in the clientID>' \
   --data 'redirect_uri=<redirect URL>' \
-  --data code=<code from the query parameter above>
+  --data 'code=<code from the query parameter above>'
 ```
 
 - grant_type=authorization_code: This is the only supported flow, for now. We might extend this in the future
@@ -236,15 +236,15 @@ If everything goes well you should receive a JSON response with the user's profi
 
 ```
 {
+  "id": <id from the Identity Provider>,
   "email": "sjackson@coolstartup.com",
   "firstName": "SAML"
-  "id": <id from the Identity Provider>,
-  "lastName": "Jackson",
+  "lastName": "Jackson"
 }
 ```
 
-- email: The email address of the user as provided by the Identity Provider
 - id: The id of the user as provided by the Identity Provider
+- email: The email address of the user as provided by the Identity Provider
 - firstName: The first name of the user as provided by the Identity Provider
 - lastName: The last name of the user as provided by the Identity Provider
 
