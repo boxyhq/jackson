@@ -33,7 +33,7 @@ function getEncodedClientId(client_id) {
   }
 }
 
-const authorize = async (req, res) => {
+const authorize = async (body, res) => {
   const {
     response_type = 'code',
     client_id,
@@ -45,7 +45,7 @@ const authorize = async (req, res) => {
     code_challenge_method = '',
     // eslint-disable-next-line no-unused-vars
     provider = 'saml',
-  } = req.query;
+  } = body;
 
   if (!redirect_uri) {
     return res.status(400).send('Please specify a redirect URL.');
@@ -127,10 +127,10 @@ const authorize = async (req, res) => {
   });
 };
 
-const samlResponse = async (req, res) => {
-  const { SAMLResponse } = req.body; // RelayState will contain the sessionId from earlier quasi-oauth flow
+const samlResponse = async (body, res) => {
+  const { SAMLResponse } = body; // RelayState will contain the sessionId from earlier quasi-oauth flow
 
-  let RelayState = req.body.RelayState || '';
+  let RelayState = body.RelayState || '';
 
   if (!options.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
     // IDP is disabled so block the request
@@ -225,14 +225,14 @@ const samlResponse = async (req, res) => {
   );
 };
 
-const token = async (req, res) => {
+const token = async (body, res) => {
   const {
     client_id,
     client_secret,
     code_verifier,
     code,
     grant_type = 'authorization_code',
-  } = req.body;
+  } = body;
 
   if (grant_type !== 'authorization_code') {
     return res.status(400).send('Unsupported grant_type');
@@ -287,14 +287,7 @@ const token = async (req, res) => {
   });
 };
 
-const userInfo = async (req, res) => {
-  let token = extractAuthToken(req);
-
-  // check for query param
-  if (!token) {
-    token = req.query.access_token;
-  }
-
+const userInfo = async (token, res) => {
   const profile = await tokenStore.get(token);
 
   res.json(profile.claims);
