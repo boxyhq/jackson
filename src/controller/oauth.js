@@ -2,10 +2,11 @@ const crypto = require('crypto');
 
 const saml = require('../saml/saml.js');
 const codeVerifier = require('./oauth/code-verifier.js');
-const { indexNames, extractAuthToken } = require('./utils.js');
+const { indexNames } = require('./utils.js');
 const dbutils = require('../db/utils.js');
 const redirect = require('./oauth/redirect.js');
 const allowed = require('./oauth/allowed.js');
+const { JacksonError } = require('../error.js');
 
 let configStore;
 let sessionStore;
@@ -33,7 +34,7 @@ function getEncodedClientId(client_id) {
   }
 }
 
-const authorize = async (body, res) => {
+const authorize = async (body) => {
   const {
     response_type = 'code',
     client_id,
@@ -48,13 +49,13 @@ const authorize = async (body, res) => {
   } = body;
 
   if (!redirect_uri) {
-    return res.status(400).send('Please specify a redirect URL.');
+    throw new JacksonError('Please specify a redirect URL.');
   }
 
   if (!state) {
-    return res
-      .status(400)
-      .send('Please specify a state to safeguard against XSRF attacks.');
+    throw new JacksonError(
+      'Please specify a state to safeguard against XSRF attacks.'
+    );
   }
 
   let samlConfig;
@@ -74,7 +75,7 @@ const authorize = async (body, res) => {
       });
 
       if (!samlConfigs || samlConfigs.length === 0) {
-        return res.status(403).send('SAML configuration not found.');
+        throw new JacksonError('SAML configuration not found.');
       }
 
       // TODO: Support multiple matches
@@ -89,7 +90,7 @@ const authorize = async (body, res) => {
     });
 
     if (!samlConfigs || samlConfigs.length === 0) {
-      return res.status(403).send('SAML configuration not found.');
+      throw new JacksonError('SAML configuration not found.');
     }
 
     // TODO: Support multiple matches
@@ -97,11 +98,11 @@ const authorize = async (body, res) => {
   }
 
   if (!samlConfig) {
-    return res.status(403).send('SAML configuration not found.');
+    throw new JacksonError('SAML configuration not found.');
   }
 
   if (!allowed.redirect(redirect_uri, samlConfig.redirectUrl)) {
-    return res.status(403).send('Redirect URL is not allowed.');
+    throw new JacksonError('Redirect URL is not allowed.');
   }
 
   const samlReq = saml.request({
@@ -121,24 +122,25 @@ const authorize = async (body, res) => {
     code_challenge_method,
   });
 
-  return redirect.success(res, samlConfig.idpMetadata.sso.redirectUrl, {
+  const redirectUrl = redirect.success(samlConfig.idpMetadata.sso.redirectUrl, {
     RelayState: relayStatePrefix + sessionId,
     SAMLRequest: Buffer.from(samlReq.request).toString('base64'),
   });
+
+  return { redirect_url: redirectUrl };
 };
 
-const samlResponse = async (body, res) => {
+const samlResponse = async (body) => {
   const { SAMLResponse } = body; // RelayState will contain the sessionId from earlier quasi-oauth flow
 
   let RelayState = body.RelayState || '';
 
   if (!options.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
     // IDP is disabled so block the request
-    return res
-      .status(403)
-      .send(
-        'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.'
-      );
+
+    throw new JacksonError(
+      'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.'
+    );
   }
 
   if (!RelayState.startsWith(relayStatePrefix)) {
@@ -157,7 +159,7 @@ const samlResponse = async (body, res) => {
   });
 
   if (!samlConfigs || samlConfigs.length === 0) {
-    return res.status(403).send('SAML configuration not found.');
+    throw new JacksonError('SAML configuration not found.');
   }
 
   // TODO: Support multiple matches
@@ -168,9 +170,7 @@ const samlResponse = async (body, res) => {
   if (RelayState !== '') {
     session = await sessionStore.get(RelayState);
     if (!session) {
-      return redirect.error(
-        res,
-        samlConfig.defaultRedirectUrl,
+      throw new JacksonError(
         'Unable to validate state from the origin request.'
       );
     }
@@ -207,7 +207,7 @@ const samlResponse = async (body, res) => {
     session.redirect_uri &&
     !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)
   ) {
-    return res.status(403).send('Redirect URL is not allowed.');
+    throw new JacksonError('Redirect URL is not allowed.');
   }
 
   let params = {
@@ -218,14 +218,15 @@ const samlResponse = async (body, res) => {
     params.state = session.state;
   }
 
-  return redirect.success(
-    res,
+  const redirectUrl = redirect.success(
     (session && session.redirect_uri) || samlConfig.defaultRedirectUrl,
     params
   );
+
+  return { redirect_url: redirectUrl };
 };
 
-const token = async (body, res) => {
+const token = async (body) => {
   const {
     client_id,
     client_secret,
@@ -235,16 +236,16 @@ const token = async (body, res) => {
   } = body;
 
   if (grant_type !== 'authorization_code') {
-    return res.status(400).send('Unsupported grant_type');
+    throw new JacksonError('Unsupported grant_type');
   }
 
   if (!code) {
-    return res.status(400).send('Please specify code');
+    throw new JacksonError('Please specify code');
   }
 
   const codeVal = await codeStore.get(code);
   if (!codeVal || !codeVal.profile) {
-    return res.status(403).send('Invalid code');
+    throw new JacksonError('Invalid code');
   }
 
   if (client_id && client_secret) {
@@ -256,7 +257,7 @@ const token = async (body, res) => {
         client_id !== codeVal.clientID ||
         client_secret !== codeVal.clientSecret
       ) {
-        return res.status(401).send('Invalid client_id or client_secret');
+        throw new JacksonError('Invalid client_id or client_secret');
       }
     }
   } else if (code_verifier) {
@@ -267,12 +268,10 @@ const token = async (body, res) => {
     }
 
     if (codeVal.session.code_challenge !== cv) {
-      return res.status(401).send('Invalid code_verifier');
+      throw new JacksonError('Invalid code_verifier');
     }
   } else if (codeVal && codeVal.session) {
-    return res
-      .status(401)
-      .send('Please specify client_secret or code_verifier');
+    throw new JacksonError('Please specify client_secret or code_verifier');
   }
 
   // store details against a token
@@ -280,17 +279,17 @@ const token = async (body, res) => {
 
   await tokenStore.put(token, codeVal.profile);
 
-  res.json({
+  return {
     access_token: token,
     token_type: 'bearer',
     expires_in: options.db.ttl,
-  });
+  };
 };
 
-const userInfo = async (token, res) => {
-  const profile = await tokenStore.get(token);
+const userInfo = async (token) => {
+  const { claims } = await tokenStore.get(token);
 
-  res.json(profile.claims);
+  return claims;
 };
 
 module.exports = (opts) => {
