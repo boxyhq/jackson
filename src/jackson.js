@@ -99,10 +99,8 @@ internalApp.post(apiPath + '/config', async (req, res) => {
 
     res.json(await apiController.config(req.body));
   } catch (err) {
-    const { message, statusCode } = err;
-
-    res.status(statusCode).json({
-      error: message,
+    res.status(500).json({
+      error: err.message,
     });
   }
 });
