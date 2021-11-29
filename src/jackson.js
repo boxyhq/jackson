@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+
 const env = require('./env.js');
+const { extractAuthToken } = require('./controller/utils.js');
 
 let apiController;
 let oauthController;
@@ -19,7 +21,9 @@ app.get(oauthPath + '/authorize', async (req, res) => {
 
     res.redirect(redirect_url);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
@@ -29,7 +33,9 @@ app.post(env.samlPath, async (req, res) => {
 
     res.redirect(redirect_url);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
@@ -39,7 +45,9 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
 
     res.send(result);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
@@ -51,7 +59,9 @@ app.get(oauthPath + '/userinfo', cors(), async (req, res) => {
 
     res.send(profile);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
@@ -79,16 +89,6 @@ const validateApiKey = (token) => {
   return env.apiKeys.includes(token);
 };
 
-const extractAuthToken = (req) => {
-  const authHeader = req.get('authorization');
-  const parts = (authHeader || '').split(' ');
-  if (parts.length > 1) {
-    return parts[1];
-  }
-
-  return null;
-};
-
 internalApp.post(apiPath + '/config', async (req, res) => {
   try {
     const apiKey = extractAuthToken(req);
@@ -99,8 +99,10 @@ internalApp.post(apiPath + '/config', async (req, res) => {
 
     res.json(await apiController.config(req.body));
   } catch (err) {
-    res.status(500).json({
-      error: err.message,
+    const { message, statusCode } = err;
+
+    res.status(statusCode).json({
+      error: message,
     });
   }
 });
