@@ -49,12 +49,13 @@ const authorize = async (body) => {
   } = body;
 
   if (!redirect_uri) {
-    throw new JacksonError('Please specify a redirect URL.');
+    throw new JacksonError('Please specify a redirect URL.', 400);
   }
 
   if (!state) {
     throw new JacksonError(
-      'Please specify a state to safeguard against XSRF attacks.'
+      'Please specify a state to safeguard against XSRF attacks.',
+      400
     );
   }
 
@@ -75,7 +76,7 @@ const authorize = async (body) => {
       });
 
       if (!samlConfigs || samlConfigs.length === 0) {
-        throw new JacksonError('SAML configuration not found.');
+        throw new JacksonError('SAML configuration not found.', 403);
       }
 
       // TODO: Support multiple matches
@@ -90,7 +91,7 @@ const authorize = async (body) => {
     });
 
     if (!samlConfigs || samlConfigs.length === 0) {
-      throw new JacksonError('SAML configuration not found.');
+      throw new JacksonError('SAML configuration not found.', 403);
     }
 
     // TODO: Support multiple matches
@@ -98,11 +99,11 @@ const authorize = async (body) => {
   }
 
   if (!samlConfig) {
-    throw new JacksonError('SAML configuration not found.');
+    throw new JacksonError('SAML configuration not found.', 403);
   }
 
   if (!allowed.redirect(redirect_uri, samlConfig.redirectUrl)) {
-    throw new JacksonError('Redirect URL is not allowed.');
+    throw new JacksonError('Redirect URL is not allowed.', 403);
   }
 
   const samlReq = saml.request({
@@ -139,7 +140,8 @@ const samlResponse = async (body) => {
     // IDP is disabled so block the request
 
     throw new JacksonError(
-      'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.'
+      'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
+      403
     );
   }
 
@@ -159,7 +161,7 @@ const samlResponse = async (body) => {
   });
 
   if (!samlConfigs || samlConfigs.length === 0) {
-    throw new JacksonError('SAML configuration not found.');
+    throw new JacksonError('SAML configuration not found.', 403);
   }
 
   // TODO: Support multiple matches
@@ -171,7 +173,8 @@ const samlResponse = async (body) => {
     session = await sessionStore.get(RelayState);
     if (!session) {
       throw new JacksonError(
-        'Unable to validate state from the origin request.'
+        'Unable to validate state from the origin request.',
+        403
       );
     }
   }
@@ -207,7 +210,7 @@ const samlResponse = async (body) => {
     session.redirect_uri &&
     !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)
   ) {
-    throw new JacksonError('Redirect URL is not allowed.');
+    throw new JacksonError('Redirect URL is not allowed.', 403);
   }
 
   let params = {
@@ -236,16 +239,16 @@ const token = async (body) => {
   } = body;
 
   if (grant_type !== 'authorization_code') {
-    throw new JacksonError('Unsupported grant_type');
+    throw new JacksonError('Unsupported grant_type', 400);
   }
 
   if (!code) {
-    throw new JacksonError('Please specify code');
+    throw new JacksonError('Please specify code', 400);
   }
 
   const codeVal = await codeStore.get(code);
   if (!codeVal || !codeVal.profile) {
-    throw new JacksonError('Invalid code');
+    throw new JacksonError('Invalid code', 403);
   }
 
   if (client_id && client_secret) {
@@ -257,7 +260,7 @@ const token = async (body) => {
         client_id !== codeVal.clientID ||
         client_secret !== codeVal.clientSecret
       ) {
-        throw new JacksonError('Invalid client_id or client_secret');
+        throw new JacksonError('Invalid client_id or client_secret', 401);
       }
     }
   } else if (code_verifier) {
@@ -268,10 +271,13 @@ const token = async (body) => {
     }
 
     if (codeVal.session.code_challenge !== cv) {
-      throw new JacksonError('Invalid code_verifier');
+      throw new JacksonError('Invalid code_verifier', 401);
     }
   } else if (codeVal && codeVal.session) {
-    throw new JacksonError('Please specify client_secret or code_verifier');
+    throw new JacksonError(
+      'Please specify client_secret or code_verifier',
+      401
+    );
   }
 
   // store details against a token
