@@ -21,7 +21,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
 
     res.redirect(redirect_url);
   } catch (err) {
-    const { message, statusCode } = err;
+    const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);
   }
@@ -33,7 +33,7 @@ app.post(env.samlPath, async (req, res) => {
 
     res.redirect(redirect_url);
   } catch (err) {
-    const { message, statusCode } = err;
+    const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);
   }
@@ -45,7 +45,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
 
     res.send(result);
   } catch (err) {
-    const { message, statusCode } = err;
+    const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);
   }
@@ -53,15 +53,24 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
 
 app.get(oauthPath + '/userinfo', cors(), async (req, res) => {
   try {
-    const authToken = req.get('authorization').split(' ')[1];
+    let token = extractAuthToken(req);
 
-    const profile = await oauthController.userInfo(authToken);
+    // check for query param
+    if (!token) {
+      token = req.query.access_token;
+    }
 
-    res.send(profile);
+    if (!token) {
+      res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const profile = await oauthController.userInfo(token);
+
+    res.json(profile);
   } catch (err) {
-    const { message, statusCode } = err;
+    const { message, statusCode = 500 } = err;
 
-    res.status(statusCode).send(message);
+    res.status(statusCode).json({ message });
   }
 });
 
