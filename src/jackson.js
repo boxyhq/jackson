@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-
 const env = require('./env.js');
-const { extractAuthToken } = require('./controller/utils.js');
 
 let apiController;
 let oauthController;
@@ -17,7 +15,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(oauthPath + '/authorize', async (req, res) => {
   try {
-    await oauthController.authorize(req, res);
+    const { redirect_url } = await oauthController.authorize(req.query);
+
+    res.redirect(redirect_url);
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -25,7 +25,9 @@ app.get(oauthPath + '/authorize', async (req, res) => {
 
 app.post(env.samlPath, async (req, res) => {
   try {
-    await oauthController.samlResponse(req, res);
+    const { redirect_url } = await oauthController.samlResponse(req.body);
+
+    res.redirect(redirect_url);
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -33,7 +35,9 @@ app.post(env.samlPath, async (req, res) => {
 
 app.post(oauthPath + '/token', cors(), async (req, res) => {
   try {
-    await oauthController.token(req, res);
+    const result = await oauthController.token(req.body);
+
+    res.send(result);
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -41,7 +45,11 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
 
 app.get(oauthPath + '/userinfo', cors(), async (req, res) => {
   try {
-    await oauthController.userInfo(req, res);
+    const authToken = req.get('authorization').split(' ')[1];
+
+    const profile = await oauthController.userInfo(authToken);
+
+    res.send(profile);
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -69,6 +77,16 @@ if (env.useInternalServer) {
 
 const validateApiKey = (token) => {
   return env.apiKeys.includes(token);
+};
+
+const extractAuthToken = (req) => {
+  const authHeader = req.get('authorization');
+  const parts = (authHeader || '').split(' ');
+  if (parts.length > 1) {
+    return parts[1];
+  }
+
+  return null;
 };
 
 internalApp.post(apiPath + '/config', async (req, res) => {
