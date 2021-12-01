@@ -140,8 +140,48 @@ tap.test('authorize()', async (t) => {
   t.end();
 });
 
-tap.test('samlResponse()', () => {});
+tap.test('token()', (t) => {
+  t.test('Grant type should be authorization_code', async (t) => {
+    const body = {
+      grant_type: 'authorization_code_1',
+    };
 
-tap.test('token', () => {});
+    try {
+      await oauthController.token(body);
 
-tap.test('userInfo', () => {});
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      t.equal(err.message, 'Unsupported grant_type');
+      t.equal(err.statusCode, 400);
+    }
+
+    t.end();
+  });
+
+  t.test('Should provide the authorization code', async (t) => {
+    const body = {
+      grant_type: 'authorization_code',
+    };
+
+    try {
+      await oauthController.token(body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      t.equal(err.message, 'Please specify code');
+      t.equal(err.statusCode, 400);
+    }
+
+    t.end();
+  });
+
+  t.end();
+});
+
+tap.test('samlResponse()', (t) => {
+  t.end();
+});
+
+tap.test('userInfo', (t) => {
+  t.end();
+});
