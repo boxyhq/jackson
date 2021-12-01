@@ -11,7 +11,7 @@ const options = {
   samlPath: '/sso/oauth/saml',
   db: {
     engine: 'mongo',
-    url: 'mongodb+srv://root:N5L6iRWExvAjiZF@cluster0.4zkpq.mongodb.net/commerce?retryWrites=true&w=majority',
+    url: 'mongodb://localhost:27017/jackson',
   },
 };
 
