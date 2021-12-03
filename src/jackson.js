@@ -87,7 +87,7 @@ internalApp.post(apiPath + '/config', async (req, res) => {
   }
 });
 
-internalApp.get(apiPath + '/config', async (req, res) => {
+internalApp.post(apiPath + '/config/get', async (req, res) => {
   try {
     const apiKey = extractAuthToken(req);
     if (!validateApiKey(apiKey)) {

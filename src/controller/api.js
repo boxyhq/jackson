@@ -83,9 +83,9 @@ const config = async (body) => {
 };
 
 const getConfig = async (body) => {
-  const { clientID, clientSecret, tenant, product } = body;
+  const { clientID, tenant, product } = body;
 
-  if (clientID && clientSecret) {
+  if (clientID) {
     const samlConfig = await configStore.get(clientID);
     if (!samlConfig) {
       return {};
