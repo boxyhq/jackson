@@ -78,6 +78,7 @@ const config = async (body) => {
   return {
     client_id: clientID,
     client_secret: clientSecret,
+    provider: idpMetadata.provider,
   };
 };
 
