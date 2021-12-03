@@ -130,7 +130,7 @@ Please follow the instructions [here](https://docs.google.com/document/d/1fk---Z
 
 ### 1.1 SAML profile/claims/attributes mapping
 
-As outlined in the guide above we try and support 4 attributes in the SAML claims - `id`, `email`, `firstName`, `lastName`. This is how the common SAML aattributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.
+As outlined in the guide above we try and support 4 attributes in the SAML claims - `id`, `email`, `firstName`, `lastName`. This is how the common SAML attributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.
 
 | SAML Attribute                                                       | Jackson mapping |
 | -------------------------------------------------------------------- | --------------- |
@@ -164,7 +164,29 @@ curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 - tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id, or user-id
 - product: Jackson support multiple products, this is a unique identifier you set from your side that relates back to the product your customer is using
 
-The response returns a JSON with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow. If you do not want to store the `client_id` and `client_secret` you can alternatively use `client_id=tenant=<tenantID>&product=<productID>` and any arbitrary value for `client_secret` when setting up the OAuth 2.0 flow.
+The response returns a JSON with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow. If you do not want to store the `client_id` and `client_secret` you can alternatively use `client_id=tenant=<tenantID>&product=<productID>` and any arbitrary value for `client_secret` when setting up the OAuth 2.0 flow. Additionally a `provider` attribute is also returned which indicates the domain of your Identity Provider.
+
+#### 2.1 SAML GET config API
+
+This endpoint can be used to return metadata about an existing SAML config. This can be used to check and display the details to your customers. You can use either `clientID` and `clientSecret` combination or `tenant` and `product` combination.
+
+```
+curl --location --request GET 'http://localhost:6000/api/v1/saml/config' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'tenant=boxyhq.com' \
+--data-urlencode 'product=demo'
+```
+
+```
+curl --location --request GET 'http://localhost:6000/api/v1/saml/config' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'clientID=<Client ID>' \
+--data-urlencode 'clientSecret=<Client Secret>'
+```
+
+The response returns a JSON with `provider` indicating the domain of your Identity Provider. If an empty JSON payload is returned then we do not have any configuration stored for the attributes you requested.
 
 ### 3. OAuth 2.0 Flow
 
