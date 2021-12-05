@@ -2,6 +2,7 @@ require('reflect-metadata');
 const typeorm = require('typeorm');
 const JacksonStore = require('./model/JacksonStore.js');
 const JacksonIndex = require('./model/JacksonIndex.js');
+const JacksonTTL = require('./model/JacksonTTL.js');
 
 const dbutils = require('../utils.js');
 
@@ -20,6 +21,7 @@ class Sql {
             entities: [
               require('./entity/JacksonStore.js')(options.type),
               require('./entity/JacksonIndex.js'),
+              require('./entity/JacksonTTL.js'),
             ],
           });
 
@@ -33,22 +35,29 @@ class Sql {
 
       this.storeRepository = this.connection.getRepository(JacksonStore);
       this.indexRepository = this.connection.getRepository(JacksonIndex);
+      this.ttlRepository = this.connection.getRepository(JacksonTTL);
 
       if (options.ttl && options.limit) {
         this.ttlCleanup = async () => {
           const now = Date.now();
 
           while (true) {
-            const ids = await this.storeRepository.find({
-              expiresAt: typeorm.MoreThan(now),
-              take: options.limit,
-            });
+            const ids = await this.ttlRepository
+              .createQueryBuilder('jackson_ttl')
+              .limit(options.limit)
+              .where('jackson_ttl.expiresAt <= :expiresAt', { expiresAt: now })
+              .getMany();
 
             if (ids.length <= 0) {
               break;
             }
 
+            const delIds = ids.map((id) => {
+              return id.key;
+            });
+
             await this.storeRepository.remove(ids);
+            await this.ttlRepository.delete(delIds);
           }
 
           this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
@@ -99,12 +108,14 @@ class Sql {
 
   async put(namespace, key, val, ttl = 0, ...indexes) {
     await this.connection.transaction(async (transactionalEntityManager) => {
-      const store = new JacksonStore(
-        dbutils.key(namespace, key),
-        JSON.stringify(val),
-        ttl > 0 ? Date.now() + ttl * 1000 : null
-      );
+      const dbKey = dbutils.key(namespace, key);
+      const store = new JacksonStore(dbKey, JSON.stringify(val));
       await transactionalEntityManager.save(store);
+
+      if (ttl) {
+        const ttlRec = new JacksonTTL(dbKey, Date.now() + ttl * 1000);
+        await transactionalEntityManager.save(ttlRec);
+      }
 
       // no ttl support for secondary indexes
       for (const idx of indexes || []) {

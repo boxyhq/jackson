@@ -27,10 +27,6 @@ module.exports = (type) => {
       value: {
         type: valueType(type),
       },
-      expiresAt: {
-        type: 'bigint',
-        nullable: true,
-      },
     },
   });
 };
