@@ -1,12 +1,17 @@
 const tap = require('tap');
 const { promises: fs } = require('fs');
 const path = require('path');
-const readConfig = require('../read-config');
 const sinon = require('sinon');
+const crypto = require('crypto');
+
+const readConfig = require('../read-config');
 const saml = require('../saml/saml');
 
 let apiController;
 let oauthController;
+
+const code = '1234567890';
+const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
@@ -21,7 +26,7 @@ const options = {
 };
 
 const samlConfig = {
-  tenant: 'cedex.com',
+  tenant: 'boxyhq.com',
   product: 'crm',
   redirectUrl: '["http://localhost:3000/*"]',
   defaultRedirectUrl: 'http://localhost:3000/login/saml',
@@ -32,7 +37,9 @@ const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
 
   for (const config of configs) {
-    await apiController.config(config);
+    const response = await apiController.config(config);
+
+    console.log(response);
 
     console.log(
       `loaded config for tenant "${config.tenant}" and product "${config.product}"`
@@ -151,44 +158,6 @@ tap.test('authorize()', async (t) => {
   t.end();
 });
 
-tap.test('token()', (t) => {
-  t.test('Grant type should be authorization_code', async (t) => {
-    const body = {
-      grant_type: 'authorization_code_1',
-    };
-
-    try {
-      await oauthController.token(body);
-
-      t.fail('Expecting JacksonError.');
-    } catch (err) {
-      t.equal(err.message, 'Unsupported grant_type');
-      t.equal(err.statusCode, 400);
-    }
-
-    t.end();
-  });
-
-  t.test('Should provide the authorization code', async (t) => {
-    const body = {
-      grant_type: 'authorization_code',
-    };
-
-    try {
-      await oauthController.token(body);
-
-      t.fail('Expecting JacksonError.');
-    } catch (err) {
-      t.equal(err.message, 'Please specify code');
-      t.equal(err.statusCode, 400);
-    }
-
-    t.end();
-  });
-
-  t.end();
-});
-
 tap.test('samlResponse()', async (t) => {
   const authBody = {
     redirect_uri: samlConfig.defaultRedirectUrl,
@@ -243,17 +212,117 @@ tap.test('samlResponse()', async (t) => {
         lastName: 'Doe',
       });
 
+      const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code);
+
       const response = await oauthController.samlResponse(responseBody);
 
       const params = new URLSearchParams(new URL(response.redirect_url).search);
 
       t.ok(stubValidateAsync.calledOnce);
+      t.ok(stubRandomBytes.calledOnce);
       t.ok('redirect_url' in response);
       t.ok(params.has('code'));
       t.ok(params.has('state'));
       t.match(params.get('state'), authBody.state);
+
+      stubRandomBytes.restore();
+      stubValidateAsync.restore();
+
+      t.end();
     }
   );
+
+  t.end();
+});
+
+tap.test('token()', (t) => {
+  t.test('Grant type should be authorization_code', async (t) => {
+    const body = {
+      grant_type: 'authorization_code_1',
+    };
+
+    try {
+      await oauthController.token(body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      t.equal(err.message, 'Unsupported grant_type');
+      t.equal(err.statusCode, 400);
+    }
+
+    t.end();
+  });
+
+  t.test('Should provide the authorization code', async (t) => {
+    const body = {
+      grant_type: 'authorization_code',
+    };
+
+    try {
+      await oauthController.token(body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      t.equal(err.message, 'Please specify code');
+      t.equal(err.statusCode, 400);
+    }
+
+    t.end();
+  });
+
+  t.test('Handle invalid code', async (t) => {
+    const body = {
+      grant_type: 'authorization_code',
+      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_secret: 'some-secret',
+      redirect_uri: null,
+      code: 'invalid-code',
+    };
+
+    try {
+      await oauthController.token(body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      t.equal(err.message, 'Invalid code');
+      t.equal(err.statusCode, 403);
+    }
+
+    t.end();
+  });
+
+  // TODO
+  t.test('Handle invalid client_id', async (t) => {
+    t.end();
+  });
+
+  t.test('Should return the token', async (t) => {
+    const body = {
+      grant_type: 'authorization_code',
+      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_secret: 'some-secret',
+      redirect_uri: null,
+      code: code,
+    };
+
+    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(token);
+
+    const response = await oauthController.token(body);
+
+    t.ok('access_token' in response);
+    t.ok('token_type' in response);
+    t.ok('expires_in' in response);
+
+    t.match(response.access_token, token);
+    t.match(response.token_type, 'bearer');
+    t.match(response.expires_in, 300);
+
+    t.ok(stubRandomBytes.calledOnce);
+
+    stubRandomBytes.reset();
+
+    t.end();
+  });
 
   t.end();
 });
