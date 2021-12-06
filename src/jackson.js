@@ -39,7 +39,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
   }
 });
 
-app.get(oauthPath + '/userinfo', cors(), async (req, res) => {
+app.get(oauthPath + '/userinfo', async (req, res) => {
   try {
     await oauthController.userInfo(req, res);
   } catch (err) {
