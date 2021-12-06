@@ -22,8 +22,7 @@
     "pre-loaded-db": "cross-env PRE_LOADED_CONFIG='./_config' nodemon src/jackson.js",
     "test": "tap --timeout=100 src/**/*.test.js",
     "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
-    "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
-    "prepare": "husky install"
+    "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans"
   },
   "tap": {
     "coverage-map": "map.js",
