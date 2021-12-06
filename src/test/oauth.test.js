@@ -1,13 +1,18 @@
 const tap = require('tap');
 const { promises: fs } = require('fs');
 const path = require('path');
+const readConfig = require('../read-config');
+const sinon = require('sinon');
+const saml = require('../saml/saml');
 
 let apiController;
 let oauthController;
 
+const metadataPath = path.join(__dirname, '/data/metadata');
+
 const options = {
   externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://my-cool-app.com',
+  samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
   db: {
     engine: 'mongo',
@@ -15,24 +20,33 @@ const options = {
   },
 };
 
-const metadataPath = path.join(__dirname, '/saml.xml');
-
 const samlConfig = {
-  tenant: 'boxyhq.com',
-  product: 'demo',
+  tenant: 'cedex.com',
+  product: 'crm',
   redirectUrl: '["http://localhost:3000/*"]',
   defaultRedirectUrl: 'http://localhost:3000/login/saml',
   rawMetadata: null,
 };
 
+const addMetadata = async (metadataPath) => {
+  const configs = await readConfig(metadataPath);
+
+  for (const config of configs) {
+    await apiController.config(config);
+
+    console.log(
+      `loaded config for tenant "${config.tenant}" and product "${config.product}"`
+    );
+  }
+};
+
 tap.before(async () => {
   const controller = await require('../index.js')(options);
-  samlConfig['rawMetadata'] = await fs.readFile(metadataPath);
 
   apiController = controller.apiController;
   oauthController = controller.oauthController;
 
-  await apiController.config(samlConfig);
+  await addMetadata(metadataPath);
 });
 
 tap.teardown(async () => {
@@ -98,7 +112,7 @@ tap.test('authorize()', async (t) => {
     t.end();
   });
 
-  t.test('Should return the SAML config for a valid client id', async (t) => {
+  t.test('Should return the Idp SSO URL given valid client id', async (t) => {
     const body = {
       redirect_uri: samlConfig.defaultRedirectUrl,
       state: 'state-123',
@@ -107,16 +121,13 @@ tap.test('authorize()', async (t) => {
 
     const result = await oauthController.authorize(body);
 
-    t.match(
-      result,
-      { redirect_url: /^(https:\/\/)[abc]/ },
-      'Should return Idp authorize URL.'
-    );
+    t.ok('redirect_url' in result, 'Should return Idp authorize URL.');
+
     t.end();
   });
 
   t.test(
-    'Should throw exception for if Redirect URL is not allowed.',
+    'Should throw exception if Redirect URL is not allowed.',
     async (t) => {
       const body = {
         redirect_uri: 'https://example.com/',
@@ -178,10 +189,71 @@ tap.test('token()', (t) => {
   t.end();
 });
 
-tap.test('samlResponse()', (t) => {
-  t.end();
-});
+tap.test('samlResponse()', async (t) => {
+  const authBody = {
+    redirect_uri: samlConfig.defaultRedirectUrl,
+    state: 'state-123',
+    client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+  };
 
-tap.test('userInfo', (t) => {
+  const { redirect_url } = await oauthController.authorize(authBody);
+
+  const relayState = new URLSearchParams(new URL(redirect_url).search).get(
+    'RelayState'
+  );
+
+  const rawResponse = await fs.readFile(
+    path.join(__dirname, '/data/saml_response'),
+    'utf8'
+  );
+
+  t.test('Should throw error if RelayState is missing', async (t) => {
+    const responseBody = {
+      SAMLResponse: rawResponse,
+    };
+
+    try {
+      await oauthController.samlResponse(responseBody);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      t.equal(
+        err.message,
+        'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.'
+      );
+
+      t.equal(err.statusCode, 403);
+    }
+
+    t.end();
+  });
+
+  t.test(
+    'Should return a URL with code and state as query params',
+    async (t) => {
+      const responseBody = {
+        SAMLResponse: rawResponse,
+        RelayState: relayState,
+      };
+
+      const stubValidateAsync = sinon.stub(saml, 'validateAsync').returns({
+        id: 1,
+        email: 'john@example.com',
+        firstName: 'John',
+        lastName: 'Doe',
+      });
+
+      const response = await oauthController.samlResponse(responseBody);
+
+      const params = new URLSearchParams(new URL(response.redirect_url).search);
+
+      t.ok(stubValidateAsync.calledOnce);
+      t.ok('redirect_url' in response);
+      t.ok(params.has('code'));
+      t.ok(params.has('state'));
+      t.match(params.get('state'), authBody.state);
+    }
+  );
+
   t.end();
 });
