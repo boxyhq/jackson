@@ -37,13 +37,7 @@ const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
 
   for (const config of configs) {
-    const response = await apiController.config(config);
-
-    console.log(response);
-
-    console.log(
-      `loaded config for tenant "${config.tenant}" and product "${config.product}"`
-    );
+    await apiController.config(config);
   }
 };
 
@@ -61,7 +55,7 @@ tap.teardown(async () => {
 });
 
 tap.test('authorize()', async (t) => {
-  t.test('Should provide a redirect URL', async (t) => {
+  t.test('Should throw an error if `redirect_uri` null', async (t) => {
     const body = {
       redirect_uri: null,
       state: 'state',
@@ -69,17 +63,20 @@ tap.test('authorize()', async (t) => {
 
     try {
       await oauthController.authorize(body);
-
       t.fail('Expecting JacksonError.');
     } catch (err) {
-      t.equal(err.message, 'Please specify a redirect URL.');
-      t.equal(err.statusCode, 400);
+      t.equal(
+        err.message,
+        'Please specify a redirect URL.',
+        'got expected error message'
+      );
+      t.equal(err.statusCode, 400, 'got expected status code');
     }
 
     t.end();
   });
 
-  t.test('Should provide a state value', async (t) => {
+  t.test('Should throw an error if `state` null', async (t) => {
     const body = {
       redirect_uri: 'https://example.com/',
       state: null,
@@ -92,15 +89,16 @@ tap.test('authorize()', async (t) => {
     } catch (err) {
       t.equal(
         err.message,
-        'Please specify a state to safeguard against XSRF attacks.'
+        'Please specify a state to safeguard against XSRF attacks.',
+        'got expected error message'
       );
-      t.equal(err.statusCode, 400);
+      t.equal(err.statusCode, 400, 'got expected status code');
     }
 
     t.end();
   });
 
-  t.test('Should throw error for an invalid client id', async (t) => {
+  t.test('Should throw an error if `client_id` is invalid', async (t) => {
     const body = {
       redirect_uri: 'https://example.com/',
       state: 'state-123',
@@ -112,29 +110,19 @@ tap.test('authorize()', async (t) => {
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
-      t.equal(err.message, 'SAML configuration not found.');
-      t.equal(err.statusCode, 403);
+      t.equal(
+        err.message,
+        'SAML configuration not found.',
+        'got expected error message'
+      );
+      t.equal(err.statusCode, 403, 'got expected status code');
     }
 
     t.end();
   });
 
-  t.test('Should return the Idp SSO URL given valid client id', async (t) => {
-    const body = {
-      redirect_uri: samlConfig.defaultRedirectUrl,
-      state: 'state-123',
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
-    };
-
-    const result = await oauthController.authorize(body);
-
-    t.ok('redirect_url' in result, 'Should return Idp authorize URL.');
-
-    t.end();
-  });
-
   t.test(
-    'Should throw exception if Redirect URL is not allowed.',
+    'Should throw an error if `redirect_uri` is not allowed',
     async (t) => {
       const body = {
         redirect_uri: 'https://example.com/',
@@ -147,13 +135,34 @@ tap.test('authorize()', async (t) => {
 
         t.fail('Expecting JacksonError.');
       } catch (err) {
-        t.equal(err.message, 'Redirect URL is not allowed.');
-        t.equal(err.statusCode, 403);
+        t.equal(
+          err.message,
+          'Redirect URL is not allowed.',
+          'got expected error message'
+        );
+        t.equal(err.statusCode, 403, 'got expected status code');
       }
 
       t.end();
     }
   );
+
+  t.test('Should return the Idp SSO URL', async (t) => {
+    const body = {
+      redirect_uri: samlConfig.defaultRedirectUrl,
+      state: 'state-123',
+      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+    };
+
+    const response = await oauthController.authorize(body);
+    const params = new URLSearchParams(new URL(response.redirect_url).search);
+
+    t.ok('redirect_url' in response, 'got the Idp authorize URL');
+    t.ok(params.has('RelayState'), 'RelayState present in the query string');
+    t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+    t.end();
+  });
 
   t.end();
 });
@@ -236,24 +245,27 @@ tap.test('samlResponse()', async (t) => {
 });
 
 tap.test('token()', (t) => {
-  t.test('Grant type should be authorization_code', async (t) => {
-    const body = {
-      grant_type: 'authorization_code_1',
-    };
+  t.test(
+    'Should throw an error if `grant_type` is not `authorization_code`',
+    async (t) => {
+      const body = {
+        grant_type: 'authorization_code_1',
+      };
 
-    try {
-      await oauthController.token(body);
+      try {
+        await oauthController.token(body);
 
-      t.fail('Expecting JacksonError.');
-    } catch (err) {
-      t.equal(err.message, 'Unsupported grant_type');
-      t.equal(err.statusCode, 400);
+        t.fail('Expecting JacksonError.');
+      } catch (err) {
+        t.equal(err.message, 'Unsupported grant_type');
+        t.equal(err.statusCode, 400);
+      }
+
+      t.end();
     }
+  );
 
-    t.end();
-  });
-
-  t.test('Should provide the authorization code', async (t) => {
+  t.test('Should throw an error if `code` is missing', async (t) => {
     const body = {
       grant_type: 'authorization_code',
     };
@@ -270,7 +282,7 @@ tap.test('token()', (t) => {
     t.end();
   });
 
-  t.test('Handle invalid code', async (t) => {
+  t.test('Should throw an error if `code` is invalid', async (t) => {
     const body = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
@@ -291,12 +303,7 @@ tap.test('token()', (t) => {
     t.end();
   });
 
-  // TODO
-  t.test('Handle invalid client_id', async (t) => {
-    t.end();
-  });
-
-  t.test('Should return the token', async (t) => {
+  t.test('Should return the `access_token` for a valid request', async (t) => {
     const body = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
@@ -321,6 +328,11 @@ tap.test('token()', (t) => {
 
     stubRandomBytes.reset();
 
+    t.end();
+  });
+
+  // TODO
+  t.test('Handle invalid client_id', async (t) => {
     t.end();
   });
 
