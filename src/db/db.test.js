@@ -224,7 +224,7 @@ t.test('dbs', ({ end }) => {
       }
 
       await new Promise((resolve) =>
-        setTimeout(resolve, ((dbEngine === 'mem' ? 5 : 0) + ttl + 0.5) * 1000)
+        setTimeout(resolve, (2*ttl + 0.5) * 1000)
       );
 
       const ret1 = await ttlStore.get(record1.id);

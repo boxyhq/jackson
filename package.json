@@ -1,6 +1,6 @@
 {
   "name": "@boxyhq/saml-jackson",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "license": "Apache 2.0",
   "description": "SAML 2.0 service",
   "main": "src/index.js",
@@ -19,8 +19,10 @@
     "dev": "cross-env IDP_ENABLED=true nodemon src/jackson.js",
     "mongo": "cross-env DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson nodemon src/jackson.js",
     "pre-loaded": "cross-env DB_ENGINE=mem PRE_LOADED_CONFIG='./_config' nodemon src/jackson.js",
+    "pre-loaded-db": "cross-env PRE_LOADED_CONFIG='./_config' nodemon src/jackson.js",
     "test": "tap --timeout=100 src/**/*.test.js",
-    "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d"
+    "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
+    "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans"
   },
   "tap": {
     "coverage-map": "map.js",
@@ -35,7 +37,7 @@
     "@peculiar/x509": "1.6.0",
     "cors": "2.8.5",
     "express": "4.17.1",
-    "mongodb": "4.2.0",
+    "mongodb": "4.2.1",
     "mysql2": "2.3.3",
     "pg": "8.7.1",
     "rambda": "6.9.0",
@@ -50,9 +52,16 @@
   },
   "devDependencies": {
     "cross-env": "7.0.3",
-    "eslint": "8.3.0",
+    "eslint": "8.4.0",
+    "husky": "7.0.4",
+    "lint-staged": "12.1.2",
     "nodemon": "2.0.15",
-    "sinon": "^12.0.1",
-    "tap": "15.1.2"
+    "prettier": "2.5.1",
+    "sinon": "12.0.1",
+    "tap": "15.1.5"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
   }
 }

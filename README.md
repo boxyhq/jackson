@@ -97,7 +97,7 @@ router.post('/oauth/token', cors(), async (req, res) => {
   }
 });
 
-router.get('/oauth/userinfo', cors(), async (req, res) => {
+router.get('/oauth/userinfo', async (req, res) => {
   try {
     await oauthController.userInfo(req, res);
   } catch (err) {
@@ -130,7 +130,7 @@ Please follow the instructions [here](https://docs.google.com/document/d/1fk---Z
 
 ### 1.1 SAML profile/claims/attributes mapping
 
-As outlined in the guide above we try and support 4 attributes in the SAML claims - `id`, `email`, `firstName`, `lastName`. This is how the common SAML aattributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.
+As outlined in the guide above we try and support 4 attributes in the SAML claims - `id`, `email`, `firstName`, `lastName`. This is how the common SAML attributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.
 
 | SAML Attribute                                                       | Jackson mapping |
 | -------------------------------------------------------------------- | --------------- |
@@ -164,7 +164,28 @@ curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 - tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id, or user-id
 - product: Jackson support multiple products, this is a unique identifier you set from your side that relates back to the product your customer is using
 
-The response returns a JSON with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow. If you do not want to store the `client_id` and `client_secret` you can alternatively use `client_id=tenant=<tenantID>&product=<productID>` and any arbitrary value for `client_secret` when setting up the OAuth 2.0 flow.
+The response returns a JSON with `client_id` and `client_secret` that can be stored against your tenant and product for a more secure OAuth 2.0 flow. If you do not want to store the `client_id` and `client_secret` you can alternatively use `client_id=tenant=<tenantID>&product=<productID>` and any arbitrary value for `client_secret` when setting up the OAuth 2.0 flow. Additionally a `provider` attribute is also returned which indicates the domain of your Identity Provider.
+
+#### 2.1 SAML get config API
+
+This endpoint can be used to return metadata about an existing SAML config. This can be used to check and display the details to your customers. You can use either `clientID` or `tenant` and `product` combination.
+
+```
+curl --location --request POST 'http://localhost:6000/api/v1/saml/config/get' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'tenant=boxyhq.com' \
+--data-urlencode 'product=demo'
+```
+
+```
+curl --location --request POST 'http://localhost:6000/api/v1/saml/config/get' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'clientID=<Client ID>'
+```
+
+The response returns a JSON with `provider` indicating the domain of your Identity Provider. If an empty JSON payload is returned then we do not have any configuration stored for the attributes you requested.
 
 ### 3. OAuth 2.0 Flow
 
@@ -278,7 +299,7 @@ The following options are supported and will have to be configured during deploy
 | EXTERNAL_URL (npm: externalUrl)   | The public URL to reach this service, used internally for documenting the SAML configuration instructions.                                                                                                                                                                                                                                                                                                           | `http://{HOST_URL}:{HOST_PORT}` |
 | INTERNAL_HOST_URL                 | The URL to bind to expose the internal APIs. Do not configure this to a public network.                                                                                                                                                                                                                                                                                                                              | `localhost`                     |
 | INTERNAL_HOST_PORT                | The port to bind to for the internal APIs.                                                                                                                                                                                                                                                                                                                                                                           | `6000`                          |
-| JACKSON_API_KEYS                  | A comma separated list of API keys that will be validated when serving the Config API requests                                                                                                                                                                                                                                                                                                                                                  |                                 |
+| JACKSON_API_KEYS                  | A comma separated list of API keys that will be validated when serving the Config API requests                                                                                                                                                                                                                                                                                                                       |                                 |
 | SAML_AUDIENCE (npm: samlAudience) | This is just an identifier to validate the SAML audience, this value will also get configured in the SAML apps created by your customers. Once set do not change this value unless you get your customers to reconfigure their SAML again. It is case-sensitive. This does not have to be a real URL.                                                                                                                | `https://saml.boxyhq.com`       |
 | IDP_ENABLED (npm: idpEnabled)     | Set to `true` to enable IdP initiated login for SAML. SP initiated login is the only recommended flow but you might have to support IdP login at times.                                                                                                                                                                                                                                                              | `false`                         |
 | DB_ENGINE (npm: db.engine)        | Supported values are `redis`, `sql`, `mongo`, `mem`.                                                                                                                                                                                                                                                                                                                                                                 | `sql`                           |

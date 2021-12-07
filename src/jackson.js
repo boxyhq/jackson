@@ -51,7 +51,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
   }
 });
 
-app.get(oauthPath + '/userinfo', cors(), async (req, res) => {
+app.get(oauthPath + '/userinfo', async (req, res) => {
   try {
     let token = extractAuthToken(req);
 
@@ -107,6 +107,22 @@ internalApp.post(apiPath + '/config', async (req, res) => {
     }
 
     res.json(await apiController.config(req.body));
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
+
+internalApp.post(apiPath + '/config/get', async (req, res) => {
+  try {
+    const apiKey = extractAuthToken(req);
+    if (!validateApiKey(apiKey)) {
+      res.status(401).send('Unauthorized');
+      return;
+    }
+
+    res.json(await apiController.getConfig(req.body));
   } catch (err) {
     res.status(500).json({
       error: err.message,
