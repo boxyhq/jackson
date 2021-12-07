@@ -6,12 +6,13 @@ module.exports = {
     res.redirect(url);
   },
 
-  success: (res, redirectUrl, params) => {
-    var url = new URL(redirectUrl);
+  success: (redirectUrl, params) => {
+    const url = new URL(redirectUrl);
+
     for (const [key, value] of Object.entries(params)) {
       url.searchParams.set(key, value);
     }
 
-    res.redirect(url);
+    return url.href;
   },
 };

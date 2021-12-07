@@ -57,6 +57,7 @@
     "lint-staged": "12.1.2",
     "nodemon": "2.0.15",
     "prettier": "2.5.1",
+    "sinon": "12.0.1",
     "tap": "15.1.5"
   },
   "lint-staged": {

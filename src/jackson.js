@@ -17,33 +17,60 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(oauthPath + '/authorize', async (req, res) => {
   try {
-    await oauthController.authorize(req, res);
+    const { redirect_url } = await oauthController.authorize(req.query);
+
+    res.redirect(redirect_url);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode = 500 } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
 app.post(env.samlPath, async (req, res) => {
   try {
-    await oauthController.samlResponse(req, res);
+    const { redirect_url } = await oauthController.samlResponse(req.body);
+
+    res.redirect(redirect_url);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode = 500 } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
 app.post(oauthPath + '/token', cors(), async (req, res) => {
   try {
-    await oauthController.token(req, res);
+    const result = await oauthController.token(req.body);
+
+    res.send(result);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode = 500 } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
 app.get(oauthPath + '/userinfo', async (req, res) => {
   try {
-    await oauthController.userInfo(req, res);
+    let token = extractAuthToken(req);
+
+    // check for query param
+    if (!token) {
+      token = req.query.access_token;
+    }
+
+    if (!token) {
+      res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const profile = await oauthController.userInfo(token);
+
+    res.json(profile);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode = 500 } = err;
+
+    res.status(statusCode).json({ message });
   }
 });
 
