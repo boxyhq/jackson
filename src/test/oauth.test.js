@@ -185,7 +185,7 @@ tap.test('samlResponse()', async (t) => {
     'utf8'
   );
 
-  t.test('Should throw error if RelayState is missing', async (t) => {
+  t.test('Should throw an error if `RelayState` is missing', async (t) => {
     const responseBody = {
       SAMLResponse: rawResponse,
     };
@@ -197,10 +197,11 @@ tap.test('samlResponse()', async (t) => {
     } catch (err) {
       t.equal(
         err.message,
-        'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.'
+        'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
+        'got expected error message'
       );
 
-      t.equal(err.statusCode, 403);
+      t.equal(err.statusCode, 403, 'got expected status code');
     }
 
     t.end();
@@ -227,12 +228,12 @@ tap.test('samlResponse()', async (t) => {
 
       const params = new URLSearchParams(new URL(response.redirect_url).search);
 
-      t.ok(stubValidateAsync.calledOnce);
-      t.ok(stubRandomBytes.calledOnce);
-      t.ok('redirect_url' in response);
-      t.ok(params.has('code'));
-      t.ok(params.has('state'));
-      t.match(params.get('state'), authBody.state);
+      t.ok(stubValidateAsync.calledOnce, 'randomBytes called once');
+      t.ok(stubRandomBytes.calledOnce, 'validateAsync called once');
+      t.ok('redirect_url' in response, 'response contains redirect_url');
+      t.ok(params.has('code'), 'query string includes code');
+      t.ok(params.has('state'), 'query string includes state');
+      t.match(params.get('state'), authBody.state, 'state value is valid');
 
       stubRandomBytes.restore();
       stubValidateAsync.restore();
@@ -257,8 +258,12 @@ tap.test('token()', (t) => {
 
         t.fail('Expecting JacksonError.');
       } catch (err) {
-        t.equal(err.message, 'Unsupported grant_type');
-        t.equal(err.statusCode, 400);
+        t.equal(
+          err.message,
+          'Unsupported grant_type',
+          'got expected error message'
+        );
+        t.equal(err.statusCode, 400, 'got expected status code');
       }
 
       t.end();
@@ -275,8 +280,8 @@ tap.test('token()', (t) => {
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
-      t.equal(err.message, 'Please specify code');
-      t.equal(err.statusCode, 400);
+      t.equal(err.message, 'Please specify code', 'got expected error message');
+      t.equal(err.statusCode, 400, 'got expected status code');
     }
 
     t.end();
@@ -296,8 +301,8 @@ tap.test('token()', (t) => {
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
-      t.equal(err.message, 'Invalid code');
-      t.equal(err.statusCode, 403);
+      t.equal(err.message, 'Invalid code', 'got expected error message');
+      t.equal(err.statusCode, 403, 'got expected status code');
     }
 
     t.end();
@@ -316,15 +321,13 @@ tap.test('token()', (t) => {
 
     const response = await oauthController.token(body);
 
-    t.ok('access_token' in response);
-    t.ok('token_type' in response);
-    t.ok('expires_in' in response);
-
+    t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
+    t.ok('access_token' in response, 'includes access_token');
+    t.ok('token_type' in response, 'includes token_type');
+    t.ok('expires_in' in response, 'includes expires_in');
     t.match(response.access_token, token);
     t.match(response.token_type, 'bearer');
     t.match(response.expires_in, 300);
-
-    t.ok(stubRandomBytes.calledOnce);
 
     stubRandomBytes.reset();
 
