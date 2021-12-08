@@ -43,7 +43,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
   try {
     const result = await oauthController.token(req.body);
 
-    res.send(result);
+    res.json(result);
   } catch (err) {
     const { message, statusCode = 500 } = err;
 

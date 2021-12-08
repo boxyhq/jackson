@@ -20,8 +20,7 @@ const options = {
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
   db: {
-    engine: 'mongo',
-    url: 'mongodb://localhost:27017/jackson',
+    engine: 'mem',
   },
 };
 

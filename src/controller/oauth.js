@@ -6,7 +6,7 @@ const { indexNames } = require('./utils.js');
 const dbutils = require('../db/utils.js');
 const redirect = require('./oauth/redirect.js');
 const allowed = require('./oauth/allowed.js');
-const { JacksonError } = require('../error.js');
+const { JacksonError } = require('./error.js');
 
 let configStore;
 let sessionStore;

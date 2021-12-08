@@ -17,7 +17,7 @@ There are two ways to use this repo.
 
 ## Install as an npm library
 
-Jackson is available as an [npm package](https://www.npmjs.com/package/@boxyhq/saml-jackson) that can be integrated into Express.js routes. The library should be usable with other node.js web application frameworks but is currently untested. Please file an issue or submit a PR if you encounter any issues.
+Jackson is available as an [npm package](https://www.npmjs.com/package/@boxyhq/saml-jackson) that can be integrated into any web application framework (like Express.js for example). Please file an issue or submit a PR if you encounter any issues with your choice of framework.
 
 ```
 npm i @boxyhq/saml-jackson
@@ -75,33 +75,60 @@ router.post('/api/v1/saml/config', async (req, res) => {
 // OAuth 2.0 flow
 router.get('/oauth/authorize', async (req, res) => {
   try {
-    await oauthController.authorize(req, res);
+    const { redirect_url } = await oauthController.authorize(req.query);
+
+    res.redirect(redirect_url);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode = 500 } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
 router.post('/oauth/saml', async (req, res) => {
   try {
-    await oauthController.samlResponse(req, res);
+    const { redirect_url } = await oauthController.samlResponse(req.body);
+
+    res.redirect(redirect_url);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode = 500 } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
 router.post('/oauth/token', cors(), async (req, res) => {
   try {
-    await oauthController.token(req, res);
+    const result = await oauthController.token(req.body);
+
+    res.json(result);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode = 500 } = err;
+
+    res.status(statusCode).send(message);
   }
 });
 
 router.get('/oauth/userinfo', async (req, res) => {
   try {
-    await oauthController.userInfo(req, res);
+    let token = extractAuthToken(req);
+
+    // check for query param
+    if (!token) {
+      token = req.query.access_token;
+    }
+
+    if (!token) {
+      res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const profile = await oauthController.userInfo(token);
+
+    res.json(profile);
   } catch (err) {
-    res.status(500).send(err.message);
+    const { message, statusCode = 500 } = err;
+
+    res.status(statusCode).json({ message });
   }
 });
 
