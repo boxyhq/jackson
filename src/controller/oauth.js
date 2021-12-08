@@ -61,7 +61,19 @@ const authorize = async (body) => {
 
   let samlConfig;
 
-  if (
+  if (tenant && product) {
+    const samlConfigs = await configStore.getByIndex({
+      name: indexNames.tenantProduct,
+      value: dbutils.keyFromParts(tenant, product),
+    });
+
+    if (!samlConfigs || samlConfigs.length === 0) {
+      throw new JacksonError('SAML configuration not found.', 403);
+    }
+
+    // TODO: Support multiple matches
+    samlConfig = samlConfigs[0];
+  } else if (
     client_id &&
     client_id !== '' &&
     client_id !== 'undefined' &&
@@ -85,17 +97,10 @@ const authorize = async (body) => {
       samlConfig = await configStore.get(client_id);
     }
   } else {
-    const samlConfigs = await configStore.getByIndex({
-      name: indexNames.tenantProduct,
-      value: dbutils.keyFromParts(tenant, product),
-    });
-
-    if (!samlConfigs || samlConfigs.length === 0) {
-      throw new JacksonError('SAML configuration not found.', 403);
-    }
-
-    // TODO: Support multiple matches
-    samlConfig = samlConfigs[0];
+    throw new JacksonError(
+      'You need to specify client_id or tenant & product',
+      403
+    );
   }
 
   if (!samlConfig) {

@@ -236,6 +236,8 @@ https://localhost:5000/oauth/authorize
 
 - response_type=code: This is the only supported type for now but maybe extended in the future
 - client_id: Use the client_id returned by the SAML config API or use `tenant=<tenantID>&product=<productID>` to use the tenant and product IDs instead. **Note:** Please don't forget to URL encode the query parameters including `client_id`.
+- tenant: Optionally you can provide a dummy `client_id` and specify the `tenant` and `product` custom attributes (if your OAuth 2.0 library allows it).
+- product: Should be specified if specifying `tenant` above
 - redirect_uri: This is where the user will be taken back once the authorization flow is complete
 - state: Use a randomly generated string as the state, this will be echoed back as a query parameter when taking the user back to the `redirect_uri` above. You should validate the state to prevent XSRF attacks
 
