@@ -258,14 +258,16 @@ const token = async (body) => {
 
   if (client_id && client_secret) {
     // check if we have an encoded client_id
-    const sp = getEncodedClientId(client_id);
-    if (!sp) {
-      // OAuth flow
-      if (
-        client_id !== codeVal.clientID ||
-        client_secret !== codeVal.clientSecret
-      ) {
-        throw new JacksonError('Invalid client_id or client_secret', 401);
+    if (client_id !== 'dummy' && client_secret !== 'dummy') {
+      const sp = getEncodedClientId(client_id);
+      if (!sp) {
+        // OAuth flow
+        if (
+          client_id !== codeVal.clientID ||
+          client_secret !== codeVal.clientSecret
+        ) {
+          throw new JacksonError('Invalid client_id or client_secret', 401);
+        }
       }
     }
   } else if (code_verifier) {
