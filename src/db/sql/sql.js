@@ -1,3 +1,5 @@
+/*eslint no-constant-condition: ["error", { "checkLoops": false }]*/
+
 require('reflect-metadata');
 const typeorm = require('typeorm');
 const JacksonStore = require('./model/JacksonStore.js');
@@ -97,10 +99,6 @@ class Sql {
       res.forEach((r) => {
         ret.push(JSON.parse(r.store.value));
       });
-    }
-
-    if (res && res.store) {
-      return JSON.parse(res.store.value);
     }
 
     return ret;
