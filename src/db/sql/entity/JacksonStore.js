@@ -27,6 +27,16 @@ module.exports = (type) => {
       value: {
         type: valueType(type),
       },
+      iv: {
+        type: 'varchar',
+        length: 64,
+        nullable: true,
+      },
+      tag: {
+        type: 'varchar',
+        length: 64,
+        nullable: true,
+      },
     },
   });
 };

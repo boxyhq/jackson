@@ -14,7 +14,7 @@ class Sql {
       while (true) {
         try {
           this.connection = await typeorm.createConnection({
-            name: options.type,
+            name: options.type + Math.floor(Math.random() * 100000),
             type: options.type,
             url: options.url,
             synchronize: true,
@@ -82,7 +82,11 @@ class Sql {
     });
 
     if (res && res.value) {
-      return JSON.parse(res.value);
+      return {
+        value: res.value,
+        iv: res.iv,
+        tag: res.tag,
+      };
     }
 
     return null;
@@ -97,7 +101,11 @@ class Sql {
 
     if (res) {
       res.forEach((r) => {
-        ret.push(JSON.parse(r.store.value));
+        ret.push({
+          value: r.store.value,
+          iv: r.store.iv,
+          tag: r.store.tag,
+        });
       });
     }
 
@@ -107,7 +115,7 @@ class Sql {
   async put(namespace, key, val, ttl = 0, ...indexes) {
     await this.connection.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
-      const store = new JacksonStore(dbKey, val);
+      const store = new JacksonStore(dbKey, val.value, val.iv, val.tag);
       await transactionalEntityManager.save(store);
 
       if (ttl) {

@@ -18,6 +18,7 @@ const db = {
   url: process.env.DB_URL,
   type: process.env.DB_TYPE,
   ttl: process.env.DB_TTL,
+  encryptionKey: process.env.DB_ENCRYPTION_KEY,
 };
 
 module.exports = {

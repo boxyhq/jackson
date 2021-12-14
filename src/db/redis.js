@@ -46,7 +46,7 @@ class Redis {
     let tx = this.client.multi();
     const k = dbutils.key(namespace, key);
 
-    tx = tx.set(k, val);
+    tx = tx.set(k, JSON.stringify(val));
 
     if (ttl) {
       tx = tx.expire(k, ttl);
