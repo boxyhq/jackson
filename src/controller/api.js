@@ -10,7 +10,7 @@ let configStore;
 const extractHostName = (url) => {
   try {
     const pUrl = new URL(url);
-    if(pUrl.hostname.startsWith('www.')) {
+    if (pUrl.hostname.startsWith('www.')) {
       return pUrl.hostname.substring(4);
     }
     return pUrl.hostname;
@@ -56,7 +56,7 @@ const config = async (body) => {
     {
       idpMetadata,
       defaultRedirectUrl,
-      redirectUrl: JSON.parse(redirectUrl),
+      redirectUrl: JSON.parse(redirectUrl), // redirectUrl is a stringified array
       tenant,
       product,
       clientID,

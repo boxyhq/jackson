@@ -54,7 +54,7 @@ class Mem {
   async put(namespace, key, val, ttl = 0, ...indexes) {
     const k = dbutils.key(namespace, key);
 
-    this.store[k] = JSON.stringify(val);
+    this.store[k] = val;
 
     if (ttl) {
       this.ttlStore[k] = {

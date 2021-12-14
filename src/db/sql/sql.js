@@ -81,7 +81,7 @@ class Sql {
       key: dbutils.key(namespace, key),
     });
 
-    if (res) {
+    if (res && res.value) {
       return JSON.parse(res.value);
     }
 
@@ -107,7 +107,7 @@ class Sql {
   async put(namespace, key, val, ttl = 0, ...indexes) {
     await this.connection.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
-      const store = new JacksonStore(dbKey, JSON.stringify(val));
+      const store = new JacksonStore(dbKey, val);
       await transactionalEntityManager.save(store);
 
       if (ttl) {

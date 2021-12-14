@@ -48,7 +48,7 @@ class Mongo {
 
   async put(namespace, key, val, ttl = 0, ...indexes) {
     const doc = {
-      value: JSON.stringify(val),
+      value: val,
     };
 
     if (ttl) {

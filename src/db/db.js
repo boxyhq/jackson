@@ -23,7 +23,13 @@ class DB {
       throw new Error('secondary indexes not allow on a store with ttl');
     }
 
-    return await this.db.put(namespace, key, val, ttl, ...indexes);
+    return await this.db.put(
+      namespace,
+      key,
+      JSON.stringify(val),
+      ttl,
+      ...indexes
+    );
   }
 
   async delete(namespace, key) {
