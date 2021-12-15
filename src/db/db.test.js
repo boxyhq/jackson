@@ -2,6 +2,8 @@ const t = require('tap');
 
 const DB = require('./db.js');
 
+const encryptionKey = '3yGrTcnKPBqqHoH3zZMAU6nt4bmIYb2q';
+
 let configStores = [];
 let ttlStores = [];
 const ttl = 3;
@@ -17,39 +19,87 @@ const record2 = {
   city: 'London',
 };
 
+const memDbConfig = {
+  engine: 'mem',
+  ttl: 1,
+};
+
+const redisDbConfig = {
+  engine: 'redis',
+  url: 'redis://localhost:6379',
+};
+
+const postgresDbConfig = {
+  engine: 'sql',
+  url: 'postgresql://postgres:postgres@localhost:5432/postgres',
+  type: 'postgres',
+  ttl: 1,
+  cleanupLimit: 1,
+};
+
+const mongoDbConfig = {
+  engine: 'mongo',
+  url: 'mongodb://localhost:27017/jackson',
+};
+
+const mysqlDbConfig = {
+  engine: 'sql',
+  url: 'mysql://root:mysql@localhost:3307/mysql',
+  type: 'mysql',
+  ttl: 1,
+  cleanupLimit: 1,
+};
+
+const mariadbDbConfig = {
+  engine: 'sql',
+  url: 'mariadb://root@localhost:3306/mysql',
+  type: 'mariadb',
+  ttl: 1,
+  cleanupLimit: 1,
+};
+
 const dbs = [
   {
-    engine: 'mem',
-    ttl: 1,
+    ...memDbConfig,
   },
   {
-    engine: 'redis',
-    url: 'redis://localhost:6379',
+    ...memDbConfig,
+    encryptionKey,
   },
   {
-    engine: 'sql',
-    url: 'postgresql://postgres:postgres@localhost:5432/postgres',
-    type: 'postgres',
-    ttl: 1,
-    limit: 1,
+    ...redisDbConfig,
   },
   {
-    engine: 'mongo',
-    url: 'mongodb://localhost:27017/jackson',
+    ...redisDbConfig,
+    encryptionKey,
   },
   {
-    engine: 'sql',
-    url: 'mysql://root:mysql@localhost:3307/mysql',
-    type: 'mysql',
-    ttl: 1,
-    limit: 1,
+    ...postgresDbConfig,
   },
   {
-    engine: 'sql',
-    url: 'mariadb://root@localhost:3306/mysql',
-    type: 'mariadb',
-    ttl: 1,
-    limit: 1,
+    ...postgresDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mongoDbConfig,
+  },
+  {
+    ...mongoDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mysqlDbConfig,
+  },
+  {
+    ...mysqlDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mariadbDbConfig,
+  },
+  {
+    ...mariadbDbConfig,
+    encryptionKey,
   },
 ];
 
@@ -224,7 +274,7 @@ t.test('dbs', ({ end }) => {
       }
 
       await new Promise((resolve) =>
-        setTimeout(resolve, (2*ttl + 0.5) * 1000)
+        setTimeout(resolve, (2 * ttl + 0.5) * 1000)
       );
 
       const ret1 = await ttlStore.get(record1.id);

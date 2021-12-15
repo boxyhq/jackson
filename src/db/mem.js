@@ -34,7 +34,7 @@ class Mem {
   async get(namespace, key) {
     let res = this.store[dbutils.key(namespace, key)];
     if (res) {
-      return JSON.parse(res);
+      return res;
     }
 
     return null;

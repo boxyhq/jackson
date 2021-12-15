@@ -25,7 +25,7 @@ class Mongo {
       _id: dbutils.key(namespace, key),
     });
     if (res && res.value) {
-      return JSON.parse(res.value);
+      return res.value;
     }
 
     return null;
@@ -40,7 +40,7 @@ class Mongo {
 
     const ret = [];
     for (const doc of docs || []) {
-      ret.push(JSON.parse(doc.value));
+      ret.push(doc.value);
     }
 
     return ret;
