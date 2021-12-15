@@ -114,7 +114,7 @@ internalApp.post(apiPath + '/config', async (req, res) => {
   }
 });
 
-internalApp.post(apiPath + '/config/get', async (req, res) => {
+internalApp.get(apiPath + '/config', async (req, res) => {
   try {
     const apiKey = extractAuthToken(req);
     if (!validateApiKey(apiKey)) {
@@ -122,7 +122,7 @@ internalApp.post(apiPath + '/config/get', async (req, res) => {
       return;
     }
 
-    res.json(await apiController.getConfig(req.body));
+    res.json(await apiController.getConfig(req.query));
   } catch (err) {
     res.status(500).json({
       error: err.message,
