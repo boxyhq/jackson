@@ -34,7 +34,7 @@ const postgresDbConfig = {
   url: 'postgresql://postgres:postgres@localhost:5432/postgres',
   type: 'postgres',
   ttl: 1,
-  limit: 1,
+  cleanupLimit: 1,
 };
 
 const mongoDbConfig = {
@@ -47,7 +47,7 @@ const mysqlDbConfig = {
   url: 'mysql://root:mysql@localhost:3307/mysql',
   type: 'mysql',
   ttl: 1,
-  limit: 1,
+  cleanupLimit: 1,
 };
 
 const mariadbDbConfig = {
@@ -55,7 +55,7 @@ const mariadbDbConfig = {
   url: 'mariadb://root@localhost:3306/mysql',
   type: 'mariadb',
   ttl: 1,
-  limit: 1,
+  cleanupLimit: 1,
 };
 
 const dbs = [

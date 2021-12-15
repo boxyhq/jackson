@@ -22,7 +22,7 @@ const defaultOpts = (opts) => {
     newOpts.db.url || 'postgresql://postgres:postgres@localhost:5432/postgres';
   newOpts.db.type = newOpts.db.type || 'postgres'; // Only needed if DB_ENGINE is sql. Supported values: postgres, cockroachdb, mysql, mariadb
   newOpts.db.ttl = (newOpts.db.ttl || 300) * 1; // TTL for the code, session and token stores (in seconds)
-  newOpts.db.limit = (newOpts.db.limit || 1000) * 1; // Limit ttl cleanup to this many items at a time
+  newOpts.db.cleanupLimit = (newOpts.db.cleanupLimit || 1000) * 1; // Limit cleanup of TTL entries to this many items at a time
 
   return newOpts;
 };
@@ -56,7 +56,8 @@ module.exports = async function (opts) {
     }
   }
 
-  const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
+  const type =
+    opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {

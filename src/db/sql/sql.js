@@ -39,14 +39,14 @@ class Sql {
       this.indexRepository = this.connection.getRepository(JacksonIndex);
       this.ttlRepository = this.connection.getRepository(JacksonTTL);
 
-      if (options.ttl && options.limit) {
+      if (options.ttl && options.cleanupLimit) {
         this.ttlCleanup = async () => {
           const now = Date.now();
 
           while (true) {
             const ids = await this.ttlRepository
               .createQueryBuilder('jackson_ttl')
-              .limit(options.limit)
+              .limit(options.cleanupLimit)
               .where('jackson_ttl.expiresAt <= :expiresAt', { expiresAt: now })
               .getMany();
 
@@ -68,7 +68,7 @@ class Sql {
         this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
       } else {
         console.log(
-          'Warning: ttl cleanup not enabled, set both "ttl" and "limit" options to enable it!'
+          'Warning: ttl cleanup not enabled, set both "ttl" and "cleanupLimit" options to enable it!'
         );
       }
 
