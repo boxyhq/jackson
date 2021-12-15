@@ -71,6 +71,20 @@ router.post('/api/v1/saml/config', async (req, res) => {
     });
   }
 });
+// fetch config
+router.get('/api/v1/saml/config', async (req, res) => {
+  try {
+    // apply your authentication flow (or ensure this route has passed through your auth middleware)
+    ...
+
+    // only when properly authenticated, call the config function
+    res.json(await apiController.config(req.query));
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
 
 // OAuth 2.0 flow
 router.get('/oauth/authorize', async (req, res) => {
@@ -198,7 +212,7 @@ The response returns a JSON with `client_id` and `client_secret` that can be sto
 This endpoint can be used to return metadata about an existing SAML config. This can be used to check and display the details to your customers. You can use either `clientID` or `tenant` and `product` combination.
 
 ```
-curl --location --request POST 'http://localhost:6000/api/v1/saml/config/get' \
+curl -G --location 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'tenant=boxyhq.com' \
@@ -206,7 +220,7 @@ curl --location --request POST 'http://localhost:6000/api/v1/saml/config/get' \
 ```
 
 ```
-curl --location --request POST 'http://localhost:6000/api/v1/saml/config/get' \
+curl -G --location 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'clientID=<Client ID>'
