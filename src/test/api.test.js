@@ -129,7 +129,6 @@ tap.test('controller/api', async (t) => {
       const PROVIDER = 'accounts.google.com';
 
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENTID);
-      // kdStub.returns(CLIENTID);
       const rbStub = sinon
         .stub(crypto, 'randomBytes')
         .returns('f3b0f91eb8f4a9f7cc2254e08682d50b05b5d36262929e7f');
