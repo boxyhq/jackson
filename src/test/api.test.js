@@ -8,7 +8,9 @@ const dbutils = require('../db/utils');
 
 let apiController;
 
-const options = {
+const CLIENT_ID = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
+const PROVIDER = 'accounts.google.com';
+const OPTIONS = {
   externalUrl: 'https://my-cool-app.com',
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
@@ -18,7 +20,7 @@ const options = {
 };
 
 tap.before(async () => {
-  const controller = await require('../index.js')(options);
+  const controller = await require('../index.js')(OPTIONS);
 
   apiController = controller.apiController;
 });
@@ -125,10 +127,8 @@ tap.test('controller/api', async (t) => {
 
     t.test('when the request is good', async (t) => {
       const body = Object.assign({}, config[0]);
-      const CLIENTID = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
-      const PROVIDER = 'accounts.google.com';
 
-      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENTID);
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID);
       const rbStub = sinon
         .stub(crypto, 'randomBytes')
         .returns('f3b0f91eb8f4a9f7cc2254e08682d50b05b5d36262929e7f');
@@ -136,7 +136,7 @@ tap.test('controller/api', async (t) => {
       const response = await apiController.config(body);
       t.ok(kdStub.called);
       t.ok(rbStub.calledOnce);
-      t.equal(response.client_id, CLIENTID);
+      t.equal(response.client_id, CLIENT_ID);
       t.equal(
         response.client_secret,
         'f3b0f91eb8f4a9f7cc2254e08682d50b05b5d36262929e7f'
@@ -144,7 +144,7 @@ tap.test('controller/api', async (t) => {
       t.equal(response.provider, PROVIDER);
 
       const savedConf = await apiController.getConfig({
-        clientID: CLIENTID,
+        clientID: CLIENT_ID,
       });
       t.equal(savedConf.provider, PROVIDER);
 
