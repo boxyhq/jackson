@@ -114,9 +114,9 @@ tap.test('controller/api', async (t) => {
 
         try {
           await apiController.config(body);
-          t.fail('Expecting JacksonError.');
+          t.fail('Expecting Error.');
         } catch (err) {
-          t.equal(err.statusCode, 400);
+          t.match(err.message, /Non-whitespace before first tag./);
         }
 
         t.end();

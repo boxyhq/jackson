@@ -24,8 +24,6 @@ const config = async (body) => {
   const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } =
     body;
 
-  let idpMetadata;
-
   if (!rawMetadata) {
     throw new JacksonError('Please provide rawMetadata', 400);
   }
@@ -46,11 +44,7 @@ const config = async (body) => {
     throw new JacksonError('Please provide product', 400);
   }
 
-  try {
-    idpMetadata = await saml.parseMetadataAsync(rawMetadata);
-  } catch (err) {
-    throw new JacksonError(err.message, 400);
-  }
+  const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
   // extract provider
   let providerName = extractHostName(idpMetadata.entityID);
