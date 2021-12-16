@@ -2,6 +2,7 @@ const saml = require('../saml/saml.js');
 const x509 = require('../saml/x509.js');
 const dbutils = require('../db/utils.js');
 const { indexNames } = require('./utils.js');
+const { JacksonError } = require('./error.js');
 
 const crypto = require('crypto');
 
@@ -22,6 +23,27 @@ const extractHostName = (url) => {
 const config = async (body) => {
   const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } =
     body;
+
+  if (!rawMetadata) {
+    throw new JacksonError('Please provide rawMetadata', 400);
+  }
+
+  if (!defaultRedirectUrl) {
+    throw new JacksonError('Please provide a defaultRedirectUrl', 400);
+  }
+
+  if (!redirectUrl) {
+    throw new JacksonError('Please provide redirectUrl', 400);
+  }
+
+  if (!tenant) {
+    throw new JacksonError('Please provide tenant', 400);
+  }
+
+  if (!product) {
+    throw new JacksonError('Please provide product', 400);
+  }
+
   const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
   // extract provider
