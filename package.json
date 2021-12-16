@@ -1,6 +1,6 @@
 {
   "name": "@boxyhq/saml-jackson",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "Apache 2.0",
   "description": "SAML 2.0 service",
   "main": "src/index.js",
