@@ -242,6 +242,25 @@ curl -G --location 'http://localhost:6000/api/v1/saml/config' \
 
 The response returns a JSON with `provider` indicating the domain of your Identity Provider. If an empty JSON payload is returned then we do not have any configuration stored for the attributes you requested.
 
+#### 2.2 SAML delete config API
+
+This endpoint can be used to delete an existing IdP metadata.
+
+```
+curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'tenant=boxyhq.com' \
+--data-urlencode 'product=demo'
+```
+
+```
+curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'clientID=<Client ID>'
+```
+
 ### 3. OAuth 2.0 Flow
 
 Jackson has been designed to abstract the SAML login flow as a pure OAuth 2.0 flow. This means it's compatible with any standard OAuth 2.0 library out there, both client-side and server-side. It is important to remember that SAML is configured per customer unlike OAuth 2.0 where you can have a single OAuth app supporting logins for all customers.
