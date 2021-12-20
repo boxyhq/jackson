@@ -85,7 +85,21 @@ router.get('/api/v1/saml/config', async (req, res) => {
     });
   }
 });
+// delete config
+router.delete('/api/v1/saml/config', async (req, res) => {
+  try {
+    // apply your authentication flow (or ensure this route has passed through your auth middleware)
+    ...
 
+    // only when properly authenticated, call the config function
+    await apiController.deleteConfig(req.body);
+    res.status(200).end();
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
 // OAuth 2.0 flow
 router.get('/oauth/authorize', async (req, res) => {
   try {
