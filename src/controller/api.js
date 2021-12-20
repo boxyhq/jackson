@@ -127,10 +127,30 @@ const getConfig = async (body) => {
   }
 };
 
+const deleteConfig = async (body) => {
+  const { clientID, tenant, product } = body;
+
+  if (clientID) {
+    await configStore.delete(clientID);
+  } else {
+    const samlConfigs = await configStore.getByIndex({
+      name: indexNames.tenantProduct,
+      value: dbutils.keyFromParts(tenant, product),
+    });
+    if (!samlConfigs || !samlConfigs.length) {
+      return;
+    }
+    for (const conf of samlConfigs) {
+      await configStore.delete(conf.clientID);
+    }
+  }
+};
+
 module.exports = (opts) => {
   configStore = opts.configStore;
   return {
     config,
     getConfig,
+    deleteConfig,
   };
 };

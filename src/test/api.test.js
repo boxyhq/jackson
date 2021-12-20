@@ -143,10 +143,16 @@ tap.test('controller/api', async (t) => {
       );
       t.equal(response.provider, PROVIDER);
 
-      const savedConf = await apiController.getConfig({
+      let savedConf = await apiController.getConfig({
         clientID: CLIENT_ID,
       });
       t.equal(savedConf.provider, PROVIDER);
+
+      await apiController.deleteConfig({ clientID: CLIENT_ID });
+      savedConf = await apiController.getConfig({
+        clientID: CLIENT_ID,
+      });
+      t.same(savedConf, {});
 
       dbutils.keyDigest.restore();
       crypto.randomBytes.restore();
