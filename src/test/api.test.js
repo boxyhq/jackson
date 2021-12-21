@@ -143,10 +143,35 @@ tap.test('controller/api', async (t) => {
       );
       t.equal(response.provider, PROVIDER);
 
-      const savedConf = await apiController.getConfig({
+      let savedConf = await apiController.getConfig({
         clientID: CLIENT_ID,
       });
       t.equal(savedConf.provider, PROVIDER);
+      try {
+        await apiController.deleteConfig({ clientID: CLIENT_ID });
+        t.fail('Expecting JacksonError.');
+      } catch (err) {
+        t.equal(err.message, 'Please provide clientSecret');
+        t.equal(err.statusCode, 400);
+      }
+      try {
+        await apiController.deleteConfig({
+          clientID: CLIENT_ID,
+          clientSecret: 'xxxxx',
+        });
+        t.fail('Expecting JacksonError.');
+      } catch (err) {
+        t.equal(err.message, 'clientSecret mismatch');
+        t.equal(err.statusCode, 400);
+      }
+      await apiController.deleteConfig({
+        clientID: CLIENT_ID,
+        clientSecret: 'f3b0f91eb8f4a9f7cc2254e08682d50b05b5d36262929e7f',
+      });
+      savedConf = await apiController.getConfig({
+        clientID: CLIENT_ID,
+      });
+      t.same(savedConf, {}, 'should return empty config');
 
       dbutils.keyDigest.restore();
       crypto.randomBytes.restore();

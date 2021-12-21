@@ -85,7 +85,21 @@ router.get('/api/v1/saml/config', async (req, res) => {
     });
   }
 });
+// delete config
+router.delete('/api/v1/saml/config', async (req, res) => {
+  try {
+    // apply your authentication flow (or ensure this route has passed through your auth middleware)
+    ...
 
+    // only when properly authenticated, call the config function
+    await apiController.deleteConfig(req.body);
+    res.status(200).end();
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
 // OAuth 2.0 flow
 router.get('/oauth/authorize', async (req, res) => {
   try {
@@ -227,6 +241,26 @@ curl -G --location 'http://localhost:6000/api/v1/saml/config' \
 ```
 
 The response returns a JSON with `provider` indicating the domain of your Identity Provider. If an empty JSON payload is returned then we do not have any configuration stored for the attributes you requested.
+
+#### 2.2 SAML delete config API
+
+This endpoint can be used to delete an existing IdP metadata.
+
+```
+curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'tenant=boxyhq.com' \
+--data-urlencode 'product=demo'
+```
+
+```
+curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
+--header 'Authorization: Api-Key <Jackson API Key>' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'clientID=<Client ID>'
+--data-urlencode 'clientSecret=<Client Secret>'
+```
 
 ### 3. OAuth 2.0 Flow
 

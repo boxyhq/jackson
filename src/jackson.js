@@ -130,6 +130,22 @@ internalApp.get(apiPath + '/config', async (req, res) => {
   }
 });
 
+internalApp.delete(apiPath + '/config', async (req, res) => {
+  try {
+    const apiKey = extractAuthToken(req);
+    if (!validateApiKey(apiKey)) {
+      res.status(401).send('Unauthorized');
+      return;
+    }
+    await apiController.deleteConfig(req.body);
+    res.status(200).end();
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
+
 let internalServer = server;
 if (env.useInternalServer) {
   internalServer = internalApp.listen(env.internalHostPort, async () => {

@@ -127,10 +127,41 @@ const getConfig = async (body) => {
   }
 };
 
+const deleteConfig = async (body) => {
+  const { clientID, clientSecret, tenant, product } = body;
+
+  if (clientID) {
+    if (!clientSecret) {
+      throw new JacksonError('Please provide clientSecret', 400);
+    }
+    const samlConfig = await configStore.get(clientID);
+    if (!samlConfig) {
+      return;
+    }
+    if (samlConfig.clientSecret === clientSecret) {
+      await configStore.delete(clientID);
+    } else {
+      throw new JacksonError('clientSecret mismatch', 400);
+    }
+  } else {
+    const samlConfigs = await configStore.getByIndex({
+      name: indexNames.tenantProduct,
+      value: dbutils.keyFromParts(tenant, product),
+    });
+    if (!samlConfigs || !samlConfigs.length) {
+      return;
+    }
+    for (const conf of samlConfigs) {
+      await configStore.delete(conf.clientID);
+    }
+  }
+};
+
 module.exports = (opts) => {
   configStore = opts.configStore;
   return {
     config,
     getConfig,
+    deleteConfig,
   };
 };
