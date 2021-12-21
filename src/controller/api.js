@@ -128,10 +128,21 @@ const getConfig = async (body) => {
 };
 
 const deleteConfig = async (body) => {
-  const { clientID, tenant, product } = body;
+  const { clientID, clientSecret, tenant, product } = body;
 
   if (clientID) {
-    await configStore.delete(clientID);
+    if (!clientSecret) {
+      throw new JacksonError('Please provide clientSecret', 400);
+    }
+    const samlConfig = await configStore.get(clientID);
+    if (!samlConfig) {
+      return;
+    }
+    if (samlConfig.clientSecret === clientSecret) {
+      await configStore.delete(clientID);
+    } else {
+      throw new JacksonError('clientSecret mismatch', 400);
+    }
   } else {
     const samlConfigs = await configStore.getByIndex({
       name: indexNames.tenantProduct,

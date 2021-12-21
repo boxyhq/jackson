@@ -259,6 +259,7 @@ curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'clientID=<Client ID>'
+--data-urlencode 'clientSecret=<Client Secret>'
 ```
 
 ### 3. OAuth 2.0 Flow
