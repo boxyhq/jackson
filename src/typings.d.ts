@@ -25,3 +25,14 @@ export type IABC = {
     tenant: string
     product: string
 }
+
+interface ISAMLConfig {
+    // Ensure backward compatibility
+    config(body: IdPConfig): Promise<Client>
+    getConfig(body: IABC): Promise<Partial<Client>>
+    deleteConfig(body: IABC): Promise<void>
+
+    create(body: IdPConfig): Promise<Client>
+    get(body: IABC): Promise<Partial<Client>>
+    delete(body: IABC): Promise<void>
+  }

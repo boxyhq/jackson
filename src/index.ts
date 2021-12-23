@@ -1,4 +1,5 @@
 import DB = require("./db/db");
+import { SAMLConfig } from "./controller/api";
 import readConfig from "./read-config";
 
 const defaultOpts = (opts: any) => {
@@ -36,7 +37,8 @@ export default async function controllers(opts: any): Promise<{ apiController: o
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
 
-  const apiController = require('./controller/api.ts')({ configStore });
+  const apiController = new SAMLConfig(configStore)
+
   const oauthController = require('./controller/oauth.js')({
     configStore,
     sessionStore,
