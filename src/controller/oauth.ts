@@ -3,10 +3,10 @@ import { JacksonError } from "./error";
 import * as allowed from "./oauth/allowed";
 import * as codeVerifier from "./oauth/code-verifier";
 import * as redirect from "./oauth/redirect";
+import { IndexNames } from "./utils";
 
 const saml = require('../saml/saml.js');
 const dbutils = require('../db/utils.js');
-const { indexNames } = require('./utils.js');
 
 let configStore;
 let sessionStore;
@@ -63,7 +63,7 @@ const authorize = async (body) => {
 
   if (tenant && product) {
     const samlConfigs = await configStore.getByIndex({
-      name: indexNames.tenantProduct,
+      name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(tenant, product),
     });
 
@@ -83,7 +83,7 @@ const authorize = async (body) => {
     const sp = getEncodedClientId(client_id);
     if (sp) {
       const samlConfigs = await configStore.getByIndex({
-        name: indexNames.tenantProduct,
+        name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(sp.tenant, sp.product),
       });
 
@@ -161,7 +161,7 @@ const samlResponse = async (body) => {
   const parsedResp = await saml.parseAsync(rawResponse);
 
   const samlConfigs = await configStore.getByIndex({
-    name: indexNames.entityID,
+    name: IndexNames.EntityID,
     value: parsedResp.issuer,
   });
 

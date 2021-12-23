@@ -1,11 +1,11 @@
 import crypto from 'crypto';
 import { Client, IABC, IdPConfig } from "../typings";
 import { JacksonError } from "./error";
+import { IndexNames } from "./utils";
 
 const saml = require('../saml/saml.js');
 const x509 = require('../saml/x509.js');
 const dbutils = require('../db/utils.js');
-const { indexNames } = require('./utils.js');
 
 let configStore;
 
@@ -98,12 +98,12 @@ const config = async (body: IdPConfig): Promise<Client> => {
     },
     {
       // secondary index on entityID
-      name: indexNames.entityID,
+      name: IndexNames.EntityID,
       value: idpMetadata.entityID,
     },
     {
       // secondary index on tenant + product
-      name: indexNames.tenantProduct,
+      name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(tenant, product),
     }
   );
@@ -130,7 +130,7 @@ const getConfig = async (body: IABC): Promise<Partial<Client>> => {
     return { provider: samlConfig.idpMetadata.provider };
   } else {
     const samlConfigs = await configStore.getByIndex({
-      name: indexNames.tenantProduct,
+      name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(tenant, product),
     });
 
@@ -162,7 +162,7 @@ const deleteConfig = async (body: IABC): Promise<void> => {
     }
   } else {
     const samlConfigs = await configStore.getByIndex({
-      name: indexNames.tenantProduct,
+      name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(tenant, product),
     });
     if (!samlConfigs || !samlConfigs.length) {
