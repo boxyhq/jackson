@@ -2,7 +2,7 @@
     "compilerOptions": {
         "outDir": "./dist",
         "allowJs": true,
-        "module": "CommonJS",
+        "module": "commonjs",
         "target": "es6", //same as es2015
         "forceConsistentCasingInFileNames": true,
         "noImplicitAny": false,
@@ -11,7 +11,11 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "declaration": true,
-        "noEmitOnError": true
+        "noEmitOnError": true,
+        "noUnusedParameters": true,
+        "removeComments": false,
+        "strictNullChecks": true,
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "./src/**/*"

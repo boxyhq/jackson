@@ -1,5 +1,5 @@
 import DB = require("./db/db");
-import readConfig = require('./read-config');
+import readConfig from "./read-config";
 
 const defaultOpts = (opts: any) => {
   const newOpts = {
@@ -44,20 +44,23 @@ module.exports = async function (opts) {
     tokenStore,
     opts,
   });
+
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
     const configs = await readConfig(opts.preLoadedConfig);
 
     for (const config of configs) {
       await apiController.config(config);
-      console.log(
-        `loaded config for tenant "${config.tenant}" and product "${config.product}"`
-      );
+
+      // console.log(
+      //   `loaded config for tenant "${config.tenant}" and product "${config.product}"`
+      // );
     }
   }
 
   const type =
     opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
+
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
