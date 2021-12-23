@@ -1,11 +1,11 @@
 import crypto from 'crypto';
 import { Client, IABC, IdPConfig } from "../typings";
+import { JacksonError } from "./error";
 
 const saml = require('../saml/saml.js');
 const x509 = require('../saml/x509.js');
 const dbutils = require('../db/utils.js');
 const { indexNames } = require('./utils.js');
-const { JacksonError } = require('./error.js');
 
 let configStore;
 
