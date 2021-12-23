@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import * as dbutils from "../db/utils";
 import { JacksonError } from "./error";
 import * as allowed from "./oauth/allowed";
 import * as codeVerifier from "./oauth/code-verifier";
@@ -6,7 +7,6 @@ import * as redirect from "./oauth/redirect";
 import { IndexNames } from "./utils";
 
 const saml = require('../saml/saml.js');
-const dbutils = require('../db/utils.js');
 
 let configStore;
 let sessionStore;

@@ -1,11 +1,11 @@
 import crypto from 'crypto';
+import * as dbutils from "../db/utils";
 import { Client, IABC, IdPConfig, ISAMLConfig } from "../typings";
 import { JacksonError } from "./error";
 import { IndexNames } from "./utils";
 
 const saml = require('../saml/saml.js');
 const x509 = require('../saml/x509.js');
-const dbutils = require('../db/utils.js');
 
 export class SAMLConfig implements ISAMLConfig {
   private configStore; // TODO: Add type

@@ -2,12 +2,14 @@ import * as fs from "fs";
 import * as path from "path";
 import { IdPConfig } from "./typings";
 
-export = async function readConfig(preLoadedConfig: string): Promise<IdPConfig[]> {
+const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
   if (preLoadedConfig.startsWith('./')) {
     preLoadedConfig = path.resolve(process.cwd(), preLoadedConfig);
   }
+
   const files = await fs.promises.readdir(preLoadedConfig);
   const configs: IdPConfig[] = [];
+
   for (let idx in files) {
     const file = files[idx];
     if (file.endsWith('.js')) {
@@ -22,4 +24,6 @@ export = async function readConfig(preLoadedConfig: string): Promise<IdPConfig[]
   }
 
   return configs;
-};
+}
+
+export default readConfig;

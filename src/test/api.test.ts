@@ -1,9 +1,9 @@
-const tap = require('tap');
-const path = require('path');
-const sinon = require('sinon');
 import * as crypto from 'crypto';
+import * as path from 'path';
+import * as sinon from 'sinon';
+import * as tap from 'tap';
+import * as dbutils from '../db/utils';
 import readConfig from '../read-config';
-const dbutils = require('../db/utils');
 
 let apiController;
 
