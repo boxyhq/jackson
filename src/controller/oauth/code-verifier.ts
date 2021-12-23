@@ -1,16 +1,11 @@
-const crypto = require('crypto');
+import crypto from "crypto";
 
-const transformBase64 = (input) => {
+export const transformBase64 = (input: string): string => {
   return input.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 };
 
-const encode = (code_challenge) => {
+export const encode = (code_challenge: string): string => {
   return transformBase64(
     crypto.createHash('sha256').update(code_challenge).digest('base64')
   );
-};
-
-module.exports = {
-  encode,
-  transformBase64,
 };

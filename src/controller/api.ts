@@ -1,4 +1,4 @@
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import { Client, IABC, IdPConfig } from "../typings";
 
 const saml = require('../saml/saml.js');
