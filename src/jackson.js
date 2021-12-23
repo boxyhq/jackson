@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const env = require('./env.js');
+const env = require('./env');
 const { extractAuthToken } = require('./controller/utils.js');
 
 let apiController;

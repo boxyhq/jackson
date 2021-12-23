@@ -1,11 +1,11 @@
 const hostUrl = process.env.HOST_URL || 'localhost';
-const hostPort = (process.env.HOST_PORT || '5000') * 1;
+const hostPort = +(process.env.HOST_PORT || '5000');
 const externalUrl =
   process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const samlPath = process.env.SAML_PATH || '/oauth/saml';
 
 const internalHostUrl = process.env.INTERNAL_HOST_URL || 'localhost';
-const internalHostPort = (process.env.INTERNAL_HOST_PORT || '6000') * 1;
+const internalHostPort = +(process.env.INTERNAL_HOST_PORT || '6000');
 
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
 
@@ -21,7 +21,7 @@ const db = {
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
 };
 
-module.exports = {
+const env = {
   hostUrl,
   hostPort,
   externalUrl,
@@ -37,3 +37,5 @@ module.exports = {
     hostUrl === internalHostUrl && hostPort === internalHostPort
   ),
 };
+
+exports = env

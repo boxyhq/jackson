@@ -16,6 +16,9 @@ const decrypt = (res, encryptionKey) => {
 };
 
 class DB {
+  db: any;
+  encryptionKey: string;
+
   constructor(db, encryptionKey) {
     this.db = db;
     this.encryptionKey = encryptionKey;
@@ -60,7 +63,7 @@ class DB {
   }
 }
 
-module.exports = {
+export = {
   new: async (options) => {
     const encryptionKey = options.encryptionKey
       ? Buffer.from(options.encryptionKey, 'latin1')

@@ -15,9 +15,11 @@
     "SAML 2.0"
   ],
   "scripts": {
+    "build": "tsc",
     "start": "cross-env IDP_ENABLED=true node src/jackson.js",
     "dev": "cross-env IDP_ENABLED=true nodemon src/jackson.js",
-    "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson nodemon src/jackson.js",
+    "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson DB_ENCRYPTION_KEY=RiVoTxDoLUUoIUOp224abMxK6PGGfFuF nodemon dist/jackson.js",
+    "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/jackson DB_ENCRYPTION_KEY=RiVoTxDoLUUoIUOp224abMxK6PGGfFuF nodemon src/jackson.js",
     "pre-loaded": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mem PRE_LOADED_CONFIG='./_config' nodemon src/jackson.js",
     "pre-loaded-db": "cross-env JACKSON_API_KEYS=secret PRE_LOADED_CONFIG='./_config' nodemon src/jackson.js",
     "test": "tap --timeout=100 src/**/*.test.js",
@@ -58,7 +60,8 @@
     "nodemon": "2.0.15",
     "prettier": "2.5.1",
     "sinon": "12.0.1",
-    "tap": "15.1.5"
+    "tap": "15.1.5",
+    "typescript": "^4.5.4"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",

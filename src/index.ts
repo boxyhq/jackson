@@ -1,7 +1,7 @@
-const DB = require('./db/db.js');
-const readConfig = require('./read-config.js');
+import DB = require("./db/db");
+import readConfig = require('./read-config');
 
-const defaultOpts = (opts) => {
+const defaultOpts = (opts: any) => {
   const newOpts = {
     ...opts,
   };

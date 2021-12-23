@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
+import * as path from "path"
+import * as fs from "fs";
 
-module.exports = async function (preLoadedConfig) {
+export = async function readConfig(preLoadedConfig: string) {
   if (preLoadedConfig.startsWith('./')) {
     preLoadedConfig = path.resolve(process.cwd(), preLoadedConfig);
   }

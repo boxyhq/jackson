@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "allowJs": true,
+        "module": "CommonJS",
+        "target": "es6", //same as es2015
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": false,
+        "strict": true,
+        "noImplicitThis": false,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "declaration": true,
+        "noEmitOnError": true
+    },
+    "include": [
+        "./src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/test/*"
+    ]
+}
