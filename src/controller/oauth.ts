@@ -1,11 +1,11 @@
-const crypto = require('crypto');
+import crypto from "crypto";
+import * as allowed from "./oauth/allowed";
+import * as codeVerifier from "./oauth/code-verifier";
+import * as redirect from "./oauth/redirect";
 
 const saml = require('../saml/saml.js');
-const codeVerifier = require('./oauth/code-verifier.js');
-const { indexNames } = require('./utils.js');
 const dbutils = require('../db/utils.js');
-const redirect = require('./oauth/redirect.js');
-const allowed = require('./oauth/allowed.js');
+const { indexNames } = require('./utils.js');
 const { JacksonError } = require('./error.js');
 
 let configStore;
