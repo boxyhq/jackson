@@ -183,23 +183,3 @@ export default (opts) => {
     deleteConfig,
   };
 }
-
-// Proposed
-// export class IdpConfig {
-//   create()
-//   get()
-//   delete()
-// }
-
-// const config = new IdpConfig(opts.configStore);
-// config.create(body)
-
-
-// module.exports = (opts) => {
-//   configStore = opts.configStore;
-//   return {
-//     config,
-//     getConfig,
-//     deleteConfig,
-//   };
-// };

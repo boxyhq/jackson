@@ -1,9 +1,8 @@
 const tap = require('tap');
 const path = require('path');
 const sinon = require('sinon');
-const crypto = require('crypto');
-
-const readConfig = require('../read-config');
+import * as crypto from 'crypto';
+import readConfig from '../read-config';
 const dbutils = require('../db/utils');
 
 let apiController;
@@ -20,7 +19,7 @@ const OPTIONS = {
 };
 
 tap.before(async () => {
-  const controller = await require('../index.js')(OPTIONS);
+  const controller = await require('../index.ts')(OPTIONS);
 
   apiController = controller.apiController;
 });

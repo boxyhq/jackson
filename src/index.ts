@@ -36,7 +36,7 @@ module.exports = async function (opts) {
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
 
-  const apiController = require('./controller/api.js')({ configStore });
+  const apiController = require('./controller/api.ts')({ configStore });
   const oauthController = require('./controller/oauth.js')({
     configStore,
     sessionStore,
