@@ -1,9 +1,9 @@
-const indexNames = {
+export const indexNames = {
   entityID: 'entityID',
   tenantProduct: 'tenantProduct',
-};
+}
 
-const extractAuthToken = (req) => {
+export const extractAuthToken = (req) => {
   const authHeader = req.get('authorization');
   const parts = (authHeader || '').split(' ');
   if (parts.length > 1) {
@@ -11,9 +11,4 @@ const extractAuthToken = (req) => {
   }
 
   return null;
-};
-
-module.exports = {
-  indexNames,
-  extractAuthToken,
-};
+}
