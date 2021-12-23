@@ -1,6 +1,6 @@
 const t = require('tap');
 
-const DB = require('./db.js');
+const DB = require('../db/db.js');
 
 const encryptionKey = '3yGrTcnKPBqqHoH3zZMAU6nt4bmIYb2q';
 
