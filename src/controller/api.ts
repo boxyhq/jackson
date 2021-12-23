@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Client, IABC, IdPConfig } from "../types";
+import { Client, IABC, IdPConfig } from "../typings";
 
 const saml = require('../saml/saml.js');
 const x509 = require('../saml/x509.js');

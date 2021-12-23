@@ -1,8 +1,8 @@
-export interface IdPConfig {
-    defaultRedirectUrl: string
-    redirectUrl: string
-    tenant: string
-    product: string
+export type IdPConfig = {
+    defaultRedirectUrl: string;
+    redirectUrl: string;
+    tenant: string;
+    product: string;
     rawMetadata: string
 }
 
