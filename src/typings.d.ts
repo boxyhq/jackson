@@ -26,7 +26,7 @@ export type IABC = {
   product: string
 }
 
-interface ISAMLConfig {
+export interface ISAMLConfig {
   // Ensure backward compatibility
   config(body: IdPConfig): Promise<Client>
   getConfig(body: IABC): Promise<Partial<Client>>
@@ -37,7 +37,20 @@ interface ISAMLConfig {
   delete(body: IABC): Promise<void>
 }
 
-interface Index {
+export interface Index {
   name: string,
   value: string
+}
+
+export interface DatabaseDriver {
+  get(key: string);
+  put(key: string, value: any, indexes: Index[]);
+  delete(key: string);
+  getByIndex(idx: Index);
+}
+
+export interface StoreContract extends DatabaseDriver {
+  namespace: string;
+  db: DatabaseDriver;
+  ttl: string;
 }

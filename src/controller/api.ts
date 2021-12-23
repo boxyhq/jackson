@@ -8,7 +8,8 @@ const saml = require('../saml/saml.js');
 const x509 = require('../saml/x509.js');
 
 export class SAMLConfig implements ISAMLConfig {
-  private configStore; // TODO: Add type
+  // TODO: Add type
+  private configStore
 
   constructor(configStore) {
     this.configStore = configStore;
