@@ -14,10 +14,34 @@ export class SAMLConfig implements ISAMLConfig {
     this.configStore = configStore;
   }
 
+  private _validateIdPConfig (body: IdPConfig): void {
+    const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
+
+    if (!rawMetadata) {
+        throw new JacksonError('Please provide rawMetadata', 400);
+    }
+
+    if (!defaultRedirectUrl) {
+        throw new JacksonError('Please provide a defaultRedirectUrl', 400);
+    }
+
+    if (!redirectUrl) {
+        throw new JacksonError('Please provide redirectUrl', 400);
+    }
+
+    if (!tenant) {
+        throw new JacksonError('Please provide tenant', 400);
+    }
+
+    if (!product) {
+        throw new JacksonError('Please provide product', 400);
+    }
+  }
+
   public async create(body: IdPConfig): Promise<Client> {
     const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
 
-    validateIdPConfig(body)
+    this._validateIdPConfig(body);
 
     const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
 
@@ -85,17 +109,13 @@ export class SAMLConfig implements ISAMLConfig {
   public async get(body: IABC): Promise<Partial<Client>> {
     const { clientID, tenant, product } = body;
 
-    // TODO: Add params validations
-
     if (clientID) {
       const samlConfig = await this.configStore.get(clientID);
 
-      if (!samlConfig) {
-        return {};
-      }
+      return (samlConfig) ? { provider: samlConfig.idpMetadata.provider } : {};
+    }
 
-      return { provider: samlConfig.idpMetadata.provider };
-    } else {
+    if(tenant && product) {
       const samlConfigs = await this.configStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
@@ -107,38 +127,45 @@ export class SAMLConfig implements ISAMLConfig {
 
       return { provider: samlConfigs[0].idpMetadata.provider };
     }
+
+    throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
   }
 
   public async delete(body: IABC): Promise<void> {
     const { clientID, clientSecret, tenant, product } = body;
 
-    // TODO: Add params validations
+    if(clientID && clientSecret) {
+      const samlConfig = await this.configStore.get(clientID);
 
-   if (clientID) {
-     if (!clientSecret) {
-       throw new JacksonError('Please provide clientSecret', 400);
-     }
-     const samlConfig = await this.configStore.get(clientID);
-     if (!samlConfig) {
-       return;
-     }
-     if (samlConfig.clientSecret === clientSecret) {
-       await this.configStore.delete(clientID);
-     } else {
-       throw new JacksonError('clientSecret mismatch', 400);
-     }
-   } else {
-     const samlConfigs = await this.configStore.getByIndex({
-       name: IndexNames.TenantProduct,
-       value: dbutils.keyFromParts(tenant, product),
-     });
-     if (!samlConfigs || !samlConfigs.length) {
-       return;
-     }
-     for (const conf of samlConfigs) {
-       await this.configStore.delete(conf.clientID);
-     }
-   }
+      if (!samlConfig) {
+        return;
+      }
+
+      if (samlConfig.clientSecret === clientSecret) {
+        await this.configStore.delete(clientID);
+      } else {
+        throw new JacksonError('clientSecret mismatch', 400);
+      }
+    }
+
+    if(tenant && product) {
+      const samlConfigs = await this.configStore.getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
+
+      if (!samlConfigs || !samlConfigs.length) {
+        return;
+      }
+
+      for (const conf of samlConfigs) {
+        await this.configStore.delete(conf.clientID);
+      }
+
+      return;
+    }
+
+    throw new JacksonError('Please provide `clientID` and `clientSecret` or `tenant` and `product`.', 400);
   }
 
   // Ensure backward compatibility
@@ -169,27 +196,3 @@ const extractHostName = (url: string): string | null => {
     return null;
   }
 };
-
-const validateIdPConfig = (body: IdPConfig): void => {
-    const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
-
-    if (!rawMetadata) {
-        throw new JacksonError('Please provide rawMetadata', 400);
-    }
-
-    if (!defaultRedirectUrl) {
-        throw new JacksonError('Please provide a defaultRedirectUrl', 400);
-    }
-
-    if (!redirectUrl) {
-        throw new JacksonError('Please provide redirectUrl', 400);
-    }
-
-    if (!tenant) {
-        throw new JacksonError('Please provide tenant', 400);
-    }
-
-    if (!product) {
-        throw new JacksonError('Please provide product', 400);
-    }
-}
