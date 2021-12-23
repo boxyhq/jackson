@@ -184,7 +184,7 @@ const samlResponse = async (body) => {
     }
   }
 
-  let validateOpts = {
+  let validateOpts: any = {
     thumbprint: samlConfig.idpMetadata.thumbprint,
     audience: options.samlAudience,
   };
@@ -198,7 +198,7 @@ const samlResponse = async (body) => {
   // store details against a code
   const code = crypto.randomBytes(20).toString('hex');
 
-  let codeVal = {
+  let codeVal: any = {
     profile,
     clientID: samlConfig.clientID,
     clientSecret: samlConfig.clientSecret,
@@ -218,7 +218,7 @@ const samlResponse = async (body) => {
     throw new JacksonError('Redirect URL is not allowed.', 403);
   }
 
-  let params = {
+  let params: any = {
     code,
   };
 

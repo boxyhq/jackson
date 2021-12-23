@@ -11,7 +11,7 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "declaration": true,
-        "noEmitOnError": true,
+        "noEmitOnError": false,
         "noUnusedParameters": true,
         "removeComments": false,
         "strictNullChecks": true,
