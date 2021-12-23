@@ -27,7 +27,7 @@ const defaultOpts = (opts: any) => {
   return newOpts;
 };
 
-module.exports = async function (opts) {
+export default async function controllers(opts: any): Promise<{ apiController: object, oauthController: object }> {
   opts = defaultOpts(opts);
 
   const db = await DB.new(opts.db);

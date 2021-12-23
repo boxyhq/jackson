@@ -1,8 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-
-const env = require('./env');
-const { extractAuthToken } = require('./controller/utils.js');
+import express from 'express';
+import cors from 'cors';
+import env from './env';
+import { extractAuthToken } from './controller/utils.js';
+import { JacksonError } from './controller/error';
 
 let apiController;
 let oauthController;
@@ -21,7 +21,7 @@ app.get(oauthPath + '/authorize', async (req, res) => {
 
     res.redirect(redirect_url);
   } catch (err) {
-    const { message, statusCode = 500 } = err;
+    const { message, statusCode = 500 } = err as JacksonError;
 
     res.status(statusCode).send(message);
   }
@@ -33,7 +33,7 @@ app.post(env.samlPath, async (req, res) => {
 
     res.redirect(redirect_url);
   } catch (err) {
-    const { message, statusCode = 500 } = err;
+    const { message, statusCode = 500 } = err as JacksonError;
 
     res.status(statusCode).send(message);
   }
@@ -45,7 +45,7 @@ app.post(oauthPath + '/token', cors(), async (req, res) => {
 
     res.json(result);
   } catch (err) {
-    const { message, statusCode = 500 } = err;
+    const { message, statusCode = 500 } = err as JacksonError;
 
     res.status(statusCode).send(message);
   }
@@ -68,7 +68,7 @@ app.get(oauthPath + '/userinfo', async (req, res) => {
 
     res.json(profile);
   } catch (err) {
-    const { message, statusCode = 500 } = err;
+    const { message, statusCode = 500 } = err as JacksonError;
 
     res.status(statusCode).json({ message });
   }
@@ -79,9 +79,10 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  const ret = await require('./index.js')(env);
-  apiController = ret.apiController;
-  oauthController = ret.oauthController;
+  const ctrlrModule =  await (await import('./index')).default(env);
+
+  apiController = ctrlrModule.apiController;
+  oauthController = ctrlrModule.oauthController;
 });
 
 // Internal routes, recommended not to expose this to the public interface though it would be guarded by API key(s)
@@ -108,8 +109,10 @@ internalApp.post(apiPath + '/config', async (req, res) => {
 
     res.json(await apiController.config(req.body));
   } catch (err) {
+    const {message} = err as JacksonError
+
     res.status(500).json({
-      error: err.message,
+      error: message,
     });
   }
 });
@@ -124,8 +127,10 @@ internalApp.get(apiPath + '/config', async (req, res) => {
 
     res.json(await apiController.getConfig(req.query));
   } catch (err) {
+    const {message} = err as JacksonError
+
     res.status(500).json({
-      error: err.message,
+      error: message,
     });
   }
 });
@@ -140,8 +145,10 @@ internalApp.delete(apiPath + '/config', async (req, res) => {
     await apiController.deleteConfig(req.body);
     res.status(200).end();
   } catch (err) {
+    const {message} = err as JacksonError
+
     res.status(500).json({
-      error: err.message,
+      error: message,
     });
   }
 });
