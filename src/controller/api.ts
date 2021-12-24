@@ -11,7 +11,7 @@ export class SAMLConfig implements ISAMLConfig {
   // TODO: Add type
   private configStore
 
-  constructor(configStore) {
+  constructor({configStore}) {
     this.configStore = configStore;
   }
 

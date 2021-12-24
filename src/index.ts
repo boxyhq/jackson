@@ -40,7 +40,7 @@ export default async function controllers(
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
 
-  const apiController = new SAMLConfig(configStore);
+  const apiController = new SAMLConfig({configStore});
 
   const oauthController = new OAuthController({
     configStore,
