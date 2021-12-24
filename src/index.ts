@@ -54,9 +54,9 @@ export default async function controllers(opts: any): Promise<{ apiController: o
     for (const config of configs) {
       await apiController.config(config);
 
-      // console.log(
-      //   `loaded config for tenant "${config.tenant}" and product "${config.product}"`
-      // );
+      console.log(
+        `loaded config for tenant "${config.tenant}" and product "${config.product}"`
+      );
     }
   }
 

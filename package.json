@@ -62,11 +62,11 @@
     "prettier": "2.5.1",
     "sinon": "12.0.1",
     "tap": "15.1.5",
+    "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.{js,css,md}": "prettier --write"
-  },
-  "type": "module"
+  }
 }

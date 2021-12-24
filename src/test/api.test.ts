@@ -32,7 +32,7 @@ tap.test('controller/api', async (t) => {
   const metadataPath = path.join(__dirname, '/data/metadata');
   const config = await readConfig(metadataPath);
 
-  t.test('.config()', async (t) => {
+  t.test('.config()', async (t) => {  
     t.test('when required fields are missing or invalid', async (t) => {
       t.test('when `rawMetadata` is empty', async (t) => {
         const body = Object.assign({}, config[0]);
