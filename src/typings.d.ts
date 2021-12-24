@@ -108,4 +108,5 @@ export interface Encrypted {
   value: string;
 }
 
+// TODO: Need fix
 export type EncryptionKey = any;
