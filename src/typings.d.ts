@@ -6,7 +6,8 @@ export type IdPConfig = {
   rawMetadata: string;
 };
 
-export interface OAuthApp {
+// TODO: Suggest an interface name
+export interface OAuth {
   client_id: string;
   client_secret: string;
   provider: string;
@@ -29,12 +30,12 @@ export type IABC =
 
 export interface ISAMLConfig {
   // Ensure backward compatibility
-  config(body: IdPConfig): Promise<OAuthApp>;
-  getConfig(body: IABC): Promise<Partial<OAuthApp>>;
+  config(body: IdPConfig): Promise<OAuth>;
+  getConfig(body: IABC): Promise<Partial<OAuth>>;
   deleteConfig(body: IABC): Promise<void>;
 
-  create(body: IdPConfig): Promise<OAuthApp>;
-  get(body: IABC): Promise<Partial<OAuthApp>>;
+  create(body: IdPConfig): Promise<OAuth>;
+  get(body: IABC): Promise<Partial<OAuth>>;
   delete(body: IABC): Promise<void>;
 }
 

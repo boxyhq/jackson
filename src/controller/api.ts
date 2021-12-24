@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import * as dbutils from "../db/utils";
-import { IABC, IdPConfig, ISAMLConfig, OAuthApp } from "../typings";
+import { IABC, IdPConfig, ISAMLConfig, OAuth } from "../typings";
 import { JacksonError } from "./error";
 import { IndexNames } from "./utils";
 
@@ -39,7 +39,7 @@ export class SAMLConfig implements ISAMLConfig {
     }
   }
 
-  public async create(body: IdPConfig): Promise<OAuthApp> {
+  public async create(body: IdPConfig): Promise<OAuth> {
     const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
 
     this._validateIdPConfig(body);
@@ -107,7 +107,7 @@ export class SAMLConfig implements ISAMLConfig {
     };
   }
 
-  public async get(body: IABC): Promise<Partial<OAuthApp>> {
+  public async get(body: IABC): Promise<Partial<OAuth>> {
     const { clientID, tenant, product } = body;
 
     if (clientID) {
@@ -171,11 +171,11 @@ export class SAMLConfig implements ISAMLConfig {
 
   // Ensure backward compatibility
 
-  async config(body: IdPConfig): Promise<OAuthApp> {
+  async config(body: IdPConfig): Promise<OAuth> {
     return this.create(body);
   }
 
-  async getConfig(body: IABC): Promise<Partial<OAuthApp>> {
+  async getConfig(body: IABC): Promise<Partial<OAuth>> {
     return this.get(body);
   }
 
