@@ -1,11 +1,11 @@
 {
   "name": "@boxyhq/saml-jackson",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "license": "Apache 2.0",
   "description": "SAML 2.0 service",
   "main": "src/index.js",
   "engines": {
-    "node": ">=14.18.1"
+    "node": ">=14.x"
   },
   "repository": {
     "type": "git",
