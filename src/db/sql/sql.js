@@ -6,7 +6,7 @@ const JacksonStore = require('./model/JacksonStore.js');
 const JacksonIndex = require('./model/JacksonIndex.js');
 const JacksonTTL = require('./model/JacksonTTL.js');
 
-const dbutils = require('../utils.js');
+const dbutils = require('../utils');
 
 class Sql {
   constructor(options) {
