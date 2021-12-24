@@ -53,6 +53,7 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
+    "@types/redis": "^4.0.11",
     "@types/tap": "^15.0.5",
     "cross-env": "7.0.3",
     "eslint": "8.4.0",

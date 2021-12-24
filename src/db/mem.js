@@ -1,5 +1,5 @@
 // This is an in-memory implementation to be used with testing and prototyping only
-const dbutils = require('./utils.js');
+import * as dbutils from './utils';
 
 class Mem {
   constructor(options) {

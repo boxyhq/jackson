@@ -54,3 +54,11 @@ export interface StoreContract extends DatabaseDriver {
   db: DatabaseDriver;
   ttl: string;
 }
+
+export interface Encrypted {
+  iv: string,
+  tag: string,
+  value: string
+}
+
+export type EncryptionKey = any

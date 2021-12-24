@@ -1,11 +1,13 @@
-const mem = require('./mem.js');
-const mongo = require('./mongo.js');
-const redis = require('./redis.js');
 const sql = require('./sql/sql.js');
-const store = require('./store.js');
-const encrypter = require('./encrypter.js');
+const mem = require('./mem')
 
-const decrypt = (res, encryptionKey) => {
+import { Encrypted, EncryptionKey, Index } from '../typings';
+import * as encrypter from './encrypter';
+import mongo from './mongo';
+import redis from './redis';
+import store from './store';
+
+const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): object => {
   if (res.iv && res.tag) {
     return JSON.parse(
       encrypter.decrypt(res.value, res.iv, res.tag, encryptionKey)
@@ -16,16 +18,17 @@ const decrypt = (res, encryptionKey) => {
 };
 
 class DB {
-  db: any;
-  encryptionKey: string;
+  private db: any;
+  private encryptionKey: EncryptionKey;
 
-  constructor(db, encryptionKey) {
+  constructor(db: any, encryptionKey: EncryptionKey) {
     this.db = db;
     this.encryptionKey = encryptionKey;
   }
 
-  async get(namespace, key) {
+  async get(namespace: string, key: string): Promise<any> {
     const res = await this.db.get(namespace, key);
+
     if (!res) {
       return null;
     }
@@ -33,7 +36,7 @@ class DB {
     return decrypt(res, this.encryptionKey);
   }
 
-  async getByIndex(namespace, idx) {
+  async getByIndex(namespace: string, idx: Index): Promise<any> {
     const res = await this.db.getByIndex(namespace, idx);
     const encryptionKey = this.encryptionKey;
     return res.map((r) => {
@@ -42,7 +45,7 @@ class DB {
   }
 
   // ttl is in seconds
-  async put(namespace, key, val, ttl = 0, ...indexes) {
+  async put(namespace: string, key: string, val: string, ttl: number = 0, ...indexes: any[]): Promise<any> {
     if (ttl > 0 && indexes && indexes.length > 0) {
       throw new Error('secondary indexes not allow on a store with ttl');
     }
@@ -54,11 +57,11 @@ class DB {
     return await this.db.put(namespace, key, dbVal, ttl, ...indexes);
   }
 
-  async delete(namespace, key) {
+  async delete(namespace: string, key: string): Promise<any> {
     return await this.db.delete(namespace, key);
   }
 
-  store(namespace, ttl = 0) {
+  store(namespace: string, ttl: number = 0): any {
     return store.new(namespace, this, ttl);
   }
 }
@@ -68,6 +71,7 @@ export = {
     const encryptionKey = options.encryptionKey
       ? Buffer.from(options.encryptionKey, 'latin1')
       : null;
+
     switch (options.engine) {
       case 'redis':
         return new DB(await redis.new(options), encryptionKey);

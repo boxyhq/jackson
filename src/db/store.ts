@@ -1,26 +1,33 @@
-const dbutils = require('./utils.js');
+import { Index } from '../typings';
+import * as dbutils from './utils';
 
 class Store {
-  constructor(namespace, db, ttl = 0) {
+  private namespace: string;
+  private db: any;
+  private ttl: number;
+
+  constructor(namespace: string, db: any, ttl: number = 0) {
     this.namespace = namespace;
     this.db = db;
     this.ttl = ttl;
   }
 
-  async get(key) {
+  async get(key: string): Promise<any> {
     return await this.db.get(this.namespace, dbutils.keyDigest(key));
   }
 
-  async getByIndex(idx) {
+  async getByIndex(idx: Index): Promise<any> {
     idx.value = dbutils.keyDigest(idx.value);
+
     return await this.db.getByIndex(this.namespace, idx);
   }
 
-  async put(key, val, ...indexes) {
+  async put(key: string, val: string, ...indexes: any[]): Promise<any> {
     indexes = (indexes || []).map((idx) => {
       idx.value = dbutils.keyDigest(idx.value);
       return idx;
     });
+
     return await this.db.put(
       this.namespace,
       dbutils.keyDigest(key),
@@ -30,13 +37,13 @@ class Store {
     );
   }
 
-  async delete(key) {
+  async delete(key: string): Promise<any> {
     return await this.db.delete(this.namespace, dbutils.keyDigest(key));
   }
 }
 
-module.exports = {
-  new: (namespace, db, ttl = 0) => {
+export default {
+  new: (namespace: string, db: any, ttl: number = 0) => {
     return new Store(namespace, db, ttl);
   },
 };

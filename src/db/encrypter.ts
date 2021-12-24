@@ -1,14 +1,16 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
+import { Encrypted, EncryptionKey } from '../typings';
 
 const ALGO = 'aes-256-gcm';
 const BLOCK_SIZE = 16; // 128 bit
 
-const encrypt = (text, key) => {
+export const encrypt = (text: string, key: EncryptionKey): Encrypted => {
   const iv = crypto.randomBytes(BLOCK_SIZE);
   const cipher = crypto.createCipheriv(ALGO, key, iv);
 
   let ciphertext = cipher.update(text, 'utf8', 'base64');
   ciphertext += cipher.final('base64');
+
   return {
     iv: iv.toString('base64'),
     tag: cipher.getAuthTag().toString('base64'),
@@ -16,7 +18,7 @@ const encrypt = (text, key) => {
   };
 };
 
-const decrypt = (ciphertext, iv, tag, key) => {
+export const decrypt = (ciphertext: string, iv: string, tag: string, key: EncryptionKey): string => {
   const decipher = crypto.createDecipheriv(
     ALGO,
     key,
@@ -28,9 +30,4 @@ const decrypt = (ciphertext, iv, tag, key) => {
   cleartext += decipher.final('utf8');
 
   return cleartext;
-};
-
-module.exports = {
-  encrypt,
-  decrypt,
 };

@@ -1,26 +1,31 @@
-const redis = require('redis');
-const dbutils = require('./utils.js');
+import * as redis from 'redis';
+import { Index } from '../typings';
+import * as dbutils from './utils';
 
 class Redis {
-  constructor(options) {
-    return (async () => {
-      let opts = {};
-      if (options && options.url) {
-        opts.socket = {
-          url: options.url,
-        };
-      }
-      this.client = redis.createClient(opts);
+  private client!: any
+  private options: any;
 
-      this.client.on('error', (err) => console.log('Redis Client Error', err));
-
-      await this.client.connect();
-
-      return this;
-    })();
+  constructor(options: any) {
+    this.options = options;
   }
 
-  async get(namespace, key) {
+  async init() {
+    let opts = {};
+
+    if (this.options && this.options.url) {
+      opts['socket'] = {
+        url: this.options.url,
+      };
+    }
+
+    this.client = redis.createClient(opts);
+    this.client.on('error', (err: any) => console.log('Redis Client Error', err));
+
+    await this.client.connect();
+  }
+
+  async get(namespace: string, key: string): Promise<any> {
     let res = await this.client.get(dbutils.key(namespace, key));
     if (res) {
       return JSON.parse(res);
@@ -29,12 +34,12 @@ class Redis {
     return null;
   }
 
-  async getByIndex(namespace, idx) {
+  async getByIndex(namespace: string, idx: Index): Promise<any> {
     const dbKeys = await this.client.sMembers(
       dbutils.keyForIndex(namespace, idx)
     );
 
-    const ret = [];
+    const ret: string[] = [];
     for (const dbKey of dbKeys || []) {
       ret.push(await this.get(namespace, dbKey));
     }
@@ -42,7 +47,7 @@ class Redis {
     return ret;
   }
 
-  async put(namespace, key, val, ttl = 0, ...indexes) {
+  async put(namespace: string, key: string, val: string, ttl: number = 0, ...indexes: any[]): Promise<void> {
     let tx = this.client.multi();
     const k = dbutils.key(namespace, key);
 
@@ -62,7 +67,7 @@ class Redis {
     await tx.exec();
   }
 
-  async delete(namespace, key) {
+  async delete(namespace: string, key: string): Promise<any> {
     let tx = this.client.multi();
     const k = dbutils.key(namespace, key);
     tx = tx.del(k);
@@ -81,8 +86,8 @@ class Redis {
   }
 }
 
-module.exports = {
-  new: async (options) => {
-    return new Redis(options);
-  },
+export default {
+  new: async (options: any) => {
+    return await new Redis(options).init();
+  }
 };
