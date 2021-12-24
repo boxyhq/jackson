@@ -1,4 +1,4 @@
-import Ripemd160  from 'ripemd160';
+import Ripemd160 from 'ripemd160';
 import { Index } from '../typings';
 
 export const key = (namespace: string, k: string): string => {
@@ -19,7 +19,7 @@ export const keyFromParts = (...parts: string[]): string => {
   return parts.join(':');
 };
 
-export const sleep = (ms:number): Promise<void> => {
+export const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 

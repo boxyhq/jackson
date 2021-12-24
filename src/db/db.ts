@@ -1,5 +1,5 @@
 const sql = require('./sql/sql.js');
-const mem = require('./mem')
+const mem = require('./mem');
 
 import { Encrypted, EncryptionKey, Index } from '../typings';
 import * as encrypter from './encrypter';
@@ -45,7 +45,13 @@ class DB {
   }
 
   // ttl is in seconds
-  async put(namespace: string, key: string, val: string, ttl: number = 0, ...indexes: any[]): Promise<any> {
+  async put(
+    namespace: string,
+    key: string,
+    val: string,
+    ttl: number = 0,
+    ...indexes: any[]
+  ): Promise<any> {
     if (ttl > 0 && indexes && indexes.length > 0) {
       throw new Error('secondary indexes not allow on a store with ttl');
     }

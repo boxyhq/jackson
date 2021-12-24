@@ -3,7 +3,7 @@ import { Index } from '../typings';
 import * as dbutils from './utils';
 
 class Redis {
-  private client!: any
+  private client!: any;
   private options: any;
 
   constructor(options: any) {
@@ -20,7 +20,9 @@ class Redis {
     }
 
     this.client = redis.createClient(opts);
-    this.client.on('error', (err: any) => console.log('Redis Client Error', err));
+    this.client.on('error', (err: any) =>
+      console.log('Redis Client Error', err)
+    );
 
     await this.client.connect();
   }
@@ -47,7 +49,13 @@ class Redis {
     return ret;
   }
 
-  async put(namespace: string, key: string, val: string, ttl: number = 0, ...indexes: any[]): Promise<void> {
+  async put(
+    namespace: string,
+    key: string,
+    val: string,
+    ttl: number = 0,
+    ...indexes: any[]
+  ): Promise<void> {
     let tx = this.client.multi();
     const k = dbutils.key(namespace, key);
 
@@ -89,5 +97,5 @@ class Redis {
 export default {
   new: async (options: any) => {
     return await new Redis(options).init();
-  }
+  },
 };

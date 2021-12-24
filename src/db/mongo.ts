@@ -3,10 +3,10 @@ import { Index } from '../typings';
 import * as dbutils from './utils';
 
 type Document = {
-  value: string,
-  expiresAt: Date,
-  indexes: string[]
-}
+  value: string;
+  expiresAt: Date;
+  indexes: string[];
+};
 
 class Mongo {
   private client: any;
@@ -29,7 +29,7 @@ class Mongo {
     await this.collection.createIndex({ indexes: 1 });
     await this.collection.createIndex(
       { expiresAt: 1 },
-        { expireAfterSeconds: 1 }
+      { expireAfterSeconds: 1 }
     );
   }
 
@@ -59,7 +59,13 @@ class Mongo {
     return ret;
   }
 
-  async put(namespace: string, key: string, val: string, ttl: number = 0, ...indexes: any[]): Promise<void> {
+  async put(
+    namespace: string,
+    key: string,
+    val: string,
+    ttl: number = 0,
+    ...indexes: any[]
+  ): Promise<void> {
     const doc = <Document>{
       value: val,
     };
@@ -98,5 +104,5 @@ class Mongo {
 export default {
   new: async (options: any) => {
     return await new Mongo(options).init();
-  }
+  },
 };

@@ -38,4 +38,4 @@ const env = {
   ),
 };
 
-export default  env
+export default env;

@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from 'crypto';
 
 export const transformBase64 = (input: string): string => {
   return input.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
