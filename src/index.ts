@@ -1,6 +1,7 @@
-import DB = require("./db/db");
-import { SAMLConfig } from "./controller/api";
-import readConfig from "./read-config";
+import DB = require('./db/db');
+import { SAMLConfig } from './controller/api';
+import { OAuthController } from './controller/oauth';
+import readConfig from './read-config';
 
 const defaultOpts = (opts: any) => {
   const newOpts = {
@@ -28,7 +29,9 @@ const defaultOpts = (opts: any) => {
   return newOpts;
 };
 
-export default async function controllers(opts: any): Promise<{ apiController: object, oauthController: object }> {
+export default async function controllers(
+  opts: any
+): Promise<{ apiController: object; oauthController: object }> {
   opts = defaultOpts(opts);
 
   const db = await DB.new(opts.db);
@@ -37,9 +40,9 @@ export default async function controllers(opts: any): Promise<{ apiController: o
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
 
-  const apiController = new SAMLConfig(configStore)
+  const apiController = new SAMLConfig(configStore);
 
-  const oauthController = require('./controller/oauth.js')({
+  const oauthController = new OAuthController({
     configStore,
     sessionStore,
     codeStore,
@@ -69,4 +72,4 @@ export default async function controllers(opts: any): Promise<{ apiController: o
     apiController,
     oauthController,
   };
-};
+}
