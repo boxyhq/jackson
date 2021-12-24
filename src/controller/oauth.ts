@@ -81,10 +81,10 @@ const authorize = async (body) => {
   ) {
     // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
     const sp = getEncodedClientId(client_id);
-    if (sp) {
+    if (sp?.tenant) {
       const samlConfigs = await configStore.getByIndex({
         name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(sp.tenant, sp.product),
+        value: dbutils.keyFromParts(sp.tenant, sp.product || ''),
       });
 
       if (!samlConfigs || samlConfigs.length === 0) {
