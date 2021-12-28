@@ -9,9 +9,9 @@ export const extractAuthToken = (req: Request): string | null => {
   }
 
   return null;
-}
+};
 
 export enum IndexNames {
   EntityID = 'entityID',
-  TenantProduct = 'tenantProduct'
+  TenantProduct = 'tenantProduct',
 }

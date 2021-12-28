@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import env from './env';
-import { extractAuthToken } from './controller/utils.js';
+import { extractAuthToken } from './controller/utils';
 import { JacksonError } from './controller/error';
 
 let apiController;
@@ -79,7 +79,7 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  const ctrlrModule =  await (await import('./index')).default(env);
+  const ctrlrModule = await (await import('./index')).default(env);
 
   apiController = ctrlrModule.apiController;
   oauthController = ctrlrModule.oauthController;
@@ -109,7 +109,7 @@ internalApp.post(apiPath + '/config', async (req, res) => {
 
     res.json(await apiController.config(req.body));
   } catch (err) {
-    const {message} = err as JacksonError
+    const { message } = err as JacksonError;
 
     res.status(500).json({
       error: message,
@@ -127,7 +127,7 @@ internalApp.get(apiPath + '/config', async (req, res) => {
 
     res.json(await apiController.getConfig(req.query));
   } catch (err) {
-    const {message} = err as JacksonError
+    const { message } = err as JacksonError;
 
     res.status(500).json({
       error: message,
@@ -145,7 +145,7 @@ internalApp.delete(apiPath + '/config', async (req, res) => {
     await apiController.deleteConfig(req.body);
     res.status(200).end();
   } catch (err) {
-    const {message} = err as JacksonError
+    const { message } = err as JacksonError;
 
     res.status(500).json({
       error: message,

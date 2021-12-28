@@ -1,4 +1,7 @@
-export const success = (redirectUrl: string, params: Record<string, string>): string => {
+export const success = (
+  redirectUrl: string,
+  params: Record<string, string>
+): string => {
   const url: URL = new URL(redirectUrl);
 
   for (const [key, value] of Object.entries(params)) {
@@ -6,4 +9,4 @@ export const success = (redirectUrl: string, params: Record<string, string>): st
   }
 
   return url.href;
-}
+};

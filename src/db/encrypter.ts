@@ -18,7 +18,12 @@ export const encrypt = (text: string, key: EncryptionKey): Encrypted => {
   };
 };
 
-export const decrypt = (ciphertext: string, iv: string, tag: string, key: EncryptionKey): string => {
+export const decrypt = (
+  ciphertext: string,
+  iv: string,
+  tag: string,
+  key: EncryptionKey
+): string => {
   const decipher = crypto.createDecipheriv(
     ALGO,
     key,
