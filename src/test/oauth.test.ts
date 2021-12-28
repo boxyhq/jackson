@@ -6,6 +6,7 @@ import crypto from 'crypto';
 
 import readConfig from '../read-config';
 import saml from '../saml/saml';
+import { JacksonError } from '../controller/error';
 
 let apiController;
 let oauthController;
@@ -64,12 +65,13 @@ tap.test('authorize()', async (t) => {
       await oauthController.authorize(body);
       t.fail('Expecting JacksonError.');
     } catch (err) {
+      const { message, statusCode } = err as JacksonError;
       t.equal(
-        err.message,
+        message,
         'Please specify a redirect URL.',
         'got expected error message'
       );
-      t.equal(err.statusCode, 400, 'got expected status code');
+      t.equal(statusCode, 400, 'got expected status code');
     }
 
     t.end();
@@ -86,12 +88,13 @@ tap.test('authorize()', async (t) => {
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
+      const { message, statusCode } = err as JacksonError;
       t.equal(
-        err.message,
+        message,
         'Please specify a state to safeguard against XSRF attacks.',
         'got expected error message'
       );
-      t.equal(err.statusCode, 400, 'got expected status code');
+      t.equal(statusCode, 400, 'got expected status code');
     }
 
     t.end();
@@ -109,12 +112,13 @@ tap.test('authorize()', async (t) => {
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
+      const { message, statusCode } = err as JacksonError;
       t.equal(
-        err.message,
+        message,
         'SAML configuration not found.',
         'got expected error message'
       );
-      t.equal(err.statusCode, 403, 'got expected status code');
+      t.equal(statusCode, 403, 'got expected status code');
     }
 
     t.end();
@@ -134,12 +138,13 @@ tap.test('authorize()', async (t) => {
 
         t.fail('Expecting JacksonError.');
       } catch (err) {
+        const { message, statusCode } = err as JacksonError;
         t.equal(
-          err.message,
+          message,
           'Redirect URL is not allowed.',
           'got expected error message'
         );
-        t.equal(err.statusCode, 403, 'got expected status code');
+        t.equal(statusCode, 403, 'got expected status code');
       }
 
       t.end();
@@ -194,13 +199,14 @@ tap.test('samlResponse()', async (t) => {
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
+      const { message, statusCode } = err as JacksonError;
       t.equal(
-        err.message,
+        message,
         'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
         'got expected error message'
       );
 
-      t.equal(err.statusCode, 403, 'got expected status code');
+      t.equal(statusCode, 403, 'got expected status code');
     }
 
     t.end();
@@ -257,12 +263,13 @@ tap.test('token()', (t) => {
 
         t.fail('Expecting JacksonError.');
       } catch (err) {
+        const { message, statusCode } = err as JacksonError;
         t.equal(
-          err.message,
+          message,
           'Unsupported grant_type',
           'got expected error message'
         );
-        t.equal(err.statusCode, 400, 'got expected status code');
+        t.equal(statusCode, 400, 'got expected status code');
       }
 
       t.end();
@@ -279,8 +286,9 @@ tap.test('token()', (t) => {
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
-      t.equal(err.message, 'Please specify code', 'got expected error message');
-      t.equal(err.statusCode, 400, 'got expected status code');
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Please specify code', 'got expected error message');
+      t.equal(statusCode, 400, 'got expected status code');
     }
 
     t.end();
@@ -300,8 +308,9 @@ tap.test('token()', (t) => {
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
-      t.equal(err.message, 'Invalid code', 'got expected error message');
-      t.equal(err.statusCode, 403, 'got expected status code');
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid code', 'got expected error message');
+      t.equal(statusCode, 403, 'got expected status code');
     }
 
     t.end();
@@ -315,8 +324,8 @@ tap.test('token()', (t) => {
       redirect_uri: null,
       code: code,
     };
-
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(token);
+    //@ts-ignore
+    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').resolves(token);
 
     const response = await oauthController.token(body);
 
