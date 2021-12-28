@@ -226,21 +226,21 @@ tap.test('samlResponse()', async (t) => {
         firstName: 'John',
         lastName: 'Doe',
       });
-
-      // const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code);
+      //@ts-ignore
+      const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code);
 
       const response = await oauthController.samlResponse(responseBody);
 
       const params = new URLSearchParams(new URL(response.redirect_url).search);
 
       t.ok(stubValidateAsync.calledOnce, 'validateAsync called once');
-      // t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
+      t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
       t.ok('redirect_url' in response, 'response contains redirect_url');
       t.ok(params.has('code'), 'query string includes code');
       t.ok(params.has('state'), 'query string includes state');
       t.match(params.get('state'), authBody.state, 'state value is valid');
 
-      // stubRandomBytes.restore();
+      stubRandomBytes.restore();
       stubValidateAsync.restore();
 
       t.end();
@@ -324,8 +324,11 @@ tap.test('token()', (t) => {
       redirect_uri: null,
       code: code,
     };
-    //@ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').resolves(token);
+    const stubRandomBytes = sinon
+      .stub(crypto, 'randomBytes')
+      .onFirstCall()
+      //@ts-ignore
+      .returns(token);
 
     const response = await oauthController.token(body);
 
@@ -337,7 +340,7 @@ tap.test('token()', (t) => {
     t.match(response.token_type, 'bearer');
     t.match(response.expires_in, 300);
 
-    stubRandomBytes.reset();
+    stubRandomBytes.restore();
 
     t.end();
   });
