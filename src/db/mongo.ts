@@ -64,7 +64,7 @@ class Mongo implements DatabaseDriver {
   async put(
     namespace: string,
     key: string,
-    val: any,
+    val: string,
     ttl: number = 0,
     ...indexes: any[]
   ): Promise<void> {

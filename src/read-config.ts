@@ -1,6 +1,6 @@
-import * as fs from "fs";
-import * as path from "path";
-import { IdPConfig } from "./typings";
+import * as fs from 'fs';
+import * as path from 'path';
+import { IdPConfig } from './typings';
 
 const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
   if (preLoadedConfig.startsWith('./')) {
@@ -24,6 +24,6 @@ const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
   }
 
   return configs;
-}
+};
 
 export default readConfig;
