@@ -219,12 +219,9 @@ tap.test('samlResponse()', async (t) => {
         RelayState: relayState,
       };
 
-      const stubValidateAsync = sinon.stub(saml, 'validateAsync').resolves({
-        id: 1,
-        email: 'john@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-      });
+      const stubValidateAsync = sinon
+        .stub(saml, 'validateAsync')
+        .resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
       //@ts-ignore
       const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code);
 
