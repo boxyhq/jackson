@@ -3,7 +3,7 @@
   "version": "0.2.3",
   "license": "Apache 2.0",
   "description": "SAML 2.0 service",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "engines": {
     "node": ">=14.18.1"
   },
