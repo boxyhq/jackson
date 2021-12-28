@@ -96,10 +96,11 @@ export interface DatabaseDriver {
   getByIndex(idx: Index);
 }
 
-export interface StoreContract extends DatabaseDriver {
-  namespace: string;
-  db: DatabaseDriver;
-  ttl: string;
+export interface Storable {
+  get(key: string): Promise<any>;
+  put(key: string, val: any, indexes: Index[]): Promise<any>;
+  delete(key: string): Promise<any>;
+  getByIndex(idx: Index): Promise<any>;
 }
 
 export interface Encrypted {

@@ -45,7 +45,7 @@ class DB {
   }
 
   // ttl is in seconds
-  async put(namespace: string, key: string, val: string, ttl: number = 0, ...indexes: any[]): Promise<any> {
+  async put(namespace: string, key: string, val: any, ttl: number = 0, ...indexes: any[]): Promise<any> {
     if (ttl > 0 && indexes && indexes.length > 0) {
       throw new Error('secondary indexes not allow on a store with ttl');
     }
