@@ -2,11 +2,11 @@ const saml = require('@boxyhq/saml20');
 const xml2js = require('xml2js');
 const thumbprint = require('thumbprint');
 const xmlcrypto = require('xml-crypto');
-import rambda from 'rambda';
+import * as rambda from 'rambda';
 import xmlbuilder from 'xmlbuilder';
 import crypto from 'crypto';
 import claims from './claims';
-import { SAMLProfile, SAMLReq } from '../typings';
+import { SAMLProfile, SAMLReq } from 'jackson-saml';
 
 const idPrefix = '_';
 const authnXPath =
@@ -231,4 +231,4 @@ const parseMetadataAsync = async (
   });
 };
 
-export { request, parseAsync, validateAsync, parseMetadataAsync };
+export default { request, parseAsync, validateAsync, parseMetadataAsync };

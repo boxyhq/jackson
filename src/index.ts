@@ -2,7 +2,7 @@ import { SAMLConfig } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import DB from './db/db';
 import readConfig from './read-config';
-import { DatabaseOption } from './typings';
+import { DatabaseOption } from 'jackson-saml';
 
 const defaultOpts = (opts: any) => {
   const newOpts = {

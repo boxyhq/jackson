@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { Encrypted, EncryptionKey } from '../typings';
+import { Encrypted, EncryptionKey } from 'jackson-saml';
 
 const ALGO = 'aes-256-gcm';
 const BLOCK_SIZE = 16; // 128 bit

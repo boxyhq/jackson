@@ -7,14 +7,14 @@ import {
   OAuthTokenRes,
   Profile,
   SAMLResponsePayload,
-} from '../typings';
+} from 'jackson-saml';
 import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { IndexNames } from './utils';
 
-import saml = require('../saml/saml');
+import saml from '../saml/saml';
 
 const relayStatePrefix = 'boxyhq_jackson_';
 
