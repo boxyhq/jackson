@@ -117,3 +117,16 @@ export interface Encrypted {
 
 // TODO: Need fix
 export type EncryptionKey = any;
+
+export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem';
+
+export type DatabaseType = 'postgres' | 'cockroachdb' | 'mysql' | 'mariadb';
+
+export interface DatabaseOption {
+  engine: DatabaseEngine;
+  url: string;
+  type: DatabaseType;
+  ttl: number;
+  cleanupLimit: number;
+  encryptionKey?: string;
+}

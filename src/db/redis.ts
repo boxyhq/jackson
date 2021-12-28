@@ -1,12 +1,12 @@
 import * as redis from 'redis';
-import { DatabaseDriver, Index } from '../typings';
+import { DatabaseDriver, DatabaseOption, Index } from '../typings';
 import * as dbutils from './utils';
 
 class Redis implements DatabaseDriver {
+  private options: DatabaseOption;
   private client!: any;
-  private options: any;
 
-  constructor(options: any) {
+  constructor(options: DatabaseOption) {
     this.options = options;
   }
 
@@ -97,7 +97,7 @@ class Redis implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: any) => {
+  new: async (options: DatabaseOption) => {
     return await new Redis(options).init();
   },
 };

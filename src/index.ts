@@ -2,6 +2,7 @@ import { SAMLConfig } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import DB from './db/db';
 import readConfig from './read-config';
+import { DatabaseOption } from './typings';
 
 const defaultOpts = (opts: any) => {
   const newOpts = {
@@ -34,7 +35,7 @@ export default async function controllers(
 ): Promise<{ apiController: object; oauthController: object }> {
   opts = defaultOpts(opts);
 
-  const db = await DB.new(opts.db);
+  const db = await DB.new(<DatabaseOption>opts.db);
 
   const configStore = db.store('saml:config');
   const sessionStore = db.store('oauth:session', opts.db.ttl);

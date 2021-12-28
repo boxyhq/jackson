@@ -316,7 +316,9 @@ tap.test('token()', (t) => {
       code: code,
     };
 
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(token);
+    const stubRandomBytes = sinon
+      .stub(crypto, 'randomBytes')
+      .returns(Buffer.toString(token)); //
 
     const response = await oauthController.token(body);
 

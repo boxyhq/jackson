@@ -1,18 +1,18 @@
 // This is an in-memory implementation to be used with testing and prototyping only
 
-import { DatabaseDriver, Index } from '../typings';
+import { DatabaseDriver, DatabaseOption, Index } from '../typings';
 import * as dbutils from './utils';
 
 class Mem implements DatabaseDriver {
+  private options: DatabaseOption;
   private store: any;
   private indexes: any;
   private cleanup: any;
   private ttlStore: any;
-  private options: any;
   private ttlCleanup: any;
   private timerId: any;
 
-  constructor(options) {
+  constructor(options: DatabaseOption) {
     this.options = options;
   }
 
@@ -120,7 +120,7 @@ class Mem implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: any) => {
+  new: async (options: DatabaseOption) => {
     return await new Mem(options).init();
   },
 };

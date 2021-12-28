@@ -1,6 +1,6 @@
 const sql = require('./sql/sql.js');
 
-import { Encrypted, EncryptionKey, Index } from '../typings';
+import { DatabaseOption, Encrypted, EncryptionKey, Index } from '../typings';
 import * as encrypter from './encrypter';
 import mem from './mem';
 import mongo from './mongo';
@@ -73,7 +73,7 @@ class DB {
 }
 
 export = {
-  new: async (options) => {
+  new: async (options: DatabaseOption) => {
     const encryptionKey = options.encryptionKey
       ? Buffer.from(options.encryptionKey, 'latin1')
       : null;

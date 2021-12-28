@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { DatabaseDriver, Index } from '../typings';
+import { DatabaseDriver, DatabaseOption, Index } from '../typings';
 import * as dbutils from './utils';
 
 type Document = {
@@ -9,12 +9,12 @@ type Document = {
 };
 
 class Mongo implements DatabaseDriver {
-  private client: any;
+  private options: DatabaseOption;
+  private client!: MongoClient;
   private collection: any;
   private db: any;
-  private options: any;
 
-  constructor(options: any) {
+  constructor(options: DatabaseOption) {
     this.options = options;
   }
 
@@ -104,7 +104,7 @@ class Mongo implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: any) => {
+  new: async (options: DatabaseOption) => {
     return await new Mongo(options).init();
   },
 };
