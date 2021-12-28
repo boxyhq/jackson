@@ -1,14 +1,14 @@
 import { MongoClient } from 'mongodb';
-import { Index } from '../typings';
+import { DatabaseDriver, Index } from '../typings';
 import * as dbutils from './utils';
 
 type Document = {
-  value: string,
-  expiresAt: Date,
-  indexes: string[]
-}
+  value: string;
+  expiresAt: Date;
+  indexes: string[];
+};
 
-class Mongo {
+class Mongo implements DatabaseDriver {
   private client: any;
   private collection: any;
   private db: any;
@@ -18,7 +18,7 @@ class Mongo {
     this.options = options;
   }
 
-  async init() {
+  async init(): Promise<Mongo> {
     this.client = new MongoClient(this.options.url);
 
     await this.client.connect();
@@ -29,8 +29,10 @@ class Mongo {
     await this.collection.createIndex({ indexes: 1 });
     await this.collection.createIndex(
       { expiresAt: 1 },
-        { expireAfterSeconds: 1 }
+      { expireAfterSeconds: 1 }
     );
+
+    return this;
   }
 
   async get(namespace: string, key: string): Promise<any> {
@@ -59,7 +61,13 @@ class Mongo {
     return ret;
   }
 
-  async put(namespace: string, key: string, val: string, ttl: number = 0, ...indexes: any[]): Promise<void> {
+  async put(
+    namespace: string,
+    key: string,
+    val: any,
+    ttl: number = 0,
+    ...indexes: any[]
+  ): Promise<void> {
     const doc = <Document>{
       value: val,
     };
@@ -98,5 +106,5 @@ class Mongo {
 export default {
   new: async (options: any) => {
     return await new Mongo(options).init();
-  }
+  },
 };

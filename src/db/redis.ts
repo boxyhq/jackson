@@ -1,16 +1,16 @@
 import * as redis from 'redis';
-import { Index } from '../typings';
+import { DatabaseDriver, Index } from '../typings';
 import * as dbutils from './utils';
 
-class Redis {
-  private client!: any
+class Redis implements DatabaseDriver {
+  private client!: any;
   private options: any;
 
   constructor(options: any) {
     this.options = options;
   }
 
-  async init() {
+  async init(): Promise<Redis> {
     let opts = {};
 
     if (this.options && this.options.url) {
@@ -20,9 +20,13 @@ class Redis {
     }
 
     this.client = redis.createClient(opts);
-    this.client.on('error', (err: any) => console.log('Redis Client Error', err));
+    this.client.on('error', (err: any) =>
+      console.log('Redis Client Error', err)
+    );
 
     await this.client.connect();
+
+    return this;
   }
 
   async get(namespace: string, key: string): Promise<any> {
@@ -47,7 +51,13 @@ class Redis {
     return ret;
   }
 
-  async put(namespace: string, key: string, val: string, ttl: number = 0, ...indexes: any[]): Promise<void> {
+  async put(
+    namespace: string,
+    key: string,
+    val: string,
+    ttl: number = 0,
+    ...indexes: any[]
+  ): Promise<void> {
     let tx = this.client.multi();
     const k = dbutils.key(namespace, key);
 
@@ -89,5 +99,5 @@ class Redis {
 export default {
   new: async (options: any) => {
     return await new Redis(options).init();
-  }
+  },
 };

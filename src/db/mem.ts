@@ -1,37 +1,46 @@
 // This is an in-memory implementation to be used with testing and prototyping only
+
+import { DatabaseDriver, Index } from '../typings';
 import * as dbutils from './utils';
 
-class Mem {
+class Mem implements DatabaseDriver {
+  private store: any;
+  private indexes: any;
+  private cleanup: any;
+  private ttlStore: any;
+  private options: any;
+  private ttlCleanup: any;
+  private timerId: any;
+
   constructor(options) {
-    return (async () => {
-      this.store = {}; // map of key, value
-      this.indexes = {}; // map of key, Set
-      this.cleanup = {}; // map of indexes for cleanup when store key is deleted
-      this.ttlStore = {}; // map of key to ttl
-
-      if (options.ttl) {
-        this.ttlCleanup = async () => {
-          const now = Date.now();
-          for (const k in this.ttlStore) {
-            if (this.ttlStore[k].expiresAt < now) {
-              await this.delete(
-                this.ttlStore[k].namespace,
-                this.ttlStore[k].key
-              );
-            }
-          }
-
-          this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
-        };
-
-        this.timerId = setTimeout(this.ttlCleanup, options.ttl * 1000);
-      }
-
-      return this;
-    })();
+    this.options = options;
   }
 
-  async get(namespace, key) {
+  async init(): Promise<Mem> {
+    this.store = {}; // map of key, value
+    this.indexes = {}; // map of key, Set
+    this.cleanup = {}; // map of indexes for cleanup when store key is deleted
+    this.ttlStore = {}; // map of key to ttl
+
+    if (this.options.ttl) {
+      this.ttlCleanup = async () => {
+        const now = Date.now();
+        for (const k in this.ttlStore) {
+          if (this.ttlStore[k].expiresAt < now) {
+            await this.delete(this.ttlStore[k].namespace, this.ttlStore[k].key);
+          }
+        }
+
+        this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
+      };
+
+      this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
+    }
+
+    return this;
+  }
+
+  async get(namespace: string, key: string): Promise<any> {
     let res = this.store[dbutils.key(namespace, key)];
     if (res) {
       return res;
@@ -40,10 +49,10 @@ class Mem {
     return null;
   }
 
-  async getByIndex(namespace, idx) {
+  async getByIndex(namespace: string, idx: Index): Promise<any> {
     const dbKeys = await this.indexes[dbutils.keyForIndex(namespace, idx)];
 
-    const ret = [];
+    const ret: string[] = [];
     for (const dbKey of dbKeys || []) {
       ret.push(await this.get(namespace, dbKey));
     }
@@ -51,7 +60,13 @@ class Mem {
     return ret;
   }
 
-  async put(namespace, key, val, ttl = 0, ...indexes) {
+  async put(
+    namespace: string,
+    key: string,
+    val: string,
+    ttl: number = 0,
+    ...indexes: any[]
+  ): Promise<any> {
     const k = dbutils.key(namespace, key);
 
     this.store[k] = val;
@@ -86,7 +101,7 @@ class Mem {
     }
   }
 
-  async delete(namespace, key) {
+  async delete(namespace: string, key: string): Promise<any> {
     const k = dbutils.key(namespace, key);
 
     delete this.store[k];
@@ -104,8 +119,8 @@ class Mem {
   }
 }
 
-module.exports = {
-  new: async (options) => {
-    return new Mem(options);
+export default {
+  new: async (options: any) => {
+    return await new Mem(options).init();
   },
 };

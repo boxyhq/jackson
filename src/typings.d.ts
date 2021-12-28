@@ -90,10 +90,16 @@ export interface Index {
 }
 
 export interface DatabaseDriver {
-  get(key: string);
-  put(key: string, value: any, indexes: Index[]);
-  delete(key: string);
-  getByIndex(idx: Index);
+  get(namespace: string, key: string): Promise<any>;
+  put(
+    namespace: string,
+    key: string,
+    val: any,
+    ttl: number,
+    indexes: Index[]
+  ): Promise<any>;
+  delete(namespace: string, key: string): Promise<any>;
+  getByIndex(namespace: string, idx: Index): Promise<any>;
 }
 
 export interface Storable {

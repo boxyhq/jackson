@@ -19,7 +19,7 @@
     },
     "include": [
         "./src/**/*"
-    ],
+, "mem.js"    ],
     "exclude": [
         "node_modules",
         "**/test/*"
