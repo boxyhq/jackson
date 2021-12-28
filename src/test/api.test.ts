@@ -1,9 +1,10 @@
-import * as crypto from 'crypto';
 import * as path from 'path';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../db/utils';
+import controllers from '../index';
 import readConfig from '../read-config';
+import { IdPConfig } from '../typings';
 
 let apiController;
 
@@ -19,7 +20,7 @@ const OPTIONS = {
 };
 
 tap.before(async () => {
-  const controller = await require('../index.ts')(OPTIONS);
+  const controller = await controllers(OPTIONS);
 
   apiController = controller.apiController;
 });
@@ -32,11 +33,18 @@ tap.test('controller/api', async (t) => {
   const metadataPath = path.join(__dirname, '/data/metadata');
   const config = await readConfig(metadataPath);
 
+  t.afterEach(async () => {
+    await apiController.deleteConfig({
+      tenant: config[0].tenant,
+      product: config[0].product,
+    });
+  });
+
   t.test('Create the config', async (t) => {
     t.test('when required fields are missing or invalid', async (t) => {
       t.test('when `rawMetadata` is empty', async (t) => {
-        const body = Object.assign({}, config[0]);
-        // delete body['rawMetadata'];
+        const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+        delete body['rawMetadata'];
 
         try {
           await apiController.config(body);
@@ -50,8 +58,8 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `defaultRedirectUrl` is empty', async (t) => {
-        const body = Object.assign({}, config[0]);
-        // delete body['defaultRedirectUrl'];
+        const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+        delete body['defaultRedirectUrl'];
 
         try {
           await apiController.config(body);
@@ -65,8 +73,8 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `redirectUrl` is empty', async (t) => {
-        const body = Object.assign({}, config[0]);
-        // delete body['redirectUrl'];
+        const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+        delete body['redirectUrl'];
 
         try {
           await apiController.config(body);
@@ -80,8 +88,8 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `tenant` is empty', async (t) => {
-        const body = Object.assign({}, config[0]);
-        // delete body['tenant'];
+        const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+        delete body['tenant'];
 
         try {
           await apiController.config(body);
@@ -95,8 +103,8 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `product` is empty', async (t) => {
-        const body = Object.assign({}, config[0]);
-        // delete body['product'];
+        const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+        delete body['product'];
 
         try {
           await apiController.config(body);
@@ -128,19 +136,11 @@ tap.test('controller/api', async (t) => {
       const body = Object.assign({}, config[0]);
 
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID);
-      const rbStub = sinon
-        .stub(crypto, 'randomBytes')
-        .returns('f3b0f91eb8f4a9f7cc2254e08682d50b05b5d36262929e7f');
 
       const response = await apiController.config(body);
 
       t.ok(kdStub.called);
-      t.ok(rbStub.calledOnce);
       t.equal(response.client_id, CLIENT_ID);
-      t.equal(
-        response.client_secret,
-        'f3b0f91eb8f4a9f7cc2254e08682d50b05b5d36262929e7f'
-      );
       t.equal(response.provider, PROVIDER);
 
       let savedConf = await apiController.getConfig({
@@ -149,8 +149,7 @@ tap.test('controller/api', async (t) => {
 
       t.equal(savedConf.provider, PROVIDER);
 
-      dbutils.keyDigest.restore();
-      crypto.randomBytes.restore();
+      kdStub.restore();
 
       t.end();
     });
@@ -159,38 +158,112 @@ tap.test('controller/api', async (t) => {
   });
 
   t.test('Get the config', async (t) => {
+    t.test('when valid request', async (t) => {
+      const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+
+      await apiController.config(body);
+
+      const { provider } = await apiController.getConfig(body);
+
+      t.equal(provider, PROVIDER);
+
+      t.end();
+    });
+
+    t.test('when invalid request', async (t) => {
+      let response;
+
+      const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+
+      await apiController.config(body);
+
+      // Empty body
+      try {
+        await apiController.getConfig({});
+        t.fail('Expecting Error.');
+      } catch (err: any) {
+        t.match(
+          err.message,
+          'Please provide `clientID` or `tenant` and `product`.'
+        );
+      }
+
+      // Invalid clientID
+      response = await apiController.getConfig({
+        clientID: 'an invalid clientID',
+      });
+
+      t.match(response, {});
+
+      // Invalid tenant and product combination
+      response = await apiController.getConfig({
+        tenant: 'demo.com',
+        product: 'desk',
+      });
+
+      t.match(response, {});
+
+      t.end();
+    });
+
     t.end();
   });
 
-  // t.test('Delete the config', async (t) => {
-  //   t.test('able to delete', async (t) => {
-  //     try {
-  //       await apiController.deleteConfig({ clientID: CLIENT_ID });
-  //       t.fail('Expecting JacksonError.');
-  //     } catch (err: any) {
-  //       t.equal(err.message, 'Please provide clientSecret');
-  //       t.equal(err.statusCode, 400);
-  //     }
-  //     try {
-  //       await apiController.deleteConfig({
-  //         clientID: CLIENT_ID,
-  //         clientSecret: 'xxxxx',
-  //       });
-  //       t.fail('Expecting JacksonError.');
-  //     } catch (err: any) {
-  //       t.equal(err.message, 'clientSecret mismatch');
-  //       t.equal(err.statusCode, 400);
-  //     }
-  //     await apiController.deleteConfig({
-  //       clientID: CLIENT_ID,
-  //       clientSecret: 'f3b0f91eb8f4a9f7cc2254e08682d50b05b5d36262929e7f',
-  //     });
-  //     savedConf = await apiController.getConfig({
-  //       clientID: CLIENT_ID,
-  //     });
-  //     t.same(savedConf, {}, 'should return empty config');
-  //   });
-  // });
+  t.test('Delete the config', async (t) => {
+    t.test('when valid request', async (t) => {
+      const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+
+      const client = await apiController.config(body);
+
+      await apiController.deleteConfig({
+        clientID: client.client_id,
+        clientSecret: client.client_secret,
+      });
+
+      const response = await apiController.getConfig({
+        clientID: client.client_id,
+      });
+
+      t.match(response, {});
+
+      t.end();
+    });
+
+    t.test('when invalid request', async (t) => {
+      let response;
+
+      const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+
+      const client = await apiController.config(body);
+
+      // Empty body
+      try {
+        await apiController.deleteConfig({});
+        t.fail('Expecting Error.');
+      } catch (err: any) {
+        t.match(
+          err.message,
+          'Please provide `clientID` and `clientSecret` or `tenant` and `product`.'
+        );
+      }
+
+      // Invalid clientID or clientSecret
+      try {
+        await apiController.deleteConfig({
+          clientID: client.client_id,
+          clientSecret: 'invalid client secret',
+        });
+
+        t.fail('Expecting Error.');
+      } catch (err: any) {
+        t.match(err.message, 'clientSecret mismatch.');
+      }
+
+      t.end();
+    });
+
+    t.end();
+  });
 
   t.end();
 });
