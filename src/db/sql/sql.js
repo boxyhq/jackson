@@ -1,12 +1,12 @@
 /*eslint no-constant-condition: ["error", { "checkLoops": false }]*/
 
 require('reflect-metadata');
-const typeorm = require('typeorm');
-const JacksonStore = require('./model/JacksonStore.js');
-const JacksonIndex = require('./model/JacksonIndex.js');
-const JacksonTTL = require('./model/JacksonTTL.js');
 
-const dbutils = require('../utils');
+import typeorm from 'typeorm';
+import * as dbutils from '../utils';
+import { JacksonIndex } from './model/JacksonIndex';
+import { JacksonStore } from './model/JacksonStore';
+import { JacksonTTL } from './model/JacksonTTL';
 
 class Sql {
   constructor(options) {

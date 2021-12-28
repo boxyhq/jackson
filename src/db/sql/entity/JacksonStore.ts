@@ -1,7 +1,8 @@
-const EntitySchema = require('typeorm').EntitySchema;
-const JacksonStore = require('../model/JacksonStore.js');
+import { ColumnType, EntitySchema } from 'typeorm';
+import { DatabaseType } from '../../../typings';
+import { JacksonStore } from '../model/JacksonStore';
 
-const valueType = (type) => {
+const valueType = (type: DatabaseType): ColumnType => {
   switch (type) {
     case 'postgres':
     case 'cockroachdb':
@@ -14,7 +15,7 @@ const valueType = (type) => {
   }
 };
 
-module.exports = (type) => {
+export default (type: DatabaseType) => {
   return new EntitySchema({
     name: 'JacksonStore',
     target: JacksonStore,

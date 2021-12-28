@@ -6,7 +6,6 @@ import controllers from '../index';
 import readConfig from '../read-config';
 import { IdPConfig } from '../typings';
 
-
 let apiController;
 
 const CLIENT_ID = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
@@ -16,7 +15,8 @@ const OPTIONS = {
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
   db: {
-    engine: 'mem',
+    engine: 'mongo',
+    url: 'mongodb://localhost:27017/jackson-demo',
   },
 };
 
@@ -139,8 +139,6 @@ tap.test('controller/api', async (t) => {
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID);
 
       const response = await apiController.config(body);
-
-      sinon.stub('')
 
       t.ok(kdStub.called);
       t.equal(response.client_id, CLIENT_ID);

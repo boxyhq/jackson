@@ -1,8 +1,8 @@
-const EntitySchema = require('typeorm').EntitySchema;
-const JacksonIndex = require('../model/JacksonIndex.js');
-const JacksonStore = require('../model/JacksonStore.js');
+import { EntitySchema } from 'typeorm';
+import { JacksonIndex } from '../model/JacksonIndex';
+import { JacksonStore } from '../model/JacksonStore';
 
-module.exports = new EntitySchema({
+export default new EntitySchema({
   name: 'JacksonIndex',
   target: JacksonIndex,
   columns: {
@@ -18,9 +18,11 @@ module.exports = new EntitySchema({
     storeKey: {
       type: 'varchar',
       length: 1500,
-    }
+    },
   },
   relations: {
+    // TODO: Remove the below line to see the error
+    // @ts-ignore
     store: {
       target: () => JacksonStore,
       type: 'many-to-one',

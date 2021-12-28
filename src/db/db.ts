@@ -1,13 +1,19 @@
 const sql = require('./sql/sql.js');
 
-import { DatabaseOption, Encrypted, EncryptionKey, Index } from '../typings';
+import {
+  DatabaseDriver,
+  DatabaseOption,
+  Encrypted,
+  EncryptionKey,
+  Index,
+} from '../typings';
 import * as encrypter from './encrypter';
 import mem from './mem';
 import mongo from './mongo';
 import redis from './redis';
 import store from './store';
 
-const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): object => {
+const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): any => {
   if (res.iv && res.tag) {
     return JSON.parse(
       encrypter.decrypt(res.value, res.iv, res.tag, encryptionKey)
@@ -17,7 +23,7 @@ const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): object => {
   return JSON.parse(res.value);
 };
 
-class DB {
+class DB implements DatabaseDriver {
   private db: any;
   private encryptionKey: EncryptionKey;
 

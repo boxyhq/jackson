@@ -1,7 +1,7 @@
-const EntitySchema = require('typeorm').EntitySchema;
-const JacksonTTL = require('../model/JacksonTTL.js');
+import { EntitySchema } from 'typeorm';
+import { JacksonTTL } from '../model/JacksonTTL';
 
-module.exports = new EntitySchema({
+export default new EntitySchema({
   name: 'JacksonTTL',
   target: JacksonTTL,
   columns: {
