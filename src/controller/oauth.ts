@@ -1,20 +1,21 @@
 import crypto from 'crypto';
-import * as dbutils from '../db/utils';
 import {
   IOAuthController,
+  JacksonOption,
   OAuthReqBody,
   OAuthTokenReq,
   OAuthTokenRes,
   Profile,
   SAMLResponsePayload,
+  Storable,
 } from 'saml-jackson';
+import * as dbutils from '../db/utils';
+import saml from '../saml/saml';
 import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { IndexNames } from './utils';
-
-import saml from '../saml/saml';
 
 const relayStatePrefix = 'boxyhq_jackson_';
 
@@ -39,11 +40,11 @@ function getEncodedClientId(
 }
 
 export class OAuthController implements IOAuthController {
-  private configStore;
-  private sessionStore;
-  private codeStore;
-  private tokenStore;
-  private opts;
+  private configStore: Storable;
+  private sessionStore: Storable;
+  private codeStore: Storable;
+  private tokenStore: Storable;
+  private opts: JacksonOption;
 
   constructor({ configStore, sessionStore, codeStore, tokenStore, opts }) {
     this.configStore = configStore;
@@ -133,6 +134,7 @@ export class OAuthController implements IOAuthController {
     }
 
     const samlReq = saml.request({
+      // @ts-ignore
       entityID: this.opts.samlAudience,
       callbackUrl: this.opts.externalUrl + this.opts.samlPath,
       signingKey: samlConfig.certs.privateKey,
@@ -188,6 +190,8 @@ export class OAuthController implements IOAuthController {
 
     const samlConfigs = await this.configStore.getByIndex({
       name: IndexNames.EntityID,
+
+      // @ts-ignore
       value: parsedResp?.issuer,
     });
 

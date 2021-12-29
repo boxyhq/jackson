@@ -25,17 +25,17 @@ const record2 = {
   city: 'London',
 };
 
-const memDbConfig: Partial<DatabaseOption> = {
+const memDbConfig = <DatabaseOption>{
   engine: 'mem',
   ttl: 1,
 };
 
-const redisDbConfig: Partial<DatabaseOption> = {
+const redisDbConfig = <DatabaseOption>{
   engine: 'redis',
   url: 'redis://localhost:6379',
 };
 
-const postgresDbConfig: Partial<DatabaseOption> = {
+const postgresDbConfig = <DatabaseOption>{
   engine: 'sql',
   url: 'postgresql://postgres:postgres@localhost:5432/postgres',
   type: 'postgres',
@@ -43,12 +43,12 @@ const postgresDbConfig: Partial<DatabaseOption> = {
   cleanupLimit: 1,
 };
 
-const mongoDbConfig: Partial<DatabaseOption> = {
+const mongoDbConfig = <DatabaseOption>{
   engine: 'mongo',
   url: 'mongodb://localhost:27017/jackson',
 };
 
-const mysqlDbConfig: Partial<DatabaseOption> = {
+const mysqlDbConfig = <DatabaseOption>{
   engine: 'sql',
   url: 'mysql://root:mysql@localhost:3307/mysql',
   type: 'mysql',
@@ -56,7 +56,7 @@ const mysqlDbConfig: Partial<DatabaseOption> = {
   cleanupLimit: 1,
 };
 
-const mariadbDbConfig: Partial<DatabaseOption> = {
+const mariadbDbConfig = <DatabaseOption>{
   engine: 'sql',
   url: 'mariadb://root@localhost:3306/mysql',
   type: 'mariadb',
@@ -111,7 +111,7 @@ const dbs = [
 
 tap.before(async () => {
   for (const idx in dbs) {
-    const opts = <DatabaseOption>dbs[idx];
+    const opts = dbs[idx];
     const db = await DB.new(opts);
 
     configStores.push(db.store('saml:config'));
@@ -130,8 +130,6 @@ tap.test('dbs', ({ end }) => {
     let dbEngine = dbs[idx].engine;
 
     if (dbs[idx].type) {
-      // TODO Fix it
-      // @ts-ignore
       dbEngine += ': ' + dbs[idx].type;
     }
 
@@ -277,10 +275,7 @@ tap.test('dbs', ({ end }) => {
     });
 
     tap.test('ttl expiry: ' + dbEngine, async (t) => {
-      console.log({ dbEngine });
-
       // mongo runs ttl task every 60 seconds
-      // @ts-ignore
       if (dbEngine.startsWith('mongo')) {
         t.end();
         return;
@@ -302,9 +297,9 @@ tap.test('dbs', ({ end }) => {
 
   tap.test('db.new() error', async (t) => {
     try {
-      await DB.new({
-        engine: 'somedb' as DatabaseEngine,
-      } as DatabaseOption);
+      await DB.new(<DatabaseOption>{
+        engine: <DatabaseEngine>'somedb',
+      });
 
       t.fail('expecting an unsupported db error');
     } catch (err) {
