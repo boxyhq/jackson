@@ -1,15 +1,14 @@
 import crypto from 'crypto';
-import { IABC, IdPConfig, ISAMLConfig, OAuth } from 'saml-jackson';
+import { IdPConfig, ISAMLConfig, OAuth, Storable } from 'saml-jackson';
 import * as dbutils from '../db/utils';
+import saml from '../saml/saml';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 
-import saml from '../saml/saml';
 const x509 = require('../saml/x509.js');
 
 export class SAMLConfig implements ISAMLConfig {
-  // TODO: Add type
-  private configStore;
+  private configStore: Storable;
 
   constructor({ configStore }) {
     this.configStore = configStore;
@@ -109,7 +108,11 @@ export class SAMLConfig implements ISAMLConfig {
     };
   }
 
-  public async get(body: IABC): Promise<Partial<OAuth>> {
+  public async get(body: {
+    clientID: string;
+    tenant: string;
+    product: string;
+  }): Promise<Partial<OAuth>> {
     const { clientID, tenant, product } = body;
 
     if (clientID) {
@@ -137,7 +140,12 @@ export class SAMLConfig implements ISAMLConfig {
     );
   }
 
-  public async delete(body: IABC): Promise<void> {
+  public async delete(body: {
+    clientID: string;
+    clientSecret: string;
+    tenant: string;
+    product: string;
+  }): Promise<void> {
     const { clientID, clientSecret, tenant, product } = body;
 
     if (clientID && clientSecret) {
@@ -185,11 +193,20 @@ export class SAMLConfig implements ISAMLConfig {
     return this.create(body);
   }
 
-  async getConfig(body: IABC): Promise<Partial<OAuth>> {
+  async getConfig(body: {
+    clientID: string;
+    tenant: string;
+    product: string;
+  }): Promise<Partial<OAuth>> {
     return this.get(body);
   }
 
-  async deleteConfig(body: IABC): Promise<void> {
+  async deleteConfig(body: {
+    clientID: string;
+    clientSecret: string;
+    tenant: string;
+    product: string;
+  }): Promise<void> {
     return this.delete(body);
   }
 }

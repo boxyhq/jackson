@@ -13,30 +13,46 @@ declare module 'saml-jackson' {
     provider: string;
   }
 
-  // TODO: Suggest an interface name
-  export type IABC =
-    | {
-        clientID: string;
-        clientSecret?: string;
-        tenant?: string;
-        product?: string;
-      }
-    | {
-        clientID?: string;
-        clientSecret?: string;
-        tenant: string;
-        product: string;
-      };
+  export interface SAMLConfigReq {
+    clientID: string;
+    clientSecret: string;
+    tenant: string;
+    product: string;
+  }
 
   export interface ISAMLConfig {
     // Ensure backward compatibility
     config(body: IdPConfig): Promise<OAuth>;
-    getConfig(body: IABC): Promise<Partial<OAuth>>;
-    deleteConfig(body: IABC): Promise<void>;
+
+    // {
+    //   clientID: string;
+    //   tenant: string;
+    //   product: string;
+    // }
+
+    getConfig(body: Pick<SAMLConfigReq, "clientID", "">): Promise<Partial<OAuth>>;
+
+    deleteConfig(body: {
+      clientID: string;
+      clientSecret: string;
+      tenant: string;
+      product: string;
+    }): Promise<void>;
 
     create(body: IdPConfig): Promise<OAuth>;
-    get(body: IABC): Promise<Partial<OAuth>>;
-    delete(body: IABC): Promise<void>;
+
+    get(body: {
+      clientID: string;
+      tenant: string;
+      product: string;
+    }): Promise<Partial<OAuth>>;
+
+    delete(body: {
+      clientID: string;
+      clientSecret: string;
+      tenant: string;
+      product: string;
+    }): Promise<void>;
   }
 
   export interface IOAuthController {

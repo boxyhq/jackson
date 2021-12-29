@@ -1,10 +1,10 @@
 import * as path from 'path';
+import { IdPConfig } from 'saml-jackson';
 import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../db/utils';
 import controllers from '../index';
 import readConfig from '../read-config';
-import { IdPConfig } from 'saml-jackson';
 
 let apiController;
 
