@@ -22,7 +22,7 @@ class Store implements Storable {
     return await this.db.getByIndex(this.namespace, idx);
   }
 
-  async put(key: string, val: any, ...indexes: any): Promise<any> {
+  async put(key: string, val: any, ...indexes: Index[]): Promise<any> {
     indexes = (indexes || []).map((idx) => {
       idx.value = dbutils.keyDigest(idx.value);
       return idx;
@@ -43,7 +43,7 @@ class Store implements Storable {
 }
 
 export default {
-  new: (namespace: string, db: any, ttl: number = 0) => {
+  new: (namespace: string, db: any, ttl: number = 0): Storable => {
     return new Store(namespace, db, ttl);
   },
 };

@@ -105,7 +105,7 @@ declare module 'saml-jackson' {
 
   export interface Storable {
     get(key: string): Promise<any>;
-    put(key: string, val: any, indexes?: Index[]): Promise<any>;
+    put(key: string, val: any, ...indexes: Index[]): Promise<any>;
     delete(key: string): Promise<any>;
     getByIndex(idx: Index): Promise<any>;
   }
@@ -116,12 +116,21 @@ declare module 'saml-jackson' {
     value: string;
   }
 
-  // TODO: Need fix
   export type EncryptionKey = any;
 
-  export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem';
+  export enum DatabaseEngine {
+    redis,
+    sql,
+    mongo,
+    mem,
+  }
 
-  export type DatabaseType = 'postgres' | 'cockroachdb' | 'mysql' | 'mariadb';
+  export enum DatabaseType {
+    postgres,
+    cockroachdb,
+    mysql,
+    mariadb,
+  }
 
   export interface DatabaseOption {
     engine: DatabaseEngine;

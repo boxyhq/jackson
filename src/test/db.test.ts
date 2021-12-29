@@ -1,10 +1,17 @@
+import {
+  DatabaseEngine,
+  DatabaseOption,
+  DatabaseType,
+  EncryptionKey,
+  Storable,
+} from 'saml-jackson';
 import * as t from 'tap';
 import DB from '../db/db';
 
-const encryptionKey = '3yGrTcnKPBqqHoH3zZMAU6nt4bmIYb2q';
+const encryptionKey: EncryptionKey = '3yGrTcnKPBqqHoH3zZMAU6nt4bmIYb2q';
 
-let configStores = [];
-let ttlStores = [];
+let configStores: Storable[] = [];
+let ttlStores: Storable[] = [];
 const ttl = 3;
 
 const record1 = {
@@ -12,47 +19,48 @@ const record1 = {
   name: 'Deepak',
   city: 'London',
 };
+
 const record2 = {
   id: '2',
   name: 'Sama',
   city: 'London',
 };
 
-const memDbConfig = {
-  engine: 'mem',
+const memDbConfig = <DatabaseOption>{
+  engine: DatabaseEngine.mem,
   ttl: 1,
 };
 
-const redisDbConfig = {
-  engine: 'redis',
+const redisDbConfig = <DatabaseOption>{
+  engine: DatabaseEngine.redis,
   url: 'redis://localhost:6379',
 };
 
-const postgresDbConfig = {
-  engine: 'sql',
+const postgresDbConfig = <DatabaseOption>{
+  engine: DatabaseEngine.sql,
   url: 'postgresql://postgres:postgres@localhost:5432/postgres',
-  type: 'postgres',
+  type: DatabaseType.postgres,
   ttl: 1,
   cleanupLimit: 1,
 };
 
-const mongoDbConfig = {
-  engine: 'mongo',
+const mongoDbConfig = <DatabaseOption>{
+  engine: DatabaseEngine.mongo,
   url: 'mongodb://localhost:27017/jackson',
 };
 
-const mysqlDbConfig = {
-  engine: 'sql',
+const mysqlDbConfig = <DatabaseOption>{
+  engine: DatabaseEngine.sql,
   url: 'mysql://root:mysql@localhost:3307/mysql',
-  type: 'mysql',
+  type: DatabaseType.mysql,
   ttl: 1,
   cleanupLimit: 1,
 };
 
-const mariadbDbConfig = {
-  engine: 'sql',
+const mariadbDbConfig = <DatabaseOption>{
+  engine: DatabaseEngine.sql,
   url: 'mariadb://root@localhost:3306/mysql',
-  type: 'mariadb',
+  type: DatabaseType.mariadb,
   ttl: 1,
   cleanupLimit: 1,
 };
@@ -121,9 +129,13 @@ t.test('dbs', ({ end }) => {
     const configStore = configStores[idx];
     const ttlStore = ttlStores[idx];
     let dbEngine = dbs[idx].engine;
+
     if (dbs[idx].type) {
+      // TODO Fix it
+      // @ts-ignore
       dbEngine += ': ' + dbs[idx].type;
     }
+
     t.test('put(): ' + dbEngine, async (t) => {
       await configStore.put(
         record1.id,
@@ -266,7 +278,10 @@ t.test('dbs', ({ end }) => {
     });
 
     t.test('ttl expiry: ' + dbEngine, async (t) => {
+      console.log({ dbEngine });
+
       // mongo runs ttl task every 60 seconds
+      // @ts-ignore
       if (dbEngine.startsWith('mongo')) {
         t.end();
         return;
@@ -288,6 +303,7 @@ t.test('dbs', ({ end }) => {
 
   t.test('db.new() error', async (t) => {
     try {
+      // @ts-ignore
       await DB.new('somedb');
       t.fail('expecting an unsupported db error');
     } catch (err) {

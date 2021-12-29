@@ -1,14 +1,14 @@
-import { ColumnType, EntitySchema } from 'typeorm';
 import { DatabaseType } from 'saml-jackson';
+import { ColumnType, EntitySchema } from 'typeorm';
 import { JacksonStore } from '../model/JacksonStore';
 
 const valueType = (type: DatabaseType): ColumnType => {
   switch (type) {
-    case 'postgres':
-    case 'cockroachdb':
+    case DatabaseType.postgres:
+    case DatabaseType.cockroachdb:
       return 'text';
-    case 'mysql':
-    case 'mariadb':
+    case DatabaseType.mysql:
+    case DatabaseType.mariadb:
       return 'mediumtext';
     default:
       return 'varchar';

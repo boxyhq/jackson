@@ -2,10 +2,12 @@ const sql = require('./sql/sql.js');
 
 import {
   DatabaseDriver,
+  DatabaseEngine,
   DatabaseOption,
   Encrypted,
   EncryptionKey,
   Index,
+  Storable,
 } from 'saml-jackson';
 import * as encrypter from './encrypter';
 import mem from './mem';
@@ -73,7 +75,7 @@ class DB implements DatabaseDriver {
     return await this.db.delete(namespace, key);
   }
 
-  store(namespace: string, ttl: number = 0): any {
+  store(namespace: string, ttl: number = 0): Storable {
     return store.new(namespace, this, ttl);
   }
 }
@@ -85,13 +87,13 @@ export = {
       : null;
 
     switch (options.engine) {
-      case 'redis':
+      case DatabaseEngine.redis:
         return new DB(await redis.new(options), encryptionKey);
-      case 'sql':
+      case DatabaseEngine.sql:
         return new DB(await sql.new(options), encryptionKey);
-      case 'mongo':
+      case DatabaseEngine.mongo:
         return new DB(await mongo.new(options), encryptionKey);
-      case 'mem':
+      case DatabaseEngine.mem:
         return new DB(await mem.new(options), encryptionKey);
       default:
         throw new Error('unsupported db engine: ' + options.engine);
