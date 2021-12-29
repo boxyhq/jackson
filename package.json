@@ -16,7 +16,7 @@
     "SAML 2.0"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "start": "cross-env IDP_ENABLED=true node src/jackson.js",
     "dev": "cross-env IDP_ENABLED=true nodemon src/jackson.js",
     "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson DB_ENCRYPTION_KEY=RiVoTxDoLUUoIUOp224abMxK6PGGfFuF nodemon --config nodemon.json src/jackson.ts",
