@@ -1,8 +1,9 @@
-import express from 'express';
 import cors from 'cors';
-import env from './env';
-import { extractAuthToken } from './controller/utils';
+import express from 'express';
 import { JacksonError } from './controller/error';
+import { extractAuthToken } from './controller/utils';
+import env from './env';
+import jackson from './index';
 
 let apiController;
 let oauthController;
@@ -79,7 +80,9 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  const ctrlrModule = await (await import('./index')).default(env);
+  // TODO: Fix it
+  // @ts-ignore
+  const ctrlrModule = await jackson(env);
 
   apiController = ctrlrModule.apiController;
   oauthController = ctrlrModule.oauthController;

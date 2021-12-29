@@ -7,7 +7,6 @@ declare module 'saml-jackson' {
     rawMetadata: string;
   };
 
-  // TODO: Suggest an interface name
   export interface OAuth {
     client_id: string;
     client_secret: string;
@@ -135,9 +134,9 @@ declare module 'saml-jackson' {
   export interface DatabaseOption {
     engine: DatabaseEngine;
     url: string;
-    type: DatabaseType;
+    type?: DatabaseType;
     ttl: number;
-    cleanupLimit: number;
+    cleanupLimit?: number;
     encryptionKey?: string;
   }
 
@@ -157,5 +156,14 @@ declare module 'saml-jackson' {
     claims: Record<string, any>;
     issuer: string;
     sessionIndex: string;
+  }
+
+  export interface JacksonOption {
+    externalUrl: string;
+    samlPath: string;
+    samlAudience?: string;
+    preLoadedConfig?: string;
+    idpEnabled?: boolean;
+    db: DatabaseOption;
   }
 }

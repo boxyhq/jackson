@@ -13,6 +13,7 @@ const samlAudience = process.env.SAML_AUDIENCE;
 const preLoadedConfig = process.env.PRE_LOADED_CONFIG;
 
 const idpEnabled = process.env.IDP_ENABLED;
+
 const db = {
   engine: process.env.DB_ENGINE,
   url: process.env.DB_URL,
