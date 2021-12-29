@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { DatabaseEngine, IdPConfig } from 'saml-jackson';
+import { DatabaseOption, IdPConfig } from 'saml-jackson';
 import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../db/utils';
@@ -16,9 +16,9 @@ const OPTIONS = {
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
   db: {
-    engine: DatabaseEngine.mongo,
+    engine: 'mongo',
     url: 'mongodb://localhost:27017/jackson-demo',
-  },
+  } as DatabaseOption,
 };
 
 tap.before(async () => {

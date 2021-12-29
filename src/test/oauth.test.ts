@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { DatabaseEngine } from 'saml-jackson';
 import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../controller/error';
@@ -22,7 +21,7 @@ const options = {
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
   db: {
-    engine: DatabaseEngine.mem,
+    engine: 'mem',
   },
 };
 
