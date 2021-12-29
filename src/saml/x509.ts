@@ -1,4 +1,4 @@
-import x509, { Extension } from '@peculiar/x509';
+import * as x509 from '@peculiar/x509';
 import { Crypto } from '@peculiar/webcrypto';
 
 const crypto = new Crypto();
@@ -14,7 +14,7 @@ const alg = {
 const generate = async () => {
   const keys = await crypto.subtle.generateKey(alg, true, ['sign', 'verify']);
 
-  const extensions: Extension[] = [
+  const extensions: x509.Extension[] = [
     new x509.BasicConstraintsExtension(false, undefined, true),
   ];
 
