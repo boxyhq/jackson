@@ -1,4 +1,4 @@
-import { DatabaseEngine, DatabaseType, JacksonOption } from 'saml-jackson';
+import { JacksonOption } from 'saml-jackson';
 import { SAMLConfig } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import DB from './db/db';
@@ -22,10 +22,10 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.idpEnabled = newOpts.idpEnabled === true;
 
   newOpts.db = newOpts.db || {};
-  newOpts.db.engine = newOpts.db.engine || DatabaseEngine.sql;
+  newOpts.db.engine = newOpts.db.engine || 'sql';
   newOpts.db.url =
     newOpts.db.url || 'postgresql://postgres:postgres@localhost:5432/postgres';
-  newOpts.db.type = newOpts.db.type || DatabaseType.postgres; // Only needed if DB_ENGINE is sql.
+  newOpts.db.type = newOpts.db.type || 'postgres'; // Only needed if DB_ENGINE is sql.
   newOpts.db.ttl = (newOpts.db.ttl || 300) * 1; // TTL for the code, session and token stores (in seconds)
   newOpts.db.cleanupLimit = (newOpts.db.cleanupLimit || 1000) * 1; // Limit cleanup of TTL entries to this many items at a time
 
@@ -68,9 +68,7 @@ export default async function controllers(
   }
 
   const type =
-    opts.db.engine === DatabaseEngine.sql && opts.db.type
-      ? ' Type: ' + opts.db.type
-      : '';
+    opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
 
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 

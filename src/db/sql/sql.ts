@@ -29,7 +29,6 @@ class Sql implements DatabaseDriver {
         // TODO: Fix it
         // @ts-ignore
         this.connection = await typeorm.createConnection({
-          // @ts-ignore
           name: this.options.type + Math.floor(Math.random() * 100000),
           type: this.options.type,
           url: this.options.url,
@@ -79,7 +78,7 @@ class Sql implements DatabaseDriver {
           await this.storeRepositor; //y.remove(ids);
           await this.ttlRepository.delete(delIds);
         }
-        // @ts-ignore
+
         this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
       };
 

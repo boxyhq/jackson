@@ -19,8 +19,6 @@ class Mongo implements DatabaseDriver {
   }
 
   async init(): Promise<Mongo> {
-    // TODO: Fix it
-    // @ts-ignore
     this.client = new MongoClient(this.options.url);
 
     await this.client.connect();

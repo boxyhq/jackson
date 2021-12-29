@@ -2,7 +2,6 @@ const sql = require('./sql/sql.js');
 
 import {
   DatabaseDriver,
-  DatabaseEngine,
   DatabaseOption,
   Encrypted,
   EncryptionKey,
@@ -87,13 +86,13 @@ export = {
       : null;
 
     switch (options.engine) {
-      case DatabaseEngine.redis:
+      case 'redis':
         return new DB(await redis.new(options), encryptionKey);
-      case DatabaseEngine.sql:
+      case 'sql':
         return new DB(await sql.new(options), encryptionKey);
-      case DatabaseEngine.mongo:
+      case 'mongo':
         return new DB(await mongo.new(options), encryptionKey);
-      case DatabaseEngine.mem:
+      case 'mem':
         return new DB(await mem.new(options), encryptionKey);
       default:
         throw new Error('unsupported db engine: ' + options.engine);

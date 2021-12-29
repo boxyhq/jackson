@@ -4,11 +4,11 @@ import { JacksonStore } from '../model/JacksonStore';
 
 const valueType = (type: DatabaseType): ColumnType => {
   switch (type) {
-    case DatabaseType.postgres:
-    case DatabaseType.cockroachdb:
+    case 'postgres':
+    case 'cockroachdb':
       return 'text';
-    case DatabaseType.mysql:
-    case DatabaseType.mariadb:
+    case 'mysql':
+    case 'mariadb':
       return 'mediumtext';
     default:
       return 'varchar';

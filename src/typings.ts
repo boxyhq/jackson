@@ -125,27 +125,17 @@ declare module 'saml-jackson' {
 
   export type EncryptionKey = any;
 
-  export enum DatabaseEngine {
-    redis,
-    sql,
-    mongo,
-    mem,
-  }
+  export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem';
 
-  export enum DatabaseType {
-    postgres,
-    cockroachdb,
-    mysql,
-    mariadb,
-  }
+  export type DatabaseType = 'postgres' | 'cockroachdb' | 'mysql' | 'mariadb';
 
   export interface DatabaseOption {
     engine: DatabaseEngine;
-    url?: string;
-    type?: DatabaseType;
-    ttl?: number;
-    cleanupLimit?: number;
-    encryptionKey?: string;
+    url: string;
+    type: DatabaseType;
+    ttl: number;
+    cleanupLimit: number;
+    encryptionKey: string;
   }
 
   export interface SAMLReq {

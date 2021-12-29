@@ -1,7 +1,6 @@
 import {
   DatabaseEngine,
   DatabaseOption,
-  DatabaseType,
   EncryptionKey,
   Storable,
 } from 'saml-jackson';
@@ -27,40 +26,40 @@ const record2 = {
 };
 
 const memDbConfig: Partial<DatabaseOption> = {
-  engine: DatabaseEngine.mem,
+  engine: 'mem',
   ttl: 1,
 };
 
 const redisDbConfig: Partial<DatabaseOption> = {
-  engine: DatabaseEngine.redis,
+  engine: 'redis',
   url: 'redis://localhost:6379',
 };
 
-const postgresDbConfig: DatabaseOption = {
-  engine: DatabaseEngine.sql,
+const postgresDbConfig: Partial<DatabaseOption> = {
+  engine: 'sql',
   url: 'postgresql://postgres:postgres@localhost:5432/postgres',
-  type: DatabaseType.postgres,
+  type: 'postgres',
   ttl: 1,
   cleanupLimit: 1,
 };
 
 const mongoDbConfig: Partial<DatabaseOption> = {
-  engine: DatabaseEngine.mongo,
+  engine: 'mongo',
   url: 'mongodb://localhost:27017/jackson',
 };
 
-const mysqlDbConfig: DatabaseOption = {
-  engine: DatabaseEngine.sql,
+const mysqlDbConfig: Partial<DatabaseOption> = {
+  engine: 'sql',
   url: 'mysql://root:mysql@localhost:3307/mysql',
-  type: DatabaseType.mysql,
+  type: 'mysql',
   ttl: 1,
   cleanupLimit: 1,
 };
 
-const mariadbDbConfig: DatabaseOption = {
-  engine: DatabaseEngine.sql,
+const mariadbDbConfig: Partial<DatabaseOption> = {
+  engine: 'sql',
   url: 'mariadb://root@localhost:3306/mysql',
-  type: DatabaseType.mariadb,
+  type: 'mariadb',
   ttl: 1,
   cleanupLimit: 1,
 };
@@ -303,8 +302,9 @@ t.test('dbs', ({ end }) => {
 
   t.test('db.new() error', async (t) => {
     try {
-      // @ts-ignore
-      await DB.new('some-other-db');
+      await DB.new({
+        engine: 'somedb' as DatabaseEngine,
+      } as DatabaseOption);
 
       t.fail('expecting an unsupported db error');
     } catch (err) {
