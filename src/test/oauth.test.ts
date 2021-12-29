@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { JacksonOption } from 'saml-jackson';
 import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../controller/error';
@@ -23,7 +24,7 @@ const options = {
   db: {
     engine: 'mem',
   },
-};
+} as JacksonOption;
 
 const samlConfig = {
   tenant: 'boxyhq.com',
