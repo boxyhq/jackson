@@ -26,17 +26,17 @@ const record2 = {
   city: 'London',
 };
 
-const memDbConfig = <DatabaseOption>{
+const memDbConfig: Partial<DatabaseOption> = {
   engine: DatabaseEngine.mem,
   ttl: 1,
 };
 
-const redisDbConfig = <DatabaseOption>{
+const redisDbConfig: Partial<DatabaseOption> = {
   engine: DatabaseEngine.redis,
   url: 'redis://localhost:6379',
 };
 
-const postgresDbConfig = <DatabaseOption>{
+const postgresDbConfig: DatabaseOption = {
   engine: DatabaseEngine.sql,
   url: 'postgresql://postgres:postgres@localhost:5432/postgres',
   type: DatabaseType.postgres,
@@ -44,12 +44,12 @@ const postgresDbConfig = <DatabaseOption>{
   cleanupLimit: 1,
 };
 
-const mongoDbConfig = <DatabaseOption>{
+const mongoDbConfig: Partial<DatabaseOption> = {
   engine: DatabaseEngine.mongo,
   url: 'mongodb://localhost:27017/jackson',
 };
 
-const mysqlDbConfig = <DatabaseOption>{
+const mysqlDbConfig: DatabaseOption = {
   engine: DatabaseEngine.sql,
   url: 'mysql://root:mysql@localhost:3307/mysql',
   type: DatabaseType.mysql,
@@ -57,7 +57,7 @@ const mysqlDbConfig = <DatabaseOption>{
   cleanupLimit: 1,
 };
 
-const mariadbDbConfig = <DatabaseOption>{
+const mariadbDbConfig: DatabaseOption = {
   engine: DatabaseEngine.sql,
   url: 'mariadb://root@localhost:3306/mysql',
   type: DatabaseType.mariadb,
@@ -112,7 +112,7 @@ const dbs = [
 
 t.before(async () => {
   for (const idx in dbs) {
-    const opts = dbs[idx];
+    const opts = <DatabaseOption>dbs[idx];
     const db = await DB.new(opts);
 
     configStores.push(db.store('saml:config'));
@@ -304,7 +304,8 @@ t.test('dbs', ({ end }) => {
   t.test('db.new() error', async (t) => {
     try {
       // @ts-ignore
-      await DB.new('somedb');
+      await DB.new('some-other-db');
+
       t.fail('expecting an unsupported db error');
     } catch (err) {
       t.ok(err, 'got expected error');
