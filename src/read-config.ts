@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { IdPConfig } from 'jackson-saml';
+import { IdPConfig } from 'saml-jackson';
 
 const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
   if (preLoadedConfig.startsWith('./')) {

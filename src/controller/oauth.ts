@@ -7,7 +7,7 @@ import {
   OAuthTokenRes,
   Profile,
   SAMLResponsePayload,
-} from 'jackson-saml';
+} from 'saml-jackson';
 import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';

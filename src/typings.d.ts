@@ -1,4 +1,4 @@
-declare module 'jackson-saml' {
+declare module 'saml-jackson' {
   export type IdPConfig = {
     defaultRedirectUrl: string;
     redirectUrl: string;

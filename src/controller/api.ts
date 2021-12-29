@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { IABC, IdPConfig, ISAMLConfig, OAuth } from 'jackson-saml';
+import { IABC, IdPConfig, ISAMLConfig, OAuth } from 'saml-jackson';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';

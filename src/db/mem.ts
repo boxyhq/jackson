@@ -1,6 +1,6 @@
 // This is an in-memory implementation to be used with testing and prototyping only
 
-import { DatabaseDriver, DatabaseOption, Index } from 'jackson-saml';
+import { DatabaseDriver, DatabaseOption, Index } from 'saml-jackson';
 import * as dbutils from './utils';
 
 class Mem implements DatabaseDriver {

@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { DatabaseDriver, DatabaseOption, Index } from 'jackson-saml';
+import { DatabaseDriver, DatabaseOption, Index } from 'saml-jackson';
 import * as dbutils from './utils';
 
 type Document = {
