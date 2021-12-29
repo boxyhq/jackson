@@ -1,6 +1,5 @@
-const t = require('tap');
-
-const DB = require('../db/db.js');
+import * as t from 'tap';
+import DB from '../db/db';
 
 const encryptionKey = '3yGrTcnKPBqqHoH3zZMAU6nt4bmIYb2q';
 
