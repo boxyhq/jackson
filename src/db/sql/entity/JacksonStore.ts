@@ -1,43 +1,30 @@
-import { DatabaseType } from 'saml-jackson';
-import { ColumnType, EntitySchema } from 'typeorm';
-import { JacksonStore } from '../model/JacksonStore';
+import { Entity, Column } from 'typeorm';
 
-const valueType = (type: DatabaseType): ColumnType => {
-  switch (type) {
-    case 'postgres':
-    case 'cockroachdb':
-      return 'text';
-    case 'mysql':
-    case 'mariadb':
-      return 'mediumtext';
-    default:
-      return 'varchar';
-  }
-};
+@Entity()
+export class JacksonStore {
+  @Column({
+    primary: true,
+    type: 'varchar',
+    length: 1500,
+  })
+  key!: string;
 
-export default (type: DatabaseType) => {
-  return new EntitySchema({
-    name: 'JacksonStore',
-    target: JacksonStore,
-    columns: {
-      key: {
-        primary: true,
-        type: 'varchar',
-        length: 1500,
-      },
-      value: {
-        type: valueType(type),
-      },
-      iv: {
-        type: 'varchar',
-        length: 64,
-        nullable: true,
-      },
-      tag: {
-        type: 'varchar',
-        length: 64,
-        nullable: true,
-      },
-    },
-  });
-};
+  @Column({
+    type: 'text',
+  })
+  value!: string;
+
+  @Column({
+    type: 'varchar',
+    length: 64,
+    nullable: true,
+  })
+  iv?: string;
+
+  @Column({
+    type: 'varchar',
+    length: 64,
+    nullable: true,
+  })
+  tag?: string;
+}
