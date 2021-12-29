@@ -4,8 +4,7 @@ import * as dbutils from '../db/utils';
 import saml from '../saml/saml';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
-
-const x509 = require('../saml/x509.js');
+import x509 from '../saml/x509';
 
 export class SAMLConfig implements ISAMLConfig {
   private configStore: Storable;

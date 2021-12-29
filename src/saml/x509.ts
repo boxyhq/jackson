@@ -1,5 +1,5 @@
-const x509 = require('@peculiar/x509');
-const { Crypto } = require('@peculiar/webcrypto');
+import x509, { Extension } from '@peculiar/x509';
+import { Crypto } from '@peculiar/webcrypto';
 
 const crypto = new Crypto();
 x509.cryptoProvider.set(crypto);
@@ -14,16 +14,18 @@ const alg = {
 const generate = async () => {
   const keys = await crypto.subtle.generateKey(alg, true, ['sign', 'verify']);
 
-  const extensions = [
+  const extensions: Extension[] = [
     new x509.BasicConstraintsExtension(false, undefined, true),
   ];
 
   extensions.push(
     new x509.KeyUsagesExtension(x509.KeyUsageFlags.digitalSignature, true)
   );
-  extensions.push(
-    await x509.SubjectKeyIdentifierExtension.create(keys.publicKey)
-  );
+  if (keys.publicKey) {
+    extensions.push(
+      await x509.SubjectKeyIdentifierExtension.create(keys.publicKey)
+    );
+  }
 
   const cert = await x509.X509CertificateGenerator.createSelfSigned({
     serialNumber: '01',
@@ -34,15 +36,16 @@ const generate = async () => {
     keys: keys,
     extensions,
   });
+  if (keys.privateKey) {
+    const pkcs8 = await crypto.subtle.exportKey('pkcs8', keys.privateKey);
 
-  const pkcs8 = await crypto.subtle.exportKey('pkcs8', keys.privateKey);
-
-  return {
-    publicKey: cert.toString('pem'),
-    privateKey: x509.PemConverter.encode(pkcs8, 'private key'),
-  };
+    return {
+      publicKey: cert.toString('pem'),
+      privateKey: x509.PemConverter.encode(pkcs8, 'private key'),
+    };
+  }
 };
 
-module.exports = {
+export default {
   generate,
 };
