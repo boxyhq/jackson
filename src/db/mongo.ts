@@ -104,7 +104,7 @@ class Mongo implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption) => {
+  new: async (options: DatabaseOption): Promise<Mongo> => {
     return await new Mongo(options).init();
   },
 };

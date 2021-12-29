@@ -1,5 +1,3 @@
-const sql = require('./sql/sql.js');
-
 import {
   DatabaseDriver,
   DatabaseOption,
@@ -12,6 +10,7 @@ import * as encrypter from './encrypter';
 import mem from './mem';
 import mongo from './mongo';
 import redis from './redis';
+import sql from './sql/sql';
 import store from './store';
 
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): any => {

@@ -23,7 +23,7 @@ class Sql implements DatabaseDriver {
     this.options = options;
   }
 
-  async init() {
+  async init(): Promise<Sql> {
     while (true) {
       try {
         // TODO: Fix it
@@ -88,6 +88,8 @@ class Sql implements DatabaseDriver {
         'Warning: ttl cleanup not enabled, set both "ttl" and "cleanupLimit" options to enable it!'
       );
     }
+
+    return this;
   }
 
   async get(namespace: string, key: string): Promise<any> {
@@ -171,7 +173,7 @@ class Sql implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption) => {
+  new: async (options: DatabaseOption): Promise<Sql> => {
     return await new Sql(options).init();
   },
 };

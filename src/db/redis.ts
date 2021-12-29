@@ -97,7 +97,7 @@ class Redis implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption) => {
+  new: async (options: DatabaseOption): Promise<Redis> => {
     return await new Redis(options).init();
   },
 };
