@@ -1,4 +1,4 @@
-import { Index, Storable } from '../typings';
+import { Index, Storable } from 'saml-jackson';
 import * as dbutils from './utils';
 
 class Store implements Storable {

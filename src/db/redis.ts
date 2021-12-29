@@ -1,5 +1,5 @@
 import * as redis from 'redis';
-import { DatabaseDriver, DatabaseOption, Index } from '../typings';
+import { DatabaseDriver, DatabaseOption, Index } from 'saml-jackson';
 import * as dbutils from './utils';
 
 class Redis implements DatabaseDriver {

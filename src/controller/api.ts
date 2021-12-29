@@ -1,10 +1,10 @@
 import crypto from 'crypto';
+import { IABC, IdPConfig, ISAMLConfig, OAuth } from 'saml-jackson';
 import * as dbutils from '../db/utils';
-import { IABC, IdPConfig, ISAMLConfig, OAuth } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 
-const saml = require('../saml/saml.js');
+import saml from '../saml/saml';
 const x509 = require('../saml/x509.js');
 
 export class SAMLConfig implements ISAMLConfig {

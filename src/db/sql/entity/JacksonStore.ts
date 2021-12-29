@@ -1,5 +1,5 @@
 import { ColumnType, EntitySchema } from 'typeorm';
-import { DatabaseType } from '../../../typings';
+import { DatabaseType } from 'saml-jackson';
 import { JacksonStore } from '../model/JacksonStore';
 
 const valueType = (type: DatabaseType): ColumnType => {

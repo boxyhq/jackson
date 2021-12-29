@@ -7,14 +7,14 @@ import {
   OAuthTokenRes,
   Profile,
   SAMLResponsePayload,
-} from '../typings';
+} from 'saml-jackson';
 import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { IndexNames } from './utils';
 
-const saml = require('../saml/saml.js');
+import saml from '../saml/saml';
 
 const relayStatePrefix = 'boxyhq_jackson_';
 
@@ -188,7 +188,7 @@ export class OAuthController implements IOAuthController {
 
     const samlConfigs = await this.configStore.getByIndex({
       name: IndexNames.EntityID,
-      value: parsedResp.issuer,
+      value: parsedResp?.issuer,
     });
 
     if (!samlConfigs || samlConfigs.length === 0) {

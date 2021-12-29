@@ -1,27 +1,25 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist",
-        "allowJs": true,
-        "module": "CommonJS",
-        "target": "es6", //same as es2015
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitAny": false,
-        "strict": true,
-        "noImplicitThis": false,
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "declaration": true,
-        "noEmitOnError": false,
-        "noUnusedParameters": true,
-        "removeComments": false,
-        "strictNullChecks": true,
-        "allowSyntheticDefaultImports": true
-    },
-    "include": [
-        "./src/**/*"
-, "mem.js"    ],
-    "exclude": [
-        "node_modules",
-        "**/test/*"
-    ]
+  "compilerOptions": {
+    "outDir": "./dist",
+    "allowJs": true,
+    "module": "CommonJS",
+    "target": "es6", //same as es2015
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strict": true,
+    "noImplicitThis": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "noEmitOnError": false,
+    "noUnusedParameters": true,
+    "removeComments": false,
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "**/test/*"],
+  "ts-node": {
+    "files": true
+  }
 }
