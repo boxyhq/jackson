@@ -1,23 +1,17 @@
-import { EntitySchema } from 'typeorm';
-import { JacksonTTL } from '../model/JacksonTTL';
+import { Entity, Column, Index } from 'typeorm';
 
-export default new EntitySchema({
-  name: 'JacksonTTL',
-  target: JacksonTTL,
-  columns: {
-    key: {
-      primary: true,
-      type: 'varchar',
-      length: 1500,
-    },
-    expiresAt: {
-      type: 'bigint',
-    },
-  },
-  indices: [
-    {
-      name: '_jackson_ttl_expires_at',
-      columns: ['expiresAt'],
-    },
-  ],
-});
+@Entity()
+export class JacksonTTL {
+  @Column({
+    primary: true,
+    type: 'varchar',
+    length: 1500,
+  })
+  key!: string;
+
+  @Index('_jackson_ttl_expires_at')
+  @Column({
+    type: 'bigint',
+  })
+  expiresAt!: number;
+}

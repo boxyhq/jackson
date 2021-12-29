@@ -3,20 +3,23 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index } from 'saml-jackson';
-import typeorm from 'typeorm';
+import { Connection, createConnection } from 'typeorm';
 import * as dbutils from '../utils';
 import { JacksonIndex } from './model/JacksonIndex';
 import { JacksonStore } from './model/JacksonStore';
-import { JacksonTTL } from './model/JacksonTTL';
+import { JacksonTTL } from './entity/JacksonTTL';
+
+import JacksonStoreEntity from './entity/JacksonStore';
+import JacksonIndexEntity from './entity/JacksonIndex';
+import { JacksonTTL as JacksonTTLEntity } from './entity/JacksonTTL';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
-  private connection!: typeorm.Connection;
+  private connection!: Connection;
   private storeRepository; //!: typeorm.Repository<JacksonStore>;
   private indexRepository; //!: typeorm.Repository<JacksonIndex>;
   private ttlRepository; //!: typeorm.Repository<JacksonTTL>;
   private ttlCleanup;
-  private storeRepositor;
   private timerId;
 
   constructor(options: DatabaseOption) {
@@ -28,7 +31,7 @@ class Sql implements DatabaseDriver {
       try {
         // TODO: Fix it
         // @ts-ignore
-        this.connection = await typeorm.createConnection({
+        this.connection = await createConnection({
           name: this.options.type + Math.floor(Math.random() * 100000),
           type: this.options.type,
           url: this.options.url,
@@ -36,9 +39,9 @@ class Sql implements DatabaseDriver {
           migrationsTableName: '_jackson_migrations',
           logging: false,
           entities: [
-            require('./entity/JacksonStore.js')(this.options.type),
-            require('./entity/JacksonIndex.js'),
-            require('./entity/JacksonTTL.js'),
+            JacksonStoreEntity(this.options.type),
+            JacksonIndexEntity,
+            JacksonTTLEntity,
           ],
         });
 
@@ -75,7 +78,7 @@ class Sql implements DatabaseDriver {
             return id.key;
           });
 
-          await this.storeRepositor; //y.remove(ids);
+          await this.storeRepository.remove(ids);
           await this.ttlRepository.delete(delIds);
         }
 
@@ -145,7 +148,9 @@ class Sql implements DatabaseDriver {
       await transactionalEntityManager.save(store);
 
       if (ttl) {
-        const ttlRec = new JacksonTTL(dbKey, Date.now() + ttl * 1000);
+        const ttlRec = new JacksonTTL();
+        ttlRec.key = dbKey;
+        ttlRec.expiresAt = Date.now() + ttl * 1000;
         await transactionalEntityManager.save(ttlRec);
       }
 

@@ -4,7 +4,7 @@ import {
   EncryptionKey,
   Storable,
 } from 'saml-jackson';
-import * as t from 'tap';
+import tap from 'tap';
 import DB from '../db/db';
 
 const encryptionKey: EncryptionKey = '3yGrTcnKPBqqHoH3zZMAU6nt4bmIYb2q';
@@ -109,7 +109,7 @@ const dbs = [
   },
 ];
 
-t.before(async () => {
+tap.before(async () => {
   for (const idx in dbs) {
     const opts = <DatabaseOption>dbs[idx];
     const db = await DB.new(opts);
@@ -119,11 +119,11 @@ t.before(async () => {
   }
 });
 
-t.teardown(async () => {
+tap.teardown(async () => {
   process.exit(0);
 });
 
-t.test('dbs', ({ end }) => {
+tap.test('dbs', ({ end }) => {
   for (const idx in configStores) {
     const configStore = configStores[idx];
     const ttlStore = ttlStores[idx];
@@ -135,7 +135,7 @@ t.test('dbs', ({ end }) => {
       dbEngine += ': ' + dbs[idx].type;
     }
 
-    t.test('put(): ' + dbEngine, async (t) => {
+    tap.test('put(): ' + dbEngine, async (t) => {
       await configStore.put(
         record1.id,
         record1,
@@ -169,7 +169,7 @@ t.test('dbs', ({ end }) => {
       t.end();
     });
 
-    t.test('get(): ' + dbEngine, async (t) => {
+    tap.test('get(): ' + dbEngine, async (t) => {
       const ret1 = await configStore.get(record1.id);
       const ret2 = await configStore.get(record2.id);
 
@@ -179,7 +179,7 @@ t.test('dbs', ({ end }) => {
       t.end();
     });
 
-    t.test('getByIndex(): ' + dbEngine, async (t) => {
+    tap.test('getByIndex(): ' + dbEngine, async (t) => {
       const ret1 = await configStore.getByIndex({
         name: 'name',
         value: record1.name,
@@ -200,7 +200,7 @@ t.test('dbs', ({ end }) => {
       t.end();
     });
 
-    t.test('delete(): ' + dbEngine, async (t) => {
+    tap.test('delete(): ' + dbEngine, async (t) => {
       await configStore.delete(record1.id);
 
       const ret0 = await configStore.getByIndex({
@@ -233,7 +233,7 @@ t.test('dbs', ({ end }) => {
       t.end();
     });
 
-    t.test('ttl indexes: ' + dbEngine, async (t) => {
+    tap.test('ttl indexes: ' + dbEngine, async (t) => {
       try {
         await ttlStore.put(
           record1.id,
@@ -258,7 +258,7 @@ t.test('dbs', ({ end }) => {
       t.end();
     });
 
-    t.test('ttl put(): ' + dbEngine, async (t) => {
+    tap.test('ttl put(): ' + dbEngine, async (t) => {
       await ttlStore.put(record1.id, record1);
 
       await ttlStore.put(record2.id, record2);
@@ -266,7 +266,7 @@ t.test('dbs', ({ end }) => {
       t.end();
     });
 
-    t.test('ttl get(): ' + dbEngine, async (t) => {
+    tap.test('ttl get(): ' + dbEngine, async (t) => {
       const ret1 = await ttlStore.get(record1.id);
       const ret2 = await ttlStore.get(record2.id);
 
@@ -276,7 +276,7 @@ t.test('dbs', ({ end }) => {
       t.end();
     });
 
-    t.test('ttl expiry: ' + dbEngine, async (t) => {
+    tap.test('ttl expiry: ' + dbEngine, async (t) => {
       console.log({ dbEngine });
 
       // mongo runs ttl task every 60 seconds
@@ -300,7 +300,7 @@ t.test('dbs', ({ end }) => {
     });
   }
 
-  t.test('db.new() error', async (t) => {
+  tap.test('db.new() error', async (t) => {
     try {
       await DB.new({
         engine: 'somedb' as DatabaseEngine,
