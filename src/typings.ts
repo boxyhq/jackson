@@ -13,24 +13,15 @@ declare module 'saml-jackson' {
     provider: string;
   }
 
-  export interface SAMLConfigReq {
-    clientID: string;
-    clientSecret: string;
-    tenant: string;
-    product: string;
-  }
-
   export interface ISAMLConfig {
     // Ensure backward compatibility
     config(body: IdPConfig): Promise<OAuth>;
 
-    // {
-    //   clientID: string;
-    //   tenant: string;
-    //   product: string;
-    // }
-
-    getConfig(body: Pick<SAMLConfigReq, "clientID", "">): Promise<Partial<OAuth>>;
+    getConfig(body: {
+      clientID: string;
+      tenant: string;
+      product: string;
+    }): Promise<Partial<OAuth>>;
 
     deleteConfig(body: {
       clientID: string;
@@ -39,6 +30,7 @@ declare module 'saml-jackson' {
       product: string;
     }): Promise<void>;
 
+    // New methods
     create(body: IdPConfig): Promise<OAuth>;
 
     get(body: {
@@ -149,9 +141,9 @@ declare module 'saml-jackson' {
 
   export interface DatabaseOption {
     engine: DatabaseEngine;
-    url: string;
+    url?: string;
     type?: DatabaseType;
-    ttl: number;
+    ttl?: number;
     cleanupLimit?: number;
     encryptionKey?: string;
   }

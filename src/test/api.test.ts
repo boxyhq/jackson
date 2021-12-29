@@ -1,11 +1,12 @@
 import * as path from 'path';
-import { IdPConfig } from 'saml-jackson';
+import { DatabaseEngine, IdPConfig } from 'saml-jackson';
 import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../db/utils';
 import controllers from '../index';
 import readConfig from '../read-config';
 
+// TODO: Add the type
 let apiController;
 
 const CLIENT_ID = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
@@ -15,7 +16,7 @@ const OPTIONS = {
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
   db: {
-    engine: 'mongo',
+    engine: DatabaseEngine.mongo,
     url: 'mongodb://localhost:27017/jackson-demo',
   },
 };
