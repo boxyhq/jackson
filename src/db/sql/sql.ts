@@ -32,7 +32,7 @@ class Sql implements DatabaseDriver {
           url: this.options.url,
           synchronize: true,
           migrationsTableName: '_jackson_migrations',
-          logging: false,
+          logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
         });
 
