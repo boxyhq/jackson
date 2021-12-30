@@ -13,7 +13,7 @@ import redis from './redis';
 import sql from './sql/sql';
 import store from './store';
 
-const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): any => {
+const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
     return JSON.parse(
       encrypter.decrypt(res.value, res.iv, res.tag, encryptionKey)
@@ -24,15 +24,15 @@ const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): any => {
 };
 
 class DB implements DatabaseDriver {
-  private db: any;
+  private db: DatabaseDriver;
   private encryptionKey: EncryptionKey;
 
-  constructor(db: any, encryptionKey: EncryptionKey) {
+  constructor(db: DatabaseDriver, encryptionKey: EncryptionKey) {
     this.db = db;
     this.encryptionKey = encryptionKey;
   }
 
-  async get(namespace: string, key: string): Promise<any> {
+  async get(namespace: string, key: string): Promise<unknown> {
     const res = await this.db.get(namespace, key);
 
     if (!res) {
@@ -42,7 +42,7 @@ class DB implements DatabaseDriver {
     return decrypt(res, this.encryptionKey);
   }
 
-  async getByIndex(namespace: string, idx: Index): Promise<any> {
+  async getByIndex(namespace: string, idx: Index): Promise<unknown[]> {
     const res = await this.db.getByIndex(namespace, idx);
     const encryptionKey = this.encryptionKey;
     return res.map((r) => {
@@ -54,10 +54,10 @@ class DB implements DatabaseDriver {
   async put(
     namespace: string,
     key: string,
-    val: any,
-    ttl: number = 0,
-    ...indexes: any[]
-  ): Promise<any> {
+    val: unknown,
+    ttl = 0,
+    ...indexes: Index[]
+  ): Promise<unknown> {
     if (ttl > 0 && indexes && indexes.length > 0) {
       throw new Error('secondary indexes not allow on a store with ttl');
     }
@@ -69,11 +69,11 @@ class DB implements DatabaseDriver {
     return await this.db.put(namespace, key, dbVal, ttl, ...indexes);
   }
 
-  async delete(namespace: string, key: string): Promise<any> {
+  async delete(namespace: string, key: string): Promise<unknown> {
     return await this.db.delete(namespace, key);
   }
 
-  store(namespace: string, ttl: number = 0): Storable {
+  store(namespace: string, ttl = 0): Storable {
     return store.new(namespace, this, ttl);
   }
 }

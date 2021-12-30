@@ -104,7 +104,7 @@ declare module 'saml-jackson' {
       key: string,
       val: any,
       ttl: number,
-      indexes: Index[]
+      ...indexes: Index[]
     ): Promise<any>;
     delete(namespace: string, key: string): Promise<any>;
     getByIndex(namespace: string, idx: Index): Promise<any>;
@@ -159,7 +159,7 @@ declare module 'saml-jackson' {
   export interface JacksonOption {
     externalUrl: string;
     samlPath: string;
-    samlAudience?: string;
+    samlAudience: string;
     preLoadedConfig?: string;
     idpEnabled?: boolean;
     db: DatabaseOption;

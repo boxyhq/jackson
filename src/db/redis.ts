@@ -11,7 +11,7 @@ class Redis implements DatabaseDriver {
   }
 
   async init(): Promise<Redis> {
-    let opts = {};
+    const opts = {};
 
     if (this.options && this.options.url) {
       opts['socket'] = {
@@ -30,7 +30,7 @@ class Redis implements DatabaseDriver {
   }
 
   async get(namespace: string, key: string): Promise<any> {
-    let res = await this.client.get(dbutils.key(namespace, key));
+    const res = await this.client.get(dbutils.key(namespace, key));
     if (res) {
       return JSON.parse(res);
     }
@@ -55,7 +55,7 @@ class Redis implements DatabaseDriver {
     namespace: string,
     key: string,
     val: Encrypted,
-    ttl: number = 0,
+    ttl = 0,
     ...indexes: any[]
   ): Promise<void> {
     let tx = this.client.multi();

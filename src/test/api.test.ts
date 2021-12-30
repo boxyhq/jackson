@@ -144,7 +144,7 @@ tap.test('controller/api', async (t) => {
       t.equal(response.client_id, CLIENT_ID);
       t.equal(response.provider, PROVIDER);
 
-      let savedConf = await apiController.getConfig({
+      const savedConf = await apiController.getConfig({
         clientID: CLIENT_ID,
       });
 

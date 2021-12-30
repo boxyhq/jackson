@@ -56,13 +56,13 @@ export class SAMLConfig implements ISAMLConfig {
 
     idpMetadata.provider = providerName ? providerName : 'Unknown';
 
-    let clientID = dbutils.keyDigest(
+    const clientID = dbutils.keyDigest(
       dbutils.keyFromParts(tenant, product, idpMetadata.entityID)
     );
 
     let clientSecret;
 
-    let exists = await this.configStore.get(clientID);
+    const exists = await this.configStore.get(clientID);
 
     if (exists) {
       clientSecret = exists.clientSecret;

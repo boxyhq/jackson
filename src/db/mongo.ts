@@ -36,7 +36,7 @@ class Mongo implements DatabaseDriver {
   }
 
   async get(namespace: string, key: string): Promise<any> {
-    let res = await this.collection.findOne({
+    const res = await this.collection.findOne({
       _id: dbutils.key(namespace, key),
     });
     if (res && res.value) {
@@ -65,7 +65,7 @@ class Mongo implements DatabaseDriver {
     namespace: string,
     key: string,
     val: Encrypted,
-    ttl: number = 0,
+    ttl = 0,
     ...indexes: any[]
   ): Promise<void> {
     const doc = <Document>{

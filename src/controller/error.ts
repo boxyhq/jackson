@@ -2,7 +2,7 @@ export class JacksonError extends Error {
   public name: string;
   public statusCode: number;
 
-  constructor(message: string, statusCode: number = 500) {
+  constructor(message: string, statusCode = 500) {
     super(message);
 
     this.name = this.constructor.name;

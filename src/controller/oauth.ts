@@ -66,7 +66,7 @@ export class OAuthController implements IOAuthController {
       product,
       code_challenge,
       code_challenge_method = '',
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       provider = 'saml',
     } = body;
 
@@ -134,7 +134,6 @@ export class OAuthController implements IOAuthController {
     }
 
     const samlReq = saml.request({
-      // @ts-ignore
       entityID: this.opts.samlAudience,
       callbackUrl: this.opts.externalUrl + this.opts.samlPath,
       signingKey: samlConfig.certs.privateKey,
@@ -190,8 +189,6 @@ export class OAuthController implements IOAuthController {
 
     const samlConfigs = await this.configStore.getByIndex({
       name: IndexNames.EntityID,
-
-      // @ts-ignore
       value: parsedResp?.issuer,
     });
 
@@ -214,7 +211,7 @@ export class OAuthController implements IOAuthController {
       }
     }
 
-    let validateOpts: any = {
+    const validateOpts: Record<string, string> = {
       thumbprint: samlConfig.idpMetadata.thumbprint,
       audience: this.opts.samlAudience,
     };
@@ -228,7 +225,7 @@ export class OAuthController implements IOAuthController {
     // store details against a code
     const code = crypto.randomBytes(20).toString('hex');
 
-    let codeVal: any = {
+    const codeVal: Record<string, unknown> = {
       profile,
       clientID: samlConfig.clientID,
       clientSecret: samlConfig.clientSecret,
@@ -248,7 +245,7 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
-    let params: any = {
+    const params: Record<string, string> = {
       code,
     };
 

@@ -84,7 +84,6 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  // @ts-ignore
   const ctrlrModule = await jackson(env);
 
   apiController = ctrlrModule.apiController;

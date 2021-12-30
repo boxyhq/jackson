@@ -43,7 +43,7 @@ class Mem implements DatabaseDriver {
   }
 
   async get(namespace: string, key: string): Promise<any> {
-    let res = this.store[dbutils.key(namespace, key)];
+    const res = this.store[dbutils.key(namespace, key)];
     if (res) {
       return res;
     }
@@ -66,7 +66,7 @@ class Mem implements DatabaseDriver {
     namespace: string,
     key: string,
     val: Encrypted,
-    ttl: number = 0,
+    ttl = 0,
     ...indexes: any[]
   ): Promise<any> {
     const k = dbutils.key(namespace, key);

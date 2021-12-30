@@ -6,7 +6,7 @@ class Store implements Storable {
   private db: any;
   private ttl: number;
 
-  constructor(namespace: string, db: any, ttl: number = 0) {
+  constructor(namespace: string, db: any, ttl = 0) {
     this.namespace = namespace;
     this.db = db;
     this.ttl = ttl;
@@ -43,7 +43,7 @@ class Store implements Storable {
 }
 
 export default {
-  new: (namespace: string, db: any, ttl: number = 0): Storable => {
+  new: (namespace: string, db: any, ttl = 0): Storable => {
     return new Store(namespace, db, ttl);
   },
 };

@@ -1,7 +1,7 @@
-const saml = require('@boxyhq/saml20');
-const xml2js = require('xml2js');
-const thumbprint = require('thumbprint');
-const xmlcrypto = require('xml-crypto');
+import saml from '@boxyhq/saml20';
+import xml2js from 'xml2js';
+import thumbprint from 'thumbprint';
+import xmlcrypto from 'xml-crypto';
 import * as rambda from 'rambda';
 import xmlbuilder from 'xmlbuilder';
 import crypto from 'crypto';
@@ -53,7 +53,8 @@ const request = ({
   const id = idPrefix + crypto.randomBytes(10).toString('hex');
   const date = new Date().toISOString();
 
-  let samlReq: Record<string, any> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const samlReq: Record<string, any> = {
     'samlp:AuthnRequest': {
       '@xmlns:samlp': 'urn:oasis:names:tc:SAML:2.0:protocol',
       '@ID': id,
@@ -97,9 +98,7 @@ const request = ({
   };
 };
 
-const parseAsync = async (
-  rawAssertion: string
-): Promise<SAMLProfile | void> => {
+const parseAsync = async (rawAssertion: string): Promise<SAMLProfile> => {
   return new Promise((resolve, reject) => {
     saml.parse(
       rawAssertion,
@@ -118,7 +117,7 @@ const parseAsync = async (
 const validateAsync = async (
   rawAssertion: string,
   options
-): Promise<SAMLProfile | void> => {
+): Promise<SAMLProfile> => {
   return new Promise((resolve, reject) => {
     saml.validate(
       rawAssertion,
