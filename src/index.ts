@@ -81,4 +81,4 @@ const controllers = async (
   };
 };
 
-module.exports = controllers;
+export default controllers;
