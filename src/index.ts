@@ -82,3 +82,5 @@ const controllers = async (
 };
 
 export default controllers;
+
+export { SAMLConfig, OAuthController };
