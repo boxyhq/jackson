@@ -2,7 +2,7 @@
 
 require('reflect-metadata');
 
-import { DatabaseDriver, DatabaseOption, Index } from 'saml-jackson';
+import { DatabaseDriver, DatabaseOption, Index, Encrypted } from 'saml-jackson';
 import { Connection, createConnection } from 'typeorm';
 import * as dbutils from '../utils';
 import JacksonIndexEntity from './entity/JacksonIndex';
@@ -115,11 +115,10 @@ class Sql implements DatabaseDriver {
       key: dbutils.keyForIndex(namespace, idx),
     });
 
-    const ret: string[] = [];
+    const ret: Encrypted[] = [];
 
     if (res) {
       res.forEach((r) => {
-        // @ts-ignore
         ret.push({
           value: r.store.value,
           iv: r.store.iv,
@@ -134,14 +133,13 @@ class Sql implements DatabaseDriver {
   async put(
     namespace: string,
     key: string,
-    val: string,
+    val: Encrypted,
     ttl: number = 0,
     ...indexes: any[]
   ): Promise<void> {
     await this.connection.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
 
-      // @ts-ignore
       const store = new JacksonStore(dbKey, val.value, val.iv, val.tag);
 
       await transactionalEntityManager.save(store);

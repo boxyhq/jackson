@@ -17,9 +17,12 @@ const mapping = [
     attribute: 'lastName',
     schema: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname',
   },
-];
+] as const;
 
-const map = (claims) => {
+type attributes = typeof mapping[number]['attribute'];
+type schemas = typeof mapping[number]['schema'];
+
+const map = (claims: Record<attributes | schemas, unknown>) => {
   const profile = {
     raw: claims,
   };
@@ -35,6 +38,4 @@ const map = (claims) => {
   return profile;
 };
 
-module.exports = {
-  map,
-};
+export default { map };

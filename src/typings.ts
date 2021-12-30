@@ -118,8 +118,8 @@ declare module 'saml-jackson' {
   }
 
   export interface Encrypted {
-    iv: string;
-    tag: string;
+    iv?: string;
+    tag?: string;
     value: string;
   }
 
