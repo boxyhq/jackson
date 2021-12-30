@@ -1,7 +1,14 @@
 import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { IOAuthController, ISAMLConfig, JacksonOption } from 'saml-jackson';
+import {
+  IOAuthController,
+  ISAMLConfig,
+  JacksonOption,
+  OAuthReqBody,
+  OAuthTokenReq,
+  SAMLResponsePayload,
+} from 'saml-jackson';
 import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../controller/error';
@@ -56,13 +63,13 @@ tap.teardown(async () => {
 
 tap.test('authorize()', async (t) => {
   t.test('Should throw an error if `redirect_uri` null', async (t) => {
-    const body = {
-      redirect_uri: null,
+    const body: Partial<OAuthReqBody> = {
+      redirect_uri: undefined,
       state: 'state',
     };
 
     try {
-      await oauthController.authorize(body);
+      await oauthController.authorize(<OAuthReqBody>body);
       t.fail('Expecting JacksonError.');
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
@@ -78,13 +85,13 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should throw an error if `state` null', async (t) => {
-    const body = {
+    const body: Partial<OAuthReqBody> = {
       redirect_uri: 'https://example.com/',
-      state: null,
+      state: undefined,
     };
 
     try {
-      await oauthController.authorize(body);
+      await oauthController.authorize(<OAuthReqBody>body);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
@@ -108,7 +115,7 @@ tap.test('authorize()', async (t) => {
     };
 
     try {
-      await oauthController.authorize(body);
+      await oauthController.authorize(<OAuthReqBody>body);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
@@ -134,7 +141,7 @@ tap.test('authorize()', async (t) => {
       };
 
       try {
-        await oauthController.authorize(body);
+        await oauthController.authorize(<OAuthReqBody>body);
 
         t.fail('Expecting JacksonError.');
       } catch (err) {
@@ -158,7 +165,7 @@ tap.test('authorize()', async (t) => {
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
     };
 
-    const response = await oauthController.authorize(body);
+    const response = await oauthController.authorize(<OAuthReqBody>body);
     const params = new URLSearchParams(new URL(response.redirect_url).search);
 
     t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -178,7 +185,9 @@ tap.test('samlResponse()', async (t) => {
     client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
   };
 
-  const { redirect_url } = await oauthController.authorize(authBody);
+  const { redirect_url } = await oauthController.authorize(
+    <OAuthReqBody>authBody
+  );
 
   const relayState = new URLSearchParams(new URL(redirect_url).search).get(
     'RelayState'
@@ -190,12 +199,12 @@ tap.test('samlResponse()', async (t) => {
   );
 
   t.test('Should throw an error if `RelayState` is missing', async (t) => {
-    const responseBody = {
+    const responseBody: Partial<SAMLResponsePayload> = {
       SAMLResponse: rawResponse,
     };
 
     try {
-      await oauthController.samlResponse(responseBody);
+      await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
@@ -223,10 +232,13 @@ tap.test('samlResponse()', async (t) => {
       const stubValidateAsync = sinon
         .stub(saml, 'validateAsync')
         .resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
+
       //@ts-ignore
       const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code);
 
-      const response = await oauthController.samlResponse(responseBody);
+      const response = await oauthController.samlResponse(
+        <SAMLResponsePayload>responseBody
+      );
 
       const params = new URLSearchParams(new URL(response.redirect_url).search);
 
@@ -256,7 +268,7 @@ tap.test('token()', (t) => {
       };
 
       try {
-        await oauthController.token(body);
+        await oauthController.token(<OAuthTokenReq>body);
 
         t.fail('Expecting JacksonError.');
       } catch (err) {
@@ -279,7 +291,7 @@ tap.test('token()', (t) => {
     };
 
     try {
-      await oauthController.token(body);
+      await oauthController.token(<OAuthTokenReq>body);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
@@ -292,16 +304,15 @@ tap.test('token()', (t) => {
   });
 
   t.test('Should throw an error if `code` is invalid', async (t) => {
-    const body = {
+    const body: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
       client_secret: 'some-secret',
-      redirect_uri: null,
       code: 'invalid-code',
     };
 
     try {
-      await oauthController.token(body);
+      await oauthController.token(<OAuthTokenReq>body);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
@@ -314,11 +325,10 @@ tap.test('token()', (t) => {
   });
 
   t.test('Should return the `access_token` for a valid request', async (t) => {
-    const body = {
+    const body: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
       client_secret: 'some-secret',
-      redirect_uri: null,
       code: code,
     };
 
@@ -328,7 +338,7 @@ tap.test('token()', (t) => {
       //@ts-ignore
       .returns(token);
 
-    const response = await oauthController.token(body);
+    const response = await oauthController.token(<OAuthTokenReq>body);
 
     t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
     t.ok('access_token' in response, 'includes access_token');
