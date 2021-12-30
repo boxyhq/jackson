@@ -4,16 +4,13 @@ import { IOAuthController, ISAMLConfig } from 'saml-jackson';
 import { JacksonError } from './controller/error';
 import { extractAuthToken } from './controller/utils';
 import env from './env';
-
-//import jackson from './index';
-
-const jackson = require('./index');
+import jackson from './index';
 
 let apiController: ISAMLConfig;
 let oauthController: IOAuthController;
 
-const oauthPath = '/oauth';
-const apiPath = '/api/v1/saml';
+const oauthPath: string = '/oauth';
+const apiPath: string = '/api/v1/saml';
 
 const app = express();
 
@@ -22,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(oauthPath + '/authorize', async (req, res) => {
   try {
+    // @ts-ignore
     const { redirect_url } = await oauthController.authorize(req.query);
 
     res.redirect(redirect_url);
@@ -62,6 +60,7 @@ app.get(oauthPath + '/userinfo', async (req, res) => {
 
     // check for query param
     if (!token) {
+      // @ts-ignore
       token = req.query.access_token;
     }
 
@@ -84,6 +83,7 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
+  // @ts-ignore
   const ctrlrModule = await jackson(env);
 
   apiController = ctrlrModule.apiController;
@@ -130,6 +130,7 @@ internalApp.get(apiPath + '/config', async (req, res) => {
       return;
     }
 
+    // @ts-ignore
     res.json(await apiController.getConfig(req.query));
   } catch (err) {
     const { message } = err as JacksonError;
