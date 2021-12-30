@@ -20,6 +20,7 @@ const db = {
   type: process.env.DB_TYPE,
   ttl: process.env.DB_TTL,
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
+  cleanupLimit: process.env.DB_CLEANUP_LIMIT,
 };
 
 const env = {
