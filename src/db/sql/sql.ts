@@ -5,14 +5,10 @@ require('reflect-metadata');
 import { DatabaseDriver, DatabaseOption, Index, Encrypted } from 'saml-jackson';
 import { Connection, createConnection } from 'typeorm';
 import * as dbutils from '../utils';
-import JacksonIndexEntity from './entity/JacksonIndex';
-import JacksonStoreEntity from './entity/JacksonStore';
-import {
-  JacksonTTL,
-  JacksonTTL as JacksonTTLEntity,
-} from './entity/JacksonTTL';
-import { JacksonIndex } from './model/JacksonIndex';
-import { JacksonStore } from './model/JacksonStore';
+
+import { JacksonStore } from './entity/JacksonStore';
+import { JacksonIndex } from './entity/JacksonIndex';
+import { JacksonTTL } from './entity/JacksonTTL';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
@@ -36,12 +32,8 @@ class Sql implements DatabaseDriver {
           url: this.options.url,
           synchronize: true,
           migrationsTableName: '_jackson_migrations',
-          logging: false,
-          entities: [
-            JacksonStoreEntity(this.options.type),
-            JacksonIndexEntity,
-            JacksonTTLEntity,
-          ],
+          logging: ['error'],
+          entities: [JacksonStore, JacksonIndex, JacksonTTL],
         });
 
         break;
@@ -140,7 +132,11 @@ class Sql implements DatabaseDriver {
     await this.connection.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
 
-      const store = new JacksonStore(dbKey, val.value, val.iv, val.tag);
+      const store = new JacksonStore();
+      store.key = dbKey;
+      store.value = val.value;
+      store.iv = val.iv;
+      store.tag = val.tag;
 
       await transactionalEntityManager.save(store);
 
@@ -159,9 +155,10 @@ class Sql implements DatabaseDriver {
           storeKey: store.key,
         });
         if (!rec) {
-          await transactionalEntityManager.save(
-            new JacksonIndex(0, key, store)
-          );
+          const ji = new JacksonIndex();
+          ji.key = key;
+          ji.store = store;
+          await transactionalEntityManager.save(ji);
         }
       }
     });
