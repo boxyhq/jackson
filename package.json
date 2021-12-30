@@ -57,8 +57,11 @@
     "@types/redis": "4.0.11",
     "@types/sinon": "10.0.6",
     "@types/tap": "15.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
     "cross-env": "7.0.3",
-    "eslint": "8.5.0",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
     "husky": "7.0.4",
     "lint-staged": "12.1.4",
     "nodemon": "2.0.15",
@@ -66,7 +69,7 @@
     "sinon": "12.0.1",
     "tap": "15.1.5",
     "ts-node": "10.4.0",
-    "typescript": "4.5.4"
+    "typescript": "^4.5.4"
   },
   "lint-staged": {
     "*.{js,ts}": "eslint --cache --fix",
