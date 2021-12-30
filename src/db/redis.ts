@@ -1,5 +1,5 @@
 import * as redis from 'redis';
-import { DatabaseDriver, DatabaseOption, Index } from 'saml-jackson';
+import { DatabaseDriver, DatabaseOption, Encrypted, Index } from 'saml-jackson';
 import * as dbutils from './utils';
 
 class Redis implements DatabaseDriver {
@@ -54,7 +54,7 @@ class Redis implements DatabaseDriver {
   async put(
     namespace: string,
     key: string,
-    val: string,
+    val: Encrypted,
     ttl: number = 0,
     ...indexes: any[]
   ): Promise<void> {
