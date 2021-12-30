@@ -21,7 +21,6 @@ export default new EntitySchema({
     },
   },
   relations: {
-    // TODO: Remove the below line to see the error
     // @ts-ignore
     store: {
       target: () => JacksonStore,

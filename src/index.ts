@@ -32,9 +32,12 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   return newOpts;
 };
 
-export default async function controllers(
+const controllers = async (
   opts: JacksonOption
-): Promise<{ apiController: SAMLConfig; oauthController: OAuthController }> {
+): Promise<{
+  apiController: SAMLConfig;
+  oauthController: OAuthController;
+}> => {
   opts = defaultOpts(opts);
 
   const db = await DB.new(opts.db);
@@ -76,4 +79,6 @@ export default async function controllers(
     apiController,
     oauthController,
   };
-}
+};
+
+module.exports = controllers;

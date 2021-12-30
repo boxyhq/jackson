@@ -4,7 +4,10 @@ import { IOAuthController, ISAMLConfig } from 'saml-jackson';
 import { JacksonError } from './controller/error';
 import { extractAuthToken } from './controller/utils';
 import env from './env';
-import jackson from './index';
+
+//import jackson from './index';
+
+const jackson = require('./index');
 
 let apiController: ISAMLConfig;
 let oauthController: IOAuthController;
