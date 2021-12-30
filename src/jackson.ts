@@ -1,12 +1,13 @@
 import cors from 'cors';
 import express from 'express';
+import { IOAuthController, ISAMLConfig } from 'saml-jackson';
 import { JacksonError } from './controller/error';
 import { extractAuthToken } from './controller/utils';
 import env from './env';
 import jackson from './index';
 
-let apiController;
-let oauthController;
+let apiController: ISAMLConfig;
+let oauthController: IOAuthController;
 
 const oauthPath = '/oauth';
 const apiPath = '/api/v1/saml';
@@ -62,7 +63,7 @@ app.get(oauthPath + '/userinfo', async (req, res) => {
     }
 
     if (!token) {
-      res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const profile = await oauthController.userInfo(token);
@@ -80,7 +81,6 @@ const server = app.listen(env.hostPort, async () => {
     `🚀 The path of the righteous server: http://${env.hostUrl}:${env.hostPort}`
   );
 
-  // TODO: Fix it
   // @ts-ignore
   const ctrlrModule = await jackson(env);
 

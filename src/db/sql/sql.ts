@@ -5,20 +5,21 @@ require('reflect-metadata');
 import { DatabaseDriver, DatabaseOption, Index } from 'saml-jackson';
 import { Connection, createConnection } from 'typeorm';
 import * as dbutils from '../utils';
+import JacksonIndexEntity from './entity/JacksonIndex';
+import JacksonStoreEntity from './entity/JacksonStore';
+import {
+  JacksonTTL,
+  JacksonTTL as JacksonTTLEntity,
+} from './entity/JacksonTTL';
 import { JacksonIndex } from './model/JacksonIndex';
 import { JacksonStore } from './model/JacksonStore';
-import { JacksonTTL } from './entity/JacksonTTL';
-
-import JacksonStoreEntity from './entity/JacksonStore';
-import JacksonIndexEntity from './entity/JacksonIndex';
-import { JacksonTTL as JacksonTTLEntity } from './entity/JacksonTTL';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
   private connection!: Connection;
-  private storeRepository; //!: typeorm.Repository<JacksonStore>;
-  private indexRepository; //!: typeorm.Repository<JacksonIndex>;
-  private ttlRepository; //!: typeorm.Repository<JacksonTTL>;
+  private storeRepository;
+  private indexRepository;
+  private ttlRepository;
   private ttlCleanup;
   private timerId;
 
@@ -29,8 +30,6 @@ class Sql implements DatabaseDriver {
   async init(): Promise<Sql> {
     while (true) {
       try {
-        // TODO: Fix it
-        // @ts-ignore
         this.connection = await createConnection({
           name: this.options.type + Math.floor(Math.random() * 100000),
           type: this.options.type,

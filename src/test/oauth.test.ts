@@ -1,30 +1,29 @@
 import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { JacksonOption } from 'saml-jackson';
+import { IOAuthController, ISAMLConfig, JacksonOption } from 'saml-jackson';
 import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../controller/error';
 import readConfig from '../read-config';
 import saml from '../saml/saml';
 
-// TODO: Add type
-let apiController;
-let oauthController;
+let apiController: ISAMLConfig;
+let oauthController: IOAuthController;
 
 const code = '1234567890';
 const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-const options = {
+const options = <JacksonOption>{
   externalUrl: 'https://my-cool-app.com',
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
   db: {
     engine: 'mem',
   },
-} as JacksonOption;
+};
 
 const samlConfig = {
   tenant: 'boxyhq.com',

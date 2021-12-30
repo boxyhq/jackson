@@ -51,7 +51,7 @@ declare module 'saml-jackson' {
     authorize(body: OAuthReqBody): Promise<{ redirect_url: string }>;
     samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }>;
     token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
-    userInfo(body: string): Promise<Profile>;
+    userInfo(token: string): Promise<Profile>;
   }
 
   export interface OAuthReqBody {
