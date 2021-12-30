@@ -74,5 +74,9 @@
   "lint-staged": {
     "*.{js,ts}": "eslint --cache --fix",
     "*.{js,ts,css,md}": "prettier --write"
-  }
+  },
+  "files" : [
+    "dist",
+    "Dockerfile"
+  ]
 }
