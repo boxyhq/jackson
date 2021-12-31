@@ -127,7 +127,7 @@ tap.test('dbs', ({ end }) => {
   for (const idx in configStores) {
     const configStore = configStores[idx];
     const ttlStore = ttlStores[idx];
-    let dbEngine = dbs[idx].engine;
+    let dbEngine = dbs[idx].engine!;
 
     if (dbs[idx].type) {
       dbEngine += ': ' + dbs[idx].type;

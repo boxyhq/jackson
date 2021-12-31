@@ -134,7 +134,7 @@ export class OAuthController implements IOAuthController {
     }
 
     const samlReq = saml.request({
-      entityID: this.opts.samlAudience,
+      entityID: this.opts.samlAudience!,
       callbackUrl: this.opts.externalUrl + this.opts.samlPath,
       signingKey: samlConfig.certs.privateKey,
     });
@@ -213,7 +213,7 @@ export class OAuthController implements IOAuthController {
 
     const validateOpts: Record<string, string> = {
       thumbprint: samlConfig.idpMetadata.thumbprint,
-      audience: this.opts.samlAudience,
+      audience: this.opts.samlAudience!,
     };
 
     if (session && session.id) {
