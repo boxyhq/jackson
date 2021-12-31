@@ -8,7 +8,7 @@ import {
   OAuthReqBody,
   OAuthTokenReq,
   SAMLResponsePayload,
-} from 'saml-jackson';
+} from '../typings';
 import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../controller/error';

@@ -2,7 +2,12 @@
 
 require('reflect-metadata');
 
-import { DatabaseDriver, DatabaseOption, Index, Encrypted } from 'saml-jackson';
+import {
+  DatabaseDriver,
+  DatabaseOption,
+  Index,
+  Encrypted,
+} from '../../typings';
 import { Connection, createConnection } from 'typeorm';
 import * as dbutils from '../utils';
 

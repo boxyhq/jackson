@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { IdPConfig, ISAMLConfig, OAuth, Storable } from 'saml-jackson';
+import { IdPConfig, ISAMLConfig, OAuth, Storable } from '../typings';
 import * as dbutils from '../db/utils';
 import saml from '../saml/saml';
 import x509 from '../saml/x509';

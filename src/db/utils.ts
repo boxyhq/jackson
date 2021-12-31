@@ -1,5 +1,5 @@
 import Ripemd160 from 'ripemd160';
-import { Index } from 'saml-jackson';
+import { Index } from '../typings';
 
 export const key = (namespace: string, k: string): string => {
   return namespace + ':' + k;

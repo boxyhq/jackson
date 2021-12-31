@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { IdPConfig } from 'saml-jackson';
+import { IdPConfig } from './typings';
 
 const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
   if (preLoadedConfig.startsWith('./')) {
@@ -10,7 +10,7 @@ const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
   const files = await fs.promises.readdir(preLoadedConfig);
   const configs: IdPConfig[] = [];
 
-  for (let idx in files) {
+  for (const idx in files) {
     const file = files[idx];
     if (file.endsWith('.js')) {
       const config = require(path.join(preLoadedConfig, file)) as IdPConfig;

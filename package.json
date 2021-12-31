@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepublish": "npm run build",
     "start": "cross-env IDP_ENABLED=true node dist/jackson.js",
     "dev": "cross-env IDP_ENABLED=true nodemon --config nodemon.json src/jackson.ts",
     "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson nodemon --config nodemon.json src/jackson.ts",

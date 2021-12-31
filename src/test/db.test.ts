@@ -3,7 +3,7 @@ import {
   DatabaseOption,
   EncryptionKey,
   Storable,
-} from 'saml-jackson';
+} from '../typings';
 import tap from 'tap';
 import DB from '../db/db';
 

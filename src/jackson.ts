@@ -1,16 +1,16 @@
 import cors from 'cors';
 import express from 'express';
-import { OAuthController, SAMLConfig } from './index';
+import { IOAuthController, ISAMLConfig } from './index';
 import { JacksonError } from './controller/error';
 import { extractAuthToken } from './controller/utils';
 import env from './env';
 import jackson from './index';
 
-let apiController: SAMLConfig;
-let oauthController: OAuthController;
+let apiController: ISAMLConfig;
+let oauthController: IOAuthController;
 
-const oauthPath: string = '/oauth';
-const apiPath: string = '/api/v1/saml';
+const oauthPath = '/oauth';
+const apiPath = '/api/v1/saml';
 
 const app = express();
 
