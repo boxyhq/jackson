@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "start": "cross-env IDP_ENABLED=true node dist/jackson.js",
     "dev": "cross-env IDP_ENABLED=true nodemon --config nodemon.json src/jackson.ts",
     "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson nodemon --config nodemon.json src/jackson.ts",
@@ -51,7 +51,6 @@
     "ripemd160": "2.0.2",
     "thumbprint": "0.0.1",
     "typeorm": "0.2.41",
-    "typescript": "4.5.4",
     "xml-crypto": "2.1.3",
     "xml2js": "0.4.23",
     "xmlbuilder": "15.1.1"
@@ -74,7 +73,8 @@
     "sinon": "12.0.1",
     "tap": "15.1.5",
     "ts-node": "10.4.0",
-    "tsconfig-paths": "3.12.0"
+    "tsconfig-paths": "3.12.0",
+    "typescript": "4.5.4"
   },
   "lint-staged": {
     "*.{js,ts}": "eslint --cache --fix",
