@@ -1,1 +1,1 @@
-module.exports = (test) => test.replace(/\.test\.js$/, '.js');
+export default (test) => test.replace(/\.test\.js$/, '.js');

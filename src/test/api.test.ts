@@ -1,23 +1,22 @@
 import * as path from 'path';
-import { DatabaseOption, IdPConfig } from 'saml-jackson';
+import { IdPConfig, JacksonOption } from 'saml-jackson';
 import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../db/utils';
 import controllers from '../index';
 import readConfig from '../read-config';
 
-// TODO: Add the type
 let apiController;
 
 const CLIENT_ID = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
-const OPTIONS = {
+const OPTIONS = <JacksonOption>{
   externalUrl: 'https://my-cool-app.com',
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
   db: {
     engine: 'mem',
-  } as DatabaseOption,
+  },
 };
 
 tap.before(async () => {
@@ -63,7 +62,7 @@ tap.test('controller/api', async (t) => {
         delete body['defaultRedirectUrl'];
 
         try {
-          await apiController.config(body);
+          await apiController.config(body as IdPConfig);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide a defaultRedirectUrl');
@@ -78,7 +77,7 @@ tap.test('controller/api', async (t) => {
         delete body['redirectUrl'];
 
         try {
-          await apiController.config(body);
+          await apiController.config(body as IdPConfig);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide redirectUrl');
@@ -93,7 +92,7 @@ tap.test('controller/api', async (t) => {
         delete body['tenant'];
 
         try {
-          await apiController.config(body);
+          await apiController.config(body as IdPConfig);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide tenant');
@@ -108,7 +107,7 @@ tap.test('controller/api', async (t) => {
         delete body['product'];
 
         try {
-          await apiController.config(body);
+          await apiController.config(body as IdPConfig);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide product');
@@ -162,7 +161,7 @@ tap.test('controller/api', async (t) => {
     t.test('when valid request', async (t) => {
       const body: Partial<IdPConfig> = Object.assign({}, config[0]);
 
-      await apiController.config(body);
+      await apiController.config(body as IdPConfig);
 
       const { provider } = await apiController.getConfig(body);
 
@@ -231,8 +230,6 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when invalid request', async (t) => {
-      let response;
-
       const body: Partial<IdPConfig> = Object.assign({}, config[0]);
 
       const client = await apiController.config(body);

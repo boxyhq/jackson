@@ -2,9 +2,9 @@ import crypto from 'crypto';
 import { IdPConfig, ISAMLConfig, OAuth, Storable } from 'saml-jackson';
 import * as dbutils from '../db/utils';
 import saml from '../saml/saml';
+import x509 from '../saml/x509';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
-import x509 from '../saml/x509';
 
 export class SAMLConfig implements ISAMLConfig {
   private configStore: Storable;

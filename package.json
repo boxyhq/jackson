@@ -23,7 +23,9 @@
     "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/jackson nodemon --config nodemon.json src/jackson.ts",
     "pre-loaded": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mem PRE_LOADED_CONFIG='./_config' nodemon --config nodemon.json src/jackson.ts",
     "pre-loaded-db": "cross-env JACKSON_API_KEYS=secret PRE_LOADED_CONFIG='./_config' nodemon --config nodemon.json src/jackson.ts",
-    "test": "tap --ts --timeout=100 src/**/*.test.ts",
+    "test": "tap --ts --timeout=100 --coverage src/**/*.test.ts ",
+
+    "test:coverage": "npm run build && tap src/**/*.test.ts --cov",
     "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
     "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
     "db:migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config ormconfig.js  -n Initial"
