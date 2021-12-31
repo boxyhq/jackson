@@ -19,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(oauthPath + '/authorize', async (req, res) => {
   try {
+    // @ts-ignore
     const { redirect_url } = await oauthController.authorize(req.query);
 
     res.redirect(redirect_url);
@@ -59,6 +60,7 @@ app.get(oauthPath + '/userinfo', async (req, res) => {
 
     // check for query param
     if (!token) {
+      // @ts-ignore
       token = req.query.access_token;
     }
 
@@ -128,6 +130,7 @@ internalApp.get(apiPath + '/config', async (req, res) => {
       return;
     }
 
+    // @ts-ignore
     res.json(await apiController.getConfig(req.query));
   } catch (err) {
     const { message } = err as JacksonError;
