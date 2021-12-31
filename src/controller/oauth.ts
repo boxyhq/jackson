@@ -322,7 +322,7 @@ export class OAuthController implements IOAuthController {
     return {
       access_token: token,
       token_type: 'bearer',
-      expires_in: this.opts.db.ttl,
+      expires_in: this.opts.db.ttl!,
     };
   }
 

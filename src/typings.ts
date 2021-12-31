@@ -114,10 +114,10 @@ export type DatabaseType = 'postgres' | 'mysql' | 'mariadb';
 export interface DatabaseOption {
   engine: DatabaseEngine;
   url: string;
-  type: DatabaseType;
-  ttl: number;
-  cleanupLimit: number;
-  encryptionKey: string;
+  type?: DatabaseType;
+  ttl?: number;
+  cleanupLimit?: number;
+  encryptionKey?: string;
 }
 
 export interface SAMLReq {

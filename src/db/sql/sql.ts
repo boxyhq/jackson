@@ -32,8 +32,8 @@ class Sql implements DatabaseDriver {
     while (true) {
       try {
         this.connection = await createConnection({
-          name: this.options.type + Math.floor(Math.random() * 100000),
-          type: this.options.type,
+          name: this.options.type! + Math.floor(Math.random() * 100000),
+          type: this.options.type!,
           url: this.options.url,
           synchronize: true,
           migrationsTableName: '_jackson_migrations',
@@ -78,7 +78,7 @@ class Sql implements DatabaseDriver {
           await this.ttlRepository.delete(delIds);
         }
 
-        this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
+        this.timerId = setTimeout(this.ttlCleanup, this.options.ttl! * 1000);
       };
 
       this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
