@@ -4,28 +4,28 @@ SAML service [SAML in a box from BoxyHQ]
 
 You need someone like Jules Winnfield to save you from the vagaries of SAML login.
 
-# Source code visualizer
+## Source code visualizer
 
 [CodeSee codebase visualizer](https://app.codesee.io/maps/public/53e91640-23b5-11ec-a724-79d7dd589517)
 
-# Getting Started
+## Getting Started
 
 There are two ways to use this repo.
 
-- As an npm library (for Express compatible frameworks)
+- As an npm library
 - As a separate service
 
 ## Install as an npm library
 
 Jackson is available as an [npm package](https://www.npmjs.com/package/@boxyhq/saml-jackson) that can be integrated into any web application framework (like Express.js for example). Please file an issue or submit a PR if you encounter any issues with your choice of framework.
 
-```
+```bash
 npm i @boxyhq/saml-jackson
 ```
 
 ### Add Express Routes
 
-```
+```javascript
 // express
 const express = require('express');
 const router = express.Router();
@@ -169,11 +169,11 @@ app.use('/sso', router);
 
 The docker container can be found at [boxyhq/jackson](https://hub.docker.com/r/boxyhq/jackson/tags). It is preferable to use a specific version instead of the `latest` tag. Jackson uses two ports (configurable if needed, see below) 5000 and 6000. 6000 is the internal port and ideally should not be exposed to a public network.
 
-```
+```bash
 docker run -p 5000:5000 -p 6000:6000 boxyhq/jackson:78e9099d
 ```
 
-Refer to https://github.com/boxyhq/jackson#configuration for the full configuration.
+Refer to <https://github.com/boxyhq/jackson#configuration> for the full configuration.
 
 Kubernetes and docker-compose deployment files will be coming soon.
 
@@ -187,12 +187,12 @@ Please follow the instructions [here](https://docs.google.com/document/d/1fk---Z
 
 As outlined in the guide above we try and support 4 attributes in the SAML claims - `id`, `email`, `firstName`, `lastName`. This is how the common SAML attributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.
 
-| SAML Attribute                                                       | Jackson mapping |
-| -------------------------------------------------------------------- | --------------- |
-| http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier | id              |
-| http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress   | email           |
-| http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname      | firstName       |
-| http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname        | lastName        |
+| SAML Attribute                                                         | Jackson mapping |
+| ---------------------------------------------------------------------- | --------------- |
+| <http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier> | id              |
+| <http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress>   | email           |
+| <http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname>      | firstName       |
+| <http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname>        | lastName        |
 
 ### 2. SAML config API
 
@@ -202,7 +202,7 @@ You will need to provide a place in the UI for your customers (The account setti
 
 The following API call sets up the configuration in Jackson:
 
-```
+```bash
 curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -225,7 +225,7 @@ The response returns a JSON with `client_id` and `client_secret` that can be sto
 
 This endpoint can be used to return metadata about an existing SAML config. This can be used to check and display the details to your customers. You can use either `clientID` or `tenant` and `product` combination.
 
-```
+```bash
 curl -G --location 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -233,7 +233,7 @@ curl -G --location 'http://localhost:6000/api/v1/saml/config' \
 --data-urlencode 'product=demo'
 ```
 
-```
+```bash
 curl -G --location 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -246,7 +246,7 @@ The response returns a JSON with `provider` indicating the domain of your Identi
 
 This endpoint can be used to delete an existing IdP metadata.
 
-```
+```bash
 curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -254,7 +254,7 @@ curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
 --data-urlencode 'product=demo'
 ```
 
-```
+```bash
 curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -266,7 +266,7 @@ curl -X "DELETE" --location 'http://localhost:6000/api/v1/saml/config' \
 
 Jackson has been designed to abstract the SAML login flow as a pure OAuth 2.0 flow. This means it's compatible with any standard OAuth 2.0 library out there, both client-side and server-side. It is important to remember that SAML is configured per customer unlike OAuth 2.0 where you can have a single OAuth app supporting logins for all customers.
 
-Jackson also supports the PKCE authorization flow (https://oauth.net/2/pkce/), so you can protect your SPAs.
+Jackson also supports the PKCE authorization flow (<https://oauth.net/2/pkce/>), so you can protect your SPAs.
 
 If for any reason you need to implement the flow on your own, the steps are outlined below:
 
@@ -274,7 +274,7 @@ If for any reason you need to implement the flow on your own, the steps are outl
 
 The OAuth flow begins with redirecting your user to the `authorize` URL:
 
-```
+```bash
 https://localhost:5000/oauth/authorize
   ?response_type=code&provider=saml
   &client_id=<clientID or tenant and product query params as described in the SAML config API section above>
@@ -295,7 +295,7 @@ After successful authorization, the user is redirected back to the `redirect_uri
 
 The code can then be exchanged for a token by making the following request:
 
-```
+```bash
 curl --request POST \
   --url 'http://localhost:5000/oauth/token' \
   --header 'content-type: application/x-www-form-urlencoded' \
@@ -313,7 +313,7 @@ curl --request POST \
 
 If everything goes well you should receive a JSON response that includes the access token. This token is needed for the next step where we fetch the user profile.
 
-```
+```json
 {
   "access_token": <access token>,
   "token_type": "bearer",
@@ -325,7 +325,7 @@ If everything goes well you should receive a JSON response that includes the acc
 
 The short-lived access token can now be used to request the user's profile. You'll need to make the following request:
 
-```
+```bash
 curl --request GET \
   --url https://localhost:5000/oauth/userinfo \
   --header 'authorization: Bearer <access token>' \
@@ -334,7 +334,7 @@ curl --request GET \
 
 If everything goes well you should receive a JSON response with the user's profile:
 
-```
+```json
 {
   "id": <id from the Identity Provider>,
   "email": "sjackson@coolstartup.com",
@@ -390,7 +390,7 @@ The following options are supported and will have to be configured during deploy
 
 If PRE_LOADED_CONFIG is set then it should point to a directory with the following structure (example below):-
 
-```
+```bash
 boxyhq.js
 boxyhq.xml
 anothertenant.js
@@ -399,7 +399,7 @@ anothertenant.xml
 
 The JS file has the following structure:-
 
-```
+```javascript
 module.exports = {
   defaultRedirectUrl: 'http://localhost:3000/login/saml',
   redirectUrl: '["http://localhost:3000/*", "http://localhost:5000/*"]',
@@ -414,7 +414,7 @@ The config and XML above correspond to the `SAML API config` (see below).
 
 ## SAML Login flows
 
-There are two kinds of SAML login flows - SP-initiated and IdP-initiated. We highly recommend sticking to the SP-initiated flow since it is more secure but Jackson also supports the IdP-initiated flow if you enable it. For an in-depth understanding of SAML and the two flows please refer to Okta's comprehensive guide - https://developer.okta.com/docs/concepts/saml/.
+There are two kinds of SAML login flows - SP-initiated and IdP-initiated. We highly recommend sticking to the SP-initiated flow since it is more secure but Jackson also supports the IdP-initiated flow if you enable it. For an in-depth understanding of SAML and the two flows please refer to Okta's comprehensive guide - <https://developer.okta.com/docs/concepts/saml/>.
 
 ## Contributing
 
