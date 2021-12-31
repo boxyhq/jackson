@@ -32,7 +32,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   return newOpts;
 };
 
-const controllers = async (
+export const controllers = async (
   opts: JacksonOption
 ): Promise<{
   apiController: SAMLConfig;
