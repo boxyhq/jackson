@@ -9,8 +9,8 @@ import jackson from './index';
 let apiController: SAMLConfig;
 let oauthController: OAuthController;
 
-const oauthPath: string = '/oauth';
-const apiPath: string = '/api/v1/saml';
+const oauthPath = '/oauth';
+const apiPath = '/api/v1/saml';
 
 const app = express();
 
