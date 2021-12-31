@@ -1,10 +1,9 @@
 import cors from 'cors';
 import express from 'express';
-import { IOAuthController, ISAMLConfig } from './index';
+import { jackson, IOAuthController, ISAMLConfig } from './index';
 import { JacksonError } from './controller/error';
 import { extractAuthToken } from './controller/utils';
 import env from './env';
-import jackson from './index';
 
 let apiController: ISAMLConfig;
 let oauthController: IOAuthController;
