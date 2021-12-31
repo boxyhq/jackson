@@ -4,7 +4,7 @@ FROM node:16.13.1-alpine3.14 AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY src/ src/
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json tsconfig*.json ./
 RUN npm ci --only=production
 
 # Production image, copy all the files and run next
