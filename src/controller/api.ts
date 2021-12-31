@@ -1,12 +1,12 @@
 import crypto from 'crypto';
-import { IdPConfig, ISAMLConfig, OAuth, Storable } from '../typings';
+import { IdPConfig, IAPIController, OAuth, Storable } from '../typings';
 import * as dbutils from '../db/utils';
 import saml from '../saml/saml';
 import x509 from '../saml/x509';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 
-export class SAMLConfig implements ISAMLConfig {
+export class APIController implements IAPIController {
   private configStore: Storable;
 
   constructor({ configStore }) {
@@ -38,7 +38,7 @@ export class SAMLConfig implements ISAMLConfig {
     }
   }
 
-  public async create(body: IdPConfig): Promise<OAuth> {
+  public async config(body: IdPConfig): Promise<OAuth> {
     const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } =
       body;
 
@@ -107,7 +107,7 @@ export class SAMLConfig implements ISAMLConfig {
     };
   }
 
-  public async get(body: {
+  public async getConfig(body: {
     clientID: string;
     tenant: string;
     product: string;
@@ -139,7 +139,7 @@ export class SAMLConfig implements ISAMLConfig {
     );
   }
 
-  public async delete(body: {
+  public async deleteConfig(body: {
     clientID: string;
     clientSecret: string;
     tenant: string;
@@ -184,29 +184,6 @@ export class SAMLConfig implements ISAMLConfig {
       'Please provide `clientID` and `clientSecret` or `tenant` and `product`.',
       400
     );
-  }
-
-  // Ensure backward compatibility
-
-  async config(body: IdPConfig): Promise<OAuth> {
-    return this.create(body);
-  }
-
-  async getConfig(body: {
-    clientID: string;
-    tenant: string;
-    product: string;
-  }): Promise<Partial<OAuth>> {
-    return this.get(body);
-  }
-
-  async deleteConfig(body: {
-    clientID: string;
-    clientSecret: string;
-    tenant: string;
-    product: string;
-  }): Promise<void> {
-    return this.delete(body);
   }
 }
 

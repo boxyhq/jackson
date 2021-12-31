@@ -1,5 +1,5 @@
 import { JacksonOption } from './typings';
-import { SAMLConfig } from './controller/api';
+import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import DB from './db/db';
 import readConfig from './read-config';
@@ -35,7 +35,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 export const controllers = async (
   opts: JacksonOption
 ): Promise<{
-  apiController: SAMLConfig;
+  apiController: APIController;
   oauthController: OAuthController;
 }> => {
   opts = defaultOpts(opts);
@@ -47,7 +47,7 @@ export const controllers = async (
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
 
-  const apiController = new SAMLConfig({ configStore });
+  const apiController = new APIController({ configStore });
 
   const oauthController = new OAuthController({
     configStore,

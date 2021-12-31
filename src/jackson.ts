@@ -1,11 +1,11 @@
 import cors from 'cors';
 import express from 'express';
-import jackson, { IOAuthController, ISAMLConfig } from './index';
+import jackson, { IOAuthController, IAPIController } from './index';
 import { JacksonError } from './controller/error';
 import { extractAuthToken } from './controller/utils';
 import env from './env';
 
-let apiController: ISAMLConfig;
+let apiController: IAPIController;
 let oauthController: IOAuthController;
 
 const oauthPath = '/oauth';

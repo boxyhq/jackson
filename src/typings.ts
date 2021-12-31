@@ -12,8 +12,7 @@ export interface OAuth {
   provider: string;
 }
 
-export interface ISAMLConfig {
-  // Ensure backward compatibility
+export interface IAPIController {
   config(body: IdPConfig): Promise<OAuth>;
 
   getConfig(body: {
@@ -23,22 +22,6 @@ export interface ISAMLConfig {
   }): Promise<Partial<OAuth>>;
 
   deleteConfig(body: {
-    clientID: string;
-    clientSecret: string;
-    tenant: string;
-    product: string;
-  }): Promise<void>;
-
-  // New methods
-  create(body: IdPConfig): Promise<OAuth>;
-
-  get(body: {
-    clientID: string;
-    tenant: string;
-    product: string;
-  }): Promise<Partial<OAuth>>;
-
-  delete(body: {
     clientID: string;
     clientSecret: string;
     tenant: string;

@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import {
   IOAuthController,
-  ISAMLConfig,
+  IAPIController,
   JacksonOption,
   OAuthReqBody,
   OAuthTokenReq,
@@ -15,7 +15,7 @@ import { JacksonError } from '../controller/error';
 import readConfig from '../read-config';
 import saml from '../saml/saml';
 
-let apiController: ISAMLConfig;
+let apiController: IAPIController;
 let oauthController: IOAuthController;
 
 const code = '1234567890';
