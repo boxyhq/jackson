@@ -1,13 +1,13 @@
 import cors from 'cors';
 import express from 'express';
-import { OAuthController, SAMLConfig } from './index';
+import { IOAuthController, ISAMLConfig } from './index';
 import { JacksonError } from './controller/error';
 import { extractAuthToken } from './controller/utils';
 import env from './env';
 import jackson from './index';
 
-let apiController: SAMLConfig;
-let oauthController: OAuthController;
+let apiController: ISAMLConfig;
+let oauthController: IOAuthController;
 
 const oauthPath = '/oauth';
 const apiPath = '/api/v1/saml';
@@ -19,7 +19,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(oauthPath + '/authorize', async (req, res) => {
   try {
-    // @ts-ignore
     const { redirect_url } = await oauthController.authorize(req.query);
 
     res.redirect(redirect_url);
@@ -60,7 +59,6 @@ app.get(oauthPath + '/userinfo', async (req, res) => {
 
     // check for query param
     if (!token) {
-      // @ts-ignore
       token = req.query.access_token;
     }
 
@@ -130,7 +128,6 @@ internalApp.get(apiPath + '/config', async (req, res) => {
       return;
     }
 
-    // @ts-ignore
     res.json(await apiController.getConfig(req.query));
   } catch (err) {
     const { message } = err as JacksonError;
