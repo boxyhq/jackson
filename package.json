@@ -1,9 +1,10 @@
 {
   "name": "@boxyhq/saml-jackson",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "license": "Apache 2.0",
   "description": "SAML 2.0 service",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "engines": {
     "node": ">=14.x"
   },
@@ -15,14 +16,18 @@
     "SAML 2.0"
   ],
   "scripts": {
-    "start": "cross-env IDP_ENABLED=true node src/jackson.js",
-    "dev": "cross-env IDP_ENABLED=true nodemon src/jackson.js",
-    "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson nodemon src/jackson.js",
-    "pre-loaded": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mem PRE_LOADED_CONFIG='./_config' nodemon src/jackson.js",
-    "pre-loaded-db": "cross-env JACKSON_API_KEYS=secret PRE_LOADED_CONFIG='./_config' nodemon src/jackson.js",
-    "test": "tap --timeout=100 src/**/*.test.js",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "start": "cross-env IDP_ENABLED=true node dist/jackson.js",
+    "dev": "cross-env IDP_ENABLED=true nodemon --config nodemon.json src/jackson.ts",
+    "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson nodemon --config nodemon.json src/jackson.ts",
+    "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/jackson nodemon --config nodemon.json src/jackson.ts",
+    "pre-loaded": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mem PRE_LOADED_CONFIG='./_config' nodemon --config nodemon.json src/jackson.ts",
+    "pre-loaded-db": "cross-env JACKSON_API_KEYS=secret PRE_LOADED_CONFIG='./_config' nodemon --config nodemon.json src/jackson.ts",
+    "test": "tap --ts --timeout=100 --coverage src/**/*.test.ts ",
     "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
-    "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans"
+    "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
+    "db:migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config ormconfig.js  -n Initial"
   },
   "tap": {
     "coverage-map": "map.js",
@@ -33,15 +38,15 @@
   },
   "dependencies": {
     "@boxyhq/saml20": "0.2.0",
-    "@peculiar/webcrypto": "1.2.2",
-    "@peculiar/x509": "1.6.0",
+    "@peculiar/webcrypto": "1.2.3",
+    "@peculiar/x509": "1.6.1",
     "cors": "2.8.5",
-    "express": "4.17.1",
-    "mongodb": "4.2.1",
+    "express": "4.17.2",
+    "mongodb": "4.2.2",
     "mysql2": "2.3.3",
     "pg": "8.7.1",
     "rambda": "6.9.0",
-    "redis": "4.0.0-rc.4",
+    "redis": "4.0.1",
     "reflect-metadata": "0.1.13",
     "ripemd160": "2.0.2",
     "thumbprint": "0.0.1",
@@ -51,17 +56,32 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.11.17",
+    "@types/redis": "4.0.11",
+    "@types/sinon": "10.0.6",
+    "@types/tap": "15.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
     "cross-env": "7.0.3",
-    "eslint": "8.4.0",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
     "husky": "7.0.4",
-    "lint-staged": "12.1.2",
+    "lint-staged": "12.1.4",
     "nodemon": "2.0.15",
     "prettier": "2.5.1",
     "sinon": "12.0.1",
-    "tap": "15.1.5"
+    "tap": "15.1.5",
+    "ts-node": "10.4.0",
+    "tsconfig-paths": "3.12.0",
+    "typescript": "4.5.4"
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{js,css,md}": "prettier --write"
-  }
+    "*.{js,ts}": "eslint --cache --fix",
+    "*.{js,ts,css,md}": "prettier --write"
+  },
+  "files": [
+    "dist",
+    "Dockerfile"
+  ]
 }
