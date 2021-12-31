@@ -32,7 +32,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   return newOpts;
 };
 
-export const jackson = async (
+const controllers = async (
   opts: JacksonOption
 ): Promise<{
   apiController: SAMLConfig;
@@ -80,5 +80,7 @@ export const jackson = async (
     oauthController,
   };
 };
+
+export default controllers;
 
 export * from './typings';
