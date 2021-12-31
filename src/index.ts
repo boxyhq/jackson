@@ -1,4 +1,4 @@
-import { JacksonOption } from 'saml-jackson';
+import { JacksonOption } from './typings';
 import { SAMLConfig } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import DB from './db/db';

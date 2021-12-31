@@ -5,7 +5,7 @@ import {
   EncryptionKey,
   Index,
   Storable,
-} from 'saml-jackson';
+} from '../typings';
 import * as encrypter from './encrypter';
 import mem from './mem';
 import mongo from './mongo';

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { DatabaseOption, IdPConfig } from 'saml-jackson';
+import { DatabaseOption, IdPConfig } from '../typings';
 import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../db/utils';

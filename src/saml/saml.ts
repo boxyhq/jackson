@@ -6,7 +6,7 @@ import * as rambda from 'rambda';
 import xmlbuilder from 'xmlbuilder';
 import crypto from 'crypto';
 import claims from './claims';
-import { SAMLProfile, SAMLReq } from 'saml-jackson';
+import { SAMLProfile, SAMLReq } from '../typings';
 
 const idPrefix = '_';
 const authnXPath =

@@ -8,7 +8,7 @@ import {
   Profile,
   SAMLResponsePayload,
   Storable,
-} from 'saml-jackson';
+} from '../typings';
 import * as dbutils from '../db/utils';
 import saml from '../saml/saml';
 import { JacksonError } from './error';
