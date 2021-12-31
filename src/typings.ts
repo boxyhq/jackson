@@ -112,8 +112,8 @@ export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem';
 export type DatabaseType = 'postgres' | 'mysql' | 'mariadb';
 
 export interface DatabaseOption {
-  engine: DatabaseEngine;
-  url: string;
+  engine?: DatabaseEngine;
+  url?: string;
   type?: DatabaseType;
   ttl?: number;
   cleanupLimit?: number;
@@ -141,7 +141,7 @@ export interface SAMLProfile {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
-  samlAudience: string;
+  samlAudience?: string;
   preLoadedConfig?: string;
   idpEnabled?: boolean;
   db: DatabaseOption;
