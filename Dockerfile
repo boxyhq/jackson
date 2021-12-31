@@ -17,7 +17,7 @@ ENV NODE_ENV production
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
 
-COPY --from=deps /app/src ./src
+COPY --from=deps /app/dist ./dist
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
 
@@ -26,4 +26,4 @@ USER nodejs
 EXPOSE 5000
 EXPOSE 6000
 
-CMD [ "node", "src/jackson.js" ]
+CMD [ "node", "dist/jackson.js" ]
