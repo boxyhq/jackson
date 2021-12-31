@@ -32,7 +32,6 @@
     "db:migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config ormconfig.js  -n Initial"
   },
   "tap": {
-    "coverage-map": "map.js",
     "branches": 50,
     "functions": 70,
     "lines": 70,

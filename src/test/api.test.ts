@@ -4,7 +4,7 @@ import tap from 'tap';
 import * as dbutils from '../db/utils';
 import controllers from '../index';
 import readConfig from '../read-config';
-import { IdPConfig } from '../typings';
+import { IdPConfig, JacksonOption } from '../typings';
 
 let apiController;
 
