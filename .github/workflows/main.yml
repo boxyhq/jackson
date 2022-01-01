@@ -16,7 +16,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./jackson
+    working-directory: ./npm
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
