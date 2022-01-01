@@ -1,4 +1,4 @@
-import { DatabaseEngine, DatabaseType } from '../jackson/index';
+import { DatabaseEngine, DatabaseType } from '@boxyhq/saml-jackson';
 
 const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5000');

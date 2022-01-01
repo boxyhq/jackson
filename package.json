@@ -27,7 +27,7 @@
     "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans"
   },
   "dependencies": {
-    "@boxyhq/saml-jackson": "file:./jackson",
+    "@boxyhq/saml-jackson": "file:./npm",
     "cors": "2.8.5",
     "next": "12.0.7",
     "react": "17.0.2",
@@ -37,9 +37,19 @@
     "@types/cors": "2.8.12",
     "@types/node": "16.11.12",
     "@types/react": "17.0.37",
+    "@typescript-eslint/eslint-plugin": "5.8.1",
+    "@typescript-eslint/parser": "5.8.1",
     "cross-env": "7.0.3",
     "eslint": "8.4.1",
     "eslint-config-next": "12.0.7",
+    "eslint-config-prettier": "8.3.0",
+    "husky": "7.0.4",
+    "lint-staged": "12.1.4",
+    "prettier": "2.5.1",
     "typescript": "4.5.3"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint --cache --fix",
+    "*.{js,ts,css,md}": "prettier --write"
   }
 }

@@ -1,3 +1,6 @@
 node_modules
 npm-debug.log
-npm
+.git
+.github
+_dev
+.vscode

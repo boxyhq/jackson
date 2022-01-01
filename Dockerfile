@@ -4,12 +4,16 @@ FROM node:16.13.1-alpine3.14 AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
+COPY npm npm
+RUN echo $(ls -lisa)
 RUN npm install
 
 # Rebuild the source code only when needed
 FROM node:16.13.1-alpine3.14 AS builder
 WORKDIR /app
 COPY . .
+COPY npm npm
+RUN echo $(ls -lisa)
 COPY --from=deps /app/node_modules ./node_modules
 RUN npm run build && npm install --production --ignore-scripts --prefer-offline
 
