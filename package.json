@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "cross-env IDP_ENABLED=true next dev -p 5000",
     "build": "next build",
-    "start": "cross-env IDP_ENABLED=true next start -p 5000",
+    "start": "next start -p 5000",
     "lint": "next lint",
     "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson npm run dev",
     "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/jackson npm run dev",
