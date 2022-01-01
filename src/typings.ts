@@ -16,16 +16,16 @@ export interface IAPIController {
   config(body: IdPConfig): Promise<OAuth>;
 
   getConfig(body: {
-    clientID: string;
-    tenant: string;
-    product: string;
+    clientID?: string;
+    tenant?: string;
+    product?: string;
   }): Promise<Partial<OAuth>>;
 
   deleteConfig(body: {
-    clientID: string;
-    clientSecret: string;
-    tenant: string;
-    product: string;
+    clientID?: string;
+    clientSecret?: string;
+    tenant?: string;
+    product?: string;
   }): Promise<void>;
 }
 
