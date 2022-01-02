@@ -94,13 +94,13 @@ jobs:
 
           echo $(cat npmversion.txt)
         working-directory: ./npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Upload saml-jackson npm version
         uses: actions/upload-artifact@v2
         with:
           name: npmversion
           path: ./npm/npmversion.txt
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build:
     needs: publish
