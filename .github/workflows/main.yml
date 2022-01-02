@@ -14,10 +14,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: ./npm
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   publish:
@@ -76,7 +72,9 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
       - run: npm install
+        working-directory: ./npm
       - run: npm run test
+        working-directory: ./npm
       - run: |
           publishTag="latest"
           if [[ "$GITHUB_REF" == *\/release ]]
@@ -89,9 +87,21 @@ jobs:
             sed "s/\(^[ ]*\"version\"\:[ ]*\".*\)\",/\1${versionSuffixTag}\",/" < package.json > package.json.new
             mv package.json.new package.json
           fi
+
+          echo $(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]') > npmversion.txt
+
+          echo $(cat npmversion.txt)
+
           npm publish --tag $publishTag --access public
+        working-directory: ./npm
+      - name: Upload saml-jackson npm version
+        uses: actions/upload-artifact@v2
+        with:
+          name: npmversion
+          path: ./npm/npmversion.txt
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   build:
     needs: publish
     runs-on: ubuntu-latest
@@ -103,6 +113,17 @@ jobs:
       - name: Get short SHA
         id: slug
         run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
+
+      - name: Download saml-jackson npm version
+        uses: actions/download-artifact@v2
+        with:
+          name: npmversion
+
+      - name: Get saml-jackson npm version
+        id: npmversion
+        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
+
+      - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
       - name: Set up Docker Buildx
         id: buildx
@@ -121,7 +142,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
+          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
