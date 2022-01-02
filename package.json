@@ -1,5 +1,5 @@
 {
-  "name": "jackson-next",
+  "name": "jackson",
   "private": true,
   "version": "0.1.0",
   "license": "Apache 2.0",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/boxyhq/jackson-next.git"
+    "url": "https://github.com/boxyhq/jackson.git"
   },
   "keywords": [
     "SAML 2.0"
