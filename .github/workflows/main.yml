@@ -88,11 +88,11 @@ jobs:
             mv package.json.new package.json
           fi
 
+          npm publish --tag $publishTag --access public
+
           echo $(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]') > npmversion.txt
 
           echo $(cat npmversion.txt)
-
-          npm publish --tag $publishTag --access public
         working-directory: ./npm
       - name: Upload saml-jackson npm version
         uses: actions/upload-artifact@v2
