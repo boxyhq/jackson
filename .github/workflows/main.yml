@@ -81,6 +81,7 @@ jobs:
           npm install -g json
           json -I -f package.json -e "this.main=\"dist/index.js\""
           json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+          cp ../README.md .
 
           if [[ "$GITHUB_REF" == *\/release ]]
           then
