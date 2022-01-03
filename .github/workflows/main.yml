@@ -79,8 +79,11 @@ jobs:
           publishTag="latest"
 
           npm install -g json
+          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
+          echo ver=$JACKSON_VERSION
           json -I -f package.json -e "this.main=\"dist/index.js\""
           json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
           if [[ "$GITHUB_REF" == *\/release ]]
           then
@@ -89,14 +92,13 @@ jobs:
           else
             echo "Dev branch"
             publishTag="beta"
-            versionSuffixTag="-beta.${GITHUB_RUN_NUMBER}"
-            sed "s/\(^[ ]*\"version\"\:[ ]*\".*\)\",/\1${versionSuffixTag}\",/" < package.json > package.json.new
-            mv package.json.new package.json
+            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+            json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
           fi
 
           npm publish --tag $publishTag --access public
 
-          echo $(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]') > npmversion.txt
+          echo $(JACKSON_VERSION) > npmversion.txt
 
           echo $(cat npmversion.txt)
         working-directory: ./npm
