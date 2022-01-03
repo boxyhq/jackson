@@ -98,7 +98,7 @@ jobs:
 
           npm publish --tag $publishTag --access public
 
-          echo $(JACKSON_VERSION) > npmversion.txt
+          echo ${JACKSON_VERSION} > npmversion.txt
 
           echo $(cat npmversion.txt)
         working-directory: ./npm
