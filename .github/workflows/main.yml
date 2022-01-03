@@ -77,6 +77,11 @@ jobs:
         working-directory: ./npm
       - run: |
           publishTag="latest"
+
+          npm install -g json
+          json -I -f package.json -e "this.main=\"dist/index.js\""
+          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+
           if [[ "$GITHUB_REF" == *\/release ]]
           then
             echo "Release branch"
@@ -125,8 +130,8 @@ jobs:
 
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
-      - name: Update @boxyhq/saml-jackson
-        run: npm install @boxyhq/saml-jackson@${{ steps.npmversion.outputs.npmversion }}
+      # - name: Update @boxyhq/saml-jackson
+      #   run: npm install @boxyhq/saml-jackson@${{ steps.npmversion.outputs.npmversion }}
 
       - name: Set up Docker Buildx
         id: buildx

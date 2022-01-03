@@ -1,30 +1,37 @@
 {
   "name": "jackson",
-  "private": true,
   "version": "0.1.0",
-  "license": "Apache 2.0",
+  "private": true,
   "description": "SAML 2.0 service (next.js)",
-  "engines": {
-    "node": ">=14.18.1"
-  },
+  "keywords": [
+    "SAML 2.0"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/boxyhq/jackson.git"
   },
-  "keywords": [
-    "SAML 2.0"
-  ],
+  "license": "Apache 2.0",
   "scripts": {
-    "dev": "cross-env IDP_ENABLED=true next dev -p 5000",
     "build": "next build",
-    "start": "next start -p 5000",
+    "dev": "cross-env IDP_ENABLED=true next dev -p 5000",
+    "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
+    "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
     "lint": "next lint",
     "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson npm run dev",
-    "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/jackson npm run dev",
     "pre-loaded": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mem PRE_LOADED_CONFIG='./_config' npm run dev",
     "pre-loaded-db": "cross-env JACKSON_API_KEYS=secret PRE_LOADED_CONFIG='./_config' npm run dev",
-    "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
-    "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans"
+    "sort": "npx sort-package-json",
+    "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/jackson npm run dev",
+    "start": "next start -p 5000"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint --cache --fix",
+    "*.{js,ts,css,md}": "prettier --write"
   },
   "dependencies": {
     "@boxyhq/saml-jackson": "file:./npm",
@@ -48,13 +55,7 @@
     "prettier": "2.5.1",
     "typescript": "4.5.3"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,ts}": "eslint --cache --fix",
-    "*.{js,ts,css,md}": "prettier --write"
+  "engines": {
+    "node": ">=14.18.1"
   }
 }

@@ -1,29 +1,31 @@
 {
   "name": "@boxyhq/saml-jackson",
   "version": "0.3.2",
-  "license": "Apache 2.0",
   "description": "SAML 2.0 service",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "engines": {
-    "node": ">=14.x"
-  },
+  "keywords": [
+    "SAML 2.0"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/boxyhq/jackson.git"
   },
-  "keywords": [
-    "SAML 2.0"
+  "license": "Apache 2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "migration"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "db:migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config ormconfig.js  -n Initial",
     "prepublishOnly": "npm run build",
-    "test": "tap --ts --timeout=100 --coverage test/**/*.test.ts ",
-    "db:migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config ormconfig.js  -n Initial"
+    "test": "tap --ts --timeout=100 --coverage test/**/*.test.ts",
+    "sort": "npx sort-package-json"
   },
   "tap": {
-    "coverage-map": "map.js",
     "branches": 50,
+    "coverage-map": "map.js",
     "functions": 70,
     "lines": 70,
     "statements": 70
@@ -63,8 +65,7 @@
     "tsconfig-paths": "3.12.0",
     "typescript": "4.5.4"
   },
-  "files": [
-    "dist",
-    "migration"
-  ]
+  "engines": {
+    "node": ">=14.x"
+  }
 }
