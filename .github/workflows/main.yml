@@ -72,22 +72,44 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
       - run: npm install
+        working-directory: ./npm
       - run: npm run test
+        working-directory: ./npm
       - run: |
           publishTag="latest"
+
+          npm install -g json
+          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
+          echo ver=$JACKSON_VERSION
+          json -I -f package.json -e "this.main=\"dist/index.js\""
+          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+
           if [[ "$GITHUB_REF" == *\/release ]]
           then
             echo "Release branch"
+            cp ../README.md .
           else
             echo "Dev branch"
             publishTag="beta"
-            versionSuffixTag="-beta.${GITHUB_RUN_NUMBER}"
-            sed "s/\(^[ ]*\"version\"\:[ ]*\".*\)\",/\1${versionSuffixTag}\",/" < package.json > package.json.new
-            mv package.json.new package.json
+            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+            json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
           fi
+
           npm publish --tag $publishTag --access public
+
+          echo ${JACKSON_VERSION} > npmversion.txt
+
+          echo $(cat npmversion.txt)
+        working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Upload saml-jackson npm version
+        uses: actions/upload-artifact@v2
+        with:
+          name: npmversion
+          path: ./npm/npmversion.txt
+
   build:
     needs: publish
     runs-on: ubuntu-latest
@@ -99,6 +121,20 @@ jobs:
       - name: Get short SHA
         id: slug
         run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
+
+      - name: Download saml-jackson npm version
+        uses: actions/download-artifact@v2
+        with:
+          name: npmversion
+
+      - name: Get saml-jackson npm version
+        id: npmversion
+        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
+
+      - run: echo ${{ steps.npmversion.outputs.npmversion }}
+
+      # - name: Update @boxyhq/saml-jackson
+      #   run: npm install @boxyhq/saml-jackson@${{ steps.npmversion.outputs.npmversion }}
 
       - name: Set up Docker Buildx
         id: buildx
@@ -117,7 +153,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
+          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
