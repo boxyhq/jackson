@@ -9,5 +9,12 @@
       "plan": "heroku-postgresql:hobby-dev",
       "as": "POSTGRES"
     }
-  ]
+  ],
+  "env": {
+    "JACKSON_API_KEYS": {
+      "description": "API Key for validating REST calls",
+      "generator": "secret",
+      "required": true
+    }
+  }
 }
