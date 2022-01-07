@@ -1,1 +1,1 @@
-web: export DB_URL=$POSTGRES_URL JACKSON_API_KEYS=$JACKSON_API_KEYS && npm run start
+web: export DB_URL=$POSTGRES_URL JACKSON_API_KEYS=$JACKSON_API_KEYS ./node_modules/.bin/next start -p 5000
