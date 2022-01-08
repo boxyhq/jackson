@@ -1,12 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import { extractAuthToken, validateApiKey } from '@lib/utils';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    const apiKey = extractAuthToken(req);
+    if (!validateApiKey(apiKey)) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
     const { apiController } = await jackson();
     if (req.method === 'POST') {
       res.json(await apiController.config(req.body));

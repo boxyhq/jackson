@@ -1,16 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-
-const extractAuthToken = (req: NextApiRequest) => {
-  const authHeader = req.headers['authorization'];
-  const parts = (authHeader || '').split(' ');
-  if (parts.length > 1) {
-    return parts[1];
-  }
-
-  return null;
-};
+import { extractAuthToken } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
