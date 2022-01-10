@@ -1,6 +1,6 @@
 # SAML Jackson (not fiction anymore)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,JACKSON_API_KEYS,DB_ENCRYPTION_KEY)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,JACKSON_API_KEYS,DB_ENCRYPTION_KEY&envDescription=DB%20engine%20and%20keys%20for%20encryption%20and%20authentication.&envLink=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson%23configuration)
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/boxyhq/jackson/tree/56-one-click-deploy)
 
 SAML service [SAML in a box from BoxyHQ]
