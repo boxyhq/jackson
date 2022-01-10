@@ -250,7 +250,17 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Invalid code', 403);
     }
 
-    if (client_id && client_secret) {
+    if (code_verifier) {
+      // PKCE flow
+      let cv = code_verifier;
+      if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
+        cv = codeVerifier.encode(code_verifier);
+      }
+
+      if (codeVal.session.code_challenge !== cv) {
+        throw new JacksonError('Invalid code_verifier', 401);
+      }
+    } else if (client_id && client_secret) {
       // check if we have an encoded client_id
       if (client_id !== 'dummy' && client_secret !== 'dummy') {
         const sp = getEncodedClientId(client_id);
@@ -260,16 +270,6 @@ export class OAuthController implements IOAuthController {
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
         }
-      }
-    } else if (code_verifier) {
-      // PKCE flow
-      let cv = code_verifier;
-      if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
-        cv = codeVerifier.encode(code_verifier);
-      }
-
-      if (codeVal.session.code_challenge !== cv) {
-        throw new JacksonError('Invalid code_verifier', 401);
       }
     } else if (codeVal && codeVal.session) {
       throw new JacksonError('Please specify client_secret or code_verifier', 401);
