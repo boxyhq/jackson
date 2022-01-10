@@ -2,9 +2,7 @@ const type = process.env.DB_TYPE || 'postgres';
 
 module.exports = {
   type,
-  url:
-    process.env.DB_URL ||
-    'postgresql://postgres:postgres@localhost:5432/postgres',
+  url: process.env.DB_URL || 'postgresql://postgres:postgres@localhost:5432/postgres',
   synchronize: false,
   logging: true,
   entities: ['src/db/sql/entity/**/*.ts'],
@@ -12,5 +10,8 @@ module.exports = {
   cli: {
     entitiesDir: 'src/db/sql/entity',
     migrationsDir: `migration/${type}`,
+  },
+  extra: {
+    ssl: true,
   },
 };
