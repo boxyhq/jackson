@@ -5,8 +5,8 @@ import { User, UserProvider } from '../admin/users';
 
 const userProvider = new UserProvider();
 
+// This is a temporary solution. Need a database implementation
 const verificationToken = {
-  identifier: 'kiran@boxyhq.com',
   expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   token: 'verification-token',
 };
@@ -16,14 +16,12 @@ const adapter = {
     return await userProvider.getUserByEmail(email);
   },
 
-  // TODO: Why this method?
-  async updateUser(user: Partial<AdapterUser>): Promise<AdapterUser> {
-    return {
-      id: '1',
-      name: 'Kiran',
-      email: 'kiran@boxyhq.com',
-      emailVerified: new Date(),
-    };
+  async updateUser(user: Partial<AdapterUser>): Promise<User | null> {
+    if (!user.id) {
+      return null;
+    }
+
+    return await userProvider.getUserById(user.id);
   },
 
   async createVerificationToken({
@@ -31,21 +29,11 @@ const adapter = {
     expires,
     token,
   }): Promise<VerificationToken | null | undefined> {
-    return verificationToken;
+    return null;
   },
 
-  useVerificationToken({ identifier, token }): Awaitable<VerificationToken | null> {
-    return verificationToken;
-  },
-};
-
-const callbacks = {
-  async signIn({ user }): Promise<boolean> {
-    if (!user.email) {
-      return false;
-    }
-
-    return await userProvider.isAllowedToSignIn(user.email);
+  useVerificationToken({ identifier }): Awaitable<VerificationToken | null> {
+    return { ...verificationToken, identifier };
   },
 };
 
@@ -53,6 +41,9 @@ export default NextAuth({
   debug: true,
   providers: [
     EmailProvider({
+      async generateVerificationToken() {
+        return verificationToken.token;
+      },
       server: {
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
@@ -72,7 +63,15 @@ export default NextAuth({
     secret: process.env.NEXTAUTH_JWT_SIGNING_PRIVATE_KEY,
     maxAge: 60 * 60 * 24 * 30,
   },
+  callbacks: {
+    async signIn({ user }): Promise<boolean> {
+      if (!user.email) {
+        return false;
+      }
+
+      return await userProvider.isAllowedToSignIn(user.email);
+    },
+  },
   // @ts-ignore
   adapter: adapter,
-  callbacks: callbacks,
 });

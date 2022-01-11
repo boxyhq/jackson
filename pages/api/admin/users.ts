@@ -51,6 +51,18 @@ export class UserProvider {
     return null;
   }
 
+  async getUserById(id: string): Promise<User | null> {
+    const users = this.users.filter((user) => {
+      return user.id === id;
+    });
+
+    if (users.length > 0) {
+      return users[0];
+    }
+
+    return null;
+  }
+
   async isAllowedToSignIn(email: string): Promise<boolean> {
     const user = await this.getUserByEmail(email);
 
@@ -61,5 +73,3 @@ export class UserProvider {
     return true;
   }
 }
-
-// export default new UserProvider();
