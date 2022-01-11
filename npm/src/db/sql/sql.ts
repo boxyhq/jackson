@@ -34,9 +34,9 @@ class Sql implements DatabaseDriver {
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
-          ssl: {
-            rejectUnauthorized: false,
-          },
+          // ssl: {
+          //   rejectUnauthorized: false,
+          // },
         });
 
         break;
