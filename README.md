@@ -206,14 +206,14 @@ The following API call sets up the configuration in Jackson:
 curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key <Jackson API Key>' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
---data-urlencode 'rawMetadata=<IdP/SP metadata XML>' \
+--data-urlencode 'encodedRawMetadata=Base64(<IdP/SP metadata XML>)' \
 --data-urlencode 'defaultRedirectUrl=http://localhost:3000/login/saml' \
 --data-urlencode 'redirectUrl=["http://localhost:3000/*"]' \
 --data-urlencode 'tenant=boxyhq.com' \
 --data-urlencode 'product=demo'
 ```
 
-- rawMetadata: The XML metadata file your customer gets from their Identity Provider
+- encodedRawMetadata: Base64 encoding of the XML metadata your customer gets from their Identity Provider
 - defaultRedirectUrl: The redirect URL to use in the IdP login flow. Jackson will call this URL after completing an IdP login flow
 - redirectUrl: JSON encoded array containing a list of allowed redirect URLs. Jackson will disallow any redirects not on this list (or not the default URL above)
 - tenant: Jackson supports a multi-tenant architecture, this is a unique identifier you set from your side that relates back to your customer's tenant. This is normally an email, domain, an account id, or user-id
@@ -383,7 +383,7 @@ The following options are supported and will have to be configured during deploy
 | DB_TYPE (npm: db.type)                    | Only needed when DB_ENGINE is `sql`. Supported values are `postgres`, `mysql`, `mariadb`.                                                                                                                                                                                                                                                                                                                            | `postgres`                      |
 | DB_TTL (npm: db.ttl)                      | TTL for the code, session and token stores (in seconds).                                                                                                                                                                                                                                                                                                                                                             | 300                             |
 | DB_CLEANUP_LIMIT (npm: db.cleanupLimit)   | Limit cleanup of TTL entries to this number.                                                                                                                                                                                                                                                                                                                                                                         | 1000                            |
-| DB_ENCRYPTION_KEY (npm: db.encryptionKey) | To encrypt data at rest specify a 32 character key.                                                                                                                                                                                                                                                                                                                                                                  |                                 |
+| DB_ENCRYPTION_KEY (npm: db.encryptionKey) | To encrypt data at rest specify a random 32 character string. You can use `openssl rand -base64 24` to generate one.                                                                                                                                                                                                                                                                                                 |                                 |
 | PRE_LOADED_CONFIG                         | If you only need a single tenant or a handful of pre-configured tenants then this config will help you read and load SAML configs. It works well with the mem DB engine so you don't have to configure any external databases for this to work (though it works with those as well). This is a path (absolute or relative) to a directory that contains files organized in the format described in the next section. |                                 |
 
 ## Pre-loaded SAML Configuration

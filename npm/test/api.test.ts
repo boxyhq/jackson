@@ -42,15 +42,15 @@ tap.test('controller/api', async (t) => {
 
   t.test('Create the config', async (t) => {
     t.test('when required fields are missing or invalid', async (t) => {
-      t.test('when `rawMetadata` is empty', async (t) => {
+      t.test('when `encodedRawMetadata` is empty', async (t) => {
         const body: Partial<IdPConfig> = Object.assign({}, config[0]);
-        delete body['rawMetadata'];
+        delete body['encodedRawMetadata'];
 
         try {
           await apiController.config(body);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
-          t.equal(err.message, 'Please provide rawMetadata');
+          t.equal(err.message, 'Please provide rawMetadata or encodedRawMetadata');
           t.equal(err.statusCode, 400);
         }
 
@@ -117,9 +117,9 @@ tap.test('controller/api', async (t) => {
         t.end();
       });
 
-      t.test('when `rawMetadata` is not a valid XML', async (t) => {
+      t.test('when `encodedRawMetadata` is not a valid XML', async (t) => {
         const body = Object.assign({}, config[0]);
-        body['rawMetadata'] = 'not a valid XML';
+        body['encodedRawMetadata'] = Buffer.from('not a valid XML', 'utf8').toString('base64');
 
         try {
           await apiController.config(body);
