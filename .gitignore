@@ -37,3 +37,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+.nyc_output/**
