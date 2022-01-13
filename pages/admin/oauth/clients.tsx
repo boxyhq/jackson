@@ -7,15 +7,19 @@ const OAuthClient: NextPage = () => {
 
   if (error) {
     return (
-      <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>
-        {JSON.stringify(error.info)}
+      <div className='p-6'>
+        <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>
+          {JSON.stringify(error.info)}
+        </div>
       </div>
     );
   }
 
   if (!Array.isArray(data)) {
     return (
-      <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>Nothing to show</div>
+      <div className='p-6'>
+        <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>Nothing to show</div>
+      </div>
     );
   }
 
