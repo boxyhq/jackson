@@ -1,5 +1,6 @@
 import Cors from 'cors';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getSession } from 'next-auth/react';
 
 // Initializing the cors middleware
 const corsFunction = Cors({
@@ -23,3 +24,15 @@ function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: any) {
 export async function cors(req: NextApiRequest, res: NextApiResponse) {
   return await runMiddleware(req, res, corsFunction);
 }
+
+export const checkSession = (handler) => async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getSession({ req });
+  if (session) {
+    // Signed in
+    return handler(req, res);
+  } else {
+    // Not Signed in
+    res.status(401);
+  }
+  res.end();
+};
