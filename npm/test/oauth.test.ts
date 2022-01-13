@@ -37,7 +37,7 @@ const samlConfig = {
   product: 'crm',
   redirectUrl: '["http://localhost:3000/*"]',
   defaultRedirectUrl: 'http://localhost:3000/login/saml',
-  rawMetadata: null,
+  encodedRawMetadata: null,
 };
 
 const addMetadata = async (metadataPath) => {
@@ -209,7 +209,8 @@ tap.test('samlResponse()', async (t) => {
       .stub(saml, 'validateAsync')
       .resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
 
-    //@ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code);
 
     const response = await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
@@ -301,7 +302,8 @@ tap.test('token()', (t) => {
     const stubRandomBytes = sinon
       .stub(crypto, 'randomBytes')
       .onFirstCall()
-      //@ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .returns(token);
 
     const response = await oauthController.token(<OAuthTokenReq>body);
