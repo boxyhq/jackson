@@ -72,7 +72,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </Link>
         {isSideNavOpen && (
           <div
-            className='fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-gray-900/80 md:hidden'
+            className='fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-gray-900/80 md:hidden z-10'
             id='headlessui-dialog-overlay-14'
             aria-hidden='true'></div>
         )}
@@ -104,7 +104,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </ul>
         </nav>
       </header>
-      <main role='main' className='relative md:left-60 md:w-[calc(100%_-_theme(space.60))]'>
+      <main role='main' className='relative md:left-60 md:w-[calc(100%_-_theme(space.60))] p-6'>
         {children}
       </main>
       {/* <footer role="contentinfo">
