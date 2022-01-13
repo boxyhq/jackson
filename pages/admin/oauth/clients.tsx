@@ -30,7 +30,7 @@ const OAuthClient: NextPage = () => {
     <div>
       <Link href={'/admin/oauth/new'}>
         <a className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
-          Configure IdP
+          Configure Clients
         </a>
       </Link>
       <table className='border-collapse w-full border-y border-gray-200 dark:border-gray-500 bg-white dark:bg-gray-800 text-sm shadow-sm mt-6'>
