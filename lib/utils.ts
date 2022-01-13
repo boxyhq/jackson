@@ -16,7 +16,7 @@ export const extractAuthToken = (req: NextApiRequest) => {
 };
 
 export interface APIError extends Error {
-  info: string;
+  info?: string;
   status: number;
 }
 
@@ -26,13 +26,19 @@ export const fetcher = async (url: string) => {
       Authorization: 'Api-Key secret',
     }),
   });
+  let resContent;
+  try {
+    resContent = await res.clone().json();
+  } catch (e) {
+    resContent = await res.clone().text();
+  }
   if (!res.ok) {
     const error = new Error('An error occurred while fetching the data.') as APIError;
     // Attach extra info to the error object.
-    error.info = await res.json();
+    error.info = resContent;
     error.status = res.status;
     throw error;
   }
 
-  return res.json();
+  return resContent;
 };
