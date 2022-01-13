@@ -1,6 +1,7 @@
 import { JacksonOption } from './typings';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
+import { AdminController } from './controller/admin';
 import DB from './db/db';
 import readConfig from './read-config';
 
@@ -36,6 +37,7 @@ export const controllers = async (
 ): Promise<{
   apiController: APIController;
   oauthController: OAuthController;
+  adminController: AdminController;
 }> => {
   opts = defaultOpts(opts);
 
@@ -47,7 +49,7 @@ export const controllers = async (
   const tokenStore = db.store('oauth:token', opts.db.ttl);
 
   const apiController = new APIController({ configStore });
-
+  const adminController = new AdminController({ configStore });
   const oauthController = new OAuthController({
     configStore,
     sessionStore,
@@ -74,6 +76,7 @@ export const controllers = async (
   return {
     apiController,
     oauthController,
+    adminController,
   };
 };
 

@@ -1,25 +1,30 @@
-import jackson, { IAPIController, IOAuthController } from '@boxyhq/saml-jackson';
+import jackson, { IAdminController, IAPIController, IOAuthController } from '@boxyhq/saml-jackson';
 import env from '@lib/env';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
+let adminController: IAdminController;
 
 const g = global as any;
 
 export default async function init() {
-  if (!g.apiController || !g.oauthController) {
+  if (!g.apiController || !g.oauthController || !g.adminController) {
     const ret = await jackson(env);
     apiController = ret.apiController;
     oauthController = ret.oauthController;
+    adminController = ret.adminController;
     g.apiController = apiController;
     g.oauthController = oauthController;
+    g.adminController = adminController;
   } else {
     apiController = g.apiController;
     oauthController = g.oauthController;
+    adminController = g.adminController;
   }
 
   return {
     apiController,
     oauthController,
+    adminController,
   };
 }

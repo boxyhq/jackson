@@ -30,6 +30,10 @@ export interface IOAuthController {
   userInfo(token: string): Promise<Profile>;
 }
 
+export interface IAdminController {
+  getAllConfig();
+}
+
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
@@ -74,6 +78,7 @@ export interface Index {
 }
 
 export interface DatabaseDriver {
+  getAll(namespace: string): Promise<unknown[]>;
   get(namespace: string, key: string): Promise<any>;
   put(namespace: string, key: string, val: any, ttl: number, ...indexes: Index[]): Promise<any>;
   delete(namespace: string, key: string): Promise<any>;
@@ -81,6 +86,7 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
+  getAll(): Promise<unknown[]>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
