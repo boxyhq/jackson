@@ -2,8 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { extractAuthToken, validateApiKey } from '@lib/utils';
+import { checkSession } from '@lib/middleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const apiKey = extractAuthToken(req);
     if (!validateApiKey(apiKey)) {
@@ -11,9 +12,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    const { adminController } = await jackson();
+    const { adminController, apiController } = await jackson();
     if (req.method === 'GET') {
       res.json(await adminController.getAllConfig());
+    } else if (req.method === 'POST') {
+      res.json(await apiController.config(req.body));
     } else {
       throw new Error('Method not allowed');
     }
@@ -23,4 +26,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(statusCode).send(message);
   }
-}
+};
+
+export default checkSession(handler);
