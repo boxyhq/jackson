@@ -33,6 +33,14 @@ class DB implements DatabaseDriver {
     return decrypt(res, this.encryptionKey);
   }
 
+  async getAll(namespace): Promise<unknown[]> {
+    const res = (await this.db.getAll(namespace)) as Encrypted[];
+    const encryptionKey = this.encryptionKey;
+    return res.map((r) => {
+      return decrypt(r, encryptionKey);
+    });
+  }
+
   async getByIndex(namespace: string, idx: Index): Promise<unknown[]> {
     const res = await this.db.getByIndex(namespace, idx);
     const encryptionKey = this.encryptionKey;
