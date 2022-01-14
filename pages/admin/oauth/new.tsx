@@ -1,8 +1,10 @@
 import { ArrowLeftIcon } from '@heroicons/react/outline';
 import { NextPage } from 'next';
 import Link from 'next/link';
+import { useState } from 'react';
 
-const fields = [
+const basicFields = [
+  { id: 'name', label: 'Name', required: true, type: 'text', placeholder: 'MyApp' },
   {
     id: 'tenant',
     label: 'Tenant',
@@ -17,6 +19,9 @@ const fields = [
     type: 'text',
     placeholder: 'demo',
   },
+];
+
+const settingsFields = [
   {
     id: 'redirectUrls',
     label: 'Allowed redirect URLs (,Comma separated)',
@@ -24,12 +29,28 @@ const fields = [
     type: 'textarea',
     placeholder: 'http://localhost:3000',
   },
+  {
+    id: 'defaultRedirectUrl',
+    label: 'Default redirect URL',
+    required: true,
+    type: 'url',
+    placeholder: 'http://localhost:3000/login/saml',
+  },
+  {
+    id: 'rawXML',
+    label: 'Raw IdP XML',
+    required: true,
+    type: 'textarea',
+    placeholder: 'Paste the raw XML here',
+  },
 ];
 
 const NewIdP: NextPage = () => {
   const saveIdPConfig = (event) => {
     event.preventDefault();
   };
+
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <>
@@ -44,38 +65,46 @@ const NewIdP: NextPage = () => {
         <ul className='flex flex-wrap -mb-px' id='myTab' data-tabs-toggle='#samlClients' role='tablist'>
           <li className='mr-2' role='presentation'>
             <button
-              className='inline-block py-4 px-4 text-sm font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+              className={`${
+                activeTab === 0 ? 'active ' : ''
+              }inline-block py-4 px-4 text-sm font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300`}
               id='basic-info-tab'
               data-tabs-target='#basic-info'
               type='button'
               role='tab'
               aria-controls='basic-info'
-              aria-selected='false'>
+              aria-selected={activeTab === 0}
+              onClick={() => setActiveTab(0)}>
               Basic information
             </button>
           </li>
           <li className='mr-2' role='presentation'>
             <button
-              className='inline-block py-4 px-4 text-sm font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 active'
+              className={`${
+                activeTab === 1 ? 'active ' : ''
+              }inline-block py-4 px-4 text-sm font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300`}
               id='settings-tab'
               data-tabs-target='#settings'
               type='button'
               role='tab'
               aria-controls='settings'
-              aria-selected='true'>
+              aria-selected={activeTab === 1}
+              onClick={() => setActiveTab(1)}>
               Settings
             </button>
           </li>
         </ul>
       </div>
       <div id='samlClients'>
-        <div
-          className='bg-gradient-to-r bg-white border border-gray-200 code-preview dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'
-          role='tabpanel'
-          id='basic-info'
-          aria-labelledby='basic-info-tab'>
-          <form onSubmit={saveIdPConfig}>
-            {fields.map(({ id, placeholder, label, type, required }) => (
+        <form onSubmit={saveIdPConfig}>
+          <div
+            className={`${
+              activeTab === 0 ? '' : 'hidden '
+            }bg-gradient-to-r bg-white border border-gray-200 code-preview dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg`}
+            role='tabpanel'
+            id='basic-info'
+            aria-labelledby='basic-info-tab'>
+            {basicFields.map(({ id, placeholder, label, type, required }) => (
               <div className='mb-6 ' key={id}>
                 <label
                   htmlFor={id}
@@ -104,13 +133,49 @@ const NewIdP: NextPage = () => {
             <button
               type='submit'
               className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
-              Submit
+              Save Changes
             </button>
-          </form>
-        </div>
-        <div role='tabpanel' id='settings' aria-labelledby='settings-tab'>
-          Settings
-        </div>
+          </div>
+          <div
+            role='tabpanel'
+            id='settings'
+            aria-labelledby='settings-tab'
+            className={`${
+              activeTab === 1 ? '' : 'hidden '
+            }bg-gradient-to-r bg-white border border-gray-200 code-preview dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg`}>
+            {settingsFields.map(({ id, placeholder, label, type, required }) => (
+              <div className='mb-6 ' key={id}>
+                <label
+                  htmlFor={id}
+                  className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
+                  {label}
+                </label>
+                {type === 'textarea' ? (
+                  <textarea
+                    id={id}
+                    placeholder={placeholder}
+                    className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    rows={3}
+                  />
+                ) : (
+                  <input
+                    id={id}
+                    type={type}
+                    placeholder={placeholder}
+                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    required={required}
+                  />
+                )}
+              </div>
+            ))}
+
+            <button
+              type='submit'
+              className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
+              Save Changes
+            </button>
+          </div>
+        </form>
       </div>
     </>
   );
