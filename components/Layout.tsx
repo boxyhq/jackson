@@ -16,8 +16,8 @@ const navigation = [
     icon: <CollectionIcon className='w-5 h-5' aria-hidden />,
   },
   {
-    path: '/admin/oauth/clients',
-    text: <span className='ml-4'>OAuth clients</span>,
+    path: '/admin/saml/clients',
+    text: <span className='ml-4'>SAML clients</span>,
     icon: <ShieldCheckIcon className='w-5 h-5' aria-hidden />,
   },
   {
@@ -27,7 +27,7 @@ const navigation = [
   },
 ];
 
-export default function Layout({ children }: { children: ReactNode }) {
+function Layout({ children }: { children: ReactNode }) {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
   const ref = useRef(null);
 
@@ -113,3 +113,5 @@ export default function Layout({ children }: { children: ReactNode }) {
     </>
   );
 }
+
+export default Layout;
