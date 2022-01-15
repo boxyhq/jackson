@@ -2,7 +2,6 @@ import type { NextPage } from 'next';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
 const Home: NextPage = () => {
-  // const email = 'kiran@boxyhq.com';
   const { data: session } = useSession();
 
   if (session) {
@@ -17,7 +16,7 @@ const Home: NextPage = () => {
   return (
     <>
       Not signed in <br />
-      <button onClick={() => signIn('kiran@boxyhq.com')}>Sign in</button>
+      <button onClick={() => signIn()}>Sign in</button>
     </>
   );
 };
