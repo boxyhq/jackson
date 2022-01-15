@@ -1,4 +1,4 @@
-import jackson, { IAdminController, IAPIController, IOAuthController } from '@boxyhq/saml-jackson';
+import jackson, { IAdminController, IAPIController, IOAuthController, IdPConfig } from '@boxyhq/saml-jackson';
 import env from '@lib/env';
 
 let apiController: IAPIController;
@@ -28,3 +28,5 @@ export default async function init() {
     adminController,
   };
 }
+
+export type { IdPConfig };

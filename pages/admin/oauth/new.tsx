@@ -1,7 +1,8 @@
 import { ArrowLeftIcon } from '@heroicons/react/outline';
 import { NextPage } from 'next';
 import Link from 'next/link';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
+import type { IdPConfig } from '@lib/jackson';
 
 const basicFields = [
   { id: 'name', label: 'Name', required: true, type: 'text', placeholder: 'MyApp' },
@@ -23,7 +24,7 @@ const basicFields = [
 
 const settingsFields = [
   {
-    id: 'redirectUrls',
+    id: 'redirectUrl',
     label: 'Allowed redirect URLs (,Comma separated)',
     required: true,
     type: 'textarea',
@@ -37,7 +38,7 @@ const settingsFields = [
     placeholder: 'http://localhost:3000/login/saml',
   },
   {
-    id: 'rawXML',
+    id: 'rawMetadata',
     label: 'Raw IdP XML',
     required: true,
     type: 'textarea',
@@ -45,12 +46,42 @@ const settingsFields = [
   },
 ];
 
+function getInitialState() {
+  const _state: IdPConfig = {} as IdPConfig;
+  basicFields.forEach(({ id }) => {
+    _state[id] = '';
+  });
+  settingsFields.forEach(({ id }) => {
+    _state[id] = '';
+  });
+  return _state;
+}
+
 const NewIdP: NextPage = () => {
-  const saveIdPConfig = (event) => {
+  const saveIdPConfig = async (event) => {
     event.preventDefault();
+    const { rawMetadata, redirectUrl, ...rest } = formObj;
+    const encodedRawMetadata = btoa(rawMetadata || '');
+    const redirectUrlList = redirectUrl.split(',');
+
+    await fetch('/api/admin/providers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Api-Key secret',
+      },
+      body: JSON.stringify({ ...rest, encodedRawMetadata, redirectUrl: JSON.stringify(redirectUrlList) }),
+    });
   };
 
   const [activeTab, setActiveTab] = useState(0);
+
+  // form state
+  const [formObj, setFormObj] = useState<IdPConfig>(getInitialState);
+  function handleChange(event: FormEvent) {
+    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+    setFormObj((cur) => ({ ...cur, [target.id]: target.value }));
+  }
 
   return (
     <>
@@ -115,6 +146,8 @@ const NewIdP: NextPage = () => {
                   <textarea
                     id={id}
                     placeholder={placeholder}
+                    value={formObj[id]}
+                    onChange={handleChange}
                     className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     rows={3}
                   />
@@ -123,6 +156,8 @@ const NewIdP: NextPage = () => {
                     id={id}
                     type={type}
                     placeholder={placeholder}
+                    value={formObj[id]}
+                    onChange={handleChange}
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     required={required}
                   />
@@ -156,6 +191,8 @@ const NewIdP: NextPage = () => {
                     placeholder={placeholder}
                     className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     rows={3}
+                    value={formObj[id]}
+                    onChange={handleChange}
                   />
                 ) : (
                   <input
@@ -164,6 +201,8 @@ const NewIdP: NextPage = () => {
                     placeholder={placeholder}
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     required={required}
+                    value={formObj[id]}
+                    onChange={handleChange}
                   />
                 )}
               </div>
