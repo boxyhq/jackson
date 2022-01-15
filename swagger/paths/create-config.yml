@@ -1,0 +1,32 @@
+post:
+  summary: Create SAML configuration
+  requestBody:
+    content:
+      application/x-www-form-urlencoded:
+        schema:
+          type: object
+          required:
+            - encodedRawMetadata
+            - defaultRedirectUrl
+            - redirectUrl
+          properties:
+            encodedRawMetadata:
+              type: string
+              description: Base64 encoding of the XML metadata
+            defaultRedirectUrl:
+              type: string
+              description: The redirect URL to use in the IdP login flow
+            redirectUrl:
+              type: string
+              description: JSON encoded array containing a list of allowed redirect URLs
+            tenant:
+              type: string
+              description: Tenant
+            product:
+              type: string
+              description: Product
+  responses:
+    200:
+      description: OK
+    403:
+      description: Access denied
