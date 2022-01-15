@@ -63,6 +63,7 @@ export default NextAuth({
     secret: process.env.NEXTAUTH_JWT_SIGNING_PRIVATE_KEY,
     maxAge: 60 * 60 * 24 * 30,
   },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user }): Promise<boolean> {
       if (!user.email) {
