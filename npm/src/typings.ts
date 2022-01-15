@@ -3,7 +3,8 @@ export type IdPConfig = {
   redirectUrl: string;
   tenant: string;
   product: string;
-  rawMetadata: string;
+  rawMetadata?: string;
+  encodedRawMetadata?: string;
 };
 
 export interface OAuth {

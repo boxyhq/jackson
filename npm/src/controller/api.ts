@@ -14,10 +14,10 @@ export class APIController implements IAPIController {
   }
 
   private _validateIdPConfig(body: IdPConfig): void {
-    const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
+    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
 
-    if (!rawMetadata) {
-      throw new JacksonError('Please provide rawMetadata', 400);
+    if (!rawMetadata && !encodedRawMetadata) {
+      throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
     }
 
     if (!defaultRedirectUrl) {
@@ -38,11 +38,16 @@ export class APIController implements IAPIController {
   }
 
   public async config(body: IdPConfig): Promise<OAuth> {
-    const { rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
+    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
 
     this._validateIdPConfig(body);
 
-    const idpMetadata = await saml.parseMetadataAsync(rawMetadata);
+    let metaData = rawMetadata;
+    if (encodedRawMetadata) {
+      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
+    }
+
+    const idpMetadata = await saml.parseMetadataAsync(metaData!);
 
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);

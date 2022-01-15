@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 _config
+.eslintcache
 
 # dependencies
 /node_modules
@@ -37,3 +38,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+.nyc_output/**
