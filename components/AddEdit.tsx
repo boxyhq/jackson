@@ -1,8 +1,9 @@
-import { ArrowLeftIcon } from '@heroicons/react/outline';
-import { NextPage } from 'next';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
+import { ArrowLeftIcon } from '@heroicons/react/outline';
 import type { IdPConfig } from '@lib/jackson';
+import { mutate } from 'swr';
+import PopUpModal from './PopUpModal';
 
 const basicFields = [
   { id: 'name', label: 'Name', required: true, type: 'text', placeholder: 'MyApp' },
@@ -79,6 +80,18 @@ const AddEdit = ({ client }: AddEditProps) => {
     });
   };
 
+  const deleteClient = async () => {
+    await fetch('/api/admin/providers', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Api-Key secret',
+      },
+      body: JSON.stringify({ clientID: client?.clientID, clientSecret: client?.clientSecret }),
+    });
+    mutate('/api/admin/providers');
+  };
+
   const [activeTab, setActiveTab] = useState(0);
 
   // form state
@@ -91,7 +104,7 @@ const AddEdit = ({ client }: AddEditProps) => {
   return (
     <>
       {/* Or use router.back()  */}
-      <Link href='/admin/saml/clients'>
+      <Link href='/admin/saml'>
         <a className='inline-flex items-center px-4 py-2 mt-2 md:leading-6 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4 text-black dark:text-slate-50' />
           <span className='ml-2'>Back to Clients</span>
@@ -152,6 +165,7 @@ const AddEdit = ({ client }: AddEditProps) => {
                     id={id}
                     placeholder={placeholder}
                     value={formObj[id]}
+                    required={required}
                     onChange={handleChange}
                     className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     rows={3}
@@ -197,6 +211,7 @@ const AddEdit = ({ client }: AddEditProps) => {
                     className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     rows={3}
                     value={formObj[id]}
+                    required={required}
                     onChange={handleChange}
                   />
                 ) : (
@@ -212,15 +227,32 @@ const AddEdit = ({ client }: AddEditProps) => {
                 )}
               </div>
             ))}
-
-            <button
-              type='submit'
-              className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
-              Save Changes
-            </button>
+            <div className='flex justify-between'>
+              <button
+                type='submit'
+                className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
+                Save Changes
+              </button>
+            </div>
           </div>
+          {client?.clientID && client.clientSecret && (
+            <section className='flex items-center text-red-900 bg-red-100 p-6 rounded mt-10'>
+              <div className='flex-1'>
+                <h6 className='font-medium mb-1'>Delete this application</h6>
+                <p className='font-light'>All your apps using this client will stop working.</p>
+              </div>
+              <button
+                type='button'
+                className='bg-red-700 hover:bg-red-800 text-white text-sm font-bold py-2 px-4 rounded leading-6 inline-block'
+                onClick={deleteClient}
+                data-modal-toggle='popup-modal'>
+                Delete
+              </button>
+            </section>
+          )}
         </form>
       </div>
+      <PopUpModal />
     </>
   );
 };
