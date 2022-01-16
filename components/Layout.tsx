@@ -16,7 +16,7 @@ const navigation = [
     icon: <CollectionIcon className='w-5 h-5' aria-hidden />,
   },
   {
-    path: '/admin/saml/clients',
+    path: '/admin/saml',
     text: <span className='ml-4'>SAML clients</span>,
     icon: <ShieldCheckIcon className='w-5 h-5' aria-hidden />,
   },

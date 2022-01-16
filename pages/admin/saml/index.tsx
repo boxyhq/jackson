@@ -65,7 +65,7 @@ const OAuthClient: NextPage = () => {
                 </td>
                 <td>
                   <Link href={`/admin/saml/edit/${provider.clientID}`}>
-                    <a className='inline-flex items-center justify-center text-white font-medium py-2 px-4 rounded leading-6'>
+                    <a className='inline-flex items-center justify-center dark:text-white font-medium py-2 px-4 rounded leading-6'>
                       <DotsHorizontalIcon className='h-6 w-6' />
                     </a>
                   </Link>
