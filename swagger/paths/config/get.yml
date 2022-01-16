@@ -1,0 +1,9 @@
+summary: Get SAML configuration
+operationId: getConfig
+tags:
+  - Config
+responses:
+  '200':
+    description: OK
+  '403':
+    description: Access denied

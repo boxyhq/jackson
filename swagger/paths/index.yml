@@ -1,0 +1,7 @@
+/saml/config:
+  post:
+    $ref: ./config/create.yml
+  get:
+    $ref: ./config/get.yml
+  delete:
+    $ref: ./config/delete.yml

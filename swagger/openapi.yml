@@ -1,0 +1,23 @@
+openapi: 3.0.0
+
+info:
+  title: SAML Jackson API
+  description: SAML service
+  version: 1.0.0
+  contact:
+    name: Boxy HQ
+    url: https://boxyhq.com/
+    email: deepak@boxyhq.com
+  license:
+    name: Apache-2.0 License
+    url: https://github.com/boxyhq/jackson/blob/main/LICENSE
+
+servers:
+  - url: https://boxyhq.com/api/v1/
+    description: Production server
+
+paths:
+  $ref: ./paths/index.yml
+
+# paths:
+#   $ref: './paths/index.yml'

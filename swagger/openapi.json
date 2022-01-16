@@ -1,0 +1,108 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SAML Jackson API",
+    "description": "SAML service",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Boxy HQ",
+      "url": "https://boxyhq.com/",
+      "email": "deepak@boxyhq.com"
+    },
+    "license": {
+      "name": "Apache-2.0 License",
+      "url": "https://github.com/boxyhq/jackson/blob/main/LICENSE"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://boxyhq.com/api/v1/",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/saml/config": {
+      "post": {
+        "summary": "Create SAML configuration",
+        "operationId": "createConfig",
+        "tags": [
+          "Config"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "encodedRawMetadata",
+                  "defaultRedirectUrl",
+                  "redirectUrl"
+                ],
+                "properties": {
+                  "encodedRawMetadata": {
+                    "type": "string",
+                    "description": "Base64 encoding of the XML metadata"
+                  },
+                  "defaultRedirectUrl": {
+                    "type": "string",
+                    "description": "The redirect URL to use in the IdP login flow"
+                  },
+                  "redirectUrl": {
+                    "type": "string",
+                    "description": "JSON encoded array containing a list of allowed redirect URLs"
+                  },
+                  "tenant": {
+                    "type": "string",
+                    "description": "Tenant"
+                  },
+                  "product": {
+                    "type": "string",
+                    "description": "Product"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Access denied"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get SAML configuration",
+        "operationId": "getConfig",
+        "tags": [
+          "Config"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Access denied"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete SAML configuration",
+        "operationId": "deleteConfig",
+        "tags": [
+          "Config"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Access denied"
+          }
+        }
+      }
+    }
+  }
+}
