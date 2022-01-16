@@ -2,7 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "SAML Jackson API",
-    "description": "SAML service",
+    "description": "This is the API documentation SAML Jackson service.",
+    "termsOfService": "https://boxyhq.com/terms.html",
     "version": "1.0.0",
     "contact": {
       "name": "Boxy HQ",
@@ -16,17 +17,31 @@
   },
   "servers": [
     {
-      "url": "https://boxyhq.com/api/v1/",
+      "url": "https://boxyhq.com/",
       "description": "Production server"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Api-Key"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
   "paths": {
-    "/saml/config": {
+    "/api/v1/saml/config": {
       "post": {
         "summary": "Create SAML configuration",
         "operationId": "createConfig",
         "tags": [
-          "Config"
+          "SAML Config"
         ],
         "requestBody": {
           "content": {
@@ -77,7 +92,7 @@
         "summary": "Get SAML configuration",
         "operationId": "getConfig",
         "tags": [
-          "Config"
+          "SAML Config"
         ],
         "responses": {
           "200": {
@@ -92,7 +107,39 @@
         "summary": "Delete SAML configuration",
         "operationId": "deleteConfig",
         "tags": [
-          "Config"
+          "SAML Config"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Access denied"
+          }
+        }
+      }
+    },
+    "/oauth": {
+      "post": {
+        "summary": "Code exchange",
+        "operationId": "oauthCodeExchange",
+        "tags": [
+          "OAuth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Access denied"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get profile",
+        "operationId": "oauthGetProfile",
+        "tags": [
+          "OAuth"
         ],
         "responses": {
           "200": {

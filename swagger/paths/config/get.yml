@@ -1,7 +1,7 @@
 summary: Get SAML configuration
 operationId: getConfig
 tags:
-  - Config
+  - SAML Config
 responses:
   '200':
     description: OK

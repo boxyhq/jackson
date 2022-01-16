@@ -1,7 +1,7 @@
-summary: Delete SAML configuration
-operationId: deleteConfig
+summary: Get profile
+operationId: oauthGetProfile
 tags:
-  - SAML Config
+  - OAuth
 responses:
   '200':
     description: OK

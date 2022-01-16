@@ -1,7 +1,7 @@
 summary: Create SAML configuration
 operationId: createConfig
 tags:
-  - Config
+  - SAML Config
 requestBody:
   content:
     application/x-www-form-urlencoded:

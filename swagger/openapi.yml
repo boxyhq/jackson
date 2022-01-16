@@ -2,7 +2,8 @@ openapi: 3.0.0
 
 info:
   title: SAML Jackson API
-  description: SAML service
+  description: This is the API documentation SAML Jackson service.
+  termsOfService: https://boxyhq.com/terms.html
   version: 1.0.0
   contact:
     name: Boxy HQ
@@ -13,11 +14,18 @@ info:
     url: https://github.com/boxyhq/jackson/blob/main/LICENSE
 
 servers:
-  - url: https://boxyhq.com/api/v1/
+  - url: https://boxyhq.com/
     description: Production server
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Api-Key
+
+security:
+  - ApiKeyAuth: []
 
 paths:
   $ref: ./paths/index.yml
-
-# paths:
-#   $ref: './paths/index.yml'

@@ -1,7 +1,13 @@
-/saml/config:
+/api/v1/saml/config:
   post:
     $ref: ./config/create.yml
   get:
     $ref: ./config/get.yml
   delete:
     $ref: ./config/delete.yml
+
+/oauth:
+  post:
+    $ref: ./oauth/token.yml
+  get:
+    $ref: ./oauth/profile.yml
