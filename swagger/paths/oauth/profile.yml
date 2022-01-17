@@ -1,5 +1,5 @@
 summary: Get profile
-operationId: oauthGetProfile
+operationId: oauth-get-profile
 tags:
   - OAuth
 responses:

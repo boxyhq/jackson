@@ -1,5 +1,5 @@
 summary: Get SAML configuration
-operationId: getConfig
+operationId: get-saml-config
 tags:
   - SAML Config
 parameters:

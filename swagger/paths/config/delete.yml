@@ -1,32 +1,30 @@
 summary: Delete SAML configuration
-operationId: deleteConfig
+operationId: delete-saml-config
 tags:
   - SAML Config
 consumes:
   - application/x-www-form-urlencoded
 parameters:
-  - in: body
-    name: config
-    schema:
-      type: object
-      required:
-        - clientID
-        - clientSecret
-        - tenant
-        - product
-      properties:
-        clientID:
-          type: string
-          description: Client ID
-        clientSecret:
-          type: string
-          description: Client Secret
-        tenant:
-          type: string
-          description: Tenant
-        product:
-          type: string
-          description: Product
+  - name: clientID
+    in: formData
+    type: string
+    required: true
+    description: Client ID
+  - name: clientSecret
+    in: formData
+    type: string
+    required: true
+    description: Client Secret
+  - name: tenant
+    in: formData
+    type: string
+    required: true
+    description: Tenant
+  - name: product
+    in: formData
+    type: string
+    required: true
+    description: Product
 responses:
   '200':
     description: Success

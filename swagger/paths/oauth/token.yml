@@ -1,36 +1,36 @@
 summary: Code exchange
-operationId: oauthCodeExchange
+operationId: oauth-code-exchange
 tags:
   - OAuth
 consumes:
   - application/x-www-form-urlencoded
 parameters:
-  - in: body
-    name: config
-    schema:
-      type: object
-      required:
-        - grant_type
-        - client_id
-        - client_secret
-        - redirect_uri
-        - code
-      properties:
-        grant_type:
-          type: string
-          default: authorization_code
-        client_id:
-          type: string
-          description: Use the client_id returned by the SAML config API
-        client_secret:
-          type: string
-          description: Use the client_secret returned by the SAML config API
-        redirect_uri:
-          type: string
-          description: Redirect URI
-        code:
-          type: string
-          description: Code
+  - name: grant_type
+    in: formData
+    type: string
+    description: Grant type should be 'authorization_code'
+    default: authorization_code
+    required: true
+  - name: client_id
+    in: formData
+    type: string
+    description: Use the client_id returned by the SAML config API
+    required: true
+  - name: client_secret
+    in: formData
+    type: string
+    description: Use the client_secret returned by the SAML config API
+    required: true
+  - name: redirect_uri
+    in: formData
+    type: string
+    description: Redirect URI
+    required: true
+  - name: code
+    in: formData
+    type: string
+    description: Code
+    required: true
 responses:
   '200':
     description: Success
