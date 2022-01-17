@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 const EditClient: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data, error } = useSWR('/api/admin/providers', fetcher);
+  const { data, error } = useSWR('/api/admin/providers', fetcher, { revalidateOnFocus: false });
 
   if (error) {
     return (
