@@ -5,21 +5,19 @@ tags:
 responses:
   '200':
     description: Success
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            id:
-              type: string
-            email:
-              type: string
-            firstName:
-              type: string
-            lastName:
-              type: string
-          example:
-            id: 32b5af58fdf
-            email: jackson@coolstartup.com
-            firstName: SAML
-            lastName: Jackson
+    schema:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      example:
+        id: 32b5af58fdf
+        email: jackson@coolstartup.com
+        firstName: SAML
+        lastName: Jackson

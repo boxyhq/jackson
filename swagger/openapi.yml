@@ -1,4 +1,4 @@
-openapi: 3.0.0
+swagger: "2.0"
 
 info:
   title: SAML Jackson API
@@ -12,26 +12,20 @@ info:
   license:
     name: Apache-2.0 License
     url: https://github.com/boxyhq/jackson/blob/main/LICENSE
-
-servers:
-  - url: http://localhost:5000/
-    description: Development server
-
-components:
-  securitySchemes:
+host: localhost:5000
+basePath: /
+schemes:
+  - http
+  - https
+produces:
+- application/json; charset=utf-8
+securityDefinitions:
     apiKey:
       type: apiKey
       in: header
       name: Authorization
-      description: 'Authorization: Api-Key your-api-key'
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: Access token
 security:
   - apiKey: []
-  - bearerAuth: []
 
 paths:
   $ref: ./paths/index.yml

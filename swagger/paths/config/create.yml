@@ -2,51 +2,51 @@ summary: Create SAML configuration
 operationId: createConfig
 tags:
   - SAML Config
-requestBody:
-  content:
-    application/x-www-form-urlencoded:
-      schema:
-        type: object
-        required:
-          - encodedRawMetadata
-          - defaultRedirectUrl
-          - redirectUrl
-          - tenant
-          - product
-        properties:
-          encodedRawMetadata:
-            type: string
-            description: Base64 encoding of the XML metadata
-          defaultRedirectUrl:
-            type: string
-            description: The redirect URL to use in the IdP login flow
-          redirectUrl:
-            type: string
-            description: JSON encoded array containing a list of allowed redirect URLs
-          tenant:
-            type: string
-            description: Tenant
-          product:
-            type: string
-            description: Product
+consumes:
+  - application/x-www-form-urlencoded
+parameters:
+  - in: body
+    name: config
+    schema:
+      type: object
+      required:
+        - encodedRawMetadata
+        - defaultRedirectUrl
+        - redirectUrl
+        - tenant
+        - product
+      properties:
+        encodedRawMetadata:
+          type: string
+          description: Base64 encoding of the XML metadata
+        defaultRedirectUrl:
+          type: string
+          description: The redirect URL to use in the IdP login flow
+        redirectUrl:
+          type: string
+          description: JSON encoded array containing a list of allowed redirect URLs
+        tenant:
+          type: string
+          description: Tenant
+        product:
+          type: string
+          description: Product
 responses:
   '200':
     description: Success
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            client_id:
-              type: string
-            client_secret:
-              type: string
-            provider:
-              type: string
-          example:
-            client_id: 8958e13053832b5af58fdf2ee83f35f5d013dc74
-            client_secret: 13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7
-            type: accounts.google.com
+    schema:
+      type: object
+      properties:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        provider:
+          type: string
+      example:
+        client_id: 8958e13053832b5af58fdf2ee83f35f5d013dc74
+        client_secret: 13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7
+        type: accounts.google.com
   '401':
     description: Unauthorized
 

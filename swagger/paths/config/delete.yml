@@ -2,8 +2,34 @@ summary: Delete SAML configuration
 operationId: deleteConfig
 tags:
   - SAML Config
+consumes:
+  - application/x-www-form-urlencoded
+parameters:
+  - in: body
+    name: config
+    schema:
+      type: object
+      required:
+        - clientID
+        - clientSecret
+        - tenant
+        - product
+      properties:
+        clientID:
+          type: string
+          description: Client ID
+        clientSecret:
+          type: string
+          description: Client Secret
+        tenant:
+          type: string
+          description: Tenant
+        product:
+          type: string
+          description: Product
 responses:
   '200':
-    description: OK
-  '403':
-    description: Access denied
+    description: Success
+  '401':
+    description: Unauthorized
+

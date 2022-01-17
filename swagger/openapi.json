@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "swagger": "2.0",
   "info": {
     "title": "SAML Jackson API",
     "description": "This is the API documentation for SAML Jackson service.",
@@ -15,34 +15,25 @@
       "url": "https://github.com/boxyhq/jackson/blob/main/LICENSE"
     }
   },
-  "servers": [
-    {
-      "url": "http://localhost:5000/",
-      "description": "Development server"
-    }
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
   ],
-  "components": {
-    "securitySchemes": {
-      "apiKey": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization",
-        "description": "Authorization: HApi-Key <Jackson API Key>"
-      },
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "Access token"
-      }
+  "produces": [
+    "application/json; charset=utf-8"
+  ],
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization"
     }
   },
   "security": [
     {
       "apiKey": []
-    },
-    {
-      "bearerAuth": []
     }
   ],
   "paths": {
@@ -53,68 +44,67 @@
         "tags": [
           "SAML Config"
         ],
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "encodedRawMetadata",
-                  "defaultRedirectUrl",
-                  "redirectUrl",
-                  "tenant",
-                  "product"
-                ],
-                "properties": {
-                  "encodedRawMetadata": {
-                    "type": "string",
-                    "description": "Base64 encoding of the XML metadata"
-                  },
-                  "defaultRedirectUrl": {
-                    "type": "string",
-                    "description": "The redirect URL to use in the IdP login flow"
-                  },
-                  "redirectUrl": {
-                    "type": "string",
-                    "description": "JSON encoded array containing a list of allowed redirect URLs"
-                  },
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  }
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "config",
+            "schema": {
+              "type": "object",
+              "required": [
+                "encodedRawMetadata",
+                "defaultRedirectUrl",
+                "redirectUrl",
+                "tenant",
+                "product"
+              ],
+              "properties": {
+                "encodedRawMetadata": {
+                  "type": "string",
+                  "description": "Base64 encoding of the XML metadata"
+                },
+                "defaultRedirectUrl": {
+                  "type": "string",
+                  "description": "The redirect URL to use in the IdP login flow"
+                },
+                "redirectUrl": {
+                  "type": "string",
+                  "description": "JSON encoded array containing a list of allowed redirect URLs"
+                },
+                "tenant": {
+                  "type": "string",
+                  "description": "Tenant"
+                },
+                "product": {
+                  "type": "string",
+                  "description": "Product"
                 }
               }
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "client_id": {
-                      "type": "string"
-                    },
-                    "client_secret": {
-                      "type": "string"
-                    },
-                    "provider": {
-                      "type": "string"
-                    }
-                  },
-                  "example": {
-                    "client_id": "8958e13053832b5af58fdf2ee83f35f5d013dc74",
-                    "client_secret": "13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7",
-                    "type": "accounts.google.com"
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "client_id": {
+                  "type": "string"
+                },
+                "client_secret": {
+                  "type": "string"
+                },
+                "provider": {
+                  "type": "string"
                 }
+              },
+              "example": {
+                "client_id": "8958e13053832b5af58fdf2ee83f35f5d013dc74",
+                "client_secret": "13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7",
+                "type": "accounts.google.com"
               }
             }
           },
@@ -133,44 +123,34 @@
           {
             "in": "query",
             "name": "tenant",
-            "schema": {
-              "type": "string"
-            },
+            "type": "string",
             "description": "Tenant"
           },
           {
             "in": "query",
             "name": "product",
-            "schema": {
-              "type": "string"
-            },
+            "type": "string",
             "description": "Product"
           },
           {
             "in": "query",
             "name": "clientID",
-            "schema": {
-              "type": "string"
-            },
+            "type": "string",
             "description": "Client ID"
           }
         ],
         "responses": {
           "200": {
             "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "provider": {
-                      "type": "string"
-                    }
-                  },
-                  "example": {
-                    "type": "accounts.google.com"
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string"
                 }
+              },
+              "example": {
+                "type": "accounts.google.com"
               }
             }
           },
@@ -185,12 +165,48 @@
         "tags": [
           "SAML Config"
         ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "config",
+            "schema": {
+              "type": "object",
+              "required": [
+                "clientID",
+                "clientSecret",
+                "tenant",
+                "product"
+              ],
+              "properties": {
+                "clientID": {
+                  "type": "string",
+                  "description": "Client ID"
+                },
+                "clientSecret": {
+                  "type": "string",
+                  "description": "Client Secret"
+                },
+                "tenant": {
+                  "type": "string",
+                  "description": "Tenant"
+                },
+                "product": {
+                  "type": "string",
+                  "description": "Product"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
-          "403": {
-            "description": "Access denied"
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -202,69 +218,67 @@
         "tags": [
           "OAuth"
         ],
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "grant_type",
-                  "client_id",
-                  "client_secret",
-                  "redirect_uri",
-                  "code"
-                ],
-                "properties": {
-                  "grant_type": {
-                    "type": "string",
-                    "default": "authorization_code",
-                    "readOnly": true
-                  },
-                  "client_id": {
-                    "type": "string",
-                    "description": "Use the client_id returned by the SAML config API"
-                  },
-                  "client_secret": {
-                    "type": "string",
-                    "description": "Use the client_secret returned by the SAML config API"
-                  },
-                  "redirect_uri": {
-                    "type": "string",
-                    "description": "Redirect URI"
-                  },
-                  "code": {
-                    "type": "string",
-                    "description": "Code"
-                  }
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "config",
+            "schema": {
+              "type": "object",
+              "required": [
+                "grant_type",
+                "client_id",
+                "client_secret",
+                "redirect_uri",
+                "code"
+              ],
+              "properties": {
+                "grant_type": {
+                  "type": "string",
+                  "default": "authorization_code"
+                },
+                "client_id": {
+                  "type": "string",
+                  "description": "Use the client_id returned by the SAML config API"
+                },
+                "client_secret": {
+                  "type": "string",
+                  "description": "Use the client_secret returned by the SAML config API"
+                },
+                "redirect_uri": {
+                  "type": "string",
+                  "description": "Redirect URI"
+                },
+                "code": {
+                  "type": "string",
+                  "description": "Code"
                 }
               }
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "access_token": {
-                      "type": "string"
-                    },
-                    "token_type": {
-                      "type": "string"
-                    },
-                    "expires_in": {
-                      "type": "string"
-                    }
-                  },
-                  "example": {
-                    "access_token": "8958e13053832b5af58fdf2ee83f35f5d013dc74",
-                    "token_type": "bearer",
-                    "expires_in": 300
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "type": "string"
+                },
+                "token_type": {
+                  "type": "string"
+                },
+                "expires_in": {
+                  "type": "string"
                 }
+              },
+              "example": {
+                "access_token": "8958e13053832b5af58fdf2ee83f35f5d013dc74",
+                "token_type": "bearer",
+                "expires_in": 300
               }
             }
           }
@@ -281,31 +295,27 @@
         "responses": {
           "200": {
             "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "email": {
-                      "type": "string"
-                    },
-                    "firstName": {
-                      "type": "string"
-                    },
-                    "lastName": {
-                      "type": "string"
-                    }
-                  },
-                  "example": {
-                    "id": "32b5af58fdf",
-                    "email": "jackson@coolstartup.com",
-                    "firstName": "SAML",
-                    "lastName": "Jackson"
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
                 }
+              },
+              "example": {
+                "id": "32b5af58fdf",
+                "email": "jackson@coolstartup.com",
+                "firstName": "SAML",
+                "lastName": "Jackson"
               }
             }
           }
