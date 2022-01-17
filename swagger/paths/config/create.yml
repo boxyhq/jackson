@@ -11,6 +11,8 @@ requestBody:
           - encodedRawMetadata
           - defaultRedirectUrl
           - redirectUrl
+          - tenant
+          - product
         properties:
           encodedRawMetadata:
             type: string
@@ -29,6 +31,22 @@ requestBody:
             description: Product
 responses:
   '200':
-    description: OK
-  '403':
-    description: Access denied
+    description: Success
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            client_id:
+              type: string
+            client_secret:
+              type: string
+            provider:
+              type: string
+          example:
+            client_id: 8958e13053832b5af58fdf2ee83f35f5d013dc74
+            client_secret: 13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7
+            type: accounts.google.com
+  '401':
+    description: Unauthorized
+

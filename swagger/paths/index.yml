@@ -6,8 +6,10 @@
   delete:
     $ref: ./config/delete.yml
 
-/oauth:
+/oauth/token:
   post:
     $ref: ./oauth/token.yml
+
+/oauth/userinfo:
   get:
     $ref: ./oauth/profile.yml

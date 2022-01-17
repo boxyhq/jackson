@@ -2,8 +2,49 @@ summary: Code exchange
 operationId: oauthCodeExchange
 tags:
   - OAuth
+requestBody:
+  content:
+    application/x-www-form-urlencoded:
+      schema:
+        type: object
+        required:
+          - grant_type
+          - client_id
+          - client_secret
+          - redirect_uri
+          - code
+        properties:
+          grant_type:
+            type: string
+            default: authorization_code
+            readOnly: true
+          client_id:
+            type: string
+            description: Use the client_id returned by the SAML config API
+          client_secret:
+            type: string
+            description: Use the client_secret returned by the SAML config API
+          redirect_uri:
+            type: string
+            description: Redirect URI
+          code:
+            type: string
+            description: Code
 responses:
   '200':
-    description: OK
-  '403':
-    description: Access denied
+    description: Success
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            access_token:
+              type: string
+            token_type:
+              type: string
+            expires_in:
+              type: string
+          example:
+            access_token: 8958e13053832b5af58fdf2ee83f35f5d013dc74
+            token_type: bearer
+            expires_in: 300

@@ -2,8 +2,34 @@ summary: Get SAML configuration
 operationId: getConfig
 tags:
   - SAML Config
+parameters:
+  - in: query
+    name: tenant
+    schema:
+      type: string
+    description: Tenant
+  - in: query
+    name: product
+    schema:
+      type: string
+    description: Product
+  - in: query
+    name: clientID
+    schema:
+      type: string
+    description: Client ID
 responses:
   '200':
-    description: OK
-  '403':
-    description: Access denied
+    description: Success
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            provider:
+              type: string
+          example:
+            type: accounts.google.com
+  '401':
+    description: Unauthorized
+

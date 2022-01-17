@@ -15,7 +15,7 @@ info:
 
 servers:
   - url: http://localhost:5000/
-    description: Production server
+    description: Development server
 
 components:
   securitySchemes:

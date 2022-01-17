@@ -18,7 +18,7 @@
   "servers": [
     {
       "url": "http://localhost:5000/",
-      "description": "Production server"
+      "description": "Development server"
     }
   ],
   "components": {
@@ -52,7 +52,9 @@
                 "required": [
                   "encodedRawMetadata",
                   "defaultRedirectUrl",
-                  "redirectUrl"
+                  "redirectUrl",
+                  "tenant",
+                  "product"
                 ],
                 "properties": {
                   "encodedRawMetadata": {
@@ -82,10 +84,33 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "client_id": {
+                      "type": "string"
+                    },
+                    "client_secret": {
+                      "type": "string"
+                    },
+                    "provider": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "client_id": "8958e13053832b5af58fdf2ee83f35f5d013dc74",
+                    "client_secret": "13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7",
+                    "type": "accounts.google.com"
+                  }
+                }
+              }
+            }
           },
-          "403": {
-            "description": "Access denied"
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
@@ -95,12 +120,53 @@
         "tags": [
           "SAML Config"
         ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Tenant"
+          },
+          {
+            "in": "query",
+            "name": "product",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product"
+          },
+          {
+            "in": "query",
+            "name": "clientID",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Client ID"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "provider": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "type": "accounts.google.com"
+                  }
+                }
+              }
+            }
           },
-          "403": {
-            "description": "Access denied"
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
@@ -120,22 +186,83 @@
         }
       }
     },
-    "/oauth": {
+    "/oauth/token": {
       "post": {
         "summary": "Code exchange",
         "operationId": "oauthCodeExchange",
         "tags": [
           "OAuth"
         ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "grant_type",
+                  "client_id",
+                  "client_secret",
+                  "redirect_uri",
+                  "code"
+                ],
+                "properties": {
+                  "grant_type": {
+                    "type": "string",
+                    "default": "authorization_code",
+                    "readOnly": true
+                  },
+                  "client_id": {
+                    "type": "string",
+                    "description": "Use the client_id returned by the SAML config API"
+                  },
+                  "client_secret": {
+                    "type": "string",
+                    "description": "Use the client_secret returned by the SAML config API"
+                  },
+                  "redirect_uri": {
+                    "type": "string",
+                    "description": "Redirect URI"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "Code"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "403": {
-            "description": "Access denied"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "token_type": {
+                      "type": "string"
+                    },
+                    "expires_in": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "access_token": "8958e13053832b5af58fdf2ee83f35f5d013dc74",
+                    "token_type": "bearer",
+                    "expires_in": 300
+                  }
+                }
+              }
+            }
           }
         }
-      },
+      }
+    },
+    "/oauth/userinfo": {
       "get": {
         "summary": "Get profile",
         "operationId": "oauthGetProfile",
@@ -144,10 +271,34 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "403": {
-            "description": "Access denied"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "firstName": {
+                      "type": "string"
+                    },
+                    "lastName": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "id": "32b5af58fdf",
+                    "email": "jackson@coolstartup.com",
+                    "firstName": "SAML",
+                    "lastName": "Jackson"
+                  }
+                }
+              }
+            }
           }
         }
       }
