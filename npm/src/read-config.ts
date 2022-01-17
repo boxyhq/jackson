@@ -13,12 +13,13 @@ const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
   for (const idx in files) {
     const file = files[idx];
     if (file.endsWith('.js')) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const config = require(path.join(preLoadedConfig, file)) as IdPConfig;
       const rawMetadata = await fs.promises.readFile(
         path.join(preLoadedConfig, path.parse(file).name + '.xml'),
         'utf8'
       );
-      config.rawMetadata = rawMetadata;
+      config.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
       configs.push(config);
     }
   }
