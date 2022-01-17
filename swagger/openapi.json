@@ -2,9 +2,9 @@
   "openapi": "3.0.0",
   "info": {
     "title": "SAML Jackson API",
-    "description": "This is the API documentation SAML Jackson service.",
+    "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
-    "version": "1.0.0",
+    "version": "0.3.3",
     "contact": {
       "name": "Boxy HQ",
       "url": "https://boxyhq.com/",
@@ -23,15 +23,24 @@
   ],
   "components": {
     "securitySchemes": {
-      "bearerAuth": {
+      "apiKey": {
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "Authorization: Api-Key <Jackson API Key>"
+        "description": "Authorization: HApi-Key <Jackson API Key>"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Access token"
       }
     }
   },
   "security": [
+    {
+      "apiKey": []
+    },
     {
       "bearerAuth": []
     }
