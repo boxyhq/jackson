@@ -2,8 +2,9 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/outline';
 import type { IdPConfig } from '@lib/jackson';
+import { Modal } from '@supabase/ui';
+import { useRouter } from 'next/router';
 import { mutate } from 'swr';
-import PopUpModal from './PopUpModal';
 
 const basicFields = [
   { id: 'name', label: 'Name', required: true, type: 'text', placeholder: 'MyApp' },
@@ -60,10 +61,11 @@ function getInitialState(client) {
 }
 
 type AddEditProps = {
-  client?: Record<string, unknown>;
+  client?: Record<string, any>;
 };
 
 const AddEdit = ({ client }: AddEditProps) => {
+  const router = useRouter();
   const saveIdPConfig = async (event) => {
     event.preventDefault();
     const { rawMetadata, redirectUrl, ...rest } = formObj;
@@ -80,6 +82,9 @@ const AddEdit = ({ client }: AddEditProps) => {
     });
   };
 
+  const [delModalVisible, setDelModalVisible] = useState(false);
+  const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
+  const [userNameEntry, setUserNameEntry] = useState('');
   const deleteClient = async () => {
     await fetch('/api/admin/providers', {
       method: 'DELETE',
@@ -89,7 +94,9 @@ const AddEdit = ({ client }: AddEditProps) => {
       },
       body: JSON.stringify({ clientID: client?.clientID, clientSecret: client?.clientSecret }),
     });
-    mutate('/api/admin/providers');
+    toggleDelConfirm();
+    await mutate('/api/admin/providers');
+    router.replace('/admin/saml');
   };
 
   const [activeTab, setActiveTab] = useState(0);
@@ -244,15 +251,53 @@ const AddEdit = ({ client }: AddEditProps) => {
               <button
                 type='button'
                 className='bg-red-700 hover:bg-red-800 text-white text-sm font-bold py-2 px-4 rounded leading-6 inline-block'
-                onClick={deleteClient}
+                onClick={toggleDelConfirm}
                 data-modal-toggle='popup-modal'>
                 Delete
               </button>
             </section>
           )}
         </form>
+        <Modal
+          closable
+          title='Are you absolutely sure ?'
+          description='This action cannot be undone. This will permanently delete the application.'
+          visible={delModalVisible}
+          onCancel={toggleDelConfirm}
+          customFooter={
+            <div className='inline-flex ml-auto'>
+              <button
+                type='button'
+                onClick={toggleDelConfirm}
+                className='bg-white hover:bg-gray-200 border-2  text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
+                Cancel
+              </button>
+              <button
+                type='button'
+                disabled={userNameEntry !== client?.product}
+                onClick={deleteClient}
+                className='ml-1.5 bg-red-700 hover:bg-red-800 disabled:bg-slate-400 text-white text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
+                Delete
+              </button>
+            </div>
+          }>
+          <p className='text-slate-600'>
+            Please type in the name of the product &apos;
+            {client?.product && <strong>{client.product}</strong>}&apos; to confirm.
+          </p>
+          <label htmlFor='nameOfProd' className='font-medium text-slate-900'>
+            Name *
+          </label>
+          <input
+            id='nameOfProd'
+            required
+            className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:white dark:border-gray-600 dark:placeholder-gray-400 d dark:focus:ring-blue-500 dark:focus:border-blue-500'
+            value={userNameEntry}
+            onChange={({ target }) => {
+              setUserNameEntry(target.value);
+            }}></input>
+        </Modal>
       </div>
-      <PopUpModal />
     </>
   );
 };
