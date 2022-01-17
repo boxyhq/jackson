@@ -14,18 +14,19 @@ info:
     url: https://github.com/boxyhq/jackson/blob/main/LICENSE
 
 servers:
-  - url: https://boxyhq.com/
+  - url: http://localhost:5000/
     description: Production server
 
 components:
   securitySchemes:
-    ApiKeyAuth:
+    bearerAuth:
       type: apiKey
       in: header
-      name: Api-Key
+      name: Authorization
+      description: 'Authorization: Api-Key <Jackson API Key>'
 
 security:
-  - ApiKeyAuth: []
+  - bearerAuth: []
 
 paths:
   $ref: ./paths/index.yml
