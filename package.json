@@ -23,7 +23,7 @@
     "sort": "npx sort-package-json",
     "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/jackson npm run dev",
     "start": "next start -p 5000",
-    "swagger-jsdoc": "swagger-jsdoc -d swaggerDefinition.js npm/src/**/*.ts arg"
+    "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg"
   },
   "husky": {
     "hooks": {

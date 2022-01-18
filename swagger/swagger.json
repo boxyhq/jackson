@@ -1,10 +1,9 @@
 {
-  "swagger": "2.0",
   "info": {
     "title": "SAML Jackson API",
+    "version": "0.3.4",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
-    "version": "0.3.3",
     "contact": {
       "name": "Boxy HQ",
       "url": "https://boxyhq.com/",
@@ -21,9 +20,6 @@
     "http",
     "https"
   ],
-  "produces": [
-    "application/json; charset=utf-8"
-  ],
   "securityDefinitions": {
     "apiKey": {
       "type": "apiKey",
@@ -36,13 +32,17 @@
       "apiKey": []
     }
   ],
+  "swagger": "2.0",
   "paths": {
     "/api/v1/saml/config": {
       "post": {
-        "summary": "Create SAML configuration",
+        "description": "Create SAML configuration",
         "operationId": "create-saml-config",
         "tags": [
           "SAML Config"
+        ],
+        "produces": [
+          "application/json"
         ],
         "consumes": [
           "application/x-www-form-urlencoded"
@@ -50,38 +50,38 @@
         "parameters": [
           {
             "name": "encodedRawMetadata",
+            "description": "Base64 encoding of the XML metadata",
             "in": "formData",
-            "type": "string",
             "required": true,
-            "description": "Base64 encoding of the XML metadata"
+            "type": "string"
           },
           {
             "name": "defaultRedirectUrl",
+            "description": "The redirect URL to use in the IdP login flow",
             "in": "formData",
-            "type": "string",
             "required": true,
-            "description": "The redirect URL to use in the IdP login flow"
+            "type": "string"
           },
           {
             "name": "redirectUrl",
+            "description": "JSON encoded array containing a list of allowed redirect URLs",
             "in": "formData",
-            "type": "string",
             "required": true,
-            "description": "JSON encoded array containing a list of allowed redirect URLs"
+            "type": "string"
           },
           {
             "name": "tenant",
+            "description": "Tenant",
             "in": "formData",
-            "type": "string",
             "required": true,
-            "description": "Tenant"
+            "type": "string"
           },
           {
             "name": "product",
+            "description": "Product",
             "in": "formData",
-            "type": "string",
             "required": true,
-            "description": "Product"
+            "type": "string"
           }
         ],
         "responses": {
@@ -186,14 +186,12 @@
             "name": "tenant",
             "in": "formData",
             "type": "string",
-            "required": true,
             "description": "Tenant"
           },
           {
             "name": "product",
             "in": "formData",
             "type": "string",
-            "required": true,
             "description": "Product"
           }
         ],
@@ -318,5 +316,9 @@
         }
       }
     }
-  }
+  },
+  "definitions": {},
+  "responses": {},
+  "parameters": {},
+  "tags": []
 }
