@@ -63,7 +63,7 @@ function Layout({ children }: { children: ReactNode }) {
       </Head>
       <header
         role='banner'
-        className='p-5 md:px-12 relative border-b border-gray-900/10 dark:border-gray-300/10'>
+        className='p-5 md:px-12 fixed left-0 right-0 border-b bg-white dark:bg-gray-900 border-gray-900/10 dark:border-gray-300/10 z-10'>
         <Link href='/'>
           <a title='Go to dashboard' className='leading-10 font-bold flex items-center ml-10 md:ml-0'>
             <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} />
@@ -72,7 +72,7 @@ function Layout({ children }: { children: ReactNode }) {
         </Link>
         {isSideNavOpen && (
           <div
-            className='fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-gray-900/80 md:hidden z-10'
+            className='fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-gray-900/80 md:hidden'
             id='headlessui-dialog-overlay-14'
             aria-hidden='true'></div>
         )}
@@ -88,7 +88,7 @@ function Layout({ children }: { children: ReactNode }) {
           <ul
             className={`fixed top-0 bottom-0 left-0 w-60 p-6 border-r border-gray-900/10 dark:border-gray-300/10 transition-transform ${
               isSideNavOpen ? 'translate-x-0' : '-translate-x-full'
-            } md:translate-x-0 md:top-20 md:translate-y-[2px] bg-white dark:bg-gray-900 z-10`}
+            } md:translate-x-0 md:top-20 md:translate-y-[2px] bg-white dark:bg-gray-900`}
             id='menu'
             ref={ref}>
             {navigation.map(({ path, text, icon }, index) => (
@@ -104,7 +104,7 @@ function Layout({ children }: { children: ReactNode }) {
           </ul>
         </nav>
       </header>
-      <main role='main' className='relative md:left-60 md:w-[calc(100%_-_theme(space.60))] p-6'>
+      <main role='main' className='relative top-[81px] md:left-60 md:w-[calc(100%_-_theme(space.60))] p-6'>
         {children}
       </main>
       {/* <footer role="contentinfo">
