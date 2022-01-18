@@ -46,6 +46,19 @@ const settingsFields = [
     required: true,
     type: 'textarea',
     placeholder: 'Paste the raw XML here',
+    enabledInEditMode: false,
+  },
+];
+
+const editModeFields = [
+  { id: 'clientID', label: 'ClientID', readOnly: true, type: 'text' },
+  { id: 'clientSecret', label: 'Client Secret', readOnly: true, type: 'password' },
+  {
+    id: 'idpMetadata',
+    label: 'IDP Metadata',
+    readonly: true,
+    type: 'textarea',
+    transform: (val) => JSON.stringify(val),
   },
 ];
 
@@ -66,6 +79,8 @@ type AddEditProps = {
 
 const AddEdit = ({ client }: AddEditProps) => {
   const router = useRouter();
+  const editMode = !!client;
+
   const saveIdPConfig = async (event) => {
     event.preventDefault();
     const { rawMetadata, redirectUrl, ...rest } = formObj;
@@ -234,6 +249,35 @@ const AddEdit = ({ client }: AddEditProps) => {
                 )}
               </div>
             ))}
+            {editMode &&
+              editModeFields.map(({ id, label, type, transform }) => (
+                <div className='mb-6' key={id}>
+                  <label
+                    htmlFor={id}
+                    className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
+                    {label}
+                  </label>
+                  {type === 'textarea' ? (
+                    <textarea
+                      id={id}
+                      value={typeof transform === 'function' ? transform(client[id]) : client[id]}
+                      readOnly={true}
+                      onChange={handleChange}
+                      className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      rows={3}
+                    />
+                  ) : (
+                    <input
+                      id={id}
+                      type={type}
+                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      value={typeof transform === 'function' ? transform(client[id]) : client[id]}
+                      readOnly
+                      onChange={handleChange}
+                    />
+                  )}
+                </div>
+              ))}
             <div className='flex justify-between'>
               <button
                 type='submit'
