@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import { IdPConfig, IAPIController, OAuth, Storable } from '../typings';
 import * as dbutils from '../db/utils';
 import saml from '../saml/saml';
 import x509 from '../saml/x509';
+import { IAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 
@@ -37,6 +37,33 @@ export class APIController implements IAPIController {
     }
   }
 
+  /**
+   * @swagger
+   *
+   * /api/v1/saml/config:
+   *   post:
+   *     description: Create SAML configuration
+   *     operationId: create-saml-config
+   *     tags: [SAML Config]
+   *     produces:
+   *       - application/json
+   *     consumes:
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - name: encodedRawMetadata
+   *         description: Base64 encoding of the XML metadata
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: defaultRedirectUrl
+   *         description: The redirect URL to use in the IdP login flow
+   *         in: formData
+   *         required: true
+   *         type: string
+   *     responses:
+   *       200:
+   *         description: Success
+   */
   public async config(body: IdPConfig): Promise<OAuth> {
     const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
 

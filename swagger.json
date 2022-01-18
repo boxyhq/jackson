@@ -1,0 +1,53 @@
+{
+  "info": {
+    "title": "Hello World",
+    "version": "1.0.0",
+    "description": "A sample API"
+  },
+  "host": "www.example.com",
+  "basePath": "/",
+  "swagger": "2.0",
+  "paths": {
+    "/api/v1/saml/config": {
+      "post": {
+        "description": "Create SAML configuration",
+        "operationId": "create-saml-config",
+        "tags": [
+          "SAML Config"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "encodedRawMetadata",
+            "description": "Base64 encoding of the XML metadata",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "defaultRedirectUrl",
+            "description": "The redirect URL to use in the IdP login flow",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {},
+  "responses": {},
+  "parameters": {},
+  "securityDefinitions": {},
+  "tags": []
+}
