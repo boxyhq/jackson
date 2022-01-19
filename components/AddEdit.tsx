@@ -7,13 +7,21 @@ import { useRouter } from 'next/router';
 import { mutate } from 'swr';
 
 const basicFields = [
-  { id: 'name', label: 'Name', required: true, type: 'text', placeholder: 'MyApp' },
+  {
+    id: 'name',
+    label: 'Name',
+    required: true,
+    type: 'text',
+    placeholder: 'MyApp',
+    editModeAttrs: { readOnly: true },
+  },
   {
     id: 'tenant',
     label: 'Tenant',
     required: true,
     type: 'text',
     placeholder: 'acme.com',
+    editModeAttrs: { readOnly: true },
   },
   {
     id: 'product',
@@ -21,17 +29,19 @@ const basicFields = [
     required: true,
     type: 'text',
     placeholder: 'demo',
+    editModeAttrs: { readOnly: true },
   },
 ];
 
 const settingsFields = [
   {
     id: 'redirectUrl',
-    label: 'Allowed redirect URLs (,Comma separated)',
+    label: 'Allowed redirect URLs (newline separated)',
     required: true,
     type: 'textarea',
     placeholder: 'http://localhost:3000',
     isArray: true,
+    editModeAttrs: {},
   },
   {
     id: 'defaultRedirectUrl',
@@ -39,6 +49,7 @@ const settingsFields = [
     required: true,
     type: 'url',
     placeholder: 'http://localhost:3000/login/saml',
+    editModeAttrs: {},
   },
   {
     id: 'rawMetadata',
@@ -46,13 +57,19 @@ const settingsFields = [
     required: true,
     type: 'textarea',
     placeholder: 'Paste the raw XML here',
-    enabledInEditMode: false,
+    editModeAttrs: { hidden: true },
   },
 ];
 
 const editModeFields = [
-  { id: 'clientID', label: 'ClientID', readOnly: true, type: 'text' },
-  { id: 'clientSecret', label: 'Client Secret', readOnly: true, type: 'password' },
+  { id: 'clientID', label: 'ClientID', readOnly: true, type: 'text', editModeAttrs: { readOnly: true } },
+  {
+    id: 'clientSecret',
+    label: 'Client Secret',
+    readOnly: true,
+    type: 'password',
+    editModeAttrs: { readOnly: true },
+  },
   {
     id: 'idpMetadata',
     label: 'IDP Metadata',
@@ -65,10 +82,10 @@ const editModeFields = [
 function getInitialState(client) {
   const _state: IdPConfig = {} as IdPConfig;
   basicFields.forEach(({ id, isArray = false }: { isArray?: boolean } & typeof basicFields[number]) => {
-    _state[id] = client?.[id] ? (isArray ? client[id].join() : client[id]) : '';
+    _state[id] = client?.[id] ? (isArray ? client[id].join('\r\n') : client[id]) : '';
   });
-  settingsFields.forEach(({ id, isArray = false }: { isArray?: boolean } & typeof basicFields[number]) => {
-    _state[id] = client?.[id] ? (isArray ? client[id].join() : client[id]) : '';
+  settingsFields.forEach(({ id, isArray = false }: { isArray?: boolean } & typeof settingsFields[number]) => {
+    _state[id] = client?.[id] ? (isArray ? client[id].join('\r\n') : client[id]) : '';
   });
   return _state;
 }
@@ -80,15 +97,15 @@ type AddEditProps = {
 const AddEdit = ({ client }: AddEditProps) => {
   const router = useRouter();
   const editMode = !!client;
-  const fieldFilter = ({ enabledInEditMode = true }) => (editMode ? enabledInEditMode : true);
+  // const fieldFilter = ({ enabledInEditMode = true }) => (editMode ? enabledInEditMode : true);
 
   const saveIdPConfig = async (event) => {
     event.preventDefault();
     const { rawMetadata, redirectUrl, ...rest } = formObj;
     const encodedRawMetadata = btoa(rawMetadata || '');
-    const redirectUrlList = redirectUrl.split(',');
+    const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-    await fetch('/api/admin/providers', {
+    const res = await fetch('/api/admin/providers', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,6 +113,9 @@ const AddEdit = ({ client }: AddEditProps) => {
       },
       body: JSON.stringify({ ...rest, encodedRawMetadata, redirectUrl: JSON.stringify(redirectUrlList) }),
     });
+    if (res.ok) {
+      router.replace('/admin/saml');
+    }
   };
 
   const [delModalVisible, setDelModalVisible] = useState(false);
@@ -176,7 +196,7 @@ const AddEdit = ({ client }: AddEditProps) => {
             role='tabpanel'
             id='basic-info'
             aria-labelledby='basic-info-tab'>
-            {basicFields.map(({ id, placeholder, label, type, required }) => (
+            {basicFields.map(({ id, placeholder, label, type, required, editModeAttrs }) => (
               <div className='mb-6 ' key={id}>
                 <label
                   htmlFor={id}
@@ -189,6 +209,7 @@ const AddEdit = ({ client }: AddEditProps) => {
                     placeholder={placeholder}
                     value={formObj[id]}
                     required={required}
+                    readOnly={editMode && editModeAttrs?.readOnly}
                     onChange={handleChange}
                     className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     rows={3}
@@ -199,6 +220,7 @@ const AddEdit = ({ client }: AddEditProps) => {
                     type={type}
                     placeholder={placeholder}
                     value={formObj[id]}
+                    readOnly={editMode && editModeAttrs?.readOnly}
                     onChange={handleChange}
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     required={required}
@@ -220,38 +242,42 @@ const AddEdit = ({ client }: AddEditProps) => {
             className={`${
               activeTab === 1 ? '' : 'hidden '
             }bg-gradient-to-r bg-white border border-gray-200 code-preview dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg`}>
-            {settingsFields.filter(fieldFilter).map(({ id, placeholder, label, type, required }) => (
-              <div className='mb-6 ' key={id}>
-                <label
-                  htmlFor={id}
-                  className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
-                  {label}
-                </label>
-                {type === 'textarea' ? (
-                  <textarea
-                    id={id}
-                    placeholder={placeholder}
-                    className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    rows={3}
-                    value={formObj[id]}
-                    required={required}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <input
-                    id={id}
-                    type={type}
-                    placeholder={placeholder}
-                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    required={required}
-                    value={formObj[id]}
-                    onChange={handleChange}
-                  />
-                )}
-              </div>
-            ))}
+            {settingsFields
+              .filter(({ editModeAttrs: { hidden } }) => (editMode ? !hidden : true))
+              .map(({ id, placeholder, label, type, required, isArray }) => (
+                <div className='mb-6 ' key={id}>
+                  <label
+                    htmlFor={id}
+                    className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
+                    {label}
+                  </label>
+                  {type === 'textarea' ? (
+                    <textarea
+                      id={id}
+                      placeholder={placeholder}
+                      className={`block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
+                        isArray ? 'whitespace-pre' : ''
+                      }`}
+                      rows={3}
+                      value={formObj[id]}
+                      required={required}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <input
+                      id={id}
+                      type={type}
+                      placeholder={placeholder}
+                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      required={required}
+                      value={formObj[id]}
+                      onChange={handleChange}
+                    />
+                  )}
+                </div>
+              ))}
             {editMode &&
-              editModeFields.map(({ id, label, type, transform }) => (
+              editModeFields.map(({ id, label, type, transform, editModeAttrs }) => (
                 <div className='mb-6' key={id}>
                   <label
                     htmlFor={id}
@@ -262,8 +288,8 @@ const AddEdit = ({ client }: AddEditProps) => {
                     <textarea
                       id={id}
                       value={typeof transform === 'function' ? transform(client[id]) : client[id]}
-                      readOnly={true}
                       onChange={handleChange}
+                      readOnly={editMode && editModeAttrs?.readOnly}
                       className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                       rows={3}
                     />
@@ -273,7 +299,7 @@ const AddEdit = ({ client }: AddEditProps) => {
                       type={type}
                       className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                       value={typeof transform === 'function' ? transform(client[id]) : client[id]}
-                      readOnly
+                      readOnly={editMode && editModeAttrs?.readOnly}
                       onChange={handleChange}
                     />
                   )}
