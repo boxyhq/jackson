@@ -22,7 +22,8 @@
     "pre-loaded-db": "cross-env JACKSON_API_KEYS=secret PRE_LOADED_CONFIG='./_config' npm run dev",
     "sort": "npx sort-package-json",
     "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/jackson npm run dev",
-    "start": "next start -p 5000"
+    "start": "next start -p 5000",
+    "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg"
   },
   "husky": {
     "hooks": {
@@ -41,6 +42,7 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
+    "@apidevtools/swagger-cli": "4.0.4",
     "@types/cors": "2.8.12",
     "@types/node": "17.0.9",
     "@types/react": "17.0.38",
@@ -53,6 +55,7 @@
     "husky": "7.0.4",
     "lint-staged": "12.1.7",
     "prettier": "2.5.1",
+    "swagger-jsdoc": "6.1.0",
     "typescript": "4.5.4"
   },
   "engines": {

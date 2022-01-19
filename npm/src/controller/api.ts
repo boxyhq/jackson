@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import { IdPConfig, IAPIController, OAuth, Storable } from '../typings';
 import * as dbutils from '../db/utils';
 import saml from '../saml/saml';
 import x509 from '../saml/x509';
+import { IAPIController, IdPConfig, OAuth, Storable } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 
@@ -37,6 +37,63 @@ export class APIController implements IAPIController {
     }
   }
 
+  /**
+   * @swagger
+   *
+   * /api/v1/saml/config:
+   *   post:
+   *     description: Create SAML configuration
+   *     operationId: create-saml-config
+   *     tags: [SAML Config]
+   *     produces:
+   *       - application/json
+   *     consumes:
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - name: encodedRawMetadata
+   *         description: Base64 encoding of the XML metadata
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: defaultRedirectUrl
+   *         description: The redirect URL to use in the IdP login flow
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: redirectUrl
+   *         description: JSON encoded array containing a list of allowed redirect URLs
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: tenant
+   *         description: Tenant
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: product
+   *         description: Product
+   *         in: formData
+   *         required: true
+   *         type: string
+   *     responses:
+   *       200:
+   *         description: Success
+   *         schema:
+   *           type: object
+   *           properties:
+   *             client_id:
+   *               type: string
+   *             client_secret:
+   *               type: string
+   *             provider:
+   *               type: string
+   *           example:
+   *             client_id: 8958e13053832b5af58fdf2ee83f35f5d013dc74
+   *             client_secret: 13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7
+   *             type: accounts.google.com
+   *       401:
+   *         description: Unauthorized
+   */
   public async config(body: IdPConfig): Promise<OAuth> {
     const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
 
@@ -106,6 +163,41 @@ export class APIController implements IAPIController {
     };
   }
 
+  /**
+   * @swagger
+   *
+   * /api/v1/saml/config:
+   *   get:
+   *     summary: Get SAML configuration
+   *     operationId: get-saml-config
+   *     tags:
+   *       - SAML Config
+   *     parameters:
+   *       - in: query
+   *         name: tenant
+   *         type: string
+   *         description: Tenant
+   *       - in: query
+   *         name: product
+   *         type: string
+   *         description: Product
+   *       - in: query
+   *         name: clientID
+   *         type: string
+   *         description: Client ID
+   *     responses:
+   *       '200':
+   *         description: Success
+   *         schema:
+   *           type: object
+   *           properties:
+   *             provider:
+   *               type: string
+   *           example:
+   *             type: accounts.google.com
+   *       '401':
+   *         description: Unauthorized
+   */
   public async getConfig(body: {
     clientID: string;
     tenant: string;
@@ -135,6 +227,41 @@ export class APIController implements IAPIController {
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
   }
 
+  /**
+   * @swagger
+   * /api/v1/saml/config:
+   *   delete:
+   *     summary: Delete SAML configuration
+   *     operationId: delete-saml-config
+   *     tags:
+   *       - SAML Config
+   *     consumes:
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - name: clientID
+   *         in: formData
+   *         type: string
+   *         required: true
+   *         description: Client ID
+   *       - name: clientSecret
+   *         in: formData
+   *         type: string
+   *         required: true
+   *         description: Client Secret
+   *       - name: tenant
+   *         in: formData
+   *         type: string
+   *         description: Tenant
+   *       - name: product
+   *         in: formData
+   *         type: string
+   *         description: Product
+   *     responses:
+   *       '200':
+   *         description: Success
+   *       '401':
+   *         description: Unauthorized
+   */
   public async deleteConfig(body: {
     clientID: string;
     clientSecret: string;

@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import * as dbutils from '../db/utils';
+import saml from '../saml/saml';
 import {
   IOAuthController,
   JacksonOption,
@@ -9,8 +11,6 @@ import {
   SAMLResponsePayload,
   Storable,
 } from '../typings';
-import * as dbutils from '../db/utils';
-import saml from '../saml/saml';
 import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
@@ -234,6 +234,61 @@ export class OAuthController implements IOAuthController {
     return { redirect_url: redirectUrl };
   }
 
+  /**
+   * @swagger
+   *
+   * /oauth/token:
+   *   post:
+   *     summary: Code exchange
+   *     operationId: oauth-code-exchange
+   *     tags:
+   *       - OAuth
+   *     consumes:
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - name: grant_type
+   *         in: formData
+   *         type: string
+   *         description: Grant type should be 'authorization_code'
+   *         default: authorization_code
+   *         required: true
+   *       - name: client_id
+   *         in: formData
+   *         type: string
+   *         description: Use the client_id returned by the SAML config API
+   *         required: true
+   *       - name: client_secret
+   *         in: formData
+   *         type: string
+   *         description: Use the client_secret returned by the SAML config API
+   *         required: true
+   *       - name: redirect_uri
+   *         in: formData
+   *         type: string
+   *         description: Redirect URI
+   *         required: true
+   *       - name: code
+   *         in: formData
+   *         type: string
+   *         description: Code
+   *         required: true
+   *     responses:
+   *       '200':
+   *         description: Success
+   *         schema:
+   *           type: object
+   *           properties:
+   *             access_token:
+   *               type: string
+   *             token_type:
+   *               type: string
+   *             expires_in:
+   *               type: string
+   *           example:
+   *             access_token: 8958e13053832b5af58fdf2ee83f35f5d013dc74
+   *             token_type: bearer
+   *             expires_in: 300
+   */
   public async token(body: OAuthTokenReq): Promise<OAuthTokenRes> {
     const { client_id, client_secret, code_verifier, code, grant_type = 'authorization_code' } = body;
 
@@ -287,6 +342,35 @@ export class OAuthController implements IOAuthController {
     };
   }
 
+  /**
+   * @swagger
+   *
+   * /oauth/userinfo:
+   *   get:
+   *     summary: Get profile
+   *     operationId: oauth-get-profile
+   *     tags:
+   *       - OAuth
+   *     responses:
+   *       '200':
+   *         description: Success
+   *         schema:
+   *           type: object
+   *           properties:
+   *             id:
+   *               type: string
+   *             email:
+   *               type: string
+   *             firstName:
+   *               type: string
+   *             lastName:
+   *               type: string
+   *           example:
+   *             id: 32b5af58fdf
+   *             email: jackson@coolstartup.com
+   *             firstName: SAML
+   *             lastName: Jackson
+   */
   public async userInfo(token: string): Promise<Profile> {
     const { claims } = await this.tokenStore.get(token);
 
