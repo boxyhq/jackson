@@ -80,6 +80,7 @@ type AddEditProps = {
 const AddEdit = ({ client }: AddEditProps) => {
   const router = useRouter();
   const editMode = !!client;
+  const fieldFilter = ({ enabledInEditMode = true }) => (editMode ? enabledInEditMode : true);
 
   const saveIdPConfig = async (event) => {
     event.preventDefault();
@@ -219,7 +220,7 @@ const AddEdit = ({ client }: AddEditProps) => {
             className={`${
               activeTab === 1 ? '' : 'hidden '
             }bg-gradient-to-r bg-white border border-gray-200 code-preview dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg`}>
-            {settingsFields.map(({ id, placeholder, label, type, required }) => (
+            {settingsFields.filter(fieldFilter).map(({ id, placeholder, label, type, required }) => (
               <div className='mb-6 ' key={id}>
                 <label
                   htmlFor={id}
