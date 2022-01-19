@@ -9,7 +9,7 @@ module.exports = {
     contact: {
       name: 'Boxy HQ',
       url: 'https://boxyhq.com/',
-      email: 'deepak@boxyhq.com',
+      email: 'support@boxyhq.com',
     },
     license: {
       name: 'Apache-2.0 License',

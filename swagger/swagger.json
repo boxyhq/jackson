@@ -1,13 +1,13 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "0.3.4",
+    "version": "0.3.5",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
       "name": "Boxy HQ",
       "url": "https://boxyhq.com/",
-      "email": "deepak@boxyhq.com"
+      "email": "support@boxyhq.com"
     },
     "license": {
       "name": "Apache-2.0 License",
@@ -36,7 +36,7 @@
   "paths": {
     "/api/v1/saml/config": {
       "post": {
-        "description": "Create SAML configuration",
+        "summary": "Create SAML configuration",
         "operationId": "create-saml-config",
         "tags": [
           "SAML Config"
@@ -60,28 +60,32 @@
             "description": "The redirect URL to use in the IdP login flow",
             "in": "formData",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "example": "http://localhost:3000/login/saml"
           },
           {
             "name": "redirectUrl",
             "description": "JSON encoded array containing a list of allowed redirect URLs",
             "in": "formData",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "example": "[\"http://localhost:3000/*\"]"
           },
           {
             "name": "tenant",
             "description": "Tenant",
             "in": "formData",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "example": "boxyhq.com"
           },
           {
             "name": "product",
             "description": "Product",
             "in": "formData",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "example": "demo"
           }
         ],
         "responses": {
@@ -123,13 +127,15 @@
             "in": "query",
             "name": "tenant",
             "type": "string",
-            "description": "Tenant"
+            "description": "Tenant",
+            "example": "boxyhq.com"
           },
           {
             "in": "query",
             "name": "product",
             "type": "string",
-            "description": "Product"
+            "description": "Product",
+            "example": "demo"
           },
           {
             "in": "query",
@@ -186,13 +192,15 @@
             "name": "tenant",
             "in": "formData",
             "type": "string",
-            "description": "Tenant"
+            "description": "Tenant",
+            "example": "boxyhq.com"
           },
           {
             "name": "product",
             "in": "formData",
             "type": "string",
-            "description": "Product"
+            "description": "Product",
+            "example": "demo"
           }
         ],
         "responses": {
