@@ -1,1 +1,1 @@
-web: export DB_URL=$POSTGRES_URL?sslmode=require JACKSON_API_KEYS=$JACKSON_API_KEYS DB_SSL_REJECT_UNAUTHORIZED=false && ./node_modules/.bin/next start -p $PORT
+web: export DB_URL=$POSTGRES_URL JACKSON_API_KEYS=$JACKSON_API_KEYS DB_SSL_REJECT_UNAUTHORIZED=false && ./node_modules/.bin/next start -p $PORT
