@@ -3,6 +3,7 @@ export type IdPConfig = {
   redirectUrl: string;
   tenant: string;
   product: string;
+  name: string;
   rawMetadata?: string;
   encodedRawMetadata?: string;
 };

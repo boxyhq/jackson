@@ -14,7 +14,7 @@ export class APIController implements IAPIController {
   }
 
   private _validateIdPConfig(body: IdPConfig): void {
-    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
+    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product, name } = body;
 
     if (!rawMetadata && !encodedRawMetadata) {
       throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
@@ -35,10 +35,14 @@ export class APIController implements IAPIController {
     if (!product) {
       throw new JacksonError('Please provide product', 400);
     }
+
+    if (!name) {
+      throw new JacksonError('Please provide a friendly name', 400);
+    }
   }
 
   public async config(body: IdPConfig): Promise<OAuth> {
-    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
+    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product, name } = body;
 
     this._validateIdPConfig(body);
 
@@ -83,6 +87,7 @@ export class APIController implements IAPIController {
         redirectUrl: JSON.parse(redirectUrl), // redirectUrl is a stringified array
         tenant,
         product,
+        name,
         clientID,
         clientSecret,
         certs,
