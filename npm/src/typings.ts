@@ -106,6 +106,7 @@ export interface DatabaseOption {
   ttl?: number;
   cleanupLimit?: number;
   encryptionKey?: string;
+  sslRejectUnauthorized?: boolean;
 }
 
 export interface SAMLReq {

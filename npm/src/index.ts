@@ -27,7 +27,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.db.type = newOpts.db.type || 'postgres'; // Only needed if DB_ENGINE is sql.
   newOpts.db.ttl = (newOpts.db.ttl || 300) * 1; // TTL for the code, session and token stores (in seconds)
   newOpts.db.cleanupLimit = (newOpts.db.cleanupLimit || 1000) * 1; // Limit cleanup of TTL entries to this many items at a time
-
+  newOpts.db.sslRejectUnauthorized = newOpts.db.sslRejectUnauthorized || true;
   return newOpts;
 };
 

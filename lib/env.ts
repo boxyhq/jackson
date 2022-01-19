@@ -17,6 +17,7 @@ const db = {
   type: process.env.DB_TYPE ? <DatabaseType>process.env.DB_TYPE : undefined,
   ttl: process.env.DB_TTL ? Number(process.env.DB_TTL) : undefined,
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
+  sslRejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'false' ? false : true,
 };
 
 export default {
