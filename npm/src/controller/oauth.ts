@@ -16,6 +16,10 @@ import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { IndexNames } from './utils';
+import { promisify } from 'util';
+import { deflateRaw } from 'zlib';
+
+const deflateRawAsync = promisify(deflateRaw);
 
 const relayStatePrefix = 'boxyhq_jackson_';
 
@@ -135,9 +139,12 @@ export class OAuthController implements IOAuthController {
       code_challenge_method,
     });
 
+    // deepak: When supporting HTTP-POST skip deflate
+    const samlReqEnc = await deflateRawAsync(samlReq.request);
+
     const redirectUrl = redirect.success(samlConfig.idpMetadata.sso.redirectUrl, {
       RelayState: relayStatePrefix + sessionId,
-      SAMLRequest: Buffer.from(samlReq.request).toString('base64'),
+      SAMLRequest: Buffer.from(samlReqEnc).toString('base64'),
     });
 
     return { redirect_url: redirectUrl };
@@ -372,8 +379,12 @@ export class OAuthController implements IOAuthController {
    *             lastName: Jackson
    */
   public async userInfo(token: string): Promise<Profile> {
-    const { claims } = await this.tokenStore.get(token);
+    const rsp = await this.tokenStore.get(token);
 
-    return claims;
+    if (!rsp || !rsp.claims) {
+      throw new JacksonError('Invalid token', 403);
+    }
+
+    return rsp.claims;
   }
 }
