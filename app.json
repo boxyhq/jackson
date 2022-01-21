@@ -15,6 +15,10 @@
       "description": "API Key for validating REST calls",
       "generator": "secret",
       "required": true
+    },
+    "PGSSLMODE": {
+      "description": "https://devcenter.heroku.com/articles/connecting-heroku-postgres#connecting-in-node-js",
+      "value": "no-verify"
     }
   }
 }
