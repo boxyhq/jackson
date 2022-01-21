@@ -26,9 +26,6 @@ class Sql implements DatabaseDriver {
   async init(): Promise<Sql> {
     while (true) {
       try {
-        // to support self signed cert like heroku postgres
-        // const sslOpts =
-        //   this.options.sslRejectUnauthorized === false ? { ssl: { rejectUnauthorized: false } } : undefined;
         this.connection = await createConnection({
           name: this.options.type! + Math.floor(Math.random() * 100000),
           type: this.options.type!,
@@ -37,7 +34,6 @@ class Sql implements DatabaseDriver {
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
-          // ...sslOpts,
         });
 
         break;
