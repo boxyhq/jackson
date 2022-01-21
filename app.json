@@ -4,12 +4,7 @@
   "repository": "https://github.com/boxyhq/jackson",
   "logo": "https://boxyhq.com/img/logo.png",
   "keywords": ["saml", "saml2", "saml-service-provider"],
-  "addons": [
-    {
-      "plan": "heroku-postgresql:hobby-dev",
-      "as": "POSTGRES"
-    }
-  ],
+  "addons": ["heroku-postgresql"],
   "env": {
     "JACKSON_API_KEYS": {
       "description": "API Key for validating REST calls",
