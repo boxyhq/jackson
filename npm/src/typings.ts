@@ -4,6 +4,7 @@ export type IdPConfig = {
   tenant: string;
   product: string;
   name: string;
+  description: string;
   rawMetadata?: string;
   encodedRawMetadata?: string;
 };

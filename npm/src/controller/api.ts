@@ -42,7 +42,16 @@ export class APIController implements IAPIController {
   }
 
   public async config(body: IdPConfig): Promise<OAuth> {
-    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product, name } = body;
+    const {
+      encodedRawMetadata,
+      rawMetadata,
+      defaultRedirectUrl,
+      redirectUrl,
+      tenant,
+      product,
+      name,
+      description,
+    } = body;
 
     this._validateIdPConfig(body);
 
@@ -88,6 +97,7 @@ export class APIController implements IAPIController {
         tenant,
         product,
         name,
+        description,
         clientID,
         clientSecret,
         certs,
