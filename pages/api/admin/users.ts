@@ -6,61 +6,29 @@ export type User = {
   emailVerified: Date;
 };
 
-const users: User[] = [
-  {
-    id: '1',
-    name: 'Deepak',
-    email: 'deepak@boxyhq.com',
-    role: 'owner',
-    emailVerified: new Date(),
-  },
-
-  {
-    id: '2',
-    name: 'Aswin',
-    email: 'aswin@boxyhq.com',
-    role: 'admin',
-    emailVerified: new Date(),
-  },
-
-  {
-    id: '3',
-    name: 'Kiran',
-    email: 'kiran@boxyhq.com',
-    role: 'staff',
-    emailVerified: new Date(),
-  },
-];
-
+const emailVerified = new Date();
 export class UserProvider {
-  private users: User[];
-
-  constructor() {
-    this.users = users;
-  }
-
   async getUserByEmail(email: string): Promise<User | null> {
-    const users = this.users.filter((user) => {
-      return user.email === email;
-    });
+    const acl = process.env.NEXTAUTH_ACL?.split(',');
 
-    if (users.length > 0) {
-      return users[0];
+    if (acl) {
+      for (let i = 0; i < acl?.length; i++) {
+        if (email.endsWith(acl[i])) {
+          return {
+            id: email,
+            name: email.replace(acl[i], ''),
+            email,
+            role: 'admin',
+            emailVerified,
+          };
+        }
+      }
     }
-
     return null;
   }
 
   async getUserById(id: string): Promise<User | null> {
-    const users = this.users.filter((user) => {
-      return user.id === id;
-    });
-
-    if (users.length > 0) {
-      return users[0];
-    }
-
-    return null;
+    return this.getUserByEmail(id);
   }
 
   async isAllowedToSignIn(email: string): Promise<boolean> {
