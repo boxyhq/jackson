@@ -30,10 +30,10 @@ const OAuthClient: NextPage = () => {
   return (
     <div>
       <div className='flex items-center justify-between'>
-        <h2 className='text-2xl text-slate-900 dark:text-white font-bold'>SAML Clients</h2>
+        <h2 className='text-2xl text-slate-900 dark:text-white font-bold'>SAML Connections</h2>
         <Link href={'/admin/saml/new'}>
           <a className='bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded leading-6'>
-            <span className='inline-block mr-2'>+</span> Configure Client
+            <span className='inline-block mr-2'>+</span> Configure Connection
           </a>
         </Link>
       </div>
