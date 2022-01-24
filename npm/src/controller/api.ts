@@ -121,17 +121,78 @@ export class APIController implements IAPIController {
     };
   }
 
-  public async getConfig(body: {
-    clientID: string;
-    tenant: string;
-    product: string;
-  }): Promise<Partial<OAuth>> {
+  public async updateConfig(body): Promise<void> {
+    const {
+      encodedRawMetadata, // could be omitted
+      rawMetadata, // could be omitted
+      defaultRedirectUrl,
+      redirectUrl,
+      name,
+      description,
+      ...clientInfo
+    } = body;
+    if (!clientInfo?.clientID) {
+      throw new JacksonError('Please provide clientID', 400);
+    }
+    let metaData = rawMetadata;
+    if (encodedRawMetadata) {
+      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
+    }
+    let newMetadata;
+    if (metaData) {
+      newMetadata = await saml.parseMetadataAsync(metaData);
+
+      // extract provider
+      let providerName = extractHostName(newMetadata.entityID);
+      if (!providerName) {
+        providerName = extractHostName(newMetadata.sso.redirectUrl || newMetadata.sso.postUrl);
+      }
+
+      newMetadata.provider = providerName ? providerName : 'Unknown';
+    }
+
+    if (newMetadata) {
+      // check if clientID matches with new metadata payload
+      const clientID = dbutils.keyDigest(
+        dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, newMetadata.entityID)
+      );
+
+      if (clientID !== clientInfo?.clientID) {
+        throw new JacksonError('Tenant/Product config mismatch with IdP metadata');
+      }
+    }
+    const _currentConfig = (await this.getConfig(clientInfo))?.config;
+
+    await this.configStore.put(
+      clientInfo?.clientID,
+      {
+        ..._currentConfig,
+        name: name ? name : _currentConfig.name,
+        description: description ? description : _currentConfig.description,
+        idpMetadata: newMetadata ? newMetadata : _currentConfig.idpMetadata,
+        defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
+        redirectUrl: redirectUrl ? JSON.parse(redirectUrl) : _currentConfig.redirectUrl,
+      },
+      {
+        // secondary index on entityID
+        name: IndexNames.EntityID,
+        value: _currentConfig.idpMetadata.entityID,
+      },
+      {
+        // secondary index on tenant + product
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product),
+      }
+    );
+  }
+
+  public async getConfig(body: { clientID: string; tenant: string; product: string }): Promise<any> {
     const { clientID, tenant, product } = body;
 
     if (clientID) {
       const samlConfig = await this.configStore.get(clientID);
 
-      return samlConfig ? { provider: samlConfig.idpMetadata.provider } : {};
+      return samlConfig ? { provider: samlConfig.idpMetadata.provider, config: samlConfig } : {};
     }
 
     if (tenant && product) {
@@ -144,7 +205,7 @@ export class APIController implements IAPIController {
         return {};
       }
 
-      return { provider: samlConfigs[0].idpMetadata.provider };
+      return { provider: samlConfigs[0].idpMetadata.provider, config: samlConfigs[0] };
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);

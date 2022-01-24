@@ -17,7 +17,8 @@ export interface OAuth {
 
 export interface IAPIController {
   config(body: IdPConfig): Promise<OAuth>;
-  getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<Partial<OAuth>>;
+  updateConfig(body: any): Promise<void>;
+  getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
     clientID?: string;
     clientSecret?: string;
