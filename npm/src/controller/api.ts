@@ -192,7 +192,7 @@ export class APIController implements IAPIController {
     if (clientID) {
       const samlConfig = await this.configStore.get(clientID);
 
-      return samlConfig ? { provider: samlConfig.idpMetadata.provider, config: samlConfig } : {};
+      return samlConfig ? { config: samlConfig } : {};
     }
 
     if (tenant && product) {
@@ -205,7 +205,7 @@ export class APIController implements IAPIController {
         return {};
       }
 
-      return { provider: samlConfigs[0].idpMetadata.provider, config: samlConfigs[0] };
+      return { config: samlConfigs[0] };
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
