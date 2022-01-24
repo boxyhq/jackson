@@ -17,7 +17,7 @@ const navigation = [
   },
   {
     path: '/admin/saml',
-    text: <span className='ml-4'>SAML clients</span>,
+    text: <span className='ml-4'>SAML Connections</span>,
     icon: <ShieldCheckIcon className='w-5 h-5' aria-hidden />,
   },
   {
