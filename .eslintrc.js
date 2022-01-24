@@ -16,4 +16,12 @@ module.exports = {
     'prettier',
     'next/core-web-vitals',
   ],
+  overrides: [
+    {
+      files: ['*.js'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+      },
+    },
+  ],
 };
