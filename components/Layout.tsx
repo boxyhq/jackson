@@ -8,6 +8,7 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import ActiveLink from './ActiveLink';
 import useKeyPress from 'hooks/useKeyPress';
 import useMediaQuery from 'hooks/useMediaQuery';
+import { signIn, useSession, signOut } from 'next-auth/react';
 
 const navigation = [
   {
@@ -54,6 +55,15 @@ function Layout({ children }: { children: ReactNode }) {
       _closeSideNav();
     }
   }, [_closeSideNav, _mdBreakpointMatch]);
+
+  // get logged-in status
+  const { data: session, status } = useSession();
+  // redirect to signin if unauthenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      signIn();
+    }
+  }, [status]);
 
   return (
     <>
