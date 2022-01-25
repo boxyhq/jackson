@@ -1,24 +1,15 @@
 import type { NextPage } from 'next';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 const Home: NextPage = () => {
-  const { data: session } = useSession();
+  const router = useRouter();
 
-  if (session) {
-    return (
-      <>
-        Signed in as {session?.user?.email} <br />
-        <button onClick={() => signOut()}>Sign out</button>
-      </>
-    );
-  }
+  useEffect(() => {
+    router.push('/admin');
+  }, [router]);
 
-  return (
-    <>
-      Not signed in <br />
-      <button onClick={() => signIn()}>Sign in</button>
-    </>
-  );
+  return <p>Redirecting...</p>;
 };
 
 export default Home;
