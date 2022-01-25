@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import Logo from '../public/logo.png';
-import { CollectionIcon, MenuIcon, ShieldCheckIcon, UserIcon } from '@heroicons/react/outline';
+import { CollectionIcon, LogoutIcon, MenuIcon, ShieldCheckIcon, UserIcon } from '@heroicons/react/outline';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import ActiveLink from './ActiveLink';
 import useKeyPress from 'hooks/useKeyPress';
@@ -65,6 +65,19 @@ function Layout({ children }: { children: ReactNode }) {
     }
   }, [status]);
 
+  // user settings dropdown state
+  const [isOpen, setIsOpen] = useState(false);
+  const userDropDownRef = useRef(null);
+  useOnClickOutside(userDropDownRef, () => setIsOpen(false));
+
+  if (status === 'loading') {
+    return <p>Loading...</p>;
+  }
+
+  if (status === 'unauthenticated') {
+    return null;
+  }
+
   return (
     <>
       <Head>
@@ -74,12 +87,39 @@ function Layout({ children }: { children: ReactNode }) {
       <header
         role='banner'
         className='p-5 md:px-12 fixed left-0 right-0 border-b bg-white dark:bg-gray-900 border-gray-900/10 dark:border-gray-300/10 z-10'>
-        <Link href='/'>
-          <a title='Go to dashboard' className='leading-10 font-bold flex items-center ml-10 md:ml-0'>
-            <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} />
-            <h1 className='ml-2 text-gray-900 dark:text-white'>Jackson</h1>
-          </a>
-        </Link>
+        <div className='flex justify-between'>
+          <Link href='/'>
+            <a title='Go to dashboard' className='leading-10 font-bold flex items-center ml-10 md:ml-0'>
+              <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} />
+              <h1 className='ml-2 text-gray-900 dark:text-white'>Jackson</h1>
+            </a>
+          </Link>
+          <div className='relative'>
+            <button
+              type='button'
+              className='rounded-full h-8 w-8 flex items-center justify-center bg-indigo-600 text-cyan-50 uppercase'
+              aria-label='user settings'
+              aria-expanded={isOpen}
+              onClick={() => setIsOpen(!isOpen)}>
+              {session?.user?.name?.[0]}
+            </button>
+            {isOpen && (
+              <ul
+                className='absolute z-50 top-full right-0 bg-white rounded-lg ring-1 ring-slate-900/10 shadow-lg overflow-hidden w-36 py-1 text-sm text-slate-700 font-semibold dark:bg-slate-800 dark:ring-0 dark:highlight-white/5 dark:text-slate-300'
+                ref={userDropDownRef}>
+                <li>
+                  <button
+                    type='button'
+                    className='py-1 px-2 h-8 w-full flex justify-center items-center cursor-pointer'
+                    onClick={() => signOut()}>
+                    <LogoutIcon className='w-5 h-5' aria-hidden />
+                    Log out
+                  </button>
+                </li>
+              </ul>
+            )}
+          </div>
+        </div>
         {isSideNavOpen && (
           <div
             className='fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-gray-900/80 md:hidden'
