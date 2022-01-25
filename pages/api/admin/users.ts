@@ -1,3 +1,5 @@
+import * as micromatch from 'micromatch';
+
 export type User = {
   id: string;
   name: string;
@@ -12,16 +14,14 @@ export class UserProvider {
     const acl = process.env.NEXTAUTH_ACL?.split(',');
 
     if (acl) {
-      for (let i = 0; i < acl?.length; i++) {
-        if (email.endsWith(acl[i])) {
-          return {
-            id: email,
-            name: email.replace(acl[i], ''),
-            email,
-            role: 'admin',
-            emailVerified,
-          };
-        }
+      if (micromatch.isMatch(email, acl)) {
+        return {
+          id: email,
+          name: email.split('@')[0],
+          email,
+          role: 'admin',
+          emailVerified,
+        };
       }
     }
     return null;
