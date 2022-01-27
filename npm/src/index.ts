@@ -1,8 +1,8 @@
-import { JacksonOption } from './typings';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import DB from './db/db';
 import readConfig from './read-config';
+import { JacksonOption } from './typings';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {

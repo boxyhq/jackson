@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import * as dbutils from '../db/utils';
+import * as metrics from '../opentelemetry/metrics';
 import saml from '../saml/saml';
 import {
   IOAuthController,
@@ -65,6 +66,8 @@ export class OAuthController implements IOAuthController {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       provider = 'saml',
     } = body;
+
+    metrics.increment('oauthAuthorize');
 
     if (!redirect_uri) {
       throw new JacksonError('Please specify a redirect URL.', 400);
@@ -292,6 +295,8 @@ export class OAuthController implements IOAuthController {
   public async token(body: OAuthTokenReq): Promise<OAuthTokenRes> {
     const { client_id, client_secret, code_verifier, code, grant_type = 'authorization_code' } = body;
 
+    metrics.increment('oauthToken');
+
     if (grant_type !== 'authorization_code') {
       throw new JacksonError('Unsupported grant_type', 400);
     }
@@ -373,6 +378,8 @@ export class OAuthController implements IOAuthController {
    */
   public async userInfo(token: string): Promise<Profile> {
     const { claims } = await this.tokenStore.get(token);
+
+    metrics.increment('oauthUserInfo');
 
     return claims;
   }

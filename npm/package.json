@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@boxyhq/saml20": "0.2.0",
+    "@opentelemetry/api-metrics": "^0.27.0",
     "@peculiar/webcrypto": "1.2.3",
     "@peculiar/x509": "1.6.1",
     "cors": "2.8.5",
