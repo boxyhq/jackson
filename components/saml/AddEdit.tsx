@@ -118,7 +118,8 @@ type AddEditProps = {
 const AddEdit = ({ clientConfig }: AddEditProps) => {
   const router = useRouter();
   const isEditView = !!clientConfig;
-
+  // FORM: SUBMIT
+  const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' }>({ status: 'UNKNOWN' });
   const saveSAMLConnection = async (event) => {
     event.preventDefault();
     const { rawMetadata, redirectUrl, ...rest } = formObj;
@@ -133,8 +134,13 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
       },
       body: JSON.stringify({ ...rest, encodedRawMetadata, redirectUrl: JSON.stringify(redirectUrlList) }),
     });
-    if (res.ok && !isEditView) {
+    if (res.ok) {
+      if (!isEditView) {
       router.replace('/admin/saml');
+      } else {
+        setSaveStatus({ status: 'SUCCESS' });
+        setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
+      }
     }
   };
 
