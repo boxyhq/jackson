@@ -27,4 +27,18 @@ export class JacksonStore {
     nullable: true,
   })
   tag?: string;
+
+  @Column({
+    type: 'timestamptz',
+    default: 'now()',
+    nullable: false,
+  })
+  creationDate?: Date;
+
+  @Column({
+    type: 'timestamptz',
+    nullable: true,
+  })
+  modificationDate?: Date;
+
 }

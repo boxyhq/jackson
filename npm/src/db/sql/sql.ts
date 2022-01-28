@@ -3,7 +3,7 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings';
-import { Connection, createConnection } from 'typeorm';
+import { Connection, createConnection, Like } from 'typeorm';
 import * as dbutils from '../utils';
 
 import { JacksonStore } from './entity/JacksonStore';
@@ -102,6 +102,14 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
+  async getAll(namespace: string): Promise<unknown> {
+    let response = await this.storeRepository.find({ where: { key: Like(`%${namespace}%`), }, select: ['value', 'iv', 'tag'], });
+
+    let returnValue = JSON.parse(JSON.stringify(response))
+    if (returnValue) return returnValue
+    return [];
+  }
+
   async getByIndex(namespace: string, idx: Index): Promise<any> {
     const res = await this.indexRepository.find({
       key: dbutils.keyForIndex(namespace, idx),
@@ -137,7 +145,7 @@ class Sql implements DatabaseDriver {
       store.value = val.value;
       store.iv = val.iv;
       store.tag = val.tag;
-
+      store.modificationDate = new Date().toISOString()
       await transactionalEntityManager.save(store);
 
       if (ttl) {

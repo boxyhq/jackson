@@ -1,10 +1,10 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class Initial1640877103193 implements MigrationInterface {
     name = 'Initial1640877103193'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "jackson_store" ("key" character varying(1500) NOT NULL, "value" text NOT NULL, "iv" character varying(64), "tag" character varying(64), CONSTRAINT "PK_87b6fc1475fbd1228d2f53c6f4a" PRIMARY KEY ("key"))`);
+        await queryRunner.query(`CREATE TABLE "jackson_store" ("key" character varying(1500) NOT NULL, "value" text NOT NULL, "iv" character varying(64), "tag" character varying(64),"creationDate" timestamp with time zone NOT NULL DEFAULT NOW(), "modificationDate" timestamp with time zone, CONSTRAINT "PK_87b6fc1475fbd1228d2f53c6f4a" PRIMARY KEY ("key"))`);
         await queryRunner.query(`CREATE TABLE "jackson_index" ("id" SERIAL NOT NULL, "key" character varying(1500) NOT NULL, "storeKey" character varying(1500) NOT NULL, CONSTRAINT "PK_a95aa83f01e3c73e126856b7820" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "_jackson_index_key" ON "jackson_index" ("key") `);
         await queryRunner.query(`CREATE INDEX "_jackson_index_key_store" ON "jackson_index" ("key", "storeKey") `);

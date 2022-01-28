@@ -75,6 +75,7 @@ class Mongo implements DatabaseDriver {
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
     const doc = <_Document>{
       value: val,
+      modificationDate: { type: Date },
     };
 
     if (ttl) {
@@ -87,15 +88,17 @@ class Mongo implements DatabaseDriver {
 
       if (!doc.indexes) {
         doc.indexes = [];
-      }
-
-      doc.indexes.push(idxKey);
+      } doc.indexes.push(idxKey);
     }
 
+    doc.modificationDate = new Date().toISOString()
     await this.collection.updateOne(
       { _id: dbutils.key(namespace, key) } as Filter<{ _id: any }>,
       {
         $set: doc,
+        $setOnInsert: {
+          creationDate: new Date().toISOString()
+        }
       },
       { upsert: true } as UpdateOptions
     );
