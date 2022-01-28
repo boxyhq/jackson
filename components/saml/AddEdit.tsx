@@ -116,7 +116,7 @@ type AddEditProps = {
 const AddEdit = ({ clientConfig }: AddEditProps) => {
   const router = useRouter();
   const isEditView = !!clientConfig;
-  // FORM: SUBMIT
+  // FORM LOGIC: SUBMIT
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' }>({ status: 'UNKNOWN' });
   const saveSAMLConnection = async (event) => {
     event.preventDefault();
@@ -173,12 +173,15 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
     <>
       {/* Or use router.back()  */}
       <Link href='/admin/saml'>
-        <a className='inline-flex items-center px-4 py-2 mt-2 md:leading-3 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
+        <a className='inline-flex items-center pr-4 py-2 mt-2 md:leading-3 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4 text-black dark:text-slate-50' />
           <span className='ml-2'>Back to Connections</span>
         </a>
       </Link>
-      <div className='mt-10'>
+      <div>
+        <h2 className='font-bold text-3xl text-black mt-2 mb-4 dark:text-white'>
+          {clientConfig?.name || 'New Connection'}
+        </h2>
         <form onSubmit={saveSAMLConnection}>
           <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
             {fieldCatalog
