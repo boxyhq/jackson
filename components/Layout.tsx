@@ -87,7 +87,7 @@ function Layout({ children }: { children: ReactNode }) {
       <header
         role='banner'
         className='p-5 md:px-12 fixed left-0 right-0 border-b bg-white dark:bg-gray-900 border-gray-900/10 dark:border-gray-300/10 z-10'>
-        <div className='flex justify-between'>
+        <div className='flex justify-between items-center'>
           <Link href='/'>
             <a title='Go to dashboard' className='leading-10 font-bold flex items-center ml-10 md:ml-0'>
               <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} />
