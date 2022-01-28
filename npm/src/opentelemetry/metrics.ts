@@ -3,27 +3,27 @@ import { metrics } from '@opentelemetry/api-metrics';
 const meter = metrics.getMeter('saml-jackson');
 
 const counters = {
-  createConfig: meter.createCounter('config_create', {
+  createConfig: meter.createCounter('saml.config.create', {
     description: 'Number of SAML config create requests',
   }),
 
-  getConfig: meter.createCounter('config_get', {
+  getConfig: meter.createCounter('saml.config.get', {
     description: 'Number of SAML config get requests',
   }),
 
-  deleteConfig: meter.createCounter('config_delete', {
+  deleteConfig: meter.createCounter('saml.config.delete', {
     description: 'Number of SAML config delete requests',
   }),
 
-  oauthAuthorize: meter.createCounter('oauth_authorize', {
+  oauthAuthorize: meter.createCounter('saml.oauth.authorize', {
     description: 'Number of SAML oauth authorize requests',
   }),
 
-  oauthToken: meter.createCounter('oauth_token', {
+  oauthToken: meter.createCounter('saml.oauth.token', {
     description: 'Number of SAML oauth token requests',
   }),
 
-  oauthUserInfo: meter.createCounter('oauth_user_info', {
+  oauthUserInfo: meter.createCounter('saml.oauth.userinfo', {
     description: 'Number of SAML oauth user info requests',
   }),
 };
