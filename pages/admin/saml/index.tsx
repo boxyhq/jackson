@@ -40,8 +40,8 @@ const OAuthClient: NextPage = () => {
           </a>
         </Link>
       </div>
-      <div className='overflow-hidden shadow-md sm:rounded-lg mt-6'>
-        <table className='min-w-full '>
+      <div className='overflow-auto shadow-md rounded-lg mt-6'>
+        <table className='min-w-full'>
           <thead className='bg-gray-50 dark:bg-gray-700 shadow-md sm:rounded-lg'>
             <tr>
               <th
