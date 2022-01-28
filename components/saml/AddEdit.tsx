@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { FormEvent, useState } from 'react';
-import { ArrowLeftIcon } from '@heroicons/react/outline';
-import { Modal, Tabs } from '@supabase/ui';
 import { useRouter } from 'next/router';
+import { FormEvent, useState } from 'react';
 import { mutate } from 'swr';
+import { ArrowLeftIcon, CheckCircleIcon } from '@heroicons/react/outline';
+import { Modal } from '@supabase/ui';
 
 /**
  * Edit view will have extra fields (showOnlyInEditView: true)
@@ -16,42 +16,42 @@ const fieldCatalog = [
     label: 'Name',
     type: 'text',
     placeholder: 'MyApp',
-    attributes: { tabIndex: 0 },
+    attributes: {},
   },
   {
     key: 'description',
     label: 'Description',
     type: 'text',
     placeholder: 'A short description not more than 50 characters',
-    attributes: { tabIndex: 0, maxLength: 100 },
+    attributes: { maxLength: 100 },
   },
   {
     key: 'tenant',
     label: 'Tenant',
     type: 'text',
     placeholder: 'acme.com',
-    attributes: { tabIndex: 0, editable: false },
+    attributes: { editable: false },
   },
   {
     key: 'product',
     label: 'Product',
     type: 'text',
     placeholder: 'demo',
-    attributes: { tabIndex: 0, editable: false },
+    attributes: { editable: false },
   },
   {
     key: 'redirectUrl',
     label: 'Allowed redirect URLs (newline separated)',
     type: 'textarea',
     placeholder: 'http://localhost:3000',
-    attributes: { tabIndex: 1, isArray: true, rows: 3 },
+    attributes: { isArray: true, rows: 3 },
   },
   {
     key: 'defaultRedirectUrl',
     label: 'Default redirect URL',
     type: 'url',
     placeholder: 'http://localhost:3000/login/saml',
-    attributes: { tabIndex: 1 },
+    attributes: {},
   },
   {
     key: 'rawMetadata',
@@ -59,7 +59,6 @@ const fieldCatalog = [
     type: 'textarea',
     placeholder: 'Paste the raw XML here',
     attributes: {
-      tabIndex: 1,
       rows: 5,
       requiredInEditView: false,
       labelInEditView: 'Raw IdP XML (fully replaces the current one)',
@@ -70,7 +69,6 @@ const fieldCatalog = [
     label: 'IDP Metadata',
     type: 'pre',
     attributes: {
-      tabIndex: 1,
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
@@ -81,13 +79,13 @@ const fieldCatalog = [
     key: 'clientID',
     label: 'Client Id',
     type: 'text',
-    attributes: { tabIndex: 1, showOnlyInEditView: true },
+    attributes: { showOnlyInEditView: true },
   },
   {
     key: 'clientSecret',
     label: 'Client Secret',
     type: 'password',
-    attributes: { tabIndex: 1, showOnlyInEditView: true },
+    attributes: { showOnlyInEditView: true },
   },
 ];
 
@@ -136,7 +134,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
     });
     if (res.ok) {
       if (!isEditView) {
-      router.replace('/admin/saml');
+        router.replace('/admin/saml');
       } else {
         setSaveStatus({ status: 'SUCCESS' });
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
@@ -182,165 +180,90 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
       </Link>
       <div className='mt-10'>
         <form onSubmit={saveSAMLConnection}>
-          <Tabs type='underlined'>
-            <Tabs.Panel id='basic-info' label='Basic information'>
-              <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
-                {fieldCatalog
-                  .filter(({ attributes: { tabIndex } }) => tabIndex === 0)
-                  .filter(({ attributes: { showOnlyInEditView } }) =>
-                    isEditView ? true : !showOnlyInEditView
-                  )
-                  .map(
-                    ({
-                      key,
-                      placeholder,
-                      label,
-                      type,
-                      attributes: {
-                        isArray,
-                        rows,
-                        formatForDisplay,
-                        editable,
-                        requiredInEditView,
-                        labelInEditView,
-                        maxLength,
-                      },
-                    }) => {
-                      const readOnly = isEditView && editable === false;
-                      const required = isEditView ? requiredInEditView !== false : true;
-                      const _label = isEditView && labelInEditView ? labelInEditView : label;
-                      const value =
-                        readOnly && typeof formatForDisplay === 'function'
-                          ? formatForDisplay(formObj[key])
-                          : formObj[key];
-                      return (
-                        <div className='mb-6 ' key={key}>
-                          <label
-                            htmlFor={key}
-                            className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
-                            {_label}
-                          </label>
-                          {type === 'pre' ? (
-                            <pre className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'>
-                              {value}
-                            </pre>
-                          ) : type === 'textarea' ? (
-                            <textarea
-                              id={key}
-                              placeholder={placeholder}
-                              value={value}
-                              required={required}
-                              readOnly={readOnly}
-                              maxLength={maxLength}
-                              onChange={handleChange}
-                              className={`block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-                                isArray ? 'whitespace-pre' : ''
-                              }`}
-                              rows={rows}
-                            />
-                          ) : (
-                            <input
-                              id={key}
-                              type={type}
-                              placeholder={placeholder}
-                              value={value}
-                              required={required}
-                              readOnly={readOnly}
-                              maxLength={maxLength}
-                              onChange={handleChange}
-                              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                            />
-                          )}
-                        </div>
-                      );
-                    }
-                  )}
-
-                <button
-                  type='submit'
-                  className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
-                  Save Changes
-                </button>
-              </div>
-            </Tabs.Panel>
-            <Tabs.Panel id='settings' label='Settings'>
-              <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
-                {fieldCatalog
-                  .filter(({ attributes: { tabIndex } }) => tabIndex === 1)
-                  .filter(({ attributes: { showOnlyInEditView } }) =>
-                    isEditView ? true : !showOnlyInEditView
-                  )
-                  .map(
-                    ({
-                      key,
-                      placeholder,
-                      label,
-                      type,
-                      attributes: {
-                        isArray,
-                        rows,
-                        formatForDisplay,
-                        editable,
-                        requiredInEditView,
-                        labelInEditView,
-                        maxLength,
-                      },
-                    }) => {
-                      const readOnly = isEditView && editable === false;
-                      const required = isEditView ? requiredInEditView !== false : true;
-                      const _label = isEditView && labelInEditView ? labelInEditView : label;
-                      const value =
-                        readOnly && typeof formatForDisplay === 'function'
-                          ? formatForDisplay(formObj[key])
-                          : formObj[key];
-                      return (
-                        <div className='mb-6 ' key={key}>
-                          <label
-                            htmlFor={key}
-                            className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
-                            {_label}
-                          </label>
-                          {type === 'pre' ? (
-                            <pre className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-auto'>
-                              {value}
-                            </pre>
-                          ) : type === 'textarea' ? (
-                            <textarea
-                              id={key}
-                              placeholder={placeholder}
-                              className={`block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-                                isArray ? 'whitespace-pre' : ''
-                              }`}
-                              rows={rows}
-                              value={value}
-                              required={required}
-                              maxLength={maxLength}
-                              onChange={handleChange}
-                            />
-                          ) : (
-                            <input
-                              id={key}
-                              type={type}
-                              placeholder={placeholder}
-                              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                              required={required}
-                              maxLength={maxLength}
-                              value={value}
-                              onChange={handleChange}
-                            />
-                          )}
-                        </div>
-                      );
-                    }
-                  )}
-                <button
-                  type='submit'
-                  className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
-                  Save Changes
-                </button>
-              </div>
-            </Tabs.Panel>
-          </Tabs>
+          <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
+            {fieldCatalog
+              .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
+              .map(
+                ({
+                  key,
+                  placeholder,
+                  label,
+                  type,
+                  attributes: {
+                    isArray,
+                    rows,
+                    formatForDisplay,
+                    editable,
+                    requiredInEditView,
+                    labelInEditView,
+                    maxLength,
+                  },
+                }) => {
+                  const readOnly = isEditView && editable === false;
+                  const required = isEditView ? requiredInEditView !== false : true;
+                  const _label = isEditView && labelInEditView ? labelInEditView : label;
+                  const value =
+                    readOnly && typeof formatForDisplay === 'function'
+                      ? formatForDisplay(formObj[key])
+                      : formObj[key];
+                  return (
+                    <div className='mb-6 ' key={key}>
+                      <label
+                        htmlFor={key}
+                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
+                        {_label}
+                      </label>
+                      {type === 'pre' ? (
+                        <pre className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-auto'>
+                          {value}
+                        </pre>
+                      ) : type === 'textarea' ? (
+                        <textarea
+                          id={key}
+                          placeholder={placeholder}
+                          value={value}
+                          required={required}
+                          readOnly={readOnly}
+                          maxLength={maxLength}
+                          onChange={handleChange}
+                          className={`block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
+                            isArray ? 'whitespace-pre' : ''
+                          }`}
+                          rows={rows}
+                        />
+                      ) : (
+                        <input
+                          id={key}
+                          type={type}
+                          placeholder={placeholder}
+                          value={value}
+                          required={required}
+                          readOnly={readOnly}
+                          maxLength={maxLength}
+                          onChange={handleChange}
+                          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        />
+                      )}
+                    </div>
+                  );
+                }
+              )}
+            <div className='flex justify-between'>
+              <button
+                type='submit'
+                className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
+                Save Changes
+              </button>
+              <p role='status' className='text-green-500 inline-flex items-center'>
+                {status === 'SUCCESS' && (
+                  <>
+                    Saved
+                    <CheckCircleIcon aria-hidden className='ml-1 text-green-500 h-4 w-4'></CheckCircleIcon>
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
           {clientConfig?.clientID && clientConfig.clientSecret && (
             <section className='flex items-center text-red-900 bg-red-100 p-6 rounded mt-10'>
               <div className='flex-1'>
