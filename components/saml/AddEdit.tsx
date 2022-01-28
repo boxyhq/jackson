@@ -251,17 +251,21 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
                   );
                 }
               )}
-            <div className='flex justify-between'>
+            <div className='flex'>
               <button
                 type='submit'
                 className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
                 Save Changes
               </button>
-              <p role='status' className='text-green-500 inline-flex items-center'>
+              <p
+                role='status'
+                className={`text-green-500 inline-flex items-center ml-2 ${
+                  status === 'SUCCESS' ? 'opacity-100' : 'opacity-0'
+                } transition-opacity motion-reduce:transition-none`}>
                 {status === 'SUCCESS' && (
                   <>
                     Saved
-                    <CheckCircleIcon aria-hidden className='ml-1 text-green-500 h-4 w-4'></CheckCircleIcon>
+                    <CheckCircleIcon aria-hidden className='ml-1 text-green-500 h-5 w-5'></CheckCircleIcon>
                   </>
                 )}
               </p>
