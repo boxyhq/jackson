@@ -1,5 +1,8 @@
 # SAML Jackson (not fiction anymore)
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,JACKSON_API_KEYS,DB_ENCRYPTION_KEY&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/env-variables)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 SAML service [SAML in a box from BoxyHQ]
 
 You need someone like Jules Winnfield to save you from the vagaries of SAML login. Jackson implements the SAML login flow as an OAuth 2.0 flow, abstracting away all the complexities of the SAML protocol.

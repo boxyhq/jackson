@@ -1,0 +1,19 @@
+{
+  "name": "SAML Jackson",
+  "description": "SAML service [SAML in a box from BoxyHQ]",
+  "repository": "https://github.com/boxyhq/jackson",
+  "logo": "https://boxyhq.com/img/logo.png",
+  "keywords": ["saml", "saml2", "saml-service-provider"],
+  "addons": ["heroku-postgresql"],
+  "env": {
+    "JACKSON_API_KEYS": {
+      "description": "API Key for validating REST calls",
+      "generator": "secret",
+      "required": true
+    },
+    "PGSSLMODE": {
+      "description": "https://devcenter.heroku.com/articles/connecting-heroku-postgres#connecting-in-node-js",
+      "value": "no-verify"
+    }
+  }
+}
