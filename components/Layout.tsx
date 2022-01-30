@@ -8,7 +8,7 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import ActiveLink from './ActiveLink';
 import useKeyPress from 'hooks/useKeyPress';
 import useMediaQuery from 'hooks/useMediaQuery';
-import { signIn, useSession, signOut } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 
 const navigation = [
   {
@@ -56,14 +56,9 @@ function Layout({ children }: { children: ReactNode }) {
     }
   }, [_closeSideNav, _mdBreakpointMatch]);
 
-  // get logged-in status
-  const { data: session, status } = useSession();
-  // redirect to signin if unauthenticated
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      signIn();
-    }
-  }, [status]);
+  // check logged-in status, https://next-auth.js.org/getting-started/client#require-session
+  // The default behavior is to redirect the user to the sign-in page, from where - after a successful login - they will be sent back to the page they started on.
+  const { data: session, status } = useSession({ required: true });
 
   // user settings dropdown state
   const [isOpen, setIsOpen] = useState(false);
@@ -72,10 +67,6 @@ function Layout({ children }: { children: ReactNode }) {
 
   if (status === 'loading') {
     return <p>Loading...</p>;
-  }
-
-  if (status === 'unauthenticated') {
-    return null;
   }
 
   return (
