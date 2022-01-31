@@ -1,35 +1,50 @@
 import { metrics } from '@opentelemetry/api-metrics';
 
-const meter = metrics.getMeter('saml-jackson');
-
 const counters = {
-  createConfig: meter.createCounter('saml.config.create', {
+  createConfig: {
+    name: 'saml.config.create',
     description: 'Number of SAML config create requests',
-  }),
+  },
 
-  getConfig: meter.createCounter('saml.config.get', {
+  getConfig: {
+    name: 'saml.config.get',
     description: 'Number of SAML config get requests',
-  }),
+  },
 
-  deleteConfig: meter.createCounter('saml.config.delete', {
+  deleteConfig: {
+    name: 'saml.config.delete',
     description: 'Number of SAML config delete requests',
-  }),
+  },
 
-  oauthAuthorize: meter.createCounter('saml.oauth.authorize', {
+  oauthAuthorize: {
+    name: 'saml.oauth.authorize',
     description: 'Number of SAML oauth authorize requests',
-  }),
+  },
 
-  oauthToken: meter.createCounter('saml.oauth.token', {
+  oauthToken: {
+    name: 'saml.oauth.token',
     description: 'Number of SAML oauth token requests',
-  }),
+  },
 
-  oauthUserInfo: meter.createCounter('saml.oauth.userinfo', {
+  oauthUserInfo: {
+    name: 'saml.oauth.userinfo',
     description: 'Number of SAML oauth user info requests',
-  }),
-};
+  }
+}
+
+const createCounter = (action: string) => {
+  const meter = metrics.getMeterProvider().getMeter('saml-jackson');
+  const counter = counters[action];
+
+  return meter.createCounter(counter.name, {
+    description: counter.description,
+  })
+}
 
 const increment = (action: string) => {
-  counters[action].add(1);
+  const counter = createCounter(action);
+
+  counter.add(1);
 };
 
 export { increment };
