@@ -4,12 +4,8 @@ import { metrics } from '@opentelemetry/api-metrics';
 import { Resource } from '@opentelemetry/resources';
 import packageInfo from '../package.json';
 
-const exporter = new OTLPMetricExporter({
-  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
-});
-
 const meterProvider = new MeterProvider({
-  exporter: exporter,
+  exporter: new OTLPMetricExporter,
   interval: 1000,
   resource: new Resource({
     'service.name': `${packageInfo.name}`,
