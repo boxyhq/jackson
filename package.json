@@ -13,7 +13,7 @@
   "license": "Apache 2.0",
   "scripts": {
     "build": "next build",
-    "dev": "cross-env JACKSON_API_KEYS=secret IDP_ENABLED=true next dev -p 5000",
+    "dev": "cross-env JACKSON_API_KEYS=secret IDP_ENABLED=true next dev -p 4000",
     "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
     "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
     "lint": "next lint",
@@ -37,7 +37,7 @@
   "dependencies": {
     "@boxyhq/saml-jackson": "file:./npm",
     "@opentelemetry/api-metrics": "^0.27.0",
-    "@opentelemetry/exporter-metrics-otlp-grpc": "0.27.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.27.0",
     "@opentelemetry/sdk-metrics-base": "0.27.0",
     "cors": "2.8.5",
     "next": "12.0.7",
