@@ -95,27 +95,27 @@ function getFieldList(isEditView) {
     : fieldCatalog.filter(({ attributes: { showOnlyInEditView } }) => !showOnlyInEditView); // filtered list for add view
 }
 
-function getInitialState(clientConfig, isEditView) {
+function getInitialState(samlConfig, isEditView) {
   const _state = {};
   const _fieldCatalog = getFieldList(isEditView);
 
   _fieldCatalog.forEach(({ key, attributes }) => {
-    _state[key] = clientConfig?.[key]
+    _state[key] = samlConfig?.[key]
       ? attributes.isArray
-        ? clientConfig[key].join('\r\n') // render list of items on newline eg:- redirect URLs
-        : clientConfig[key]
+        ? samlConfig[key].join('\r\n') // render list of items on newline eg:- redirect URLs
+        : samlConfig[key]
       : '';
   });
   return _state;
 }
 
 type AddEditProps = {
-  clientConfig?: Record<string, any>;
+  samlConfig?: Record<string, any>;
 };
 
-const AddEdit = ({ clientConfig }: AddEditProps) => {
+const AddEdit = ({ samlConfig }: AddEditProps) => {
   const router = useRouter();
-  const isEditView = !!clientConfig;
+  const isEditView = !!samlConfig;
   // FORM LOGIC: SUBMIT
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' }>({ status: 'UNKNOWN' });
   const saveSAMLConfiguration = async (event) => {
@@ -153,7 +153,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
         'Content-Type': 'application/json',
         Authorization: 'Api-Key secret',
       },
-      body: JSON.stringify({ clientID: clientConfig?.clientID, clientSecret: clientConfig?.clientSecret }),
+      body: JSON.stringify({ clientID: samlConfig?.clientID, clientSecret: samlConfig?.clientSecret }),
     });
     toggleDelConfirm();
     await mutate('/api/admin/samlconf');
@@ -162,7 +162,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
 
   // STATE: FORM
   const [formObj, setFormObj] = useState<Record<string, string>>(() =>
-    getInitialState(clientConfig, isEditView)
+    getInitialState(samlConfig, isEditView)
   );
   function handleChange(event: FormEvent) {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
@@ -180,7 +180,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
       </Link>
       <div>
         <h2 className='font-bold text-3xl text-black mt-2 mb-4 dark:text-white'>
-          {clientConfig?.name || 'New SAML Configuration'}
+          {samlConfig?.name || 'New SAML Configuration'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
           <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
@@ -271,7 +271,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
               </p>
             </div>
           </div>
-          {clientConfig?.clientID && clientConfig.clientSecret && (
+          {samlConfig?.clientID && samlConfig.clientSecret && (
             <section className='flex items-center text-red-900 bg-red-100 p-6 rounded mt-10'>
               <div className='flex-1'>
                 <h6 className='font-medium mb-1'>Delete this configuration</h6>
@@ -303,7 +303,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
               </button>
               <button
                 type='button'
-                disabled={userNameEntry !== clientConfig?.product}
+                disabled={userNameEntry !== samlConfig?.product}
                 onClick={deleteConfiguration}
                 className='ml-1.5 bg-red-700 hover:bg-red-800 disabled:bg-slate-400 text-white text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
                 Delete
@@ -312,7 +312,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
           }>
           <p className='text-slate-600'>
             Please type in the name of the product &apos;
-            {clientConfig?.product && <strong>{clientConfig.product}</strong>}&apos; to confirm.
+            {samlConfig?.product && <strong>{samlConfig.product}</strong>}&apos; to confirm.
           </p>
           <label htmlFor='nameOfProd' className='font-medium text-slate-900'>
             Name *
