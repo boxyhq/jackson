@@ -1,49 +1,12 @@
-import NextAuth, { Awaitable } from 'next-auth';
-import type { AdapterUser, VerificationToken } from 'next-auth/adapters';
+import Adapter from '@lib/nextAuthAdapter';
+import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
-import { User, UserProvider } from '../admin/users';
-
-const userProvider = new UserProvider();
-
-// This is a temporary solution. Need a database implementation
-const verificationToken = {
-  expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-  token: 'verification-token',
-};
-
-const adapter = {
-  async getUserByEmail(email: string): Promise<User | null> {
-    return await userProvider.getUserByEmail(email);
-  },
-
-  async updateUser(user: Partial<AdapterUser>): Promise<User | null> {
-    if (!user.id) {
-      return null;
-    }
-
-    return await userProvider.getUserById(user.id);
-  },
-
-  async createVerificationToken({
-    identifier,
-    expires,
-    token,
-  }): Promise<VerificationToken | null | undefined> {
-    return null;
-  },
-
-  useVerificationToken({ identifier }): Awaitable<VerificationToken | null> {
-    return { ...verificationToken, identifier };
-  },
-};
+import { validateEmailWithACL } from '@lib/utils';
 
 export default NextAuth({
   debug: true,
   providers: [
     EmailProvider({
-      async generateVerificationToken() {
-        return verificationToken.token;
-      },
       server: {
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
@@ -69,10 +32,10 @@ export default NextAuth({
       if (!user.email) {
         return false;
       }
-
-      return await userProvider.isAllowedToSignIn(user.email);
+      const email = user.email;
+      return validateEmailWithACL(email);
     },
   },
   // @ts-ignore
-  adapter: adapter,
+  adapter: Adapter(),
 });
