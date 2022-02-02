@@ -29,7 +29,7 @@ jobs:
         id: cyclonedx-scan
         with:
           path: "./"
-          output: "${{ steps.vars.outputs.filename }}.json"
+          output: ${{ steps.vars.outputs.filename }}.json
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.vars.outputs.filename }}.json 
