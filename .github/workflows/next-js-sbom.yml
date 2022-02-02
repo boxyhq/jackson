@@ -24,6 +24,17 @@ jobs:
             publishTag="beta"
             echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
+      - name: CycloneDX SBOM report
+        uses: CycloneDX/gh-node-module-generatebom@master
+        id: cyclonedx-scan
+        with:
+          output: ${{ steps.vars.outputs.filename }}.cyclonedx
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.vars.outputs.filename }}.cyclonedx 
+          path: ${{ steps.cyclonedx-scan.outputs.file }}
+          artifact-name: ${{ steps.vars.outputs.filename }}.cyclonedx
+
       - name: Build the container image
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
