@@ -37,3 +37,4 @@ jobs:
         with:
           name: tern 
           path: ${{ steps.scan.outputs.file }}
+          artifact-name: ${{ steps.vars.outputs.filename }}.spdx
