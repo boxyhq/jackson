@@ -13,8 +13,9 @@ const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
   for (const idx in files) {
     const file = files[idx];
     if (file.endsWith('.js')) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const config = require(path.join(preLoadedConfig, file)) as IdPConfig;
+      const { default: config }: { default: IdPConfig } = await import(
+        /* webpackIgnore: true */ path.join(preLoadedConfig, file)
+      );
       const rawMetadata = await fs.promises.readFile(
         path.join(preLoadedConfig, path.parse(file).name + '.xml'),
         'utf8'
