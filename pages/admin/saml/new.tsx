@@ -1,8 +1,8 @@
 import { NextPage } from 'next';
 import AddEdit from '@components/saml/AddEdit';
 
-const NewIdP: NextPage = () => {
+const NewSAMLConfiguration: NextPage = () => {
   return <AddEdit />;
 };
 
-export default NewIdP;
+export default NewSAMLConfiguration;

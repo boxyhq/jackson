@@ -4,7 +4,7 @@ import { fetcher } from '@lib/utils';
 import AddEdit from '@components/saml/AddEdit';
 import { useRouter } from 'next/router';
 
-const EditClient: NextPage = () => {
+const EditSAMLConfiguration: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const { data, error } = useSWR('/api/admin/providers', fetcher, { revalidateOnFocus: false });
@@ -24,4 +24,4 @@ const EditClient: NextPage = () => {
   return <AddEdit clientConfig={idpClient} />;
 };
 
-export default EditClient;
+export default EditSAMLConfiguration;

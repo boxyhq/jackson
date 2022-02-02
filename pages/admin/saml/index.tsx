@@ -4,8 +4,7 @@ import { fetcher } from '@lib/utils';
 import Link from 'next/link';
 import { DotsHorizontalIcon } from '@heroicons/react/outline';
 
-const OAuthClient: NextPage = () => {
-  const { data, error } = useSWR('/api/admin/providers', fetcher, { revalidateOnFocus: false });
+const SAMLConfigurations: NextPage = () => {
 
   if (error) {
     return (
@@ -82,4 +81,4 @@ const OAuthClient: NextPage = () => {
   );
 };
 
-export default OAuthClient;
+export default SAMLConfigurations;
