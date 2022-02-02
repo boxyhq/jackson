@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Container Image CI
+name: NPM Package SBOM Reports
 on: [push]
 jobs:
   build:
