@@ -124,7 +124,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
     const encodedRawMetadata = btoa(rawMetadata || '');
     const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-    const res = await fetch('/api/admin/samlconf', {
+    const res = await fetch('/api/admin/saml/config', {
       method: isEditView ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const [userNameEntry, setUserNameEntry] = useState('');
   const deleteConfiguration = async () => {
-    await fetch('/api/admin/samlconf', {
+    await fetch('/api/admin/saml/config', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -156,7 +156,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
       body: JSON.stringify({ clientID: samlConfig?.clientID, clientSecret: samlConfig?.clientSecret }),
     });
     toggleDelConfirm();
-    await mutate('/api/admin/samlconf');
+    await mutate('/api/admin/saml/config');
     router.replace('/admin/saml');
   };
 
@@ -172,7 +172,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
   return (
     <>
       {/* Or use router.back()  */}
-      <Link href='/admin/samlconf'>
+      <Link href='/admin/saml/config'>
         <a className='inline-flex items-center pr-4 py-2 mt-2 md:leading-3 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4 text-black dark:text-slate-50' />
           <span className='ml-2'>Back to Configurations</span>

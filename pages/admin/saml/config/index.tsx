@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DotsHorizontalIcon } from '@heroicons/react/outline';
 
 const SAMLConfigurations: NextPage = () => {
-  const { data, error } = useSWR('/api/admin/samlconf', fetcher, { revalidateOnFocus: false });
+  const { data, error } = useSWR('/api/admin/saml/config', fetcher, { revalidateOnFocus: false });
 
   if (error) {
     return (
@@ -31,7 +31,7 @@ const SAMLConfigurations: NextPage = () => {
     <div>
       <div className='flex items-center justify-between'>
         <h2 className='md:text-2xl text-slate-900 dark:text-white font-bold'>SAML Configurations</h2>
-        <Link href={'/admin/samlconf/new'}>
+        <Link href={'/admin/saml/config/new'}>
           <a className='bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-2 md:px-4 rounded text-xs md:text-sm md:leading-6'>
             <span className='inline-block mr-1 md:mr-2' aria-hidden>
               +
@@ -67,7 +67,7 @@ const SAMLConfigurations: NextPage = () => {
                   {provider.product}
                 </td>
                 <td>
-                  <Link href={`/admin/samlconf/edit/${provider.clientID}`}>
+                  <Link href={`/admin/saml/config/edit/${provider.clientID}`}>
                     <a className='inline-flex items-center justify-center dark:text-white font-medium py-2 px-4 rounded leading-6'>
                       <DotsHorizontalIcon className='h-6 w-6' />
                     </a>

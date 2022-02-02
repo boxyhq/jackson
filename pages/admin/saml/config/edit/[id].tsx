@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 const EditSAMLConfiguration: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data: samlConfig, error } = useSWR(`/api/admin/samlconf/${id}`, fetcher, {
+  const { data: samlConfig, error } = useSWR(`/api/admin/saml/config/${id}`, fetcher, {
     revalidateOnFocus: false,
   });
 
