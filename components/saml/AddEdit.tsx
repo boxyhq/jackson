@@ -134,7 +134,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
     });
     if (res.ok) {
       if (!isEditView) {
-        router.replace('/admin/saml');
+        router.replace('/admin/saml/config');
       } else {
         setSaveStatus({ status: 'SUCCESS' });
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
@@ -157,7 +157,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
     });
     toggleDelConfirm();
     await mutate('/api/admin/saml/config');
-    router.replace('/admin/saml');
+    router.replace('/admin/saml/config');
   };
 
   // STATE: FORM
