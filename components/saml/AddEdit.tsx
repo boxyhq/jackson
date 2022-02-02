@@ -172,7 +172,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
   return (
     <>
       {/* Or use router.back()  */}
-      <Link href='/admin/saml'>
+      <Link href='/admin/samlconf'>
         <a className='inline-flex items-center pr-4 py-2 mt-2 md:leading-3 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4 text-black dark:text-slate-50' />
           <span className='ml-2'>Back to Configurations</span>
