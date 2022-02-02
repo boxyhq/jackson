@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { DotsHorizontalIcon } from '@heroicons/react/outline';
 
 const SAMLConfigurations: NextPage = () => {
+  const { data, error } = useSWR('/api/admin/samlconf', fetcher, { revalidateOnFocus: false });
 
   if (error) {
     return (

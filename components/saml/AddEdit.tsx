@@ -124,7 +124,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
     const encodedRawMetadata = btoa(rawMetadata || '');
     const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-    const res = await fetch('/api/admin/providers', {
+    const res = await fetch('/api/admin/samlconf', {
       method: isEditView ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,6 +147,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const [userNameEntry, setUserNameEntry] = useState('');
   const deleteConfiguration = async () => {
+    await fetch('/api/admin/samlconf', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -155,7 +156,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
       body: JSON.stringify({ clientID: clientConfig?.clientID, clientSecret: clientConfig?.clientSecret }),
     });
     toggleDelConfirm();
-    await mutate('/api/admin/providers');
+    await mutate('/api/admin/samlconf');
     router.replace('/admin/saml');
   };
 
