@@ -14,7 +14,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { adminController, apiController } = await jackson();
     if (req.method === 'GET') {
-      res.json(await adminController.getAllConfig());
+      const { slug } = req.query;
+      if (slug?.[0]) {
+        res.json(await apiController.getConfig({ clientID: slug[0] }));
+      } else {
+        res.json(await adminController.getAllConfig());
+      }
     } else if (req.method === 'POST') {
       res.json(await apiController.config(req.body));
     } else if (req.method === 'PATCH') {
