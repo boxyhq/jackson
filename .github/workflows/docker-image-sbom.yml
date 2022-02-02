@@ -7,8 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build the container image
-        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Set output variables
         id: vars
         run: |
@@ -26,6 +24,8 @@ jobs:
             publishTag="beta"
             echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
+      - name: Build the container image
+        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
         uses: philips-labs/tern-action@v1.1.0
         id: scan
