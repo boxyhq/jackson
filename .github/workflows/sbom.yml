@@ -29,7 +29,7 @@ jobs:
           else
             publishTag="beta"
             echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-          fi"
+          fi
       - name: NPM Pacakge SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
