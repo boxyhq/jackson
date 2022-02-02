@@ -33,8 +33,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.vars.outputs.filename }}.json 
-          path: ${{ steps.cyclonedx-scan.outputs.file }}
-          artifact-name: ${{ steps.vars.outputs.filename }}.json
+          path: ${{ steps.vars.outputs.filename }}.json
 
       - name: Build the container image
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
