@@ -1,3 +1,8 @@
 {
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/.next": true,
+    "**/.nyc_output": true,
+    "**/node_modules": true
+  }
 }
