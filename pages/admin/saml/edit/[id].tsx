@@ -7,7 +7,9 @@ import { useRouter } from 'next/router';
 const EditSAMLConfiguration: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data, error } = useSWR('/api/admin/providers', fetcher, { revalidateOnFocus: false });
+  const { data: samlConfig, error } = useSWR(`/api/admin/samlconf/${id}`, fetcher, {
+    revalidateOnFocus: false,
+  });
 
   if (error) {
     return (
@@ -17,11 +19,10 @@ const EditSAMLConfiguration: NextPage = () => {
     );
   }
 
-  if (!data) {
+  if (!samlConfig) {
     return <div>Loading...</div>;
   }
-  const idpClient = data.find(({ clientID }) => id === clientID);
-  return <AddEdit clientConfig={idpClient} />;
+  return <AddEdit samlConfig={samlConfig?.config} />;
 };
 
 export default EditSAMLConfiguration;
