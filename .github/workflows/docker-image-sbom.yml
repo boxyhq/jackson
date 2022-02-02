@@ -35,6 +35,6 @@ jobs:
           output: ${{ steps.vars.outputs.filename }}.spdx
       - uses: actions/upload-artifact@v2
         with:
-          name: tern 
+          name: ${{ steps.vars.outputs.filename }}.spdx 
           path: ${{ steps.scan.outputs.file }}
           artifact-name: ${{ steps.vars.outputs.filename }}.spdx
