@@ -28,7 +28,7 @@ jobs:
         uses: CycloneDX/gh-node-module-generatebom@master
         id: cyclonedx-scan
         with:
-          input: "./"
+          path: "./"
           output: "${{ steps.vars.outputs.filename }}.json"
       - uses: actions/upload-artifact@v2
         with:
