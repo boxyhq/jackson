@@ -1,0 +1,39 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Next JS Image SBOM SPDX
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the container image
+        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+      - name: Set output variables
+        id: vars
+        run: |
+          publishTag="latest"
+          PACKAGE_VERSION=$(cat package.json \
+          | grep version \
+          | head -1 \
+          | awk -F: '{ print $2 }' \
+          | sed 's/[",]//g')
+          if [[ "$GITHUB_REF" == *\/release ]]
+          then
+            publishTag="latest"
+            echo ::set-output name=filename::"${PACKAGE_VERSION}-latest"
+          else
+            publishTag="beta"
+            echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+          fi
+      - name: Scan docker image using TERN
+        uses: philips-labs/tern-action@v1.1.0
+        id: scan
+        with:
+          image: localbuild/testimage:latest
+          format: spdxtagvalue
+          output: ${{ steps.vars.outputs.filename }}.spdx
+      - uses: actions/upload-artifact@v2
+        with:
+          name: tern 
+          path: ${{ steps.scan.outputs.file }}
