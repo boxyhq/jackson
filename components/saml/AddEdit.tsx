@@ -118,7 +118,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
   const isEditView = !!clientConfig;
   // FORM LOGIC: SUBMIT
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' }>({ status: 'UNKNOWN' });
-  const saveSAMLConnection = async (event) => {
+  const saveSAMLConfiguration = async (event) => {
     event.preventDefault();
     const { rawMetadata, redirectUrl, ...rest } = formObj;
     const encodedRawMetadata = btoa(rawMetadata || '');
@@ -146,8 +146,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const [userNameEntry, setUserNameEntry] = useState('');
-  const deleteClient = async () => {
-    await fetch('/api/admin/providers', {
+  const deleteConfiguration = async () => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -175,14 +174,14 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
       <Link href='/admin/saml'>
         <a className='inline-flex items-center pr-4 py-2 mt-2 md:leading-3 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4 text-black dark:text-slate-50' />
-          <span className='ml-2'>Back to Connections</span>
+          <span className='ml-2'>Back to Configurations</span>
         </a>
       </Link>
       <div>
         <h2 className='font-bold text-3xl text-black mt-2 mb-4 dark:text-white'>
-          {clientConfig?.name || 'New Connection'}
+          {clientConfig?.name || 'New SAML Configuration'}
         </h2>
-        <form onSubmit={saveSAMLConnection}>
+        <form onSubmit={saveSAMLConfiguration}>
           <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
             {fieldCatalog
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
@@ -274,8 +273,8 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
           {clientConfig?.clientID && clientConfig.clientSecret && (
             <section className='flex items-center text-red-900 bg-red-100 p-6 rounded mt-10'>
               <div className='flex-1'>
-                <h6 className='font-medium mb-1'>Delete this application</h6>
-                <p className='font-light'>All your apps using this client will stop working.</p>
+                <h6 className='font-medium mb-1'>Delete this configuration</h6>
+                <p className='font-light'>All your apps using this configuration will stop working.</p>
               </div>
               <button
                 type='button'
@@ -290,7 +289,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
         <Modal
           closable
           title='Are you absolutely sure ?'
-          description='This action cannot be undone. This will permanently delete the application.'
+          description='This action cannot be undone. This will permanently delete the SAML config.'
           visible={delModalVisible}
           onCancel={toggleDelConfirm}
           customFooter={
@@ -304,7 +303,7 @@ const AddEdit = ({ clientConfig }: AddEditProps) => {
               <button
                 type='button'
                 disabled={userNameEntry !== clientConfig?.product}
-                onClick={deleteClient}
+                onClick={deleteConfiguration}
                 className='ml-1.5 bg-red-700 hover:bg-red-800 disabled:bg-slate-400 text-white text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
                 Delete
               </button>
