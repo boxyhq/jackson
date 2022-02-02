@@ -1,0 +1,29 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Container Image CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Scan current project
+        uses: anchore/scan-action@v3
+        with:
+          path: "."
+          fail-build: false
+      - name: SBOM Report [SPDX]
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx
+          artifact-name: sbom.spdx
+      - uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.spdx$"
+      - name: SBOM Report [CycloneDx]
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx
+      - uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: "*.*"
