@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Next JS Image SBOM SPDX
+name: Next JS Project SBOM SPDX
 on: [push]
 jobs:
   build:
@@ -28,7 +28,8 @@ jobs:
         uses: CycloneDX/gh-node-module-generatebom@master
         id: cyclonedx-scan
         with:
-          output: ${{ steps.vars.outputs.filename }}.json
+          input: "./"
+          output: "${{ steps.vars.outputs.filename }}.json"
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.vars.outputs.filename }}.json 
