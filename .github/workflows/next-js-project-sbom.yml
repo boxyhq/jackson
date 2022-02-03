@@ -23,7 +23,7 @@ jobs:
             echo ::set-output name=filename::"${PACKAGE_VERSION}-latest"
           else
             publishTag="beta"
-            echo ::set-output name=filename::"${PACKAGE_VERSION | xargs}-beta.${GITHUB_RUN_NUMBER}"
+            echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
       - name: CycloneDX SBOM report
         uses: CycloneDX/gh-node-module-generatebom@master
