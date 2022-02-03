@@ -40,9 +40,9 @@ jobs:
         run: mkdir -p ./_devsec/
       - name: Move Report
         run: mv ${{ steps.vars.outputs.filename }}.json "./_devsec/${{ steps.vars.outputs.filename }}.json"
-      - name: Build the container image
       - name: debug
         run: tree
+      - name: Build the container image
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
         uses: philips-labs/tern-action@v1.1.0
