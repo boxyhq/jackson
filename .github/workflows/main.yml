@@ -63,12 +63,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: CycloneDX SBOM report
-        uses: CycloneDX/gh-node-module-generatebom@master
-        id: cyclonedx-scan
-        with:
-          path: "./"
-          output: ${{ steps.vars.outputs.filename }}.json
       - name: Set output variables
         id: vars
         run: |
@@ -88,6 +82,12 @@ jobs:
             publishTag="beta"
             echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
+      - name: CycloneDX SBOM report
+        uses: CycloneDX/gh-node-module-generatebom@master
+        id: cyclonedx-scan
+        with:
+          path: "./"
+          output: ${{ steps.vars.outputs.filename }}.json
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.vars.outputs.filename }}.json 
