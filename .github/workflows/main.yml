@@ -63,18 +63,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          always-auth: true
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org
-          scope: '@boxyhq'
-          cache: 'npm'
-      - run: npm install
-        working-directory: ./npm
-      - run: npm run test
-        working-directory: ./npm
       - name: NPM Package Scan
         uses: anchore/scan-action@v3
         with:
@@ -112,6 +100,18 @@ jobs:
           sbom-artifact-match: ".*\\.spdx$"
       - name: debug
         run: tree
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          always-auth: true
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org
+          scope: '@boxyhq'
+          cache: 'npm'
+      - run: npm install
+        working-directory: ./npm
+      - run: npm run test
+        working-directory: ./npm
       - run: |
           publishTag="latest"
 
