@@ -63,38 +63,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set output variables
-        id: vars
-        run: |
-          publishTag="latest"
-          PACKAGE_VERSION=$(cat package.json \
-          | grep version \
-          | head -1 \
-          | awk -F: '{ print $2 }' \
-          | sed 's/[",]//g')
-          mkdir _devsec
-          mkdir ./npm/_devsec
-          if [[ "$GITHUB_REF" == *\/release ]]
-          then
-            publishTag="latest"
-            echo ::set-output name=filename::"${PACKAGE_VERSION}-latest"
-          else
-            publishTag="beta"
-            echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-          fi
-      - name: CycloneDX SBOM report
-        uses: CycloneDX/gh-node-module-generatebom@master
-        id: cyclonedx-scan
-        with:
-          path: "./"
-          output: ${{steps.vars.outputs.filename}}.json
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{steps.vars.outputs.filename}}.json 
-          path: ${{steps.vars.outputs.filename}}.json
-      # - run: REPORT=${{steps.vars.outputs.filename}}.json mkdir ./_devsec && mv $REPORT ./_devsec/$REPORT
-      - name: debug
-        run: tree
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
