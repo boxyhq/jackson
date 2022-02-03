@@ -36,7 +36,7 @@ jobs:
           name: ${{steps.vars.outputs.filename}}.json 
           path: ${{steps.vars.outputs.filename}}.json
       - name: Create folder/Clear folder
-        run: mkdir -p ./_devsec/ && rm -r ./_devsec/
+        run: mkdir -p ./_devsec/ && rm ./_devsec/*
       - name: Move Report
         run: mv ${{ steps.vars.outputs.filename }}.json "./_devsec/${{steps.vars.outputs.filename}}.json"
       - name: Build the container image
