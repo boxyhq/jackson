@@ -34,7 +34,8 @@ jobs:
         with:
           name: ${{ steps.vars.outputs.filename }}.json 
           path: ${{ steps.vars.outputs.filename }}.json
-
+      - name: debug
+        run: tree
       - name: Build the container image
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
