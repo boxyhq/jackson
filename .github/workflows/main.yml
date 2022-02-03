@@ -92,7 +92,7 @@ jobs:
         with:
           name: ${{ steps.vars.outputs.filename }}.json 
           path: ${{ steps.vars.outputs.filename }}.json
-      - run: mkdir ./_devsec && mv${{steps.vars.outputs.filename}}.json ./_devsec/${{steps.vars.outputs.filename}}.json
+      - run: REPORT=${{steps.vars.outputs.filename}}.json mkdir ./_devsec && mv $REPORT ./_devsec/$REPORT
       - name: debug
         run: tree
       - name: Use Node.js ${{ matrix.node-version }}
