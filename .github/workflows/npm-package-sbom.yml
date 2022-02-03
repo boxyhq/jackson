@@ -44,6 +44,8 @@ jobs:
         with:
           format: cyclonedx
           artifact-name: ${{ steps.vars.outputs.filename }}.cyclonedx
+      - name: Tree
+        run: tree
       - name: Publish report [CycloneDx]
         uses: anchore/sbom-action/publish-sbom@v0
         with:
