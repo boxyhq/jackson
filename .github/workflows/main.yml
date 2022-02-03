@@ -75,6 +75,43 @@ jobs:
         working-directory: ./npm
       - run: npm run test
         working-directory: ./npm
+      - name: NPM Package Scan
+        uses: anchore/scan-action@v3
+        with:
+          path: "./npm"
+          fail-build: false
+      - name: Set output variables
+        id: vars
+        run: |
+          publishTag="latest"
+          PACKAGE_VERSION=$(cat package.json \
+          | grep version \
+          | head -1 \
+          | awk -F: '{ print $2 }' \
+          | sed 's/[",]//g')
+          mkdir _devsec
+          mkdir ./npm/_devsec
+          if [[ "$GITHUB_REF" == *\/release ]]
+          then
+            publishTag="latest"
+            echo ::set-output name=filename::"${PACKAGE_VERSION}-latest"
+          else
+            publishTag="beta"
+            echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+          fi
+      - name: NPM Pacakge SBOM Report [SPDX]
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx
+          artifact-name: npm_${{ steps.vars.outputs.filename }}.spdx
+      - name: debug
+        run: tree
+      - name: Publish report [SPDX]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.spdx$"
+      - name: debug
+        run: tree
       - run: |
           publishTag="latest"
 
