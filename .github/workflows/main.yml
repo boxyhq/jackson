@@ -87,11 +87,11 @@ jobs:
         id: cyclonedx-scan
         with:
           path: "./"
-          output: ${{ steps.vars.outputs.filename }}.json
+          output: ${{steps.vars.outputs.filename}}.json
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.vars.outputs.filename }}.json 
-          path: ${{ steps.vars.outputs.filename }}.json
+          name: ${{steps.vars.outputs.filename}}.json 
+          path: ${{steps.vars.outputs.filename}}.json
       - run: REPORT=${{steps.vars.outputs.filename}}.json mkdir ./_devsec && mv $REPORT ./_devsec/$REPORT
       - name: debug
         run: tree
