@@ -38,8 +38,8 @@ jobs:
         run: tree
       - name: Create folder
         run: mkdir -p ./_devsec/
-      - name: Copy Report
-        run: mv${{ steps.vars.outputs.filename }}.json ./_devsec/${{ steps.vars.outputs.filename }}.json
+      - name: Move Report
+        run: cp ${{ steps.vars.outputs.filename }}.json ./_devsec/${{ steps.vars.outputs.filename }}.json
       - name: Build the container image
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
