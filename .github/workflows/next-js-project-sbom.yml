@@ -52,7 +52,8 @@ jobs:
         run: mv ${{ steps.vars.outputs.filename }}.spdx "./_devsec/${{steps.vars.outputs.filename}}.spdx"
       - name: Tree
         run: tree
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{ steps.vars.outputs.filename }}.spdx 
-          path: ${{ steps.scan.outputs.file }}
+      - name: Commit report
+        run: |
+          git add .
+          git commit -am "Automated report"
+          git push
