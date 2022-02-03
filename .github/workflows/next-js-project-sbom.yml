@@ -11,18 +11,19 @@ jobs:
         id: vars
         run: |
           publishTag="latest"
-          PACKAGE_VERSION=$(cat package.json \
+          | xargs=$(cat package.json \
           | grep version \
           | head -1 \
           | awk -F: '{ print $2 }' \
           | sed 's/[",]//g')
           if [[ "$GITHUB_REF" == *\/release ]]
+          PACKAGE_VERSION = $PACKAGE_VERSION | xargs
           then
             publishTag="latest"
             echo ::set-output name=filename::"${PACKAGE_VERSION}-latest"
           else
             publishTag="beta"
-            echo ::set-output name=filename::"${PACKAGE_VERSION | xargs}-beta.${GITHUB_RUN_NUMBER}"
+            echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
       - name: CycloneDX SBOM report
         uses: CycloneDX/gh-node-module-generatebom@master
