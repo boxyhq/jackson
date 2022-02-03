@@ -35,14 +35,10 @@ jobs:
         with:
           name: ${{steps.vars.outputs.filename}}.json 
           path: ${{steps.vars.outputs.filename}}.json
-      - name: debug
-        run: tree
       - name: Create folder
         run: mkdir -p ./_devsec/
       - name: Move Report
         run: mv ${{ steps.vars.outputs.filename }}.json "./_devsec/${{steps.vars.outputs.filename}}.json"
-      - name: debug
-        run: tree
       - name: Build the container image
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
@@ -52,6 +48,8 @@ jobs:
           image: localbuild/testimage:latest
           format: spdxtagvalue
           output: ${{ steps.vars.outputs.filename }}.spdx
+      - name: Tree
+        run: tree
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.vars.outputs.filename }}.spdx 
