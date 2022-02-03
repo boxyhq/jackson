@@ -11,7 +11,7 @@ jobs:
         id: vars
         run: |
           publishTag="latest"
-          PACKAGE_VERSION=$(echo $(cat ../package.json) | json version)
+          PACKAGE_VERSION=$(echo $(cat ./package.json) | json version)
           if [[ "$GITHUB_REF" == *\/release ]]
           then
             publishTag="latest"
