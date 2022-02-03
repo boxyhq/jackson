@@ -63,11 +63,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: NPM Package Scan
-        uses: anchore/scan-action@v3
+      - name: CycloneDX SBOM report
+        uses: CycloneDX/gh-node-module-generatebom@master
+        id: cyclonedx-scan
         with:
-          path: "./npm"
-          fail-build: false
+          path: "./"
+          output: ${{ steps.vars.outputs.filename }}.json
       - name: Set output variables
         id: vars
         run: |
@@ -87,17 +88,11 @@ jobs:
             publishTag="beta"
             echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
-      - name: NPM Pacakge SBOM Report [SPDX]
-        uses: anchore/sbom-action@v0
-        with:
-          format: spdx
-          artifact-name: ${{steps.vars.outputs.filename}}.spdx
-      - name: debug
-        run: tree
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.vars.outputs.filename }}.spdx 
-          path: ${{ steps.vars.outputs.filename }}.spdx
+          name: ${{ steps.vars.outputs.filename }}.json 
+          path: ${{ steps.vars.outputs.filename }}.json
+      - run: mkdir _devsec && mv ${{ steps.vars.outputs.filename }}.json ./_devsec/${{ steps.vars.outputs.filename }}.json
       - name: debug
         run: tree
       - name: Use Node.js ${{ matrix.node-version }}
