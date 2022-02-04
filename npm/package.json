@@ -19,6 +19,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "db:migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config ormconfig.js  -n Initial",
+    "db:migration:run": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run",
+    // "db:migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config ormconfig.js  -n createdAt",
     "prepublishOnly": "npm run build",
     "test": "tap --ts --timeout=100 --coverage test/**/*.test.ts",
     "sort": "npx sort-package-json"
