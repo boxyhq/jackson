@@ -33,8 +33,21 @@
                 "text": "Cross-site scripting (XSS) vulnerability in the 3 slide gallery in the Fresh theme before 7.x-1.4 for Drupal allows remote authenticated users with the administer themes permission to inject arbitrary web script or HTML via unspecified vectors."
               },
               "help": {
-                "text": "Vulnerability CVE-2013-1779\nSeverity: Low\nPackage: fresh\nVersion: 0.5.2\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2013-1779](https://nvd.nist.gov/vuln/detail/CVE-2013-1779)",
-                "markdown": "**Vulnerability CVE-2013-1779**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Low|fresh|0.5.2|none|npm|package-lock.json|unknown|[CVE-2013-1779](https://nvd.nist.gov/vuln/detail/CVE-2013-1779)|\n"
+                "text": "Vulnerability CVE-2013-1779\nSeverity: Low\nPackage: fresh\nVersion: 0.5.2\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2013-1779](https://nvd.nist.gov/vuln/detail/CVE-2013-1779)",
+                "markdown": "**Vulnerability CVE-2013-1779**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Low|fresh|0.5.2|none|npm|npm/package-lock.json|unknown|[CVE-2013-1779](https://nvd.nist.gov/vuln/detail/CVE-2013-1779)|\n"
+              }
+            },
+            {
+              "id": "ANCHOREVULN_CVE-2014-8180_npm_mongodb_3.7.3",
+              "shortDescription": {
+                "text": "CVE-2014-8180 Medium vulnerability for mongodb package"
+              },
+              "fullDescription": {
+                "text": "MongoDB on Red Hat Satellite 6 allows local users to bypass authentication by logging in with an empty password and delete information which can cause a Denial of Service."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2014-8180\nSeverity: Medium\nPackage: mongodb\nVersion: 3.7.3\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2014-8180](https://nvd.nist.gov/vuln/detail/CVE-2014-8180)",
+                "markdown": "**Vulnerability CVE-2014-8180**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Medium|mongodb|3.7.3|none|npm|package-lock.json|unknown|[CVE-2014-8180](https://nvd.nist.gov/vuln/detail/CVE-2014-8180)|\n"
               }
             },
             {
@@ -46,8 +59,21 @@
                 "text": "MongoDB on Red Hat Satellite 6 allows local users to bypass authentication by logging in with an empty password and delete information which can cause a Denial of Service."
               },
               "help": {
-                "text": "Vulnerability CVE-2014-8180\nSeverity: Medium\nPackage: mongodb\nVersion: 4.3.0\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2014-8180](https://nvd.nist.gov/vuln/detail/CVE-2014-8180)",
-                "markdown": "**Vulnerability CVE-2014-8180**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Medium|mongodb|4.3.0|none|npm|package-lock.json|unknown|[CVE-2014-8180](https://nvd.nist.gov/vuln/detail/CVE-2014-8180)|\n"
+                "text": "Vulnerability CVE-2014-8180\nSeverity: Medium\nPackage: mongodb\nVersion: 4.3.0\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2014-8180](https://nvd.nist.gov/vuln/detail/CVE-2014-8180)",
+                "markdown": "**Vulnerability CVE-2014-8180**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Medium|mongodb|4.3.0|none|npm|npm/package-lock.json|unknown|[CVE-2014-8180](https://nvd.nist.gov/vuln/detail/CVE-2014-8180)|\n"
+              }
+            },
+            {
+              "id": "ANCHOREVULN_CVE-2017-18381_npm_mongodb_3.7.3",
+              "shortDescription": {
+                "text": "CVE-2017-18381 Critical vulnerability for mongodb package"
+              },
+              "fullDescription": {
+                "text": "The installation process in Open edX before 2017-01-10 exposes a MongoDB instance to external connections with default credentials."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2017-18381\nSeverity: Critical\nPackage: mongodb\nVersion: 3.7.3\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2017-18381](https://nvd.nist.gov/vuln/detail/CVE-2017-18381)",
+                "markdown": "**Vulnerability CVE-2017-18381**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Critical|mongodb|3.7.3|none|npm|package-lock.json|unknown|[CVE-2017-18381](https://nvd.nist.gov/vuln/detail/CVE-2017-18381)|\n"
               }
             },
             {
@@ -59,8 +85,8 @@
                 "text": "The installation process in Open edX before 2017-01-10 exposes a MongoDB instance to external connections with default credentials."
               },
               "help": {
-                "text": "Vulnerability CVE-2017-18381\nSeverity: Critical\nPackage: mongodb\nVersion: 4.3.0\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2017-18381](https://nvd.nist.gov/vuln/detail/CVE-2017-18381)",
-                "markdown": "**Vulnerability CVE-2017-18381**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Critical|mongodb|4.3.0|none|npm|package-lock.json|unknown|[CVE-2017-18381](https://nvd.nist.gov/vuln/detail/CVE-2017-18381)|\n"
+                "text": "Vulnerability CVE-2017-18381\nSeverity: Critical\nPackage: mongodb\nVersion: 4.3.0\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2017-18381](https://nvd.nist.gov/vuln/detail/CVE-2017-18381)",
+                "markdown": "**Vulnerability CVE-2017-18381**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Critical|mongodb|4.3.0|none|npm|npm/package-lock.json|unknown|[CVE-2017-18381](https://nvd.nist.gov/vuln/detail/CVE-2017-18381)|\n"
               }
             },
             {
@@ -77,6 +103,19 @@
               }
             },
             {
+              "id": "ANCHOREVULN_CVE-2017-2665_npm_mongodb_3.7.3",
+              "shortDescription": {
+                "text": "CVE-2017-2665 High vulnerability for mongodb package"
+              },
+              "fullDescription": {
+                "text": "The skyring-setup command creates random password for mongodb skyring database but it writes password in plain text to /etc/skyring/skyring.conf file which is owned by root but read by local user. Any local user who has access to system running skyring service will be able to get password in plain text."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2017-2665\nSeverity: High\nPackage: mongodb\nVersion: 3.7.3\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2017-2665](https://nvd.nist.gov/vuln/detail/CVE-2017-2665)",
+                "markdown": "**Vulnerability CVE-2017-2665**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|mongodb|3.7.3|none|npm|package-lock.json|unknown|[CVE-2017-2665](https://nvd.nist.gov/vuln/detail/CVE-2017-2665)|\n"
+              }
+            },
+            {
               "id": "ANCHOREVULN_CVE-2017-2665_npm_mongodb_4.3.0",
               "shortDescription": {
                 "text": "CVE-2017-2665 High vulnerability for mongodb package"
@@ -85,8 +124,8 @@
                 "text": "The skyring-setup command creates random password for mongodb skyring database but it writes password in plain text to /etc/skyring/skyring.conf file which is owned by root but read by local user. Any local user who has access to system running skyring service will be able to get password in plain text."
               },
               "help": {
-                "text": "Vulnerability CVE-2017-2665\nSeverity: High\nPackage: mongodb\nVersion: 4.3.0\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2017-2665](https://nvd.nist.gov/vuln/detail/CVE-2017-2665)",
-                "markdown": "**Vulnerability CVE-2017-2665**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|mongodb|4.3.0|none|npm|package-lock.json|unknown|[CVE-2017-2665](https://nvd.nist.gov/vuln/detail/CVE-2017-2665)|\n"
+                "text": "Vulnerability CVE-2017-2665\nSeverity: High\nPackage: mongodb\nVersion: 4.3.0\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2017-2665](https://nvd.nist.gov/vuln/detail/CVE-2017-2665)",
+                "markdown": "**Vulnerability CVE-2017-2665**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|mongodb|4.3.0|none|npm|npm/package-lock.json|unknown|[CVE-2017-2665](https://nvd.nist.gov/vuln/detail/CVE-2017-2665)|\n"
               }
             },
             {
@@ -111,8 +150,8 @@
                 "text": "An Integer Overflow issue was discovered in the struct library in the Lua subsystem in Redis before 3.2.12, 4.x before 4.0.10, and 5.x before 5.0 RC2, leading to a failure of bounds checking."
               },
               "help": {
-                "text": "Vulnerability CVE-2018-11219\nSeverity: Critical\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2018-11219](https://nvd.nist.gov/vuln/detail/CVE-2018-11219)",
-                "markdown": "**Vulnerability CVE-2018-11219**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Critical|redis|4.0.1|none|npm|package-lock.json|unknown|[CVE-2018-11219](https://nvd.nist.gov/vuln/detail/CVE-2018-11219)|\n"
+                "text": "Vulnerability CVE-2018-11219\nSeverity: Critical\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2018-11219](https://nvd.nist.gov/vuln/detail/CVE-2018-11219)",
+                "markdown": "**Vulnerability CVE-2018-11219**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Critical|redis|4.0.1|none|npm|npm/package-lock.json|unknown|[CVE-2018-11219](https://nvd.nist.gov/vuln/detail/CVE-2018-11219)|\n"
               }
             },
             {
@@ -142,6 +181,19 @@
               }
             },
             {
+              "id": "ANCHOREVULN_CVE-2018-7467_npm_next_12.0.9",
+              "shortDescription": {
+                "text": "CVE-2018-7467 High vulnerability for next package"
+              },
+              "fullDescription": {
+                "text": "AxxonSoft Axxon Next has Directory Traversal via an initial /css//..%2f substring in a URI."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-7467\nSeverity: High\nPackage: next\nVersion: 12.0.9\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2018-7467](https://nvd.nist.gov/vuln/detail/CVE-2018-7467)",
+                "markdown": "**Vulnerability CVE-2018-7467**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|next|12.0.9|none|npm|package-lock.json|unknown|[CVE-2018-7467](https://nvd.nist.gov/vuln/detail/CVE-2018-7467)|\n"
+              }
+            },
+            {
               "id": "ANCHOREVULN_CVE-2019-10192_npm_redis_4.0.1",
               "shortDescription": {
                 "text": "CVE-2019-10192 High vulnerability for redis package"
@@ -150,8 +202,8 @@
                 "text": "A heap-buffer overflow vulnerability was found in the Redis hyperloglog data structure versions 3.x before 3.2.13, 4.x before 4.0.14 and 5.x before 5.0.4. By carefully corrupting a hyperloglog using the SETRANGE command, an attacker could trick Redis interpretation of dense HLL encoding to write up to 3 bytes beyond the end of a heap-allocated buffer."
               },
               "help": {
-                "text": "Vulnerability CVE-2019-10192\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2019-10192](https://nvd.nist.gov/vuln/detail/CVE-2019-10192)",
-                "markdown": "**Vulnerability CVE-2019-10192**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|package-lock.json|unknown|[CVE-2019-10192](https://nvd.nist.gov/vuln/detail/CVE-2019-10192)|\n"
+                "text": "Vulnerability CVE-2019-10192\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2019-10192](https://nvd.nist.gov/vuln/detail/CVE-2019-10192)",
+                "markdown": "**Vulnerability CVE-2019-10192**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|npm/package-lock.json|unknown|[CVE-2019-10192](https://nvd.nist.gov/vuln/detail/CVE-2019-10192)|\n"
               }
             },
             {
@@ -163,8 +215,8 @@
                 "text": "A stack-buffer overflow vulnerability was found in the Redis hyperloglog data structure versions 3.x before 3.2.13, 4.x before 4.0.14 and 5.x before 5.0.4. By corrupting a hyperloglog using the SETRANGE command, an attacker could cause Redis to perform controlled increments of up to 12 bytes past the end of a stack-allocated buffer."
               },
               "help": {
-                "text": "Vulnerability CVE-2019-10193\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2019-10193](https://nvd.nist.gov/vuln/detail/CVE-2019-10193)",
-                "markdown": "**Vulnerability CVE-2019-10193**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|package-lock.json|unknown|[CVE-2019-10193](https://nvd.nist.gov/vuln/detail/CVE-2019-10193)|\n"
+                "text": "Vulnerability CVE-2019-10193\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2019-10193](https://nvd.nist.gov/vuln/detail/CVE-2019-10193)",
+                "markdown": "**Vulnerability CVE-2019-10193**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|npm/package-lock.json|unknown|[CVE-2019-10193](https://nvd.nist.gov/vuln/detail/CVE-2019-10193)|\n"
               }
             },
             {
@@ -176,8 +228,8 @@
                 "text": "An integer overflow in the getnum function in lua_struct.c in Redis before 6.0.3 allows context-dependent attackers with permission to run Lua code in a Redis session to cause a denial of service (memory corruption and application crash) or possibly bypass intended sandbox restrictions via a large number, which triggers a stack-based buffer overflow. NOTE: this issue exists because of a CVE-2015-8080 regression."
               },
               "help": {
-                "text": "Vulnerability CVE-2020-14147\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2020-14147](https://nvd.nist.gov/vuln/detail/CVE-2020-14147)",
-                "markdown": "**Vulnerability CVE-2020-14147**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|package-lock.json|unknown|[CVE-2020-14147](https://nvd.nist.gov/vuln/detail/CVE-2020-14147)|\n"
+                "text": "Vulnerability CVE-2020-14147\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2020-14147](https://nvd.nist.gov/vuln/detail/CVE-2020-14147)",
+                "markdown": "**Vulnerability CVE-2020-14147**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|npm/package-lock.json|unknown|[CVE-2020-14147](https://nvd.nist.gov/vuln/detail/CVE-2020-14147)|\n"
               }
             },
             {
@@ -189,8 +241,8 @@
                 "text": "Improper serialization of internal state in the authorization subsystem in MongoDB Server's authorization subsystem permits a user with valid credentials to bypass IP whitelisting protection mechanisms following administrative action. This issue affects: MongoDB Inc. MongoDB Server 4.2 versions prior to 4.2.3; 4.0 versions prior to 4.0.15; 4.3 versions prior to 4.3.3; 3.6 versions prior to 3.6.18."
               },
               "help": {
-                "text": "Vulnerability CVE-2020-7921\nSeverity: Medium\nPackage: mongodb\nVersion: 4.3.0\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2020-7921](https://nvd.nist.gov/vuln/detail/CVE-2020-7921)",
-                "markdown": "**Vulnerability CVE-2020-7921**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Medium|mongodb|4.3.0|none|npm|package-lock.json|unknown|[CVE-2020-7921](https://nvd.nist.gov/vuln/detail/CVE-2020-7921)|\n"
+                "text": "Vulnerability CVE-2020-7921\nSeverity: Medium\nPackage: mongodb\nVersion: 4.3.0\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2020-7921](https://nvd.nist.gov/vuln/detail/CVE-2020-7921)",
+                "markdown": "**Vulnerability CVE-2020-7921**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Medium|mongodb|4.3.0|none|npm|npm/package-lock.json|unknown|[CVE-2020-7921](https://nvd.nist.gov/vuln/detail/CVE-2020-7921)|\n"
               }
             },
             {
@@ -202,8 +254,21 @@
                 "text": "Redis is an open-source, in-memory database that persists on disk. In affected versions of Redis an integer overflow bug in 32-bit Redis version 4.0 or newer could be exploited to corrupt the heap and potentially result with remote code execution. Redis 4.0 or newer uses a configurable limit for the maximum supported bulk input size. By default, it is 512MB which is a safe value for all platforms. If the limit is significantly increased, receiving a large request from a client may trigger several integer overflow scenarios, which would result with buffer overflow and heap corruption. We believe this could in certain conditions be exploited for remote code execution. By default, authenticated Redis users have access to all configuration parameters and can therefore use the “CONFIG SET proto-max-bulk-len” to change the safe default, making the system vulnerable. **This problem only affects 32-bit Redis (on a 32-bit system, or as a 32-bit executable running on a 64-bit system).** The problem is fixed in version 6.2, and the fix is back ported to 6.0.11 and 5.0.11. Make sure you use one of these versions if you are running 32-bit Redis. An additional workaround to mitigate the problem without patching the redis-server executable is to prevent clients from directly executing `CONFIG SET`: Using Redis 6.0 or newer, ACL configuration can be used to block the command. Using older versions, the `rename-command` configuration directive can be used to rename the command to a random string unknown to users, rendering it inaccessible. Please note that this workaround may have an additional impact on users or operational systems that expect `CONFIG SET` to behave in certain ways."
               },
               "help": {
-                "text": "Vulnerability CVE-2021-21309\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2021-21309](https://nvd.nist.gov/vuln/detail/CVE-2021-21309)",
-                "markdown": "**Vulnerability CVE-2021-21309**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|package-lock.json|unknown|[CVE-2021-21309](https://nvd.nist.gov/vuln/detail/CVE-2021-21309)|\n"
+                "text": "Vulnerability CVE-2021-21309\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2021-21309](https://nvd.nist.gov/vuln/detail/CVE-2021-21309)",
+                "markdown": "**Vulnerability CVE-2021-21309**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|npm/package-lock.json|unknown|[CVE-2021-21309](https://nvd.nist.gov/vuln/detail/CVE-2021-21309)|\n"
+              }
+            },
+            {
+              "id": "ANCHOREVULN_CVE-2021-29940_npm_through_2.3.8",
+              "shortDescription": {
+                "text": "CVE-2021-29940 Critical vulnerability for through package"
+              },
+              "fullDescription": {
+                "text": "An issue was discovered in the through crate through 2021-02-18 for Rust. There is a double free (in through and through_and) upon a panic of the map function."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2021-29940\nSeverity: Critical\nPackage: through\nVersion: 2.3.8\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2021-29940](https://nvd.nist.gov/vuln/detail/CVE-2021-29940)",
+                "markdown": "**Vulnerability CVE-2021-29940**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Critical|through|2.3.8|none|npm|package-lock.json|unknown|[CVE-2021-29940](https://nvd.nist.gov/vuln/detail/CVE-2021-29940)|\n"
               }
             },
             {
@@ -241,8 +306,8 @@
                 "text": "Redis is an in-memory database that persists on disk. A vulnerability involving out-of-bounds read and integer overflow to buffer overflow exists starting with version 2.2 and prior to versions 5.0.13, 6.0.15, and 6.2.5. On 32-bit systems, Redis `*BIT*` command are vulnerable to integer overflow that can potentially be exploited to corrupt the heap, leak arbitrary heap contents or trigger remote code execution. The vulnerability involves changing the default `proto-max-bulk-len` configuration parameter to a very large value and constructing specially crafted commands bit commands. This problem only affects Redis on 32-bit platforms, or compiled as a 32-bit binary. Redis versions 5.0.`3m 6.0.15, and 6.2.5 contain patches for this issue. An additional workaround to mitigate the problem without patching the `redis-server` executable is to prevent users from modifying the `proto-max-bulk-len` configuration parameter. This can be done using ACL to restrict unprivileged users from using the CONFIG SET command."
               },
               "help": {
-                "text": "Vulnerability CVE-2021-32761\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2021-32761](https://nvd.nist.gov/vuln/detail/CVE-2021-32761)",
-                "markdown": "**Vulnerability CVE-2021-32761**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|package-lock.json|unknown|[CVE-2021-32761](https://nvd.nist.gov/vuln/detail/CVE-2021-32761)|\n"
+                "text": "Vulnerability CVE-2021-32761\nSeverity: High\nPackage: redis\nVersion: 4.0.1\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2021-32761](https://nvd.nist.gov/vuln/detail/CVE-2021-32761)",
+                "markdown": "**Vulnerability CVE-2021-32761**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|High|redis|4.0.1|none|npm|npm/package-lock.json|unknown|[CVE-2021-32761](https://nvd.nist.gov/vuln/detail/CVE-2021-32761)|\n"
               }
             },
             {
@@ -267,8 +332,8 @@
                 "text": "json-schema is vulnerable to Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution')"
               },
               "help": {
-                "text": "Vulnerability CVE-2021-3918\nSeverity: Critical\nPackage: json-schema\nVersion: 0.2.3\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [CVE-2021-3918](https://nvd.nist.gov/vuln/detail/CVE-2021-3918)",
-                "markdown": "**Vulnerability CVE-2021-3918**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Critical|json-schema|0.2.3|none|npm|package-lock.json|unknown|[CVE-2021-3918](https://nvd.nist.gov/vuln/detail/CVE-2021-3918)|\n"
+                "text": "Vulnerability CVE-2021-3918\nSeverity: Critical\nPackage: json-schema\nVersion: 0.2.3\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [CVE-2021-3918](https://nvd.nist.gov/vuln/detail/CVE-2021-3918)",
+                "markdown": "**Vulnerability CVE-2021-3918**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Critical|json-schema|0.2.3|none|npm|npm/package-lock.json|unknown|[CVE-2021-3918](https://nvd.nist.gov/vuln/detail/CVE-2021-3918)|\n"
               }
             },
             {
@@ -280,8 +345,8 @@
                 "text": "json-schema is vulnerable to Prototype Pollution"
               },
               "help": {
-                "text": "Vulnerability GHSA-896r-f27r-55mw\nSeverity: Medium\nPackage: json-schema\nVersion: 0.2.3\nFix Version: 0.4.0\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [GHSA-896r-f27r-55mw](https://github.com/advisories/GHSA-896r-f27r-55mw)",
-                "markdown": "**Vulnerability GHSA-896r-f27r-55mw**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Medium|json-schema|0.2.3|0.4.0|npm|package-lock.json|unknown|[GHSA-896r-f27r-55mw](https://github.com/advisories/GHSA-896r-f27r-55mw)|\n"
+                "text": "Vulnerability GHSA-896r-f27r-55mw\nSeverity: Medium\nPackage: json-schema\nVersion: 0.2.3\nFix Version: 0.4.0\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [GHSA-896r-f27r-55mw](https://github.com/advisories/GHSA-896r-f27r-55mw)",
+                "markdown": "**Vulnerability GHSA-896r-f27r-55mw**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Medium|json-schema|0.2.3|0.4.0|npm|npm/package-lock.json|unknown|[GHSA-896r-f27r-55mw](https://github.com/advisories/GHSA-896r-f27r-55mw)|\n"
               }
             },
             {
@@ -293,8 +358,8 @@
                 "text": "Withdrawn: Arbitrary code execution in lodash"
               },
               "help": {
-                "text": "Vulnerability GHSA-8p5q-j9m2-g8wr\nSeverity: Low\nPackage: lodash\nVersion: 4.17.21\nFix Version: none\nType: npm\nLocation: package-lock.json\nData Namespace: unknown\nLink: [GHSA-8p5q-j9m2-g8wr](https://github.com/advisories/GHSA-8p5q-j9m2-g8wr)",
-                "markdown": "**Vulnerability GHSA-8p5q-j9m2-g8wr**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Low|lodash|4.17.21|none|npm|package-lock.json|unknown|[GHSA-8p5q-j9m2-g8wr](https://github.com/advisories/GHSA-8p5q-j9m2-g8wr)|\n"
+                "text": "Vulnerability GHSA-8p5q-j9m2-g8wr\nSeverity: Low\nPackage: lodash\nVersion: 4.17.21\nFix Version: none\nType: npm\nLocation: npm/package-lock.json\nData Namespace: unknown\nLink: [GHSA-8p5q-j9m2-g8wr](https://github.com/advisories/GHSA-8p5q-j9m2-g8wr)",
+                "markdown": "**Vulnerability GHSA-8p5q-j9m2-g8wr**\n| Severity | Package | Version | Fix Version | Type | Location | Data Namespace | Link |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|Low|lodash|4.17.21|none|npm|npm/package-lock.json|unknown|[GHSA-8p5q-j9m2-g8wr](https://github.com/advisories/GHSA-8p5q-j9m2-g8wr)|\n"
               }
             }
           ]
@@ -324,6 +389,86 @@
               "physicalLocation": {
                 "artifactLocation": {
                   "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2002-1647_npm_slash_3.0.0",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports slash at version 3.0.0  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2013-1779_npm_fresh_0.5.2",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "The path npm/package-lock.json reports fresh at version 0.5.2  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
@@ -389,11 +534,91 @@
           "baselineState": "unchanged"
         },
         {
+          "ruleId": "ANCHOREVULN_CVE-2014-8180_npm_mongodb_3.7.3",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path package-lock.json reports mongodb at version 3.7.3  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
           "ruleId": "ANCHOREVULN_CVE-2014-8180_npm_mongodb_4.3.0",
           "ruleIndex": 0,
           "level": "error",
           "message": {
-            "text": "The path package-lock.json reports mongodb at version 4.3.0  which would result in a vulnerable (npm) package installed",
+            "text": "The path npm/package-lock.json reports mongodb at version 4.3.0  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2017-18381_npm_mongodb_3.7.3",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path package-lock.json reports mongodb at version 3.7.3  which would result in a vulnerable (npm) package installed",
             "id": "default"
           },
           "analysisTarget": {
@@ -433,17 +658,17 @@
           "ruleIndex": 0,
           "level": "error",
           "message": {
-            "text": "The path package-lock.json reports mongodb at version 4.3.0  which would result in a vulnerable (npm) package installed",
+            "text": "The path npm/package-lock.json reports mongodb at version 4.3.0  which would result in a vulnerable (npm) package installed",
             "id": "default"
           },
           "analysisTarget": {
-            "uri": "package-lock.json"
+            "uri": "npm/package-lock.json"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "package-lock.json"
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
@@ -509,11 +734,51 @@
           "baselineState": "unchanged"
         },
         {
-          "ruleId": "ANCHOREVULN_CVE-2017-2665_npm_mongodb_4.3.0",
+          "ruleId": "ANCHOREVULN_CVE-2017-18589_npm_cookie_0.4.1",
           "ruleIndex": 0,
           "level": "error",
           "message": {
-            "text": "The path package-lock.json reports mongodb at version 4.3.0  which would result in a vulnerable (npm) package installed",
+            "text": "The path npm/package-lock.json reports cookie at version 0.4.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2017-2665_npm_mongodb_3.7.3",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path package-lock.json reports mongodb at version 3.7.3  which would result in a vulnerable (npm) package installed",
             "id": "default"
           },
           "analysisTarget": {
@@ -524,6 +789,46 @@
               "physicalLocation": {
                 "artifactLocation": {
                   "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2017-2665_npm_mongodb_4.3.0",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports mongodb at version 4.3.0  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
@@ -564,6 +869,86 @@
               "physicalLocation": {
                 "artifactLocation": {
                   "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2018-11218_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2018-11219_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
@@ -669,6 +1054,46 @@
           "baselineState": "unchanged"
         },
         {
+          "ruleId": "ANCHOREVULN_CVE-2018-12326_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
           "ruleId": "ANCHOREVULN_CVE-2018-12453_npm_redis_4.0.1",
           "ruleIndex": 0,
           "level": "error",
@@ -684,6 +1109,126 @@
               "physicalLocation": {
                 "artifactLocation": {
                   "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2018-12453_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2018-7467_npm_next_12.0.9",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path package-lock.json reports next at version 12.0.9  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2019-10192_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
@@ -753,6 +1298,46 @@
           "ruleIndex": 0,
           "level": "error",
           "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2019-10193_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
             "text": "The path package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
             "id": "default"
           },
@@ -764,6 +1349,46 @@
               "physicalLocation": {
                 "artifactLocation": {
                   "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2020-14147_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
@@ -833,7 +1458,87 @@
           "ruleIndex": 0,
           "level": "error",
           "message": {
-            "text": "The path package-lock.json reports mongodb at version 4.3.0  which would result in a vulnerable (npm) package installed",
+            "text": "The path npm/package-lock.json reports mongodb at version 4.3.0  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2021-21309_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2021-21309_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
             "id": "default"
           },
           "analysisTarget": {
@@ -869,11 +1574,11 @@
           "baselineState": "unchanged"
         },
         {
-          "ruleId": "ANCHOREVULN_CVE-2021-21309_npm_redis_4.0.1",
+          "ruleId": "ANCHOREVULN_CVE-2021-29940_npm_through_2.3.8",
           "ruleIndex": 0,
           "level": "error",
           "message": {
-            "text": "The path package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "text": "The path package-lock.json reports through at version 2.3.8  which would result in a vulnerable (npm) package installed",
             "id": "default"
           },
           "analysisTarget": {
@@ -949,6 +1654,46 @@
           "baselineState": "unchanged"
         },
         {
+          "ruleId": "ANCHOREVULN_CVE-2021-32626_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
           "ruleId": "ANCHOREVULN_CVE-2021-32672_npm_redis_4.0.1",
           "ruleIndex": 0,
           "level": "error",
@@ -964,6 +1709,86 @@
               "physicalLocation": {
                 "artifactLocation": {
                   "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2021-32672_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2021-32761_npm_redis_4.0.1",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
@@ -1069,21 +1894,61 @@
           "baselineState": "unchanged"
         },
         {
-          "ruleId": "ANCHOREVULN_CVE-2021-3918_npm_json-schema_0.2.3",
+          "ruleId": "ANCHOREVULN_CVE-2021-3470_npm_redis_4.0.1",
           "ruleIndex": 0,
           "level": "error",
           "message": {
-            "text": "The path package-lock.json reports json-schema at version 0.2.3  which would result in a vulnerable (npm) package installed",
+            "text": "The path npm/package-lock.json reports redis at version 4.0.1  which would result in a vulnerable (npm) package installed",
             "id": "default"
           },
           "analysisTarget": {
-            "uri": "package-lock.json"
+            "uri": "npm/package-lock.json"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "package-lock.json"
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_CVE-2021-3918_npm_json-schema_0.2.3",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "The path npm/package-lock.json reports json-schema at version 0.2.3  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
@@ -1113,17 +1978,57 @@
           "ruleIndex": 0,
           "level": "error",
           "message": {
-            "text": "The path package-lock.json reports json-schema at version 0.2.3  which would result in a vulnerable (npm) package installed",
+            "text": "The path npm/package-lock.json reports json-schema at version 0.2.3  which would result in a vulnerable (npm) package installed",
             "id": "default"
           },
           "analysisTarget": {
-            "uri": "package-lock.json"
+            "uri": "npm/package-lock.json"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "package-lock.json"
+                  "uri": "npm/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1,
+                  "byteOffset": 1,
+                  "byteLength": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "dockerfile"
+                }
+              ]
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "external"
+            }
+          ],
+          "baselineState": "unchanged"
+        },
+        {
+          "ruleId": "ANCHOREVULN_GHSA-8p5q-j9m2-g8wr_npm_lodash_4.17.21",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "The path npm/package-lock.json reports lodash at version 4.17.21  which would result in a vulnerable (npm) package installed",
+            "id": "default"
+          },
+          "analysisTarget": {
+            "uri": "npm/package-lock.json"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "npm/package-lock.json"
                 },
                 "region": {
                   "startLine": 1,
