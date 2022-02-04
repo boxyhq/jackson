@@ -57,7 +57,9 @@ jobs:
         run: mv docker_sbom.spdx "./_docker/sbom.spdx"
       - name: Commit report
         run: |
-          rm results.sarif
+          rm results.sarif || true
+          rm ./_docker/sbom.json || true
+          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx
           git pull
           git config --global user.email "ukrocks.mehta@gmail.com"
           git config --global user.name "Utkarsh Mehta"
