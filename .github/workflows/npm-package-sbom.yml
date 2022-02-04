@@ -59,7 +59,7 @@ jobs:
         with:
           name: ${{ steps.vars.outputs.filename }}.cyclonedx
       - name: Create folder/Clear folder
-        run: mkdir -p ./npm/_devsec/ && rm ./npm/_devsec/*
+        run: mkdir -p ./npm/_devsec/ && rm ./npm/_devsec/*.*
       - name: Move SPDX Report
         run: mv ${{ steps.vars.outputs.filename }}.spdx "./npm/_devsec/${{steps.vars.outputs.filename}}.spdx"
       - name: Move CycloneDx Report

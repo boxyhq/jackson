@@ -36,7 +36,7 @@ jobs:
           name: ${{steps.vars.outputs.filename}}.json 
           path: ${{steps.vars.outputs.filename}}.json
       - name: Create folder/Clear folder
-        run: mkdir -p ./_devsec/ && rm ./_devsec/*
+        run: mkdir -p ./_devsec/ && rm ./_devsec/*.*
       - name: Move Report
         run: mv ${{ steps.vars.outputs.filename }}.json "./_devsec/${{steps.vars.outputs.filename}}.json"
       - name: Build the container image
@@ -49,7 +49,7 @@ jobs:
           format: spdxtagvalue
           output: ${{ steps.vars.outputs.filename }}.spdx
       - name: Create/Clear folder
-        run: mkdir -p ./docker/ && rm ./docker/*
+        run: mkdir -p ./docker/ && rm ./docker/*.*
       - name: Move Report
         run: mv ${{ steps.vars.outputs.filename }}.spdx "./docker/${{steps.vars.outputs.filename}}.spdx"
       - name: Commit report
