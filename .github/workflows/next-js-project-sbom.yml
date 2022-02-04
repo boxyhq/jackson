@@ -54,6 +54,7 @@ jobs:
         run: mv ${{ steps.vars.outputs.filename }}.spdx "./docker/${{steps.vars.outputs.filename}}.spdx"
       - name: Commit report
         run: |
+          git pull
           git add .
           git config --global user.email "ukrocks.mehta@gmail.com"
           git config --global user.name "Utkarsh Mehta"
