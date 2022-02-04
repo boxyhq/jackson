@@ -36,6 +36,23 @@ class Redis implements DatabaseDriver {
     return null;
   }
 
+  async getAll(namespace: string): Promise<unknown[]> {
+    const keys = await this.client.sendCommand(['keys', namespace + ':*']);
+    const returnValue: string[] = [];
+    for (let i = 0; i < keys.length; i++) {
+      try {
+        if (this.client.get(keys[i])) {
+          const value = await this.client.get(keys[i]);
+          returnValue.push(JSON.parse(value));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    if (returnValue) return returnValue;
+    return [];
+  }
+
   async getByIndex(namespace: string, idx: Index): Promise<any> {
     const dbKeys = await this.client.sMembers(dbutils.keyForIndex(namespace, idx));
 

@@ -33,12 +33,11 @@ export class JacksonStore {
     default: 'now()',
     nullable: false,
   })
-  creationDate?: Date;
+  createdAt?: Date;
 
   @Column({
     type: 'timestamptz',
     nullable: true,
   })
-  modificationDate?: Date;
-
+  modifedAt?: Date;
 }

@@ -87,7 +87,7 @@ class Sql implements DatabaseDriver {
   }
 
   async get(namespace: string, key: string): Promise<any> {
-    let res = await this.storeRepository.findOne({
+    const res = await this.storeRepository.findOne({
       key: dbutils.key(namespace, key),
     });
 
@@ -102,11 +102,18 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string): Promise<unknown> {
-    let response = await this.storeRepository.find({ where: { key: Like(`%${namespace}%`), }, select: ['value', 'iv', 'tag'], });
+  async getAll(namespace: string): Promise<unknown[]> {
+    const response = await this.storeRepository.find({
+      where: { key: Like(`%${namespace}%`) },
+      select: ['value', 'iv', 'tag'],
+      order: {
+        ['createdAt']: 'DESC',
+        // ['createdAt']: 'ASC',
+      },
+    });
 
-    let returnValue = JSON.parse(JSON.stringify(response))
-    if (returnValue) return returnValue
+    const returnValue = JSON.parse(JSON.stringify(response));
+    if (returnValue) return returnValue;
     return [];
   }
 
@@ -134,7 +141,7 @@ class Sql implements DatabaseDriver {
     namespace: string,
     key: string,
     val: Encrypted,
-    ttl: number = 0,
+    ttl = 0,
     ...indexes: any[]
   ): Promise<void> {
     await this.connection.transaction(async (transactionalEntityManager) => {
@@ -145,7 +152,7 @@ class Sql implements DatabaseDriver {
       store.value = val.value;
       store.iv = val.iv;
       store.tag = val.tag;
-      store.modificationDate = new Date().toISOString()
+      store.modifedAt = new Date().toISOString();
       await transactionalEntityManager.save(store);
 
       if (ttl) {
