@@ -111,8 +111,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ${{ steps.vars.outputs.filename }}.cyclonedx
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Remove temp files & pull latest code
-        run: rm results.sarif && git pull
+        run: rm results.sarif && git pull ${{steps.extract_branch.outputs.branch}}
       - name: Create folder/Clear folder
         run: mkdir -p ./npm/_devsec/ && rm -rf ./npm/_devsec/*.* || true
       - name: Move SPDX Report
