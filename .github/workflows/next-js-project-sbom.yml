@@ -12,29 +12,11 @@ jobs:
         with:
           path: "./"
           fail-build: false
-      - name: Set output variables
-        id: vars
-        run: |
-          publishTag="latest"
-          PACKAGE_VERSION=$(cat package.json \
-          | grep version \
-          | head -1 \
-          | awk -F: '{ print $2 }' \
-          | sed 's/[",]//g' | xargs)
-          if [[ "$GITHUB_REF" == *\/release ]]
-          
-          then
-            publishTag="latest"
-            echo ::set-output name=filename::"${PACKAGE_VERSION}-latest"
-          else
-            publishTag="beta"
-            echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-          fi
       - name: Next Js Project SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
           format: spdx
-          artifact-name: ${{ steps.vars.outputs.filename }}.spdx
+          artifact-name: sbom.spdx
       - name: Publish report [SPDX]
         uses: anchore/sbom-action/publish-sbom@v0
         with:
@@ -43,25 +25,21 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
-          artifact-name: ${{ steps.vars.outputs.filename }}.cyclonedx
+          artifact-name: sbom.cyclonedx
       - name: Publish report [CycloneDx]
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
+      - name: Remove older SBOMs
+        run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
         uses: actions/download-artifact@v2
         with:
-          name: ${{ steps.vars.outputs.filename }}.spdx
+          name: sbom.spdx
       - name: Download artifact for CycloneDx Report
         uses: actions/download-artifact@v2
         with:
-          name: ${{ steps.vars.outputs.filename }}.cyclonedx
-      - name: Create folder/Clear folder
-        run: mkdir -p ./_devsec/ && rm -rf ./_devsec/*.* || true
-      - name: Move Report [SPDX]
-        run: mv ${{ steps.vars.outputs.filename }}.spdx "./_devsec/${{steps.vars.outputs.filename}}.spdx"
-      - name: Move Report [CycloneDx]
-        run: mv ${{ steps.vars.outputs.filename }}.cyclonedx "./_devsec/${{steps.vars.outputs.filename}}.cyclonedx"
+          name: sbom.cyclonedx
       - name: Build the container image
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
@@ -70,15 +48,13 @@ jobs:
         with:
           image: localbuild/testimage:latest
           format: spdxtagvalue
-          output: ${{ steps.vars.outputs.filename }}.spdx
+          output: docker_sbom.spdx
       - name: Create/Clear folder
-        run: mkdir -p ./docker/ && rm -rf ./docker/*.* || true
+        run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
       - name: Docker CycloneDx report
-        run: npm install -g @appthreat/cdxgen && cdxgen localbuild/testimage:latest -o ./docker/${{steps.vars.outputs.filename}}.xml -t docker
+        run: npm install -g @appthreat/cdxgen && cdxgen localbuild/testimage:latest -o ./_docker/sbom.xml -t docker
       - name: Move Report
-        run: mv ${{ steps.vars.outputs.filename }}.spdx "./docker/${{steps.vars.outputs.filename}}.spdx"
-      - name: tree
-        run: tree
+        run: mv docker_sbom.spdx "./_docker/sbom.spdx"
       - name: Commit report
         run: |
           rm results.sarif

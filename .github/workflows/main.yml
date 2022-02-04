@@ -68,28 +68,11 @@ jobs:
         with:
           path: "./npm"
           fail-build: false
-      - name: Set output variables
-        id: vars
-        run: |
-          publishTag="latest"
-          PACKAGE_VERSION=$(cat package.json \
-          | grep version \
-          | head -1 \
-          | awk -F: '{ print $2 }' \
-          | sed 's/[",]//g')
-          if [[ "$GITHUB_REF" == *\/release ]]
-          then
-            publishTag="latest"
-            echo ::set-output name=filename::"${PACKAGE_VERSION}-latest"
-          else
-            publishTag="beta"
-            echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-          fi
       - name: Create NPM Pacakge SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
           format: spdx
-          artifact-name: ${{ steps.vars.outputs.filename }}.spdx
+          artifact-name: npm_sbom.spdx
       - name: Publish report [SPDX]
         uses: anchore/sbom-action/publish-sbom@v0
         with:
@@ -98,7 +81,7 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
-          artifact-name: ${{ steps.vars.outputs.filename }}.cyclonedx
+          artifact-name: npm_sbom.cyclonedx
       - name: Publish report [CycloneDx]
         uses: anchore/sbom-action/publish-sbom@v0
         with:
@@ -106,19 +89,19 @@ jobs:
       - name: Download artifact for SPDX Report
         uses: actions/download-artifact@v2
         with:
-          name: ${{ steps.vars.outputs.filename }}.spdx
+          name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
         uses: actions/download-artifact@v2
         with:
-          name: ${{ steps.vars.outputs.filename }}.cyclonedx
+          name: npm_sbom.cyclonedx
       - name: Remove temp files & pull latest code
         run: rm results.sarif && git pull || true
-      - name: Create folder/Clear folder
-        run: mkdir -p ./npm/_devsec/ && rm -rf ./npm/_devsec/*.* || true
+      - name: Remove older SBOMs
+        run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
-        run: mv ${{ steps.vars.outputs.filename }}.spdx "./npm/_devsec/${{steps.vars.outputs.filename}}.spdx"
+        run: mv npm_sbom.spdx "./npm/sbom.spdx"
       - name: Move CycloneDx Report
-        run: mv ${{ steps.vars.outputs.filename }}.cyclonedx "./npm/_devsec/${{steps.vars.outputs.filename}}.cyclonedx"
+        run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
       - name: Commit report
         run: |
           git add .
