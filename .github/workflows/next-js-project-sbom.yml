@@ -71,6 +71,8 @@ jobs:
           image: localbuild/testimage:latest
           format: spdxtagvalue
           output: ${{ steps.vars.outputs.filename }}.spdx
+      - name: Docker CycloneDx report
+      - run: npm install -g @appthreat/cdxgen && cdxgen localbuild/testimage:latest -o ./docker/${{steps.vars.outputs.filename}}.xml -t docker
       - name: Create/Clear folder
         run: mkdir -p ./docker/ && rm -rf ./docker/*.* || true
       - name: Move Report
