@@ -25,7 +25,9 @@
     "start": "next start -p 5000",
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
     "redis": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=redis DB_TYPE=redis DB_URL=redis://localhost:6379/redis npm run dev",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "pretest:e2e": "NEXTAUTH_SECRET='8a6acwAk0AqOrjc4ytlpM2cG+5WuQOLREQD/XTnUFmQ=' DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson ts-node --log-error e2e/setup.ts",
+    "test:e2e": "NEXTAUTH_SECRET='8a6acwAk0AqOrjc4ytlpM2cG+5WuQOLREQD/XTnUFmQ=' playwright test"
   },
   "husky": {
     "hooks": {
@@ -51,6 +53,7 @@
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
+    "@playwright/test": "1.18.1",
     "@types/cors": "2.8.12",
     "@types/micromatch": "4.0.2",
     "@types/node": "17.0.14",
@@ -68,6 +71,8 @@
     "prettier": "2.5.1",
     "swagger-jsdoc": "6.1.0",
     "tailwindcss": "3.0.18",
+    "ts-node": "10.4.0",
+    "tsconfig-paths": "3.12.0",
     "typescript": "4.5.5"
   },
   "engines": {
