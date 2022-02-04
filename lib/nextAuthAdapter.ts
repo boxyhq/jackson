@@ -6,7 +6,7 @@ import { validateEmailWithACL } from './utils';
 
 const g = global as any;
 
-async function initDB(): Promise<Storable> {
+export async function initNextAuthDB(): Promise<Storable> {
   if (!g.adminAuthStore) {
     const db = await DB.new(opts.db);
     g.adminAuthStore = db.store('admin:auth');
@@ -16,7 +16,7 @@ async function initDB(): Promise<Storable> {
 
 /** @return { import("next-auth/adapters").Adapter } */
 export default function Adapter() {
-  const store = (async () => await initDB())();
+  const store = (async () => await initNextAuthDB())();
   return {
     async createUser(user) {
       return user;
