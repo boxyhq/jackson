@@ -121,6 +121,7 @@ jobs:
         run: mv ${{ steps.vars.outputs.filename }}.cyclonedx "./npm/_devsec/${{steps.vars.outputs.filename}}.cyclonedx"
       - name: Commit report
         run: |
+          rm results.sarif
           git pull
           git add .
           git config --global user.email "ukrocks.mehta@gmail.com"
