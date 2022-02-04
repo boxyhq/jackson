@@ -113,6 +113,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ${{ steps.vars.outputs.filename }}.cyclonedx
+      - run: rm results.sarif && git pull
       - name: Create folder/Clear folder
         run: mkdir -p ./npm/_devsec/ && rm -rf ./npm/_devsec/*.* || true
       - name: Move SPDX Report
@@ -121,8 +122,6 @@ jobs:
         run: mv ${{ steps.vars.outputs.filename }}.cyclonedx "./npm/_devsec/${{steps.vars.outputs.filename}}.cyclonedx"
       - name: Commit report
         run: |
-          rm results.sarif
-          git pull
           git add .
           git config --global user.email "ukrocks.mehta@gmail.com"
           git config --global user.name "Utkarsh Mehta"
