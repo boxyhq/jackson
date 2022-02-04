@@ -48,10 +48,10 @@ jobs:
           image: localbuild/testimage:latest
           format: spdxtagvalue
           output: ${{ steps.vars.outputs.filename }}.spdx
+      - name: Create/Clear folder
+        run: mkdir -p ./docker/ && rm ./docker/*
       - name: Move Report
-        run: mkdir -p ./docker/ && rm ./docker/* && mv ${{ steps.vars.outputs.filename }}.spdx "./docker/${{steps.vars.outputs.filename}}.spdx"
-      - name: Tree
-        run: tree
+        run: mv ${{ steps.vars.outputs.filename }}.spdx "./docker/${{steps.vars.outputs.filename}}.spdx"
       - name: Commit report
         run: |
           git add .
