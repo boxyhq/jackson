@@ -7,6 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Next Js Project Scan
+        uses: anchore/scan-action@v3
+        with:
+          path: "./"
+          fail-build: false
       - name: Set output variables
         id: vars
         run: |
@@ -25,20 +30,38 @@ jobs:
             publishTag="beta"
             echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
-      - name: CycloneDX SBOM report
-        uses: CycloneDX/gh-node-module-generatebom@master
-        id: cyclonedx-scan
+      - name: Next Js Project SBOM Report [SPDX]
+        uses: anchore/sbom-action@v0
         with:
-          path: "./"
-          output: ${{steps.vars.outputs.filename}}.json
-      - uses: actions/upload-artifact@v2
+          format: spdx
+          artifact-name: ${{ steps.vars.outputs.filename }}.spdx
+      - name: Publish report [SPDX]
+        uses: anchore/sbom-action/publish-sbom@v0
         with:
-          name: ${{steps.vars.outputs.filename}}.json 
-          path: ${{steps.vars.outputs.filename}}.json
+          sbom-artifact-match: ".*\\.spdx$"
+      - name: Next Js Project SBOM Report [CycloneDx]
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx
+          artifact-name: ${{ steps.vars.outputs.filename }}.cyclonedx
+      - name: Publish report [CycloneDx]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.cyclonedx$"
+      - name: Download artifact for SPDX Report
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ steps.vars.outputs.filename }}.spdx
+      - name: Download artifact for CycloneDx Report
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ steps.vars.outputs.filename }}.cyclonedx
       - name: Create folder/Clear folder
         run: mkdir -p ./_devsec/ && rm -rf ./_devsec/*.* || true
-      - name: Move Report
-        run: mv ${{ steps.vars.outputs.filename }}.json "./_devsec/${{steps.vars.outputs.filename}}.json"
+      - name: Move Report [SPDX]
+        run: mv ${{ steps.vars.outputs.filename }}.spdx "./_devsec/${{steps.vars.outputs.filename}}.spdx"
+      - name: Move Report [CycloneDx]
+        run: mv ${{ steps.vars.outputs.filename }}.cyclonedx "./_devsec/${{steps.vars.outputs.filename}}.cyclonedx"
       - name: Build the container image
         run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
