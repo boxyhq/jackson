@@ -49,7 +49,7 @@ jobs:
           format: spdxtagvalue
           output: ${{ steps.vars.outputs.filename }}.spdx
       - name: Move Report
-        run: mv ${{ steps.vars.outputs.filename }}.spdx "./_devsec/${{steps.vars.outputs.filename}}.spdx"
+        run: mkdir -p ./docker/ && rm ./docker/* && mv ${{ steps.vars.outputs.filename }}.spdx "./docker/${{steps.vars.outputs.filename}}.spdx"
       - name: Tree
         run: tree
       - name: Commit report
