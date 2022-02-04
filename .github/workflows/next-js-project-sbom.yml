@@ -65,4 +65,4 @@ jobs:
           git config --global user.name "github-bot"
           git add . 
           git commit -am "Automated report" 
-          https://${{GITHUB_TOKEN}}@github.com/boxyhq/jackson.git || true
+          https://${{ secrets.GITHUB_TOKEN }}@github.com/boxyhq/jackson.git || true
