@@ -63,6 +63,70 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: NPM Package Scan
+        uses: anchore/scan-action@v3
+        with:
+          path: "./npm"
+          fail-build: false
+      - name: Set output variables
+        id: vars
+        run: |
+          publishTag="latest"
+          PACKAGE_VERSION=$(cat package.json \
+          | grep version \
+          | head -1 \
+          | awk -F: '{ print $2 }' \
+          | sed 's/[",]//g')
+          if [[ "$GITHUB_REF" == *\/release ]]
+          then
+            publishTag="latest"
+            echo ::set-output name=filename::"${PACKAGE_VERSION}-latest"
+          else
+            publishTag="beta"
+            echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+          fi
+      - name: NPM Pacakge SBOM Report [SPDX]
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx
+          artifact-name: ${{ steps.vars.outputs.filename }}.spdx
+      - name: Publish report [SPDX]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.spdx$"
+      - name: NPM Pacakge SBOM Report [CycloneDx]
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx
+          artifact-name: ${{ steps.vars.outputs.filename }}.cyclonedx
+      - name: Tree
+        run: tree
+      - name: Publish report [CycloneDx]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.cyclonedx$"
+      - name: Download artifact for SPDX Report
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ steps.vars.outputs.filename }}.spdx
+      - name: Download artifact for CycloneDx Report
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ steps.vars.outputs.filename }}.cyclonedx
+      - name: Create folder/Clear folder
+        run: mkdir -p ./npm/_devsec/ && rm -rf ./npm/_devsec/*.* || true
+      - name: Move SPDX Report
+        run: mv ${{ steps.vars.outputs.filename }}.spdx "./npm/_devsec/${{steps.vars.outputs.filename}}.spdx"
+      - name: Move CycloneDx Report
+        run: mv ${{ steps.vars.outputs.filename }}.cyclonedx "./npm/_devsec/${{steps.vars.outputs.filename}}.cyclonedx"
+      - name: Commit report
+        run: |
+          git pull
+          git add .
+          git config --global user.email "ukrocks.mehta@gmail.com"
+          git config --global user.name "Utkarsh Mehta"
+          git commit -am "Automated report"
+          git push
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
