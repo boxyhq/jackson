@@ -61,8 +61,8 @@ jobs:
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx
           git pull
-          git config --global user.email "ukrocks.mehta@gmail.com"
-          git config --global user.name "Utkarsh Mehta"
+          git config --global user.email "github-bot@boxyhq.com"
+          git config --global user.name "github-bot"
           git add . 
           git commit -am "Automated report" 
-          git push || true
+          https://${GITHUB_TOKEN}@github.com/boxyhq/jackson.git || true

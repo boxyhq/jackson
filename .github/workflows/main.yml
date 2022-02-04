@@ -104,11 +104,11 @@ jobs:
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
       - name: Commit report
         run: |
-          git config --global user.email "ukrocks.mehta@gmail.com"
-          git config --global user.name "Utkarsh Mehta"
+          git config --global user.email "github-bot@boxyhq.com"
+          git config --global user.name "github-bot"
           git add . 
           git commit -am "Automated report" 
-          git push || true
+          https://${GITHUB_TOKEN}@github.com/boxyhq/jackson.git || true
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
