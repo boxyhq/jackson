@@ -26,8 +26,8 @@
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
     "redis": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=redis DB_TYPE=redis DB_URL=redis://localhost:6379/redis npm run dev",
     "prepare": "husky install",
-    "pretest:e2e": "NEXTAUTH_SECRET='8a6acwAk0AqOrjc4ytlpM2cG+5WuQOLREQD/XTnUFmQ=' DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson ts-node --log-error e2e/setup.ts",
-    "test:e2e": "NEXTAUTH_SECRET='8a6acwAk0AqOrjc4ytlpM2cG+5WuQOLREQD/XTnUFmQ=' playwright test"
+    "pretest:e2e": "env-cmd -f .env.test.local ts-node --log-error e2e/seedAuthDb.ts",
+    "test:e2e": "env-cmd -f .env.test.local playwright test"
   },
   "husky": {
     "hooks": {
@@ -62,6 +62,7 @@
     "@typescript-eslint/parser": "5.10.2",
     "autoprefixer": "10.4.2",
     "cross-env": "7.0.3",
+    "env-cmd": "10.1.0",
     "eslint": "8.8.0",
     "eslint-config-next": "12.0.10",
     "eslint-config-prettier": "8.3.0",
