@@ -61,4 +61,6 @@ jobs:
           git pull
           git config --global user.email "ukrocks.mehta@gmail.com"
           git config --global user.name "Utkarsh Mehta"
-          git add . && git commit -am "Automated report" && git push || true
+          git add . 
+          git commit -am "Automated report" 
+          git push || true

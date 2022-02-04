@@ -106,7 +106,9 @@ jobs:
         run: |
           git config --global user.email "ukrocks.mehta@gmail.com"
           git config --global user.name "Utkarsh Mehta"
-          git add . && git commit -am "Automated report" && git push || true
+          git add . 
+          git commit -am "Automated report" 
+          git push || true
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
