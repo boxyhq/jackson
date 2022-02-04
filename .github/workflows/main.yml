@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: NPM Package Scan
+      - name: NPM Package SBOM Scan
         uses: anchore/scan-action@v3
         with:
           path: "./npm"
@@ -85,7 +85,7 @@ jobs:
             publishTag="beta"
             echo ::set-output name=filename::"${PACKAGE_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
-      - name: NPM Pacakge SBOM Report [SPDX]
+      - name: Create NPM Pacakge SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
           format: spdx
@@ -94,13 +94,11 @@ jobs:
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
-      - name: NPM Pacakge SBOM Report [CycloneDx]
+      - name: Create NPM Pacakge SBOM Report [CycloneDx]
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
           artifact-name: ${{ steps.vars.outputs.filename }}.cyclonedx
-      - name: Tree
-        run: tree
       - name: Publish report [CycloneDx]
         uses: anchore/sbom-action/publish-sbom@v0
         with:
@@ -113,7 +111,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ${{ steps.vars.outputs.filename }}.cyclonedx
-      - run: rm results.sarif && git pull
+      - name: Remove temp files & pull latest code
+        run: rm results.sarif && git pull
       - name: Create folder/Clear folder
         run: mkdir -p ./npm/_devsec/ && rm -rf ./npm/_devsec/*.* || true
       - name: Move SPDX Report
@@ -135,8 +134,6 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
-      - name: Tree
-        run: tree
       - run: npm install
         working-directory: ./npm
       - run: npm run test
