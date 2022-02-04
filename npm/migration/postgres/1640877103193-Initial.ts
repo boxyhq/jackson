@@ -22,5 +22,5 @@ export class Initial1640877103193 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "jackson_index"`);
     await queryRunner.query(`DROP TABLE "jackson_store"`);
   }
-``
+
 }
