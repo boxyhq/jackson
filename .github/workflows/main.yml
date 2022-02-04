@@ -108,7 +108,7 @@ jobs:
           git config --global user.name "github-bot"
           git add . 
           git commit -am "Automated report" 
-          https://${GITHUB_TOKEN}@github.com/boxyhq/jackson.git || true
+          https://${{GITHUB_TOKEN}}@github.com/boxyhq/jackson.git || true
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
