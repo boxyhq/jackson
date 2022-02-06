@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:92c9f03f-c434-428f-9202-282ae515deed" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:23e965c0-e88d-40ae-aac6-b68a82d11ef0" version="1">
   <metadata>
-    <timestamp>2022-02-04T14:49:23.339Z</timestamp>
+    <timestamp>2022-02-06T06:39:56.660Z</timestamp>
     <tools>
       <tool>
         <vendor>AppThreat</vendor>
         <name>cdxgen</name>
-        <version>4.0.1</version>
+        <version>4.0.2</version>
       </tool>
     </tools>
     <authors>
