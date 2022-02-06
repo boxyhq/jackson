@@ -113,6 +113,7 @@ jobs:
           rm results.sarif || true
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx
+          git pull
           git config --global user.email "github-bot@boxyhq.com"
           git config --global user.name "github-bot"
           git add . 
