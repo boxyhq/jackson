@@ -124,7 +124,7 @@ jobs:
           branch: ${{ github.ref }}
 
   publish:
-    needs: publish
+    needs: sbom
     runs-on: ubuntu-latest
 
     strategy:
