@@ -16,50 +16,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  publish:
+  sbom:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: ''
-          POSTGRES_HOST_AUTH_METHOD: 'trust'
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:6.2.5-alpine
-        ports:
-          - 6379:6379
-      mongo:
-        image: mongo:4.4.10
-        ports:
-          - 27017:27017
-      mysql:
-        image: mysql:5.7
-        ports:
-          - 3307:3306
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: mysql
-      maria:
-        image: mariadb:10.4.22
-        ports:
-          - 3306:3306
-        env:
-          MARIADB_DATABASE: mysql
-          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
 
     steps:
       - uses: actions/checkout@v2
@@ -113,6 +71,54 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
+
+  publish:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: ''
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:6.2.5-alpine
+        ports:
+          - 6379:6379
+      mongo:
+        image: mongo:4.4.10
+        ports:
+          - 27017:27017
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3307:3306
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: mysql
+      maria:
+        image: mariadb:10.4.22
+        ports:
+          - 3306:3306
+        env:
+          MARIADB_DATABASE: mysql
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+
+    steps:
+      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
