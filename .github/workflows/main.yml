@@ -118,7 +118,6 @@ jobs:
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
 
     steps:
-      needs: sbom
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
