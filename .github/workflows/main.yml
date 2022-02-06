@@ -60,8 +60,59 @@ jobs:
         run: mv npm_sbom.spdx "./npm/sbom.spdx"
       - name: Move CycloneDx Report
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
+      - name: Next Js Project Scan
+        uses: anchore/scan-action@v3
+        with:
+          path: "./"
+          fail-build: false
+      - name: Next Js Project SBOM Report [SPDX]
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx
+          artifact-name: sbom.spdx
+      - name: Publish report [SPDX]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.spdx$"
+      - name: Next Js Project SBOM Report [CycloneDx]
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx
+          artifact-name: sbom.cyclonedx
+      - name: Publish report [CycloneDx]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.cyclonedx$"
+      - name: Remove older SBOMs
+        run: rm -rf sbom*.* || true
+      - name: Download artifact for SPDX Report
+        uses: actions/download-artifact@v2
+        with:
+          name: sbom.spdx
+      - name: Download artifact for CycloneDx Report
+        uses: actions/download-artifact@v2
+        with:
+          name: sbom.cyclonedx
+      - name: Build the container image
+        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+      - name: Scan docker image using TERN
+        uses: philips-labs/tern-action@v1.1.0
+        id: scan
+        with:
+          image: localbuild/testimage:latest
+          format: spdxtagvalue
+          output: docker_sbom.spdx
+      - name: Create/Clear folder
+        run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
+      - name: Docker CycloneDx report
+        run: npm install -g @appthreat/cdxgen && cdxgen localbuild/testimage:latest -o ./_docker/sbom.xml -t docker
+      - name: Move Report
+        run: mv docker_sbom.spdx "./_docker/sbom.spdx"
       - name: Commit report
         run: |
+          rm results.sarif || true
+          rm ./_docker/sbom.json || true
+          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx
           git config --global user.email "github-bot@boxyhq.com"
           git config --global user.name "github-bot"
           git add . 
@@ -73,6 +124,7 @@ jobs:
           branch: ${{ github.ref }}
 
   publish:
+    needs: publish
     runs-on: ubuntu-latest
 
     strategy:
