@@ -2,11 +2,11 @@ SPDXVersion: SPDX-2.2
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: .
-DocumentNamespace: https://anchore.com/syft/dir/5cf7c1f1-be8c-4d1c-950a-ebbf0fd54a77
+DocumentNamespace: https://anchore.com/syft/dir/93100830-2c8b-440a-80a2-486629957f4d
 LicenseListVersion: 3.15
 Creator: Organization: Anchore, Inc
 Creator: Tool: syft-0.33.0
-Created: 2022-02-06T07:11:56Z
+Created: 2022-02-06T07:22:43Z
 
 ##### Package: @apidevtools/json-schema-ref-parser
 
