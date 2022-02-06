@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:50d3cacc-67cf-48b2-9edc-54b755eaff9c" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:e3e1c96f-02c3-4bd5-985e-59df401435b0" version="1">
   <metadata>
-    <timestamp>2022-02-06T07:09:28.001Z</timestamp>
+    <timestamp>2022-02-06T07:16:29.354Z</timestamp>
     <tools>
       <tool>
         <vendor>AppThreat</vendor>
