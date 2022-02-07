@@ -277,7 +277,34 @@ export class APIController implements IAPIController {
    *         schema:
    *           type: object
    *           example:
-   *             type: accounts.google.com
+   *             {
+   *               "config": {
+   *                 "idpMetadata": {
+   *                   "sso": {
+   *                     "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+   *                     "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
+   *                   },
+   *                   "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+   *                   "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+   *                   "loginType": "idp",
+   *                   "provider": "okta.com"
+   *                 },
+   *                 "defaultRedirectUrl": "https://hoppscotch.io/",
+   *                 "redirectUrl": ["https://hoppscotch.io/"],
+   *                 "tenant": "hoppscotch.io",
+   *                 "product": "API Engine",
+   *                 "name": "Hoppscotch-SP",
+   *                 "description": "SP for hoppscotch.io",
+   *                 "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *                 "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *                 "certs": {
+   *                   "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+   *                   "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+   *                 }
+   *               }
+   *             }
+   *       '400':
+   *         description: Please provide `clientID` or `tenant`/`product`.
    *       '401':
    *         description: Unauthorized
    */
