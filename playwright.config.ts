@@ -39,7 +39,6 @@ const config: PlaywrightTestConfig = {
       name: 'Desktop Chrome',
       use: {
         ...devices['Desktop Chrome'],
-        headless: false,
         baseURL: 'http://localhost:5000',
         storageState: './e2e/state.json',
       },
