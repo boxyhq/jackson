@@ -16,14 +16,14 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    
     services:
       postgres:
         image: postgres:13
@@ -60,10 +60,10 @@ jobs:
         env:
           MARIADB_DATABASE: mysql
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
-
+    
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           always-auth: true
@@ -71,28 +71,13 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
-      - run: npm install
+    - run: npm install
         working-directory: ./npm
-      - run: npm run test
+    - run: npm run test
         working-directory: ./npm
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check Out Repo
-        uses: actions/checkout@v2
-
-      - name: Get short SHA
-        id: slug
-        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
-
-      - name: NPM Version
-        id: npmversion
-        run: |
+    - run: |
           publishTag="latest"
-          npm i
+
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
           echo ver=$JACKSON_VERSION
@@ -112,12 +97,28 @@ jobs:
 
           echo ${JACKSON_VERSION} > npmversion.txt
 
-          echo "::set-output name=publishTag::$(echo publishTag)"
-          echo "::set-output name=npmversion::$(cat npmversion.txt)"
+          echo $(cat npmversion.txt)
         working-directory: ./npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Upload saml-jackson npm version
+        uses: actions/upload-artifact@v2
+        with:
+          name: npmversion
+          path: ./npm/npmversion.txt
 
-      - name: tree
-        run: tree
+       name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
+
+      - name: Download saml-jackson npm version
+        uses: actions/download-artifact@v2
+        with:
+          name: npmversion
+
+      - name: Get saml-jackson npm version
+        id: npmversion
+        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
 
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
@@ -215,11 +216,13 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: sbom.cyclonedx
+      - name: Build the container image
+        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
         uses: philips-labs/tern-action@v1.1.0
         id: scan
         with:
-          image: boxyhq/${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
+          image: localbuild/testimage:latest
           format: spdxtagvalue
           output: docker_sbom.spdx
       - name: Create/Clear folder
@@ -246,14 +249,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
 
+      - run: npm install
+        working-directory: ./npm
+      - run: npm run test
+        working-directory: ./npm
       - run: |
-          npm i
-          npm publish --tag ${{ steps.npmversion.outputs.publishTag }} --access public
+          npm publish --tag $publishTag --access public
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Upload saml-jackson npm version
-        uses: actions/upload-artifact@v2
-        with:
-          name: npmversion
-          path: ./npm/npmversion.txt
