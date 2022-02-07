@@ -16,11 +16,137 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  sbom:
+  test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: ''
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:6.2.5-alpine
+        ports:
+          - 6379:6379
+      mongo:
+        image: mongo:4.4.10
+        ports:
+          - 27017:27017
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3307:3306
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: mysql
+      maria:
+        image: mariadb:10.4.22
+        ports:
+          - 3306:3306
+        env:
+          MARIADB_DATABASE: mysql
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
 
     steps:
       - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          always-auth: true
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org
+          scope: '@boxyhq'
+          cache: 'npm'
+      - run: npm install
+        working-directory: ./npm
+      - run: npm run test
+        working-directory: ./npm
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
+
+      - name: NPM Version
+        id: npmversion
+        run: |
+          publishTag="latest"
+
+          npm install -g json
+          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
+          echo ver=$JACKSON_VERSION
+          json -I -f package.json -e "this.main=\"dist/index.js\""
+          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+
+          if [[ "$GITHUB_REF" == *\/release ]]
+          then
+            echo "Release branch"
+          else
+            echo "Dev branch"
+            publishTag="beta"
+            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+            json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+          fi
+
+          echo ${JACKSON_VERSION} > npmversion.txt
+
+          echo "::set-output name=publishTag::${publishTag}"
+          echo "::set-output name=npmversion::$(cat npmversion.txt)"
+        working-directory: ./npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Download saml-jackson npm version
+        uses: actions/download-artifact@v2
+        with:
+          name: npmversion
+
+      - run: echo ${{ steps.npmversion.outputs.npmversion }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
       - name: NPM Package SBOM Scan
         uses: anchore/scan-action@v3
         with:
@@ -93,13 +219,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: sbom.cyclonedx
-      - name: Build the container image
-        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
         uses: philips-labs/tern-action@v1.1.0
         id: scan
         with:
-          image: localbuild/testimage:latest
+          image: boxyhq/${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
           format: spdxtagvalue
           output: docker_sbom.spdx
       - name: Create/Clear folder
@@ -126,91 +250,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
 
-  publish:
-    needs: sbom
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: ''
-          POSTGRES_HOST_AUTH_METHOD: 'trust'
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:6.2.5-alpine
-        ports:
-          - 6379:6379
-      mongo:
-        image: mongo:4.4.10
-        ports:
-          - 27017:27017
-      mysql:
-        image: mysql:5.7
-        ports:
-          - 3307:3306
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: mysql
-      maria:
-        image: mariadb:10.4.22
-        ports:
-          - 3306:3306
-        env:
-          MARIADB_DATABASE: mysql
-          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          always-auth: true
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org
-          scope: '@boxyhq'
-          cache: 'npm'
-      - run: npm install
-        working-directory: ./npm
-      - run: npm run test
-        working-directory: ./npm
       - run: |
-          publishTag="latest"
-
-          npm install -g json
-          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
-          echo ver=$JACKSON_VERSION
-          json -I -f package.json -e "this.main=\"dist/index.js\""
-          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
-          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
-
-          if [[ "$GITHUB_REF" == *\/release ]]
-          then
-            echo "Release branch"
-          else
-            echo "Dev branch"
-            publishTag="beta"
-            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-            json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
-          fi
-
-          npm publish --tag $publishTag --access public
-
-          echo ${JACKSON_VERSION} > npmversion.txt
-
-          echo $(cat npmversion.txt)
+          npm publish --tag ${{ steps.npmversion.outputs.publishTag }} --access public
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -219,48 +260,3 @@ jobs:
         with:
           name: npmversion
           path: ./npm/npmversion.txt
-
-  build:
-    needs: publish
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check Out Repo
-        uses: actions/checkout@v2
-
-      - name: Get short SHA
-        id: slug
-        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
-
-      - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v2
-        with:
-          name: npmversion
-
-      - name: Get saml-jackson npm version
-        id: npmversion
-        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
-
-      - run: echo ${{ steps.npmversion.outputs.npmversion }}
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          context: ./
-          file: ./Dockerfile
-          push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
-
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
