@@ -1,10 +1,11 @@
-import { Collection, Db, Filter, MongoClient, UpdateOptions } from 'mongodb';
+import { Collection, Db, MongoClient, UpdateOptions } from 'mongodb';
 import { DatabaseDriver, DatabaseOption, Encrypted, Index } from '../typings';
 import * as dbutils from './utils';
 
 type _Document = {
   value: Encrypted;
-  expiresAt: Date;
+  expiresAt?: Date;
+  modifiedAt: string;
   indexes: string[];
 };
 
@@ -41,7 +42,7 @@ class Mongo implements DatabaseDriver {
   async get(namespace: string, key: string): Promise<any> {
     const res = await this.collection.findOne({
       _id: dbutils.key(namespace, key),
-    } as Filter<{ _id: any }>);
+    });
     if (res && res.value) {
       return res.value;
     }
@@ -75,7 +76,6 @@ class Mongo implements DatabaseDriver {
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
     const doc = <_Document>{
       value: val,
-      modifiedAt: { type: Date },
     };
 
     if (ttl) {
@@ -94,7 +94,7 @@ class Mongo implements DatabaseDriver {
 
     doc.modifiedAt = new Date().toISOString();
     await this.collection.updateOne(
-      { _id: dbutils.key(namespace, key) } as Filter<{ _id: any }>,
+      { _id: dbutils.key(namespace, key) },
       {
         $set: doc,
         $setOnInsert: {
@@ -108,7 +108,7 @@ class Mongo implements DatabaseDriver {
   async delete(namespace: string, key: string): Promise<any> {
     return await this.collection.deleteOne({
       _id: dbutils.key(namespace, key),
-    } as Filter<{ _id: any }>);
+    });
   }
 }
 
