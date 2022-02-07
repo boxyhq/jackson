@@ -247,6 +247,7 @@ jobs:
           branch: ${{ github.ref }}
 
       - run: |
+          npm i
           npm publish --tag ${{ steps.npmversion.outputs.publishTag }} --access public
         working-directory: ./npm
         env:
