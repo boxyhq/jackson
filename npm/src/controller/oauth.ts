@@ -56,9 +56,7 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
-  public async authorize(
-    body: OAuthReqBody
-  ): Promise<{ redirect_url: string | null; authorize_form: string | null }> {
+  public async authorize(body: OAuthReqBody): Promise<{ redirect_url: string; authorize_form: string }> {
     const {
       response_type = 'code',
       client_id,
@@ -144,8 +142,8 @@ export class OAuthController implements IOAuthController {
     const relayState = relayStatePrefix + sessionId;
     const { sso } = samlConfig.idpMetadata;
 
-    let redirectUrl: string | null = null;
-    let authorizeForm: string | null = null;
+    let redirectUrl = '';
+    let authorizeForm = '';
 
     // HTTP redirect binding
     if ('redirectUrl' in sso) {

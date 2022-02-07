@@ -71,6 +71,8 @@ export const controllers = async (
 
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
+  console.log('From local NPM');
+
   return {
     apiController,
     oauthController,
