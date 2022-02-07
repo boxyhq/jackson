@@ -27,6 +27,7 @@ const config: PlaywrightTestConfig = {
     // More information: https://playwright.dev/docs/trace-viewer
     trace: 'retry-with-trace',
     storageState: './e2e/state.json',
+    headless: !!process.env.CI,
 
     // All available context options: https://playwright.dev/docs/api/class-browser#browser-new-context
     // contextOptions: {
