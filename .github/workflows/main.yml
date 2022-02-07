@@ -86,7 +86,7 @@ jobs:
           DB_ENGINE: mongo
           DB_URL: mongodb://mongoadmin:secret@localhost:27017/jackson
           DEBUG: pw:webserver
-        run: ts-node --log-error e2e/seedAuthDb.ts && playwright test
+        run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
       - run: npm install
         working-directory: ./npm
       - run: npm run test
