@@ -112,7 +112,7 @@ jobs:
 
           echo ${JACKSON_VERSION} > npmversion.txt
 
-          echo "::set-output name=publishTag::${publishTag}"
+          echo "::set-output name=publishTag::$(echo publishTag)"
           echo "::set-output name=npmversion::$(cat npmversion.txt)"
         working-directory: ./npm
 
