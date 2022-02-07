@@ -92,7 +92,7 @@ jobs:
         id: npmversion
         run: |
           publishTag="latest"
-
+          npm i
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
           echo ver=$JACKSON_VERSION
