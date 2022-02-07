@@ -3,7 +3,7 @@ export enum IndexNames {
   TenantProduct = 'tenantProduct',
 }
 
-export const createAuthorizeForm = (RelayState: string, SAMLRequest: string, postUrl: string) => {
+export const createAuthorizeForm = (relayState: string, samlReqEnc: string, postUrl: string) => {
   const formElements = [
     '<!DOCTYPE html>',
     '<html>',
@@ -16,8 +16,8 @@ export const createAuthorizeForm = (RelayState: string, SAMLRequest: string, pos
     '<p>Note: Since your browser does not support JavaScript, you must press the Continue button once to proceed.</p>',
     '</noscript>',
     '<form method="post" action="' + encodeURI(postUrl) + '">',
-    '<input type="hidden" name="RelayState" value="' + RelayState + '"/>',
-    '<input type="hidden" name="SAMLRequest" value="' + SAMLRequest + '"/>',
+    '<input type="hidden" name="RelayState" value="' + relayState + '"/>',
+    '<input type="hidden" name="SAMLRequest" value="' + samlReqEnc + '"/>',
     '<input type="submit" value="Continue" />',
     '</form>',
     '<script>document.forms[0].style.display="none";</script>',
