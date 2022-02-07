@@ -116,6 +116,9 @@ jobs:
           echo "::set-output name=npmversion::$(cat npmversion.txt)"
         working-directory: ./npm
 
+      - name: tree
+        run: tree
+
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
       - name: Set up Docker Buildx
