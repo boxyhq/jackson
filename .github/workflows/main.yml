@@ -80,7 +80,7 @@ jobs:
         run: npx playwright install-deps
       - name: Generate a secret
         run: |
-          echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)"" >> $GITHUB_ENV
+          echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)" >> $GITHUB_ENV
       - name: e2e tests
         env:
           DB_ENGINE: mongo
