@@ -17,23 +17,21 @@ For full documentation, visit [boxyhq.com/docs/jackson/introduction](https://box
 
 ## SBOM Reports (Software Bill Of Materials)
 
-[SBOM](https://en.wikipedia.org/wiki/Software_bill_of_materials) is a list of components in a piece of software. It is like a list of ingradients of a product.
+[SBOM](https://en.wikipedia.org/wiki/Software_bill_of_materials) is a list of components in a piece of software. It is like a list of ingredients of a product.
 
 ### Report Standards
 
-SBOMs reports primarily use [spdx](https://en.wikipedia.org/wiki/Software_Package_Data_Exchange) & [cyclonedx](https://cyclonedx.org/) standards.
+SBOM reports primarily use [SPDX](https://en.wikipedia.org/wiki/Software_Package_Data_Exchange) & [CycloneDX](https://cyclonedx.org/) standards.
 
 ### Jackson SBOM reports
 
-You can find the sbom reports at the following locations, which are updated everytime there is change in the codebase.
+You can find the SBOM reports at the following locations, which are updated every time there is change in the codebase.
 
-`sbom.spdx` `./sbom.cyclonedx`
-
-| Location    | Files                         | Context                              |
-| ----------- | ----------------------------- | ------------------------------------ |
-| `./`        | `sbom.spdx`, `sbom.cyclonedx` | Next.js Project at root location     |
-| `./npm`     | `sbom.spdx`, `sbom.cyclonedx` | NPM package                          |
-| `./_docker` | `sbom.spdx`, `sbom.cyclonedx` | Docker Image created with Dockerfile |
+| Location    | Files                         | Context                               |
+| ----------- | ----------------------------- | ------------------------------------- |
+| `./`        | `sbom.spdx`, `sbom.cyclonedx` | SAML Jackson service                  |
+| `./npm`     | `sbom.spdx`, `sbom.cyclonedx` | NPM package                           |
+| `./_docker` | `sbom.spdx`, `sbom.cyclonedx` | Docker Image for SAML Jackson service |
 
 ## Contributing
 
