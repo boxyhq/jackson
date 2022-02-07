@@ -44,6 +44,10 @@ jobs:
           - 6379:6379
       mongo:
         image: mongo:4.4.10
+        env:
+          MONGO_INITDB_DATABASE: jackson
+          MONGO_INITDB_ROOT_PASSWORD: secret
+          MONGO_INITDB_ROOT_USERNAME: mongoadmin
         ports:
           - 27017:27017
       mysql:
@@ -74,6 +78,17 @@ jobs:
       - run: npm install
       - run: npm run test
         working-directory: ./npm
+      - name: Install playwright browser dependencies
+        run: npx playwright install-deps
+      - name: Generate a secret
+        run: |
+          echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)"" >> $GITHUB_ENV
+      - name: e2e tests
+        env:
+          DB_ENGINE: mongo
+          DB_URL: mongodb://mongoadmin:secret@localhost:27017/jackson
+          DEBUG: pw:webserver
+        run: ts-node --log-error e2e/seedAuthDb.ts && playwright test
       - run: |
           publishTag="latest"
 
