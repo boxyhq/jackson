@@ -181,7 +181,75 @@ export class APIController implements IAPIController {
       provider: idpMetadata.provider,
     };
   }
-
+  /**
+   * @swagger
+   *
+   * /api/v1/saml/config:
+   *   patch:
+   *     summary: Update SAML configuration
+   *     operationId: update-saml-config
+   *     tags: [SAML Config]
+   *     consumes:
+   *       - application/json
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - name: clientID
+   *         description: Client ID for the config
+   *         type: string
+   *         in: formData
+   *         required: true
+   *       - name: name
+   *         description: Name/identifier for the config
+   *         type: string
+   *         in: formData
+   *         required: true
+   *         example: cal-saml-config
+   *       -name: description
+   *         description: A short description for the config not more than 50 characters
+   *         type: string
+   *         in: formData
+   *         required: true
+   *         example: SAML login for cal.com app
+   *       - name: encodedRawMetadata
+   *         description: Base64 encoding of the XML metadata
+   *         in: formData
+   *         type: string
+   *       - name: rawMetadata
+   *         description: Raw XML metadata
+   *         in: formData
+   *         type: string
+   *       - name: defaultRedirectUrl
+   *         description: The redirect URL to use in the IdP login flow
+   *         in: formData
+   *         required: true
+   *         type: string
+   *         example: http://localhost:3000/login/saml
+   *       - name: redirectUrl
+   *         description: JSON encoded array containing a list of allowed redirect URLs
+   *         in: formData
+   *         required: true
+   *         type: string
+   *         example: '["http://localhost:3000/*"]'
+   *       - name: tenant
+   *         description: Tenant
+   *         in: formData
+   *         required: true
+   *         type: string
+   *         example: boxyhq.com
+   *       - name: product
+   *         description: Product
+   *         in: formData
+   *         required: true
+   *         type: string
+   *         example: demo
+   *     responses:
+   *       204:
+   *         description: Success
+   *       400:
+   *         description: Please provide clientID
+   *       401:
+   *         description: Unauthorized
+   */
   public async updateConfig(body): Promise<void> {
     const {
       encodedRawMetadata, // could be omitted
