@@ -121,7 +121,7 @@ jobs:
       - name: Download saml-jackson npm version
         uses: actions/download-artifact@v2
         with:
-          name: npmversion
+          name: ./npm/npmversion
 
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
