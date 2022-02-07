@@ -115,13 +115,6 @@ jobs:
           echo "::set-output name=publishTag::${publishTag}"
           echo "::set-output name=npmversion::$(cat npmversion.txt)"
         working-directory: ./npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
-      - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v2
-        with:
-          name: ./npm/npmversion
 
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
