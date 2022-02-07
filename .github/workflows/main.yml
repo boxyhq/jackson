@@ -76,10 +76,6 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
       - run: npm install
-        working-directory: ./npm
-      - run: npm run test
-        working-directory: ./npm
-      - run: npm install
       - name: Install playwright browser dependencies
         run: npx playwright install-deps
       - name: Generate a secret
@@ -91,6 +87,10 @@ jobs:
           DB_URL: mongodb://mongoadmin:secret@localhost:27017/jackson
           DEBUG: pw:webserver
         run: ts-node --log-error e2e/seedAuthDb.ts && playwright test
+      - run: npm install
+        working-directory: ./npm
+      - run: npm run test
+        working-directory: ./npm
       - run: |
           publishTag="latest"
 
