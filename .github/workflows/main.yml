@@ -62,17 +62,20 @@ jobs:
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
     
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        always-auth: true
-        node-version: ${{ matrix.node-version }}
-        registry-url: https://registry.npmjs.org
-        scope: '@boxyhq'
-        cache: 'npm'
-    - run: cd ./npm && npm install && npm run test
-    - run: |
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          always-auth: true
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org
+          scope: '@boxyhq'
+          cache: 'npm'
+      - run: npm install
+        working-directory: ./npm
+      - run: npm run test
+        working-directory: ./npm
+      - run: |
           publishTag="latest"
 
           npm install -g json
@@ -104,7 +107,7 @@ jobs:
           name: npmversion
           path: ./npm/npmversion.txt
 
-       name: Get short SHA
+      - name: Get short SHA
         id: slug
         run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
 
