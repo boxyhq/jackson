@@ -71,9 +71,7 @@ jobs:
         registry-url: https://registry.npmjs.org
         scope: '@boxyhq'
         cache: 'npm'
-    - run: npm install
-      working-directory: ./npm
-    - run: npm run test
+    - run: npm install && npm run test
       working-directory: ./npm
     - run: |
           publishTag="latest"
