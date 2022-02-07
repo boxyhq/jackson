@@ -39,5 +39,5 @@ export class JacksonStore {
     type: 'timestamptz',
     nullable: true,
   })
-  modifedAt?: Date;
+  modifiedAt?: Date;
 }

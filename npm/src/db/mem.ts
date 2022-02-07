@@ -81,7 +81,7 @@ class Mem implements DatabaseDriver {
     this.store[k] = val;
 
     if (!Date.parse(this.store['createdAt'])) this.store['createdAt'] = new Date().toISOString();
-    this.store['modifedAt'] = new Date().toISOString();
+    this.store['modifiedAt'] = new Date().toISOString();
 
     // console.log(this.store)
     if (ttl) {

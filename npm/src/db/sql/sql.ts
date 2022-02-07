@@ -137,13 +137,7 @@ class Sql implements DatabaseDriver {
     return ret;
   }
 
-  async put(
-    namespace: string,
-    key: string,
-    val: Encrypted,
-    ttl = 0,
-    ...indexes: any[]
-  ): Promise<void> {
+  async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
     await this.connection.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
 
@@ -152,7 +146,7 @@ class Sql implements DatabaseDriver {
       store.value = val.value;
       store.iv = val.iv;
       store.tag = val.tag;
-      store.modifedAt = new Date().toISOString();
+      store.modifiedAt = new Date().toISOString();
       await transactionalEntityManager.save(store);
 
       if (ttl) {
