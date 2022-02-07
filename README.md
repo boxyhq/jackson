@@ -15,6 +15,26 @@ For full documentation, visit [boxyhq.com/docs/jackson/introduction](https://box
 
 [CodeSee codebase visualizer](https://app.codesee.io/maps/public/53e91640-23b5-11ec-a724-79d7dd589517)
 
+## SBOM Reports (Software Bill Of Materials)
+
+[SBOM](https://en.wikipedia.org/wiki/Software_bill_of_materials) is a list of components in a piece of software. It is like a list of ingradients of a product.
+
+### Report Standards
+
+SBOMs reports primarily use [spdx](https://en.wikipedia.org/wiki/Software_Package_Data_Exchange) & [cyclonedx](https://cyclonedx.org/) standards.
+
+### Jackson SBOM reports
+
+You can find the sbom reports at the following locations, which are updated everytime there is change in the codebase.
+
+`sbom.spdx` `./sbom.cyclonedx`
+
+| Location    | Files                         | Context                              |
+| ----------- | ----------------------------- | ------------------------------------ |
+| `./`        | `sbom.spdx`, `sbom.cyclonedx` | Next.js Project at root location     |
+| `./npm`     | `sbom.spdx`, `sbom.cyclonedx` | NPM package                          |
+| `./_docker` | `sbom.spdx`, `sbom.cyclonedx` | Docker Image created with Dockerfile |
+
 ## Contributing
 
 Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody else and are appreciated.
