@@ -15,7 +15,7 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { IndexNames } from './utils';
+import { IndexNames, createAuthorizeForm } from './utils';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 
@@ -56,7 +56,9 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
-  public async authorize(body: OAuthReqBody): Promise<{ redirect_url: string }> {
+  public async authorize(
+    body: OAuthReqBody
+  ): Promise<{ redirect_url: string | null; authorize_form: string | null }> {
     const {
       response_type = 'code',
       client_id,
@@ -139,15 +141,35 @@ export class OAuthController implements IOAuthController {
       code_challenge_method,
     });
 
-    // deepak: When supporting HTTP-POST skip deflate
-    const samlReqEnc = await deflateRawAsync(samlReq.request);
+    const relayState = relayStatePrefix + sessionId;
+    const { sso } = samlConfig.idpMetadata;
 
-    const redirectUrl = redirect.success(samlConfig.idpMetadata.sso.redirectUrl, {
-      RelayState: relayStatePrefix + sessionId,
-      SAMLRequest: Buffer.from(samlReqEnc).toString('base64'),
-    });
+    let redirectUrl: string | null = null;
+    let authorizeForm: string | null = null;
 
-    return { redirect_url: redirectUrl };
+    // HTTP redirect binding
+    if ('redirectUrl' in sso) {
+      const samlReqEnc = await deflateRawAsync(samlReq.request);
+
+      redirectUrl = redirect.success(sso.redirectUrl, {
+        RelayState: relayState,
+        SAMLRequest: Buffer.from(samlReqEnc).toString('base64'),
+      });
+    }
+
+    // HTTP POST binding
+    if ('postUrl' in sso) {
+      const samlReqEnc = Buffer.from(samlReq.request).toString('base64');
+
+      authorizeForm = createAuthorizeForm(relayState, samlReqEnc, sso.postUrl);
+    }
+
+    console.log({ samlConfig });
+
+    return {
+      redirect_url: redirectUrl,
+      authorize_form: authorizeForm,
+    };
   }
 
   public async samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }> {

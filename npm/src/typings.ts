@@ -25,7 +25,7 @@ export interface IAPIController {
 }
 
 export interface IOAuthController {
-  authorize(body: OAuthReqBody): Promise<{ redirect_url: string }>;
+  authorize(body: OAuthReqBody): Promise<{ redirect_url: string | null; authorize_form: string | null }>;
   samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
