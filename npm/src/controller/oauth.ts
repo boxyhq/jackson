@@ -164,8 +164,6 @@ export class OAuthController implements IOAuthController {
       authorizeForm = createAuthorizeForm(relayState, samlReqEnc, sso.postUrl);
     }
 
-    console.log({ samlConfig });
-
     return {
       redirect_url: redirectUrl,
       authorize_form: authorizeForm,
