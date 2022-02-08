@@ -16,7 +16,7 @@ const config: PlaywrightTestConfig = {
   // Run your local dev server before starting the tests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
-    command: 'npm run build && npm run start',
+    command: process.env.CI ? 'npm run build && npm run start' : 'npm run sql',
     env: {
       SAML_AUDIENCE: 'https://saml.boxyhq.com',
       JACKSON_API_KEYS: 'secret',
