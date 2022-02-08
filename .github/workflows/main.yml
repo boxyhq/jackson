@@ -239,9 +239,25 @@ jobs:
       - name: Move Report
         run: mv docker_sbom.spdx "./_docker/sbom.spdx"
       - name: Commit report
-        id: commit
         if: github.event_name != 'pull_request'
         run: |
+          rm results.sarif || true
+          rm ./_docker/sbom.json || true
+          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx
+          git pull
+          git config --global user.email "github-bot@boxyhq.com"
+          git config --global user.name "github-bot"
+          git add . 
+          git commit -am "Automated report" 
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        if: github.event_name != 'pull_request'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+      - run: npm install
+        working-directory: ./npm
+      - run: |
           publishTag="latest"
 
           npm install -g json
@@ -260,27 +276,8 @@ jobs:
             JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
             json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
           fi
-
-          echo "::set-output name=publishTag::$(echo ${publishTag})"
-
-          rm results.sarif || true
-          rm ./_docker/sbom.json || true
-          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx
-          git pull
-          git config --global user.email "github-bot@boxyhq.com"
-          git config --global user.name "github-bot"
-          git add . 
-          git commit -am "Automated report" 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        if: github.event_name != 'pull_request'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-      - run: npm install
-        working-directory: ./npm
-      - run: |
-          npm publish --tag ${{ steps.commit.outputs.publishTag }} --access public
+          
+          npm publish --tag ${publishTag} --access public
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
