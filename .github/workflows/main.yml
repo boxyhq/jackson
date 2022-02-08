@@ -225,13 +225,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: sbom.cyclonedx
-      - name: Build the container image
-        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
       - name: Scan docker image using TERN
         uses: philips-labs/tern-action@v1.1.0
         id: scan
         with:
-          image: localbuild/testimage:latest
+          image: ${{ github.repository }}:latest
           format: spdxtagvalue
           output: docker_sbom.spdx
       - name: Create/Clear folder
@@ -241,8 +239,30 @@ jobs:
       - name: Move Report
         run: mv docker_sbom.spdx "./_docker/sbom.spdx"
       - name: Commit report
+        id: commit
         if: github.event_name != 'pull_request'
         run: |
+          publishTag="latest"
+
+          npm install -g json
+          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
+          echo ver=$JACKSON_VERSION
+          json -I -f package.json -e "this.main=\"dist/index.js\""
+          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+
+          if [[ "$GITHUB_REF" == *\/release ]]
+          then
+            echo "Release branch"
+          else
+            echo "Dev branch"
+            publishTag="beta"
+            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+            json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+          fi
+
+          echo "::set-output name=publishTag::$(echo ${publishTag})"
+
           rm results.sarif || true
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx
@@ -257,13 +277,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
-
       - run: npm install
         working-directory: ./npm
-      - run: npm run test
-        working-directory: ./npm
       - run: |
-          npm publish --tag $publishTag --access public
+          npm publish --tag ${{ steps.commit.outputs.publishTag }} --access public
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
