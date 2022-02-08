@@ -54,10 +54,25 @@ export class APIController implements IAPIController {
    *     consumes:
    *       - application/x-www-form-urlencoded
    *     parameters:
+   *       - name: name
+   *         description: Name/identifier for the config
+   *         type: string
+   *         in: formData
+   *         required: true
+   *         example: cal-saml-config
+   *       -name: description
+   *         description: A short description for the config not more than 50 characters
+   *         type: string
+   *         in: formData
+   *         required: true
+   *         example: SAML login for cal.com app
    *       - name: encodedRawMetadata
    *         description: Base64 encoding of the XML metadata
    *         in: formData
-   *         required: true
+   *         type: string
+   *       - name: rawMetadata
+   *         description: Raw XML metadata
+   *         in: formData
    *         type: string
    *       - name: defaultRedirectUrl
    *         description: The redirect URL to use in the IdP login flow
