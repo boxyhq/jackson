@@ -23,7 +23,7 @@ jobs:
       matrix:
         node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-    
+
     services:
       postgres:
         image: postgres:13
@@ -60,7 +60,7 @@ jobs:
         env:
           MARIADB_DATABASE: mysql
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
-    
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -76,14 +76,10 @@ jobs:
       - run: npm run test
         working-directory: ./npm
       - run: |
-          publishTag="latest"
-
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
-          echo ver=$JACKSON_VERSION
-          json -I -f package.json -e "this.main=\"dist/index.js\""
-          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
-          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+
+          publishTag="latest"
 
           if [[ "$GITHUB_REF" == *\/release ]]
           then
@@ -92,12 +88,13 @@ jobs:
             echo "Dev branch"
             publishTag="beta"
             JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-            json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
           fi
 
           echo ${JACKSON_VERSION} > npmversion.txt
+          echo ${publishTag} > publishTag.txt
 
           echo $(cat npmversion.txt)
+          echo $(cat publishTag.txt)
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -106,6 +103,11 @@ jobs:
         with:
           name: npmversion
           path: ./npm/npmversion.txt
+      - name: Upload saml-jackson publish tag
+        uses: actions/upload-artifact@v2
+        with:
+          name: publishTag
+          path: ./npm/publishTag.txt
 
   build:
     needs: ci
@@ -114,7 +116,6 @@ jobs:
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v2
-
 
       - name: Download saml-jackson npm version
         uses: actions/download-artifact@v2
@@ -156,7 +157,7 @@ jobs:
       - name: NPM Package SBOM Scan
         uses: anchore/scan-action@v3
         with:
-          path: "./npm"
+          path: './npm'
           fail-build: true
       - name: Create NPM Pacakge SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
@@ -195,7 +196,7 @@ jobs:
       - name: Next Js Project Scan
         uses: anchore/scan-action@v3
         with:
-          path: "./"
+          path: './'
           fail-build: true
       - name: Next Js Project SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
@@ -248,7 +249,7 @@ jobs:
           git config --global user.email "github-bot@boxyhq.com"
           git config --global user.name "github-bot"
           git add . 
-          git commit -am "Automated report" 
+          git commit -am "Automated report"
       - name: Push changes
         uses: ad-m/github-push-action@master
         if: github.event_name != 'pull_request'
@@ -266,6 +267,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Download saml-jackson npm version
+        uses: actions/download-artifact@v2
+        with:
+          name: npmversion
+      - name: Get saml-jackson npm version
+        id: npmversion
+        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
+      - run: echo ${{ steps.npmversion.outputs.npmversion }}
+
+      - name: Download saml-jackson publish tag
+        uses: actions/download-artifact@v2
+        with:
+          name: publishTag
+      - name: Get saml-jackson npm version
+        id: publishTag
+        run: echo "::set-output name=publishTag::$(cat publishTag.txt)"
+      - run: echo ${{ steps.publishTag.outputs.publishTag }}
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
@@ -276,27 +295,15 @@ jobs:
           cache: 'npm'
       - run: npm install
         working-directory: ./npm
-      - run: |
-          publishTag="latest"
 
+      - run: |
           npm install -g json
-          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
-          echo ver=$JACKSON_VERSION
+          JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
           json -I -f package.json -e "this.main=\"dist/index.js\""
           json -I -f package.json -e "this.types=\"dist/index.d.ts\""
           json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
-          if [[ "$GITHUB_REF" == *\/release ]]
-          then
-            echo "Release branch"
-          else
-            echo "Dev branch"
-            publishTag="beta"
-            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-            json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
-          fi
-
-          npm publish --tag $publishTag --access public
+          npm publish --tag ${{ steps.publishTag.outputs.publishTag }} --access public
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
