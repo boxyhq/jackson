@@ -83,7 +83,7 @@ jobs:
           cache: 'npm'
       - run: npm install
       - name: Install playwright browser dependencies
-        run: npx playwright install
+        run: npx playwright install chromium
       - name: e2e tests
         env: #env for the seeding script
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
