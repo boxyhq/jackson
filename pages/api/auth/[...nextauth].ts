@@ -39,6 +39,7 @@ export default NextAuth({
       return validateEmailWithACL(email);
     },
   },
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   adapter: Adapter(),
 });
