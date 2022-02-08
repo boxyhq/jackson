@@ -33,6 +33,7 @@ const options = <JacksonOption>{
 };
 
 const samlConfig = {
+  name: 'testConfig',
   tenant: 'boxyhq.com',
   product: 'crm',
   redirectUrl: '["http://localhost:3000/*"]',
