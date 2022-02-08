@@ -16,7 +16,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  publish:
+  ci:
     runs-on: ubuntu-latest
 
     strategy:
@@ -76,14 +76,10 @@ jobs:
       - run: npm run test
         working-directory: ./npm
       - run: |
-          publishTag="latest"
-
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
-          echo ver=$JACKSON_VERSION
-          json -I -f package.json -e "this.main=\"dist/index.js\""
-          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
-          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+
+          publishTag="latest"
 
           if [[ "$GITHUB_REF" == *\/release ]]
           then
@@ -92,14 +88,13 @@ jobs:
             echo "Dev branch"
             publishTag="beta"
             JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-            json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
           fi
 
-          npm publish --tag $publishTag --access public
-
           echo ${JACKSON_VERSION} > npmversion.txt
+          echo ${publishTag} > publishTag.txt
 
           echo $(cat npmversion.txt)
+          echo $(cat publishTag.txt)
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -108,18 +103,19 @@ jobs:
         with:
           name: npmversion
           path: ./npm/npmversion.txt
+      - name: Upload saml-jackson publish tag
+        uses: actions/upload-artifact@v2
+        with:
+          name: publishTag
+          path: ./npm/publishTag.txt
 
   build:
-    needs: publish
+    needs: ci
     runs-on: ubuntu-latest
 
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v2
-
-      - name: Get short SHA
-        id: slug
-        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
 
       - name: Download saml-jackson npm version
         uses: actions/download-artifact@v2
@@ -131,6 +127,10 @@ jobs:
         run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
 
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
+
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
 
       - name: Set up Docker Buildx
         id: buildx
@@ -153,3 +153,159 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+      # - name: NPM Package SBOM Scan
+      #   uses: anchore/scan-action@v3
+      #   with:
+      #     path: './npm'
+      #     fail-build: true
+      #     severity-cutoff: high
+      - name: Create NPM Package SBOM Report [SPDX]
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx
+          artifact-name: npm_sbom.spdx
+      - name: Publish report [SPDX]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.spdx$"
+      - name: Create NPM Pacakge SBOM Report [CycloneDx]
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx
+          artifact-name: npm_sbom.cyclonedx
+      - name: Publish report [CycloneDx]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.cyclonedx$"
+      - name: Download artifact for SPDX Report
+        uses: actions/download-artifact@v2
+        with:
+          name: npm_sbom.spdx
+      - name: Download artifact for CycloneDx Report
+        uses: actions/download-artifact@v2
+        with:
+          name: npm_sbom.cyclonedx
+      - name: Remove temp files & pull latest code
+        run: rm results.sarif && git pull || true
+      - name: Remove older SBOMs
+        run: rm -rf ./npm/sbom*.* || true
+      - name: Move SPDX Report
+        run: mv npm_sbom.spdx "./npm/sbom.spdx"
+      - name: Move CycloneDx Report
+        run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
+      # - name: Next Js Project Scan
+      #   uses: anchore/scan-action@v3
+      #   with:
+      #     path: './'
+      #     fail-build: true
+      #     severity-cutoff: high
+      - name: Next Js Project SBOM Report [SPDX]
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx
+          artifact-name: sbom.spdx
+      - name: Publish report [SPDX]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.spdx$"
+      - name: Next Js Project SBOM Report [CycloneDx]
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx
+          artifact-name: sbom.cyclonedx
+      - name: Publish report [CycloneDx]
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.cyclonedx$"
+      - name: Remove older SBOMs
+        run: rm -rf sbom*.* || true
+      - name: Download artifact for SPDX Report
+        uses: actions/download-artifact@v2
+        with:
+          name: sbom.spdx
+      - name: Download artifact for CycloneDx Report
+        uses: actions/download-artifact@v2
+        with:
+          name: sbom.cyclonedx
+      - name: Scan docker image using TERN
+        uses: philips-labs/tern-action@v1.1.0
+        id: scan
+        with:
+          image: ${{ github.repository }}:latest
+          format: spdxtagvalue
+          output: docker_sbom.spdx
+      - name: Create/Clear folder
+        run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
+      - name: Docker CycloneDx report
+        run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:latest -o ./_docker/sbom.xml -t docker
+      - name: Move Report
+        run: mv docker_sbom.spdx "./_docker/sbom.spdx"
+      - name: Commit report
+        if: github.event_name != 'pull_request'
+        run: |
+          rm results.sarif || true
+          rm ./_docker/sbom.json || true
+          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
+          git pull
+          git config --global user.email "github-bot@boxyhq.com"
+          git config --global user.name "github-bot"
+          git add . 
+          git commit -am "Automated report"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        if: github.event_name != 'pull_request'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download saml-jackson npm version
+        uses: actions/download-artifact@v2
+        with:
+          name: npmversion
+      - name: Get saml-jackson npm version
+        id: npmversion
+        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
+      - run: echo ${{ steps.npmversion.outputs.npmversion }}
+
+      - name: Download saml-jackson publish tag
+        uses: actions/download-artifact@v2
+        with:
+          name: publishTag
+      - name: Get saml-jackson npm version
+        id: publishTag
+        run: echo "::set-output name=publishTag::$(cat publishTag.txt)"
+      - run: echo ${{ steps.publishTag.outputs.publishTag }}
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          always-auth: true
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org
+          scope: '@boxyhq'
+          cache: 'npm'
+      - run: npm install
+        working-directory: ./npm
+
+      - run: |
+          npm install -g json
+          JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
+          json -I -f package.json -e "this.main=\"dist/index.js\""
+          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+
+          npm publish --tag ${{ steps.publishTag.outputs.publishTag }} --access public
+        working-directory: ./npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

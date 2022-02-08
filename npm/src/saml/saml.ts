@@ -56,7 +56,7 @@ const request = ({
       '@ID': id,
       '@Version': '2.0',
       '@IssueInstant': date,
-      '@ProtocolBinding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+      '@ProtocolBinding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
       '@Destination': ssoUrl,
       'saml:Issuer': {
         '@xmlns:saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
