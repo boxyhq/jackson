@@ -86,7 +86,7 @@ jobs:
         run: npx playwright install-deps
       - name: e2e tests
         env:
-          DB_ENGINE: sql
+          DB_ENGINE: mongo
           DB_URL: mongodb://mongoadmin:secret@localhost:27017/jackson
           DEBUG: pw:webserver
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
