@@ -1,6 +1,7 @@
 import { PlaywrightTestConfig, devices } from '@playwright/test';
 import path from 'path';
 
+console.log(`process.env inside playwright config`, process.env);
 // Reference: https://playwright.dev/docs/test-configuration
 const config: PlaywrightTestConfig = {
   globalSetup: require.resolve('./e2e/globalSetup'),
