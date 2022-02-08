@@ -16,17 +16,19 @@ const config: PlaywrightTestConfig = {
   // Run your local dev server before starting the tests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
-    command: process.env.CI ? 'npm run build && npm run start' : 'npm run sql',
-    env: {
-      SAML_AUDIENCE: 'https://saml.boxyhq.com',
-      JACKSON_API_KEYS: 'secret',
-      DB_ENGINE: 'sql',
-      DB_URL: 'postgres://postgres:postgres@localhost:5432/postgres',
-      DB_TYPE: 'postgres',
-      DEBUG: 'pw:webserver',
-      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || '',
-      NEXTAUTH_URL: 'http://localhost:5000',
-    },
+    command: process.env.CI
+      ? 'SAML_AUDIENCE=https://saml.boxyhq.com JACKSON_API_KEYS=secret DB_ENGINE=sql DB_URL=postgres://postgres:postgres@localhost:5432/postgres DB_TYPE=postgres DEBUG=pw:webserver NEXTAUTH_SECRET=process.env.NEXTAUTH_SECRET NEXTAUTH_URL=http://localhost:5000 npm run build && npm run start'
+      : 'npm run sql',
+    // env: {
+    //   SAML_AUDIENCE: 'https://saml.boxyhq.com',
+    //   JACKSON_API_KEYS: 'secret',
+    //   DB_ENGINE: 'sql',
+    //   DB_URL: 'postgres://postgres:postgres@localhost:5432/postgres',
+    //   DB_TYPE: 'postgres',
+    //   DEBUG: 'pw:webserver',
+    //   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || '',
+    //   NEXTAUTH_URL: 'http://localhost:5000',
+    // },
     port: 5000,
     timeout: 60 * 1000,
     reuseExistingServer: !process.env.CI,
