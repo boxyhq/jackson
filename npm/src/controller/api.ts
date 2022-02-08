@@ -60,7 +60,7 @@ export class APIController implements IAPIController {
    *         in: formData
    *         required: true
    *         example: cal-saml-config
-   *       -name: description
+   *       - name: description
    *         description: A short description for the config not more than 50 characters
    *         type: string
    *         in: formData
@@ -219,7 +219,7 @@ export class APIController implements IAPIController {
    *         in: formData
    *         required: true
    *         example: cal-saml-config
-   *       -name: description
+   *       - name: description
    *         description: A short description for the config not more than 50 characters
    *         type: string
    *         in: formData
