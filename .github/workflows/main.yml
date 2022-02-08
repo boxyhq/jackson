@@ -159,7 +159,8 @@ jobs:
         with:
           path: './npm'
           fail-build: true
-      - name: Create NPM Pacakge SBOM Report [SPDX]
+          severity-cutoff: high
+      - name: Create NPM Package SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
           format: spdx
@@ -198,6 +199,7 @@ jobs:
         with:
           path: './'
           fail-build: true
+          severity-cutoff: high
       - name: Next Js Project SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
