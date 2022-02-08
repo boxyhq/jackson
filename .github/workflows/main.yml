@@ -241,23 +241,23 @@ jobs:
         run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:latest -o ./_docker/sbom.xml -t docker
       - name: Move Report
         run: mv docker_sbom.spdx "./_docker/sbom.spdx"
-      - name: Commit report
-        if: github.event_name != 'pull_request'
-        run: |
-          rm results.sarif || true
-          rm ./_docker/sbom.json || true
-          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
-          git pull
-          git config --global user.email "github-bot@boxyhq.com"
-          git config --global user.name "github-bot"
-          git add . 
-          git commit -am "Automated report"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        if: github.event_name != 'pull_request'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+      # - name: Commit report
+      #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
+      #   run: |
+      #     rm results.sarif || true
+      #     rm ./_docker/sbom.json || true
+      #     mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
+      #     git pull
+      #     git config --global user.email "github-bot@boxyhq.com"
+      #     git config --global user.name "github-bot"
+      #     git add .
+      #     git commit -am "Automated report"
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.ref }}
   publish:
     needs: build
     runs-on: ubuntu-latest
