@@ -157,7 +157,7 @@ jobs:
         uses: anchore/scan-action@v3
         with:
           path: "./npm"
-          fail-build: false
+          fail-build: true
       - name: Create NPM Pacakge SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
@@ -196,7 +196,7 @@ jobs:
         uses: anchore/scan-action@v3
         with:
           path: "./"
-          fail-build: false
+          fail-build: true
       - name: Next Js Project SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
