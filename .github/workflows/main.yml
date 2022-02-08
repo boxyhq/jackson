@@ -93,7 +93,7 @@ jobs:
           DB_TYPE: postgres
           DEBUG: pw:webserver
           SAML_AUDIENCE: https://saml.boxyhq.com
-          JACKSON_API_KEYS: secret,
+          JACKSON_API_KEYS: secret
         run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
       - run: npm run test
         working-directory: ./npm
