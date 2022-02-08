@@ -235,7 +235,7 @@ jobs:
       - name: Create/Clear folder
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
       - name: Docker CycloneDx report
-        run: npm install -g @appthreat/cdxgen && cdxgen localbuild/testimage:latest -o ./_docker/sbom.xml -t docker
+        run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:latest -o ./_docker/sbom.xml -t docker
       - name: Move Report
         run: mv docker_sbom.spdx "./_docker/sbom.spdx"
       - name: Commit report
@@ -243,7 +243,7 @@ jobs:
         run: |
           rm results.sarif || true
           rm ./_docker/sbom.json || true
-          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx
+          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
           git pull
           git config --global user.email "github-bot@boxyhq.com"
           git config --global user.name "github-bot"
