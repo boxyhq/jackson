@@ -21,7 +21,9 @@
     "pre-loaded": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mem PRE_LOADED_CONFIG='./_config' npm run dev",
     "pre-loaded-db": "cross-env JACKSON_API_KEYS=secret PRE_LOADED_CONFIG='./_config' npm run dev",
     "sort": "npx sort-package-json",
-    "sql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/postgres npm run dev",
+    "postgres": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/postgres npm run dev",
+    "mysql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mysql DB_URL=mysql://root:mysql@localhost:3307/mysql npm run dev",
+    "mariadb": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql npm run dev",
     "start": "next start -p 5000",
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
     "prepare": "husky install"
@@ -38,26 +40,26 @@
   "dependencies": {
     "@boxyhq/saml-jackson": "file:./npm",
     "cors": "2.8.5",
-    "next": "12.0.9",
+    "next": "12.0.10",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
     "@types/cors": "2.8.12",
-    "@types/node": "17.0.9",
+    "@types/node": "17.0.14",
     "@types/react": "17.0.38",
-    "@typescript-eslint/eslint-plugin": "5.10.0",
-    "@typescript-eslint/parser": "5.10.0",
+    "@typescript-eslint/eslint-plugin": "5.10.2",
+    "@typescript-eslint/parser": "5.10.2",
     "cross-env": "7.0.3",
-    "eslint": "8.7.0",
-    "eslint-config-next": "12.0.8",
+    "eslint": "8.8.0",
+    "eslint-config-next": "12.0.10",
     "eslint-config-prettier": "8.3.0",
     "husky": "7.0.4",
-    "lint-staged": "12.1.7",
+    "lint-staged": "12.3.3",
     "prettier": "2.5.1",
     "swagger-jsdoc": "6.1.0",
-    "typescript": "4.5.4"
+    "typescript": "4.5.5"
   },
   "engines": {
     "node": ">=14.18.1"
