@@ -82,6 +82,16 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
       - run: npm install
+      - run: npm run build
+        env:
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: http://localhost:5000
+          DB_ENGINE: sql
+          DB_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DB_TYPE: postgres
+          DEBUG: pw:webserver
+          SAML_AUDIENCE: https://saml.boxyhq.com
+          JACKSON_API_KEYS: secret
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
       - name: e2e tests
@@ -94,7 +104,7 @@ jobs:
           DEBUG: pw:webserver
           SAML_AUDIENCE: https://saml.boxyhq.com
           JACKSON_API_KEYS: secret
-        run: SAML_AUDIENCE=https://saml.boxyhq.com JACKSON_API_KEYS=secret DB_ENGINE=sql DB_URL=postgres://postgres:postgres@localhost:5432/postgres DB_TYPE=postgres DEBUG=pw:webserver NEXTAUTH_SECRET=process.env.NEXTAUTH_SECRET NEXTAUTH_URL=http://localhost:5000 npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
+        run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
       - run: npm run test
         working-directory: ./npm
       - run: |
