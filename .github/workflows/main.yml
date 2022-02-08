@@ -89,7 +89,7 @@ jobs:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }},
           DB_ENGINE: sql
           DB_URL: postgres://postgres:postgres@localhost:5432/postgres,
-          DB_TYPE: postgres,
+          DB_TYPE: postgres
         run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
       - run: npm run test
         working-directory: ./npm
