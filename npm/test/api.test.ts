@@ -143,11 +143,11 @@ tap.test('controller/api', async (t) => {
       t.equal(response.client_id, CLIENT_ID);
       t.equal(response.provider, PROVIDER);
 
-      const savedConf = await apiController.getConfig({
+      const { config: savedConfig } = await apiController.getConfig({
         clientID: CLIENT_ID,
       });
 
-      t.equal(savedConf.provider, PROVIDER);
+      t.equal(savedConfig.name, 'testConfig');
 
       kdStub.restore();
 
@@ -163,9 +163,9 @@ tap.test('controller/api', async (t) => {
 
       await apiController.config(body as IdPConfig);
 
-      const { provider } = await apiController.getConfig(body);
+      const { config: savedConfig } = await apiController.getConfig(body);
 
-      t.equal(provider, PROVIDER);
+      t.equal(savedConfig.name, 'testConfig');
 
       t.end();
     });
