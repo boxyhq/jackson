@@ -34,8 +34,6 @@
     "@boxyhq/saml20": "0.2.0",
     "@peculiar/webcrypto": "1.2.3",
     "@peculiar/x509": "1.6.1",
-    "cors": "2.8.5",
-    "express": "4.17.2",
     "mongodb": "4.3.0",
     "mysql2": "2.3.3",
     "pg": "8.7.1",
