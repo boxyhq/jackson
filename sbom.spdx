@@ -2,11 +2,11 @@ SPDXVersion: SPDX-2.2
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: .
-DocumentNamespace: https://anchore.com/syft/dir/a49dbcf5-659f-4601-9581-f3a67b221d08
+DocumentNamespace: https://anchore.com/syft/dir/e68e2234-cb7d-4331-bdc1-d62fa277ec54
 LicenseListVersion: 3.15
 Creator: Organization: Anchore, Inc
 Creator: Tool: syft-0.33.0
-Created: 2022-02-08T04:55:03Z
+Created: 2022-02-08T22:19:14Z
 
 ##### Package: @apidevtools/json-schema-ref-parser
 
@@ -826,419 +826,459 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@jsdevtools%2Fono@7.1.3
 
 PackageName: @next/env
 SPDXID: SPDXRef-Package-npm-@next/env
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/env:@next/env:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/env:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fenv@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/env:@next/env:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/env:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fenv@12.0.10
 
 ##### Package: @next/eslint-plugin-next
 
 PackageName: @next/eslint-plugin-next
 SPDXID: SPDXRef-Package-npm-@next/eslint-plugin-next
-PackageVersion: 12.0.8
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint-plugin-next:@next/eslint-plugin-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint-plugin-next:@next/eslint_plugin_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint_plugin_next:@next/eslint-plugin-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint_plugin_next:@next/eslint_plugin_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint-plugin:@next/eslint-plugin-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint-plugin:@next/eslint_plugin_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint_plugin:@next/eslint-plugin-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint_plugin:@next/eslint_plugin_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint:@next/eslint-plugin-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint:@next/eslint_plugin_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/eslint-plugin-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/eslint_plugin_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Feslint-plugin-next@12.0.8
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint-plugin-next:@next/eslint-plugin-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint-plugin-next:@next/eslint_plugin_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint_plugin_next:@next/eslint-plugin-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint_plugin_next:@next/eslint_plugin_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint-plugin:@next/eslint-plugin-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint-plugin:@next/eslint_plugin_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint_plugin:@next/eslint-plugin-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint_plugin:@next/eslint_plugin_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint:@next/eslint-plugin-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/eslint:@next/eslint_plugin_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/eslint-plugin-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/eslint_plugin_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Feslint-plugin-next@12.0.10
 
 ##### Package: @next/swc-android-arm64
 
 PackageName: @next/swc-android-arm64
 SPDXID: SPDXRef-Package-npm-@next/swc-android-arm64
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android-arm64:@next/swc-android-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android-arm64:@next/swc_android_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android_arm64:@next/swc-android-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android_arm64:@next/swc_android_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android:@next/swc-android-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android:@next/swc_android_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android:@next/swc-android-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android:@next/swc_android_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-android-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_android_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-android-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_android_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-android-arm64@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android-arm64:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android-arm64:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android_arm64:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android_arm64:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-android-arm64@12.0.10
 
 ##### Package: @next/swc-darwin-arm64
 
 PackageName: @next/swc-darwin-arm64
 SPDXID: SPDXRef-Package-npm-@next/swc-darwin-arm64
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-arm64:@next/swc-darwin-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-arm64:@next/swc_darwin_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_arm64:@next/swc-darwin-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_arm64:@next/swc_darwin_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc-darwin-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc_darwin_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc-darwin-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc_darwin_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-darwin-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_darwin_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-darwin-arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_darwin_arm64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-darwin-arm64@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-arm64:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-arm64:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_arm64:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_arm64:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-darwin-arm64@12.0.10
 
 ##### Package: @next/swc-darwin-x64
 
 PackageName: @next/swc-darwin-x64
 SPDXID: SPDXRef-Package-npm-@next/swc-darwin-x64
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-x64:@next/swc-darwin-x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-x64:@next/swc_darwin_x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_x64:@next/swc-darwin-x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_x64:@next/swc_darwin_x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc-darwin-x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc_darwin_x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc-darwin-x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc_darwin_x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-darwin-x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_darwin_x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-darwin-x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_darwin_x64:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-darwin-x64@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-x64:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-x64:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_x64:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_x64:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-darwin-x64@12.0.10
 
 ##### Package: @next/swc-linux-arm-gnueabihf
 
 PackageName: @next/swc-linux-arm-gnueabihf
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-arm-gnueabihf
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm-gnueabihf:@next/swc-linux-arm-gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm-gnueabihf:@next/swc_linux_arm_gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm_gnueabihf:@next/swc-linux-arm-gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm_gnueabihf:@next/swc_linux_arm_gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm:@next/swc-linux-arm-gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm:@next/swc_linux_arm_gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm:@next/swc-linux-arm-gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm:@next/swc_linux_arm_gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm-gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm_gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm-gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm_gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm-gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm_gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm-gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm_gnueabihf:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm-gnueabihf@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm-gnueabihf:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm-gnueabihf:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm_gnueabihf:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm_gnueabihf:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm-gnueabihf@12.0.10
 
 ##### Package: @next/swc-linux-arm64-gnu
 
 PackageName: @next/swc-linux-arm64-gnu
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-arm64-gnu
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-gnu:@next/swc-linux-arm64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-gnu:@next/swc_linux_arm64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_gnu:@next/swc-linux-arm64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_gnu:@next/swc_linux_arm64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc-linux-arm64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc_linux_arm64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc-linux-arm64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc_linux_arm64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm64-gnu@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-gnu:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-gnu:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_gnu:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_gnu:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm64-gnu@12.0.10
 
 ##### Package: @next/swc-linux-arm64-musl
 
 PackageName: @next/swc-linux-arm64-musl
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-arm64-musl
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-musl:@next/swc-linux-arm64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-musl:@next/swc_linux_arm64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_musl:@next/swc-linux-arm64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_musl:@next/swc_linux_arm64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc-linux-arm64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc_linux_arm64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc-linux-arm64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc_linux_arm64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm64-musl@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-musl:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-musl:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_musl:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_musl:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm64-musl@12.0.10
 
 ##### Package: @next/swc-linux-x64-gnu
 
 PackageName: @next/swc-linux-x64-gnu
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-x64-gnu
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-gnu:@next/swc-linux-x64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-gnu:@next/swc_linux_x64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_gnu:@next/swc-linux-x64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_gnu:@next/swc_linux_x64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc-linux-x64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc_linux_x64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc-linux-x64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc_linux_x64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-x64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_x64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-x64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_x64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-x64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_x64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-x64-gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_x64_gnu:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-x64-gnu@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-gnu:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-gnu:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_gnu:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_gnu:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-x64-gnu@12.0.10
 
 ##### Package: @next/swc-linux-x64-musl
 
 PackageName: @next/swc-linux-x64-musl
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-x64-musl
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-musl:@next/swc-linux-x64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-musl:@next/swc_linux_x64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_musl:@next/swc-linux-x64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_musl:@next/swc_linux_x64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc-linux-x64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc_linux_x64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc-linux-x64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc_linux_x64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-x64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_x64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-x64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_x64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-x64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_x64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-x64-musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_x64_musl:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-x64-musl@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-musl:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-musl:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_musl:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_musl:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-x64-musl@12.0.10
 
 ##### Package: @next/swc-win32-arm64-msvc
 
 PackageName: @next/swc-win32-arm64-msvc
 SPDXID: SPDXRef-Package-npm-@next/swc-win32-arm64-msvc
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64-msvc:@next/swc-win32-arm64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64-msvc:@next/swc_win32_arm64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64_msvc:@next/swc-win32-arm64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64_msvc:@next/swc_win32_arm64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64:@next/swc-win32-arm64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64:@next/swc_win32_arm64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64:@next/swc-win32-arm64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64:@next/swc_win32_arm64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-arm64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_arm64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-arm64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_arm64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-arm64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_arm64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-arm64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_arm64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-arm64-msvc@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64-msvc:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64-msvc:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64_msvc:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64_msvc:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-arm64-msvc@12.0.10
 
 ##### Package: @next/swc-win32-ia32-msvc
 
 PackageName: @next/swc-win32-ia32-msvc
 SPDXID: SPDXRef-Package-npm-@next/swc-win32-ia32-msvc
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32-msvc:@next/swc-win32-ia32-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32-msvc:@next/swc_win32_ia32_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32_msvc:@next/swc-win32-ia32-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32_msvc:@next/swc_win32_ia32_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32:@next/swc-win32-ia32-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32:@next/swc_win32_ia32_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32:@next/swc-win32-ia32-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32:@next/swc_win32_ia32_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-ia32-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_ia32_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-ia32-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_ia32_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-ia32-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_ia32_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-ia32-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_ia32_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-ia32-msvc@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32-msvc:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32-msvc:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32_msvc:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32_msvc:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-ia32-msvc@12.0.10
 
 ##### Package: @next/swc-win32-x64-msvc
 
 PackageName: @next/swc-win32-x64-msvc
 SPDXID: SPDXRef-Package-npm-@next/swc-win32-x64-msvc
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64-msvc:@next/swc-win32-x64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64-msvc:@next/swc_win32_x64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64_msvc:@next/swc-win32-x64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64_msvc:@next/swc_win32_x64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64:@next/swc-win32-x64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64:@next/swc_win32_x64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64:@next/swc-win32-x64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64:@next/swc_win32_x64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-x64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_x64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-x64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_x64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-x64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_x64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-x64-msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_x64_msvc:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-x64-msvc@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64-msvc:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64-msvc:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64_msvc:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64_msvc:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-x64-msvc@12.0.10
+
+##### Package: @node-redis/bloom
+
+PackageName: @node-redis/bloom
+SPDXID: SPDXRef-Package-npm-@node-redis/bloom
+PackageVersion: 1.0.1
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/bloom:@node-redis/bloom:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/bloom:@node_redis/bloom:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/bloom:@node-redis/bloom:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/bloom:@node_redis/bloom:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/bloom:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/bloom:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/bloom:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/bloom:1.0.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Fbloom@1.0.1
 
 ##### Package: @node-redis/client
 
 PackageName: @node-redis/client
 SPDXID: SPDXRef-Package-npm-@node-redis/client
-PackageVersion: 1.0.1
+PackageVersion: 1.0.3
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/client:@node-redis/client:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/client:@node_redis/client:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/client:@node-redis/client:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/client:@node_redis/client:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/client:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/client:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/client:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/client:1.0.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Fclient@1.0.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/client:@node-redis/client:1.0.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/client:@node_redis/client:1.0.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/client:@node-redis/client:1.0.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/client:@node_redis/client:1.0.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/client:1.0.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/client:1.0.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/client:1.0.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/client:1.0.3:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Fclient@1.0.3
 
-##### Package: @node-redis/json
+##### Package: @node-redis/graph
 
-PackageName: @node-redis/json
-SPDXID: SPDXRef-Package-npm-@node-redis/json
-PackageVersion: 1.0.1
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/json:@node-redis/json:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/json:@node_redis/json:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/json:@node-redis/json:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/json:@node_redis/json:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/json:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/json:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/json:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/json:1.0.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Fjson@1.0.1
-
-##### Package: @node-redis/search
-
-PackageName: @node-redis/search
-SPDXID: SPDXRef-Package-npm-@node-redis/search
-PackageVersion: 1.0.1
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/search:@node-redis/search:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/search:@node_redis/search:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/search:@node-redis/search:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/search:@node_redis/search:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/search:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/search:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/search:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/search:1.0.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Fsearch@1.0.1
-
-##### Package: @node-redis/time-series
-
-PackageName: @node-redis/time-series
-SPDXID: SPDXRef-Package-npm-@node-redis/time-series
+PackageName: @node-redis/graph
+SPDXID: SPDXRef-Package-npm-@node-redis/graph
 PackageVersion: 1.0.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/time-series:@node-redis/time-series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/time-series:@node_redis/time_series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/time_series:@node-redis/time-series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/time_series:@node_redis/time_series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/time:@node-redis/time-series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/time:@node_redis/time_series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/time:@node-redis/time-series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/time:@node_redis/time_series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/time-series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/time_series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/time-series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/time_series:1.0.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Ftime-series@1.0.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/graph:@node-redis/graph:1.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/graph:@node_redis/graph:1.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/graph:@node-redis/graph:1.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/graph:@node_redis/graph:1.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/graph:1.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/graph:1.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/graph:1.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/graph:1.0.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Fgraph@1.0.0
+
+##### Package: @node-redis/json
+
+PackageName: @node-redis/json
+SPDXID: SPDXRef-Package-npm-@node-redis/json
+PackageVersion: 1.0.2
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/json:@node-redis/json:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/json:@node_redis/json:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/json:@node-redis/json:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/json:@node_redis/json:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/json:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/json:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/json:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/json:1.0.2:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Fjson@1.0.2
+
+##### Package: @node-redis/search
+
+PackageName: @node-redis/search
+SPDXID: SPDXRef-Package-npm-@node-redis/search
+PackageVersion: 1.0.2
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/search:@node-redis/search:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/search:@node_redis/search:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/search:@node-redis/search:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/search:@node_redis/search:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/search:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/search:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/search:1.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/search:1.0.2:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Fsearch@1.0.2
+
+##### Package: @node-redis/time-series
+
+PackageName: @node-redis/time-series
+SPDXID: SPDXRef-Package-npm-@node-redis/time-series
+PackageVersion: 1.0.1
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/time-series:@node-redis/time-series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/time-series:@node_redis/time_series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/time_series:@node-redis/time-series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/time_series:@node_redis/time_series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/time:@node-redis/time-series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node-redis/time:@node_redis/time_series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/time:@node-redis/time-series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node_redis/time:@node_redis/time_series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node-redis/time-series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@node:@node_redis/time_series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node-redis/time-series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@node_redis/time_series:1.0.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@node-redis%2Ftime-series@1.0.1
 
 ##### Package: @nodelib/fs.scandir
 
@@ -1572,35 +1612,35 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@sinonjs%2Fcommons@1.8.3
 
 PackageName: @sinonjs/fake-timers
 SPDXID: SPDXRef-Package-npm-@sinonjs/fake-timers
-PackageVersion: 8.1.0
+PackageVersion: 9.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake-timers:@sinonjs/fake-timers:8.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake-timers:@sinonjs/fake_timers:8.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake_timers:@sinonjs/fake-timers:8.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake_timers:@sinonjs/fake_timers:8.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake:@sinonjs/fake-timers:8.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake:@sinonjs/fake_timers:8.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@sinonjs/fake-timers:8.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@sinonjs/fake_timers:8.1.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@sinonjs%2Ffake-timers@8.1.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake-timers:@sinonjs/fake-timers:9.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake-timers:@sinonjs/fake_timers:9.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake_timers:@sinonjs/fake-timers:9.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake_timers:@sinonjs/fake_timers:9.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake:@sinonjs/fake-timers:9.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/fake:@sinonjs/fake_timers:9.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@sinonjs/fake-timers:9.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@sinonjs/fake_timers:9.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@sinonjs%2Ffake-timers@9.1.0
 
 ##### Package: @sinonjs/samsam
 
 PackageName: @sinonjs/samsam
 SPDXID: SPDXRef-Package-npm-@sinonjs/samsam
-PackageVersion: 6.0.2
+PackageVersion: 6.1.1
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/samsam:@sinonjs/samsam:6.0.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@sinonjs/samsam:6.0.2:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@sinonjs%2Fsamsam@6.0.2
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@sinonjs/samsam:@sinonjs/samsam:6.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@sinonjs/samsam:6.1.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@sinonjs%2Fsamsam@6.1.1
 
 ##### Package: @sinonjs/text-encoding
 
@@ -1848,15 +1888,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fmime@1.3.2
 
 PackageName: @types/node
 SPDXID: SPDXRef-Package-npm-@types/node
-PackageVersion: 16.11.17
+PackageVersion: 17.0.16
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/node:@types/node:16.11.17:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/node:16.11.17:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fnode@16.11.17
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/node:@types/node:17.0.16:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/node:17.0.16:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fnode@17.0.16
 
 ##### Package: @types/prop-types
 
@@ -1964,15 +2004,57 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fserve-static@1.13.10
 
 PackageName: @types/sinon
 SPDXID: SPDXRef-Package-npm-@types/sinon
-PackageVersion: 10.0.6
+PackageVersion: 10.0.11
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinon:@types/sinon:10.0.6:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/sinon:10.0.6:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fsinon@10.0.6
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinon:@types/sinon:10.0.11:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/sinon:10.0.11:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fsinon@10.0.11
+
+##### Package: @types/sinonjs__fake-timers
+
+PackageName: @types/sinonjs__fake-timers
+SPDXID: SPDXRef-Package-npm-@types/sinonjs__fake-timers
+PackageVersion: 8.1.1
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs--fake-timers:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs--fake-timers:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs--fake-timers:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs__fake-timers:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs__fake-timers:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs__fake-timers:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs__fake_timers:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs__fake_timers:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs__fake_timers:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs-fake-timers:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs-fake-timers:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs-fake-timers:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake-timers:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake-timers:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake-timers:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake_timers:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake_timers:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake_timers:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs-fake:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs-fake:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs-fake:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs_fake:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/sinonjs:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/sinonjs--fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/sinonjs__fake-timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/sinonjs__fake_timers:8.1.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fsinonjs__fake-timers@8.1.1
 
 ##### Package: @types/tap
 
@@ -2052,25 +2134,25 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fzen-observable@0.8.3
 
 PackageName: @typescript-eslint/eslint-plugin
 SPDXID: SPDXRef-Package-npm-@typescript-eslint/eslint-plugin
-PackageVersion: 5.8.1
+PackageVersion: 5.11.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/eslint-plugin:@typescript-eslint/eslint-plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/eslint-plugin:@typescript_eslint/eslint_plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/eslint_plugin:@typescript-eslint/eslint-plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/eslint_plugin:@typescript_eslint/eslint_plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/eslint:@typescript-eslint/eslint-plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/eslint:@typescript_eslint/eslint_plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/eslint:@typescript-eslint/eslint-plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/eslint:@typescript_eslint/eslint_plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/eslint-plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/eslint_plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/eslint-plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/eslint_plugin:5.8.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Feslint-plugin@5.8.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/eslint-plugin:@typescript-eslint/eslint-plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/eslint-plugin:@typescript_eslint/eslint_plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/eslint_plugin:@typescript-eslint/eslint-plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/eslint_plugin:@typescript_eslint/eslint_plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/eslint:@typescript-eslint/eslint-plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/eslint:@typescript_eslint/eslint_plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/eslint:@typescript-eslint/eslint-plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/eslint:@typescript_eslint/eslint_plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/eslint-plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/eslint_plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/eslint-plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/eslint_plugin:5.11.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Feslint-plugin@5.11.0
 
 ##### Package: @typescript-eslint/experimental-utils
 
@@ -2100,157 +2182,157 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Fexperimental-util
 
 PackageName: @typescript-eslint/parser
 SPDXID: SPDXRef-Package-npm-@typescript-eslint/parser
-PackageVersion: 5.8.1
+PackageVersion: 5.11.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/parser:@typescript-eslint/parser:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/parser:@typescript_eslint/parser:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/parser:@typescript-eslint/parser:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/parser:@typescript_eslint/parser:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/parser:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/parser:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/parser:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/parser:5.8.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Fparser@5.8.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/parser:@typescript-eslint/parser:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/parser:@typescript_eslint/parser:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/parser:@typescript-eslint/parser:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/parser:@typescript_eslint/parser:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/parser:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/parser:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/parser:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/parser:5.11.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Fparser@5.11.0
 
 ##### Package: @typescript-eslint/scope-manager
 
 PackageName: @typescript-eslint/scope-manager
 SPDXID: SPDXRef-Package-npm-@typescript-eslint/scope-manager
-PackageVersion: 5.8.1
+PackageVersion: 5.11.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/scope-manager:@typescript-eslint/scope-manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/scope-manager:@typescript_eslint/scope_manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/scope_manager:@typescript-eslint/scope-manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/scope_manager:@typescript_eslint/scope_manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/scope:@typescript-eslint/scope-manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/scope:@typescript_eslint/scope_manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/scope:@typescript-eslint/scope-manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/scope:@typescript_eslint/scope_manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/scope-manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/scope_manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/scope-manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/scope_manager:5.8.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Fscope-manager@5.8.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/scope-manager:@typescript-eslint/scope-manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/scope-manager:@typescript_eslint/scope_manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/scope_manager:@typescript-eslint/scope-manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/scope_manager:@typescript_eslint/scope_manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/scope:@typescript-eslint/scope-manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/scope:@typescript_eslint/scope_manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/scope:@typescript-eslint/scope-manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/scope:@typescript_eslint/scope_manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/scope-manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/scope_manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/scope-manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/scope_manager:5.11.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Fscope-manager@5.11.0
 
 ##### Package: @typescript-eslint/type-utils
 
 PackageName: @typescript-eslint/type-utils
 SPDXID: SPDXRef-Package-npm-@typescript-eslint/type-utils
-PackageVersion: 5.10.0
+PackageVersion: 5.11.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/type-utils:@typescript-eslint/type-utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/type-utils:@typescript_eslint/type_utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/type_utils:@typescript-eslint/type-utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/type_utils:@typescript_eslint/type_utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/type:@typescript-eslint/type-utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/type:@typescript_eslint/type_utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/type:@typescript-eslint/type-utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/type:@typescript_eslint/type_utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/type-utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/type_utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/type-utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/type_utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Ftype-utils@5.10.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/type-utils:@typescript-eslint/type-utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/type-utils:@typescript_eslint/type_utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/type_utils:@typescript-eslint/type-utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/type_utils:@typescript_eslint/type_utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/type:@typescript-eslint/type-utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/type:@typescript_eslint/type_utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/type:@typescript-eslint/type-utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/type:@typescript_eslint/type_utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/type-utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/type_utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/type-utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/type_utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Ftype-utils@5.11.0
 
 ##### Package: @typescript-eslint/types
 
 PackageName: @typescript-eslint/types
 SPDXID: SPDXRef-Package-npm-@typescript-eslint/types
-PackageVersion: 5.8.1
+PackageVersion: 5.11.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/types:@typescript-eslint/types:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/types:@typescript_eslint/types:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/types:@typescript-eslint/types:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/types:@typescript_eslint/types:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/types:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/types:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/types:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/types:5.8.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Ftypes@5.8.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/types:@typescript-eslint/types:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/types:@typescript_eslint/types:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/types:@typescript-eslint/types:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/types:@typescript_eslint/types:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/types:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/types:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/types:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/types:5.11.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Ftypes@5.11.0
 
 ##### Package: @typescript-eslint/typescript-estree
 
 PackageName: @typescript-eslint/typescript-estree
 SPDXID: SPDXRef-Package-npm-@typescript-eslint/typescript-estree
-PackageVersion: 5.8.1
+PackageVersion: 5.11.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/typescript-estree:@typescript-eslint/typescript-estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/typescript-estree:@typescript_eslint/typescript_estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/typescript_estree:@typescript-eslint/typescript-estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/typescript_estree:@typescript_eslint/typescript_estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/typescript:@typescript-eslint/typescript-estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/typescript:@typescript_eslint/typescript_estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/typescript:@typescript-eslint/typescript-estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/typescript:@typescript_eslint/typescript_estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/typescript-estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/typescript_estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/typescript-estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/typescript_estree:5.8.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Ftypescript-estree@5.8.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/typescript-estree:@typescript-eslint/typescript-estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/typescript-estree:@typescript_eslint/typescript_estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/typescript_estree:@typescript-eslint/typescript-estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/typescript_estree:@typescript_eslint/typescript_estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/typescript:@typescript-eslint/typescript-estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/typescript:@typescript_eslint/typescript_estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/typescript:@typescript-eslint/typescript-estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/typescript:@typescript_eslint/typescript_estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/typescript-estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/typescript_estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/typescript-estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/typescript_estree:5.11.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Ftypescript-estree@5.11.0
 
 ##### Package: @typescript-eslint/utils
 
 PackageName: @typescript-eslint/utils
 SPDXID: SPDXRef-Package-npm-@typescript-eslint/utils
-PackageVersion: 5.10.0
+PackageVersion: 5.11.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/utils:@typescript-eslint/utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/utils:@typescript_eslint/utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/utils:@typescript-eslint/utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/utils:@typescript_eslint/utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/utils:5.10.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Futils@5.10.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/utils:@typescript-eslint/utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/utils:@typescript_eslint/utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/utils:@typescript-eslint/utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/utils:@typescript_eslint/utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/utils:5.11.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Futils@5.11.0
 
 ##### Package: @typescript-eslint/visitor-keys
 
 PackageName: @typescript-eslint/visitor-keys
 SPDXID: SPDXRef-Package-npm-@typescript-eslint/visitor-keys
-PackageVersion: 5.8.1
+PackageVersion: 5.11.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/visitor-keys:@typescript-eslint/visitor-keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/visitor-keys:@typescript_eslint/visitor_keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/visitor_keys:@typescript-eslint/visitor-keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/visitor_keys:@typescript_eslint/visitor_keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/visitor:@typescript-eslint/visitor-keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/visitor:@typescript_eslint/visitor_keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/visitor:@typescript-eslint/visitor-keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/visitor:@typescript_eslint/visitor_keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/visitor-keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/visitor_keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/visitor-keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/visitor_keys:5.8.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Fvisitor-keys@5.8.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/visitor-keys:@typescript-eslint/visitor-keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/visitor-keys:@typescript_eslint/visitor_keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/visitor_keys:@typescript-eslint/visitor-keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/visitor_keys:@typescript_eslint/visitor_keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/visitor:@typescript-eslint/visitor-keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/visitor:@typescript_eslint/visitor_keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/visitor:@typescript-eslint/visitor-keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/visitor:@typescript_eslint/visitor_keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/visitor-keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/visitor_keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/visitor-keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/visitor_keys:5.11.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Fvisitor-keys@5.11.0
 
 ##### Package: @xmldom/xmldom
 
@@ -2284,15 +2366,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/accepts@1.3.7
 
 PackageName: acorn
 SPDXID: SPDXRef-Package-npm-acorn
-PackageVersion: 8.6.0
+PackageVersion: 8.7.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:acorn:acorn:8.6.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:acorn:8.6.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/acorn@8.6.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:acorn:acorn:8.7.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:acorn:8.7.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/acorn@8.7.0
 
 ##### Package: acorn-jsx
 
@@ -4312,39 +4394,39 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/escape-string-regexp@2.0.0
 
 PackageName: eslint
 SPDXID: SPDXRef-Package-npm-eslint
-PackageVersion: 8.5.0
+PackageVersion: 8.8.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint:8.5.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint:8.5.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint@8.5.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint:8.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint:8.8.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint@8.8.0
 
 ##### Package: eslint-config-next
 
 PackageName: eslint-config-next
 SPDXID: SPDXRef-Package-npm-eslint-config-next
-PackageVersion: 12.0.8
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-config-next:eslint-config-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-config-next:eslint_config_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_config_next:eslint-config-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_config_next:eslint_config_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-config:eslint-config-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-config:eslint_config_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_config:eslint-config-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_config:eslint_config_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint-config-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint_config_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint-config-next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint_config_next:12.0.8:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-config-next@12.0.8
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-config-next:eslint-config-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-config-next:eslint_config_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_config_next:eslint-config-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_config_next:eslint_config_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-config:eslint-config-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-config:eslint_config_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_config:eslint-config-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_config:eslint_config_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint-config-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint_config_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint-config-next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint_config_next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-config-next@12.0.10
 
 ##### Package: eslint-config-prettier
 
@@ -4598,39 +4680,39 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-utils@3.0.0
 
 PackageName: eslint-visitor-keys
 SPDXID: SPDXRef-Package-npm-eslint-visitor-keys
-PackageVersion: 3.1.0
+PackageVersion: 3.2.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor-keys:eslint-visitor-keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor-keys:eslint_visitor_keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor_keys:eslint-visitor-keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor_keys:eslint_visitor_keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor:eslint-visitor-keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor:eslint_visitor_keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor:eslint-visitor-keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor:eslint_visitor_keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint-visitor-keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint_visitor_keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint-visitor-keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint_visitor_keys:3.1.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-visitor-keys@3.1.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor-keys:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor-keys:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor_keys:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor_keys:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-visitor-keys@3.2.0
 
 ##### Package: espree
 
 PackageName: espree
 SPDXID: SPDXRef-Package-npm-espree
-PackageVersion: 9.2.0
+PackageVersion: 9.3.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:espree:espree:9.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:espree:9.2.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/espree@9.2.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:espree:espree:9.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:espree:9.3.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/espree@9.3.0
 
 ##### Package: esprima
 
@@ -4824,21 +4906,21 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/fast-deep-equal@3.1.3
 
 PackageName: fast-glob
 SPDXID: SPDXRef-Package-npm-fast-glob
-PackageVersion: 3.2.7
+PackageVersion: 3.2.11
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast-glob:fast-glob:3.2.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast-glob:fast_glob:3.2.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast_glob:fast-glob:3.2.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast_glob:fast_glob:3.2.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast:fast-glob:3.2.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast:fast_glob:3.2.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:fast-glob:3.2.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:fast_glob:3.2.7:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/fast-glob@3.2.7
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast-glob:fast-glob:3.2.11:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast-glob:fast_glob:3.2.11:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast_glob:fast-glob:3.2.11:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast_glob:fast_glob:3.2.11:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast:fast-glob:3.2.11:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:fast:fast_glob:3.2.11:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:fast-glob:3.2.11:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:fast_glob:3.2.11:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/fast-glob@3.2.11
 
 ##### Package: fast-json-stable-stringify
 
@@ -5534,15 +5616,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/globals@11.12.0
 
 PackageName: globby
 SPDXID: SPDXRef-Package-npm-globby
-PackageVersion: 11.0.4
+PackageVersion: 11.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:globby:globby:11.0.4:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:globby:11.0.4:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/globby@11.0.4
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:globby:globby:11.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:globby:11.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/globby@11.1.0
 
 ##### Package: graceful-fs
 
@@ -7066,35 +7148,35 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/lilconfig@2.0.4
 
 PackageName: lint-staged
 SPDXID: SPDXRef-Package-npm-lint-staged
-PackageVersion: 12.1.7
+PackageVersion: 12.3.3
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint-staged:lint-staged:12.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint-staged:lint_staged:12.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint_staged:lint-staged:12.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint_staged:lint_staged:12.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint:lint-staged:12.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint:lint_staged:12.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:lint-staged:12.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:lint_staged:12.1.7:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/lint-staged@12.1.7
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint-staged:lint-staged:12.3.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint-staged:lint_staged:12.3.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint_staged:lint-staged:12.3.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint_staged:lint_staged:12.3.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint:lint-staged:12.3.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint:lint_staged:12.3.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:lint-staged:12.3.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:lint_staged:12.3.3:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/lint-staged@12.3.3
 
 ##### Package: listr2
 
 PackageName: listr2
 SPDXID: SPDXRef-Package-npm-listr2
-PackageVersion: 3.13.5
+PackageVersion: 4.0.2
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:listr2:listr2:3.13.5:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:listr2:3.13.5:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/listr2@3.13.5
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:listr2:listr2:4.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:listr2:4.0.2:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/listr2@4.0.2
 
 ##### Package: locate-path
 
@@ -7590,15 +7672,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/mkdirp@1.0.4
 
 PackageName: mongodb
 SPDXID: SPDXRef-Package-npm-mongodb
-PackageVersion: 4.3.0
+PackageVersion: 4.3.1
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:mongodb:mongodb:4.3.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:mongodb:4.3.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/mongodb@4.3.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:mongodb:mongodb:4.3.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:mongodb:4.3.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/mongodb@4.3.1
 
 ##### Package: mongodb-connection-string-url
 
@@ -7756,29 +7838,29 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/negotiator@0.6.2
 
 PackageName: next
 SPDXID: SPDXRef-Package-npm-next
-PackageVersion: 12.0.9
+PackageVersion: 12.0.10
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:next:next:12.0.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:next:12.0.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/next@12.0.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:next:next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:next:12.0.10:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/next@12.0.10
 
 ##### Package: nise
 
 PackageName: nise
 SPDXID: SPDXRef-Package-npm-nise
-PackageVersion: 5.1.0
+PackageVersion: 5.1.1
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:nise:nise:5.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:nise:5.1.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/nise@5.1.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:nise:nise:5.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:nise:5.1.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/nise@5.1.1
 
 ##### Package: node-preload
 
@@ -7922,21 +8004,21 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/object-assign@4.1.1
 
 PackageName: object-inspect
 SPDXID: SPDXRef-Package-npm-object-inspect
-PackageVersion: 1.11.1
+PackageVersion: 1.12.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:object-inspect:object-inspect:1.11.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:object-inspect:object_inspect:1.11.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:object_inspect:object-inspect:1.11.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:object_inspect:object_inspect:1.11.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:object:object-inspect:1.11.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:object:object_inspect:1.11.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:object-inspect:1.11.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:object_inspect:1.11.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/object-inspect@1.11.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:object-inspect:object-inspect:1.12.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:object-inspect:object_inspect:1.12.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:object_inspect:object-inspect:1.12.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:object_inspect:object_inspect:1.12.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:object:object-inspect:1.12.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:object:object_inspect:1.12.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:object-inspect:1.12.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:object_inspect:1.12.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/object-inspect@1.12.0
 
 ##### Package: object-keys
 
@@ -8536,15 +8618,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/performance-now@2.1.0
 
 PackageName: pg
 SPDXID: SPDXRef-Package-npm-pg
-PackageVersion: 8.7.1
+PackageVersion: 8.7.3
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg:pg:8.7.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:pg:8.7.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/pg@8.7.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg:pg:8.7.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:pg:8.7.3:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/pg@8.7.3
 
 ##### Package: pg-connection-string
 
@@ -8614,21 +8696,21 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/pg-native@3.0.0
 
 PackageName: pg-pool
 SPDXID: SPDXRef-Package-npm-pg-pool
-PackageVersion: 3.4.1
+PackageVersion: 3.5.1
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg-pool:pg-pool:3.4.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg-pool:pg_pool:3.4.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg_pool:pg-pool:3.4.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg_pool:pg_pool:3.4.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg:pg-pool:3.4.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg:pg_pool:3.4.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:pg-pool:3.4.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:pg_pool:3.4.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/pg-pool@3.4.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg-pool:pg-pool:3.5.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg-pool:pg_pool:3.5.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg_pool:pg-pool:3.5.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg_pool:pg_pool:3.5.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg:pg-pool:3.5.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:pg:pg_pool:3.5.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:pg-pool:3.5.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:pg_pool:3.5.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/pg-pool@3.5.1
 
 ##### Package: pg-protocol
 
@@ -9070,15 +9152,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/queue-microtask@1.2.3
 
 PackageName: rambda
 SPDXID: SPDXRef-Package-npm-rambda
-PackageVersion: 7.0.1
+PackageVersion: 7.0.2
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:rambda:rambda:7.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:rambda:7.0.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/rambda@7.0.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:rambda:rambda:7.0.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:rambda:7.0.2:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/rambda@7.0.2
 
 ##### Package: range-parser
 
@@ -9192,15 +9274,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/readdirp@3.6.0
 
 PackageName: redis
 SPDXID: SPDXRef-Package-npm-redis
-PackageVersion: 4.0.1
+PackageVersion: 4.0.3
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:redis:redis:4.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:redis:4.0.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/redis@4.0.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:redis:redis:4.0.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:redis:4.0.3:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/redis@4.0.3
 
 ##### Package: redis-errors
 
@@ -9542,15 +9624,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/run-parallel@1.2.0
 
 PackageName: rxjs
 SPDXID: SPDXRef-Package-npm-rxjs
-PackageVersion: 7.5.1
+PackageVersion: 7.5.2
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:rxjs:rxjs:7.5.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:rxjs:7.5.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/rxjs@7.5.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:rxjs:rxjs:7.5.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:rxjs:7.5.2:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/rxjs@7.5.2
 
 ##### Package: safe-buffer
 
@@ -9638,15 +9720,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/scheduler@0.20.2
 
 PackageName: semver
 SPDXID: SPDXRef-Package-npm-semver
-PackageVersion: 6.3.0
+PackageVersion: 7.3.5
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:semver:semver:6.3.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:semver:6.3.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/semver@6.3.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:semver:semver:7.3.5:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:semver:7.3.5:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/semver@7.3.5
 
 ##### Package: send
 
@@ -9834,15 +9916,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/signal-exit@3.0.6
 
 PackageName: sinon
 SPDXID: SPDXRef-Package-npm-sinon
-PackageVersion: 12.0.1
+PackageVersion: 13.0.1
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:sinon:sinon:12.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:sinon:12.0.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/sinon@12.0.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:sinon:sinon:13.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:sinon:13.0.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/sinon@13.0.1
 
 ##### Package: slash
 
@@ -10700,21 +10782,21 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/trivial-deferred@1.0.1
 
 PackageName: ts-node
 SPDXID: SPDXRef-Package-npm-ts-node
-PackageVersion: 10.4.0
+PackageVersion: 10.5.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts-node:ts-node:10.4.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts-node:ts_node:10.4.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts_node:ts-node:10.4.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts_node:ts_node:10.4.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts:ts-node:10.4.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts:ts_node:10.4.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:ts-node:10.4.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:ts_node:10.4.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/ts-node@10.4.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts-node:ts-node:10.5.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts-node:ts_node:10.5.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts_node:ts-node:10.5.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts_node:ts_node:10.5.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts:ts-node:10.5.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:ts:ts_node:10.5.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:ts-node:10.5.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:ts_node:10.5.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/ts-node@10.5.0
 
 ##### Package: tsconfig-paths
 
@@ -10934,15 +11016,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/typeorm@0.2.41
 
 PackageName: typescript
 SPDXID: SPDXRef-Package-npm-typescript
-PackageVersion: 4.5.4
+PackageVersion: 4.5.5
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:typescript:typescript:4.5.4:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:typescript:4.5.4:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/typescript@4.5.4
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:typescript:typescript:4.5.5:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:typescript:4.5.5:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/typescript@4.5.5
 
 ##### Package: unbox-primitive
 
@@ -11115,6 +11197,34 @@ ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8:v8_compile_cache:2.3.0:*:*:*:*:*:*:
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:v8-compile-cache:2.3.0:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:v8_compile_cache:2.3.0:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/v8-compile-cache@2.3.0
+
+##### Package: v8-compile-cache-lib
+
+PackageName: v8-compile-cache-lib
+SPDXID: SPDXRef-Package-npm-v8-compile-cache-lib
+PackageVersion: 3.0.0
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8-compile-cache-lib:v8-compile-cache-lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8-compile-cache-lib:v8_compile_cache_lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8_compile_cache_lib:v8-compile-cache-lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8_compile_cache_lib:v8_compile_cache_lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8-compile-cache:v8-compile-cache-lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8-compile-cache:v8_compile_cache_lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8_compile_cache:v8-compile-cache-lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8_compile_cache:v8_compile_cache_lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8-compile:v8-compile-cache-lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8-compile:v8_compile_cache_lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8_compile:v8-compile-cache-lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8_compile:v8_compile_cache_lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8:v8-compile-cache-lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:v8:v8_compile_cache_lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:v8-compile-cache-lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:v8_compile_cache_lib:3.0.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/v8-compile-cache-lib@3.0.0
 
 ##### Package: validator
 

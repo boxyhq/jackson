@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:f9d5b4a2-37dd-49ef-9b7f-0a951912cb71" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:54021e66-ecf0-40f2-a6db-44451efed4d4" version="1">
   <metadata>
-    <timestamp>2022-02-08T04:57:13.868Z</timestamp>
+    <timestamp>2022-02-08T22:21:36.517Z</timestamp>
     <tools>
       <tool>
         <vendor>AppThreat</vendor>
@@ -1795,60 +1795,76 @@
     <bom-ref>pkg:npm/boxyhq/saml20@0.2.0</bom-ref>
     <group>next</group>
     <name>env</name>
-    <version>12.0.9</version>
+    <version>12.0.10</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/next/env@12.0.9</purl>
+    <purl>pkg:npm/next/env@12.0.10</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/next/env@12.0.9</bom-ref>
+    <bom-ref>pkg:npm/next/env@12.0.10</bom-ref>
     <group>next</group>
     <name>swc-linux-x64-gnu</name>
-    <version>12.0.9</version>
+    <version>12.0.10</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/next/swc-linux-x64-gnu@12.0.9</purl>
+    <purl>pkg:npm/next/swc-linux-x64-gnu@12.0.10</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/next/swc-linux-x64-gnu@12.0.9</bom-ref>
+    <bom-ref>pkg:npm/next/swc-linux-x64-gnu@12.0.10</bom-ref>
     <group>next</group>
     <name>swc-linux-x64-musl</name>
-    <version>12.0.9</version>
+    <version>12.0.10</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/next/swc-linux-x64-musl@12.0.9</purl>
+    <purl>pkg:npm/next/swc-linux-x64-musl@12.0.10</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/next/swc-linux-x64-musl@12.0.9</bom-ref>
+    <bom-ref>pkg:npm/next/swc-linux-x64-musl@12.0.10</bom-ref>
+    <group>node-redis</group>
+    <name>bloom</name>
+    <version>1.0.1</version>
+    <description/>
+    <licenses/>
+    <purl>pkg:npm/node-redis/bloom@1.0.1</purl>
+    <type>library</type>
+    <bom-ref>pkg:npm/node-redis/bloom@1.0.1</bom-ref>
     <group>node-redis</group>
     <name>client</name>
-    <version>1.0.1</version>
+    <version>1.0.3</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/node-redis/client@1.0.1</purl>
+    <purl>pkg:npm/node-redis/client@1.0.3</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/node-redis/client@1.0.1</bom-ref>
+    <bom-ref>pkg:npm/node-redis/client@1.0.3</bom-ref>
     <group>node-redis</group>
-    <name>json</name>
-    <version>1.0.1</version>
-    <description/>
-    <licenses/>
-    <purl>pkg:npm/node-redis/json@1.0.1</purl>
-    <type>library</type>
-    <bom-ref>pkg:npm/node-redis/json@1.0.1</bom-ref>
-    <group>node-redis</group>
-    <name>search</name>
-    <version>1.0.1</version>
-    <description/>
-    <licenses/>
-    <purl>pkg:npm/node-redis/search@1.0.1</purl>
-    <type>library</type>
-    <bom-ref>pkg:npm/node-redis/search@1.0.1</bom-ref>
-    <group>node-redis</group>
-    <name>time-series</name>
+    <name>graph</name>
     <version>1.0.0</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/node-redis/time-series@1.0.0</purl>
+    <purl>pkg:npm/node-redis/graph@1.0.0</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/node-redis/time-series@1.0.0</bom-ref>
+    <bom-ref>pkg:npm/node-redis/graph@1.0.0</bom-ref>
+    <group>node-redis</group>
+    <name>json</name>
+    <version>1.0.2</version>
+    <description/>
+    <licenses/>
+    <purl>pkg:npm/node-redis/json@1.0.2</purl>
+    <type>library</type>
+    <bom-ref>pkg:npm/node-redis/json@1.0.2</bom-ref>
+    <group>node-redis</group>
+    <name>search</name>
+    <version>1.0.2</version>
+    <description/>
+    <licenses/>
+    <purl>pkg:npm/node-redis/search@1.0.2</purl>
+    <type>library</type>
+    <bom-ref>pkg:npm/node-redis/search@1.0.2</bom-ref>
+    <group>node-redis</group>
+    <name>time-series</name>
+    <version>1.0.1</version>
+    <description/>
+    <licenses/>
+    <purl>pkg:npm/node-redis/time-series@1.0.1</purl>
+    <type>library</type>
+    <bom-ref>pkg:npm/node-redis/time-series@1.0.1</bom-ref>
     <group/>
     <name>tslib</name>
     <version>2.3.1</version>
@@ -2686,12 +2702,12 @@
     <bom-ref>pkg:npm/next/react-dev-overlay</bom-ref>
     <group>next</group>
     <name>react-refresh-utils</name>
-    <version>12.0.9</version>
+    <version>12.0.10</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/next/react-refresh-utils@12.0.9</purl>
+    <purl>pkg:npm/next/react-refresh-utils@12.0.10</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/next/react-refresh-utils@12.0.9</bom-ref>
+    <bom-ref>pkg:npm/next/react-refresh-utils@12.0.10</bom-ref>
     <group>peculiar</group>
     <name>webcrypto</name>
     <description/>
@@ -3446,12 +3462,12 @@
     <bom-ref>pkg:npm/ws</bom-ref>
     <group/>
     <name>next</name>
-    <version>12.0.9</version>
+    <version>12.0.10</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/next@12.0.9</purl>
+    <purl>pkg:npm/next@12.0.10</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/next@12.0.9</bom-ref>
+    <bom-ref>pkg:npm/next@12.0.10</bom-ref>
     <group/>
     <name>on-finished</name>
     <version>2.3.0</version>
@@ -3534,12 +3550,12 @@
     <bom-ref>pkg:npm/pg-int8@1.0.1</bom-ref>
     <group/>
     <name>pg-pool</name>
-    <version>3.4.1</version>
+    <version>3.5.1</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/pg-pool@3.4.1</purl>
+    <purl>pkg:npm/pg-pool@3.5.1</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/pg-pool@3.4.1</bom-ref>
+    <bom-ref>pkg:npm/pg-pool@3.5.1</bom-ref>
     <group/>
     <name>pg-protocol</name>
     <version>1.5.0</version>
@@ -3558,12 +3574,12 @@
     <bom-ref>pkg:npm/pg-types@2.2.0</bom-ref>
     <group/>
     <name>pg</name>
-    <version>8.7.1</version>
+    <version>8.7.3</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/pg@8.7.1</purl>
+    <purl>pkg:npm/pg@8.7.3</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/pg@8.7.1</bom-ref>
+    <bom-ref>pkg:npm/pg@8.7.3</bom-ref>
     <group/>
     <name>pgpass</name>
     <version>1.0.5</version>
@@ -3685,6 +3701,14 @@
     <type>library</type>
     <bom-ref>pkg:npm/qs@6.9.6</bom-ref>
     <group/>
+    <name>rambda</name>
+    <version>7.0.2</version>
+    <description/>
+    <licenses/>
+    <purl>pkg:npm/rambda@7.0.2</purl>
+    <type>library</type>
+    <bom-ref>pkg:npm/rambda@7.0.2</bom-ref>
+    <group/>
     <name>range-parser</name>
     <version>1.2.1</version>
     <description/>
@@ -3726,12 +3750,12 @@
     <bom-ref>pkg:npm/redis-parser@3.0.0</bom-ref>
     <group/>
     <name>redis</name>
-    <version>4.0.1</version>
+    <version>4.0.3</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/redis@4.0.1</purl>
+    <purl>pkg:npm/redis@4.0.3</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/redis@4.0.1</bom-ref>
+    <bom-ref>pkg:npm/redis@4.0.3</bom-ref>
     <group/>
     <name>reflect-metadata</name>
     <version>0.1.13</version>
@@ -4078,108 +4102,92 @@
     <bom-ref>pkg:npm/ignore@5.2.0</bom-ref>
     <group>typescript-eslint</group>
     <name>eslint-plugin</name>
-    <version>5.8.1</version>
+    <version>5.11.0</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/typescript-eslint/eslint-plugin@5.8.1</purl>
+    <purl>pkg:npm/typescript-eslint/eslint-plugin@5.11.0</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/typescript-eslint/eslint-plugin@5.8.1</bom-ref>
+    <bom-ref>pkg:npm/typescript-eslint/eslint-plugin@5.11.0</bom-ref>
     <group>typescript-eslint</group>
     <name>parser</name>
-    <version>5.8.1</version>
+    <version>5.11.0</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/typescript-eslint/parser@5.8.1</purl>
+    <purl>pkg:npm/typescript-eslint/parser@5.11.0</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/typescript-eslint/parser@5.8.1</bom-ref>
+    <bom-ref>pkg:npm/typescript-eslint/parser@5.11.0</bom-ref>
     <group>typescript-eslint</group>
     <name>scope-manager</name>
-    <version>5.8.1</version>
+    <version>5.11.0</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/typescript-eslint/scope-manager@5.8.1</purl>
+    <purl>pkg:npm/typescript-eslint/scope-manager@5.11.0</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/typescript-eslint/scope-manager@5.8.1</bom-ref>
+    <bom-ref>pkg:npm/typescript-eslint/scope-manager@5.11.0</bom-ref>
+    <group>typescript-eslint</group>
+    <name>type-utils</name>
+    <version>5.11.0</version>
+    <description/>
+    <licenses/>
+    <purl>pkg:npm/typescript-eslint/type-utils@5.11.0</purl>
+    <type>library</type>
+    <bom-ref>pkg:npm/typescript-eslint/type-utils@5.11.0</bom-ref>
     <group>typescript-eslint</group>
     <name>types</name>
-    <version>5.8.1</version>
+    <version>5.11.0</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/typescript-eslint/types@5.8.1</purl>
+    <purl>pkg:npm/typescript-eslint/types@5.11.0</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/typescript-eslint/types@5.8.1</bom-ref>
+    <bom-ref>pkg:npm/typescript-eslint/types@5.11.0</bom-ref>
     <group>typescript-eslint</group>
     <name>typescript-estree</name>
-    <version>5.8.1</version>
+    <version>5.11.0</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/typescript-eslint/typescript-estree@5.8.1</purl>
+    <purl>pkg:npm/typescript-eslint/typescript-estree@5.11.0</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/typescript-eslint/typescript-estree@5.8.1</bom-ref>
+    <bom-ref>pkg:npm/typescript-eslint/typescript-estree@5.11.0</bom-ref>
+    <group>typescript-eslint</group>
+    <name>utils</name>
+    <version>5.11.0</version>
+    <description/>
+    <licenses/>
+    <purl>pkg:npm/typescript-eslint/utils@5.11.0</purl>
+    <type>library</type>
+    <bom-ref>pkg:npm/typescript-eslint/utils@5.11.0</bom-ref>
     <group>typescript-eslint</group>
     <name>visitor-keys</name>
-    <version>5.8.1</version>
+    <version>5.11.0</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/typescript-eslint/visitor-keys@5.8.1</purl>
+    <purl>pkg:npm/typescript-eslint/visitor-keys@5.11.0</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/typescript-eslint/visitor-keys@5.8.1</bom-ref>
+    <bom-ref>pkg:npm/typescript-eslint/visitor-keys@5.11.0</bom-ref>
     <group/>
-    <name>escape-string-regexp</name>
-    <version>4.0.0</version>
+    <name>eslint-scope</name>
+    <version>5.1.1</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/escape-string-regexp@4.0.0</purl>
+    <purl>pkg:npm/eslint-scope@5.1.1</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/escape-string-regexp@4.0.0</bom-ref>
+    <bom-ref>pkg:npm/eslint-scope@5.1.1</bom-ref>
     <group/>
-    <name>eslint</name>
-    <version>8.5.0</version>
-    <description/>
-    <licenses/>
-    <purl>pkg:npm/eslint@8.5.0</purl>
-    <type>library</type>
-    <bom-ref>pkg:npm/eslint@8.5.0</bom-ref>
-    <group/>
-    <name>glob-parent</name>
-    <version>6.0.2</version>
-    <description/>
-    <licenses/>
-    <purl>pkg:npm/glob-parent@6.0.2</purl>
-    <type>library</type>
-    <bom-ref>pkg:npm/glob-parent@6.0.2</bom-ref>
-    <group/>
-    <name>globals</name>
-    <version>13.12.0</version>
-    <description/>
-    <licenses/>
-    <purl>pkg:npm/globals@13.12.0</purl>
-    <type>library</type>
-    <bom-ref>pkg:npm/globals@13.12.0</bom-ref>
-    <group/>
-    <name>mongodb</name>
+    <name>estraverse</name>
     <version>4.3.0</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/mongodb@4.3.0</purl>
+    <purl>pkg:npm/estraverse@4.3.0</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/mongodb@4.3.0</bom-ref>
+    <bom-ref>pkg:npm/estraverse@4.3.0</bom-ref>
     <group/>
-    <name>rambda</name>
-    <version>7.0.1</version>
+    <name>mongodb</name>
+    <version>4.3.1</version>
     <description/>
     <licenses/>
-    <purl>pkg:npm/rambda@7.0.1</purl>
+    <purl>pkg:npm/mongodb@4.3.1</purl>
     <type>library</type>
-    <bom-ref>pkg:npm/rambda@7.0.1</bom-ref>
-    <group/>
-    <name>type-fest</name>
-    <version>0.20.2</version>
-    <description/>
-    <licenses/>
-    <purl>pkg:npm/type-fest@0.20.2</purl>
-    <type>library</type>
-    <bom-ref>pkg:npm/type-fest@0.20.2</bom-ref>
+    <bom-ref>pkg:npm/mongodb@4.3.1</bom-ref>
     <group/>
     <name>jackson</name>
     <version>0.3.6</version>

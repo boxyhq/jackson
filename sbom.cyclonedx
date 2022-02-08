@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.3" serialNumber="urn:uuid:6a8ff9e9-6b4e-4d19-a4fd-f46148c62233" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.3" serialNumber="urn:uuid:07b769cc-179b-48c4-87e3-d346ac6c5f44" version="1">
   <metadata>
-    <timestamp>2022-02-08T04:55:05Z</timestamp>
+    <timestamp>2022-02-08T22:19:14Z</timestamp>
     <tools>
       <tool>
         <vendor>anchore</vendor>
@@ -362,68 +362,73 @@
     </component>
     <component type="library">
       <name>@next/env</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fenv@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fenv@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/eslint-plugin-next</name>
-      <version>12.0.8</version>
-      <purl>pkg:npm/@next%2Feslint-plugin-next@12.0.8</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Feslint-plugin-next@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-android-arm64</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-android-arm64@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-android-arm64@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-darwin-arm64</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-darwin-arm64@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-darwin-arm64@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-darwin-x64</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-darwin-x64@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-darwin-x64@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-arm-gnueabihf</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-linux-arm-gnueabihf@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-linux-arm-gnueabihf@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-arm64-gnu</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-linux-arm64-gnu@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-linux-arm64-gnu@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-arm64-musl</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-linux-arm64-musl@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-linux-arm64-musl@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-x64-gnu</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-linux-x64-gnu@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-linux-x64-gnu@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-x64-musl</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-linux-x64-musl@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-linux-x64-musl@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-win32-arm64-msvc</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-win32-arm64-msvc@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-win32-arm64-msvc@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-win32-ia32-msvc</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-win32-ia32-msvc@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-win32-ia32-msvc@12.0.10</purl>
     </component>
     <component type="library">
       <name>@next/swc-win32-x64-msvc</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/@next%2Fswc-win32-x64-msvc@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/@next%2Fswc-win32-x64-msvc@12.0.10</purl>
+    </component>
+    <component type="library">
+      <name>@node-redis/bloom</name>
+      <version>1.0.1</version>
+      <purl>pkg:npm/@node-redis%2Fbloom@1.0.1</purl>
     </component>
     <component type="library">
       <name>@node-redis/client</name>
@@ -432,8 +437,13 @@
     </component>
     <component type="library">
       <name>@node-redis/client</name>
-      <version>1.0.1</version>
-      <purl>pkg:npm/@node-redis%2Fclient@1.0.1</purl>
+      <version>1.0.3</version>
+      <purl>pkg:npm/@node-redis%2Fclient@1.0.3</purl>
+    </component>
+    <component type="library">
+      <name>@node-redis/graph</name>
+      <version>1.0.0</version>
+      <purl>pkg:npm/@node-redis%2Fgraph@1.0.0</purl>
     </component>
     <component type="library">
       <name>@node-redis/json</name>
@@ -442,8 +452,8 @@
     </component>
     <component type="library">
       <name>@node-redis/json</name>
-      <version>1.0.1</version>
-      <purl>pkg:npm/@node-redis%2Fjson@1.0.1</purl>
+      <version>1.0.2</version>
+      <purl>pkg:npm/@node-redis%2Fjson@1.0.2</purl>
     </component>
     <component type="library">
       <name>@node-redis/search</name>
@@ -452,18 +462,18 @@
     </component>
     <component type="library">
       <name>@node-redis/search</name>
+      <version>1.0.2</version>
+      <purl>pkg:npm/@node-redis%2Fsearch@1.0.2</purl>
+    </component>
+    <component type="library">
+      <name>@node-redis/time-series</name>
+      <version>1.0.0</version>
+      <purl>pkg:npm/@node-redis%2Ftime-series@1.0.0</purl>
+    </component>
+    <component type="library">
+      <name>@node-redis/time-series</name>
       <version>1.0.1</version>
-      <purl>pkg:npm/@node-redis%2Fsearch@1.0.1</purl>
-    </component>
-    <component type="library">
-      <name>@node-redis/time-series</name>
-      <version>1.0.0</version>
-      <purl>pkg:npm/@node-redis%2Ftime-series@1.0.0</purl>
-    </component>
-    <component type="library">
-      <name>@node-redis/time-series</name>
-      <version>1.0.0</version>
-      <purl>pkg:npm/@node-redis%2Ftime-series@1.0.0</purl>
+      <purl>pkg:npm/@node-redis%2Ftime-series@1.0.1</purl>
     </component>
     <component type="library">
       <name>@nodelib/fs.scandir</name>
@@ -647,8 +657,8 @@
     </component>
     <component type="library">
       <name>@sinonjs/fake-timers</name>
-      <version>8.1.0</version>
-      <purl>pkg:npm/@sinonjs%2Ffake-timers@8.1.0</purl>
+      <version>9.1.0</version>
+      <purl>pkg:npm/@sinonjs%2Ffake-timers@9.1.0</purl>
     </component>
     <component type="library">
       <name>@sinonjs/samsam</name>
@@ -657,8 +667,8 @@
     </component>
     <component type="library">
       <name>@sinonjs/samsam</name>
-      <version>6.0.2</version>
-      <purl>pkg:npm/@sinonjs%2Fsamsam@6.0.2</purl>
+      <version>6.1.1</version>
+      <purl>pkg:npm/@sinonjs%2Fsamsam@6.1.1</purl>
     </component>
     <component type="library">
       <name>@sinonjs/text-encoding</name>
@@ -807,13 +817,13 @@
     </component>
     <component type="library">
       <name>@types/node</name>
-      <version>16.11.17</version>
-      <purl>pkg:npm/@types%2Fnode@16.11.17</purl>
+      <version>17.0.14</version>
+      <purl>pkg:npm/@types%2Fnode@17.0.14</purl>
     </component>
     <component type="library">
       <name>@types/node</name>
-      <version>17.0.9</version>
-      <purl>pkg:npm/@types%2Fnode@17.0.9</purl>
+      <version>17.0.16</version>
+      <purl>pkg:npm/@types%2Fnode@17.0.16</purl>
     </component>
     <component type="library">
       <name>@types/prop-types</name>
@@ -862,8 +872,8 @@
     </component>
     <component type="library">
       <name>@types/sinon</name>
-      <version>10.0.6</version>
-      <purl>pkg:npm/@types%2Fsinon@10.0.6</purl>
+      <version>10.0.11</version>
+      <purl>pkg:npm/@types%2Fsinon@10.0.11</purl>
     </component>
     <component type="library">
       <name>@types/sinon</name>
@@ -871,6 +881,11 @@
       <purl>pkg:npm/@types%2Fsinon@10.0.6</purl>
     </component>
     <component type="library">
+      <name>@types/sinonjs__fake-timers</name>
+      <version>8.1.1</version>
+      <purl>pkg:npm/@types%2Fsinonjs__fake-timers@8.1.1</purl>
+    </component>
+    <component type="library">
       <name>@types/tap</name>
       <version>15.0.5</version>
       <purl>pkg:npm/@types%2Ftap@15.0.5</purl>
@@ -912,18 +927,13 @@
     </component>
     <component type="library">
       <name>@typescript-eslint/eslint-plugin</name>
-      <version>5.10.0</version>
-      <purl>pkg:npm/@typescript-eslint%2Feslint-plugin@5.10.0</purl>
+      <version>5.10.2</version>
+      <purl>pkg:npm/@typescript-eslint%2Feslint-plugin@5.10.2</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/eslint-plugin</name>
-      <version>5.8.1</version>
-      <purl>pkg:npm/@typescript-eslint%2Feslint-plugin@5.8.1</purl>
-    </component>
-    <component type="library">
-      <name>@typescript-eslint/experimental-utils</name>
-      <version>5.8.1</version>
-      <purl>pkg:npm/@typescript-eslint%2Fexperimental-utils@5.8.1</purl>
+      <version>5.11.0</version>
+      <purl>pkg:npm/@typescript-eslint%2Feslint-plugin@5.11.0</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/experimental-utils</name>
@@ -932,63 +942,73 @@
     </component>
     <component type="library">
       <name>@typescript-eslint/parser</name>
-      <version>5.10.0</version>
-      <purl>pkg:npm/@typescript-eslint%2Fparser@5.10.0</purl>
+      <version>5.10.2</version>
+      <purl>pkg:npm/@typescript-eslint%2Fparser@5.10.2</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/parser</name>
-      <version>5.8.1</version>
-      <purl>pkg:npm/@typescript-eslint%2Fparser@5.8.1</purl>
+      <version>5.11.0</version>
+      <purl>pkg:npm/@typescript-eslint%2Fparser@5.11.0</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/scope-manager</name>
-      <version>5.10.0</version>
-      <purl>pkg:npm/@typescript-eslint%2Fscope-manager@5.10.0</purl>
+      <version>5.10.2</version>
+      <purl>pkg:npm/@typescript-eslint%2Fscope-manager@5.10.2</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/scope-manager</name>
-      <version>5.8.1</version>
-      <purl>pkg:npm/@typescript-eslint%2Fscope-manager@5.8.1</purl>
+      <version>5.11.0</version>
+      <purl>pkg:npm/@typescript-eslint%2Fscope-manager@5.11.0</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/type-utils</name>
-      <version>5.10.0</version>
-      <purl>pkg:npm/@typescript-eslint%2Ftype-utils@5.10.0</purl>
+      <version>5.10.2</version>
+      <purl>pkg:npm/@typescript-eslint%2Ftype-utils@5.10.2</purl>
+    </component>
+    <component type="library">
+      <name>@typescript-eslint/type-utils</name>
+      <version>5.11.0</version>
+      <purl>pkg:npm/@typescript-eslint%2Ftype-utils@5.11.0</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/types</name>
-      <version>5.10.0</version>
-      <purl>pkg:npm/@typescript-eslint%2Ftypes@5.10.0</purl>
+      <version>5.10.2</version>
+      <purl>pkg:npm/@typescript-eslint%2Ftypes@5.10.2</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/types</name>
-      <version>5.8.1</version>
-      <purl>pkg:npm/@typescript-eslint%2Ftypes@5.8.1</purl>
+      <version>5.11.0</version>
+      <purl>pkg:npm/@typescript-eslint%2Ftypes@5.11.0</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/typescript-estree</name>
-      <version>5.10.0</version>
-      <purl>pkg:npm/@typescript-eslint%2Ftypescript-estree@5.10.0</purl>
+      <version>5.10.2</version>
+      <purl>pkg:npm/@typescript-eslint%2Ftypescript-estree@5.10.2</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/typescript-estree</name>
-      <version>5.8.1</version>
-      <purl>pkg:npm/@typescript-eslint%2Ftypescript-estree@5.8.1</purl>
+      <version>5.11.0</version>
+      <purl>pkg:npm/@typescript-eslint%2Ftypescript-estree@5.11.0</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/utils</name>
-      <version>5.10.0</version>
-      <purl>pkg:npm/@typescript-eslint%2Futils@5.10.0</purl>
+      <version>5.10.2</version>
+      <purl>pkg:npm/@typescript-eslint%2Futils@5.10.2</purl>
+    </component>
+    <component type="library">
+      <name>@typescript-eslint/utils</name>
+      <version>5.11.0</version>
+      <purl>pkg:npm/@typescript-eslint%2Futils@5.11.0</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/visitor-keys</name>
-      <version>5.10.0</version>
-      <purl>pkg:npm/@typescript-eslint%2Fvisitor-keys@5.10.0</purl>
+      <version>5.10.2</version>
+      <purl>pkg:npm/@typescript-eslint%2Fvisitor-keys@5.10.2</purl>
     </component>
     <component type="library">
       <name>@typescript-eslint/visitor-keys</name>
-      <version>5.8.1</version>
-      <purl>pkg:npm/@typescript-eslint%2Fvisitor-keys@5.8.1</purl>
+      <version>5.11.0</version>
+      <purl>pkg:npm/@typescript-eslint%2Fvisitor-keys@5.11.0</purl>
     </component>
     <component type="library">
       <name>@xmldom/xmldom</name>
@@ -1017,8 +1037,8 @@
     </component>
     <component type="library">
       <name>acorn</name>
-      <version>8.6.0</version>
-      <purl>pkg:npm/acorn@8.6.0</purl>
+      <version>8.7.0</version>
+      <purl>pkg:npm/acorn@8.7.0</purl>
     </component>
     <component type="library">
       <name>acorn-jsx</name>
@@ -1059,11 +1079,6 @@
       <name>ajv</name>
       <version>6.12.6</version>
       <purl>pkg:npm/ajv@6.12.6</purl>
-    </component>
-    <component type="library">
-      <name>ansi-colors</name>
-      <version>4.1.1</version>
-      <purl>pkg:npm/ansi-colors@4.1.1</purl>
     </component>
     <component type="library">
       <name>ansi-colors</name>
@@ -1731,6 +1746,11 @@
       <purl>pkg:npm/cross-env@7.0.3</purl>
     </component>
     <component type="library">
+      <name>cross-env</name>
+      <version>7.0.3</version>
+      <purl>pkg:npm/cross-env@7.0.3</purl>
+    </component>
+    <component type="library">
       <name>cross-spawn</name>
       <version>7.0.3</version>
       <purl>pkg:npm/cross-spawn@7.0.3</purl>
@@ -1941,11 +1961,6 @@
       <purl>pkg:npm/enquirer@2.3.6</purl>
     </component>
     <component type="library">
-      <name>enquirer</name>
-      <version>2.3.6</version>
-      <purl>pkg:npm/enquirer@2.3.6</purl>
-    </component>
-    <component type="library">
       <name>es-abstract</name>
       <version>1.19.1</version>
       <purl>pkg:npm/es-abstract@1.19.1</purl>
@@ -1997,18 +2012,18 @@
     </component>
     <component type="library">
       <name>eslint</name>
-      <version>8.5.0</version>
-      <purl>pkg:npm/eslint@8.5.0</purl>
+      <version>8.8.0</version>
+      <purl>pkg:npm/eslint@8.8.0</purl>
     </component>
     <component type="library">
       <name>eslint</name>
-      <version>8.7.0</version>
-      <purl>pkg:npm/eslint@8.7.0</purl>
+      <version>8.8.0</version>
+      <purl>pkg:npm/eslint@8.8.0</purl>
     </component>
     <component type="library">
       <name>eslint-config-next</name>
-      <version>12.0.8</version>
-      <purl>pkg:npm/eslint-config-next@12.0.8</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/eslint-config-next@12.0.10</purl>
     </component>
     <component type="library">
       <name>eslint-config-prettier</name>
@@ -2077,8 +2092,8 @@
     </component>
     <component type="library">
       <name>eslint-visitor-keys</name>
-      <version>3.1.0</version>
-      <purl>pkg:npm/eslint-visitor-keys@3.1.0</purl>
+      <version>3.2.0</version>
+      <purl>pkg:npm/eslint-visitor-keys@3.2.0</purl>
     </component>
     <component type="library">
       <name>eslint-visitor-keys</name>
@@ -2087,8 +2102,8 @@
     </component>
     <component type="library">
       <name>espree</name>
-      <version>9.2.0</version>
-      <purl>pkg:npm/espree@9.2.0</purl>
+      <version>9.3.0</version>
+      <purl>pkg:npm/espree@9.3.0</purl>
     </component>
     <component type="library">
       <name>espree</name>
@@ -2217,8 +2232,8 @@
     </component>
     <component type="library">
       <name>fast-glob</name>
-      <version>3.2.7</version>
-      <purl>pkg:npm/fast-glob@3.2.7</purl>
+      <version>3.2.11</version>
+      <purl>pkg:npm/fast-glob@3.2.11</purl>
     </component>
     <component type="library">
       <name>fast-json-stable-stringify</name>
@@ -2552,8 +2567,8 @@
     </component>
     <component type="library">
       <name>globby</name>
-      <version>11.0.4</version>
-      <purl>pkg:npm/globby@11.0.4</purl>
+      <version>11.1.0</version>
+      <purl>pkg:npm/globby@11.1.0</purl>
     </component>
     <component type="library">
       <name>globby</name>
@@ -3217,13 +3232,13 @@
     </component>
     <component type="library">
       <name>lint-staged</name>
-      <version>12.1.7</version>
-      <purl>pkg:npm/lint-staged@12.1.7</purl>
+      <version>12.3.3</version>
+      <purl>pkg:npm/lint-staged@12.3.3</purl>
     </component>
     <component type="library">
       <name>listr2</name>
-      <version>3.13.5</version>
-      <purl>pkg:npm/listr2@3.13.5</purl>
+      <version>4.0.2</version>
+      <purl>pkg:npm/listr2@4.0.2</purl>
     </component>
     <component type="library">
       <name>locate-path</name>
@@ -3492,8 +3507,8 @@
     </component>
     <component type="library">
       <name>mongodb</name>
-      <version>4.3.0</version>
-      <purl>pkg:npm/mongodb@4.3.0</purl>
+      <version>4.3.1</version>
+      <purl>pkg:npm/mongodb@4.3.1</purl>
     </component>
     <component type="library">
       <name>mongodb-connection-string-url</name>
@@ -3577,8 +3592,8 @@
     </component>
     <component type="library">
       <name>next</name>
-      <version>12.0.9</version>
-      <purl>pkg:npm/next@12.0.9</purl>
+      <version>12.0.10</version>
+      <purl>pkg:npm/next@12.0.10</purl>
     </component>
     <component type="library">
       <name>nise</name>
@@ -3587,8 +3602,8 @@
     </component>
     <component type="library">
       <name>nise</name>
-      <version>5.1.0</version>
-      <purl>pkg:npm/nise@5.1.0</purl>
+      <version>5.1.1</version>
+      <purl>pkg:npm/nise@5.1.1</purl>
     </component>
     <component type="library">
       <name>node-preload</name>
@@ -3652,8 +3667,8 @@
     </component>
     <component type="library">
       <name>object-inspect</name>
-      <version>1.11.1</version>
-      <purl>pkg:npm/object-inspect@1.11.1</purl>
+      <version>1.12.0</version>
+      <purl>pkg:npm/object-inspect@1.12.0</purl>
     </component>
     <component type="library">
       <name>object-keys</name>
@@ -3927,8 +3942,8 @@
     </component>
     <component type="library">
       <name>pg</name>
-      <version>8.7.1</version>
-      <purl>pkg:npm/pg@8.7.1</purl>
+      <version>8.7.3</version>
+      <purl>pkg:npm/pg@8.7.3</purl>
     </component>
     <component type="library">
       <name>pg-connection-string</name>
@@ -3962,8 +3977,8 @@
     </component>
     <component type="library">
       <name>pg-pool</name>
-      <version>3.4.1</version>
-      <purl>pkg:npm/pg-pool@3.4.1</purl>
+      <version>3.5.1</version>
+      <purl>pkg:npm/pg-pool@3.5.1</purl>
     </component>
     <component type="library">
       <name>pg-protocol</name>
@@ -4111,11 +4126,6 @@
       <purl>pkg:npm/progress@2.0.3</purl>
     </component>
     <component type="library">
-      <name>progress</name>
-      <version>2.0.3</version>
-      <purl>pkg:npm/progress@2.0.3</purl>
-    </component>
-    <component type="library">
       <name>prop-types</name>
       <version>15.7.2</version>
       <purl>pkg:npm/prop-types@15.7.2</purl>
@@ -4202,8 +4212,8 @@
     </component>
     <component type="library">
       <name>rambda</name>
-      <version>7.0.1</version>
-      <purl>pkg:npm/rambda@7.0.1</purl>
+      <version>7.0.2</version>
+      <purl>pkg:npm/rambda@7.0.2</purl>
     </component>
     <component type="library">
       <name>range-parser</name>
@@ -4257,8 +4267,8 @@
     </component>
     <component type="library">
       <name>redis</name>
-      <version>4.0.1</version>
-      <purl>pkg:npm/redis@4.0.1</purl>
+      <version>4.0.3</version>
+      <purl>pkg:npm/redis@4.0.3</purl>
     </component>
     <component type="library">
       <name>redis-errors</name>
@@ -4422,8 +4432,8 @@
     </component>
     <component type="library">
       <name>rxjs</name>
-      <version>7.5.1</version>
-      <purl>pkg:npm/rxjs@7.5.1</purl>
+      <version>7.5.2</version>
+      <purl>pkg:npm/rxjs@7.5.2</purl>
     </component>
     <component type="library">
       <name>safe-buffer</name>
@@ -4474,6 +4484,11 @@
       <name>semver</name>
       <version>6.3.0</version>
       <purl>pkg:npm/semver@6.3.0</purl>
+    </component>
+    <component type="library">
+      <name>semver</name>
+      <version>7.3.5</version>
+      <purl>pkg:npm/semver@7.3.5</purl>
     </component>
     <component type="library">
       <name>send</name>
@@ -4572,8 +4587,8 @@
     </component>
     <component type="library">
       <name>sinon</name>
-      <version>12.0.1</version>
-      <purl>pkg:npm/sinon@12.0.1</purl>
+      <version>13.0.1</version>
+      <purl>pkg:npm/sinon@13.0.1</purl>
     </component>
     <component type="library">
       <name>slash</name>
@@ -4967,8 +4982,8 @@
     </component>
     <component type="library">
       <name>ts-node</name>
-      <version>10.4.0</version>
-      <purl>pkg:npm/ts-node@10.4.0</purl>
+      <version>10.5.0</version>
+      <purl>pkg:npm/ts-node@10.5.0</purl>
     </component>
     <component type="library">
       <name>tsconfig-paths</name>
@@ -5056,6 +5071,11 @@
       <purl>pkg:npm/type-fest@0.20.2</purl>
     </component>
     <component type="library">
+      <name>type-fest</name>
+      <version>0.21.3</version>
+      <purl>pkg:npm/type-fest@0.21.3</purl>
+    </component>
+    <component type="library">
       <name>type-is</name>
       <version>1.6.18</version>
       <purl>pkg:npm/type-is@1.6.18</purl>
@@ -5087,13 +5107,13 @@
     </component>
     <component type="library">
       <name>typescript</name>
-      <version>4.5.4</version>
-      <purl>pkg:npm/typescript@4.5.4</purl>
+      <version>4.5.5</version>
+      <purl>pkg:npm/typescript@4.5.5</purl>
     </component>
     <component type="library">
       <name>typescript</name>
-      <version>4.5.4</version>
-      <purl>pkg:npm/typescript@4.5.4</purl>
+      <version>4.5.5</version>
+      <purl>pkg:npm/typescript@4.5.5</purl>
     </component>
     <component type="library">
       <name>unbox-primitive</name>
@@ -5174,6 +5194,11 @@
       <name>v8-compile-cache</name>
       <version>2.3.0</version>
       <purl>pkg:npm/v8-compile-cache@2.3.0</purl>
+    </component>
+    <component type="library">
+      <name>v8-compile-cache-lib</name>
+      <version>3.0.0</version>
+      <purl>pkg:npm/v8-compile-cache-lib@3.0.0</purl>
     </component>
     <component type="library">
       <name>validator</name>
