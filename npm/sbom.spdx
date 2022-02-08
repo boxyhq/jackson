@@ -2,11 +2,11 @@ SPDXVersion: SPDX-2.2
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: .
-DocumentNamespace: https://anchore.com/syft/dir/9cc20ef4-2258-4af8-91bc-58dc741493b1
+DocumentNamespace: https://anchore.com/syft/dir/51731de5-6d47-4115-ab4a-8983a3fcecce
 LicenseListVersion: 3.15
 Creator: Organization: Anchore, Inc
 Creator: Tool: syft-0.33.0
-Created: 2022-02-08T22:19:12Z
+Created: 2022-02-08T22:43:06Z
 
 ##### Package: @apidevtools/json-schema-ref-parser
 
@@ -3230,20 +3230,6 @@ ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:buffer-writer:2.0.0:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:buffer_writer:2.0.0:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/buffer-writer@2.0.0
 
-##### Package: bytes
-
-PackageName: bytes
-SPDXID: SPDXRef-Package-npm-bytes
-PackageVersion: 3.1.1
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:bytes:bytes:3.1.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:bytes:3.1.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/bytes@3.1.1
-
 ##### Package: caching-transform
 
 PackageName: caching-transform
@@ -3944,15 +3930,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/dashdash@1.14.1
 
 PackageName: debug
 SPDXID: SPDXRef-Package-npm-debug
-PackageVersion: 2.6.9
+PackageVersion: 4.3.3
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:debug:debug:2.6.9:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:debug:2.6.9:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/debug@2.6.9
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:debug:debug:4.3.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:debug:4.3.3:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/debug@4.3.3
 
 ##### Package: decamelize
 
@@ -5848,26 +5834,6 @@ ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:html-escaper:2.0.2:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:html_escaper:2.0.2:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/html-escaper@2.0.2
 
-##### Package: http-errors
-
-PackageName: http-errors
-SPDXID: SPDXRef-Package-npm-http-errors
-PackageVersion: 1.8.1
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:http-errors:http-errors:1.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:http-errors:http_errors:1.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:http_errors:http-errors:1.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:http_errors:http_errors:1.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:http:http-errors:1.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:http:http_errors:1.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:http-errors:1.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:http_errors:1.8.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/http-errors@1.8.1
-
 ##### Package: http-signature
 
 PackageName: http-signature
@@ -5926,21 +5892,21 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/husky@7.0.4
 
 PackageName: iconv-lite
 SPDXID: SPDXRef-Package-npm-iconv-lite
-PackageVersion: 0.4.24
+PackageVersion: 0.6.3
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv-lite:iconv-lite:0.4.24:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv-lite:iconv_lite:0.4.24:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv_lite:iconv-lite:0.4.24:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv_lite:iconv_lite:0.4.24:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv:iconv-lite:0.4.24:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv:iconv_lite:0.4.24:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:iconv-lite:0.4.24:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:iconv_lite:0.4.24:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/iconv-lite@0.4.24
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv-lite:iconv-lite:0.6.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv-lite:iconv_lite:0.6.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv_lite:iconv-lite:0.6.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv_lite:iconv_lite:0.6.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv:iconv-lite:0.6.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:iconv:iconv_lite:0.6.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:iconv-lite:0.6.3:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:iconv_lite:0.6.3:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/iconv-lite@0.6.3
 
 ##### Package: ieee754
 
@@ -6090,15 +6056,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/ip@1.1.5
 
 PackageName: ipaddr.js
 SPDXID: SPDXRef-Package-npm-ipaddr.js
-PackageVersion: 1.9.1
+PackageVersion: 2.0.1
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:ipaddr.js:ipaddr.js:1.9.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:ipaddr.js:1.9.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/ipaddr.js@1.9.1
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:ipaddr.js:ipaddr.js:2.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:ipaddr.js:2.0.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/ipaddr.js@2.0.1
 
 ##### Package: is-bigint
 
@@ -7714,15 +7680,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/mongodb-connection-string-url@2.4.1
 
 PackageName: ms
 SPDXID: SPDXRef-Package-npm-ms
-PackageVersion: 2.0.0
+PackageVersion: 2.1.2
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:ms:ms:2.0.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:ms:2.0.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/ms@2.0.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:ms:ms:2.1.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:ms:2.1.2:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/ms@2.1.2
 
 ##### Package: mysql2
 
@@ -8554,25 +8520,25 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/path-parse@1.0.7
 
 PackageName: path-to-regexp
 SPDXID: SPDXRef-Package-npm-path-to-regexp
-PackageVersion: 0.1.7
+PackageVersion: 1.8.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path-to-regexp:path-to-regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path-to-regexp:path_to_regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path_to_regexp:path-to-regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path_to_regexp:path_to_regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path-to:path-to-regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path-to:path_to_regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path_to:path-to-regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path_to:path_to_regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path:path-to-regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:path:path_to_regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:path-to-regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:path_to_regexp:0.1.7:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/path-to-regexp@0.1.7
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path-to-regexp:path-to-regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path-to-regexp:path_to_regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path_to_regexp:path-to-regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path_to_regexp:path_to_regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path-to:path-to-regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path-to:path_to_regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path_to:path-to-regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path_to:path_to_regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path:path-to-regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:path:path_to_regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:path-to-regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:path_to_regexp:1.8.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/path-to-regexp@1.8.0
 
 ##### Package: path-type
 
@@ -9182,26 +9148,6 @@ ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:range-parser:1.2.1:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:range_parser:1.2.1:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/range-parser@1.2.1
 
-##### Package: raw-body
-
-PackageName: raw-body
-SPDXID: SPDXRef-Package-npm-raw-body
-PackageVersion: 2.4.2
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:raw-body:raw-body:2.4.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:raw-body:raw_body:2.4.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:raw_body:raw-body:2.4.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:raw_body:raw_body:2.4.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:raw:raw-body:2.4.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:raw:raw_body:2.4.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:raw-body:2.4.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:raw_body:2.4.2:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/raw-body@2.4.2
-
 ##### Package: react
 
 PackageName: react
@@ -9803,20 +9749,6 @@ ExternalRef: SECURITY cpe23Type cpe:2.3:a:set:set_blocking:2.0.0:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:set-blocking:2.0.0:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:set_blocking:2.0.0:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/set-blocking@2.0.0
-
-##### Package: setprototypeof
-
-PackageName: setprototypeof
-SPDXID: SPDXRef-Package-npm-setprototypeof
-PackageVersion: 1.2.0
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:setprototypeof:setprototypeof:1.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:setprototypeof:1.2.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/setprototypeof@1.2.0
 
 ##### Package: sha.js
 
@@ -10709,20 +10641,6 @@ ExternalRef: SECURITY cpe23Type cpe:2.3:a:to:to_regex_range:5.0.1:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:to-regex-range:5.0.1:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:to_regex_range:5.0.1:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/to-regex-range@5.0.1
-
-##### Package: toidentifier
-
-PackageName: toidentifier
-SPDXID: SPDXRef-Package-npm-toidentifier
-PackageVersion: 1.0.1
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:toidentifier:toidentifier:1.0.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:toidentifier:1.0.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/toidentifier@1.0.1
 
 ##### Package: tough-cookie
 
