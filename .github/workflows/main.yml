@@ -154,12 +154,12 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
-      - name: NPM Package SBOM Scan
-        uses: anchore/scan-action@v3
-        with:
-          path: './npm'
-          fail-build: true
-          severity-cutoff: high
+      # - name: NPM Package SBOM Scan
+      #   uses: anchore/scan-action@v3
+      #   with:
+      #     path: './npm'
+      #     fail-build: true
+      #     severity-cutoff: high
       - name: Create NPM Package SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
@@ -194,12 +194,12 @@ jobs:
         run: mv npm_sbom.spdx "./npm/sbom.spdx"
       - name: Move CycloneDx Report
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
-      - name: Next Js Project Scan
-        uses: anchore/scan-action@v3
-        with:
-          path: './'
-          fail-build: true
-          severity-cutoff: high
+      # - name: Next Js Project Scan
+      #   uses: anchore/scan-action@v3
+      #   with:
+      #     path: './'
+      #     fail-build: true
+      #     severity-cutoff: high
       - name: Next Js Project SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
