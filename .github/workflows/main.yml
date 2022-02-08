@@ -21,6 +21,7 @@ jobs:
     env:
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       NEXTAUTH_URL: http://localhost:5000
+      NEXTAUTH_ACL: '*@boxyhq.com'
       DB_ENGINE: sql
       DB_URL: postgres://postgres:postgres@localhost:5432/postgres
       DB_TYPE: postgres
