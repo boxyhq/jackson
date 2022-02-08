@@ -53,18 +53,8 @@ jobs:
           - 6379:6379
       mongo:
         image: mongo:4.4.10
-        env:
-          MONGO_INITDB_DATABASE: jackson
-          MONGO_INITDB_ROOT_PASSWORD: secret
-          MONGO_INITDB_ROOT_USERNAME: mongoadmin
         ports:
           - 27017:27017
-        # Set health checks to wait until mongo has started
-        options: >-
-          --health-cmd mongo
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
       mysql:
         image: mysql:5.7
         ports:
