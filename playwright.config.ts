@@ -25,6 +25,7 @@ const config: PlaywrightTestConfig = {
       DB_TYPE: 'postgres',
       DEBUG: 'pw:webserver',
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || '',
+      NEXTAUTH_URL: 'http://localhost:5000',
     },
     port: 5000,
     timeout: 60 * 1000,
