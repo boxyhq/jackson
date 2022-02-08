@@ -84,7 +84,7 @@ jobs:
           cache: 'npm'
       - run: npm install
       - name: Install playwright browser dependencies
-        run: npx playwright install-deps
+        run: npx playwright install
       - name: e2e tests
         env:
           DB_ENGINE: sql
