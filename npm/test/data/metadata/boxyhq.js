@@ -4,4 +4,5 @@ module.exports = {
   tenant: 'boxyhq.com',
   product: 'crm',
   name: 'testConfig',
+  description: 'Just a test configuration',
 };
