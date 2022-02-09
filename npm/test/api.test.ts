@@ -157,6 +157,41 @@ tap.test('controller/api', async (t) => {
     t.end();
   });
 
+  t.test('Update the config', async (t) => {
+    const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+
+    t.test('When clientID is missing', async (t) => {
+      try {
+        await apiController.updateConfig({ description: 'A new description' });
+        t.fail('Expecting JacksonError.');
+      } catch (err: any) {
+        t.equal(err.message, 'Please provide clientID');
+        t.equal(err.statusCode, 400);
+        t.end();
+      }
+    });
+
+    t.test('Update the name/description', async (t) => {
+      const { client_id: clientID } = await apiController.config(body as IdPConfig);
+      const {
+        config: { name, description },
+      } = await apiController.getConfig({ clientID });
+      t.equal(name, 'testConfig');
+      t.equal(description, 'Just a test configuration');
+      await apiController.updateConfig({
+        clientID,
+        name: 'A new name',
+        description: 'A new description',
+      });
+      const { config: savedConfig } = await apiController.getConfig({ clientID });
+      t.equal(savedConfig.name, 'A new name');
+      t.equal(savedConfig.description, 'A new description');
+      t.end();
+    });
+
+    t.end();
+  });
+
   t.test('Get the config', async (t) => {
     t.test('when valid request', async (t) => {
       const body: Partial<IdPConfig> = Object.assign({}, config[0]);
