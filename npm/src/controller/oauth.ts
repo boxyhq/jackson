@@ -16,7 +16,10 @@ import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { IndexNames, createAuthorizeForm } from './utils';
+import { promisify } from 'util';
+import { deflateRaw } from 'zlib';
 
+const deflateRawAsync = promisify(deflateRaw);
 const relayStatePrefix = 'boxyhq_jackson_';
 
 function getEncodedClientId(client_id: string): { tenant: string | null; product: string | null } | null {
@@ -136,23 +139,26 @@ export class OAuthController implements IOAuthController {
     });
 
     const relayState = relayStatePrefix + sessionId;
-    const samlReqEnc = Buffer.from(samlReq.request).toString('base64');
     const { sso } = samlConfig.idpMetadata;
 
     let redirectUrl = '';
     let authorizeForm = '';
 
-    // HTTP redirect binding
+    // HTTP Redirect binding
     if ('redirectUrl' in sso) {
+      const samlReqEnc = await deflateRawAsync(samlReq.request);
+
       redirectUrl = redirect.success(sso.redirectUrl, {
         RelayState: relayState,
-        SAMLRequest: samlReqEnc,
+        SAMLRequest: Buffer.from(samlReqEnc).toString('base64'),
       });
     }
 
     // HTTP POST binding
     if ('postUrl' in sso) {
-      authorizeForm = createAuthorizeForm(relayState, samlReqEnc, sso.postUrl);
+      const samlReqEnc = Buffer.from(samlReq.request).toString('base64');
+
+      authorizeForm = createAuthorizeForm(relayState, encodeURI(samlReqEnc), sso.postUrl);
     }
 
     return {
