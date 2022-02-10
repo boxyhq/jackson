@@ -156,6 +156,13 @@
             "required": true
           },
           {
+            "name": "clientSecret",
+            "description": "Client Secret for the config",
+            "type": "string",
+            "in": "formData",
+            "required": true
+          },
+          {
             "name": "name",
             "description": "Name/identifier for the config",
             "type": "string",
@@ -221,7 +228,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "Please provide clientID"
+            "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata"
           },
           "401": {
             "description": "Unauthorized"
