@@ -161,8 +161,9 @@ tap.test('controller/api', async (t) => {
     const body: Partial<IdPConfig> = Object.assign({}, config[0]);
 
     t.test('When clientID is missing', async (t) => {
+      const { client_secret: clientSecret } = await apiController.config(body as IdPConfig);
       try {
-        await apiController.updateConfig({ description: 'A new description' });
+        await apiController.updateConfig({ description: 'A new description', clientSecret });
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientID');
@@ -171,8 +172,23 @@ tap.test('controller/api', async (t) => {
       }
     });
 
-    t.test('Update the name/description', async (t) => {
+    t.test('When clientSecret is missing', async (t) => {
       const { client_id: clientID } = await apiController.config(body as IdPConfig);
+
+      try {
+        await apiController.updateConfig({ description: 'A new description', clientID });
+        t.fail('Expecting JacksonError.');
+      } catch (err: any) {
+        t.equal(err.message, 'Please provide clientSecret');
+        t.equal(err.statusCode, 400);
+        t.end();
+      }
+    });
+
+    t.test('Update the name/description', async (t) => {
+      const { client_id: clientID, client_secret: clientSecret } = await apiController.config(
+        body as IdPConfig
+      );
       const {
         config: { name, description },
       } = await apiController.getConfig({ clientID });
@@ -180,6 +196,7 @@ tap.test('controller/api', async (t) => {
       t.equal(description, 'Just a test configuration');
       await apiController.updateConfig({
         clientID,
+        clientSecret,
         name: 'A new name',
         description: 'A new description',
       });
@@ -283,7 +300,7 @@ tap.test('controller/api', async (t) => {
 
         t.fail('Expecting Error.');
       } catch (err: any) {
-        t.match(err.message, 'clientSecret mismatch.');
+        t.match(err.message, 'clientSecret mismatch');
       }
 
       t.end();

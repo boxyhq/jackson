@@ -213,6 +213,11 @@ export class APIController implements IAPIController {
    *         type: string
    *         in: formData
    *         required: true
+   *       - name: clientSecret
+   *         description: Client Secret for the config
+   *         type: string
+   *         in: formData
+   *         required: true
    *       - name: name
    *         description: Name/identifier for the config
    *         type: string
@@ -261,14 +266,14 @@ export class APIController implements IAPIController {
    *       204:
    *         description: Success
    *       400:
-   *         description: Please provide clientID
+   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata
    *       401:
    *         description: Unauthorized
    */
   public async updateConfig(body): Promise<void> {
     const {
-      encodedRawMetadata, // could be omitted
-      rawMetadata, // could be omitted
+      encodedRawMetadata, // could be empty
+      rawMetadata, // could be empty
       defaultRedirectUrl,
       redirectUrl,
       name,
@@ -277,6 +282,14 @@ export class APIController implements IAPIController {
     } = body;
     if (!clientInfo?.clientID) {
       throw new JacksonError('Please provide clientID', 400);
+    }
+    if (!clientInfo?.clientSecret) {
+      throw new JacksonError('Please provide clientSecret', 400);
+    }
+    const _currentConfig = (await this.getConfig(clientInfo))?.config;
+
+    if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
+      throw new JacksonError('clientSecret mismatch', 400);
     }
     let metaData = rawMetadata;
     if (encodedRawMetadata) {
@@ -302,10 +315,9 @@ export class APIController implements IAPIController {
       );
 
       if (clientID !== clientInfo?.clientID) {
-        throw new JacksonError('Tenant/Product config mismatch with IdP metadata');
+        throw new JacksonError('Tenant/Product config mismatch with IdP metadata', 400);
       }
     }
-    const _currentConfig = (await this.getConfig(clientInfo))?.config;
 
     await this.configStore.put(
       clientInfo?.clientID,
@@ -471,7 +483,7 @@ export class APIController implements IAPIController {
       if (samlConfig.clientSecret === clientSecret) {
         await this.configStore.delete(clientID);
       } else {
-        throw new JacksonError('clientSecret mismatch.', 400);
+        throw new JacksonError('clientSecret mismatch', 400);
       }
 
       return;
