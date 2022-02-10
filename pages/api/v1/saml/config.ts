@@ -15,6 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.json(await apiController.config(req.body));
     } else if (req.method === 'GET') {
       res.json(await apiController.getConfig(req.query as any));
+    } else if (req.method === 'PATCH') {
+      res.status(204).send(await apiController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
       res.status(204).end(await apiController.deleteConfig(req.body));
     } else {
