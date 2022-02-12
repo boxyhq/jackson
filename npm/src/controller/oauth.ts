@@ -151,9 +151,9 @@ export class OAuthController implements IOAuthController {
   }
 
   public async samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }> {
-    const { SAMLResponse } = body; // RelayState will contain the sessionId from earlier quasi-oauth flow
+    const { SAMLResponse } = body;
 
-    let RelayState = body.RelayState || '';
+    let RelayState = body.RelayState || ''; // RelayState will contain the sessionId from earlier quasi-oauth flow
 
     if (!this.opts.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
       // IDP is disabled so block the request
