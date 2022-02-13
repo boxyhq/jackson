@@ -324,7 +324,7 @@ export class OAuthController implements IOAuthController {
       }
     } else if (client_id && client_secret) {
       // check if we have an encoded client_id
-      if (client_id !== 'dummy' && client_secret !== 'dummy') {
+      if (client_id !== 'dummy') {
         const sp = getEncodedClientId(client_id);
         if (!sp) {
           // OAuth flow
