@@ -12,19 +12,9 @@ import { useSession, signOut } from 'next-auth/react';
 
 const navigation = [
   {
-    path: '/admin',
-    text: <span className='ml-4'>Dashboard</span>,
-    icon: <CollectionIcon className='w-5 h-5' aria-hidden />,
-  },
-  {
     path: '/admin/saml/config',
     text: <span className='ml-4'>SAML Configurations</span>,
     icon: <ShieldCheckIcon className='w-5 h-5' aria-hidden />,
-  },
-  {
-    path: '/admin/account',
-    text: <span className='mx-4'>Account</span>,
-    icon: <UserIcon className='w-5 h-5' aria-hidden />,
   },
 ];
 
