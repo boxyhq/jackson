@@ -2,11 +2,11 @@ SPDXVersion: SPDX-2.2
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: .
-DocumentNamespace: https://anchore.com/syft/dir/784cde69-4a18-4e2b-be28-7cb4d041be42
+DocumentNamespace: https://anchore.com/syft/dir/20fc22ba-a3b2-4a93-a05b-6a55614648c8
 LicenseListVersion: 3.15
 Creator: Organization: Anchore, Inc
 Creator: Tool: syft-0.33.0
-Created: 2022-02-12T22:43:56Z
+Created: 2022-02-14T00:31:16Z
 
 ##### Package: @apidevtools/json-schema-ref-parser
 
@@ -720,15 +720,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@cspotcode%2Fsource-map-support@0.7.0
 
 PackageName: @eslint/eslintrc
 SPDXID: SPDXRef-Package-npm-@eslint/eslintrc
-PackageVersion: 1.0.5
+PackageVersion: 1.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@eslint/eslintrc:@eslint/eslintrc:1.0.5:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@eslint/eslintrc:1.0.5:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@eslint%2Feslintrc@1.0.5
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@eslint/eslintrc:@eslint/eslintrc:1.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@eslint/eslintrc:1.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@eslint%2Feslintrc@1.1.0
 
 ##### Package: @humanwhocodes/config-array
 
@@ -1888,15 +1888,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fmime@1.3.2
 
 PackageName: @types/node
 SPDXID: SPDXRef-Package-npm-@types/node
-PackageVersion: 17.0.16
+PackageVersion: 17.0.17
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/node:@types/node:17.0.16:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/node:17.0.16:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fnode@17.0.16
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/node:@types/node:17.0.17:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/node:17.0.17:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fnode@17.0.17
 
 ##### Package: @types/prop-types
 
@@ -1956,15 +1956,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Frange-parser@1.2.4
 
 PackageName: @types/react
 SPDXID: SPDXRef-Package-npm-@types/react
-PackageVersion: 17.0.38
+PackageVersion: 17.0.39
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/react:@types/react:17.0.38:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/react:17.0.38:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Freact@17.0.38
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/react:@types/react:17.0.39:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/react:17.0.39:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Freact@17.0.39
 
 ##### Package: @types/scheduler
 
@@ -2153,30 +2153,6 @@ ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/eslint_
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/eslint-plugin:5.11.0:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/eslint_plugin:5.11.0:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Feslint-plugin@5.11.0
-
-##### Package: @typescript-eslint/experimental-utils
-
-PackageName: @typescript-eslint/experimental-utils
-SPDXID: SPDXRef-Package-npm-@typescript-eslint/experimental-utils
-PackageVersion: 5.8.1
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/experimental-utils:@typescript-eslint/experimental-utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/experimental-utils:@typescript_eslint/experimental_utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/experimental_utils:@typescript-eslint/experimental-utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/experimental_utils:@typescript_eslint/experimental_utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/experimental:@typescript-eslint/experimental-utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript-eslint/experimental:@typescript_eslint/experimental_utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/experimental:@typescript-eslint/experimental-utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript_eslint/experimental:@typescript_eslint/experimental_utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript-eslint/experimental-utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@typescript:@typescript_eslint/experimental_utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript-eslint/experimental-utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@typescript_eslint/experimental_utils:5.8.1:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@typescript-eslint%2Fexperimental-utils@5.8.1
 
 ##### Package: @typescript-eslint/parser
 
@@ -4394,15 +4370,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/escape-string-regexp@2.0.0
 
 PackageName: eslint
 SPDXID: SPDXRef-Package-npm-eslint
-PackageVersion: 8.8.0
+PackageVersion: 8.9.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint:8.8.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint:8.8.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint@8.8.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint:8.9.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint:8.9.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint@8.9.0
 
 ##### Package: eslint-config-next
 
@@ -4640,21 +4616,21 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-plugin-react-hooks@4.3.0
 
 PackageName: eslint-scope
 SPDXID: SPDXRef-Package-npm-eslint-scope
-PackageVersion: 7.1.0
+PackageVersion: 7.1.1
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-scope:eslint-scope:7.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-scope:eslint_scope:7.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_scope:eslint-scope:7.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_scope:eslint_scope:7.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint-scope:7.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint_scope:7.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint-scope:7.1.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint_scope:7.1.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-scope@7.1.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-scope:eslint-scope:7.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-scope:eslint_scope:7.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_scope:eslint-scope:7.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_scope:eslint_scope:7.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint-scope:7.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint_scope:7.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint-scope:7.1.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint_scope:7.1.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-scope@7.1.1
 
 ##### Package: eslint-utils
 
@@ -4680,39 +4656,39 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-utils@3.0.0
 
 PackageName: eslint-visitor-keys
 SPDXID: SPDXRef-Package-npm-eslint-visitor-keys
-PackageVersion: 3.2.0
+PackageVersion: 3.3.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor-keys:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor-keys:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor_keys:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor_keys:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint-visitor-keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint_visitor_keys:3.2.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-visitor-keys@3.2.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor-keys:eslint-visitor-keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor-keys:eslint_visitor_keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor_keys:eslint-visitor-keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor_keys:eslint_visitor_keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor:eslint-visitor-keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint-visitor:eslint_visitor_keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor:eslint-visitor-keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint_visitor:eslint_visitor_keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint-visitor-keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:eslint:eslint_visitor_keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint-visitor-keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:eslint_visitor_keys:3.3.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/eslint-visitor-keys@3.3.0
 
 ##### Package: espree
 
 PackageName: espree
 SPDXID: SPDXRef-Package-npm-espree
-PackageVersion: 9.3.0
+PackageVersion: 9.3.1
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:espree:espree:9.3.0:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:espree:9.3.0:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/espree@9.3.0
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:espree:espree:9.3.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:espree:9.3.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/espree@9.3.1
 
 ##### Package: esprima
 
@@ -7148,21 +7124,21 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/lilconfig@2.0.4
 
 PackageName: lint-staged
 SPDXID: SPDXRef-Package-npm-lint-staged
-PackageVersion: 12.3.3
+PackageVersion: 12.3.4
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint-staged:lint-staged:12.3.3:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint-staged:lint_staged:12.3.3:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint_staged:lint-staged:12.3.3:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint_staged:lint_staged:12.3.3:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint:lint-staged:12.3.3:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint:lint_staged:12.3.3:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:lint-staged:12.3.3:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:lint_staged:12.3.3:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/lint-staged@12.3.3
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint-staged:lint-staged:12.3.4:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint-staged:lint_staged:12.3.4:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint_staged:lint-staged:12.3.4:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint_staged:lint_staged:12.3.4:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint:lint-staged:12.3.4:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:lint:lint_staged:12.3.4:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:lint-staged:12.3.4:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:lint_staged:12.3.4:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/lint-staged@12.3.4
 
 ##### Package: listr2
 
@@ -8989,20 +8965,6 @@ ExternalRef: SECURITY cpe23Type cpe:2.3:a:process:process_on_spawn:1.0.0:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:process-on-spawn:1.0.0:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:process_on_spawn:1.0.0:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/process-on-spawn@1.0.0
-
-##### Package: progress
-
-PackageName: progress
-SPDXID: SPDXRef-Package-npm-progress
-PackageVersion: 2.0.3
-PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
-PackageLicenseConcluded: NONE
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:progress:progress:2.0.3:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:progress:2.0.3:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/progress@2.0.3
 
 ##### Package: prop-types
 
