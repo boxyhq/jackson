@@ -14,6 +14,10 @@
     "PGSSLMODE": {
       "description": "https://devcenter.heroku.com/articles/connecting-heroku-postgres#connecting-in-node-js",
       "value": "no-verify"
+    },
+    "EXTERNAL_URL": {
+      "description": "The public URL of the app. See https://boxyhq.com/docs/jackson/env-variables#external_url . Replace <HEROKU_APP_NAME> below with 'App name' from above",
+      "value": "https://<HEROKU_APP_NAME>.herokuapp.com"
     }
   }
 }
