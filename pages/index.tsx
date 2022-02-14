@@ -6,7 +6,7 @@ const Home: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/admin');
+    router.push('/admin/saml/config');
   }, [router]);
 
   return <p>Redirecting...</p>;
