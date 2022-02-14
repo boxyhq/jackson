@@ -151,9 +151,9 @@ export class OAuthController implements IOAuthController {
   }
 
   public async samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }> {
-    const { SAMLResponse } = body; // RelayState will contain the sessionId from earlier quasi-oauth flow
+    const { SAMLResponse } = body;
 
-    let RelayState = body.RelayState || '';
+    let RelayState = body.RelayState || ''; // RelayState will contain the sessionId from earlier quasi-oauth flow
 
     if (!this.opts.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
       // IDP is disabled so block the request
@@ -324,7 +324,7 @@ export class OAuthController implements IOAuthController {
       }
     } else if (client_id && client_secret) {
       // check if we have an encoded client_id
-      if (client_id !== 'dummy' && client_secret !== 'dummy') {
+      if (client_id !== 'dummy') {
         const sp = getEncodedClientId(client_id);
         if (!sp) {
           // OAuth flow
