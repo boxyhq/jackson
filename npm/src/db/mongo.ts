@@ -52,7 +52,7 @@ class Mongo implements DatabaseDriver {
 
   async getAll(namespace: string): Promise<unknown[]> {
     const _namespaceMatch = new RegExp(`^${namespace}:.*`);
-    const docs = await this.collection.find({ _id: _namespaceMatch }).toArray();
+    const docs = await this.collection.find({ _id: _namespaceMatch }, { sort: { createdAt: -1 } }).toArray();
 
     if (docs) return docs.map(({ value }) => value);
     return [];
