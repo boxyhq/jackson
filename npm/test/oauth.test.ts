@@ -295,7 +295,7 @@ tap.test('token()', (t) => {
     const body: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
-      client_secret: 'some-secret',
+      client_secret: 'dummy',
       code: code,
     };
 
