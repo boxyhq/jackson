@@ -61,7 +61,7 @@ export class APIController implements IAPIController {
    *         required: true
    *         example: cal-saml-config
    *       - name: description
-   *         description: A short description for the config not more than 50 characters
+   *         description: A short description for the config not more than 100 characters
    *         type: string
    *         in: formData
    *         example: SAML login for cal.com app
@@ -224,7 +224,7 @@ export class APIController implements IAPIController {
    *         required: true
    *         example: cal-saml-config
    *       - name: description
-   *         description: A short description for the config not more than 50 characters
+   *         description: A short description for the config not more than 100 characters
    *         type: string
    *         in: formData
    *         example: SAML login for cal.com app

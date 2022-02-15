@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "0.3.6",
+    "version": "0.3.7",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -58,10 +58,9 @@
           },
           {
             "name": "description",
-            "description": "A short description for the config not more than 50 characters",
+            "description": "A short description for the config not more than 100 characters",
             "type": "string",
             "in": "formData",
-            "required": true,
             "example": "SAML login for cal.com app"
           },
           {
@@ -172,10 +171,9 @@
           },
           {
             "name": "description",
-            "description": "A short description for the config not more than 50 characters",
+            "description": "A short description for the config not more than 100 characters",
             "type": "string",
             "in": "formData",
-            "required": true,
             "example": "SAML login for cal.com app"
           },
           {
