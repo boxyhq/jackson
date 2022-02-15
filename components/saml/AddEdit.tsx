@@ -186,7 +186,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
       </Link>
       <div>
         <h2 className='font-bold text-3xl text-primary  mt-2 mb-4 dark:text-white'>
-          {samlConfig?.name || 'New SAML Configuration'}
+          {samlConfig?.name || samlConfig?.product || 'New SAML Configuration'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
           <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
