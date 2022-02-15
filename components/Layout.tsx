@@ -135,7 +135,9 @@ function Layout({ children }: { children: ReactNode }) {
           </ul>
         </nav>
       </header>
-      <main role='main' className='relative top-[81px] md:left-60 md:w-[calc(100%_-_theme(space.60))] p-6'>
+      <main
+        role='main'
+        className='relative top-[81px] h-[calc(100%_-_81px)] md:left-60 md:w-[calc(100%_-_theme(space.60))] p-6 overflow-auto'>
         {children}
       </main>
       {/* <footer role="contentinfo">
