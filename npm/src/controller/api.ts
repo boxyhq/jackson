@@ -126,6 +126,8 @@ export class APIController implements IAPIController {
    *             client_id: 8958e13053832b5af58fdf2ee83f35f5d013dc74
    *             client_secret: 13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7
    *             type: accounts.google.com
+   *       400:
+   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters
    *       401:
    *         description: Unauthorized
    */
@@ -277,7 +279,7 @@ export class APIController implements IAPIController {
    *       204:
    *         description: Success
    *       400:
-   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata
+   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters
    *       401:
    *         description: Unauthorized
    */
@@ -413,7 +415,7 @@ export class APIController implements IAPIController {
    *               }
    *             }
    *       '400':
-   *         description: Please provide `clientID` or `tenant`/`product`.
+   *         description: Please provide `clientID` or `tenant` and `product`.
    *       '401':
    *         description: Unauthorized
    */
@@ -476,6 +478,8 @@ export class APIController implements IAPIController {
    *     responses:
    *       '200':
    *         description: Success
+   *       '400':
+   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'
    *       '401':
    *         description: Unauthorized
    */
