@@ -23,7 +23,7 @@ const fieldCatalog = [
     key: 'description',
     label: 'Description',
     type: 'text',
-    placeholder: 'A short description not more than 50 characters',
+    placeholder: 'A short description not more than 100 characters',
     attributes: { maxLength: 100, required: false, requiredInEditView: false }, // not required in create/edit view
   },
   {
