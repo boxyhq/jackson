@@ -22,3 +22,8 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.theme-default {
+  --color-primary: 37 194 160;
+  --color-secondary: 48 56 70;
+}
