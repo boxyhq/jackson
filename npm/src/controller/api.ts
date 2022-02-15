@@ -64,7 +64,6 @@ export class APIController implements IAPIController {
    *         description: A short description for the config not more than 50 characters
    *         type: string
    *         in: formData
-   *         required: true
    *         example: SAML login for cal.com app
    *       - name: encodedRawMetadata
    *         description: Base64 encoding of the XML metadata
@@ -228,7 +227,6 @@ export class APIController implements IAPIController {
    *         description: A short description for the config not more than 50 characters
    *         type: string
    *         in: formData
-   *         required: true
    *         example: SAML login for cal.com app
    *       - name: encodedRawMetadata
    *         description: Base64 encoding of the XML metadata
