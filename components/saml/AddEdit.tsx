@@ -254,7 +254,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
             <div className='flex'>
               <button
                 type='submit'
-                className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
+                className='bg-primary/70 hover:bg-primary/90 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
                 Save Changes
               </button>
               <p

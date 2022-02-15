@@ -30,9 +30,9 @@ const SAMLConfigurations: NextPage = () => {
   return (
     <div>
       <div className='flex items-center justify-between'>
-        <h2 className='md:text-2xl text-slate-900 dark:text-white font-bold'>SAML Configurations</h2>
+        <h2 className='md:text-2xl text-primary dark:text-white font-bold'>SAML Configurations</h2>
         <Link href={'/admin/saml/config/new'}>
-          <a className='bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-2 md:px-4 rounded text-xs md:text-sm md:leading-6'>
+          <a className='bg-primary/70 hover:bg-primary/90 text-white font-medium py-2 px-2 md:px-4 rounded text-xs md:text-sm md:leading-6'>
             <span className='inline-block mr-1 md:mr-2' aria-hidden>
               +
             </span>

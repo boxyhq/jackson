@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import Logo from '../public/logo.png';
-import { CollectionIcon, LogoutIcon, MenuIcon, ShieldCheckIcon, UserIcon } from '@heroicons/react/outline';
+import { LogoutIcon, MenuIcon, ShieldCheckIcon } from '@heroicons/react/outline';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import ActiveLink from './ActiveLink';
 import useKeyPress from 'hooks/useKeyPress';
@@ -78,7 +78,7 @@ function Layout({ children }: { children: ReactNode }) {
           <div className='relative'>
             <button
               type='button'
-              className='rounded-full h-8 w-8 flex items-center justify-center bg-indigo-600 text-cyan-50 uppercase'
+              className='rounded-full h-8 w-8 flex items-center justify-center bg-secondary text-cyan-50 uppercase'
               aria-label='user settings'
               aria-expanded={isOpen}
               onClick={() => setIsOpen(!isOpen)}>
@@ -124,8 +124,8 @@ function Layout({ children }: { children: ReactNode }) {
             ref={ref}>
             {navigation.map(({ path, text, icon }, index) => (
               <li key={index}>
-                <ActiveLink href={path} activeClassName='text-sky-500 dark:text-sky-400 font-semibold'>
-                  <a className='flex items-center px-4 py-2 mt-2 md:text-sm md:leading-6 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 font-medium'>
+                <ActiveLink href={path} activeClassName='text-primary dark:text-sky-400 font-semibold'>
+                  <a className='flex items-center px-4 py-2 mt-2 md:text-sm md:leading-6 text-primary hover:font-bold dark:text-gray-400 dark:hover:text-gray-300 font-medium'>
                     {icon}
                     {text}
                   </a>
