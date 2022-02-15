@@ -140,6 +140,8 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
         router.replace('/admin/saml/config');
       } else {
         setSaveStatus({ status: 'SUCCESS' });
+        // revalidate on save
+        mutate(`/api/admin/saml/config/${router.query.id}`);
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
       }
     } else {
