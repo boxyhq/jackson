@@ -124,8 +124,8 @@ function Layout({ children }: { children: ReactNode }) {
             ref={ref}>
             {navigation.map(({ path, text, icon }, index) => (
               <li key={index}>
-                <ActiveLink href={path} activeClassName='text-primary dark:text-sky-400 font-semibold'>
-                  <a className='flex items-center px-4 py-2 mt-2 md:text-sm md:leading-6 text-primary hover:font-bold dark:text-gray-400 dark:hover:text-gray-300 font-medium'>
+                <ActiveLink href={path} activeClassName='text-primary/90 dark:text-sky-400 font-semibold'>
+                  <a className='link-primary'>
                     {icon}
                     {text}
                   </a>

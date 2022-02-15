@@ -173,13 +173,13 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
     <>
       {/* Or use router.back()  */}
       <Link href='/admin/saml/config'>
-        <a className='inline-flex items-center pr-4 py-2 mt-2 md:leading-3 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
-          <ArrowLeftIcon aria-hidden className='h-4 w-4 text-black dark:text-slate-50' />
+        <a className='link-primary'>
+          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span className='ml-2'>Back to Configurations</span>
         </a>
       </Link>
       <div>
-        <h2 className='font-bold text-3xl text-black mt-2 mb-4 dark:text-white'>
+        <h2 className='font-bold text-3xl text-primary  mt-2 mb-4 dark:text-white'>
           {samlConfig?.name || 'New SAML Configuration'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>

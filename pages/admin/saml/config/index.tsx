@@ -68,7 +68,7 @@ const SAMLConfigurations: NextPage = () => {
                 </td>
                 <td>
                   <Link href={`/admin/saml/config/edit/${provider.clientID}`}>
-                    <a className='inline-flex items-center justify-center dark:text-white font-medium py-2 px-4 rounded leading-6'>
+                    <a className='link-primary'>
                       <PencilAltIcon className='h-5 w-5 text-secondary' />
                     </a>
                   </Link>
