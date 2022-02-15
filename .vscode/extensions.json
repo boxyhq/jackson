@@ -7,7 +7,6 @@
     "bradlc.vscode-tailwindcss", // hinting / autocompletion for tailwind
     "heybourn.headwind", // automatically sort tailwind classes in predictable order, kinda like "prettier for tailwind",
     "ban.spellright", // Spell check for docs
-    "fabianlauer.vs-code-xml-format", // xml formatter
-    "streetsidesoftware.code-spell-checker" // code spell checker
+    "fabianlauer.vs-code-xml-format" // xml formatter
   ]
 }

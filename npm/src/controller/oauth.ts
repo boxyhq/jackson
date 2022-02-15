@@ -331,6 +331,11 @@ export class OAuthController implements IOAuthController {
           if (client_id !== codeVal.clientID || client_secret !== codeVal.clientSecret) {
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
+        } else {
+          // encoded client_id, verify client_secret
+          if (client_secret !== this.opts.clientSecretVerifier) {
+            throw new JacksonError('Invalid client_secret', 401);
+          }
         }
       }
     } else if (codeVal && codeVal.session) {
