@@ -8,7 +8,8 @@ import { Modal } from '@supabase/ui';
 /**
  * Edit view will have extra fields (showOnlyInEditView: true)
  * to render parsed metadata and other attributes.
- * All fields are editable unless they have editable set to false.
+ * All fields are editable unless they have `editable` set to false.
+ * All fields are required unless they have `required` set to false.
  */
 const fieldCatalog = [
   {
@@ -23,7 +24,7 @@ const fieldCatalog = [
     label: 'Description',
     type: 'text',
     placeholder: 'A short description not more than 50 characters',
-    attributes: { maxLength: 100 },
+    attributes: { maxLength: 100, required: false, requiredInEditView: false }, // not required in create/edit view
   },
   {
     key: 'tenant',
@@ -60,7 +61,7 @@ const fieldCatalog = [
     placeholder: 'Paste the raw XML here',
     attributes: {
       rows: 5,
-      requiredInEditView: false,
+      requiredInEditView: false, //not required in edit view
       labelInEditView: 'Raw IdP XML (fully replaces the current one)',
     },
   },
@@ -203,13 +204,14 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                     rows,
                     formatForDisplay,
                     editable,
-                    requiredInEditView,
+                    requiredInEditView = true, // by default all fields are required unless explicitly set to false
                     labelInEditView,
                     maxLength,
+                    required = true, // by default all fields are required unless explicitly set to false
                   },
                 }) => {
                   const readOnly = isEditView && editable === false;
-                  const required = isEditView ? requiredInEditView !== false : true;
+                  const _required = isEditView ? !!requiredInEditView : !!required;
                   const _label = isEditView && labelInEditView ? labelInEditView : label;
                   const value =
                     readOnly && typeof formatForDisplay === 'function'
@@ -231,7 +233,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           id={key}
                           placeholder={placeholder}
                           value={value}
-                          required={required}
+                          required={_required}
                           readOnly={readOnly}
                           maxLength={maxLength}
                           onChange={handleChange}
@@ -246,7 +248,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           type={type}
                           placeholder={placeholder}
                           value={value}
-                          required={required}
+                          required={_required}
                           readOnly={readOnly}
                           maxLength={maxLength}
                           onChange={handleChange}
