@@ -19,6 +19,8 @@ const db = {
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
 };
 
+const clientSecretVerifier = process.env.CLIENT_SECRET_VERIFIER;
+
 export default {
   hostUrl,
   hostPort,
@@ -29,4 +31,5 @@ export default {
   apiKeys,
   idpEnabled,
   db,
+  clientSecretVerifier,
 };
