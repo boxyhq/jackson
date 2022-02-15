@@ -5,12 +5,12 @@ import { Resource } from '@opentelemetry/resources';
 import packageInfo from '../package.json';
 
 const meterProvider = new MeterProvider({
-  exporter: new OTLPMetricExporter,
+  exporter: new OTLPMetricExporter(),
   interval: 1000,
   resource: new Resource({
     'service.name': `${packageInfo.name}`,
     'service.version': `${packageInfo.version}`,
-  })
+  }),
 });
 
 metrics.setGlobalMeterProvider(meterProvider);
