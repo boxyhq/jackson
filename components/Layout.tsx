@@ -72,7 +72,7 @@ function Layout({ children }: { children: ReactNode }) {
           <Link href='/'>
             <a title='Go to dashboard' className='leading-10 font-bold flex items-center ml-10 md:ml-0'>
               <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} />
-              <h1 className='ml-2 text-gray-900 dark:text-white'>Jackson</h1>
+              <h1 className='ml-2 text-secondary hover:text-primary dark:text-white'>Jackson</h1>
             </a>
           </Link>
           <div className='relative'>
