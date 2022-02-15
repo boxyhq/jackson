@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
 import { mutate } from 'swr';
-import { ArrowLeftIcon, CheckCircleIcon } from '@heroicons/react/outline';
+import { ArrowLeftIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/outline';
 import { Modal } from '@supabase/ui';
 
 /**
@@ -117,7 +117,9 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
   const router = useRouter();
   const isEditView = !!samlConfig;
   // FORM LOGIC: SUBMIT
-  const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' }>({ status: 'UNKNOWN' });
+  const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
+    status: 'UNKNOWN',
+  });
   const saveSAMLConfiguration = async (event) => {
     event.preventDefault();
     const { rawMetadata, redirectUrl, ...rest } = formObj;
@@ -139,6 +141,10 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
         setSaveStatus({ status: 'SUCCESS' });
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
       }
+    } else {
+      // save failed
+      setSaveStatus({ status: 'ERROR' });
+      setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
     }
   };
 
@@ -257,13 +263,21 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
               </button>
               <p
                 role='status'
-                className={`text-green-500 inline-flex items-center ml-2 ${
+                className={`text-primary inline-flex items-center ml-2 ${
                   status === 'SUCCESS' ? 'opacity-100' : 'opacity-0'
                 } transition-opacity motion-reduce:transition-none`}>
                 {status === 'SUCCESS' && (
                   <>
                     Saved
-                    <CheckCircleIcon aria-hidden className='ml-1 text-green-500 h-5 w-5'></CheckCircleIcon>
+                    <CheckCircleIcon aria-hidden className='ml-1 text-primary h-5 w-5'></CheckCircleIcon>
+                  </>
+                )}
+                {status === 'ERROR' && (
+                  <>
+                    ERROR
+                    <ExclamationCircleIcon
+                      aria-hidden
+                      className='ml-1 text-primary h-5 w-5'></ExclamationCircleIcon>
                   </>
                 )}
               </p>
