@@ -265,22 +265,21 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
               </button>
               <p
                 role='status'
-                className={`text-primary inline-flex items-center ml-2 ${
-                  status === 'SUCCESS' ? 'opacity-100' : 'opacity-0'
+                className={`ml-2 inline-flex items-center ${
+                  status === 'SUCCESS' || status === 'ERROR' ? 'opacity-100' : 'opacity-0'
                 } transition-opacity motion-reduce:transition-none`}>
                 {status === 'SUCCESS' && (
-                  <>
+                  <span className='text-primary inline-flex items-center'>
+                    <CheckCircleIcon aria-hidden className='mr-1 h-5 w-5'></CheckCircleIcon>
                     Saved
-                    <CheckCircleIcon aria-hidden className='ml-1 text-primary h-5 w-5'></CheckCircleIcon>
-                  </>
+                  </span>
                 )}
+                {/* TODO: also display error message once we standardise the response format */}
                 {status === 'ERROR' && (
-                  <>
+                  <span className='text-red-900 inline-flex items-center'>
+                    <ExclamationCircleIcon aria-hidden className='mr-1 h-5 w-5'></ExclamationCircleIcon>
                     ERROR
-                    <ExclamationCircleIcon
-                      aria-hidden
-                      className='ml-1 text-primary h-5 w-5'></ExclamationCircleIcon>
-                  </>
+                  </span>
                 )}
               </p>
             </div>
