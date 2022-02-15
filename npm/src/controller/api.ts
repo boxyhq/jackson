@@ -14,7 +14,16 @@ export class APIController implements IAPIController {
   }
 
   private _validateIdPConfig(body: IdPConfig): void {
-    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product, name } = body;
+    const {
+      encodedRawMetadata,
+      rawMetadata,
+      defaultRedirectUrl,
+      redirectUrl,
+      tenant,
+      product,
+      name,
+      description,
+    } = body;
 
     if (!rawMetadata && !encodedRawMetadata) {
       throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
@@ -38,6 +47,10 @@ export class APIController implements IAPIController {
 
     if (!name) {
       throw new JacksonError('Please provide a friendly name', 400);
+    }
+
+    if (description && description.length > 100) {
+      throw new JacksonError('Description should not exceed 100 characters', 400);
     }
   }
 
@@ -283,6 +296,9 @@ export class APIController implements IAPIController {
     }
     if (!clientInfo?.clientSecret) {
       throw new JacksonError('Please provide clientSecret', 400);
+    }
+    if (description && description.length > 100) {
+      throw new JacksonError('Description should not exceed 100 characters', 400);
     }
     const _currentConfig = (await this.getConfig(clientInfo))?.config;
 
