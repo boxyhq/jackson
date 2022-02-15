@@ -2,11 +2,11 @@ SPDXVersion: SPDX-2.2
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: .
-DocumentNamespace: https://anchore.com/syft/dir/d2c6adf6-0367-4acd-9e7a-74d81b437cb9
+DocumentNamespace: https://anchore.com/syft/dir/a06ddf93-7e67-4f1a-ba99-da4737f3c80c
 LicenseListVersion: 3.15
 Creator: Organization: Anchore, Inc
 Creator: Tool: syft-0.33.0
-Created: 2022-02-15T14:14:23Z
+Created: 2022-02-15T23:38:56Z
 
 ##### Package: @apidevtools/json-schema-ref-parser
 
@@ -1321,6 +1321,192 @@ PackageCopyrightText: NOASSERTION
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:@nodelib/fs.walk:@nodelib/fs.walk:1.2.8:*:*:*:*:*:*:*
 ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@nodelib/fs.walk:1.2.8:*:*:*:*:*:*:*
 ExternalRef: PACKAGE_MANAGER purl pkg:npm/@nodelib%2Ffs.walk@1.2.8
+
+##### Package: @opentelemetry/api
+
+PackageName: @opentelemetry/api
+SPDXID: SPDXRef-Package-npm-@opentelemetry/api
+PackageVersion: 1.0.4
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/api:@opentelemetry/api:1.0.4:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/api:1.0.4:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fapi@1.0.4
+
+##### Package: @opentelemetry/api-metrics
+
+PackageName: @opentelemetry/api-metrics
+SPDXID: SPDXRef-Package-npm-@opentelemetry/api-metrics
+PackageVersion: 0.27.0
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/api-metrics:@opentelemetry/api-metrics:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/api-metrics:@opentelemetry/api_metrics:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/api_metrics:@opentelemetry/api-metrics:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/api_metrics:@opentelemetry/api_metrics:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/api:@opentelemetry/api-metrics:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/api:@opentelemetry/api_metrics:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/api-metrics:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/api_metrics:0.27.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fapi-metrics@0.27.0
+
+##### Package: @opentelemetry/core
+
+PackageName: @opentelemetry/core
+SPDXID: SPDXRef-Package-npm-@opentelemetry/core
+PackageVersion: 1.0.1
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/core:@opentelemetry/core:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/core:1.0.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fcore@1.0.1
+
+##### Package: @opentelemetry/exporter-metrics-otlp-http
+
+PackageName: @opentelemetry/exporter-metrics-otlp-http
+SPDXID: SPDXRef-Package-npm-@opentelemetry/exporter-metrics-otlp-http
+PackageVersion: 0.27.0
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-metrics-otlp-http:@opentelemetry/exporter-metrics-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-metrics-otlp-http:@opentelemetry/exporter_metrics_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_metrics_otlp_http:@opentelemetry/exporter-metrics-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_metrics_otlp_http:@opentelemetry/exporter_metrics_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-metrics-otlp:@opentelemetry/exporter-metrics-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-metrics-otlp:@opentelemetry/exporter_metrics_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_metrics_otlp:@opentelemetry/exporter-metrics-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_metrics_otlp:@opentelemetry/exporter_metrics_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-metrics:@opentelemetry/exporter-metrics-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-metrics:@opentelemetry/exporter_metrics_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_metrics:@opentelemetry/exporter-metrics-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_metrics:@opentelemetry/exporter_metrics_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter:@opentelemetry/exporter-metrics-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter:@opentelemetry/exporter_metrics_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/exporter-metrics-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/exporter_metrics_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fexporter-metrics-otlp-http@0.27.0
+
+##### Package: @opentelemetry/exporter-trace-otlp-http
+
+PackageName: @opentelemetry/exporter-trace-otlp-http
+SPDXID: SPDXRef-Package-npm-@opentelemetry/exporter-trace-otlp-http
+PackageVersion: 0.27.0
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-trace-otlp-http:@opentelemetry/exporter-trace-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-trace-otlp-http:@opentelemetry/exporter_trace_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_trace_otlp_http:@opentelemetry/exporter-trace-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_trace_otlp_http:@opentelemetry/exporter_trace_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-trace-otlp:@opentelemetry/exporter-trace-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-trace-otlp:@opentelemetry/exporter_trace_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_trace_otlp:@opentelemetry/exporter-trace-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_trace_otlp:@opentelemetry/exporter_trace_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-trace:@opentelemetry/exporter-trace-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter-trace:@opentelemetry/exporter_trace_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_trace:@opentelemetry/exporter-trace-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter_trace:@opentelemetry/exporter_trace_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter:@opentelemetry/exporter-trace-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/exporter:@opentelemetry/exporter_trace_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/exporter-trace-otlp-http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/exporter_trace_otlp_http:0.27.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fexporter-trace-otlp-http@0.27.0
+
+##### Package: @opentelemetry/resources
+
+PackageName: @opentelemetry/resources
+SPDXID: SPDXRef-Package-npm-@opentelemetry/resources
+PackageVersion: 1.0.1
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/resources:@opentelemetry/resources:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/resources:1.0.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fresources@1.0.1
+
+##### Package: @opentelemetry/sdk-metrics-base
+
+PackageName: @opentelemetry/sdk-metrics-base
+SPDXID: SPDXRef-Package-npm-@opentelemetry/sdk-metrics-base
+PackageVersion: 0.27.0
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk-metrics-base:@opentelemetry/sdk-metrics-base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk-metrics-base:@opentelemetry/sdk_metrics_base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk_metrics_base:@opentelemetry/sdk-metrics-base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk_metrics_base:@opentelemetry/sdk_metrics_base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk-metrics:@opentelemetry/sdk-metrics-base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk-metrics:@opentelemetry/sdk_metrics_base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk_metrics:@opentelemetry/sdk-metrics-base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk_metrics:@opentelemetry/sdk_metrics_base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk:@opentelemetry/sdk-metrics-base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk:@opentelemetry/sdk_metrics_base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/sdk-metrics-base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/sdk_metrics_base:0.27.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fsdk-metrics-base@0.27.0
+
+##### Package: @opentelemetry/sdk-trace-base
+
+PackageName: @opentelemetry/sdk-trace-base
+SPDXID: SPDXRef-Package-npm-@opentelemetry/sdk-trace-base
+PackageVersion: 1.0.1
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk-trace-base:@opentelemetry/sdk-trace-base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk-trace-base:@opentelemetry/sdk_trace_base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk_trace_base:@opentelemetry/sdk-trace-base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk_trace_base:@opentelemetry/sdk_trace_base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk-trace:@opentelemetry/sdk-trace-base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk-trace:@opentelemetry/sdk_trace_base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk_trace:@opentelemetry/sdk-trace-base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk_trace:@opentelemetry/sdk_trace_base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk:@opentelemetry/sdk-trace-base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/sdk:@opentelemetry/sdk_trace_base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/sdk-trace-base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/sdk_trace_base:1.0.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fsdk-trace-base@1.0.1
+
+##### Package: @opentelemetry/semantic-conventions
+
+PackageName: @opentelemetry/semantic-conventions
+SPDXID: SPDXRef-Package-npm-@opentelemetry/semantic-conventions
+PackageVersion: 1.0.1
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NONE
+PackageLicenseDeclared: NONE
+PackageCopyrightText: NOASSERTION
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/semantic-conventions:@opentelemetry/semantic-conventions:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/semantic-conventions:@opentelemetry/semantic_conventions:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/semantic_conventions:@opentelemetry/semantic-conventions:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/semantic_conventions:@opentelemetry/semantic_conventions:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/semantic:@opentelemetry/semantic-conventions:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@opentelemetry/semantic:@opentelemetry/semantic_conventions:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/semantic-conventions:1.0.1:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@opentelemetry/semantic_conventions:1.0.1:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@opentelemetry%2Fsemantic-conventions@1.0.1
 
 ##### Package: @peculiar/asn1-cms
 

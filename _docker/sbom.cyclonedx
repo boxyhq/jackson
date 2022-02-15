@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:5ef8a262-6e61-460e-a902-72a460ead649" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:487a7a14-d50e-47c6-8fc0-7e7803d08487" version="1">
   <metadata>
-    <timestamp>2022-02-15T14:18:38.923Z</timestamp>
+    <timestamp>2022-02-15T23:40:41.432Z</timestamp>
     <tools>
       <tool>
         <vendor>AppThreat</vendor>
@@ -1865,6 +1865,78 @@
       <licenses/>
       <purl>pkg:npm/node-redis/time-series@1.0.1</purl>
     </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/api-metrics@0.27.0">
+      <group>opentelemetry</group>
+      <name>api-metrics</name>
+      <version>0.27.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/api-metrics@0.27.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/api@1.0.4">
+      <group>opentelemetry</group>
+      <name>api</name>
+      <version>1.0.4</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/api@1.0.4</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/core@1.0.1">
+      <group>opentelemetry</group>
+      <name>core</name>
+      <version>1.0.1</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/core@1.0.1</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/exporter-metrics-otlp-http@0.27.0">
+      <group>opentelemetry</group>
+      <name>exporter-metrics-otlp-http</name>
+      <version>0.27.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/exporter-metrics-otlp-http@0.27.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/exporter-trace-otlp-http@0.27.0">
+      <group>opentelemetry</group>
+      <name>exporter-trace-otlp-http</name>
+      <version>0.27.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/exporter-trace-otlp-http@0.27.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/resources@1.0.1">
+      <group>opentelemetry</group>
+      <name>resources</name>
+      <version>1.0.1</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/resources@1.0.1</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/sdk-metrics-base@0.27.0">
+      <group>opentelemetry</group>
+      <name>sdk-metrics-base</name>
+      <version>0.27.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/sdk-metrics-base@0.27.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/sdk-trace-base@1.0.1">
+      <group>opentelemetry</group>
+      <name>sdk-trace-base</name>
+      <version>1.0.1</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/sdk-trace-base@1.0.1</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/opentelemetry/semantic-conventions@1.0.1">
+      <group>opentelemetry</group>
+      <name>semantic-conventions</name>
+      <version>1.0.1</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/opentelemetry/semantic-conventions@1.0.1</purl>
+    </component>
     <component type="library" bom-ref="pkg:npm/tslib@2.3.1">
       <group/>
       <name>tslib</name>
@@ -2464,6 +2536,14 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/js-yaml@4.1.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/lodash.merge@4.6.2">
+      <group/>
+      <name>lodash.merge</name>
+      <version>4.6.2</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/lodash.merge@4.6.2</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/lodash@4.17.21">
       <group/>
