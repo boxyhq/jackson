@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import * as dbutils from '../db/utils';
+import * as metrics from '../opentelemetry/metrics';
 import saml from '../saml/saml';
 import x509 from '../saml/x509';
 import { IAPIController, IdPConfig, OAuth, Storable } from '../typings';
@@ -100,6 +101,8 @@ export class APIController implements IAPIController {
    */
   public async config(body: IdPConfig): Promise<OAuth> {
     const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
+
+    metrics.increment('createConfig');
 
     this._validateIdPConfig(body);
 
@@ -211,6 +214,8 @@ export class APIController implements IAPIController {
   }): Promise<Partial<OAuth>> {
     const { clientID, tenant, product } = body;
 
+    metrics.increment('getConfig');
+
     if (clientID) {
       const samlConfig = await this.configStore.get(clientID);
 
@@ -277,6 +282,8 @@ export class APIController implements IAPIController {
     product: string;
   }): Promise<void> {
     const { clientID, clientSecret, tenant, product } = body;
+
+    metrics.increment('deleteConfig');
 
     if (clientID && clientSecret) {
       const samlConfig = await this.configStore.get(clientID);

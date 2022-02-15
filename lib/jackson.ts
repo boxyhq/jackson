@@ -1,5 +1,6 @@
 import jackson, { IAPIController, IOAuthController } from '@boxyhq/saml-jackson';
 import env from '@lib/env';
+import '@lib/metrics';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;

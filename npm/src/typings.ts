@@ -134,4 +134,5 @@ export interface JacksonOption {
   preLoadedConfig?: string;
   idpEnabled?: boolean;
   db: DatabaseOption;
+  clientSecretVerifier?: string;
 }
