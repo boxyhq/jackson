@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import useSWR from 'swr';
 import { fetcher } from '@lib/utils';
 import Link from 'next/link';
-import { DotsHorizontalIcon } from '@heroicons/react/outline';
+import { PencilAltIcon } from '@heroicons/react/outline';
 
 const SAMLConfigurations: NextPage = () => {
   const { data, error } = useSWR('/api/admin/saml/config', fetcher, { revalidateOnFocus: false });
@@ -69,7 +69,7 @@ const SAMLConfigurations: NextPage = () => {
                 <td>
                   <Link href={`/admin/saml/config/edit/${provider.clientID}`}>
                     <a className='inline-flex items-center justify-center dark:text-white font-medium py-2 px-4 rounded leading-6'>
-                      <DotsHorizontalIcon className='h-6 w-6' />
+                      <PencilAltIcon className='h-5 w-5 text-secondary' />
                     </a>
                   </Link>
                 </td>
