@@ -313,7 +313,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
               <button
                 type='button'
                 onClick={toggleDelConfirm}
-                className='bg-white hover:bg-gray-200 border-2  text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
+                className='bg-gray-200 text-secondary/90 hover:bg-gray-300 border-2  text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
                 Cancel
               </button>
               <button
