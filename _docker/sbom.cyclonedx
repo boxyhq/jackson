@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:771c8bc2-b42a-4aad-9350-002fa6103550" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:5ef8a262-6e61-460e-a902-72a460ead649" version="1">
   <metadata>
-    <timestamp>2022-02-14T00:33:09.365Z</timestamp>
+    <timestamp>2022-02-15T14:18:38.923Z</timestamp>
     <tools>
       <tool>
         <vendor>AppThreat</vendor>
@@ -4100,13 +4100,13 @@
       <licenses/>
       <purl>pkg:npm/mongodb@4.3.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/jackson@0.3.6">
+    <component type="library" bom-ref="pkg:npm/jackson@0.3.7">
       <group/>
       <name>jackson</name>
-      <version>0.3.6</version>
+      <version>0.3.7</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/jackson@0.3.6</purl>
+      <purl>pkg:npm/jackson@0.3.7</purl>
     </component>
   </components>
 </bom>
