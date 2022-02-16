@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.3" serialNumber="urn:uuid:54689ba0-b1c0-4dbb-a757-090ed4139a28" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.3" serialNumber="urn:uuid:d02c749b-44bb-4bec-9b6e-ea3a6e367ddf" version="1">
   <metadata>
-    <timestamp>2022-02-15T14:14:22Z</timestamp>
+    <timestamp>2022-02-15T23:38:55Z</timestamp>
     <tools>
       <tool>
         <vendor>anchore</vendor>
@@ -514,6 +514,56 @@
       <name>@nodelib/fs.walk</name>
       <version>1.2.8</version>
       <purl>pkg:npm/@nodelib%2Ffs.walk@1.2.8</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/api</name>
+      <version>1.0.4</version>
+      <purl>pkg:npm/@opentelemetry%2Fapi@1.0.4</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/api-metrics</name>
+      <version>0.27.0</version>
+      <purl>pkg:npm/@opentelemetry%2Fapi-metrics@0.27.0</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/api-metrics</name>
+      <version>0.27.0</version>
+      <purl>pkg:npm/@opentelemetry%2Fapi-metrics@0.27.0</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/core</name>
+      <version>1.0.1</version>
+      <purl>pkg:npm/@opentelemetry%2Fcore@1.0.1</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/exporter-metrics-otlp-http</name>
+      <version>0.27.0</version>
+      <purl>pkg:npm/@opentelemetry%2Fexporter-metrics-otlp-http@0.27.0</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/exporter-trace-otlp-http</name>
+      <version>0.27.0</version>
+      <purl>pkg:npm/@opentelemetry%2Fexporter-trace-otlp-http@0.27.0</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/resources</name>
+      <version>1.0.1</version>
+      <purl>pkg:npm/@opentelemetry%2Fresources@1.0.1</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/sdk-metrics-base</name>
+      <version>0.27.0</version>
+      <purl>pkg:npm/@opentelemetry%2Fsdk-metrics-base@0.27.0</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/sdk-trace-base</name>
+      <version>1.0.1</version>
+      <purl>pkg:npm/@opentelemetry%2Fsdk-trace-base@1.0.1</purl>
+    </component>
+    <component type="library">
+      <name>@opentelemetry/semantic-conventions</name>
+      <version>1.0.1</version>
+      <purl>pkg:npm/@opentelemetry%2Fsemantic-conventions@1.0.1</purl>
     </component>
     <component type="library">
       <name>@peculiar/asn1-cms</name>
