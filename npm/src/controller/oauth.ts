@@ -164,7 +164,7 @@ export class OAuthController implements IOAuthController {
 
     if (!post) {
       // HTTP Redirect binding
-      redirectUrl = redirect.success(sso.redirectUrl, {
+      redirectUrl = redirect.success(ssoUrl, {
         RelayState: relayState,
         SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
       });
@@ -173,7 +173,7 @@ export class OAuthController implements IOAuthController {
       authorizeForm = createAuthorizeForm(
         relayState,
         encodeURI(Buffer.from(samlReq.request).toString('base64')),
-        sso.postUrl
+        ssoUrl
       );
     }
 
