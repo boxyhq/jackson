@@ -148,18 +148,16 @@ export class OAuthController implements IOAuthController {
     let redirectUrl = '';
     let authorizeForm = '';
 
-    // HTTP Redirect binding
     if ('redirectUrl' in sso) {
+      // HTTP Redirect binding
       const samlReqEnc = await deflateRawAsync(samlReq.request);
 
       redirectUrl = redirect.success(sso.redirectUrl, {
         RelayState: relayState,
         SAMLRequest: Buffer.from(samlReqEnc).toString('base64'),
       });
-    }
-
-    // HTTP POST binding
-    if ('postUrl' in sso) {
+    } else if ('postUrl' in sso) {
+      // HTTP POST binding
       const samlReqEnc = Buffer.from(samlReq.request).toString('base64');
 
       authorizeForm = createAuthorizeForm(relayState, encodeURI(samlReqEnc), sso.postUrl);
