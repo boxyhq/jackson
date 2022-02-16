@@ -125,7 +125,22 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
+    let ssoUrl;
+    let post = false;
+
+    const { sso } = samlConfig.idpMetadata;
+
+    if ('redirectUrl' in sso) {
+      // HTTP Redirect binding
+      ssoUrl = sso.redirectUrl;
+    } else if ('postUrl' in sso) {
+      // HTTP-POST binding
+      ssoUrl = sso.postUrl;
+      post = true;
+    }
+
     const samlReq = saml.request({
+      ssoUrl,
       entityID: this.opts.samlAudience!,
       callbackUrl: this.opts.externalUrl + this.opts.samlPath,
       signingKey: samlConfig.certs.privateKey,
@@ -143,24 +158,23 @@ export class OAuthController implements IOAuthController {
     });
 
     const relayState = relayStatePrefix + sessionId;
-    const { sso } = samlConfig.idpMetadata;
 
     let redirectUrl = '';
     let authorizeForm = '';
 
-    if ('redirectUrl' in sso) {
+    if (!post) {
       // HTTP Redirect binding
-      const samlReqEnc = await deflateRawAsync(samlReq.request);
-
       redirectUrl = redirect.success(sso.redirectUrl, {
         RelayState: relayState,
-        SAMLRequest: Buffer.from(samlReqEnc).toString('base64'),
+        SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
       });
-    } else if ('postUrl' in sso) {
+    } else {
       // HTTP POST binding
-      const samlReqEnc = Buffer.from(samlReq.request).toString('base64');
-
-      authorizeForm = createAuthorizeForm(relayState, encodeURI(samlReqEnc), sso.postUrl);
+      authorizeForm = createAuthorizeForm(
+        relayState,
+        encodeURI(Buffer.from(samlReq.request).toString('base64')),
+        sso.postUrl
+      );
     }
 
     return {
