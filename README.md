@@ -51,6 +51,10 @@ Reach out to the maintainers at one of the following places:
 - [GitHub Discussions](https://github.com/boxyhq/jackson/discussions)
 - [GitHub Issues](https://github.com/boxyhq/jackson/issues)
 
+## Reporting Security Issues
+
+[Responsible Disclosure](SECURITY.md)
+
 ## License
 
 [Apache 2.0 License](https://github.com/boxyhq/jackson/blob/main/LICENSE)
