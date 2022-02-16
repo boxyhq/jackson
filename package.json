@@ -44,6 +44,9 @@
     "@boxyhq/saml-jackson": "file:./npm",
     "@heroicons/react": "1.0.5",
     "@supabase/ui": "0.36.3",
+    "@opentelemetry/api-metrics": "0.27.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "0.27.0",
+    "@opentelemetry/sdk-metrics-base": "0.27.0",
     "cors": "2.8.5",
     "micromatch": "4.0.4",
     "next": "12.0.10",
@@ -51,7 +54,8 @@
     "nodemailer": "6.7.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "swr": "1.2.1"
+    "swr": "1.2.1",
+    "webpack-filter-warnings-plugin": "1.2.1"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
