@@ -2,11 +2,11 @@ SPDXVersion: SPDX-2.2
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: .
-DocumentNamespace: https://anchore.com/syft/dir/a1637a30-a963-4df4-9a47-08272abeca07
+DocumentNamespace: https://anchore.com/syft/dir/7634dbc3-3cfa-4c01-afa8-db7287e056bf
 LicenseListVersion: 3.15
 Creator: Organization: Anchore, Inc
 Creator: Tool: syft-0.33.0
-Created: 2022-02-16T18:04:45Z
+Created: 2022-02-17T19:52:24Z
 
 ##### Package: @ampproject/remapping
 
@@ -840,15 +840,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@jsdevtools%2Fono@7.1.3
 
 PackageName: @next/env
 SPDXID: SPDXRef-Package-npm-@next/env
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/env:@next/env:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/env:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fenv@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/env:@next/env:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/env:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fenv@12.1.0
 
 ##### Package: @next/eslint-plugin-next
 
@@ -878,297 +878,297 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Feslint-plugin-next@12.0.10
 
 PackageName: @next/swc-android-arm64
 SPDXID: SPDXRef-Package-npm-@next/swc-android-arm64
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android-arm64:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android-arm64:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android_arm64:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android_arm64:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-android-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_android_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-android-arm64@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android-arm64:@next/swc-android-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android-arm64:@next/swc_android_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android_arm64:@next/swc-android-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android_arm64:@next/swc_android_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android:@next/swc-android-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-android:@next/swc_android_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android:@next/swc-android-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_android:@next/swc_android_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-android-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_android_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-android-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_android_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-android-arm64@12.1.0
 
 ##### Package: @next/swc-darwin-arm64
 
 PackageName: @next/swc-darwin-arm64
 SPDXID: SPDXRef-Package-npm-@next/swc-darwin-arm64
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-arm64:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-arm64:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_arm64:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_arm64:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-darwin-arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_darwin_arm64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-darwin-arm64@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-arm64:@next/swc-darwin-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-arm64:@next/swc_darwin_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_arm64:@next/swc-darwin-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_arm64:@next/swc_darwin_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc-darwin-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc_darwin_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc-darwin-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc_darwin_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-darwin-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_darwin_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-darwin-arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_darwin_arm64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-darwin-arm64@12.1.0
 
 ##### Package: @next/swc-darwin-x64
 
 PackageName: @next/swc-darwin-x64
 SPDXID: SPDXRef-Package-npm-@next/swc-darwin-x64
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-x64:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-x64:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_x64:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_x64:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-darwin-x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_darwin_x64:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-darwin-x64@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-x64:@next/swc-darwin-x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin-x64:@next/swc_darwin_x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_x64:@next/swc-darwin-x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin_x64:@next/swc_darwin_x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc-darwin-x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-darwin:@next/swc_darwin_x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc-darwin-x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_darwin:@next/swc_darwin_x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-darwin-x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_darwin_x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-darwin-x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_darwin_x64:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-darwin-x64@12.1.0
 
 ##### Package: @next/swc-linux-arm-gnueabihf
 
 PackageName: @next/swc-linux-arm-gnueabihf
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-arm-gnueabihf
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm-gnueabihf:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm-gnueabihf:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm_gnueabihf:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm_gnueabihf:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm-gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm_gnueabihf:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm-gnueabihf@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm-gnueabihf:@next/swc-linux-arm-gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm-gnueabihf:@next/swc_linux_arm_gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm_gnueabihf:@next/swc-linux-arm-gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm_gnueabihf:@next/swc_linux_arm_gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm:@next/swc-linux-arm-gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm:@next/swc_linux_arm_gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm:@next/swc-linux-arm-gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm:@next/swc_linux_arm_gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm-gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm_gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm-gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm_gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm-gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm_gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm-gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm_gnueabihf:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm-gnueabihf@12.1.0
 
 ##### Package: @next/swc-linux-arm64-gnu
 
 PackageName: @next/swc-linux-arm64-gnu
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-arm64-gnu
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-gnu:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-gnu:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_gnu:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_gnu:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm64-gnu@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-gnu:@next/swc-linux-arm64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-gnu:@next/swc_linux_arm64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_gnu:@next/swc-linux-arm64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_gnu:@next/swc_linux_arm64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc-linux-arm64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc_linux_arm64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc-linux-arm64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc_linux_arm64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm64-gnu@12.1.0
 
 ##### Package: @next/swc-linux-arm64-musl
 
 PackageName: @next/swc-linux-arm64-musl
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-arm64-musl
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-musl:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-musl:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_musl:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_musl:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm64-musl@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-musl:@next/swc-linux-arm64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64-musl:@next/swc_linux_arm64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_musl:@next/swc-linux-arm64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64_musl:@next/swc_linux_arm64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc-linux-arm64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-arm64:@next/swc_linux_arm64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc-linux-arm64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_arm64:@next/swc_linux_arm64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-arm64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_arm64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-arm64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_arm64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-arm64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_arm64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-arm64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_arm64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-arm64-musl@12.1.0
 
 ##### Package: @next/swc-linux-x64-gnu
 
 PackageName: @next/swc-linux-x64-gnu
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-x64-gnu
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-gnu:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-gnu:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_gnu:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_gnu:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-x64-gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_x64_gnu:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-x64-gnu@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-gnu:@next/swc-linux-x64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-gnu:@next/swc_linux_x64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_gnu:@next/swc-linux-x64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_gnu:@next/swc_linux_x64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc-linux-x64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc_linux_x64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc-linux-x64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc_linux_x64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-x64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_x64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-x64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_x64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-x64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_x64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-x64-gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_x64_gnu:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-x64-gnu@12.1.0
 
 ##### Package: @next/swc-linux-x64-musl
 
 PackageName: @next/swc-linux-x64-musl
 SPDXID: SPDXRef-Package-npm-@next/swc-linux-x64-musl
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-musl:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-musl:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_musl:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_musl:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-x64-musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_x64_musl:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-x64-musl@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-musl:@next/swc-linux-x64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64-musl:@next/swc_linux_x64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_musl:@next/swc-linux-x64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64_musl:@next/swc_linux_x64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc-linux-x64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux-x64:@next/swc_linux_x64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc-linux-x64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux_x64:@next/swc_linux_x64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc-linux-x64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-linux:@next/swc_linux_x64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc-linux-x64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_linux:@next/swc_linux_x64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-linux-x64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_linux_x64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-linux-x64-musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_linux_x64_musl:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-linux-x64-musl@12.1.0
 
 ##### Package: @next/swc-win32-arm64-msvc
 
 PackageName: @next/swc-win32-arm64-msvc
 SPDXID: SPDXRef-Package-npm-@next/swc-win32-arm64-msvc
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64-msvc:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64-msvc:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64_msvc:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64_msvc:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-arm64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_arm64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-arm64-msvc@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64-msvc:@next/swc-win32-arm64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64-msvc:@next/swc_win32_arm64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64_msvc:@next/swc-win32-arm64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64_msvc:@next/swc_win32_arm64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64:@next/swc-win32-arm64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-arm64:@next/swc_win32_arm64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64:@next/swc-win32-arm64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_arm64:@next/swc_win32_arm64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-arm64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_arm64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-arm64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_arm64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-arm64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_arm64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-arm64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_arm64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-arm64-msvc@12.1.0
 
 ##### Package: @next/swc-win32-ia32-msvc
 
 PackageName: @next/swc-win32-ia32-msvc
 SPDXID: SPDXRef-Package-npm-@next/swc-win32-ia32-msvc
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32-msvc:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32-msvc:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32_msvc:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32_msvc:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-ia32-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_ia32_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-ia32-msvc@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32-msvc:@next/swc-win32-ia32-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32-msvc:@next/swc_win32_ia32_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32_msvc:@next/swc-win32-ia32-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32_msvc:@next/swc_win32_ia32_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32:@next/swc-win32-ia32-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-ia32:@next/swc_win32_ia32_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32:@next/swc-win32-ia32-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_ia32:@next/swc_win32_ia32_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-ia32-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_ia32_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-ia32-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_ia32_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-ia32-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_ia32_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-ia32-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_ia32_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-ia32-msvc@12.1.0
 
 ##### Package: @next/swc-win32-x64-msvc
 
 PackageName: @next/swc-win32-x64-msvc
 SPDXID: SPDXRef-Package-npm-@next/swc-win32-x64-msvc
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64-msvc:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64-msvc:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64_msvc:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64_msvc:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-x64-msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_x64_msvc:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-x64-msvc@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64-msvc:@next/swc-win32-x64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64-msvc:@next/swc_win32_x64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64_msvc:@next/swc-win32-x64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64_msvc:@next/swc_win32_x64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64:@next/swc-win32-x64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32-x64:@next/swc_win32_x64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64:@next/swc-win32-x64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32_x64:@next/swc_win32_x64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc-win32-x64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc-win32:@next/swc_win32_x64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc-win32-x64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc_win32:@next/swc_win32_x64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc-win32-x64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@next/swc:@next/swc_win32_x64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc-win32-x64-msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@next/swc_win32_x64_msvc:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@next%2Fswc-win32-x64-msvc@12.1.0
 
 ##### Package: @node-redis/bloom
 
@@ -1998,15 +1998,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fcors@2.8.12
 
 PackageName: @types/express
 SPDXID: SPDXRef-Package-npm-@types/express
-PackageVersion: 4.17.13
+PackageVersion: https://registry.npmjs.org/@types/express/-/express-4.17.13.tgz
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/express:@types/express:4.17.13:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/express:4.17.13:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fexpress@4.17.13
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:@types/express:@types/express:https://registry.npmjs.org/@types/express/-/express-4.17.13.tgz:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:@types/express:https://registry.npmjs.org/@types/express/-/express-4.17.13.tgz:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/@types%2Fexpress@https:%2F%2Fregistry.npmjs.org%2F@types%2Fexpress%2F-%2Fexpress-4.17.13.tgz
 
 ##### Package: @types/express-serve-static-core
 
@@ -5058,15 +5058,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/core-util-is@1.0.2
 
 PackageName: cors
 SPDXID: SPDXRef-Package-npm-cors
-PackageVersion: 2.8.5
+PackageVersion: https://registry.npmjs.org/cors/-/cors-2.8.5.tgz
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:cors:cors:2.8.5:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:cors:2.8.5:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/cors@2.8.5
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:cors:cors:https://registry.npmjs.org/cors/-/cors-2.8.5.tgz:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:cors:https://registry.npmjs.org/cors/-/cors-2.8.5.tgz:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/cors@https:%2F%2Fregistry.npmjs.org%2Fcors%2F-%2Fcors-2.8.5.tgz
 
 ##### Package: coveralls
 
@@ -6442,15 +6442,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/expand-brackets@2.1.4
 
 PackageName: express
 SPDXID: SPDXRef-Package-npm-express
-PackageVersion: 4.17.2
+PackageVersion: https://registry.npmjs.org/express/-/express-4.17.2.tgz
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:express:express:4.17.2:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:express:4.17.2:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/express@4.17.2
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:express:express:https://registry.npmjs.org/express/-/express-4.17.2.tgz:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:express:https://registry.npmjs.org/express/-/express-4.17.2.tgz:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/express@https:%2F%2Fregistry.npmjs.org%2Fexpress%2F-%2Fexpress-4.17.2.tgz
 
 ##### Package: extend
 
@@ -10214,15 +10214,15 @@ ExternalRef: PACKAGE_MANAGER purl pkg:npm/neo-async@2.6.2
 
 PackageName: next
 SPDXID: SPDXRef-Package-npm-next
-PackageVersion: 12.0.10
+PackageVersion: 12.1.0
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
 PackageLicenseConcluded: NONE
 PackageLicenseDeclared: NONE
 PackageCopyrightText: NOASSERTION
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:next:next:12.0.10:*:*:*:*:*:*:*
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:next:12.0.10:*:*:*:*:*:*:*
-ExternalRef: PACKAGE_MANAGER purl pkg:npm/next@12.0.10
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:next:next:12.1.0:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:*:next:12.1.0:*:*:*:*:*:*:*
+ExternalRef: PACKAGE_MANAGER purl pkg:npm/next@12.1.0
 
 ##### Package: nise
 

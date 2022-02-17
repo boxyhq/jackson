@@ -152,7 +152,7 @@ tap.test('authorize()', async (t) => {
     };
 
     const response = await oauthController.authorize(<OAuthReqBody>body);
-    const params = new URLSearchParams(new URL(response.redirect_url).search);
+    const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
     t.ok('redirect_url' in response, 'got the Idp authorize URL');
     t.ok(params.has('RelayState'), 'RelayState present in the query string');
@@ -173,7 +173,7 @@ tap.test('samlResponse()', async (t) => {
 
   const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
 
-  const relayState = new URLSearchParams(new URL(redirect_url).search).get('RelayState');
+  const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
 
   const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
 
@@ -216,7 +216,7 @@ tap.test('samlResponse()', async (t) => {
 
     const response = await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
-    const params = new URLSearchParams(new URL(response.redirect_url).search);
+    const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
     t.ok(stubValidateAsync.calledOnce, 'validateAsync called once');
     t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');

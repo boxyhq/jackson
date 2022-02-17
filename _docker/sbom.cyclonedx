@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:01c0083a-2aa0-429f-baee-db3e69ba3593" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:5144e0ae-0734-41c4-80c2-62c9a48dd272" version="1">
   <metadata>
-    <timestamp>2022-02-16T18:07:12.125Z</timestamp>
+    <timestamp>2022-02-17T19:54:42.589Z</timestamp>
     <tools>
       <tool>
         <vendor>AppThreat</vendor>
@@ -41,13 +41,13 @@
       <licenses/>
       <purl>pkg:npm/isaacs/string-locale-compare@1.1.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/npmcli/arborist@4.0.3">
+    <component type="library" bom-ref="pkg:npm/npmcli/arborist@4.2.0">
       <group>npmcli</group>
       <name>arborist</name>
-      <version>4.0.3</version>
+      <version>4.2.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/npmcli/arborist@4.0.3</purl>
+      <purl>pkg:npm/npmcli/arborist@4.2.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/npmcli/ci-detect@1.4.0">
       <group>npmcli</group>
@@ -57,13 +57,13 @@
       <licenses/>
       <purl>pkg:npm/npmcli/ci-detect@1.4.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/npmcli/config@2.3.0">
+    <component type="library" bom-ref="pkg:npm/npmcli/config@2.4.0">
       <group>npmcli</group>
       <name>config</name>
-      <version>2.3.0</version>
+      <version>2.4.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/npmcli/config@2.3.0</purl>
+      <purl>pkg:npm/npmcli/config@2.4.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/npmcli/disparity-colors@1.0.1">
       <group>npmcli</group>
@@ -129,13 +129,13 @@
       <licenses/>
       <purl>pkg:npm/npmcli/name-from-folder@1.0.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/npmcli/node-gyp@1.0.2">
+    <component type="library" bom-ref="pkg:npm/npmcli/node-gyp@1.0.3">
       <group>npmcli</group>
       <name>node-gyp</name>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/npmcli/node-gyp@1.0.2</purl>
+      <purl>pkg:npm/npmcli/node-gyp@1.0.3</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/npmcli/package-json@1.0.1">
       <group>npmcli</group>
@@ -185,13 +185,13 @@
       <licenses/>
       <purl>pkg:npm/agent-base@6.0.2</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/agentkeepalive@4.1.4">
+    <component type="library" bom-ref="pkg:npm/agentkeepalive@4.2.0">
       <group/>
       <name>agentkeepalive</name>
-      <version>4.1.4</version>
+      <version>4.2.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/agentkeepalive@4.1.4</purl>
+      <purl>pkg:npm/agentkeepalive@4.2.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/aggregate-error@3.1.0">
       <group/>
@@ -249,13 +249,13 @@
       <licenses/>
       <purl>pkg:npm/archy@1.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/are-we-there-yet@1.1.6">
+    <component type="library" bom-ref="pkg:npm/are-we-there-yet@2.0.0">
       <group/>
       <name>are-we-there-yet</name>
-      <version>1.1.6</version>
+      <version>2.0.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/are-we-there-yet@1.1.6</purl>
+      <purl>pkg:npm/are-we-there-yet@2.0.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/asap@2.0.6">
       <group/>
@@ -432,14 +432,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/cmd-shim@4.1.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/code-point-at@1.1.0">
-      <group/>
-      <name>code-point-at</name>
-      <version>1.1.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/code-point-at@1.1.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/color-convert@2.0.1">
       <group/>
@@ -633,13 +625,13 @@
       <licenses/>
       <purl>pkg:npm/function-bind@1.1.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/gauge@3.0.1">
+    <component type="library" bom-ref="pkg:npm/gauge@4.0.0">
       <group/>
       <name>gauge</name>
-      <version>3.0.1</version>
+      <version>4.0.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/gauge@3.0.1</purl>
+      <purl>pkg:npm/gauge@4.0.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/glob@7.2.0">
       <group/>
@@ -681,13 +673,13 @@
       <licenses/>
       <purl>pkg:npm/has@1.0.3</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/hosted-git-info@4.0.2">
+    <component type="library" bom-ref="pkg:npm/hosted-git-info@4.1.0">
       <group/>
       <name>hosted-git-info</name>
-      <version>4.0.2</version>
+      <version>4.1.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/hosted-git-info@4.0.2</purl>
+      <purl>pkg:npm/hosted-git-info@4.1.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/http-cache-semantics@4.1.0">
       <group/>
@@ -817,13 +809,13 @@
       <licenses/>
       <purl>pkg:npm/is-cidr@4.0.2</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/is-core-module@2.7.0">
+    <component type="library" bom-ref="pkg:npm/is-core-module@2.8.0">
       <group/>
       <name>is-core-module</name>
-      <version>2.7.0</version>
+      <version>2.8.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/is-core-module@2.7.0</purl>
+      <purl>pkg:npm/is-core-module@2.8.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/is-fullwidth-code-point@2.0.0">
       <group/>
@@ -881,109 +873,109 @@
       <licenses/>
       <purl>pkg:npm/jsonparse@1.3.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/just-diff-apply@3.0.0">
+    <component type="library" bom-ref="pkg:npm/just-diff-apply@4.0.1">
       <group/>
       <name>just-diff-apply</name>
+      <version>4.0.1</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/just-diff-apply@4.0.1</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/just-diff@5.0.1">
+      <group/>
+      <name>just-diff</name>
+      <version>5.0.1</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/just-diff@5.0.1</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/libnpmaccess@5.0.0">
+      <group/>
+      <name>libnpmaccess</name>
+      <version>5.0.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/libnpmaccess@5.0.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/libnpmdiff@3.0.0">
+      <group/>
+      <name>libnpmdiff</name>
       <version>3.0.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/just-diff-apply@3.0.0</purl>
+      <purl>pkg:npm/libnpmdiff@3.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/just-diff@3.1.1">
-      <group/>
-      <name>just-diff</name>
-      <version>3.1.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/just-diff@3.1.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/libnpmaccess@4.0.3">
-      <group/>
-      <name>libnpmaccess</name>
-      <version>4.0.3</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/libnpmaccess@4.0.3</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/libnpmdiff@2.0.4">
-      <group/>
-      <name>libnpmdiff</name>
-      <version>2.0.4</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/libnpmdiff@2.0.4</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/libnpmexec@3.0.1">
+    <component type="library" bom-ref="pkg:npm/libnpmexec@3.0.2">
       <group/>
       <name>libnpmexec</name>
+      <version>3.0.2</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/libnpmexec@3.0.2</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/libnpmfund@2.0.2">
+      <group/>
+      <name>libnpmfund</name>
+      <version>2.0.2</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/libnpmfund@2.0.2</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/libnpmhook@7.0.0">
+      <group/>
+      <name>libnpmhook</name>
+      <version>7.0.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/libnpmhook@7.0.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/libnpmorg@3.0.0">
+      <group/>
+      <name>libnpmorg</name>
+      <version>3.0.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/libnpmorg@3.0.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/libnpmpack@3.0.1">
+      <group/>
+      <name>libnpmpack</name>
       <version>3.0.1</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/libnpmexec@3.0.1</purl>
+      <purl>pkg:npm/libnpmpack@3.0.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/libnpmfund@2.0.1">
+    <component type="library" bom-ref="pkg:npm/libnpmpublish@5.0.0">
       <group/>
-      <name>libnpmfund</name>
-      <version>2.0.1</version>
+      <name>libnpmpublish</name>
+      <version>5.0.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/libnpmfund@2.0.1</purl>
+      <purl>pkg:npm/libnpmpublish@5.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/libnpmhook@6.0.3">
+    <component type="library" bom-ref="pkg:npm/libnpmsearch@4.0.0">
       <group/>
-      <name>libnpmhook</name>
-      <version>6.0.3</version>
+      <name>libnpmsearch</name>
+      <version>4.0.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/libnpmhook@6.0.3</purl>
+      <purl>pkg:npm/libnpmsearch@4.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/libnpmorg@2.0.3">
+    <component type="library" bom-ref="pkg:npm/libnpmteam@3.0.0">
       <group/>
-      <name>libnpmorg</name>
-      <version>2.0.3</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/libnpmorg@2.0.3</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/libnpmpack@3.0.0">
-      <group/>
-      <name>libnpmpack</name>
+      <name>libnpmteam</name>
       <version>3.0.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/libnpmpack@3.0.0</purl>
+      <purl>pkg:npm/libnpmteam@3.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/libnpmpublish@4.0.2">
-      <group/>
-      <name>libnpmpublish</name>
-      <version>4.0.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/libnpmpublish@4.0.2</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/libnpmsearch@3.1.2">
-      <group/>
-      <name>libnpmsearch</name>
-      <version>3.1.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/libnpmsearch@3.1.2</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/libnpmteam@2.0.4">
-      <group/>
-      <name>libnpmteam</name>
-      <version>2.0.4</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/libnpmteam@2.0.4</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/libnpmversion@2.0.1">
+    <component type="library" bom-ref="pkg:npm/libnpmversion@2.0.2">
       <group/>
       <name>libnpmversion</name>
-      <version>2.0.1</version>
+      <version>2.0.2</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/libnpmversion@2.0.1</purl>
+      <purl>pkg:npm/libnpmversion@2.0.2</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/lru-cache@6.0.0">
       <group/>
@@ -1057,13 +1049,13 @@
       <licenses/>
       <purl>pkg:npm/minipass-sized@1.0.3</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/minipass@3.1.5">
+    <component type="library" bom-ref="pkg:npm/minipass@3.1.6">
       <group/>
       <name>minipass</name>
-      <version>3.1.5</version>
+      <version>3.1.6</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/minipass@3.1.5</purl>
+      <purl>pkg:npm/minipass@3.1.6</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/minizlib@2.1.2">
       <group/>
@@ -1113,53 +1105,13 @@
       <licenses/>
       <purl>pkg:npm/negotiator@0.6.2</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/aproba@1.2.0">
-      <group/>
-      <name>aproba</name>
-      <version>1.2.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/aproba@1.2.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/gauge@2.7.4">
-      <group/>
-      <name>gauge</name>
-      <version>2.7.4</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/gauge@2.7.4</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/is-fullwidth-code-point@1.0.0">
-      <group/>
-      <name>is-fullwidth-code-point</name>
-      <version>1.0.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/is-fullwidth-code-point@1.0.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/npmlog@4.1.2">
-      <group/>
-      <name>npmlog</name>
-      <version>4.1.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/npmlog@4.1.2</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/string-width@1.0.2">
-      <group/>
-      <name>string-width</name>
-      <version>1.0.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/string-width@1.0.2</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/node-gyp@8.3.0">
+    <component type="library" bom-ref="pkg:npm/node-gyp@8.4.1">
       <group/>
       <name>node-gyp</name>
-      <version>8.3.0</version>
+      <version>8.4.1</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/node-gyp@8.3.0</purl>
+      <purl>pkg:npm/node-gyp@8.4.1</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/nopt@5.0.0">
       <group/>
@@ -1257,29 +1209,13 @@
       <licenses/>
       <purl>pkg:npm/npm-user-validate@1.0.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/are-we-there-yet@2.0.0">
-      <group/>
-      <name>are-we-there-yet</name>
-      <version>2.0.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/are-we-there-yet@2.0.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/npmlog@5.0.1">
+    <component type="library" bom-ref="pkg:npm/npmlog@6.0.0">
       <group/>
       <name>npmlog</name>
-      <version>5.0.1</version>
+      <version>6.0.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/npmlog@5.0.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/number-is-nan@1.0.1">
-      <group/>
-      <name>number-is-nan</name>
-      <version>1.0.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/number-is-nan@1.0.1</purl>
+      <purl>pkg:npm/npmlog@6.0.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/object-assign@4.1.1">
       <group/>
@@ -1321,13 +1257,13 @@
       <licenses/>
       <purl>pkg:npm/pacote@12.0.2</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/parse-conflict-json@1.1.1">
+    <component type="library" bom-ref="pkg:npm/parse-conflict-json@2.0.1">
       <group/>
       <name>parse-conflict-json</name>
-      <version>1.1.1</version>
+      <version>2.0.1</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/parse-conflict-json@1.1.1</purl>
+      <purl>pkg:npm/parse-conflict-json@2.0.1</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/path-is-absolute@1.0.1">
       <group/>
@@ -1497,13 +1433,13 @@
       <licenses/>
       <purl>pkg:npm/set-blocking@2.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/signal-exit@3.0.3">
+    <component type="library" bom-ref="pkg:npm/signal-exit@3.0.6">
       <group/>
       <name>signal-exit</name>
-      <version>3.0.3</version>
+      <version>3.0.6</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/signal-exit@3.0.3</purl>
+      <purl>pkg:npm/signal-exit@3.0.6</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/smart-buffer@4.2.0">
       <group/>
@@ -1761,21 +1697,21 @@
       <licenses/>
       <purl>pkg:npm/yallist@4.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/npm@8.1.2">
+    <component type="library" bom-ref="pkg:npm/npm@8.3.1">
       <group/>
       <name>npm</name>
-      <version>8.1.2</version>
+      <version>8.3.1</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/npm@8.1.2</purl>
+      <purl>pkg:npm/npm@8.3.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/yarn@1.22.15">
+    <component type="library" bom-ref="pkg:npm/yarn@1.22.17">
       <group/>
       <name>yarn</name>
-      <version>1.22.15</version>
+      <version>1.22.17</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/yarn@1.22.15</purl>
+      <purl>pkg:npm/yarn@1.22.17</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/boxyhq/saml-jackson@do-not-change">
       <group>boxyhq</group>
@@ -1793,29 +1729,29 @@
       <licenses/>
       <purl>pkg:npm/boxyhq/saml20@0.2.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/next/env@12.0.10">
+    <component type="library" bom-ref="pkg:npm/next/env@12.1.0">
       <group>next</group>
       <name>env</name>
-      <version>12.0.10</version>
+      <version>12.1.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/next/env@12.0.10</purl>
+      <purl>pkg:npm/next/env@12.1.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/next/swc-linux-x64-gnu@12.0.10">
+    <component type="library" bom-ref="pkg:npm/next/swc-linux-x64-gnu@12.1.0">
       <group>next</group>
       <name>swc-linux-x64-gnu</name>
-      <version>12.0.10</version>
+      <version>12.1.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/next/swc-linux-x64-gnu@12.0.10</purl>
+      <purl>pkg:npm/next/swc-linux-x64-gnu@12.1.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/next/swc-linux-x64-musl@12.0.10">
+    <component type="library" bom-ref="pkg:npm/next/swc-linux-x64-musl@12.1.0">
       <group>next</group>
       <name>swc-linux-x64-musl</name>
-      <version>12.0.10</version>
+      <version>12.1.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/next/swc-linux-x64-musl@12.0.10</purl>
+      <purl>pkg:npm/next/swc-linux-x64-musl@12.1.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/node-redis/bloom@1.0.1">
       <group>node-redis</group>
@@ -2217,14 +2153,6 @@
       <licenses/>
       <purl>pkg:npm/xtuc/long@4.2.2</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/accepts@1.3.8">
-      <group/>
-      <name>accepts</name>
-      <version>1.3.8</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/accepts@1.3.8</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/ajv-errors@1.0.1">
       <group/>
       <name>ajv-errors</name>
@@ -2273,6 +2201,14 @@
       <licenses/>
       <purl>pkg:npm/app-root-path@3.0.0</purl>
     </component>
+    <component type="library" bom-ref="pkg:npm/aproba@1.2.0">
+      <group/>
+      <name>aproba</name>
+      <version>1.2.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/aproba@1.2.0</purl>
+    </component>
     <component type="library" bom-ref="pkg:npm/arr-diff@4.0.0">
       <group/>
       <name>arr-diff</name>
@@ -2296,14 +2232,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/arr-union@3.1.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/array-flatten@1.1.1">
-      <group/>
-      <name>array-flatten</name>
-      <version>1.1.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/array-flatten@1.1.1</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/array-unique@0.3.2">
       <group/>
@@ -2473,30 +2401,6 @@
       <licenses/>
       <purl>pkg:npm/bn.js@5.2.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/debug@2.6.9">
-      <group/>
-      <name>debug</name>
-      <version>2.6.9</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/debug@2.6.9</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/ms@2.0.0">
-      <group/>
-      <name>ms</name>
-      <version>2.0.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/ms@2.0.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/body-parser@1.19.1">
-      <group/>
-      <name>body-parser</name>
-      <version>1.19.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/body-parser@1.19.1</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/braces@3.0.2">
       <group/>
       <name>braces</name>
@@ -2615,14 +2519,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/builtin-status-codes@3.0.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/bytes@3.1.1">
-      <group/>
-      <name>bytes</name>
-      <version>3.1.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/bytes@3.1.1</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/lru-cache@5.1.1">
       <group/>
@@ -2816,38 +2712,6 @@
       <licenses/>
       <purl>pkg:npm/constants-browserify@1.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/content-disposition@0.5.4">
-      <group/>
-      <name>content-disposition</name>
-      <version>0.5.4</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/content-disposition@0.5.4</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/content-type@1.0.4">
-      <group/>
-      <name>content-type</name>
-      <version>1.0.4</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/content-type@1.0.4</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/cookie-signature@1.0.6">
-      <group/>
-      <name>cookie-signature</name>
-      <version>1.0.6</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/cookie-signature@1.0.6</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/cookie@0.4.1">
-      <group/>
-      <name>cookie</name>
-      <version>0.4.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/cookie@0.4.1</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/copy-concurrently@1.0.5">
       <group/>
       <name>copy-concurrently</name>
@@ -2960,14 +2824,6 @@
       <licenses/>
       <purl>pkg:npm/des.js@1.0.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/destroy@1.0.4">
-      <group/>
-      <name>destroy</name>
-      <version>1.0.4</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/destroy@1.0.4</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/diffie-hellman@5.0.3">
       <group/>
       <name>diffie-hellman</name>
@@ -3000,14 +2856,6 @@
       <licenses/>
       <purl>pkg:npm/duplexify@3.7.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/ee-first@1.1.1">
-      <group/>
-      <name>ee-first</name>
-      <version>1.1.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/ee-first@1.1.1</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/elliptic@6.5.4">
       <group/>
       <name>elliptic</name>
@@ -3023,14 +2871,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/emojis-list@3.0.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/encodeurl@1.0.2">
-      <group/>
-      <name>encodeurl</name>
-      <version>1.0.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/encodeurl@1.0.2</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/end-of-stream@1.4.4">
       <group/>
@@ -3072,14 +2912,6 @@
       <licenses/>
       <purl>pkg:npm/escalade@3.1.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/escape-html@1.0.3">
-      <group/>
-      <name>escape-html</name>
-      <version>1.0.3</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/escape-html@1.0.3</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/esrecurse@4.3.0">
       <group/>
       <name>esrecurse</name>
@@ -3095,14 +2927,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/estraverse@5.3.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/etag@1.8.1">
-      <group/>
-      <name>etag</name>
-      <version>1.8.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/etag@1.8.1</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/events@3.3.0">
       <group/>
@@ -3120,6 +2944,22 @@
       <licenses/>
       <purl>pkg:npm/evp_bytestokey@1.0.3</purl>
     </component>
+    <component type="library" bom-ref="pkg:npm/debug@2.6.9">
+      <group/>
+      <name>debug</name>
+      <version>2.6.9</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/debug@2.6.9</purl>
+    </component>
+    <component type="library" bom-ref="pkg:npm/ms@2.0.0">
+      <group/>
+      <name>ms</name>
+      <version>2.0.0</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:npm/ms@2.0.0</purl>
+    </component>
     <component type="library" bom-ref="pkg:npm/expand-brackets@2.1.4">
       <group/>
       <name>expand-brackets</name>
@@ -3127,14 +2967,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/expand-brackets@2.1.4</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/express@4.17.2">
-      <group/>
-      <name>express</name>
-      <version>4.17.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/express@4.17.2</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/extend-shallow@2.0.1">
       <group/>
@@ -3184,14 +3016,6 @@
       <licenses/>
       <purl>pkg:npm/fill-range@7.0.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/finalhandler@1.1.2">
-      <group/>
-      <name>finalhandler</name>
-      <version>1.1.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/finalhandler@1.1.2</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/find-cache-dir@2.1.0">
       <group/>
       <name>find-cache-dir</name>
@@ -3216,14 +3040,6 @@
       <licenses/>
       <purl>pkg:npm/for-in@1.0.2</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/forwarded@0.2.0">
-      <group/>
-      <name>forwarded</name>
-      <version>0.2.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/forwarded@0.2.0</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/fragment-cache@0.2.1">
       <group/>
       <name>fragment-cache</name>
@@ -3231,14 +3047,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/fragment-cache@0.2.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/fresh@0.5.2">
-      <group/>
-      <name>fresh</name>
-      <version>0.5.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/fresh@0.5.2</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/from2@2.3.0">
       <group/>
@@ -3368,14 +3176,6 @@
       <licenses/>
       <purl>pkg:npm/hmac-drbg@1.0.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/http-errors@1.8.1">
-      <group/>
-      <name>http-errors</name>
-      <version>1.8.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/http-errors@1.8.1</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/https-browserify@1.0.0">
       <group/>
       <name>https-browserify</name>
@@ -3383,14 +3183,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/https-browserify@1.0.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/iconv-lite@0.4.24">
-      <group/>
-      <name>iconv-lite</name>
-      <version>0.4.24</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/iconv-lite@0.4.24</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/ieee754@1.2.1">
       <group/>
@@ -3672,14 +3464,6 @@
       <licenses/>
       <purl>pkg:npm/md5.js@1.3.5</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/media-typer@0.3.0">
-      <group/>
-      <name>media-typer</name>
-      <version>0.3.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/media-typer@0.3.0</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/memory-fs@0.4.1">
       <group/>
       <name>memory-fs</name>
@@ -3696,22 +3480,6 @@
       <licenses/>
       <purl>pkg:npm/memory-pager@1.5.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/merge-descriptors@1.0.1">
-      <group/>
-      <name>merge-descriptors</name>
-      <version>1.0.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/merge-descriptors@1.0.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/methods@1.1.2">
-      <group/>
-      <name>methods</name>
-      <version>1.1.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/methods@1.1.2</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/miller-rabin@4.0.1">
       <group/>
       <name>miller-rabin</name>
@@ -3719,30 +3487,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/miller-rabin@4.0.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/mime-db@1.51.0">
-      <group/>
-      <name>mime-db</name>
-      <version>1.51.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/mime-db@1.51.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/mime-types@2.1.34">
-      <group/>
-      <name>mime-types</name>
-      <version>2.1.34</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/mime-types@2.1.34</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/mime@1.6.0">
-      <group/>
-      <name>mime</name>
-      <version>1.6.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/mime@1.6.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/minimalistic-assert@1.0.1">
       <group/>
@@ -3912,14 +3656,6 @@
       <licenses/>
       <purl>pkg:npm/nanomatch@1.2.13</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/negotiator@0.6.3">
-      <group/>
-      <name>negotiator</name>
-      <version>0.6.3</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/negotiator@0.6.3</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/neo-async@2.6.2">
       <group/>
       <name>neo-async</name>
@@ -3964,13 +3700,13 @@
       <licenses/>
       <purl>pkg:npm/next/react-dev-overlay</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/next/react-refresh-utils@12.0.10">
+    <component type="library" bom-ref="pkg:npm/next/react-refresh-utils@12.1.0">
       <group>next</group>
       <name>react-refresh-utils</name>
-      <version>12.0.10</version>
+      <version>12.1.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/next/react-refresh-utils@12.0.10</purl>
+      <purl>pkg:npm/next/react-refresh-utils@12.1.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/peculiar/webcrypto">
       <group>peculiar</group>
@@ -4724,13 +4460,13 @@
       <licenses/>
       <purl>pkg:npm/ws</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/next@12.0.10">
+    <component type="library" bom-ref="pkg:npm/next@12.1.0">
       <group/>
       <name>next</name>
-      <version>12.0.10</version>
+      <version>12.1.0</version>
       <description/>
       <licenses/>
-      <purl>pkg:npm/next@12.0.10</purl>
+      <purl>pkg:npm/next@12.1.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/punycode@1.4.1">
       <group/>
@@ -4779,14 +4515,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/object.pick@1.3.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/on-finished@2.3.0">
-      <group/>
-      <name>on-finished</name>
-      <version>2.3.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/on-finished@2.3.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/optional-require@1.1.8">
       <group/>
@@ -4860,14 +4588,6 @@
       <licenses/>
       <purl>pkg:npm/parse5@5.1.1</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/parseurl@1.3.3">
-      <group/>
-      <name>parseurl</name>
-      <version>1.3.3</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/parseurl@1.3.3</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/pascalcase@0.1.1">
       <group/>
       <name>pascalcase</name>
@@ -4899,14 +4619,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/path-exists@3.0.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/path-to-regexp@0.1.7">
-      <group/>
-      <name>path-to-regexp</name>
-      <version>0.1.7</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/path-to-regexp@0.1.7</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/pbkdf2@3.1.2">
       <group/>
@@ -5108,22 +4820,6 @@
       <licenses/>
       <purl>pkg:npm/process@0.11.10</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/ipaddr.js@1.9.1">
-      <group/>
-      <name>ipaddr.js</name>
-      <version>1.9.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/ipaddr.js@1.9.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/proxy-addr@2.0.7">
-      <group/>
-      <name>proxy-addr</name>
-      <version>2.0.7</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/proxy-addr@2.0.7</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/prr@1.0.1">
       <group/>
       <name>prr</name>
@@ -5196,14 +4892,6 @@
       <licenses/>
       <purl>pkg:npm/pvutils@1.0.17</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/qs@6.9.6">
-      <group/>
-      <name>qs</name>
-      <version>6.9.6</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/qs@6.9.6</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/querystring-es3@0.2.1">
       <group/>
       <name>querystring-es3</name>
@@ -5243,22 +4931,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/randomfill@1.0.4</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/range-parser@1.2.1">
-      <group/>
-      <name>range-parser</name>
-      <version>1.2.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/range-parser@1.2.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/raw-body@2.4.2">
-      <group/>
-      <name>raw-body</name>
-      <version>2.4.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/raw-body@2.4.2</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/react-dom@17.0.2">
       <group/>
@@ -5460,14 +5132,6 @@
       <licenses/>
       <purl>pkg:npm/schema-utils@1.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/send@0.17.2">
-      <group/>
-      <name>send</name>
-      <version>0.17.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/send@0.17.2</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/seq-queue@0.0.5">
       <group/>
       <name>seq-queue</name>
@@ -5484,14 +5148,6 @@
       <licenses/>
       <purl>pkg:npm/serialize-javascript@4.0.0</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/serve-static@1.14.2">
-      <group/>
-      <name>serve-static</name>
-      <version>1.14.2</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/serve-static@1.14.2</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/set-value@2.0.1">
       <group/>
       <name>set-value</name>
@@ -5507,14 +5163,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/setimmediate@1.0.5</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/setprototypeof@1.2.0">
-      <group/>
-      <name>setprototypeof</name>
-      <version>1.2.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/setprototypeof@1.2.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/sha.js@2.4.11">
       <group/>
@@ -5660,14 +5308,6 @@
       <licenses/>
       <purl>pkg:npm/static-extend@0.1.2</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/statuses@1.5.0">
-      <group/>
-      <name>statuses</name>
-      <version>1.5.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/statuses@1.5.0</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/stream-browserify@2.0.2">
       <group/>
       <name>stream-browserify</name>
@@ -5812,14 +5452,6 @@
       <licenses/>
       <purl>pkg:npm/to-regex@3.0.2</purl>
     </component>
-    <component type="library" bom-ref="pkg:npm/toidentifier@1.0.1">
-      <group/>
-      <name>toidentifier</name>
-      <version>1.0.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/toidentifier@1.0.1</purl>
-    </component>
     <component type="library" bom-ref="pkg:npm/tr46@3.0.0">
       <group/>
       <name>tr46</name>
@@ -5859,14 +5491,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/tty-browserify@0.0.0</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/type-is@1.6.18">
-      <group/>
-      <name>type-is</name>
-      <version>1.6.18</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/type-is@1.6.18</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/typedarray@0.0.6">
       <group/>
@@ -5931,14 +5555,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/union-value@1.0.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/unpipe@1.0.0">
-      <group/>
-      <name>unpipe</name>
-      <version>1.0.0</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/unpipe@1.0.0</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/isobject@2.1.0">
       <group/>
@@ -6043,14 +5659,6 @@
       <description/>
       <licenses/>
       <purl>pkg:npm/util@0.11.1</purl>
-    </component>
-    <component type="library" bom-ref="pkg:npm/utils-merge@1.0.1">
-      <group/>
-      <name>utils-merge</name>
-      <version>1.0.1</version>
-      <description/>
-      <licenses/>
-      <purl>pkg:npm/utils-merge@1.0.1</purl>
     </component>
     <component type="library" bom-ref="pkg:npm/vary@1.1.2">
       <group/>
