@@ -10,8 +10,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const { oauthController } = await jackson();
-    const { redirect_url } = await oauthController.authorize(req.query as unknown as OAuthReqBody);
-    res.redirect(302, redirect_url);
+    const { redirect_url, authorize_form } = await oauthController.authorize(
+      req.query as unknown as OAuthReqBody
+    );
+    if (redirect_url) {
+      res.redirect(302, redirect_url!);
+    } else {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(authorize_form);
+    }
   } catch (err: any) {
     console.error('authorize error:', err);
     const { message, statusCode = 500 } = err;
