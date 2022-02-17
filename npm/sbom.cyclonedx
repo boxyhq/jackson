@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bom xmlns="http://cyclonedx.org/schema/bom/1.3" serialNumber="urn:uuid:f2d361f9-3193-400b-9406-26817c36602e" version="1">
+<bom xmlns="http://cyclonedx.org/schema/bom/1.3" serialNumber="urn:uuid:886b5f83-a367-427e-8155-5959f96184dd" version="1">
   <metadata>
-    <timestamp>2022-02-16T19:19:30Z</timestamp>
+    <timestamp>2022-02-17T19:52:25Z</timestamp>
     <tools>
       <tool>
         <vendor>anchore</vendor>
@@ -392,8 +392,8 @@
     </component>
     <component type="library">
       <name>@next/env</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fenv@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fenv@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/eslint-plugin-next</name>
@@ -402,58 +402,58 @@
     </component>
     <component type="library">
       <name>@next/swc-android-arm64</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-android-arm64@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-android-arm64@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-darwin-arm64</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-darwin-arm64@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-darwin-arm64@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-darwin-x64</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-darwin-x64@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-darwin-x64@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-arm-gnueabihf</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-linux-arm-gnueabihf@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-linux-arm-gnueabihf@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-arm64-gnu</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-linux-arm64-gnu@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-linux-arm64-gnu@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-arm64-musl</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-linux-arm64-musl@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-linux-arm64-musl@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-x64-gnu</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-linux-x64-gnu@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-linux-x64-gnu@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-linux-x64-musl</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-linux-x64-musl@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-linux-x64-musl@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-win32-arm64-msvc</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-win32-arm64-msvc@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-win32-arm64-msvc@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-win32-ia32-msvc</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-win32-ia32-msvc@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-win32-ia32-msvc@12.1.0</purl>
     </component>
     <component type="library">
       <name>@next/swc-win32-x64-msvc</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/@next%2Fswc-win32-x64-msvc@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/@next%2Fswc-win32-x64-msvc@12.1.0</purl>
     </component>
     <component type="library">
       <name>@node-redis/bloom</name>
@@ -836,16 +836,6 @@
       <purl>pkg:npm/@types%2Fbody-parser@1.19.2</purl>
     </component>
     <component type="library">
-      <name>@types/body-parser</name>
-      <version>1.19.2</version>
-      <purl>pkg:npm/@types%2Fbody-parser@1.19.2</purl>
-    </component>
-    <component type="library">
-      <name>@types/connect</name>
-      <version>3.4.35</version>
-      <purl>pkg:npm/@types%2Fconnect@3.4.35</purl>
-    </component>
-    <component type="library">
       <name>@types/connect</name>
       <version>3.4.35</version>
       <purl>pkg:npm/@types%2Fconnect@3.4.35</purl>
@@ -857,18 +847,8 @@
     </component>
     <component type="library">
       <name>@types/express</name>
-      <version>4.17.13</version>
-      <purl>pkg:npm/@types%2Fexpress@4.17.13</purl>
-    </component>
-    <component type="library">
-      <name>@types/express</name>
-      <version>4.17.13</version>
-      <purl>pkg:npm/@types%2Fexpress@4.17.13</purl>
-    </component>
-    <component type="library">
-      <name>@types/express-serve-static-core</name>
-      <version>4.17.28</version>
-      <purl>pkg:npm/@types%2Fexpress-serve-static-core@4.17.28</purl>
+      <version>https://registry.npmjs.org/@types/express/-/express-4.17.13.tgz</version>
+      <purl>pkg:npm/@types%2Fexpress@https:%2F%2Fregistry.npmjs.org%2F@types%2Fexpress%2F-%2Fexpress-4.17.13.tgz</purl>
     </component>
     <component type="library">
       <name>@types/express-serve-static-core</name>
@@ -901,19 +881,14 @@
       <purl>pkg:npm/@types%2Fmime@1.3.2</purl>
     </component>
     <component type="library">
-      <name>@types/mime</name>
-      <version>1.3.2</version>
-      <purl>pkg:npm/@types%2Fmime@1.3.2</purl>
-    </component>
-    <component type="library">
       <name>@types/node</name>
       <version>17.0.17</version>
       <purl>pkg:npm/@types%2Fnode@17.0.17</purl>
     </component>
     <component type="library">
       <name>@types/node</name>
-      <version>17.0.17</version>
-      <purl>pkg:npm/@types%2Fnode@17.0.17</purl>
+      <version>17.0.18</version>
+      <purl>pkg:npm/@types%2Fnode@17.0.18</purl>
     </component>
     <component type="library">
       <name>@types/prop-types</name>
@@ -924,16 +899,6 @@
       <name>@types/qs</name>
       <version>6.9.7</version>
       <purl>pkg:npm/@types%2Fqs@6.9.7</purl>
-    </component>
-    <component type="library">
-      <name>@types/qs</name>
-      <version>6.9.7</version>
-      <purl>pkg:npm/@types%2Fqs@6.9.7</purl>
-    </component>
-    <component type="library">
-      <name>@types/range-parser</name>
-      <version>1.2.4</version>
-      <purl>pkg:npm/@types%2Frange-parser@1.2.4</purl>
     </component>
     <component type="library">
       <name>@types/range-parser</name>
@@ -949,11 +914,6 @@
       <name>@types/scheduler</name>
       <version>0.16.2</version>
       <purl>pkg:npm/@types%2Fscheduler@0.16.2</purl>
-    </component>
-    <component type="library">
-      <name>@types/serve-static</name>
-      <version>1.13.10</version>
-      <purl>pkg:npm/@types%2Fserve-static@1.13.10</purl>
     </component>
     <component type="library">
       <name>@types/serve-static</name>
@@ -1216,11 +1176,6 @@
       <purl>pkg:npm/accepts@1.3.8</purl>
     </component>
     <component type="library">
-      <name>accepts</name>
-      <version>1.3.8</version>
-      <purl>pkg:npm/accepts@1.3.8</purl>
-    </component>
-    <component type="library">
       <name>acorn</name>
       <version>8.7.0</version>
       <purl>pkg:npm/acorn@8.7.0</purl>
@@ -1399,11 +1354,6 @@
       <name>arr-union</name>
       <version>3.1.0</version>
       <purl>pkg:npm/arr-union@3.1.0</purl>
-    </component>
-    <component type="library">
-      <name>array-flatten</name>
-      <version>1.1.1</version>
-      <purl>pkg:npm/array-flatten@1.1.1</purl>
     </component>
     <component type="library">
       <name>array-flatten</name>
@@ -1641,11 +1591,6 @@
       <purl>pkg:npm/body-parser@1.19.1</purl>
     </component>
     <component type="library">
-      <name>body-parser</name>
-      <version>1.19.1</version>
-      <purl>pkg:npm/body-parser@1.19.1</purl>
-    </component>
-    <component type="library">
       <name>brace-expansion</name>
       <version>1.1.11</version>
       <purl>pkg:npm/brace-expansion@1.1.11</purl>
@@ -1759,11 +1704,6 @@
       <name>builtin-status-codes</name>
       <version>3.0.0</version>
       <purl>pkg:npm/builtin-status-codes@3.0.0</purl>
-    </component>
-    <component type="library">
-      <name>bytes</name>
-      <version>3.1.1</version>
-      <purl>pkg:npm/bytes@3.1.1</purl>
     </component>
     <component type="library">
       <name>bytes</name>
@@ -2031,16 +1971,6 @@
       <purl>pkg:npm/content-disposition@0.5.4</purl>
     </component>
     <component type="library">
-      <name>content-disposition</name>
-      <version>0.5.4</version>
-      <purl>pkg:npm/content-disposition@0.5.4</purl>
-    </component>
-    <component type="library">
-      <name>content-type</name>
-      <version>1.0.4</version>
-      <purl>pkg:npm/content-type@1.0.4</purl>
-    </component>
-    <component type="library">
       <name>content-type</name>
       <version>1.0.4</version>
       <purl>pkg:npm/content-type@1.0.4</purl>
@@ -2059,16 +1989,6 @@
       <name>cookie</name>
       <version>0.4.1</version>
       <purl>pkg:npm/cookie@0.4.1</purl>
-    </component>
-    <component type="library">
-      <name>cookie</name>
-      <version>0.4.1</version>
-      <purl>pkg:npm/cookie@0.4.1</purl>
-    </component>
-    <component type="library">
-      <name>cookie-signature</name>
-      <version>1.0.6</version>
-      <purl>pkg:npm/cookie-signature@1.0.6</purl>
     </component>
     <component type="library">
       <name>cookie-signature</name>
@@ -2107,8 +2027,8 @@
     </component>
     <component type="library">
       <name>cors</name>
-      <version>2.8.5</version>
-      <purl>pkg:npm/cors@2.8.5</purl>
+      <version>https://registry.npmjs.org/cors/-/cors-2.8.5.tgz</version>
+      <purl>pkg:npm/cors@https:%2F%2Fregistry.npmjs.org%2Fcors%2F-%2Fcors-2.8.5.tgz</purl>
     </component>
     <component type="library">
       <name>coveralls</name>
@@ -2276,19 +2196,9 @@
       <purl>pkg:npm/depd@1.1.2</purl>
     </component>
     <component type="library">
-      <name>depd</name>
-      <version>1.1.2</version>
-      <purl>pkg:npm/depd@1.1.2</purl>
-    </component>
-    <component type="library">
       <name>des.js</name>
       <version>1.0.1</version>
       <purl>pkg:npm/des.js@1.0.1</purl>
-    </component>
-    <component type="library">
-      <name>destroy</name>
-      <version>1.0.4</version>
-      <purl>pkg:npm/destroy@1.0.4</purl>
     </component>
     <component type="library">
       <name>destroy</name>
@@ -2371,11 +2281,6 @@
       <purl>pkg:npm/ee-first@1.1.1</purl>
     </component>
     <component type="library">
-      <name>ee-first</name>
-      <version>1.1.1</version>
-      <purl>pkg:npm/ee-first@1.1.1</purl>
-    </component>
-    <component type="library">
       <name>electron-to-chromium</name>
       <version>1.4.71</version>
       <purl>pkg:npm/electron-to-chromium@1.4.71</purl>
@@ -2404,11 +2309,6 @@
       <name>emojis-list</name>
       <version>3.0.0</version>
       <purl>pkg:npm/emojis-list@3.0.0</purl>
-    </component>
-    <component type="library">
-      <name>encodeurl</name>
-      <version>1.0.2</version>
-      <purl>pkg:npm/encodeurl@1.0.2</purl>
     </component>
     <component type="library">
       <name>encodeurl</name>
@@ -2459,11 +2359,6 @@
       <name>escalade</name>
       <version>3.1.1</version>
       <purl>pkg:npm/escalade@3.1.1</purl>
-    </component>
-    <component type="library">
-      <name>escape-html</name>
-      <version>1.0.3</version>
-      <purl>pkg:npm/escape-html@1.0.3</purl>
     </component>
     <component type="library">
       <name>escape-html</name>
@@ -2636,11 +2531,6 @@
       <purl>pkg:npm/etag@1.8.1</purl>
     </component>
     <component type="library">
-      <name>etag</name>
-      <version>1.8.1</version>
-      <purl>pkg:npm/etag@1.8.1</purl>
-    </component>
-    <component type="library">
       <name>events</name>
       <version>3.3.0</version>
       <purl>pkg:npm/events@3.3.0</purl>
@@ -2672,13 +2562,8 @@
     </component>
     <component type="library">
       <name>express</name>
-      <version>4.17.2</version>
-      <purl>pkg:npm/express@4.17.2</purl>
-    </component>
-    <component type="library">
-      <name>express</name>
-      <version>4.17.2</version>
-      <purl>pkg:npm/express@4.17.2</purl>
+      <version>https://registry.npmjs.org/express/-/express-4.17.2.tgz</version>
+      <purl>pkg:npm/express@https:%2F%2Fregistry.npmjs.org%2Fexpress%2F-%2Fexpress-4.17.2.tgz</purl>
     </component>
     <component type="library">
       <name>extend</name>
@@ -2796,11 +2681,6 @@
       <purl>pkg:npm/finalhandler@1.1.2</purl>
     </component>
     <component type="library">
-      <name>finalhandler</name>
-      <version>1.1.2</version>
-      <purl>pkg:npm/finalhandler@1.1.2</purl>
-    </component>
-    <component type="library">
       <name>find-cache-dir</name>
       <version>2.1.0</version>
       <purl>pkg:npm/find-cache-dir@2.1.0</purl>
@@ -2896,19 +2776,9 @@
       <purl>pkg:npm/forwarded@0.2.0</purl>
     </component>
     <component type="library">
-      <name>forwarded</name>
-      <version>0.2.0</version>
-      <purl>pkg:npm/forwarded@0.2.0</purl>
-    </component>
-    <component type="library">
       <name>fragment-cache</name>
       <version>0.2.1</version>
       <purl>pkg:npm/fragment-cache@0.2.1</purl>
-    </component>
-    <component type="library">
-      <name>fresh</name>
-      <version>0.5.2</version>
-      <purl>pkg:npm/fresh@0.5.2</purl>
     </component>
     <component type="library">
       <name>fresh</name>
@@ -3236,11 +3106,6 @@
       <purl>pkg:npm/http-errors@1.8.1</purl>
     </component>
     <component type="library">
-      <name>http-errors</name>
-      <version>1.8.1</version>
-      <purl>pkg:npm/http-errors@1.8.1</purl>
-    </component>
-    <component type="library">
       <name>http-signature</name>
       <version>1.2.0</version>
       <purl>pkg:npm/http-signature@1.2.0</purl>
@@ -3264,11 +3129,6 @@
       <name>husky</name>
       <version>7.0.4</version>
       <purl>pkg:npm/husky@7.0.4</purl>
-    </component>
-    <component type="library">
-      <name>iconv-lite</name>
-      <version>0.4.24</version>
-      <purl>pkg:npm/iconv-lite@0.4.24</purl>
     </component>
     <component type="library">
       <name>iconv-lite</name>
@@ -4011,11 +3871,6 @@
       <purl>pkg:npm/media-typer@0.3.0</purl>
     </component>
     <component type="library">
-      <name>media-typer</name>
-      <version>0.3.0</version>
-      <purl>pkg:npm/media-typer@0.3.0</purl>
-    </component>
-    <component type="library">
       <name>memory-fs</name>
       <version>0.4.1</version>
       <purl>pkg:npm/memory-fs@0.4.1</purl>
@@ -4029,11 +3884,6 @@
       <name>memory-pager</name>
       <version>1.5.0</version>
       <purl>pkg:npm/memory-pager@1.5.0</purl>
-    </component>
-    <component type="library">
-      <name>merge-descriptors</name>
-      <version>1.0.1</version>
-      <purl>pkg:npm/merge-descriptors@1.0.1</purl>
     </component>
     <component type="library">
       <name>merge-descriptors</name>
@@ -4061,11 +3911,6 @@
       <purl>pkg:npm/methods@1.1.2</purl>
     </component>
     <component type="library">
-      <name>methods</name>
-      <version>1.1.2</version>
-      <purl>pkg:npm/methods@1.1.2</purl>
-    </component>
-    <component type="library">
       <name>micromatch</name>
       <version>4.0.4</version>
       <purl>pkg:npm/micromatch@4.0.4</purl>
@@ -4079,11 +3924,6 @@
       <name>miller-rabin</name>
       <version>4.0.1</version>
       <purl>pkg:npm/miller-rabin@4.0.1</purl>
-    </component>
-    <component type="library">
-      <name>mime</name>
-      <version>1.6.0</version>
-      <purl>pkg:npm/mime@1.6.0</purl>
     </component>
     <component type="library">
       <name>mime</name>
@@ -4271,19 +4111,14 @@
       <purl>pkg:npm/negotiator@0.6.3</purl>
     </component>
     <component type="library">
-      <name>negotiator</name>
-      <version>0.6.3</version>
-      <purl>pkg:npm/negotiator@0.6.3</purl>
-    </component>
-    <component type="library">
       <name>neo-async</name>
       <version>2.6.2</version>
       <purl>pkg:npm/neo-async@2.6.2</purl>
     </component>
     <component type="library">
       <name>next</name>
-      <version>12.0.10</version>
-      <purl>pkg:npm/next@12.0.10</purl>
+      <version>12.1.0</version>
+      <purl>pkg:npm/next@12.1.0</purl>
     </component>
     <component type="library">
       <name>nise</name>
@@ -4414,11 +4249,6 @@
       <name>object.values</name>
       <version>1.1.5</version>
       <purl>pkg:npm/object.values@1.1.5</purl>
-    </component>
-    <component type="library">
-      <name>on-finished</name>
-      <version>2.3.0</version>
-      <purl>pkg:npm/on-finished@2.3.0</purl>
     </component>
     <component type="library">
       <name>on-finished</name>
@@ -4606,11 +4436,6 @@
       <purl>pkg:npm/parseurl@1.3.3</purl>
     </component>
     <component type="library">
-      <name>parseurl</name>
-      <version>1.3.3</version>
-      <purl>pkg:npm/parseurl@1.3.3</purl>
-    </component>
-    <component type="library">
       <name>pascalcase</name>
       <version>0.1.1</version>
       <purl>pkg:npm/pascalcase@0.1.1</purl>
@@ -4659,11 +4484,6 @@
       <name>path-parse</name>
       <version>1.0.7</version>
       <purl>pkg:npm/path-parse@1.0.7</purl>
-    </component>
-    <component type="library">
-      <name>path-to-regexp</name>
-      <version>0.1.7</version>
-      <purl>pkg:npm/path-to-regexp@0.1.7</purl>
     </component>
     <component type="library">
       <name>path-to-regexp</name>
@@ -4906,11 +4726,6 @@
       <purl>pkg:npm/proxy-addr@2.0.7</purl>
     </component>
     <component type="library">
-      <name>proxy-addr</name>
-      <version>2.0.7</version>
-      <purl>pkg:npm/proxy-addr@2.0.7</purl>
-    </component>
-    <component type="library">
       <name>prr</name>
       <version>1.0.1</version>
       <purl>pkg:npm/prr@1.0.1</purl>
@@ -4986,11 +4801,6 @@
       <purl>pkg:npm/qs@6.9.6</purl>
     </component>
     <component type="library">
-      <name>qs</name>
-      <version>6.9.6</version>
-      <purl>pkg:npm/qs@6.9.6</purl>
-    </component>
-    <component type="library">
       <name>querystring</name>
       <version>0.2.0</version>
       <purl>pkg:npm/querystring@0.2.0</purl>
@@ -5034,16 +4844,6 @@
       <name>range-parser</name>
       <version>1.2.1</version>
       <purl>pkg:npm/range-parser@1.2.1</purl>
-    </component>
-    <component type="library">
-      <name>range-parser</name>
-      <version>1.2.1</version>
-      <purl>pkg:npm/range-parser@1.2.1</purl>
-    </component>
-    <component type="library">
-      <name>raw-body</name>
-      <version>2.4.2</version>
-      <purl>pkg:npm/raw-body@2.4.2</purl>
     </component>
     <component type="library">
       <name>raw-body</name>
@@ -5366,11 +5166,6 @@
       <purl>pkg:npm/send@0.17.2</purl>
     </component>
     <component type="library">
-      <name>send</name>
-      <version>0.17.2</version>
-      <purl>pkg:npm/send@0.17.2</purl>
-    </component>
-    <component type="library">
       <name>seq-queue</name>
       <version>0.0.5</version>
       <purl>pkg:npm/seq-queue@0.0.5</purl>
@@ -5384,11 +5179,6 @@
       <name>serialize-javascript</name>
       <version>4.0.0</version>
       <purl>pkg:npm/serialize-javascript@4.0.0</purl>
-    </component>
-    <component type="library">
-      <name>serve-static</name>
-      <version>1.14.2</version>
-      <purl>pkg:npm/serve-static@1.14.2</purl>
     </component>
     <component type="library">
       <name>serve-static</name>
@@ -5414,11 +5204,6 @@
       <name>setimmediate</name>
       <version>1.0.5</version>
       <purl>pkg:npm/setimmediate@1.0.5</purl>
-    </component>
-    <component type="library">
-      <name>setprototypeof</name>
-      <version>1.2.0</version>
-      <purl>pkg:npm/setprototypeof@1.2.0</purl>
     </component>
     <component type="library">
       <name>setprototypeof</name>
@@ -5654,11 +5439,6 @@
       <name>static-extend</name>
       <version>0.1.2</version>
       <purl>pkg:npm/static-extend@0.1.2</purl>
-    </component>
-    <component type="library">
-      <name>statuses</name>
-      <version>1.5.0</version>
-      <purl>pkg:npm/statuses@1.5.0</purl>
     </component>
     <component type="library">
       <name>statuses</name>
@@ -5961,11 +5741,6 @@
       <purl>pkg:npm/toidentifier@1.0.1</purl>
     </component>
     <component type="library">
-      <name>toidentifier</name>
-      <version>1.0.1</version>
-      <purl>pkg:npm/toidentifier@1.0.1</purl>
-    </component>
-    <component type="library">
       <name>tough-cookie</name>
       <version>2.5.0</version>
       <purl>pkg:npm/tough-cookie@2.5.0</purl>
@@ -6106,11 +5881,6 @@
       <purl>pkg:npm/type-is@1.6.18</purl>
     </component>
     <component type="library">
-      <name>type-is</name>
-      <version>1.6.18</version>
-      <purl>pkg:npm/type-is@1.6.18</purl>
-    </component>
-    <component type="library">
       <name>typedarray</name>
       <version>0.0.6</version>
       <purl>pkg:npm/typedarray@0.0.6</purl>
@@ -6181,11 +5951,6 @@
       <purl>pkg:npm/unpipe@1.0.0</purl>
     </component>
     <component type="library">
-      <name>unpipe</name>
-      <version>1.0.0</version>
-      <purl>pkg:npm/unpipe@1.0.0</purl>
-    </component>
-    <component type="library">
       <name>unset-value</name>
       <version>1.0.0</version>
       <purl>pkg:npm/unset-value@1.0.0</purl>
@@ -6239,11 +6004,6 @@
       <name>util-deprecate</name>
       <version>1.0.2</version>
       <purl>pkg:npm/util-deprecate@1.0.2</purl>
-    </component>
-    <component type="library">
-      <name>utils-merge</name>
-      <version>1.0.1</version>
-      <purl>pkg:npm/utils-merge@1.0.1</purl>
     </component>
     <component type="library">
       <name>utils-merge</name>
