@@ -16,7 +16,7 @@ module.exports = {
       url: 'https://github.com/boxyhq/jackson/blob/main/LICENSE',
     },
   },
-  host: 'localhost:5000',
+  host: 'localhost:5225',
   basePath: '/',
   schemes: ['http', 'https'],
   securityDefinitions: {

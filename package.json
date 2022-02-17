@@ -13,7 +13,7 @@
   "license": "Apache 2.0",
   "scripts": {
     "build": "next build",
-    "dev": "cross-env JACKSON_API_KEYS=secret IDP_ENABLED=true next dev -p 5000",
+    "dev": "cross-env JACKSON_API_KEYS=secret IDP_ENABLED=true next dev -p 5225",
     "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
     "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
     "lint": "next lint",
@@ -24,7 +24,7 @@
     "postgres": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/postgres npm run dev",
     "mysql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mysql DB_URL=mysql://root:mysql@localhost:3307/mysql npm run dev",
     "mariadb": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql npm run dev",
-    "start": "next start -p 5000",
+    "start": "next start -p 5225",
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
     "prepare": "husky install"
   },

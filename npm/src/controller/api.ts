@@ -61,13 +61,13 @@ export class APIController implements IAPIController {
    *         in: formData
    *         required: true
    *         type: string
-   *         example: http://localhost:3000/login/saml
+   *         example: http://localhost:3366/login/saml
    *       - name: redirectUrl
    *         description: JSON encoded array containing a list of allowed redirect URLs
    *         in: formData
    *         required: true
    *         type: string
-   *         example: '["http://localhost:3000/*"]'
+   *         example: '["http://localhost:3366/*"]'
    *       - name: tenant
    *         description: Tenant
    *         in: formData
