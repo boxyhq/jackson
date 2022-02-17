@@ -1,6 +1,6 @@
 module.exports = {
-  defaultRedirectUrl: 'http://localhost:3000/sso/oauth/completed',
-  redirectUrl: '["http://localhost:3000"]',
+  defaultRedirectUrl: 'http://localhost:3366/sso/oauth/completed',
+  redirectUrl: '["http://localhost:3366"]',
   tenant: 'boxyhq.com',
   product: 'crm',
   name: 'testConfig',

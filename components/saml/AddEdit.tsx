@@ -43,14 +43,14 @@ const fieldCatalog = [
     key: 'redirectUrl',
     label: 'Allowed redirect URLs (newline separated)',
     type: 'textarea',
-    placeholder: 'http://localhost:3000',
+    placeholder: 'http://localhost:3366',
     attributes: { isArray: true, rows: 3 },
   },
   {
     key: 'defaultRedirectUrl',
     label: 'Default redirect URL',
     type: 'url',
-    placeholder: 'http://localhost:3000/login/saml',
+    placeholder: 'http://localhost:3366/login/saml',
     attributes: {},
   },
   {
@@ -173,13 +173,13 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
     <>
       {/* Or use router.back()  */}
       <Link href='/admin/saml/config'>
-        <a className='inline-flex items-center pr-4 py-2 mt-2 md:leading-3 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
-          <ArrowLeftIcon aria-hidden className='h-4 w-4 text-black dark:text-slate-50' />
+        <a className='inline-flex items-center py-2 pr-4 mt-2 text-gray-700 md:leading-3 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300'>
+          <ArrowLeftIcon aria-hidden className='w-4 h-4 text-black dark:text-slate-50' />
           <span className='ml-2'>Back to Configurations</span>
         </a>
       </Link>
       <div>
-        <h2 className='font-bold text-3xl text-black mt-2 mb-4 dark:text-white'>
+        <h2 className='mt-2 mb-4 text-3xl font-bold text-black dark:text-white'>
           {samlConfig?.name || 'New SAML Configuration'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
@@ -217,7 +217,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                         {_label}
                       </label>
                       {type === 'pre' ? (
-                        <pre className='block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-auto'>
+                        <pre className='block w-full p-2 overflow-auto text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'>
                           {value}
                         </pre>
                       ) : type === 'textarea' ? (
@@ -254,7 +254,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
             <div className='flex'>
               <button
                 type='submit'
-                className='bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded leading-6 inline-block'>
+                className='inline-block px-4 py-2 font-bold leading-6 text-white bg-indigo-500 rounded hover:bg-indigo-700'>
                 Save Changes
               </button>
               <p
@@ -265,21 +265,21 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                 {status === 'SUCCESS' && (
                   <>
                     Saved
-                    <CheckCircleIcon aria-hidden className='ml-1 text-green-500 h-5 w-5'></CheckCircleIcon>
+                    <CheckCircleIcon aria-hidden className='w-5 h-5 ml-1 text-green-500'></CheckCircleIcon>
                   </>
                 )}
               </p>
             </div>
           </div>
           {samlConfig?.clientID && samlConfig.clientSecret && (
-            <section className='flex items-center text-red-900 bg-red-100 p-6 rounded mt-10'>
+            <section className='flex items-center p-6 mt-10 text-red-900 bg-red-100 rounded'>
               <div className='flex-1'>
-                <h6 className='font-medium mb-1'>Delete this configuration</h6>
+                <h6 className='mb-1 font-medium'>Delete this configuration</h6>
                 <p className='font-light'>All your apps using this configuration will stop working.</p>
               </div>
               <button
                 type='button'
-                className='bg-red-700 hover:bg-red-800 text-white text-sm font-bold py-2 px-4 rounded leading-6 inline-block'
+                className='inline-block px-4 py-2 text-sm font-bold leading-6 text-white bg-red-700 rounded hover:bg-red-800'
                 onClick={toggleDelConfirm}
                 data-modal-toggle='popup-modal'>
                 Delete
@@ -298,7 +298,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
               <button
                 type='button'
                 onClick={toggleDelConfirm}
-                className='bg-white hover:bg-gray-200 border-2  text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
+                className='inline-block px-4 py-2 text-sm font-bold leading-6 bg-white border-2 rounded hover:bg-gray-200'>
                 Cancel
               </button>
               <button
