@@ -1,7 +1,7 @@
 import { DatabaseEngine, DatabaseType } from '@boxyhq/saml-jackson';
 
 const hostUrl = process.env.HOST_URL || 'localhost';
-const hostPort = Number(process.env.PORT || '5000');
+const hostPort = Number(process.env.PORT || '5225');
 const externalUrl = process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const samlPath = '/api/oauth/saml';
 

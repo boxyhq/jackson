@@ -14,7 +14,7 @@
       "url": "https://github.com/boxyhq/jackson/blob/main/LICENSE"
     }
   },
-  "host": "localhost:5000",
+  "host": "localhost:5225",
   "basePath": "/",
   "schemes": [
     "http",
@@ -82,7 +82,7 @@
             "in": "formData",
             "required": true,
             "type": "string",
-            "example": "http://localhost:3000/login/saml"
+            "example": "http://localhost:3366/login/saml"
           },
           {
             "name": "redirectUrl",
@@ -90,7 +90,7 @@
             "in": "formData",
             "required": true,
             "type": "string",
-            "example": "[\"http://localhost:3000/*\"]"
+            "example": "[\"http://localhost:3366/*\"]"
           },
           {
             "name": "tenant",
@@ -196,7 +196,7 @@
             "in": "formData",
             "required": true,
             "type": "string",
-            "example": "http://localhost:3000/login/saml"
+            "example": "http://localhost:3366/login/saml"
           },
           {
             "name": "redirectUrl",
@@ -204,7 +204,7 @@
             "in": "formData",
             "required": true,
             "type": "string",
-            "example": "[\"http://localhost:3000/*\"]"
+            "example": "[\"http://localhost:3366/*\"]"
           },
           {
             "name": "tenant",
