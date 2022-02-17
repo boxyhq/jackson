@@ -3,6 +3,7 @@ const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
 
 module.exports = {
   reactStrictMode: true,
+  swcMinify: false,
   webpack: (config, { webpack, isServer }) => {
     if (isServer) {
       // Module not found
