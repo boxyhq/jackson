@@ -159,8 +159,8 @@ export class OAuthController implements IOAuthController {
 
     const relayState = relayStatePrefix + sessionId;
 
-    let redirectUrl = '';
-    let authorizeForm = '';
+    let redirectUrl;
+    let authorizeForm;
 
     if (!post) {
       // HTTP Redirect binding
