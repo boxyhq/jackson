@@ -81,6 +81,7 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
       - run: npm install
+      - run: node -e 'console.log(process.version, process.arch, process.platform)'
       - run: npm run build
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
