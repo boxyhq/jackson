@@ -186,7 +186,7 @@ jobs:
           ORAS_VERSION="0.8.1"
           ORAS_FILENAME="oras_0.8.1_darwin_amd64.tar.gz"
           curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
-          mkdir -p oras-install/ -C oras-install/
+          mkdir -p oras-install/
           tar -xvf "${ORAS_FILENAME}"
           mv oras-install/oras /usr/local/bin/
           rm -rf oras_0.12.0_*.tar.gz oras-install/
