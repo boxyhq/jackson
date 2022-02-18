@@ -16,101 +16,101 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  ci:
-    runs-on: ubuntu-latest
+  # ci:
+  #   runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: ''
-          POSTGRES_HOST_AUTH_METHOD: 'trust'
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:6.2.5-alpine
-        ports:
-          - 6379:6379
-      mongo:
-        image: mongo:4.4.10
-        ports:
-          - 27017:27017
-      mysql:
-        image: mysql:5.7
-        ports:
-          - 3307:3306
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: mysql
-      maria:
-        image: mariadb:10.4.22
-        ports:
-          - 3306:3306
-        env:
-          MARIADB_DATABASE: mysql
-          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+  #   services:
+  #     postgres:
+  #       image: postgres:13
+  #       ports:
+  #         - 5432:5432
+  #       env:
+  #         POSTGRES_PASSWORD: ''
+  #         POSTGRES_HOST_AUTH_METHOD: 'trust'
+  #       # Set health checks to wait until postgres has started
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #     redis:
+  #       image: redis:6.2.5-alpine
+  #       ports:
+  #         - 6379:6379
+  #     mongo:
+  #       image: mongo:4.4.10
+  #       ports:
+  #         - 27017:27017
+  #     mysql:
+  #       image: mysql:5.7
+  #       ports:
+  #         - 3307:3306
+  #       env:
+  #         MYSQL_DATABASE: mysql
+  #         MYSQL_ROOT_PASSWORD: mysql
+  #     maria:
+  #       image: mariadb:10.4.22
+  #       ports:
+  #         - 3306:3306
+  #       env:
+  #         MARIADB_DATABASE: mysql
+  #         MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          always-auth: true
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org
-          scope: '@boxyhq'
-          cache: 'npm'
-      - run: npm install
-        working-directory: ./npm
-      - run: npm run test
-        working-directory: ./npm
-      - run: |
-          npm install -g json
-          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
+    # steps:
+    #   - uses: actions/checkout@v2
+    #   - name: Use Node.js ${{ matrix.node-version }}
+    #     uses: actions/setup-node@v2
+    #     with:
+    #       always-auth: true
+    #       node-version: ${{ matrix.node-version }}
+    #       registry-url: https://registry.npmjs.org
+    #       scope: '@boxyhq'
+    #       cache: 'npm'
+    #   - run: npm install
+    #     working-directory: ./npm
+    #   - run: npm run test
+    #     working-directory: ./npm
+    #   - run: |
+    #       npm install -g json
+    #       JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
 
-          publishTag="latest"
+    #       publishTag="latest"
 
-          if [[ "$GITHUB_REF" == *\/release ]]
-          then
-            echo "Release branch"
-          else
-            echo "Dev branch"
-            publishTag="beta"
-            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-          fi
+    #       if [[ "$GITHUB_REF" == *\/release ]]
+    #       then
+    #         echo "Release branch"
+    #       else
+    #         echo "Dev branch"
+    #         publishTag="beta"
+    #         JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+    #       fi
 
-          echo ${JACKSON_VERSION} > npmversion.txt
-          echo ${publishTag} > publishTag.txt
+    #       echo ${JACKSON_VERSION} > npmversion.txt
+    #       echo ${publishTag} > publishTag.txt
 
-          echo $(cat npmversion.txt)
-          echo $(cat publishTag.txt)
-        working-directory: ./npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Upload saml-jackson npm version
-        uses: actions/upload-artifact@v2
-        with:
-          name: npmversion
-          path: ./npm/npmversion.txt
-      - name: Upload saml-jackson publish tag
-        uses: actions/upload-artifact@v2
-        with:
-          name: publishTag
-          path: ./npm/publishTag.txt
+    #       echo $(cat npmversion.txt)
+    #       echo $(cat publishTag.txt)
+    #     working-directory: ./npm
+    #     env:
+    #       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    #   - name: Upload saml-jackson npm version
+    #     uses: actions/upload-artifact@v2
+    #     with:
+    #       name: npmversion
+    #       path: ./npm/npmversion.txt
+    #   - name: Upload saml-jackson publish tag
+    #     uses: actions/upload-artifact@v2
+    #     with:
+    #       name: publishTag
+    #       path: ./npm/publishTag.txt
 
   build:
-    needs: ci
+    # needs: ci
     runs-on: ubuntu-latest
 
     steps:
@@ -180,16 +180,6 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-
-      - name: ORAS Setup
-        run: |
-          ORAS_VERSION="0.8.1"
-          ORAS_FILENAME="oras_0.8.1_darwin_amd64.tar.gz"
-          curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
-          mkdir -p oras-install/
-          tar -xvf "${ORAS_FILENAME}"
-          mv oras-install/oras /usr/local/bin/
-          rm -rf oras_0.12.0_*.tar.gz oras-install/
 
       - name: Login to GitHub Container Registry
         run: |
@@ -286,14 +276,21 @@ jobs:
           rm results.sarif || true
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
-      - name: Push SBOM reports to GitHub Container Registry
+      - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         run: |
-          oras push ghcr.io/${{github.repository_owner}}/jackson_npm/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./_docker/sbom.spdx:text/spdx
-          oras push ghcr.io/${{github.repository_owner}}/jackson_npm/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./_docker/sbom.cyclonedx:text/cyclonedx
-          oras push ghcr.io/${{github.repository_owner}}/jackson_next_js_app/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./npm/sbom.spdx:text/spdx
-          oras push ghcr.io/${{github.repository_owner}}/jackson_next_js_app/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./npm/sbom.cyclonedx:text/cyclonedx
-          oras push ghcr.io/${{github.repository_owner}}/jackson_docker/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./sbom.spdx:text/spdx
-          oras push ghcr.io/${{github.repository_owner}}/jackson_docker/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./sbom.cyclonedx:text/cyclonedx
+          ORAS_VERSION="0.8.1"
+          ORAS_FILENAME="oras_0.8.1_darwin_amd64.tar.gz"
+          curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
+          mkdir -p oras-install/
+          tar -xvf "${ORAS_FILENAME}"
+          cd oras-install
+          ./oras push ghcr.io/${{github.repository_owner}}/jackson_npm/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./_docker/sbom.spdx:text/spdx
+          ./oras push ghcr.io/${{github.repository_owner}}/jackson_npm/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./_docker/sbom.cyclonedx:text/cyclonedx
+          ./oras push ghcr.io/${{github.repository_owner}}/jackson_next_js_app/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./npm/sbom.spdx:text/spdx
+          ./oras push ghcr.io/${{github.repository_owner}}/jackson_next_js_app/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./npm/sbom.cyclonedx:text/cyclonedx
+          ./oras push ghcr.io/${{github.repository_owner}}/jackson_docker/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./sbom.spdx:text/spdx
+          ./oras push ghcr.io/${{github.repository_owner}}/jackson_docker/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./sbom.cyclonedx:text/cyclonedx
+          rm -rf oras_0.12.0_*.tar.gz oras-install/
       - name: Commit report
         if: github.ref == 'refs/heads/main'
         run: |
