@@ -276,6 +276,13 @@ jobs:
           rm results.sarif || true
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
+      - name: Download saml-jackson publish tag
+        uses: actions/download-artifact@v2
+        with:
+          name: publishTag
+      - name: Get saml-jackson npm version
+        id: _publishTag
+        run: echo "::set-output name=publishTag::$(cat publishTag.txt)"
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         run: |
           ORAS_VERSION="0.8.1"
@@ -283,12 +290,9 @@ jobs:
           curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
           mkdir oras_install
           tar -xvf "${ORAS_FILENAME}" -C oras_install
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson_npm/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./_docker/sbom.spdx:text/spdx
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson_npm/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./_docker/sbom.cyclonedx:text/cyclonedx
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson_next_js_app/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./npm/sbom.spdx:text/spdx
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson_next_js_app/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./npm/sbom.cyclonedx:text/cyclonedx
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson_docker/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./sbom.spdx:text/spdx
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson_docker/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./sbom.cyclonedx:text/cyclonedx
+          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/docker:${{ steps._publishTag.outputs.publishTag }} ./_docker/*
+          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/npm:${{ steps._publishTag.outputs.publishTag }} ./npm/sbom.*
+          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/service:${{ steps._publishTag.outputs.publishTag }} ./sbom.*
           rm -rf oras_0.12.0_*.tar.gz ./oras_install
       - name: Commit report
         if: github.ref == 'refs/heads/main'
