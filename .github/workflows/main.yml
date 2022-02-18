@@ -288,10 +288,10 @@ jobs:
           tar -xvf "${ORAS_FILENAME}" -C oras_install
           ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
           cd _docker
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
           cd ..
           cd npm
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
           cd ..
   publish:
     needs: build
