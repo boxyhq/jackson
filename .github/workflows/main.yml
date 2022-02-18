@@ -170,13 +170,13 @@ jobs:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
 
       - name: Sign the image
-        run: $(go env GOPATH)/bin/cosign sign -key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
+        run: $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
       - name: Remove cosine
         run: |
-          rm -rf ./cosign -y
+          rm -rf ./cosign
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
