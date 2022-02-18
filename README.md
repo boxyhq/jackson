@@ -25,13 +25,13 @@ SBOM reports primarily use [SPDX](https://en.wikipedia.org/wiki/Software_Package
 
 ### Jackson SBOM reports
 
-You can find the SBOM reports at the following locations, which are updated every time there is change in the codebase.
+You can find the SBOM reports as artifacts in our container registry at the following locations, which are updated every time there is change in the codebase and tagged by the version. You can use [oras](https://oras.land/cli) (or a similar OCI artifacts tool) to retrieve these files.
 
-| Location    | Files                         | Context                               |
-| ----------- | ----------------------------- | ------------------------------------- |
-| `./`        | `sbom.spdx`, `sbom.cyclonedx` | SAML Jackson service                  |
-| `./npm`     | `sbom.spdx`, `sbom.cyclonedx` | NPM package                           |
-| `./_docker` | `sbom.spdx`, `sbom.cyclonedx` | Docker Image for SAML Jackson service |
+| Location                                   | Files                         | Context                               |
+| ------------------------------------------ | ----------------------------- | ------------------------------------- |
+| `ghcr.io/boxyhq/jackson/service:<version>` | `sbom.spdx`, `sbom.cyclonedx` | SAML Jackson service                  |
+| `ghcr.io/boxyhq/jackson/npm:<version>`     | `sbom.spdx`, `sbom.cyclonedx` | NPM package                           |
+| `ghcr.io/boxyhq/jackson/docker:<version>`  | `sbom.spdx`, `sbom.cyclonedx` | Docker Image for SAML Jackson service |
 
 ## Contributing
 
