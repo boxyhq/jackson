@@ -281,8 +281,10 @@ jobs:
           ORAS_VERSION="0.8.1"
           ORAS_FILENAME="oras_0.8.1_darwin_amd64.tar.gz"
           curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
+          tree
           mkdir -p oras-install/
           tar -xvf "${ORAS_FILENAME}"
+          tree
           cd oras-install
           ./oras push ghcr.io/${{github.repository_owner}}/jackson_npm/sbom_spdx:${{ steps.slug.outputs.sha7 }} ./_docker/sbom.spdx:text/spdx
           ./oras push ghcr.io/${{github.repository_owner}}/jackson_npm/sbom_cyclonedx:${{ steps.slug.outputs.sha7 }} ./_docker/sbom.cyclonedx:text/cyclonedx
