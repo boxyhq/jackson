@@ -279,7 +279,7 @@ jobs:
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         run: |
           ORAS_VERSION="0.8.1"
-          ORAS_FILENAME="oras_0.8.1_darwin_amd64.tar.gz"
+          ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
           curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
           mkdir oras_install
           tar -xvf "${ORAS_FILENAME}" -C oras_install
