@@ -23,7 +23,7 @@ export const stripCertHeaderAndFooter = (cert: string): string => {
 function PubKeyInfo(pubKey: string) {
   this.pubKey = stripCertHeaderAndFooter(pubKey);
 
-  this.getKeyInfo = function (key, prefix) {
+  this.getKeyInfo = function (_key, prefix) {
     prefix = prefix || '';
     prefix = prefix ? prefix + ':' : prefix;
     return (
