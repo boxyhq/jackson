@@ -13,7 +13,36 @@ const authnXPath =
   '/*[local-name(.)="AuthnRequest" and namespace-uri(.)="urn:oasis:names:tc:SAML:2.0:protocol"]';
 const issuerXPath = '/*[local-name(.)="Issuer" and namespace-uri(.)="urn:oasis:names:tc:SAML:2.0:assertion"]';
 
-const signRequest = (xml: string, signingKey: string) => {
+export const stripCertHeaderAndFooter = (cert: string): string => {
+  cert = cert.replace(/-+BEGIN CERTIFICATE-+\r?\n?/, '');
+  cert = cert.replace(/-+END CERTIFICATE-+\r?\n?/, '');
+  cert = cert.replace(/\r\n/g, '\n');
+  return cert;
+};
+
+function PubKeyInfo(pubKey: string) {
+  this.pubKey = stripCertHeaderAndFooter(pubKey);
+
+  this.getKeyInfo = function (key, prefix) {
+    prefix = prefix || '';
+    prefix = prefix ? prefix + ':' : prefix;
+    return (
+      '<' +
+      prefix +
+      'X509Data><' +
+      prefix +
+      'X509Certificate>' +
+      this.pubKey +
+      '</' +
+      prefix +
+      'X509Certificate></' +
+      prefix +
+      'X509Data>'
+    );
+  };
+}
+
+const signRequest = (xml: string, signingKey: string, publicKey: string) => {
   if (!xml) {
     throw new Error('Please specify xml');
   }
@@ -23,6 +52,7 @@ const signRequest = (xml: string, signingKey: string) => {
 
   const sig = new xmlcrypto.SignedXml();
   sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
+  sig.keyInfoProvider = new PubKeyInfo(publicKey);
   sig.signingKey = signingKey;
   sig.addReference(
     authnXPath,
@@ -45,6 +75,7 @@ const request = ({
   identifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
   providerName = 'BoxyHQ',
   signingKey,
+  publicKey,
 }: SAMLReq): { id: string; request: string } => {
   const id = idPrefix + crypto.randomBytes(10).toString('hex');
   const date = new Date().toISOString();
@@ -85,7 +116,7 @@ const request = ({
 
   let xml = xmlbuilder.create(samlReq).end({});
   if (signingKey) {
-    xml = signRequest(xml, signingKey);
+    xml = signRequest(xml, signingKey, publicKey);
   }
 
   return {
