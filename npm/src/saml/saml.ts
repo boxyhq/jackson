@@ -20,7 +20,7 @@ export const stripCertHeaderAndFooter = (cert: string): string => {
   return cert;
 };
 
-function PubKeyInfo(pubKey: string) {
+function PubKeyInfo(this: any, pubKey: string) {
   this.pubKey = stripCertHeaderAndFooter(pubKey);
 
   this.getKeyInfo = function (_key, prefix) {
