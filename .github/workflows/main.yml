@@ -213,8 +213,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: npm_sbom.cyclonedx
-      - name: Remove temp files & pull latest code
-        run: rm results.sarif && git pull || true
       - name: Remove older SBOMs
         run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
