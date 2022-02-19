@@ -15,16 +15,8 @@ export class APIController implements IAPIController {
   }
 
   private _validateIdPConfig(body: IdPConfig): void {
-    const {
-      encodedRawMetadata,
-      rawMetadata,
-      defaultRedirectUrl,
-      redirectUrl,
-      tenant,
-      product,
-      name,
-      description,
-    } = body;
+    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product, description } =
+      body;
 
     if (!rawMetadata && !encodedRawMetadata) {
       throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
@@ -44,10 +36,6 @@ export class APIController implements IAPIController {
 
     if (!product) {
       throw new JacksonError('Please provide product', 400);
-    }
-
-    if (!name) {
-      throw new JacksonError('Please provide a friendly name', 400);
     }
 
     if (description && description.length > 100) {
@@ -72,7 +60,6 @@ export class APIController implements IAPIController {
    *         description: Name/identifier for the config
    *         type: string
    *         in: formData
-   *         required: true
    *         example: cal-saml-config
    *       - name: description
    *         description: A short description for the config not more than 100 characters
@@ -239,7 +226,6 @@ export class APIController implements IAPIController {
    *         description: Name/identifier for the config
    *         type: string
    *         in: formData
-   *         required: true
    *         example: cal-saml-config
    *       - name: description
    *         description: A short description for the config not more than 100 characters

@@ -9,7 +9,7 @@ import { Modal } from '@supabase/ui';
  * Edit view will have extra fields (showOnlyInEditView: true)
  * to render parsed metadata and other attributes.
  * All fields are editable unless they have `editable` set to false.
- * All fields are required unless they have `required` set to false.
+ * All fields are required unless they have `required` or `requiredInEditView` set to false.
  */
 const fieldCatalog = [
   {
@@ -17,7 +17,7 @@ const fieldCatalog = [
     label: 'Name',
     type: 'text',
     placeholder: 'MyApp',
-    attributes: {},
+    attributes: { required: false, requiredInEditView: false },
   },
   {
     key: 'description',
