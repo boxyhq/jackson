@@ -143,6 +143,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push
+        if: github.ref == 'refs/heads/release'
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -331,7 +332,9 @@ jobs:
       - run: npm install
         working-directory: ./npm
 
-      - run: |
+      - name: Publish NPM
+        if: github.ref == 'refs/heads/release'
+        run: |
           npm install -g json
           JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
           json -I -f package.json -e "this.main=\"dist/index.js\""
