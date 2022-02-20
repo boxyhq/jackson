@@ -118,6 +118,7 @@ export interface SAMLReq {
   identifierFormat?: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress';
   providerName?: 'BoxyHQ';
   signingKey: string;
+  publicKey: string;
 }
 
 export interface SAMLProfile {

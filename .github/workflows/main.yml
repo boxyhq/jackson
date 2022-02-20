@@ -143,6 +143,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push
+        if: github.ref == 'refs/heads/release'
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -151,8 +152,36 @@ jobs:
           push: true
           tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
 
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.7
+
+      - name: Install cosign
+        run: |
+          git clone https://github.com/sigstore/cosign
+          cd cosign
+          go install ./cmd/cosign
+          cd ..
+
+      - name: place the cosign private key in a file
+        run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
+        shell: bash
+        env:
+          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
+
+      - name: Sign the image
+        if: github.ref == 'refs/heads/release'
+        run: $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
+        env:
+          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
+
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+      - name: Login to GitHub Container Registry
+        run: |
+          echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
 
       # - name: NPM Package SBOM Scan
       #   uses: anchore/scan-action@v3
@@ -186,8 +215,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: npm_sbom.cyclonedx
-      - name: Remove temp files & pull latest code
-        run: rm results.sarif && git pull || true
       - name: Remove older SBOMs
         run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
@@ -239,25 +266,34 @@ jobs:
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
       - name: Docker CycloneDx report
         run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:latest -o ./_docker/sbom.xml -t docker
-      - name: Move Report
-        run: mv docker_sbom.spdx "./_docker/sbom.spdx"
-      - name: Commit report
-        if: github.ref == 'refs/heads/main'
+      - name: Move Report & cleanup
         run: |
+          mv docker_sbom.spdx "./_docker/sbom.spdx"
           rm results.sarif || true
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
-          git pull
-          git config --global user.email "github-bot@boxyhq.com"
-          git config --global user.name "github-bot"
-          git add .
-          git commit -am "Automated report"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        if: github.ref == 'refs/heads/main'
+      - name: Download saml-jackson npm version
+        uses: actions/download-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          name: npmversion
+      - name: Get saml-jackson npm version
+        id: _npmversion
+        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
+      - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
+        if: github.ref == 'refs/heads/release'
+        run: |
+          ORAS_VERSION="0.8.1"
+          ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
+          curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
+          mkdir oras_install
+          tar -xvf "${ORAS_FILENAME}" -C oras_install
+          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          cd _docker
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          cd ..
+          cd npm
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          cd ..
   publish:
     needs: build
     runs-on: ubuntu-latest
@@ -298,7 +334,9 @@ jobs:
       - run: npm install
         working-directory: ./npm
 
-      - run: |
+      - name: Publish NPM
+        if: github.ref == 'refs/heads/release'
+        run: |
           npm install -g json
           JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
           json -I -f package.json -e "this.main=\"dist/index.js\""
