@@ -167,6 +167,26 @@ jobs:
       #     path: './npm'
       #     fail-build: true
       #     severity-cutoff: high
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Cosign with brew
+        run: brew install cosign 
+
+      - name: place the cosign private key in a file
+        run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
+        shell: bash
+        env:
+          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
+
+      - name: Sign the image
+        # if: github.ref == 'refs/heads/release'
+        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }} || true
+        env:
+          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
+
       - name: Create NPM Package SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
@@ -273,31 +293,12 @@ jobs:
           ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
           cd ..
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Install Cosign with brew
-        run: brew install cosign 
-
-      - name: place the cosign private key in a file
-        run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
-        shell: bash
-        env:
-          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
-
-      - name: Sign the image
-        # if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
-        env:
-          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
-
       - name: Sign the sbom images
         # if: github.ref == 'refs/heads/release'
         run: |
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }}
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }}
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }}
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} || true
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
   publish:
