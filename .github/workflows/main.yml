@@ -273,11 +273,6 @@ jobs:
           ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
           cd ..
 
-      - name: Setup go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17.7
-
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -292,17 +287,17 @@ jobs:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
 
       - name: Sign the image
-        if: github.ref == 'refs/heads/release'
-        run: $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
+        # if: github.ref == 'refs/heads/release'
+        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
-          
+
       - name: Sign the sbom images
         # if: github.ref == 'refs/heads/release'
         run: |
-          $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }}
-          $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }}
-          $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }}
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }}
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }}
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
   publish:
