@@ -428,6 +428,13 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Invalid token', 403);
     }
 
+    // delete the token
+    try {
+      await this.tokenStore.delete(token);
+    } catch (_err) {
+      // ignore error
+    }
+
     return rsp.claims;
   }
 }
