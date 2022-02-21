@@ -154,30 +154,6 @@ jobs:
           push: true
           tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
 
-      - name: Setup go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17.7
-
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Install Cosign with brew
-        run: brew install cosign 
-
-      - name: place the cosign private key in a file
-        run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
-        shell: bash
-        env:
-          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
-
-      - name: Sign the image
-        if: github.ref == 'refs/heads/release'
-        run: $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
-        env:
-          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
-
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
@@ -296,6 +272,31 @@ jobs:
           cd npm
           ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
           cd ..
+
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.7
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Cosign with brew
+        run: brew install cosign 
+
+      - name: place the cosign private key in a file
+        run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
+        shell: bash
+        env:
+          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
+
+      - name: Sign the image
+        if: github.ref == 'refs/heads/release'
+        run: $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
+        env:
+          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
+          
       - name: Sign the sbom images
         # if: github.ref == 'refs/heads/release'
         run: |
