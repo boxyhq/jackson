@@ -278,7 +278,7 @@ jobs:
         id: _npmversion
         run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
-        if: github.ref == 'refs/heads/release'
+        # if: github.ref == 'refs/heads/release'
         run: |
           ORAS_VERSION="0.8.1"
           ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
