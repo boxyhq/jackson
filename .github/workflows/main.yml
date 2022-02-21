@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - '*'
+    tags:
+      - 'beta-v*'
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -335,7 +337,7 @@ jobs:
         working-directory: ./npm
 
       - name: Publish NPM
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
           JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
