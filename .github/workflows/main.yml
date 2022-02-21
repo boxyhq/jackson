@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - '*'
+    tags:
+      - 'beta-v*'
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -157,12 +159,12 @@ jobs:
         with:
           go-version: 1.17.7
 
-      - name: Install cosign
-        run: |
-          git clone https://github.com/sigstore/cosign
-          cd cosign
-          go install ./cmd/cosign
-          cd ..
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Cosign with brew
+        run: brew install cosign 
 
       - name: place the cosign private key in a file
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
@@ -335,7 +337,7 @@ jobs:
         working-directory: ./npm
 
       - name: Publish NPM
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
           JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
