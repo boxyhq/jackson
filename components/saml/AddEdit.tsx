@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { mutate } from 'swr';
 import { ArrowLeftIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/outline';
 import { Modal } from '@supabase/ui';
@@ -173,6 +173,12 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
   const [formObj, setFormObj] = useState<Record<string, string>>(() =>
     getInitialState(samlConfig, isEditView)
   );
+  // Resync form state on save
+  useEffect(() => {
+    const _state = getInitialState(samlConfig, isEditView);
+    setFormObj(_state);
+  }, [samlConfig, isEditView]);
+
   function handleChange(event: FormEvent) {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
     setFormObj((cur) => ({ ...cur, [target.id]: target.value }));
