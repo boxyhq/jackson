@@ -163,7 +163,7 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Install Homebrew Bundler RubyGems
+      - name: Install Cosign with brew
         run: brew install cosign 
 
       - name: place the cosign private key in a file
