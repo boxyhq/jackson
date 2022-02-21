@@ -1,8 +1,8 @@
 {
   "name": "jackson",
-  "version": "0.3.8",
+  "version": "0.4.0",
   "private": true,
-  "description": "SAML 2.0 service (next.js)",
+  "description": "SAML 2.0 service",
   "keywords": [
     "SAML 2.0"
   ],
