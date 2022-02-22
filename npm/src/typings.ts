@@ -3,6 +3,8 @@ export type IdPConfig = {
   redirectUrl: string;
   tenant: string;
   product: string;
+  name: string;
+  description: string;
   rawMetadata?: string;
   encodedRawMetadata?: string;
 };
@@ -15,7 +17,8 @@ export interface OAuth {
 
 export interface IAPIController {
   config(body: IdPConfig): Promise<OAuth>;
-  getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<Partial<OAuth>>;
+  updateConfig(body: any): Promise<void>;
+  getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
     clientID?: string;
     clientSecret?: string;
@@ -29,6 +32,10 @@ export interface IOAuthController {
   samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
+}
+
+export interface IAdminController {
+  getAllConfig();
 }
 
 export interface OAuthReqBody {
@@ -75,6 +82,7 @@ export interface Index {
 }
 
 export interface DatabaseDriver {
+  getAll(namespace: string): Promise<unknown[]>;
   get(namespace: string, key: string): Promise<any>;
   put(namespace: string, key: string, val: any, ttl: number, ...indexes: Index[]): Promise<any>;
   delete(namespace: string, key: string): Promise<any>;
@@ -82,6 +90,7 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
+  getAll(): Promise<unknown[]>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;

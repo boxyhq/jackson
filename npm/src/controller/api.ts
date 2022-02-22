@@ -15,7 +15,8 @@ export class APIController implements IAPIController {
   }
 
   private _validateIdPConfig(body: IdPConfig): void {
-    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
+    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product, description } =
+      body;
 
     if (!rawMetadata && !encodedRawMetadata) {
       throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
@@ -36,6 +37,10 @@ export class APIController implements IAPIController {
     if (!product) {
       throw new JacksonError('Please provide product', 400);
     }
+
+    if (description && description.length > 100) {
+      throw new JacksonError('Description should not exceed 100 characters', 400);
+    }
   }
 
   /**
@@ -51,10 +56,23 @@ export class APIController implements IAPIController {
    *     consumes:
    *       - application/x-www-form-urlencoded
    *     parameters:
+   *       - name: name
+   *         description: Name/identifier for the config
+   *         type: string
+   *         in: formData
+   *         example: cal-saml-config
+   *       - name: description
+   *         description: A short description for the config not more than 100 characters
+   *         type: string
+   *         in: formData
+   *         example: SAML login for cal.com app
    *       - name: encodedRawMetadata
    *         description: Base64 encoding of the XML metadata
    *         in: formData
-   *         required: true
+   *         type: string
+   *       - name: rawMetadata
+   *         description: Raw XML metadata
+   *         in: formData
    *         type: string
    *       - name: defaultRedirectUrl
    *         description: The redirect URL to use in the IdP login flow
@@ -92,11 +110,22 @@ export class APIController implements IAPIController {
    *             client_id: 8958e13053832b5af58fdf2ee83f35f5d013dc74
    *             client_secret: 13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7
    *             type: accounts.google.com
+   *       400:
+   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters
    *       401:
    *         description: Unauthorized
    */
   public async config(body: IdPConfig): Promise<OAuth> {
-    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product } = body;
+    const {
+      encodedRawMetadata,
+      rawMetadata,
+      defaultRedirectUrl,
+      redirectUrl,
+      tenant,
+      product,
+      name,
+      description,
+    } = body;
 
     metrics.increment('createConfig');
 
@@ -143,6 +172,8 @@ export class APIController implements IAPIController {
         redirectUrl: JSON.parse(redirectUrl), // redirectUrl is a stringified array
         tenant,
         product,
+        name,
+        description,
         clientID,
         clientSecret,
         certs,
@@ -164,6 +195,152 @@ export class APIController implements IAPIController {
       client_secret: clientSecret,
       provider: idpMetadata.provider,
     };
+  }
+  /**
+   * @swagger
+   *
+   * /api/v1/saml/config:
+   *   patch:
+   *     summary: Update SAML configuration
+   *     operationId: update-saml-config
+   *     tags: [SAML Config]
+   *     consumes:
+   *       - application/json
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - name: clientID
+   *         description: Client ID for the config
+   *         type: string
+   *         in: formData
+   *         required: true
+   *       - name: clientSecret
+   *         description: Client Secret for the config
+   *         type: string
+   *         in: formData
+   *         required: true
+   *       - name: name
+   *         description: Name/identifier for the config
+   *         type: string
+   *         in: formData
+   *         example: cal-saml-config
+   *       - name: description
+   *         description: A short description for the config not more than 100 characters
+   *         type: string
+   *         in: formData
+   *         example: SAML login for cal.com app
+   *       - name: encodedRawMetadata
+   *         description: Base64 encoding of the XML metadata
+   *         in: formData
+   *         type: string
+   *       - name: rawMetadata
+   *         description: Raw XML metadata
+   *         in: formData
+   *         type: string
+   *       - name: defaultRedirectUrl
+   *         description: The redirect URL to use in the IdP login flow
+   *         in: formData
+   *         required: true
+   *         type: string
+   *         example: http://localhost:3000/login/saml
+   *       - name: redirectUrl
+   *         description: JSON encoded array containing a list of allowed redirect URLs
+   *         in: formData
+   *         required: true
+   *         type: string
+   *         example: '["http://localhost:3000/*"]'
+   *       - name: tenant
+   *         description: Tenant
+   *         in: formData
+   *         required: true
+   *         type: string
+   *         example: boxyhq.com
+   *       - name: product
+   *         description: Product
+   *         in: formData
+   *         required: true
+   *         type: string
+   *         example: demo
+   *     responses:
+   *       204:
+   *         description: Success
+   *       400:
+   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters
+   *       401:
+   *         description: Unauthorized
+   */
+  public async updateConfig(body): Promise<void> {
+    const {
+      encodedRawMetadata, // could be empty
+      rawMetadata, // could be empty
+      defaultRedirectUrl,
+      redirectUrl,
+      name,
+      description,
+      ...clientInfo
+    } = body;
+    if (!clientInfo?.clientID) {
+      throw new JacksonError('Please provide clientID', 400);
+    }
+    if (!clientInfo?.clientSecret) {
+      throw new JacksonError('Please provide clientSecret', 400);
+    }
+    if (description && description.length > 100) {
+      throw new JacksonError('Description should not exceed 100 characters', 400);
+    }
+    const _currentConfig = (await this.getConfig(clientInfo))?.config;
+
+    if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
+      throw new JacksonError('clientSecret mismatch', 400);
+    }
+    let metaData = rawMetadata;
+    if (encodedRawMetadata) {
+      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
+    }
+    let newMetadata;
+    if (metaData) {
+      newMetadata = await saml.parseMetadataAsync(metaData);
+
+      // extract provider
+      let providerName = extractHostName(newMetadata.entityID);
+      if (!providerName) {
+        providerName = extractHostName(newMetadata.sso.redirectUrl || newMetadata.sso.postUrl);
+      }
+
+      newMetadata.provider = providerName ? providerName : 'Unknown';
+    }
+
+    if (newMetadata) {
+      // check if clientID matches with new metadata payload
+      const clientID = dbutils.keyDigest(
+        dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, newMetadata.entityID)
+      );
+
+      if (clientID !== clientInfo?.clientID) {
+        throw new JacksonError('Tenant/Product config mismatch with IdP metadata', 400);
+      }
+    }
+
+    await this.configStore.put(
+      clientInfo?.clientID,
+      {
+        ..._currentConfig,
+        name: name ? name : _currentConfig.name,
+        description: description ? description : _currentConfig.description,
+        idpMetadata: newMetadata ? newMetadata : _currentConfig.idpMetadata,
+        defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
+        redirectUrl: redirectUrl ? JSON.parse(redirectUrl) : _currentConfig.redirectUrl,
+      },
+      {
+        // secondary index on entityID
+        name: IndexNames.EntityID,
+        value: _currentConfig.idpMetadata.entityID,
+      },
+      {
+        // secondary index on tenant + product
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product),
+      }
+    );
   }
 
   /**
@@ -193,19 +370,39 @@ export class APIController implements IAPIController {
    *         description: Success
    *         schema:
    *           type: object
-   *           properties:
-   *             provider:
-   *               type: string
    *           example:
-   *             type: accounts.google.com
+   *             {
+   *               "config": {
+   *                 "idpMetadata": {
+   *                   "sso": {
+   *                     "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+   *                     "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
+   *                   },
+   *                   "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+   *                   "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+   *                   "loginType": "idp",
+   *                   "provider": "okta.com"
+   *                 },
+   *                 "defaultRedirectUrl": "https://hoppscotch.io/",
+   *                 "redirectUrl": ["https://hoppscotch.io/"],
+   *                 "tenant": "hoppscotch.io",
+   *                 "product": "API Engine",
+   *                 "name": "Hoppscotch-SP",
+   *                 "description": "SP for hoppscotch.io",
+   *                 "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *                 "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *                 "certs": {
+   *                   "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+   *                   "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+   *                 }
+   *               }
+   *             }
+   *       '400':
+   *         description: Please provide `clientID` or `tenant` and `product`.
    *       '401':
    *         description: Unauthorized
    */
-  public async getConfig(body: {
-    clientID: string;
-    tenant: string;
-    product: string;
-  }): Promise<Partial<OAuth>> {
+  public async getConfig(body: { clientID: string; tenant: string; product: string }): Promise<any> {
     const { clientID, tenant, product } = body;
 
     metrics.increment('getConfig');
@@ -213,7 +410,7 @@ export class APIController implements IAPIController {
     if (clientID) {
       const samlConfig = await this.configStore.get(clientID);
 
-      return samlConfig ? { provider: samlConfig.idpMetadata.provider } : {};
+      return samlConfig ? { config: samlConfig } : {};
     }
 
     if (tenant && product) {
@@ -226,7 +423,7 @@ export class APIController implements IAPIController {
         return {};
       }
 
-      return { provider: samlConfigs[0].idpMetadata.provider };
+      return { config: samlConfigs[0] };
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
@@ -264,6 +461,8 @@ export class APIController implements IAPIController {
    *     responses:
    *       '200':
    *         description: Success
+   *       '400':
+   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'
    *       '401':
    *         description: Unauthorized
    */
@@ -287,7 +486,7 @@ export class APIController implements IAPIController {
       if (samlConfig.clientSecret === clientSecret) {
         await this.configStore.delete(clientID);
       } else {
-        throw new JacksonError('clientSecret mismatch.', 400);
+        throw new JacksonError('clientSecret mismatch', 400);
       }
 
       return;

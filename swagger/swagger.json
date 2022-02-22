@@ -49,10 +49,29 @@
         ],
         "parameters": [
           {
+            "name": "name",
+            "description": "Name/identifier for the config",
+            "type": "string",
+            "in": "formData",
+            "example": "cal-saml-config"
+          },
+          {
+            "name": "description",
+            "description": "A short description for the config not more than 100 characters",
+            "type": "string",
+            "in": "formData",
+            "example": "SAML login for cal.com app"
+          },
+          {
             "name": "encodedRawMetadata",
             "description": "Base64 encoding of the XML metadata",
             "in": "formData",
-            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "rawMetadata",
+            "description": "Raw XML metadata",
+            "in": "formData",
             "type": "string"
           },
           {
@@ -107,6 +126,105 @@
               }
             }
           },
+          "400": {
+            "description": "Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update SAML configuration",
+        "operationId": "update-saml-config",
+        "tags": [
+          "SAML Config"
+        ],
+        "consumes": [
+          "application/json",
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "clientID",
+            "description": "Client ID for the config",
+            "type": "string",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "name": "clientSecret",
+            "description": "Client Secret for the config",
+            "type": "string",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "name": "name",
+            "description": "Name/identifier for the config",
+            "type": "string",
+            "in": "formData",
+            "example": "cal-saml-config"
+          },
+          {
+            "name": "description",
+            "description": "A short description for the config not more than 100 characters",
+            "type": "string",
+            "in": "formData",
+            "example": "SAML login for cal.com app"
+          },
+          {
+            "name": "encodedRawMetadata",
+            "description": "Base64 encoding of the XML metadata",
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "name": "rawMetadata",
+            "description": "Raw XML metadata",
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "name": "defaultRedirectUrl",
+            "description": "The redirect URL to use in the IdP login flow",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "example": "http://localhost:3000/login/saml"
+          },
+          {
+            "name": "redirectUrl",
+            "description": "JSON encoded array containing a list of allowed redirect URLs",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "example": "[\"http://localhost:3000/*\"]"
+          },
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "example": "boxyhq.com"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "example": "demo"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters"
+          },
           "401": {
             "description": "Unauthorized"
           }
@@ -143,15 +261,38 @@
             "description": "Success",
             "schema": {
               "type": "object",
-              "properties": {
-                "provider": {
-                  "type": "string"
-                }
-              },
               "example": {
-                "type": "accounts.google.com"
+                "config": {
+                  "idpMetadata": {
+                    "sso": {
+                      "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+                      "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
+                    },
+                    "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+                    "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+                    "loginType": "idp",
+                    "provider": "okta.com"
+                  },
+                  "defaultRedirectUrl": "https://hoppscotch.io/",
+                  "redirectUrl": [
+                    "https://hoppscotch.io/"
+                  ],
+                  "tenant": "hoppscotch.io",
+                  "product": "API Engine",
+                  "name": "Hoppscotch-SP",
+                  "description": "SP for hoppscotch.io",
+                  "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+                  "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+                  "certs": {
+                    "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+                    "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+                  }
+                }
               }
             }
+          },
+          "400": {
+            "description": "Please provide `clientID` or `tenant` and `product`."
           },
           "401": {
             "description": "Unauthorized"
@@ -198,6 +339,9 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "400": {
+            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'"
           },
           "401": {
             "description": "Unauthorized"

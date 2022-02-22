@@ -4,8 +4,8 @@ import DB from '../src/db/db';
 
 const encryptionKey: EncryptionKey = '3yGrTcnKPBqqHoH3zZMAU6nt4bmIYb2q';
 
-let configStores: Storable[] = [];
-let ttlStores: Storable[] = [];
+const configStores: Storable[] = [];
+const ttlStores: Storable[] = [];
 const ttl = 3;
 
 const record1 = {
