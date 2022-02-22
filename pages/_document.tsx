@@ -5,7 +5,7 @@ class MyDocument extends Document {
     return (
       <Html lang='en' className='h-full'>
         <Head />
-        <body className='antialiased theme-default h-full bg-white dark:bg-gray-900 selection:bg-primary/20 selection:text-secondary'>
+        <body className='h-full antialiased bg-white theme-default dark:bg-gray-900 selection:bg-primary/20 selection:text-secondary'>
           <Main />
           <NextScript />
         </body>

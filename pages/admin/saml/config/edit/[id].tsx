@@ -13,7 +13,7 @@ const EditSAMLConfiguration: NextPage = () => {
 
   if (error) {
     return (
-      <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>
+      <div className='px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded'>
         {error.info ? JSON.stringify(error.info) : error.status}
       </div>
     );

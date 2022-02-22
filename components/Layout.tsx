@@ -67,10 +67,10 @@ function Layout({ children }: { children: ReactNode }) {
       </Head>
       <header
         role='banner'
-        className='p-5 md:px-12 fixed left-0 right-0 border-b bg-white dark:bg-gray-900 border-gray-900/10 dark:border-gray-300/10 z-10'>
-        <div className='flex justify-between items-center'>
+        className='fixed left-0 right-0 z-10 p-5 bg-white border-b md:px-12 dark:bg-gray-900 border-gray-900/10 dark:border-gray-300/10'>
+        <div className='flex items-center justify-between'>
           <Link href='/'>
-            <a title='Go to dashboard' className='leading-10 font-bold flex items-center ml-10 md:ml-0'>
+            <a title='Go to dashboard' className='flex items-center ml-10 font-bold leading-10 md:ml-0'>
               <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} />
               <h1 className='ml-2 text-secondary hover:text-primary dark:text-white'>Jackson</h1>
             </a>
@@ -78,7 +78,7 @@ function Layout({ children }: { children: ReactNode }) {
           <div className='relative'>
             <button
               type='button'
-              className='rounded-full h-8 w-8 flex items-center justify-center bg-secondary text-cyan-50 uppercase'
+              className='flex items-center justify-center w-8 h-8 uppercase rounded-full bg-secondary text-cyan-50'
               aria-label='user settings'
               aria-expanded={isOpen}
               onClick={() => setIsOpen(!isOpen)}>
@@ -86,12 +86,12 @@ function Layout({ children }: { children: ReactNode }) {
             </button>
             {isOpen && (
               <ul
-                className='absolute z-50 top-full right-0 bg-white rounded-lg ring-1 ring-slate-900/10 shadow-lg overflow-hidden w-36 py-1 text-sm text-slate-700 font-semibold dark:bg-slate-800 dark:ring-0 dark:highlight-white/5 dark:text-slate-300'
+                className='absolute right-0 z-50 py-1 overflow-hidden text-sm font-semibold bg-white rounded-lg shadow-lg top-full ring-1 ring-slate-900/10 w-36 text-slate-700 dark:bg-slate-800 dark:ring-0 dark:highlight-white/5 dark:text-slate-300'
                 ref={userDropDownRef}>
                 <li>
                   <button
                     type='button'
-                    className='py-1 px-2 h-8 w-full flex justify-center items-center cursor-pointer'
+                    className='flex items-center justify-center w-full h-8 px-2 py-1 cursor-pointer'
                     onClick={() => signOut()}>
                     <LogoutIcon className='w-5 h-5' aria-hidden />
                     Log out
@@ -114,7 +114,7 @@ function Layout({ children }: { children: ReactNode }) {
             aria-controls='menu'
             onClick={() => setIsSideNavOpen((curState) => !curState)}>
             <span className='sr-only'>Menu</span>
-            <MenuIcon aria-hidden='true' className='h-6 w-6 text-black dark:text-slate-50'></MenuIcon>
+            <MenuIcon aria-hidden='true' className='w-6 h-6 text-black dark:text-slate-50'></MenuIcon>
           </button>
           <ul
             className={`fixed top-0 bottom-0 left-0 w-60 p-6 border-r border-gray-900/10 dark:border-gray-300/10 transition-transform ${
