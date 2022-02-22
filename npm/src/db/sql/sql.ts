@@ -76,7 +76,7 @@ class Sql implements DatabaseDriver {
         this.timerId = setTimeout(this.ttlCleanup, this.options.ttl! * 1000);
       };
 
-      this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
+      this.timerId = setTimeout(this.ttlCleanup, this.options.ttl! * 1000);
     } else {
       console.log(
         'Warning: ttl cleanup not enabled, set both "ttl" and "cleanupLimit" options to enable it!'
@@ -174,8 +174,10 @@ class Sql implements DatabaseDriver {
   }
 
   async delete(namespace: string, key: string): Promise<any> {
+    const dbKey = dbutils.key(namespace, key);
+    await this.ttlRepository.remove({ key: dbKey });
     return await this.storeRepository.remove({
-      key: dbutils.key(namespace, key),
+      key: dbKey,
     });
   }
 }
