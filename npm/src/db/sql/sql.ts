@@ -3,7 +3,7 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings';
-import { Connection, createConnection } from 'typeorm';
+import { Connection, createConnection, Like } from 'typeorm';
 import * as dbutils from '../utils';
 
 import { JacksonStore } from './entity/JacksonStore';
@@ -87,7 +87,7 @@ class Sql implements DatabaseDriver {
   }
 
   async get(namespace: string, key: string): Promise<any> {
-    let res = await this.storeRepository.findOne({
+    const res = await this.storeRepository.findOne({
       key: dbutils.key(namespace, key),
     });
 
@@ -100,6 +100,21 @@ class Sql implements DatabaseDriver {
     }
 
     return null;
+  }
+
+  async getAll(namespace: string): Promise<unknown[]> {
+    const response = await this.storeRepository.find({
+      where: { key: Like(`%${namespace}%`) },
+      select: ['value', 'iv', 'tag'],
+      order: {
+        ['createdAt']: 'DESC',
+        // ['createdAt']: 'ASC',
+      },
+    });
+
+    const returnValue = JSON.parse(JSON.stringify(response));
+    if (returnValue) return returnValue;
+    return [];
   }
 
   async getByIndex(namespace: string, idx: Index): Promise<any> {
@@ -122,13 +137,7 @@ class Sql implements DatabaseDriver {
     return ret;
   }
 
-  async put(
-    namespace: string,
-    key: string,
-    val: Encrypted,
-    ttl: number = 0,
-    ...indexes: any[]
-  ): Promise<void> {
+  async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
     await this.connection.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
 
@@ -137,7 +146,7 @@ class Sql implements DatabaseDriver {
       store.value = val.value;
       store.iv = val.iv;
       store.tag = val.tag;
-
+      store.modifiedAt = new Date().toISOString();
       await transactionalEntityManager.save(store);
 
       if (ttl) {

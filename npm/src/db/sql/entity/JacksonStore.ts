@@ -27,4 +27,17 @@ export class JacksonStore {
     nullable: true,
   })
   tag?: string;
+
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    nullable: false,
+  })
+  createdAt?: Date;
+
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  modifiedAt?: string;
 }

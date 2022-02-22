@@ -33,10 +33,11 @@ const options = <JacksonOption>{
 };
 
 const samlConfig = {
+  name: 'testConfig',
   tenant: 'boxyhq.com',
   product: 'crm',
-  redirectUrl: '["http://localhost:3000/*"]',
-  defaultRedirectUrl: 'http://localhost:3000/login/saml',
+  redirectUrl: '["http://localhost:3366/*"]',
+  defaultRedirectUrl: 'http://localhost:3366/login/saml',
   encodedRawMetadata: null,
 };
 

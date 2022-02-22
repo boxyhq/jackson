@@ -1,27 +1,34 @@
-import { MongoClient } from 'mongodb';
+import { Collection, Db, MongoClient, UpdateOptions } from 'mongodb';
 import { DatabaseDriver, DatabaseOption, Encrypted, Index } from '../typings';
 import * as dbutils from './utils';
 
-type Document = {
+type _Document = {
   value: Encrypted;
-  expiresAt: Date;
+  expiresAt?: Date;
+  modifiedAt: string;
   indexes: string[];
 };
 
 class Mongo implements DatabaseDriver {
   private options: DatabaseOption;
   private client!: MongoClient;
-  private collection: any;
-  private db: any;
+  private collection!: Collection;
+  private db!: Db;
 
   constructor(options: DatabaseOption) {
     this.options = options;
   }
 
   async init(): Promise<Mongo> {
-    this.client = new MongoClient(this.options.url!);
-
-    await this.client.connect();
+    try {
+      if (!this.options.url) {
+        throw Error('Please specify a db url');
+      }
+      this.client = new MongoClient(this.options.url);
+      await this.client.connect();
+    } catch (err) {
+      console.error(`error connecting to ${this.options.type} db: ${err}`);
+    }
 
     this.db = this.client.db();
     this.collection = this.db.collection('jacksonStore');
@@ -43,6 +50,14 @@ class Mongo implements DatabaseDriver {
     return null;
   }
 
+  async getAll(namespace: string): Promise<unknown[]> {
+    const _namespaceMatch = new RegExp(`^${namespace}:.*`);
+    const docs = await this.collection.find({ _id: _namespaceMatch }).toArray();
+
+    if (docs) return docs.map(({ value }) => value);
+    return [];
+  }
+
   async getByIndex(namespace: string, idx: Index): Promise<any> {
     const docs = await this.collection
       .find({
@@ -59,7 +74,7 @@ class Mongo implements DatabaseDriver {
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
-    const doc = <Document>{
+    const doc = <_Document>{
       value: val,
     };
 
@@ -74,16 +89,19 @@ class Mongo implements DatabaseDriver {
       if (!doc.indexes) {
         doc.indexes = [];
       }
-
       doc.indexes.push(idxKey);
     }
 
+    doc.modifiedAt = new Date().toISOString();
     await this.collection.updateOne(
       { _id: dbutils.key(namespace, key) },
       {
         $set: doc,
+        $setOnInsert: {
+          createdAt: new Date().toISOString(),
+        },
       },
-      { upsert: true }
+      { upsert: true } as UpdateOptions
     );
   }
 

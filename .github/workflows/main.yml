@@ -20,7 +20,16 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-
+    env:
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      NEXTAUTH_URL: http://localhost:5225
+      NEXTAUTH_ACL: '*@boxyhq.com'
+      DB_ENGINE: sql
+      DB_URL: postgres://postgres:postgres@localhost:5432/postgres
+      DB_TYPE: postgres
+      DEBUG: pw:webserver
+      SAML_AUDIENCE: https://saml.boxyhq.com
+      JACKSON_API_KEYS: secret
     strategy:
       matrix:
         node-version: [16.x]
@@ -73,8 +82,21 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
+      - name: Setup Next.js cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - run: npm install
-        working-directory: ./npm
+      - run: npm run build
+      - name: Install playwright browser dependencies
+        run: npx playwright install chromium
+      - name: e2e tests
+        run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
       - run: npm run test
         working-directory: ./npm
       - run: |
@@ -173,7 +195,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Install Cosign with brew
-        run: brew install cosign 
+        run: brew install cosign
 
       - name: place the cosign private key in a file
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'

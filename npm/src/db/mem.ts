@@ -51,6 +51,19 @@ class Mem implements DatabaseDriver {
     return null;
   }
 
+  async getAll(namespace: string): Promise<unknown[]> {
+    const returnValue: string[] = [];
+    if (namespace) {
+      for (const key in this.store) {
+        if (key.startsWith(namespace)) {
+          returnValue.push(this.store[key]);
+        }
+      }
+    }
+    if (returnValue) return returnValue;
+    return [];
+  }
+
   async getByIndex(namespace: string, idx: Index): Promise<any> {
     const dbKeys = await this.indexes[dbutils.keyForIndex(namespace, idx)];
 
@@ -67,6 +80,10 @@ class Mem implements DatabaseDriver {
 
     this.store[k] = val;
 
+    if (!Date.parse(this.store['createdAt'])) this.store['createdAt'] = new Date().toISOString();
+    this.store['modifiedAt'] = new Date().toISOString();
+
+    // console.log(this.store)
     if (ttl) {
       this.ttlStore[k] = {
         namespace,
@@ -74,7 +91,6 @@ class Mem implements DatabaseDriver {
         expiresAt: Date.now() + ttl * 1000,
       };
     }
-
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
       const idxKey = dbutils.keyForIndex(namespace, idx);
@@ -85,7 +101,6 @@ class Mem implements DatabaseDriver {
       }
 
       set.add(key);
-
       const cleanupKey = dbutils.keyFromParts(dbutils.indexPrefix, k);
       let cleanup = this.cleanup[cleanupKey];
       if (!cleanup) {

@@ -16,6 +16,10 @@ class Store implements Storable {
     return await this.db.get(this.namespace, dbutils.keyDigest(key));
   }
 
+  async getAll(): Promise<unknown[]> {
+    return await this.db.getAll(this.namespace);
+  }
+
   async getByIndex(idx: Index): Promise<any> {
     idx.value = dbutils.keyDigest(idx.value);
 
