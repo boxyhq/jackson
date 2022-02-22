@@ -60,12 +60,10 @@ export class APIController implements IAPIController {
    *         description: Name/identifier for the config
    *         type: string
    *         in: formData
-   *         example: cal-saml-config
    *       - name: description
    *         description: A short description for the config not more than 100 characters
    *         type: string
    *         in: formData
-   *         example: SAML login for cal.com app
    *       - name: encodedRawMetadata
    *         description: Base64 encoding of the XML metadata
    *         in: formData
@@ -222,12 +220,10 @@ export class APIController implements IAPIController {
    *         description: Name/identifier for the config
    *         type: string
    *         in: formData
-   *         example: cal-saml-config
    *       - name: description
    *         description: A short description for the config not more than 100 characters
    *         type: string
    *         in: formData
-   *         example: SAML login for cal.com app
    *       - name: encodedRawMetadata
    *         description: Base64 encoding of the XML metadata
    *         in: formData
@@ -241,25 +237,21 @@ export class APIController implements IAPIController {
    *         in: formData
    *         required: true
    *         type: string
-   *         example: http://localhost:3000/login/saml
    *       - name: redirectUrl
    *         description: JSON encoded array containing a list of allowed redirect URLs
    *         in: formData
    *         required: true
    *         type: string
-   *         example: '["http://localhost:3000/*"]'
    *       - name: tenant
    *         description: Tenant
    *         in: formData
    *         required: true
    *         type: string
-   *         example: boxyhq.com
    *       - name: product
    *         description: Product
    *         in: formData
    *         required: true
    *         type: string
-   *         example: demo
    *     responses:
    *       204:
    *         description: Success
