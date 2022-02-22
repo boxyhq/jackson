@@ -46,7 +46,8 @@ export const fetcher = async (url: string) => {
 };
 
 export const validateEmailWithACL = (email) => {
-  const acl = process.env.NEXTAUTH_ACL?.split(',');
+  const NEXTAUTH_ACL = process.env.NEXTAUTH_ACL || undefined;
+  const acl = NEXTAUTH_ACL?.split(',');
 
   if (acl) {
     if (micromatch.isMatch(email, acl)) {
