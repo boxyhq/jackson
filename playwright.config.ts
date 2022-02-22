@@ -17,7 +17,7 @@ const config: PlaywrightTestConfig = {
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
     command: process.env.CI ? 'npm run start' : 'npm run postgres',
-    port: 5000,
+    port: 5225,
     timeout: 60 * 1000,
     reuseExistingServer: !process.env.CI,
   },
@@ -40,7 +40,7 @@ const config: PlaywrightTestConfig = {
       name: 'Desktop Chrome',
       use: {
         ...devices['Desktop Chrome'],
-        baseURL: 'http://localhost:5000',
+        baseURL: 'http://localhost:5225',
         storageState: './e2e/state.json',
       },
     },
