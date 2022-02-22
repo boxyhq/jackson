@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - '*'
+    tags:
+      - 'beta-v*'
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -165,6 +167,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push
+        if: github.ref == 'refs/heads/release'
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -173,17 +176,12 @@ jobs:
           push: true
           tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
 
-      - name: Setup go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17.7
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Install cosign
-        run: |
-          git clone https://github.com/sigstore/cosign
-          cd cosign
-          go install ./cmd/cosign
-          cd ..
+      - name: Install Cosign with brew
+        run: brew install cosign
 
       - name: place the cosign private key in a file
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
@@ -192,7 +190,8 @@ jobs:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
 
       - name: Sign the image
-        run: $(go env GOPATH)/bin/cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
+        if: github.ref == 'refs/heads/release'
+        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
@@ -235,8 +234,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: npm_sbom.cyclonedx
-      - name: Remove temp files & pull latest code
-        run: rm results.sarif && git pull || true
       - name: Remove older SBOMs
         run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
@@ -302,6 +299,7 @@ jobs:
         id: _npmversion
         run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
+        if: github.ref == 'refs/heads/release'
         run: |
           ORAS_VERSION="0.8.1"
           ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
@@ -355,7 +353,9 @@ jobs:
       - run: npm install
         working-directory: ./npm
 
-      - run: |
+      - name: Publish NPM
+        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
+        run: |
           npm install -g json
           JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
           json -I -f package.json -e "this.main=\"dist/index.js\""
