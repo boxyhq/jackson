@@ -61,25 +61,21 @@ export class APIController implements IAPIController {
    *         in: formData
    *         required: true
    *         type: string
-   *         example: http://localhost:3366/login/saml
    *       - name: redirectUrl
    *         description: JSON encoded array containing a list of allowed redirect URLs
    *         in: formData
    *         required: true
    *         type: string
-   *         example: '["http://localhost:3366/*"]'
    *       - name: tenant
    *         description: Tenant
    *         in: formData
    *         required: true
    *         type: string
-   *         example: boxyhq.com
    *       - name: product
    *         description: Product
    *         in: formData
    *         required: true
    *         type: string
-   *         example: demo
    *     responses:
    *       200:
    *         description: Success
@@ -184,12 +180,10 @@ export class APIController implements IAPIController {
    *         name: tenant
    *         type: string
    *         description: Tenant
-   *         example: boxyhq.com
    *       - in: query
    *         name: product
    *         type: string
    *         description: Product
-   *         example: demo
    *       - in: query
    *         name: clientID
    *         type: string
@@ -263,12 +257,10 @@ export class APIController implements IAPIController {
    *         in: formData
    *         type: string
    *         description: Tenant
-   *         example: boxyhq.com
    *       - name: product
    *         in: formData
    *         type: string
    *         description: Product
-   *         example: demo
    *     responses:
    *       '200':
    *         description: Success
