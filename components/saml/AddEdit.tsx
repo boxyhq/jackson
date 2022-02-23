@@ -189,7 +189,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
       {/* Or use router.back()  */}
       <Link href='/admin/saml/config'>
         <a className='link-primary'>
-          <ArrowLeftIcon aria-hidden className='w-4 h-4' />
+          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span className='ml-2'>Back to Configurations</span>
         </a>
       </Link>
@@ -198,7 +198,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
           {samlConfig?.name || samlConfig?.product || 'New SAML Configuration'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
-          <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
+          <div className='min-w-[28rem] rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
             {fieldCatalog
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
               .map(
@@ -229,11 +229,11 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                     <div className='mb-6 ' key={key}>
                       <label
                         htmlFor={key}
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
+                        className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
                         {_label}
                       </label>
                       {type === 'pre' ? (
-                        <pre className='block w-full p-2 overflow-auto text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'>
+                        <pre className='block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'>
                           {value}
                         </pre>
                       ) : type === 'textarea' ? (
@@ -245,7 +245,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           readOnly={readOnly}
                           maxLength={maxLength}
                           onChange={handleChange}
-                          className={`block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
+                          className={`block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 ${
                             isArray ? 'whitespace-pre' : ''
                           }`}
                           rows={rows}
@@ -260,7 +260,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           readOnly={readOnly}
                           maxLength={maxLength}
                           onChange={handleChange}
-                          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                          className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
                         />
                       )}
                     </div>
@@ -278,14 +278,14 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                 } transition-opacity motion-reduce:transition-none`}>
                 {status === 'SUCCESS' && (
                   <span className='inline-flex items-center text-primary'>
-                    <CheckCircleIcon aria-hidden className='w-5 h-5 mr-1'></CheckCircleIcon>
+                    <CheckCircleIcon aria-hidden className='mr-1 h-5 w-5'></CheckCircleIcon>
                     Saved
                   </span>
                 )}
                 {/* TODO: also display error message once we standardise the response format */}
                 {status === 'ERROR' && (
                   <span className='inline-flex items-center text-red-900'>
-                    <ExclamationCircleIcon aria-hidden className='w-5 h-5 mr-1'></ExclamationCircleIcon>
+                    <ExclamationCircleIcon aria-hidden className='mr-1 h-5 w-5'></ExclamationCircleIcon>
                     ERROR
                   </span>
                 )}
@@ -293,14 +293,14 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
             </div>
           </div>
           {samlConfig?.clientID && samlConfig.clientSecret && (
-            <section className='flex items-center p-6 mt-10 text-red-900 bg-red-100 rounded'>
+            <section className='mt-10 flex items-center rounded bg-red-100 p-6 text-red-900'>
               <div className='flex-1'>
                 <h6 className='mb-1 font-medium'>Delete this configuration</h6>
                 <p className='font-light'>All your apps using this configuration will stop working.</p>
               </div>
               <button
                 type='button'
-                className='inline-block px-4 py-2 text-sm font-bold leading-6 text-white bg-red-700 rounded hover:bg-red-800'
+                className='inline-block rounded bg-red-700 px-4 py-2 text-sm font-bold leading-6 text-white hover:bg-red-800'
                 onClick={toggleDelConfirm}
                 data-modal-toggle='popup-modal'>
                 Delete
@@ -315,18 +315,18 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
           visible={delModalVisible}
           onCancel={toggleDelConfirm}
           customFooter={
-            <div className='inline-flex ml-auto'>
+            <div className='ml-auto inline-flex'>
               <button
                 type='button'
                 onClick={toggleDelConfirm}
-                className='inline-block px-4 py-2 text-sm font-bold leading-6 bg-gray-200 border-2 rounded text-secondary/90 hover:bg-gray-300'>
+                className='inline-block rounded border-2 bg-gray-200 px-4 py-2 text-sm font-bold leading-6 text-secondary/90 hover:bg-gray-300'>
                 Cancel
               </button>
               <button
                 type='button'
                 disabled={userNameEntry !== samlConfig?.product}
                 onClick={deleteConfiguration}
-                className='ml-1.5 bg-red-700 hover:bg-red-800 disabled:bg-slate-400 text-white text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
+                className='ml-1.5 inline-block rounded bg-red-700 py-2 px-4 text-sm font-bold leading-6 text-white hover:bg-red-800 disabled:bg-slate-400'>
                 Delete
               </button>
             </div>
@@ -341,7 +341,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
           <input
             id='nameOfProd'
             required
-            className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:white dark:border-gray-600 dark:placeholder-gray-400 d dark:focus:ring-blue-500 dark:focus:border-blue-500'
+            className='dark:white d block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
             value={userNameEntry}
             onChange={({ target }) => {
               setUserNameEntry(target.value);
