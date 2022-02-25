@@ -9,20 +9,20 @@ const SAMLConfigurations: NextPage = () => {
 
   if (error) {
     return (
-      <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
+      <div className='px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded'>
         {error.info ? JSON.stringify(error.info) : error.status}
       </div>
     );
   }
 
   if (!data) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   if (!Array.isArray(data)) {
     return (
       <div>
-        <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>Nothing to show</div>
+        <div className='px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded'>Nothing to show</div>
       </div>
     );
   }
@@ -33,25 +33,25 @@ const SAMLConfigurations: NextPage = () => {
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>SAML Configurations</h2>
         <Link href={'/admin/saml/config/new'}>
           <a className='btn-primary'>
-            <span className='mr-1 inline-block md:mr-2' aria-hidden>
+            <span className='inline-block mr-1 md:mr-2' aria-hidden>
               +
             </span>
-            Add Configuration
+            New
           </a>
         </Link>
       </div>
       <div className='mt-6 overflow-auto rounded-lg shadow-md'>
         <table className='min-w-full'>
-          <thead className='bg-gray-50 shadow-md dark:bg-gray-700 sm:rounded-lg'>
+          <thead className='shadow-md bg-gray-50 dark:bg-gray-700 sm:rounded-lg'>
             <tr>
               <th
                 scope='col'
-                className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400'>
+                className='px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400'>
                 Tenant
               </th>
               <th
                 scope='col'
-                className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400'>
+                className='px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400'>
                 Product
               </th>
               <th></th>
@@ -59,17 +59,17 @@ const SAMLConfigurations: NextPage = () => {
           </thead>
           <tbody>
             {data.map((provider) => (
-              <tr key={provider.clientID} className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
-                <td className='whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white'>
+              <tr key={provider.clientID} className='bg-white border-b dark:border-gray-700 dark:bg-gray-800'>
+                <td className='px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white'>
                   {provider.tenant}
                 </td>
-                <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400'>
+                <td className='px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400'>
                   {provider.product}
                 </td>
                 <td>
                   <Link href={`/admin/saml/config/edit/${provider.clientID}`}>
                     <a className='link-primary'>
-                      <PencilAltIcon className='h-5 w-5 text-secondary' />
+                      <PencilAltIcon className='w-5 h-5 text-secondary' />
                     </a>
                   </Link>
                 </td>

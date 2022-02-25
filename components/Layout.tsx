@@ -56,7 +56,7 @@ function Layout({ children }: { children: ReactNode }) {
   useOnClickOutside(userDropDownRef, () => setIsOpen(false));
 
   if (status === 'loading') {
-    return <p>Loading...</p>;
+    return null;
   }
 
   return (
