@@ -4,7 +4,6 @@ import EmailProvider from 'next-auth/providers/email';
 import { validateEmailWithACL } from '@lib/utils';
 
 export default NextAuth({
-  debug: true,
   theme: {
     colorScheme: 'light',
   },
