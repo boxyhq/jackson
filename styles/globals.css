@@ -33,9 +33,9 @@ a {
     @apply h-full;
   }
   .btn-primary {
-    @apply py-2 px-4 bg-primary/70 text-white font-semibold rounded-lg shadow-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-75;
+    @apply rounded-lg bg-primary/70 px-4 py-2 font-semibold text-white shadow-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-75;
   }
   .link-primary {
-    @apply flex items-center px-4 py-2 mt-2 md:text-sm md:leading-6 text-secondary/90 font-medium hover:font-bold dark:text-gray-400 dark:hover:text-gray-300;
+    @apply mt-2 flex items-center px-4 py-2 font-medium text-secondary/90 hover:font-bold dark:text-gray-400 dark:hover:text-gray-300 md:text-sm md:leading-6;
   }
 }

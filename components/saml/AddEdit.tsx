@@ -190,15 +190,15 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
       <Link href='/admin/saml/config'>
         <a className='link-primary'>
           <ArrowLeftIcon aria-hidden className='w-4 h-4' />
-          <span className='ml-2'>Back to Configurations</span>
+          <span className='ml-2'>Back</span>
         </a>
       </Link>
       <div>
         <h2 className='mt-2 mb-4 text-3xl font-bold text-primary dark:text-white'>
-          {samlConfig?.name || samlConfig?.product || 'New SAML Configuration'}
+          {isEditView ? 'Edit Configuration' : 'New Configuration'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
-          <div className='bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl md:w-3/4 min-w-[28rem] md:max-w-lg'>
+          <div className='min-w-[28rem] rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
             {fieldCatalog
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
               .map(
@@ -233,7 +233,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                         {_label}
                       </label>
                       {type === 'pre' ? (
-                        <pre className='block w-full p-2 overflow-auto text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'>
+                        <pre className='block w-full p-2 overflow-auto text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'>
                           {value}
                         </pre>
                       ) : type === 'textarea' ? (
@@ -245,7 +245,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           readOnly={readOnly}
                           maxLength={maxLength}
                           onChange={handleChange}
-                          className={`block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
+                          className={`block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 ${
                             isArray ? 'whitespace-pre' : ''
                           }`}
                           rows={rows}
@@ -260,7 +260,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           readOnly={readOnly}
                           maxLength={maxLength}
                           onChange={handleChange}
-                          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                          className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
                         />
                       )}
                     </div>
@@ -326,7 +326,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                 type='button'
                 disabled={userNameEntry !== samlConfig?.product}
                 onClick={deleteConfiguration}
-                className='ml-1.5 bg-red-700 hover:bg-red-800 disabled:bg-slate-400 text-white text-sm font-bold py-2 px-4 rounded leading-6 inline-block'>
+                className='ml-1.5 inline-block rounded bg-red-700 py-2 px-4 text-sm font-bold leading-6 text-white hover:bg-red-800 disabled:bg-slate-400'>
                 Delete
               </button>
             </div>
@@ -341,7 +341,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
           <input
             id='nameOfProd'
             required
-            className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:white dark:border-gray-600 dark:placeholder-gray-400 d dark:focus:ring-blue-500 dark:focus:border-blue-500'
+            className='dark:white d block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
             value={userNameEntry}
             onChange={({ target }) => {
               setUserNameEntry(target.value);

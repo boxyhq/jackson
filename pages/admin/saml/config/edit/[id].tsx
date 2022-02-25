@@ -20,7 +20,7 @@ const EditSAMLConfiguration: NextPage = () => {
   }
 
   if (!samlConfig) {
-    return <div>Loading...</div>;
+    return null;
   }
   return <AddEdit samlConfig={samlConfig?.config} />;
 };

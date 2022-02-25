@@ -16,7 +16,7 @@ const SAMLConfigurations: NextPage = () => {
   }
 
   if (!data) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   if (!Array.isArray(data)) {
@@ -30,13 +30,13 @@ const SAMLConfigurations: NextPage = () => {
   return (
     <div>
       <div className='flex items-center justify-between'>
-        <h2 className='font-bold md:text-2xl text-primary dark:text-white'>SAML Configurations</h2>
+        <h2 className='font-bold text-primary dark:text-white md:text-2xl'>SAML Configurations</h2>
         <Link href={'/admin/saml/config/new'}>
           <a className='btn-primary'>
             <span className='inline-block mr-1 md:mr-2' aria-hidden>
               +
             </span>
-            Add Configuration
+            New
           </a>
         </Link>
       </div>
@@ -59,7 +59,7 @@ const SAMLConfigurations: NextPage = () => {
           </thead>
           <tbody>
             {data.map((provider) => (
-              <tr key={provider.clientID} className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+              <tr key={provider.clientID} className='bg-white border-b dark:border-gray-700 dark:bg-gray-800'>
                 <td className='px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white'>
                   {provider.tenant}
                 </td>

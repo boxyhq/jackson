@@ -56,7 +56,7 @@ function Layout({ children }: { children: ReactNode }) {
   useOnClickOutside(userDropDownRef, () => setIsOpen(false));
 
   if (status === 'loading') {
-    return <p>Loading...</p>;
+    return null;
   }
 
   return (
@@ -67,12 +67,12 @@ function Layout({ children }: { children: ReactNode }) {
       </Head>
       <header
         role='banner'
-        className='fixed left-0 right-0 z-10 p-5 bg-white border-b md:px-12 dark:bg-gray-900 border-gray-900/10 dark:border-gray-300/10'>
+        className='fixed left-0 right-0 z-10 p-5 bg-white border-b border-gray-900/10 dark:border-gray-300/10 dark:bg-gray-900 md:px-12'>
         <div className='flex items-center justify-between'>
           <Link href='/'>
             <a title='Go to dashboard' className='flex items-center ml-10 font-bold leading-10 md:ml-0'>
               <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} />
-              <h1 className='ml-2 text-secondary hover:text-primary dark:text-white'>Jackson</h1>
+              <h1 className='ml-2 text-secondary hover:text-primary dark:text-white'>SAML Jackson</h1>
             </a>
           </Link>
           <div className='relative'>
@@ -86,7 +86,7 @@ function Layout({ children }: { children: ReactNode }) {
             </button>
             {isOpen && (
               <ul
-                className='absolute right-0 z-50 py-1 overflow-hidden text-sm font-semibold bg-white rounded-lg shadow-lg top-full ring-1 ring-slate-900/10 w-36 text-slate-700 dark:bg-slate-800 dark:ring-0 dark:highlight-white/5 dark:text-slate-300'
+                className='absolute right-0 z-50 py-1 overflow-hidden text-sm font-semibold bg-white rounded-lg shadow-lg dark:highlight-white/5 top-full w-36 text-slate-700 ring-1 ring-slate-900/10 dark:bg-slate-800 dark:text-slate-300 dark:ring-0'
                 ref={userDropDownRef}>
                 <li>
                   <button
@@ -109,7 +109,7 @@ function Layout({ children }: { children: ReactNode }) {
         )}
         <nav role='navigation'>
           <button
-            className={`w-10 h-10 inline-flex items-center justify-center absolute top-5 md:hidden`}
+            className={`absolute top-5 inline-flex h-10 w-10 items-center justify-center md:hidden`}
             aria-expanded={isSideNavOpen}
             aria-controls='menu'
             onClick={() => setIsSideNavOpen((curState) => !curState)}>
@@ -117,9 +117,9 @@ function Layout({ children }: { children: ReactNode }) {
             <MenuIcon aria-hidden='true' className='w-6 h-6 text-black dark:text-slate-50'></MenuIcon>
           </button>
           <ul
-            className={`fixed top-0 bottom-0 left-0 w-60 p-6 border-r border-gray-900/10 dark:border-gray-300/10 transition-transform ${
+            className={`fixed top-0 bottom-0 left-0 w-60 border-r border-gray-900/10 p-6 transition-transform dark:border-gray-300/10 ${
               isSideNavOpen ? 'translate-x-0' : '-translate-x-full'
-            } md:translate-x-0 md:top-20 md:translate-y-[2px] bg-white dark:bg-gray-900`}
+            } bg-white dark:bg-gray-900 md:top-20 md:translate-x-0 md:translate-y-[2px]`}
             id='menu'
             ref={ref}>
             {navigation.map(({ path, text, icon }, index) => (
@@ -137,7 +137,7 @@ function Layout({ children }: { children: ReactNode }) {
       </header>
       <main
         role='main'
-        className='relative top-[81px] h-[calc(100%_-_81px)] md:left-60 md:w-[calc(100%_-_theme(space.60))] p-6 overflow-auto'>
+        className='relative top-[81px] h-[calc(100%_-_81px)] overflow-auto p-6 md:left-60 md:w-[calc(100%_-_theme(space.60))]'>
         {children}
       </main>
       {/* <footer role="contentinfo">
