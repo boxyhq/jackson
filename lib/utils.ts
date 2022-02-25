@@ -23,11 +23,7 @@ export interface APIError extends Error {
 }
 
 export const fetcher = async (url: string) => {
-  const res = await fetch(url, {
-    headers: new Headers({
-      Authorization: 'Api-Key secret',
-    }),
-  });
+  const res = await fetch(url);
   let resContent;
   try {
     resContent = await res.clone().json();
