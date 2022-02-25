@@ -1,7 +1,6 @@
 import { NextApiRequest } from 'next';
 import env from '@lib/env';
 import micromatch from 'micromatch';
-import { AdapterUser } from 'next-auth/adapters';
 
 export const validateApiKey = (token) => {
   return env.apiKeys.includes(token);
