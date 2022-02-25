@@ -1,17 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-
 import jackson from '@lib/jackson';
-import { extractAuthToken, validateApiKey } from '@lib/utils';
 import { checkSession } from '@lib/middleware';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const apiKey = extractAuthToken(req);
-    if (!validateApiKey(apiKey)) {
-      res.status(401).json({ message: 'Unauthorized' });
-      return;
-    }
-
     const { adminController, apiController } = await jackson();
     if (req.method === 'GET') {
       const { slug } = req.query;

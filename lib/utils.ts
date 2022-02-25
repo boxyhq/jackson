@@ -1,7 +1,6 @@
 import { NextApiRequest } from 'next';
 import env from '@lib/env';
 import micromatch from 'micromatch';
-import { AdapterUser } from 'next-auth/adapters';
 
 export const validateApiKey = (token) => {
   return env.apiKeys.includes(token);
@@ -23,11 +22,7 @@ export interface APIError extends Error {
 }
 
 export const fetcher = async (url: string) => {
-  const res = await fetch(url, {
-    headers: new Headers({
-      Authorization: 'Api-Key secret',
-    }),
-  });
+  const res = await fetch(url);
   let resContent;
   try {
     resContent = await res.clone().json();
