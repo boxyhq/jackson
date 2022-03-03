@@ -102,7 +102,7 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string): Promise<unknown[]> {
+  async getAll(namespace: string, offset: number, limit: number): Promise<unknown[]> {
     const response = await this.storeRepository.find({
       where: { key: Like(`%${namespace}%`) },
       select: ['value', 'iv', 'tag'],
@@ -110,6 +110,8 @@ class Sql implements DatabaseDriver {
         ['createdAt']: 'DESC',
         // ['createdAt']: 'ASC',
       },
+      take: limit,
+      skip: offset,
     });
 
     const returnValue = JSON.parse(JSON.stringify(response));

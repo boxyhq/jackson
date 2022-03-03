@@ -35,7 +35,7 @@ export interface IOAuthController {
 }
 
 export interface IAdminController {
-  getAllConfig();
+  getAllConfig(offset?, limit?);
 }
 
 export interface OAuthReqBody {

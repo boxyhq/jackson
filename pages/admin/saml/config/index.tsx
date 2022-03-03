@@ -3,10 +3,15 @@ import useSWR from 'swr';
 import { fetcher } from '@lib/utils';
 import Link from 'next/link';
 import { PencilAltIcon } from '@heroicons/react/outline';
+import { useState } from 'react';
 
 const SAMLConfigurations: NextPage = () => {
-  const { data, error } = useSWR('/api/admin/saml/config', fetcher, { revalidateOnFocus: false });
-
+  const [paginate, setPaginate] = useState({ offset: 0, limit: 2, page: 0 });
+  const { data, error } = useSWR(
+    ['/api/admin/saml/config', `?offset=${paginate.offset}&limit=${paginate.limit}`],
+    fetcher,
+    { revalidateOnFocus: false }
+  );
   if (error) {
     return (
       <div className='px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded'>
@@ -77,6 +82,33 @@ const SAMLConfigurations: NextPage = () => {
             ))}
           </tbody>
         </table>
+        <button
+          type='button'
+          className='text-gray-900'
+          disabled={paginate.page === 0}
+          onClick={() =>
+            setPaginate((curState) => ({
+              ...curState,
+              offset: (curState.page - 1) * paginate.limit,
+              page: curState.page - 1,
+            }))
+          }>
+          Previous
+        </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button
+          type='button'
+          className='text-gray-900'
+          disabled={data.length === 0 || data.length < paginate.limit}
+          onClick={() =>
+            setPaginate((curState) => ({
+              ...curState,
+              offset: (curState.page + 1) * paginate.limit,
+              page: curState.page + 1,
+            }))
+          }>
+          Next
+        </button>
       </div>
     </div>
   );
