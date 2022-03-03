@@ -6,7 +6,7 @@ import { PencilAltIcon } from '@heroicons/react/outline';
 import { useState } from 'react';
 
 const SAMLConfigurations: NextPage = () => {
-  const [paginate, setPaginate] = useState({ offset: 0, limit: 2, page: 0 });
+  const [paginate, setPaginate] = useState({ offset: 0, limit: 20, page: 0 });
   const { data, error } = useSWR(
     ['/api/admin/saml/config', `?offset=${paginate.offset}&limit=${paginate.limit}`],
     fetcher,
