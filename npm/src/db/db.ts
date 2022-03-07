@@ -18,11 +18,9 @@ const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
 class DB implements DatabaseDriver {
   private db: DatabaseDriver;
   private encryptionKey: EncryptionKey;
-  private pageOpts;
-  constructor(db: DatabaseDriver, encryptionKey: EncryptionKey, pageOpts) {
+  constructor(db: DatabaseDriver, encryptionKey: EncryptionKey) {
     this.db = db;
     this.encryptionKey = encryptionKey;
-    this.pageOpts = pageOpts;
   }
 
   async get(namespace: string, key: string): Promise<unknown> {
@@ -36,12 +34,7 @@ class DB implements DatabaseDriver {
   }
 
   async getAll(namespace, offset, limit): Promise<unknown[]> {
-    let res;
-
-    if (isNumeric(offset) && isNumeric(limit))
-      res = (await this.db.getAll(namespace, +offset, +limit)) as Encrypted[];
-    else res = (await this.db.getAll(namespace, +this.pageOpts.offset, +this.pageOpts.limit)) as Encrypted[];
-
+    const res = (await this.db.getAll(namespace, offset, limit)) as Encrypted[];
     const encryptionKey = this.encryptionKey;
     return res.map((r) => {
       return decrypt(r, encryptionKey);
@@ -79,18 +72,18 @@ class DB implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption, pageOpts) => {
+  new: async (options: DatabaseOption) => {
     const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
 
     switch (options.engine) {
       case 'redis':
-        return new DB(await redis.new(options), encryptionKey, pageOpts);
+        return new DB(await redis.new(options), encryptionKey);
       case 'sql':
-        return new DB(await sql.new(options), encryptionKey, pageOpts);
+        return new DB(await sql.new(options), encryptionKey);
       case 'mongo':
-        return new DB(await mongo.new(options), encryptionKey, pageOpts);
+        return new DB(await mongo.new(options), encryptionKey);
       case 'mem':
-        return new DB(await mem.new(options), encryptionKey, pageOpts);
+        return new DB(await mem.new(options), encryptionKey);
       default:
         throw new Error('unsupported db engine: ' + options.engine);
     }

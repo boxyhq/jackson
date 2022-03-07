@@ -35,7 +35,7 @@ export interface IOAuthController {
 }
 
 export interface IAdminController {
-  getAllConfig(offset?: string, limit?: string);
+  getAllConfig(offset?: number, limit?: number);
 }
 
 export interface OAuthReqBody {
@@ -90,7 +90,7 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
-  getAll(offset?: string, limit?: string): Promise<unknown[]>;
+  getAll(offset?: number, limit?: number): Promise<unknown[]>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
@@ -116,6 +116,8 @@ export interface DatabaseOption {
   ttl?: number;
   cleanupLimit?: number;
   encryptionKey?: string;
+  offset?: number;
+  limit?: number;
 }
 
 export interface SAMLReq {
@@ -145,5 +147,4 @@ export interface JacksonOption {
   idpEnabled?: boolean;
   db: DatabaseOption;
   clientSecretVerifier?: string;
-  page?: { offset?: string; limit?: string };
 }

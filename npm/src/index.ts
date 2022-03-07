@@ -30,11 +30,9 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.db.cleanupLimit = (newOpts.db.cleanupLimit || 1000) * 1; // Limit cleanup of TTL entries to this many items at a time
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
+  newOpts.db.offset = newOpts.db.offset || 0;
+  newOpts.db.limit = newOpts.db.limit || 50;
 
-  newOpts.page = {
-    offset: newOpts.page?.offset || '0',
-    limit: newOpts.page?.limit || '50',
-  };
   return newOpts;
 };
 
@@ -47,7 +45,7 @@ export const controllers = async (
 }> => {
   opts = defaultOpts(opts);
 
-  const db = await DB.new(opts.db, opts.page);
+  const db = await DB.new(opts.db);
 
   const configStore = db.store('saml:config');
   const sessionStore = db.store('oauth:session', opts.db.ttl);

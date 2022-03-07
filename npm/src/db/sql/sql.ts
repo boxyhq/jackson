@@ -103,6 +103,7 @@ class Sql implements DatabaseDriver {
   }
 
   async getAll(namespace: string, offset: number, limit: number): Promise<unknown[]> {
+    const offsetAndLimitValueCheck = !dbutils.isNumeric(offset) && !dbutils.isNumeric(limit);
     const response = await this.storeRepository.find({
       where: { key: Like(`%${namespace}%`) },
       select: ['value', 'iv', 'tag'],
@@ -110,10 +111,9 @@ class Sql implements DatabaseDriver {
         ['createdAt']: 'DESC',
         // ['createdAt']: 'ASC',
       },
-      take: limit,
-      skip: offset,
+      take: offsetAndLimitValueCheck ? this.options.limit : limit,
+      skip: offsetAndLimitValueCheck ? this.options.offset : offset,
     });
-
     const returnValue = JSON.parse(JSON.stringify(response));
     if (returnValue) return returnValue;
     return [];

@@ -22,8 +22,8 @@ const db = {
 const clientSecretVerifier = process.env.CLIENT_SECRET_VERIFIER;
 
 const page = {
-  offset: process.env.PAGE_OFFSET,
-  limit: process.env.PAGE_LIMIT,
+  offset: Number(process.env.PAGE_OFFSET),
+  limit: Number(process.env.PAGE_LIMIT),
 };
 export default {
   hostUrl,
