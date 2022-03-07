@@ -18,10 +18,11 @@ const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
 class DB implements DatabaseDriver {
   private db: DatabaseDriver;
   private encryptionKey: EncryptionKey;
-
-  constructor(db: DatabaseDriver, encryptionKey: EncryptionKey) {
+  private pageOpts;
+  constructor(db: DatabaseDriver, encryptionKey: EncryptionKey, pageOpts) {
     this.db = db;
     this.encryptionKey = encryptionKey;
+    this.pageOpts = pageOpts;
   }
 
   async get(namespace: string, key: string): Promise<unknown> {
@@ -36,9 +37,10 @@ class DB implements DatabaseDriver {
 
   async getAll(namespace, offset, limit): Promise<unknown[]> {
     let res;
+
     if (isNumeric(offset) && isNumeric(limit))
       res = (await this.db.getAll(namespace, +offset, +limit)) as Encrypted[];
-    else res = (await this.db.getAll(namespace)) as Encrypted[];
+    else res = (await this.db.getAll(namespace, +this.pageOpts.offset, +this.pageOpts.limit)) as Encrypted[];
 
     const encryptionKey = this.encryptionKey;
     return res.map((r) => {
@@ -77,18 +79,18 @@ class DB implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption) => {
+  new: async (options: DatabaseOption, pageOpts) => {
     const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
 
     switch (options.engine) {
       case 'redis':
-        return new DB(await redis.new(options), encryptionKey);
+        return new DB(await redis.new(options), encryptionKey, pageOpts);
       case 'sql':
-        return new DB(await sql.new(options), encryptionKey);
+        return new DB(await sql.new(options), encryptionKey, pageOpts);
       case 'mongo':
-        return new DB(await mongo.new(options), encryptionKey);
+        return new DB(await mongo.new(options), encryptionKey, pageOpts);
       case 'mem':
-        return new DB(await mem.new(options), encryptionKey);
+        return new DB(await mem.new(options), encryptionKey, pageOpts);
       default:
         throw new Error('unsupported db engine: ' + options.engine);
     }

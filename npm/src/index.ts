@@ -31,6 +31,10 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
 
+  newOpts.page = {
+    offset: newOpts.page?.offset || '0',
+    limit: newOpts.page?.limit || '50',
+  };
   return newOpts;
 };
 
@@ -43,7 +47,7 @@ export const controllers = async (
 }> => {
   opts = defaultOpts(opts);
 
-  const db = await DB.new(opts.db);
+  const db = await DB.new(opts.db, opts.page);
 
   const configStore = db.store('saml:config');
   const sessionStore = db.store('oauth:session', opts.db.ttl);

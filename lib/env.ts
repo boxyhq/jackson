@@ -21,6 +21,10 @@ const db = {
 
 const clientSecretVerifier = process.env.CLIENT_SECRET_VERIFIER;
 
+const page = {
+  offset: process.env.PAGE_OFFSET,
+  limit: process.env.PAGE_LIMIT,
+};
 export default {
   hostUrl,
   hostPort,
@@ -32,4 +36,5 @@ export default {
   idpEnabled,
   db,
   clientSecretVerifier,
+  page,
 };

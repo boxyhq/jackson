@@ -35,7 +35,7 @@ export interface IOAuthController {
 }
 
 export interface IAdminController {
-  getAllConfig(offset?, limit?);
+  getAllConfig(offset?: string, limit?: string);
 }
 
 export interface OAuthReqBody {
@@ -90,7 +90,7 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
-  getAll(offset?: number, limit?: number): Promise<unknown[]>;
+  getAll(offset?: string, limit?: string): Promise<unknown[]>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
@@ -145,4 +145,5 @@ export interface JacksonOption {
   idpEnabled?: boolean;
   db: DatabaseOption;
   clientSecretVerifier?: string;
+  page?: { offset?: string; limit?: string };
 }
