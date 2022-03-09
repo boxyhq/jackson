@@ -46,7 +46,7 @@ class Redis implements DatabaseDriver {
 
     for await (const key of this.client.scanIterator({
       MATCH: dbutils.keyFromParts(namespace, '*'),
-      COUNT: take,
+      COUNT: pageLimit,
     })) {
       if (count >= take) {
         break;
@@ -102,9 +102,8 @@ class Redis implements DatabaseDriver {
     const idxKey = dbutils.keyFromParts(dbutils.indexPrefix, k);
     // delete secondary indexes and then the mapping of the seconary indexes
     const dbKeys = await this.client.sMembers(idxKey);
-
     for (const dbKey of dbKeys || []) {
-      tx.sRem(dbKey, key);
+      tx.sRem(dbutils.keyFromParts(dbutils.indexPrefix, dbKey), key);
     }
 
     tx.del(idxKey);
