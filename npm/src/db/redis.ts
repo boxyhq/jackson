@@ -46,7 +46,7 @@ class Redis implements DatabaseDriver {
 
     for await (const key of this.client.scanIterator({
       MATCH: dbutils.keyFromParts(namespace, '*'),
-      COUNT: pageLimit,
+      COUNT: Math.min(take, 1000),
     })) {
       if (count >= take) {
         break;
@@ -59,8 +59,8 @@ class Redis implements DatabaseDriver {
         count++;
       }
     }
-    if (returnValue) return returnValue;
-    return [];
+
+    return returnValue || [];
   }
 
   async getByIndex(namespace: string, idx: Index): Promise<any> {
