@@ -33,8 +33,8 @@ class DB implements DatabaseDriver {
     return decrypt(res, this.encryptionKey);
   }
 
-  async getAll(namespace, offset, limit): Promise<unknown[]> {
-    const res = (await this.db.getAll(namespace, offset, limit)) as Encrypted[];
+  async getAll(namespace, pageOffset, pageLimit): Promise<unknown[]> {
+    const res = (await this.db.getAll(namespace, pageOffset, pageLimit)) as Encrypted[];
     const encryptionKey = this.encryptionKey;
     return res.map((r) => {
       return decrypt(r, encryptionKey);

@@ -36,17 +36,27 @@ class Redis implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string): Promise<unknown[]> {
-    const keys = await this.client.sendCommand(['keys', namespace + ':*']);
+  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
+    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
     const returnValue: string[] = [];
-    for (let i = 0; i < keys.length; i++) {
-      try {
-        if (this.client.get(keys[i])) {
-          const value = await this.client.get(keys[i]);
-          returnValue.push(JSON.parse(value));
-        }
-      } catch (error) {
-        console.error(error);
+    let count = 0;
+    take += skip;
+
+    for await (const key of this.client.scanIterator({
+      MATCH: dbutils.keyFromParts(namespace, '*'),
+      COUNT: take,
+    })) {
+      if (count >= take) {
+        break;
+      }
+      if (count >= skip) {
+        const value = await this.client.get(key);
+        returnValue.push(JSON.parse(value));
+        count++;
+      } else {
+        count++;
       }
     }
     if (returnValue) return returnValue;
@@ -54,8 +64,8 @@ class Redis implements DatabaseDriver {
   }
 
   async getByIndex(namespace: string, idx: Index): Promise<any> {
-    const dbKeys = await this.client.sMembers(dbutils.keyForIndex(namespace, idx));
-
+    const idxKey = dbutils.keyForIndex(namespace, idx);
+    const dbKeys = await this.client.sMembers(dbutils.keyFromParts(dbutils.indexPrefix, idxKey));
     const ret: string[] = [];
     for (const dbKey of dbKeys || []) {
       ret.push(await this.get(namespace, dbKey));
@@ -77,7 +87,7 @@ class Redis implements DatabaseDriver {
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
       const idxKey = dbutils.keyForIndex(namespace, idx);
-      tx = tx.sAdd(idxKey, key);
+      tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, idxKey), key);
       tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, k), idxKey);
     }
 

@@ -30,8 +30,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.db.cleanupLimit = (newOpts.db.cleanupLimit || 1000) * 1; // Limit cleanup of TTL entries to this many items at a time
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
-  newOpts.db.offset = newOpts.db.offset || 0;
-  newOpts.db.limit = newOpts.db.limit || 50;
+  newOpts.db.pageLimit = newOpts.db.pageLimit || 50;
 
   return newOpts;
 };

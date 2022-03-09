@@ -6,11 +6,11 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { adminController, apiController } = await jackson();
     if (req.method === 'GET') {
-      const { slug, offset, limit } = req.query;
+      const { slug, pageOffset, pageLimit } = req.query;
       if (slug?.[0]) {
         res.json(await apiController.getConfig({ clientID: slug[0] }));
       } else {
-        res.json(await adminController.getAllConfig(+offset as number, +limit as number));
+        res.json(await adminController.getAllConfig(+pageOffset as number, +pageLimit as number));
       }
     } else if (req.method === 'POST') {
       res.json(await apiController.config(req.body));

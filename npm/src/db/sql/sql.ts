@@ -102,8 +102,8 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, offset: number, limit: number): Promise<unknown[]> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(offset) && !dbutils.isNumeric(limit);
+  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
+    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const response = await this.storeRepository.find({
       where: { key: Like(`%${namespace}%`) },
       select: ['value', 'iv', 'tag'],
@@ -111,8 +111,8 @@ class Sql implements DatabaseDriver {
         ['createdAt']: 'DESC',
         // ['createdAt']: 'ASC',
       },
-      take: offsetAndLimitValueCheck ? this.options.limit : limit,
-      skip: offsetAndLimitValueCheck ? this.options.offset : offset,
+      take: offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit,
+      skip: offsetAndLimitValueCheck ? 0 : pageOffset,
     });
     const returnValue = JSON.parse(JSON.stringify(response));
     if (returnValue) return returnValue;

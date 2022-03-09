@@ -6,9 +6,9 @@ import { PencilAltIcon } from '@heroicons/react/outline';
 import { useState } from 'react';
 
 const SAMLConfigurations: NextPage = () => {
-  const [paginate, setPaginate] = useState({ offset: 0, limit: 20, page: 0 });
+  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 2, page: 0 });
   const { data, error } = useSWR(
-    ['/api/admin/saml/config', `?offset=${paginate.offset}&limit=${paginate.limit}`],
+    ['/api/admin/saml/config', `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }
   );
@@ -89,7 +89,7 @@ const SAMLConfigurations: NextPage = () => {
           onClick={() =>
             setPaginate((curState) => ({
               ...curState,
-              offset: (curState.page - 1) * paginate.limit,
+              pageOffset: (curState.page - 1) * paginate.pageLimit,
               page: curState.page - 1,
             }))
           }>
@@ -99,11 +99,11 @@ const SAMLConfigurations: NextPage = () => {
         <button
           type='button'
           className='text-gray-900'
-          disabled={data.length === 0 || data.length < paginate.limit}
+          disabled={data.length === 0 || data.length < paginate.pageLimit}
           onClick={() =>
             setPaginate((curState) => ({
               ...curState,
-              offset: (curState.page + 1) * paginate.limit,
+              pageOffset: (curState.page + 1) * paginate.pageLimit,
               page: curState.page + 1,
             }))
           }>

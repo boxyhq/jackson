@@ -17,14 +17,11 @@ const db = {
   type: process.env.DB_TYPE ? <DatabaseType>process.env.DB_TYPE : undefined,
   ttl: process.env.DB_TTL ? Number(process.env.DB_TTL) : undefined,
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
+  pageLimit: process.env.PAGE_LIMIT ? Number(process.env.PAGE_LIMIT) : undefined,
 };
 
 const clientSecretVerifier = process.env.CLIENT_SECRET_VERIFIER;
 
-const page = {
-  offset: Number(process.env.PAGE_OFFSET),
-  limit: Number(process.env.PAGE_LIMIT),
-};
 export default {
   hostUrl,
   hostPort,
@@ -36,5 +33,4 @@ export default {
   idpEnabled,
   db,
   clientSecretVerifier,
-  page,
 };
