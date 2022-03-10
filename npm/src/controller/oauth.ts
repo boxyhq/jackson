@@ -272,6 +272,13 @@ export class OAuthController implements IOAuthController {
       params
     );
 
+    // delete the session
+    try {
+      await this.sessionStore.delete(RelayState);
+    } catch (_err) {
+      // ignore error
+    }
+
     return { redirect_url: redirectUrl };
   }
 
@@ -383,6 +390,13 @@ export class OAuthController implements IOAuthController {
 
     await this.tokenStore.put(token, codeVal.profile);
 
+    // delete the code
+    try {
+      await this.codeStore.delete(code);
+    } catch (_err) {
+      // ignore error
+    }
+
     return {
       access_token: token,
       token_type: 'bearer',
@@ -426,6 +440,13 @@ export class OAuthController implements IOAuthController {
 
     if (!rsp || !rsp.claims) {
       throw new JacksonError('Invalid token', 403);
+    }
+
+    // delete the token
+    try {
+      await this.tokenStore.delete(token);
+    } catch (_err) {
+      // ignore error
     }
 
     return rsp.claims;
