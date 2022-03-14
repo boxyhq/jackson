@@ -17,7 +17,7 @@ const db = {
   type: process.env.DB_TYPE ? <DatabaseType>process.env.DB_TYPE : undefined,
   ttl: process.env.DB_TTL ? Number(process.env.DB_TTL) : undefined,
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
-  pageLimit: process.env.PAGE_LIMIT ? Number(process.env.PAGE_LIMIT) : undefined,
+  pageLimit: process.env.DB_PAGE_LIMIT ? Number(process.env.DB_PAGE_LIMIT) : undefined,
 };
 
 const clientSecretVerifier = process.env.CLIENT_SECRET_VERIFIER;
