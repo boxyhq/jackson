@@ -20,7 +20,8 @@
       "value": "https://<HEROKU_APP_NAME>.herokuapp.com"
     },
     "CLIENT_SECRET_VERIFIER": {
-      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#client_secret_verifier"
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#client_secret_verifier",
+      "required": false
     },
     "SAML_AUDIENCE": {
       "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#saml_audience",
