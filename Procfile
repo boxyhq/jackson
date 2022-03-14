@@ -1,1 +1,1 @@
-web: export DB_URL=$DATABASE_URL && ./node_modules/.bin/next start -p $PORT
+web: ./node_modules/.bin/next start -p $PORT
