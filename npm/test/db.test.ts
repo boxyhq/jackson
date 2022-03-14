@@ -2,7 +2,7 @@ import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable } from '../src/
 import tap from 'tap';
 import DB from '../src/db/db';
 
-const encryptionKey: EncryptionKey = '3yGrTcnKPBqqHoH3zZMAU6nt4bmIYb2q';
+const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
 const configStores: Storable[] = [];
 const ttlStores: Storable[] = [];
@@ -19,7 +19,18 @@ const record2 = {
   name: 'Sama',
   city: 'London',
 };
-
+const records: any = [
+  {
+    id: '1',
+    name: 'Deepak',
+    city: 'London',
+  },
+  {
+    id: '2',
+    name: 'Sama',
+    city: 'London',
+  },
+];
 const memDbConfig = <DatabaseOption>{
   engine: 'mem',
   ttl: 1,
@@ -28,6 +39,7 @@ const memDbConfig = <DatabaseOption>{
 const redisDbConfig = <DatabaseOption>{
   engine: 'redis',
   url: 'redis://localhost:6379',
+  encryptionKey: encryptionKey,
 };
 
 const postgresDbConfig = <DatabaseOption>{
@@ -171,7 +183,32 @@ tap.test('dbs', ({ end }) => {
 
       t.end();
     });
+    tap.test('getAll(): ' + dbEngine, async (t) => {
+      // getAll(pageOffset?: number, pageLimit?: number): Promise<unknown[]>;
 
+      const allRecords: any = await configStore.getAll();
+      const allRecordOutput = {};
+      let allRecordInput = {};
+      for (const keyValue in records) {
+        const keyVal = records[keyValue.toString()];
+        allRecordOutput[keyVal];
+      }
+      for (const keyValue in allRecords) {
+        const keyVal = records[keyValue.toString()];
+        allRecordInput[allRecords[keyVal]];
+      }
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
+      allRecordInput = {};
+      const allRecordsWithPaggination: any = await configStore.getAll(0, 2);
+      for (const keyValue in allRecordsWithPaggination) {
+        const keyVal = records[keyValue.toString()];
+        allRecordInput[allRecordsWithPaggination[keyVal]];
+      }
+
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
+
+      t.end();
+    });
     tap.test('getByIndex(): ' + dbEngine, async (t) => {
       const ret1 = await configStore.getByIndex({
         name: 'name',

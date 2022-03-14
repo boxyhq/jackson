@@ -41,9 +41,9 @@ class Redis implements DatabaseDriver {
     let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
     const returnValue: string[] = [];
+    const keyArray: string[] = [];
     let count = 0;
     take += skip;
-
     for await (const key of this.client.scanIterator({
       MATCH: dbutils.keyFromParts(namespace, '*'),
       COUNT: Math.min(take, 1000),
@@ -52,14 +52,22 @@ class Redis implements DatabaseDriver {
         break;
       }
       if (count >= skip) {
-        const value = await this.client.get(key);
-        returnValue.push(JSON.parse(value));
+        keyArray.push(key);
         count++;
       } else {
         count++;
       }
     }
 
+    if (keyArray.length > 0) {
+      const value = await this.client.MGET(keyArray);
+      for (let i = 0; i < value.length; i++) {
+        const valueObject = JSON.parse(value[i].toString());
+        if (valueObject !== null && valueObject !== '') {
+          returnValue.push(valueObject);
+        }
+      }
+    }
     return returnValue || [];
   }
 

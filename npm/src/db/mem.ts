@@ -51,12 +51,25 @@ class Mem implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
+    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
+    let count = 0;
+    take += skip;
     const returnValue: string[] = [];
     if (namespace) {
       for (const key in this.store) {
         if (key.startsWith(namespace)) {
-          returnValue.push(this.store[key]);
+          if (count >= take) {
+            break;
+          }
+          if (count >= skip) {
+            returnValue.push(this.store[key]);
+            count++;
+          } else {
+            count++;
+          }
         }
       }
     }
