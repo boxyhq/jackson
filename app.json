@@ -18,6 +18,68 @@
     "EXTERNAL_URL": {
       "description": "The public URL of the app. See https://boxyhq.com/docs/jackson/env-variables#external_url . Replace <HEROKU_APP_NAME> below with 'App name' from above",
       "value": "https://<HEROKU_APP_NAME>.herokuapp.com"
+    },
+    "CLIENT_SECRET_VERIFIER": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#client_secret_verifier"
+    },
+    "SAML_AUDIENCE": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#saml_audience"
+    },
+    "DB_ENGINE": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#db_engine Leave empty to use the heroku-postgresql",
+      "required": false
+    },
+    "DB_URL": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#db_url Leave empty to use the heroku-postgresql",
+      "required": false
+    },
+    "DB_TYPE": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#db_type Leave empty to use the heroku-postgresql",
+      "required": false
+    },
+    "DB_TTL": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#db_ttl",
+      "required": false
+    },
+    "DB_CLEANUP_LIMIT": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#db_cleanup_limit",
+      "required": false
+    },
+    "DB_ENCRYPTION_KEY": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#db_encryption_key",
+      "required": false
+    },
+    "SMTP_HOST": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#smtp_host",
+      "required": false
+    },
+    "SMTP_PORT": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#smtp_port",
+      "required": false
+    },
+    "SMTP_USER": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#smtp_user",
+      "required": false
+    },
+    "SMTP_PASSWORD": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#smtp_password",
+      "required": false
+    },
+    "SMTP_FROM": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#smtp_from",
+      "required": false
+    },
+    "NEXTAUTH_URL": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#nextauth_url",
+      "required": false
+    },
+    "NEXTAUTH_SECRET": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#nextauth_secret",
+      "required": false
+    },
+    "NEXTAUTH_ACL": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#nextauth_acl",
+      "required": false
     }
   }
 }
