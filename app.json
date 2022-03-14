@@ -23,7 +23,9 @@
       "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#client_secret_verifier"
     },
     "SAML_AUDIENCE": {
-      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#saml_audience"
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#saml_audience",
+      "value": "https://saml.boxyhq.com",
+      "required": false
     },
     "DB_ENGINE": {
       "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#db_engine Leave empty to use the heroku-postgresql",
