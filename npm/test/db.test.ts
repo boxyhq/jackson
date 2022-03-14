@@ -19,18 +19,9 @@ const record2 = {
   name: 'Sama',
   city: 'London',
 };
-const records: any = [
-  {
-    id: '1',
-    name: 'Deepak',
-    city: 'London',
-  },
-  {
-    id: '2',
-    name: 'Sama',
-    city: 'London',
-  },
-];
+
+const records: any = [record1, record2];
+
 const memDbConfig = <DatabaseOption>{
   engine: 'mem',
   ttl: 1,
@@ -39,7 +30,6 @@ const memDbConfig = <DatabaseOption>{
 const redisDbConfig = <DatabaseOption>{
   engine: 'redis',
   url: 'redis://localhost:6379',
-  encryptionKey: encryptionKey,
 };
 
 const postgresDbConfig = <DatabaseOption>{
