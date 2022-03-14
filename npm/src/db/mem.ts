@@ -66,15 +66,12 @@ class Mem implements DatabaseDriver {
           }
           if (count >= skip) {
             returnValue.push(this.store[key]);
-            count++;
-          } else {
-            count++;
           }
+          count++;
         }
       }
     }
-    if (returnValue) return returnValue;
-    return [];
+    return returnValue || [];
   }
 
   async getByIndex(namespace: string, idx: Index): Promise<any> {

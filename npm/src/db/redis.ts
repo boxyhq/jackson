@@ -53,10 +53,8 @@ class Redis implements DatabaseDriver {
       }
       if (count >= skip) {
         keyArray.push(key);
-        count++;
-      } else {
-        count++;
       }
+      count++;
     }
 
     if (keyArray.length > 0) {
