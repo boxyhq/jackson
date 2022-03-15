@@ -19,6 +19,10 @@
       "description": "The public URL of the app. See https://boxyhq.com/docs/jackson/env-variables#external_url . Replace <HEROKU_APP_NAME> below with 'App name' from above",
       "value": "https://<HEROKU_APP_NAME>.herokuapp.com"
     },
+    "IDP_ENABLED": {
+      "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#idp_enabled",
+      "required": false
+    },
     "CLIENT_SECRET_VERIFIER": {
       "description": "https://boxyhq.com/docs/jackson/deploy/env-variables#client_secret_verifier",
       "required": false
