@@ -163,7 +163,7 @@ export class OAuthController implements IOAuthController {
       state,
       code_challenge,
       code_challenge_method,
-      requested_params: requestedParams,
+      requested: requestedParams,
     });
 
     const relayState = relayStatePrefix + sessionId;
@@ -255,7 +255,7 @@ export class OAuthController implements IOAuthController {
       profile,
       clientID: samlConfig.clientID,
       clientSecret: samlConfig.clientSecret,
-      requested_params: session.requested_params,
+      requested: session.requested,
     };
 
     if (session) {
@@ -399,7 +399,7 @@ export class OAuthController implements IOAuthController {
 
     const tokenVal = {
       ...codeVal.profile,
-      requested_params: codeVal.requested_params,
+      requested: codeVal.requested,
     };
 
     await this.tokenStore.put(token, tokenVal);
@@ -465,7 +465,7 @@ export class OAuthController implements IOAuthController {
 
     return {
       ...rsp.claims,
-      ...rsp.requested_params,
+      requested: rsp.requested,
     };
   }
 }
