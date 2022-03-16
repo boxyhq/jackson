@@ -18,7 +18,7 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { IndexNames, createAuthorizeForm } from './utils';
+import { createAuthorizeForm, IndexNames } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -149,6 +149,13 @@ export class OAuthController implements IOAuthController {
 
     const sessionId = crypto.randomBytes(16).toString('hex');
 
+    const requestedParams: Record<string, string> = {
+      tenant,
+      product,
+      client_id,
+      state,
+    };
+
     await this.sessionStore.put(sessionId, {
       id: samlReq.id,
       redirect_uri,
@@ -156,6 +163,7 @@ export class OAuthController implements IOAuthController {
       state,
       code_challenge,
       code_challenge_method,
+      requested_params: requestedParams,
     });
 
     const relayState = relayStatePrefix + sessionId;
@@ -247,6 +255,7 @@ export class OAuthController implements IOAuthController {
       profile,
       clientID: samlConfig.clientID,
       clientSecret: samlConfig.clientSecret,
+      requested_params: session.requested_params,
     };
 
     if (session) {
@@ -388,7 +397,12 @@ export class OAuthController implements IOAuthController {
     // store details against a token
     const token = crypto.randomBytes(20).toString('hex');
 
-    await this.tokenStore.put(token, codeVal.profile);
+    const tokenVal = {
+      ...codeVal.profile,
+      requested_params: codeVal.requested_params,
+    };
+
+    await this.tokenStore.put(token, tokenVal);
 
     // delete the code
     try {
@@ -449,6 +463,9 @@ export class OAuthController implements IOAuthController {
       // ignore error
     }
 
-    return rsp.claims;
+    return {
+      ...rsp.claims,
+      ...rsp.requested_params,
+    };
   }
 }
