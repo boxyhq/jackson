@@ -140,10 +140,10 @@ tap.test('controller/api', async (t) => {
       const response = await apiController.config(body);
 
       t.ok(kdStub.called);
-      t.equal(response.client_id, CLIENT_ID);
-      t.equal(response.provider, PROVIDER);
+      t.equal(response.clientID, CLIENT_ID);
+      t.equal(response.idpMetadata.provider, PROVIDER);
 
-      const { config: savedConfig } = await apiController.getConfig({
+      const savedConfig = await apiController.getConfig({
         clientID: CLIENT_ID,
       });
 
@@ -173,7 +173,7 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('When clientSecret is missing', async (t) => {
-      const { client_id: clientID } = await apiController.config(body as IdPConfig);
+      const { clientID } = await apiController.config(body as IdPConfig);
 
       try {
         await apiController.updateConfig({ description: 'A new description', clientID });
@@ -186,12 +186,8 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('Update the name/description', async (t) => {
-      const { client_id: clientID, client_secret: clientSecret } = await apiController.config(
-        body as IdPConfig
-      );
-      const {
-        config: { name, description },
-      } = await apiController.getConfig({ clientID });
+      const { clientID, clientSecret } = await apiController.config(body as IdPConfig);
+      const { name, description } = await apiController.getConfig({ clientID });
       t.equal(name, 'testConfig');
       t.equal(description, 'Just a test configuration');
       await apiController.updateConfig({
@@ -200,7 +196,7 @@ tap.test('controller/api', async (t) => {
         name: 'A new name',
         description: 'A new description',
       });
-      const { config: savedConfig } = await apiController.getConfig({ clientID });
+      const savedConfig = await apiController.getConfig({ clientID });
       t.equal(savedConfig.name, 'A new name');
       t.equal(savedConfig.description, 'A new description');
       t.end();
@@ -215,7 +211,7 @@ tap.test('controller/api', async (t) => {
 
       await apiController.config(body as IdPConfig);
 
-      const { config: savedConfig } = await apiController.getConfig(body);
+      const savedConfig = await apiController.getConfig(body);
 
       t.equal(savedConfig.name, 'testConfig');
 
@@ -262,15 +258,15 @@ tap.test('controller/api', async (t) => {
     t.test('when valid request', async (t) => {
       const body: Partial<IdPConfig> = Object.assign({}, config[0]);
 
-      const client = await apiController.config(body);
+      const { clientID, clientSecret } = await apiController.config(body);
 
       await apiController.deleteConfig({
-        clientID: client.client_id,
-        clientSecret: client.client_secret,
+        clientID,
+        clientSecret,
       });
 
       const response = await apiController.getConfig({
-        clientID: client.client_id,
+        clientID,
       });
 
       t.match(response, {});
@@ -281,7 +277,7 @@ tap.test('controller/api', async (t) => {
     t.test('when invalid request', async (t) => {
       const body: Partial<IdPConfig> = Object.assign({}, config[0]);
 
-      const client = await apiController.config(body);
+      const { clientID, clientSecret } = await apiController.config(body);
 
       // Empty body
       try {
@@ -294,7 +290,7 @@ tap.test('controller/api', async (t) => {
       // Invalid clientID or clientSecret
       try {
         await apiController.deleteConfig({
-          clientID: client.client_id,
+          clientID,
           clientSecret: 'invalid client secret',
         });
 

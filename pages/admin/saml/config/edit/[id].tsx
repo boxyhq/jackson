@@ -13,7 +13,7 @@ const EditSAMLConfiguration: NextPage = () => {
 
   if (error) {
     return (
-      <div className='px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded'>
+      <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
         {error.info ? JSON.stringify(error.info) : error.status}
       </div>
     );
@@ -22,7 +22,7 @@ const EditSAMLConfiguration: NextPage = () => {
   if (!samlConfig) {
     return null;
   }
-  return <AddEdit samlConfig={samlConfig?.config} />;
+  return <AddEdit samlConfig={samlConfig} />;
 };
 
 export default EditSAMLConfiguration;
