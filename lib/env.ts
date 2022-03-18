@@ -10,10 +10,10 @@ const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
 const samlAudience = process.env.SAML_AUDIENCE;
 const preLoadedConfig = process.env.PRE_LOADED_CONFIG;
 
-const idpEnabled = !!process.env.IDP_ENABLED;
+const idpEnabled = process.env.IDP_ENABLED === 'true';
 const db = {
   engine: process.env.DB_ENGINE ? <DatabaseEngine>process.env.DB_ENGINE : undefined,
-  url: process.env.DB_URL,
+  url: process.env.DB_URL || process.env.DATABASE_URL,
   type: process.env.DB_TYPE ? <DatabaseType>process.env.DB_TYPE : undefined,
   ttl: process.env.DB_TTL ? Number(process.env.DB_TTL) : undefined,
   encryptionKey: process.env.DB_ENCRYPTION_KEY,

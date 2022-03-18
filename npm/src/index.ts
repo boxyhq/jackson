@@ -4,6 +4,7 @@ import { AdminController } from './controller/admin';
 import DB from './db/db';
 import readConfig from './read-config';
 import { JacksonOption } from './typings';
+import defaultDb from './db/defaultDb';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -22,12 +23,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.idpEnabled = newOpts.idpEnabled === true;
 
-  newOpts.db = newOpts.db || {};
-  newOpts.db.engine = newOpts.db.engine || 'sql';
-  newOpts.db.url = newOpts.db.url || 'postgresql://postgres:postgres@localhost:5432/postgres';
-  newOpts.db.type = newOpts.db.type || 'postgres'; // Only needed if DB_ENGINE is sql.
-  newOpts.db.ttl = (newOpts.db.ttl || 300) * 1; // TTL for the code, session and token stores (in seconds)
-  newOpts.db.cleanupLimit = (newOpts.db.cleanupLimit || 1000) * 1; // Limit cleanup of TTL entries to this many items at a time
+  defaultDb(newOpts);
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
 
