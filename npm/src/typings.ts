@@ -11,7 +11,7 @@ export type IdPConfig = {
 
 export interface IAPIController {
   config(body: IdPConfig): Promise<any>;
-  updateConfig(body: any): Promise<void>;
+  updateConfig(body: any): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
     clientID?: string;

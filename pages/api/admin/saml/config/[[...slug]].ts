@@ -15,9 +15,9 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     } else if (req.method === 'POST') {
       res.json(await apiController.config(req.body));
     } else if (req.method === 'PATCH') {
-      res.status(204).send(await apiController.updateConfig(req.body));
+      res.status(204).end(await apiController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
-      res.json(await apiController.deleteConfig(req.body));
+      res.status(204).end(await apiController.deleteConfig(req.body));
     } else {
       throw new Error('Method not allowed');
     }
