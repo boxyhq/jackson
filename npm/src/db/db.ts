@@ -5,6 +5,7 @@ import mongo from './mongo';
 import redis from './redis';
 import sql from './sql/sql';
 import store from './store';
+import { isNumeric } from './utils';
 
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
@@ -17,7 +18,6 @@ const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
 class DB implements DatabaseDriver {
   private db: DatabaseDriver;
   private encryptionKey: EncryptionKey;
-
   constructor(db: DatabaseDriver, encryptionKey: EncryptionKey) {
     this.db = db;
     this.encryptionKey = encryptionKey;
@@ -33,8 +33,8 @@ class DB implements DatabaseDriver {
     return decrypt(res, this.encryptionKey);
   }
 
-  async getAll(namespace): Promise<unknown[]> {
-    const res = (await this.db.getAll(namespace)) as Encrypted[];
+  async getAll(namespace, pageOffset, pageLimit): Promise<unknown[]> {
+    const res = (await this.db.getAll(namespace, pageOffset, pageLimit)) as Encrypted[];
     const encryptionKey = this.encryptionKey;
     return res.map((r) => {
       return decrypt(r, encryptionKey);

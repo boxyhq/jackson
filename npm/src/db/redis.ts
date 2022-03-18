@@ -36,26 +36,42 @@ class Redis implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string): Promise<unknown[]> {
-    const keys = await this.client.sendCommand(['keys', namespace + ':*']);
+  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
+    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
     const returnValue: string[] = [];
-    for (let i = 0; i < keys.length; i++) {
-      try {
-        if (this.client.get(keys[i])) {
-          const value = await this.client.get(keys[i]);
-          returnValue.push(JSON.parse(value));
+    const keyArray: string[] = [];
+    let count = 0;
+    take += skip;
+    for await (const key of this.client.scanIterator({
+      MATCH: dbutils.keyFromParts(namespace, '*'),
+      COUNT: Math.min(take, 1000),
+    })) {
+      if (count >= take) {
+        break;
+      }
+      if (count >= skip) {
+        keyArray.push(key);
+      }
+      count++;
+    }
+
+    if (keyArray.length > 0) {
+      const value = await this.client.MGET(keyArray);
+      for (let i = 0; i < value.length; i++) {
+        const valueObject = JSON.parse(value[i].toString());
+        if (valueObject !== null && valueObject !== '') {
+          returnValue.push(valueObject);
         }
-      } catch (error) {
-        console.error(error);
       }
     }
-    if (returnValue) return returnValue;
-    return [];
+    return returnValue || [];
   }
 
   async getByIndex(namespace: string, idx: Index): Promise<any> {
-    const dbKeys = await this.client.sMembers(dbutils.keyForIndex(namespace, idx));
-
+    const idxKey = dbutils.keyForIndex(namespace, idx);
+    const dbKeys = await this.client.sMembers(dbutils.keyFromParts(dbutils.indexPrefix, idxKey));
     const ret: string[] = [];
     for (const dbKey of dbKeys || []) {
       ret.push(await this.get(namespace, dbKey));
@@ -77,7 +93,7 @@ class Redis implements DatabaseDriver {
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
       const idxKey = dbutils.keyForIndex(namespace, idx);
-      tx = tx.sAdd(idxKey, key);
+      tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, idxKey), key);
       tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, k), idxKey);
     }
 
@@ -92,9 +108,8 @@ class Redis implements DatabaseDriver {
     const idxKey = dbutils.keyFromParts(dbutils.indexPrefix, k);
     // delete secondary indexes and then the mapping of the seconary indexes
     const dbKeys = await this.client.sMembers(idxKey);
-
     for (const dbKey of dbKeys || []) {
-      tx.sRem(dbKey, key);
+      tx.sRem(dbutils.keyFromParts(dbutils.indexPrefix, dbKey), key);
     }
 
     tx.del(idxKey);

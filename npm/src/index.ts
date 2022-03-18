@@ -26,6 +26,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   defaultDb(newOpts);
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
+  newOpts.db.pageLimit = newOpts.db.pageLimit || 50;
 
   return newOpts;
 };

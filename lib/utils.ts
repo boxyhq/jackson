@@ -21,8 +21,8 @@ export interface APIError extends Error {
   status: number;
 }
 
-export const fetcher = async (url: string) => {
-  const res = await fetch(url);
+export const fetcher = async (url: string, queryParams = '') => {
+  const res = await fetch(`${url}${queryParams}`);
   let resContent;
   try {
     resContent = await res.clone().json();
