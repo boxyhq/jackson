@@ -415,7 +415,7 @@ export class APIController implements IAPIController {
         return {};
       }
 
-      return { config: samlConfigs[0] };
+      return { ...samlConfigs[0] };
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
