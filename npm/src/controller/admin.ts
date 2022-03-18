@@ -1,4 +1,4 @@
-import { IAdminController, Storable, OAuth } from '../typings';
+import { IAdminController, Storable } from '../typings';
 
 export class AdminController implements IAdminController {
   configStore: Storable;
@@ -7,8 +7,8 @@ export class AdminController implements IAdminController {
     this.configStore = configStore;
   }
 
-  public async getAllConfig(pageOffset?: number, pageLimit?: number): Promise<Partial<OAuth>[]> {
-    const configList = (await this.configStore.getAll(pageOffset, pageLimit)) as Partial<OAuth>[];
+  public async getAllConfig(pageOffset?: number, pageLimit?: number): Promise<Partial<any>[]> {
+    const configList = (await this.configStore.getAll(pageOffset, pageLimit)) as Partial<any>[];
     if (!configList || !configList.length) {
       return [];
     }

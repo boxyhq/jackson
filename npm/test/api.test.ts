@@ -143,7 +143,7 @@ tap.test('controller/api', async (t) => {
       t.equal(response.client_id, CLIENT_ID);
       t.equal(response.provider, PROVIDER);
 
-      const { config: savedConfig } = await apiController.getConfig({
+      const savedConfig = await apiController.getConfig({
         clientID: CLIENT_ID,
       });
 
@@ -189,9 +189,7 @@ tap.test('controller/api', async (t) => {
       const { client_id: clientID, client_secret: clientSecret } = await apiController.config(
         body as IdPConfig
       );
-      const {
-        config: { name, description },
-      } = await apiController.getConfig({ clientID });
+      const { name, description } = await apiController.getConfig({ clientID });
       t.equal(name, 'testConfig');
       t.equal(description, 'Just a test configuration');
       await apiController.updateConfig({
@@ -200,7 +198,7 @@ tap.test('controller/api', async (t) => {
         name: 'A new name',
         description: 'A new description',
       });
-      const { config: savedConfig } = await apiController.getConfig({ clientID });
+      const savedConfig = await apiController.getConfig({ clientID });
       t.equal(savedConfig.name, 'A new name');
       t.equal(savedConfig.description, 'A new description');
       t.end();
@@ -215,7 +213,7 @@ tap.test('controller/api', async (t) => {
 
       await apiController.config(body as IdPConfig);
 
-      const { config: savedConfig } = await apiController.getConfig(body);
+      const savedConfig = await apiController.getConfig(body);
 
       t.equal(savedConfig.name, 'testConfig');
 

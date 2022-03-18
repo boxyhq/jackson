@@ -3,7 +3,7 @@ import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
 import saml from '../saml/saml';
 import x509 from '../saml/x509';
-import { IAPIController, IdPConfig, OAuth, Storable } from '../typings';
+import { IAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 
@@ -113,7 +113,7 @@ export class APIController implements IAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async config(body: IdPConfig): Promise<OAuth> {
+  public async config(body: IdPConfig): Promise<any> {
     const {
       encodedRawMetadata,
       rawMetadata,
@@ -162,20 +162,22 @@ export class APIController implements IAPIController {
       throw new Error('Error generating x59 certs');
     }
 
+    const record = {
+      idpMetadata,
+      defaultRedirectUrl,
+      redirectUrl: JSON.parse(redirectUrl), // redirectUrl is a stringified array
+      tenant,
+      product,
+      name,
+      description,
+      clientID,
+      clientSecret,
+      certs,
+    };
+
     await this.configStore.put(
       clientID,
-      {
-        idpMetadata,
-        defaultRedirectUrl,
-        redirectUrl: JSON.parse(redirectUrl), // redirectUrl is a stringified array
-        tenant,
-        product,
-        name,
-        description,
-        clientID,
-        clientSecret,
-        certs,
-      },
+      record,
       {
         // secondary index on entityID
         name: IndexNames.EntityID,
@@ -188,11 +190,7 @@ export class APIController implements IAPIController {
       }
     );
 
-    return {
-      client_id: clientID,
-      client_secret: clientSecret,
-      provider: idpMetadata.provider,
-    };
+    return record;
   }
   /**
    * @swagger
@@ -279,7 +277,7 @@ export class APIController implements IAPIController {
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
-    const _currentConfig = (await this.getConfig(clientInfo))?.config;
+    const _currentConfig = await this.getConfig(clientInfo);
 
     if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
@@ -364,31 +362,29 @@ export class APIController implements IAPIController {
    *           type: object
    *           example:
    *             {
-   *               "config": {
-   *                 "idpMetadata": {
-   *                   "sso": {
-   *                     "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-   *                     "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-   *                   },
-   *                   "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-   *                   "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-   *                   "loginType": "idp",
-   *                   "provider": "okta.com"
+   *               "idpMetadata": {
+   *                 "sso": {
+   *                   "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+   *                   "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
    *                 },
-   *                 "defaultRedirectUrl": "https://hoppscotch.io/",
-   *                 "redirectUrl": ["https://hoppscotch.io/"],
-   *                 "tenant": "hoppscotch.io",
-   *                 "product": "API Engine",
-   *                 "name": "Hoppscotch-SP",
-   *                 "description": "SP for hoppscotch.io",
-   *                 "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *                 "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *                 "certs": {
-   *                   "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *                   "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *                 }
+   *                 "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+   *                 "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+   *                 "loginType": "idp",
+   *                 "provider": "okta.com"
+   *               },
+   *               "defaultRedirectUrl": "https://hoppscotch.io/",
+   *               "redirectUrl": ["https://hoppscotch.io/"],
+   *               "tenant": "hoppscotch.io",
+   *               "product": "API Engine",
+   *               "name": "Hoppscotch-SP",
+   *               "description": "SP for hoppscotch.io",
+   *               "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *               "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *               "certs": {
+   *                 "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+   *                 "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
    *               }
-   *             }
+   *           }
    *       '400':
    *         description: Please provide `clientID` or `tenant` and `product`.
    *       '401':

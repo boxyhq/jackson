@@ -9,14 +9,8 @@ export type IdPConfig = {
   encodedRawMetadata?: string;
 };
 
-export interface OAuth {
-  client_id: string;
-  client_secret: string;
-  provider: string;
-}
-
 export interface IAPIController {
-  config(body: IdPConfig): Promise<OAuth>;
+  config(body: IdPConfig): Promise<any>;
   updateConfig(body: any): Promise<void>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
