@@ -141,7 +141,7 @@ tap.test('controller/api', async (t) => {
 
       t.ok(kdStub.called);
       t.equal(response.client_id, CLIENT_ID);
-      t.equal(response.provider, PROVIDER);
+      t.equal(response.idpMetadata.provider, PROVIDER);
 
       const savedConfig = await apiController.getConfig({
         clientID: CLIENT_ID,
