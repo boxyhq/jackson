@@ -255,7 +255,7 @@ export class OAuthController implements IOAuthController {
       profile,
       clientID: samlConfig.clientID,
       clientSecret: samlConfig.clientSecret,
-      requested: session.requested,
+      requested: session?.requested,
     };
 
     if (session) {
