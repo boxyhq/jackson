@@ -19,7 +19,9 @@ SAML service [SAML in a box from BoxyHQ]
 
 You need someone like Jules Winnfield to save you from the vagaries of SAML login. Jackson implements the SAML login flow as an OAuth 2.0 flow, abstracting away all the complexities of the SAML protocol.
 
-Try our hosted demo [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
+Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
+
+You can also try our hosted demo showcasing the SAML IdP login flow [here](https://mocksaml.com/saml/login).
 
 ## Documentation
 
