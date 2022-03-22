@@ -62,7 +62,7 @@ class Mem implements DatabaseDriver {
       const val: string[] = Array.from(
         this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)]
       );
-      const iterator = val.reverse().values();
+      const iterator: IterableIterator<string> = val.reverse().values();
       for (const value of iterator) {
         if (count >= take) {
           break;
@@ -119,15 +119,15 @@ class Mem implements DatabaseDriver {
 
       cleanup.add(idxKey);
     }
-    let careatedAtSet = this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)];
-    if (!careatedAtSet) {
-      careatedAtSet = new Set();
-      this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)] = careatedAtSet;
+    let createdAtSet = this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)];
+    if (!createdAtSet) {
+      createdAtSet = new Set();
+      this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)] = createdAtSet;
       this.store['createdAt'] = new Date().toISOString();
-      careatedAtSet.add(key);
+      createdAtSet.add(key);
     } else {
       if (!this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)].has(key)) {
-        careatedAtSet.add(key);
+        createdAtSet.add(key);
         this.store['createdAt'] = new Date().toISOString();
       }
     }

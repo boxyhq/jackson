@@ -97,6 +97,7 @@ class Redis implements DatabaseDriver {
       tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, k), idxKey);
     }
     const timestamp = Number(Date.now());
+    //Converting Timestamp in negative so that when we get the value, it will be found in reverse order (descending order).
     const negetiveTimestamp = -Math.abs(timestamp);
     const value = await this.client.get(k);
     if (!value) {
