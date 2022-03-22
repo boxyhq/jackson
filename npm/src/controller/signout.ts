@@ -1,3 +1,4 @@
+import saml20 from '@boxyhq/saml20';
 import crypto from 'crypto';
 import xmlcrypto from 'xml-crypto';
 import xml2js from 'xml2js';
@@ -90,6 +91,20 @@ const signXML = async (xml: string, signingKey: string, publicKey: string): Prom
   return sig.getSignedXml();
 };
 
+// Validate the SAMLResponse
+const validateResponse = async (xml: string, options) => {
+  return new Promise((resolve, reject) => {
+    saml20.validate(xml, options, function (err, status) {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve(status);
+    });
+  });
+};
+
 export class LogoutController {
   private configStore: Storable;
   private sessionStore: Storable;
@@ -157,16 +172,34 @@ export class LogoutController {
       throw new JacksonError('Unable to validate state from the origin request.', 403);
     }
 
-    try {
-      const parsedResponse = await parseSAMLResponse(rawResponse);
+    const parsedResponse = await parseSAMLResponse(rawResponse);
 
-      if (parsedResponse.status !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
-        throw new JacksonError(`SLO failed with status ${parsedResponse.status}.`, 400);
-      }
-
-      return parsedResponse;
-    } catch (e) {
-      console.log(e);
+    if (parsedResponse.status !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
+      throw new JacksonError(`SLO failed with status ${parsedResponse.status}.`, 400);
     }
+
+    const samlConfigs = await this.configStore.getByIndex({
+      name: IndexNames.EntityID,
+      value: parsedResponse.issuer,
+    });
+
+    if (!samlConfigs || samlConfigs.length === 0) {
+      throw new JacksonError('SAML configuration not found.', 403);
+    }
+
+    const { idpMetadata } = samlConfigs[0];
+
+    const validateOpts: Record<string, string> = {
+      thumbprint: idpMetadata.thumbprint,
+      audience: this.opts.samlAudience,
+      inResponseTo: session.id,
+    };
+
+    // This throws an error
+    // TypeError: Cannot read properties of undefined (reading '0')
+    // const result = await validateResponse(rawResponse, validateOpts);
+    // console.log({ result });
+
+    return parsedResponse;
   }
 }
