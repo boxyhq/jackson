@@ -238,4 +238,4 @@ const parseMetadataAsync = async (idpMeta: string): Promise<Record<string, any>>
   });
 };
 
-export default { request, parseAsync, validateAsync, parseMetadataAsync };
+export default { request, parseAsync, validateAsync, parseMetadataAsync, PubKeyInfo };

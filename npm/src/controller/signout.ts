@@ -1,7 +1,9 @@
 import crypto from 'crypto';
+import xmlcrypto from 'xml-crypto';
 import xml2js from 'xml2js';
 import xmlbuilder from 'xmlbuilder';
 import * as dbutils from '../db/utils';
+import saml from '../saml/saml';
 import { JacksonOption, SAMLConfig, SAMLResponsePayload, SLORequestParams, Storable } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -67,6 +69,25 @@ const parseSAMLResponse = async (
   });
 };
 
+// Sign the XML
+const signXML = async (xml: string, signingKey: string, publicKey: string): Promise<string> => {
+  const sig = new xmlcrypto.SignedXml();
+
+  sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
+  sig.keyInfoProvider = new saml.PubKeyInfo(publicKey);
+  sig.signingKey = signingKey;
+
+  sig.addReference(
+    "/*[local-name(.)='LogoutRequest']",
+    ['http://www.w3.org/2000/09/xmldsig#enveloped-signature', 'http://www.w3.org/2001/10/xml-exc-c14n#'],
+    'http://www.w3.org/2001/04/xmlenc#sha256'
+  );
+
+  sig.computeSignature(xml);
+
+  return sig.getSignedXml();
+};
+
 export class LogoutController {
   private configStore: Storable;
   private opts: JacksonOption;
@@ -99,6 +120,7 @@ export class LogoutController {
 
     const {
       idpMetadata: { slo, provider },
+      certs: { privateKey, publicKey },
     } = samlConfig;
 
     if ('redirectUrl' in slo === false) {
@@ -107,10 +129,13 @@ export class LogoutController {
 
     // TODO: Need to support HTTP-POST binding
 
-    const { id, xml } = buildRequestXML(nameId, this.opts.samlAudience, slo.redirectUrl as string);
+    const { xml } = buildRequestXML(nameId, this.opts.samlAudience, slo.redirectUrl as string);
+    const signedXML = await signXML(xml, privateKey, publicKey);
+
+    console.log({ signedXML });
 
     return redirect.success(slo.redirectUrl as string, {
-      SAMLRequest: Buffer.from(xml).toString('base64'),
+      SAMLRequest: Buffer.from(signedXML).toString('base64'),
     });
   }
 
@@ -127,6 +152,8 @@ export class LogoutController {
       if (parsedResponse.status !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
         throw new JacksonError(`SLO failed with status ${parsedResponse.status}.`, 400);
       }
+
+      console.log({ RelayState });
 
       return parsedResponse;
     } catch (e) {

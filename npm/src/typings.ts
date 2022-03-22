@@ -165,4 +165,8 @@ interface Metadata {
 
 export interface SAMLConfig {
   idpMetadata: Metadata;
+  certs: {
+    privateKey: string;
+    publicKey: string;
+  };
 }
