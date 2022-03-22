@@ -44,15 +44,15 @@ class Redis implements DatabaseDriver {
     const keyArray: string[] = [];
     let count = 0;
     take += skip;
-    for await (const key of this.client.scanIterator({
-      MATCH: dbutils.keyFromParts(namespace, '*'),
-      COUNT: Math.min(take, 1000),
-    })) {
+    for await (const { score, value } of this.client.zScanIterator(
+      dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
+      Math.min(take, 1000)
+    )) {
       if (count >= take) {
         break;
       }
       if (count >= skip) {
-        keyArray.push(key);
+        keyArray.push(dbutils.keyFromParts(namespace, value));
       }
       count++;
     }
@@ -96,7 +96,17 @@ class Redis implements DatabaseDriver {
       tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, idxKey), key);
       tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, k), idxKey);
     }
-
+    const timestamp = Number(Date.now());
+    const negetiveTimestamp = -Math.abs(timestamp);
+    const value = await this.client.get(k);
+    if (!value) {
+      tx = tx.zAdd(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), [
+        { score: negetiveTimestamp, value: key },
+      ]);
+    }
+    tx = tx.zAdd(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), [
+      { score: negetiveTimestamp, value: key },
+    ]);
     await tx.exec();
   }
 
@@ -111,7 +121,8 @@ class Redis implements DatabaseDriver {
     for (const dbKey of dbKeys || []) {
       tx.sRem(dbutils.keyFromParts(dbutils.indexPrefix, dbKey), key);
     }
-
+    tx.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), key);
+    tx.ZREM(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), key);
     tx.del(idxKey);
 
     return await tx.exec();
