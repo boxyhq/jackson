@@ -7,7 +7,7 @@ const samlPath = '/api/oauth/saml';
 
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
 
-const samlAudience = process.env.SAML_AUDIENCE;
+const samlAudience = process.env.SAML_AUDIENCE || 'https://saml.boxyhq.com';
 const preLoadedConfig = process.env.PRE_LOADED_CONFIG;
 
 const idpEnabled = process.env.IDP_ENABLED === 'true';

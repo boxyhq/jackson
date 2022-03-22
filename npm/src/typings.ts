@@ -170,3 +170,8 @@ export interface SAMLConfig {
     publicKey: string;
   };
 }
+
+export interface ILogoutController {
+  createRequest(body: SLORequestParams): Promise<{ logoutUrl: string }>;
+  handleResponse(body: SAMLResponsePayload): Promise<any>;
+}

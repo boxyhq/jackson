@@ -62,10 +62,12 @@ export class LogoutController {
 
     // TODO: Need to support HTTP-POST binding
 
-    return redirect.success(slo.redirectUrl as string, {
+    const logoutUrl = redirect.success(slo.redirectUrl as string, {
       SAMLRequest: Buffer.from(await signXML(xml, privateKey, publicKey)).toString('base64'),
       RelayState: relayStatePrefix + sessionId,
     });
+
+    return { logoutUrl };
   }
 
   // Handle SLO Response
