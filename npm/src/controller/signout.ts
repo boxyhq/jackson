@@ -9,6 +9,8 @@ import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 import { IndexNames } from './utils';
 
+const relayStatePrefix = 'boxyhq_jackson_';
+
 // Create the XML for the SLO Request
 const buildRequestXML = (nameId: string, providerName: string, sloUrl: string) => {
   const id = '_' + crypto.randomBytes(10).toString('hex');
@@ -90,11 +92,13 @@ const signXML = async (xml: string, signingKey: string, publicKey: string): Prom
 
 export class LogoutController {
   private configStore: Storable;
+  private sessionStore: Storable;
   private opts: JacksonOption;
 
-  constructor({ configStore, opts }) {
+  constructor({ configStore, sessionStore, opts }) {
     this.opts = opts;
     this.configStore = configStore;
+    this.sessionStore = sessionStore;
   }
 
   // Create SLO Request
@@ -124,18 +128,21 @@ export class LogoutController {
     } = samlConfig;
 
     if ('redirectUrl' in slo === false) {
-      throw new JacksonError(`${provider} doesn't support SLO.`, 400);
+      throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);
     }
+
+    const { id, xml } = buildRequestXML(nameId, this.opts.samlAudience, slo.redirectUrl as string);
+    const sessionId = crypto.randomBytes(16).toString('hex');
+
+    await this.sessionStore.put(sessionId, {
+      id,
+    });
 
     // TODO: Need to support HTTP-POST binding
 
-    const { xml } = buildRequestXML(nameId, this.opts.samlAudience, slo.redirectUrl as string);
-    const signedXML = await signXML(xml, privateKey, publicKey);
-
-    console.log({ signedXML });
-
     return redirect.success(slo.redirectUrl as string, {
-      SAMLRequest: Buffer.from(signedXML).toString('base64'),
+      SAMLRequest: Buffer.from(await signXML(xml, privateKey, publicKey)).toString('base64'),
+      RelayState: relayStatePrefix + sessionId,
     });
   }
 
@@ -143,8 +150,12 @@ export class LogoutController {
   public async handleResponse({ SAMLResponse, RelayState }: SAMLResponsePayload) {
     const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
 
-    // TODO: Validate the signature
-    // TODO: Validate the RelayState
+    const sessionId = RelayState.replace(relayStatePrefix, '');
+    const session = await this.sessionStore.get(sessionId);
+
+    if (!session) {
+      throw new JacksonError('Unable to validate state from the origin request.', 403);
+    }
 
     try {
       const parsedResponse = await parseSAMLResponse(rawResponse);
@@ -152,8 +163,6 @@ export class LogoutController {
       if (parsedResponse.status !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
         throw new JacksonError(`SLO failed with status ${parsedResponse.status}.`, 400);
       }
-
-      console.log({ RelayState });
 
       return parsedResponse;
     } catch (e) {

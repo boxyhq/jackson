@@ -61,6 +61,7 @@ export const controllers = async (
 
   const logoutController = new LogoutController({
     configStore,
+    sessionStore,
     opts,
   });
 
