@@ -12,99 +12,6 @@ import { IndexNames } from './utils';
 
 const relayStatePrefix = 'boxyhq_jackson_';
 
-// Create the XML for the SLO Request
-const buildRequestXML = (nameId: string, providerName: string, sloUrl: string) => {
-  const id = '_' + crypto.randomBytes(10).toString('hex');
-
-  const xml: Record<string, any> = {
-    'samlp:LogoutRequest': {
-      '@xmlns:samlp': 'urn:oasis:names:tc:SAML:2.0:protocol',
-      '@xmlns:saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
-      '@ID': id,
-      '@Version': '2.0',
-      '@IssueInstant': new Date().toISOString(),
-      '@Destination': sloUrl,
-      'saml:Issuer': {
-        '#text': providerName,
-      },
-      'saml:NameID': {
-        '@Format': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
-        '#text': nameId,
-      },
-    },
-  };
-
-  return {
-    id,
-    xml: xmlbuilder.create(xml).end({}),
-  };
-};
-
-// Parse SAMLResponse
-const parseSAMLResponse = async (
-  rawResponse: string
-): Promise<{
-  id: string;
-  issuer: string;
-  status: string;
-  destination: string;
-  inResponseTo: string;
-}> => {
-  return new Promise((resolve, reject) => {
-    xml2js.parseString(
-      rawResponse,
-      { tagNameProcessors: [xml2js.processors.stripPrefix] },
-      (err: Error, { LogoutResponse }) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        resolve({
-          issuer: LogoutResponse.Issuer[0]._,
-          id: LogoutResponse.$.ID,
-          status: LogoutResponse.Status[0].StatusCode[0].$.Value,
-          destination: LogoutResponse.$.Destination,
-          inResponseTo: LogoutResponse.$.InResponseTo,
-        });
-      }
-    );
-  });
-};
-
-// Sign the XML
-const signXML = async (xml: string, signingKey: string, publicKey: string): Promise<string> => {
-  const sig = new xmlcrypto.SignedXml();
-
-  sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
-  sig.keyInfoProvider = new saml.PubKeyInfo(publicKey);
-  sig.signingKey = signingKey;
-
-  sig.addReference(
-    "/*[local-name(.)='LogoutRequest']",
-    ['http://www.w3.org/2000/09/xmldsig#enveloped-signature', 'http://www.w3.org/2001/10/xml-exc-c14n#'],
-    'http://www.w3.org/2001/04/xmlenc#sha256'
-  );
-
-  sig.computeSignature(xml);
-
-  return sig.getSignedXml();
-};
-
-// Validate the SAMLResponse
-const validateResponse = async (xml: string, options) => {
-  return new Promise((resolve, reject) => {
-    saml20.validate(xml, options, function (err, status) {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      resolve(status);
-    });
-  });
-};
-
 export class LogoutController {
   private configStore: Storable;
   private sessionStore: Storable;
@@ -203,3 +110,96 @@ export class LogoutController {
     return parsedResponse;
   }
 }
+
+// Create the XML for the SLO Request
+const buildRequestXML = (nameId: string, providerName: string, sloUrl: string) => {
+  const id = '_' + crypto.randomBytes(10).toString('hex');
+
+  const xml: Record<string, any> = {
+    'samlp:LogoutRequest': {
+      '@xmlns:samlp': 'urn:oasis:names:tc:SAML:2.0:protocol',
+      '@xmlns:saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
+      '@ID': id,
+      '@Version': '2.0',
+      '@IssueInstant': new Date().toISOString(),
+      '@Destination': sloUrl,
+      'saml:Issuer': {
+        '#text': providerName,
+      },
+      'saml:NameID': {
+        '@Format': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
+        '#text': nameId,
+      },
+    },
+  };
+
+  return {
+    id,
+    xml: xmlbuilder.create(xml).end({}),
+  };
+};
+
+// Parse SAMLResponse
+const parseSAMLResponse = async (
+  rawResponse: string
+): Promise<{
+  id: string;
+  issuer: string;
+  status: string;
+  destination: string;
+  inResponseTo: string;
+}> => {
+  return new Promise((resolve, reject) => {
+    xml2js.parseString(
+      rawResponse,
+      { tagNameProcessors: [xml2js.processors.stripPrefix] },
+      (err: Error, { LogoutResponse }) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve({
+          issuer: LogoutResponse.Issuer[0]._,
+          id: LogoutResponse.$.ID,
+          status: LogoutResponse.Status[0].StatusCode[0].$.Value,
+          destination: LogoutResponse.$.Destination,
+          inResponseTo: LogoutResponse.$.InResponseTo,
+        });
+      }
+    );
+  });
+};
+
+// Sign the XML
+const signXML = async (xml: string, signingKey: string, publicKey: string): Promise<string> => {
+  const sig = new xmlcrypto.SignedXml();
+
+  sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
+  sig.keyInfoProvider = new saml.PubKeyInfo(publicKey);
+  sig.signingKey = signingKey;
+
+  sig.addReference(
+    "/*[local-name(.)='LogoutRequest']",
+    ['http://www.w3.org/2000/09/xmldsig#enveloped-signature', 'http://www.w3.org/2001/10/xml-exc-c14n#'],
+    'http://www.w3.org/2001/04/xmlenc#sha256'
+  );
+
+  sig.computeSignature(xml);
+
+  return sig.getSignedXml();
+};
+
+// Validate the SAMLResponse
+const validateResponse = async (xml: string, options) => {
+  return new Promise((resolve, reject) => {
+    saml20.validate(xml, options, function (err, status) {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve(status);
+    });
+  });
+};
