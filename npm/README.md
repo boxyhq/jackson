@@ -14,7 +14,7 @@ npm i @boxyhq/saml-jackson
 
 ## Documentation
 
-For full documentation, visit [boxyhq.com/docs/jackson/npm-library](https://boxyhq.com/docs/jackson/npm-library)
+For full documentation, visit [boxyhq.com/docs/jackson/deploy/npm-library](https://boxyhq.com/docs/jackson/deploy/npm-library)
 
 ## License
 
