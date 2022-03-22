@@ -1,12 +1,12 @@
 import saml from '@boxyhq/saml20';
-import xml2js from 'xml2js';
+import crypto from 'crypto';
+import * as rambda from 'rambda';
 import thumbprint from 'thumbprint';
 import xmlcrypto from 'xml-crypto';
-import * as rambda from 'rambda';
+import xml2js from 'xml2js';
 import xmlbuilder from 'xmlbuilder';
-import crypto from 'crypto';
-import claims from './claims';
 import { SAMLProfile, SAMLReq } from '../typings';
+import claims from './claims';
 
 const idPrefix = '_';
 const authnXPath =
@@ -162,6 +162,8 @@ const parseMetadataAsync = async (idpMeta: string): Promise<Record<string, any>>
       let ssoPostUrl: null | undefined = null;
       let ssoRedirectUrl: null | undefined = null;
       let loginType = 'idp';
+      let sloRedirectUrl: null | undefined = null;
+      let sloPostUrl: null | undefined = null;
 
       let ssoDes: any = rambda.pathOr(null, 'EntityDescriptor.IDPSSODescriptor', res);
       if (!ssoDes) {
@@ -189,23 +191,46 @@ const parseMetadataAsync = async (idpMeta: string): Promise<Record<string, any>>
             ssoRedirectUrl = rambda.path('$.Location', ssoSvcRec);
           }
         }
+
+        const sloSvc = ssoDesRec['SingleLogoutService'] || [];
+        for (const sloSvcRec of sloSvc) {
+          if (rambda.pathOr('', '$.Binding', sloSvcRec).endsWith('HTTP-Redirect')) {
+            sloRedirectUrl = rambda.path('$.Location', sloSvcRec);
+          } else if (rambda.pathOr('', '$.Binding', sloSvcRec).endsWith('HTTP-POST')) {
+            sloPostUrl = rambda.path('$.Location', sloSvcRec);
+          }
+        }
       }
 
       const ret: Record<string, any> = {
         sso: {},
+        slo: {},
       };
+
       if (entityID) {
         ret.entityID = entityID;
       }
+
       if (X509Certificate) {
         ret.thumbprint = thumbprint.calculate(X509Certificate);
       }
+
       if (ssoPostUrl) {
         ret.sso.postUrl = ssoPostUrl;
       }
+
       if (ssoRedirectUrl) {
         ret.sso.redirectUrl = ssoRedirectUrl;
       }
+
+      if (sloRedirectUrl) {
+        ret.slo.redirectUrl = sloRedirectUrl;
+      }
+
+      if (sloPostUrl) {
+        ret.slo.postUrl = sloPostUrl;
+      }
+
       ret.loginType = loginType;
 
       resolve(ret);

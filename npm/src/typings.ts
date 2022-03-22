@@ -135,9 +135,34 @@ export interface SAMLProfile {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
-  samlAudience?: string;
+  samlAudience: string;
   preLoadedConfig?: string;
   idpEnabled?: boolean;
   db: DatabaseOption;
   clientSecretVerifier?: string;
+}
+
+export interface SLORequestParams {
+  nameId: string;
+  tenant: string;
+  product: string;
+}
+
+interface Metadata {
+  sso: {
+    postUrl?: string;
+    redirectUrl: string;
+  };
+  slo: {
+    redirectUrl?: string;
+    postUrl?: string;
+  };
+  entityID: string;
+  thumbprint: string;
+  loginType: 'idp';
+  provider: string;
+}
+
+export interface SAMLConfig {
+  idpMetadata: Metadata;
 }

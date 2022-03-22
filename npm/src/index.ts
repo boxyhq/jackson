@@ -1,10 +1,11 @@
+import { AdminController } from './controller/admin';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
-import { AdminController } from './controller/admin';
+import { LogoutController } from './controller/signout';
 import DB from './db/db';
+import defaultDb from './db/defaultDb';
 import readConfig from './read-config';
 import { JacksonOption } from './typings';
-import defaultDb from './db/defaultDb';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -37,6 +38,7 @@ export const controllers = async (
   apiController: APIController;
   oauthController: OAuthController;
   adminController: AdminController;
+  logoutController: LogoutController;
 }> => {
   opts = defaultOpts(opts);
 
@@ -54,6 +56,11 @@ export const controllers = async (
     sessionStore,
     codeStore,
     tokenStore,
+    opts,
+  });
+
+  const logoutController = new LogoutController({
+    configStore,
     opts,
   });
 
@@ -76,6 +83,7 @@ export const controllers = async (
     apiController,
     oauthController,
     adminController,
+    logoutController,
   };
 };
 
