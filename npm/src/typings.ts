@@ -146,6 +146,7 @@ export interface SLORequestParams {
   nameId: string;
   tenant: string;
   product: string;
+  redirectUrl?: string;
 }
 
 interface Metadata {

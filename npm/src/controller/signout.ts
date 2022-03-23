@@ -24,7 +24,7 @@ export class LogoutController {
   }
 
   // Create SLO Request
-  public async createRequest({ nameId, tenant, product }: SLORequestParams) {
+  public async createRequest({ nameId, tenant, product, redirectUrl }: SLORequestParams) {
     let samlConfig: SAMLConfig | null = null;
 
     if (tenant && product) {
@@ -58,6 +58,7 @@ export class LogoutController {
 
     await this.sessionStore.put(sessionId, {
       id,
+      redirectUrl,
     });
 
     // TODO: Need to support HTTP-POST binding
@@ -109,7 +110,9 @@ export class LogoutController {
     // const result = await validateResponse(rawResponse, validateOpts);
     // console.log({ result });
 
-    return parsedResponse;
+    return {
+      redirectUrl: session.redirectUrl,
+    };
   }
 }
 
