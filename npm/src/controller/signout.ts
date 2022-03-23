@@ -97,7 +97,7 @@ export class LogoutController {
       throw new JacksonError('SAML configuration not found.', 403);
     }
 
-    const { idpMetadata } = samlConfigs[0];
+    const { idpMetadata, defaultRedirectUrl }: SAMLConfig = samlConfigs[0];
 
     const validateOpts: Record<string, string> = {
       thumbprint: idpMetadata.thumbprint,
@@ -111,7 +111,7 @@ export class LogoutController {
     // console.log({ result });
 
     return {
-      redirectUrl: session.redirectUrl,
+      redirectUrl: session.redirectUrl ?? defaultRedirectUrl,
     };
   }
 }

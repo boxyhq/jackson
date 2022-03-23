@@ -170,6 +170,7 @@ export interface SAMLConfig {
     privateKey: string;
     publicKey: string;
   };
+  defaultRedirectUrl: string;
 }
 
 export interface ILogoutController {
