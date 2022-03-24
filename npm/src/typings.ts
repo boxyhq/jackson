@@ -135,7 +135,7 @@ export interface SAMLProfile {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
-  samlAudience: string;
+  samlAudience?: string;
   preLoadedConfig?: string;
   idpEnabled?: boolean;
   db: DatabaseOption;

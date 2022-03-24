@@ -57,7 +57,7 @@ export class LogoutController {
       throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);
     }
 
-    const { id, xml } = buildRequestXML(nameId, this.opts.samlAudience, slo.redirectUrl as string);
+    const { id, xml } = buildRequestXML(nameId, this.opts.samlAudience!, slo.redirectUrl as string);
     const sessionId = crypto.randomBytes(16).toString('hex');
 
     let logoutUrl: string | null = null;
