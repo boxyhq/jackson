@@ -1,7 +1,8 @@
-import saml20 from '@boxyhq/saml20';
+import { DOMParser as Dom } from '@xmldom/xmldom';
 import crypto from 'crypto';
+import thumbprint from 'thumbprint';
 import { promisify } from 'util';
-import xmlcrypto from 'xml-crypto';
+import { SignedXml, xpath as select } from 'xml-crypto';
 import xml2js from 'xml2js';
 import xmlbuilder from 'xmlbuilder';
 import { deflateRaw } from 'zlib';
@@ -118,14 +119,9 @@ export class LogoutController {
 
     const { idpMetadata, defaultRedirectUrl }: SAMLConfig = samlConfigs[0];
 
-    const validateOpts: Record<string, string> = {
-      thumbprint: idpMetadata.thumbprint,
-      audience: this.opts.samlAudience,
-      inResponseTo: session.id,
-    };
-
-    // const result = await validateResponse(rawResponse, validateOpts);
-    // console.log({ result });
+    if (await hasValidSignature(rawResponse, idpMetadata.thumbprint)) {
+      throw new JacksonError('Invalid signature.', 403);
+    }
 
     return {
       redirectUrl: session.redirectUrl ?? defaultRedirectUrl,
@@ -195,7 +191,7 @@ const parseSAMLResponse = async (
 
 // Sign the XML
 const signXML = async (xml: string, signingKey: string, publicKey: string): Promise<string> => {
-  const sig = new xmlcrypto.SignedXml();
+  const sig = new SignedXml();
 
   sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
   sig.keyInfoProvider = new saml.PubKeyInfo(publicKey);
@@ -212,16 +208,59 @@ const signXML = async (xml: string, signingKey: string, publicKey: string): Prom
   return sig.getSignedXml();
 };
 
-// Validate the SAMLResponse
-const validateResponse = async (xml: string, options) => {
+// Validate signature
+const hasValidSignature = async (xml: string, certThumbprint: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
-    saml20.validate(xml, options, function (err, status) {
-      if (err) {
-        reject(err);
-        return;
-      }
+    const doc = new Dom().parseFromString(xml);
+    const signed = new SignedXml();
+    let calculatedThumbprint;
 
-      resolve(status);
-    });
+    const signature =
+      select(
+        doc,
+        "/*/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']"
+      )[0] ||
+      select(
+        doc,
+        "/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']"
+      )[0] ||
+      select(
+        doc,
+        "/*/*/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']"
+      )[0];
+
+    signed.keyInfoProvider = {
+      getKey: function getKey(keyInfo) {
+        if (certThumbprint) {
+          const embeddedSignature = keyInfo[0].getElementsByTagNameNS(
+            'http://www.w3.org/2000/09/xmldsig#',
+            'X509Certificate'
+          );
+
+          if (embeddedSignature.length > 0) {
+            const base64cer = embeddedSignature[0].firstChild.toString();
+
+            calculatedThumbprint = thumbprint.calculate(base64cer);
+
+            return saml.certToPEM(base64cer);
+          }
+        }
+      },
+      getKeyInfo: function getKeyInfo() {
+        return '<X509Data></X509Data>';
+      },
+    };
+
+    signed.loadSignature(signature.toString());
+
+    if (signed.checkSignature(xml)) {
+      if (calculatedThumbprint.toUpperCase() === certThumbprint.toUpperCase()) {
+        resolve(true);
+      } else {
+        reject(false);
+      }
+    }
+
+    return reject(false);
   });
 };

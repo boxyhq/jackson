@@ -238,4 +238,18 @@ const parseMetadataAsync = async (idpMeta: string): Promise<Record<string, any>>
   });
 };
 
-export default { request, parseAsync, validateAsync, parseMetadataAsync, PubKeyInfo };
+const certToPEM = (cert: string) => {
+  if (cert.indexOf('BEGIN CERTIFICATE') === -1 && cert.indexOf('END CERTIFICATE') === -1) {
+    const matches = cert.match(/.{1,64}/g);
+
+    if (matches) {
+      cert = matches.join('\n');
+      cert = '-----BEGIN CERTIFICATE-----\n' + cert;
+      cert = cert + '\n-----END CERTIFICATE-----\n';
+    }
+  }
+
+  return cert;
+};
+
+export default { request, parseAsync, validateAsync, parseMetadataAsync, PubKeyInfo, certToPEM };
