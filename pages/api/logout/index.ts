@@ -11,14 +11,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { logoutController } = await jackson();
 
-    const { logoutUrl } = await logoutController.createRequest({
+    const { logoutUrl, logoutForm } = await logoutController.createRequest({
       nameId: <string>nameId,
       tenant: <string>tenant,
       product: <string>product,
       redirectUrl: <string>redirectUrl,
     });
 
-    res.redirect(302, logoutUrl);
+    if (logoutUrl) {
+      res.redirect(302, logoutUrl);
+    } else {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(logoutForm);
+    }
   } catch (err: any) {
     const { message, statusCode = 500 } = err;
 

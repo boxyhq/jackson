@@ -3,7 +3,7 @@ export enum IndexNames {
   TenantProduct = 'tenantProduct',
 }
 
-export const createAuthorizeForm = (relayState: string, samlReqEnc: string, postUrl: string) => {
+export const createRequestForm = (relayState: string, samlReqEnc: string, postUrl: string) => {
   const formElements = [
     '<!DOCTYPE html>',
     '<html>',

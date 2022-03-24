@@ -1,17 +1,20 @@
 import saml20 from '@boxyhq/saml20';
 import crypto from 'crypto';
+import { promisify } from 'util';
 import xmlcrypto from 'xml-crypto';
 import xml2js from 'xml2js';
 import xmlbuilder from 'xmlbuilder';
+import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
 import saml from '../saml/saml';
 import { JacksonOption, SAMLConfig, SAMLResponsePayload, SLORequestParams, Storable } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
-import { IndexNames } from './utils';
+import { createRequestForm, IndexNames } from './utils';
+
+const deflateRawAsync = promisify(deflateRaw);
 
 const relayStatePrefix = 'boxyhq_jackson_';
-
 export class LogoutController {
   private configStore: Storable;
   private sessionStore: Storable;
@@ -49,26 +52,42 @@ export class LogoutController {
       certs: { privateKey, publicKey },
     } = samlConfig;
 
-    if ('redirectUrl' in slo === false) {
+    if ('redirectUrl' in slo === false && 'postUrl' in slo === false) {
       throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);
     }
 
     const { id, xml } = buildRequestXML(nameId, this.opts.samlAudience, slo.redirectUrl as string);
     const sessionId = crypto.randomBytes(16).toString('hex');
 
+    let logoutUrl: string | null = null;
+    let logoutForm: string | null = null;
+
+    const relayState = relayStatePrefix + sessionId;
+    const signedXML = await signXML(xml, privateKey, publicKey);
+
     await this.sessionStore.put(sessionId, {
       id,
       redirectUrl,
     });
 
-    // TODO: Need to support HTTP-POST binding
+    // HTTP-Redirect binding
+    if ('redirectUrl' in slo) {
+      logoutUrl = redirect.success(slo.redirectUrl as string, {
+        SAMLRequest: Buffer.from(await deflateRawAsync(signedXML)).toString('base64'),
+        RelayState: relayState,
+      });
+    }
 
-    const logoutUrl = redirect.success(slo.redirectUrl as string, {
-      SAMLRequest: Buffer.from(await signXML(xml, privateKey, publicKey)).toString('base64'),
-      RelayState: relayStatePrefix + sessionId,
-    });
+    // HTTP-POST binding
+    if ('postUrl' in slo) {
+      logoutForm = createRequestForm(
+        relayState,
+        encodeURI(Buffer.from(signedXML).toString('base64')),
+        slo.postUrl as string
+      );
+    }
 
-    return { logoutUrl };
+    return { logoutUrl, logoutForm };
   }
 
   // Handle SLO Response
@@ -105,8 +124,6 @@ export class LogoutController {
       inResponseTo: session.id,
     };
 
-    // This throws an error
-    // TypeError: Cannot read properties of undefined (reading '0')
     // const result = await validateResponse(rawResponse, validateOpts);
     // console.log({ result });
 

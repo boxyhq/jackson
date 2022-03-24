@@ -174,6 +174,6 @@ export interface SAMLConfig {
 }
 
 export interface ILogoutController {
-  createRequest(body: SLORequestParams): Promise<{ logoutUrl: string }>;
+  createRequest(body: SLORequestParams): Promise<{ logoutUrl: string | null; logoutForm: string | null }>;
   handleResponse(body: SAMLResponsePayload): Promise<any>;
 }
