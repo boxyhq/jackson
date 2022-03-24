@@ -31,7 +31,10 @@ export interface IOAuthController {
 export interface IAdminController {
   getAllConfig(pageOffset?: number, pageLimit?: number);
 }
-
+export interface IHealthCheckController {
+  healthCheck();
+  completeHealthCheck(isJacksonReady: boolean);
+}
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
