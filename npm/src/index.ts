@@ -44,14 +44,15 @@ export const controllers = async (
   const db = await DB.new(opts.db);
 
   const configStore = db.store('saml:config');
-  const healthCheckStore = db.store('test:config');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
+  const healthCheckStore = db.store('_health');
 
   const apiController = new APIController({ configStore });
   const adminController = new AdminController({ configStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
+  await healthCheckController.init();
   const oauthController = new OAuthController({
     configStore,
     sessionStore,

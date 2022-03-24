@@ -32,8 +32,10 @@ export interface IAdminController {
   getAllConfig(pageOffset?: number, pageLimit?: number);
 }
 export interface IHealthCheckController {
-  healthCheck();
-  completeHealthCheck(isJacksonReady: boolean);
+  status(): Promise<{
+    status: number;
+  }>;
+  init(): Promise<void>;
 }
 export interface OAuthReqBody {
   response_type: 'code';
