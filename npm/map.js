@@ -1,6 +1,7 @@
 const map = {
   'test/api.test.ts': ['src/controller/api.ts'],
   'test/oauth.test.ts': ['src/controller/oauth.ts', 'src/controller/oauth/*'],
+  'test/signout.test.ts': ['src/controller/signout.ts'],
   'test/db.test.ts': ['src/db/*'],
 };
 

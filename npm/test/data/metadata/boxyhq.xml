@@ -23,6 +23,8 @@ zI0b5xSYZOJ7Kena7gd5zGVrc2ygKAFKiffiI5GLmLkv</ds:X509Certificate>
         </ds:X509Data>
       </ds:KeyInfo>
     </md:KeyDescriptor>
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://dev-tyj7qyzz.auth0.com/samlp/AX3jRN4ECnojiEepVjvM7yVCEcpVX6w6/logout"/>
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://dev-tyj7qyzz.auth0.com/samlp/AX3jRN4ECnojiEepVjvM7yVCEcpVX6w6/logout"/>
     <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
     <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://accounts.google.com/o/saml2"/>
     <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://accounts.google.com/o/saml2"/>

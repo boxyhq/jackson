@@ -108,6 +108,10 @@ export class LogoutController {
       throw new JacksonError(`SLO failed with status ${parsedResponse.status}.`, 400);
     }
 
+    if (parsedResponse.inResponseTo !== session.id) {
+      throw new JacksonError(`SLO failed with mismatched request ID.`, 400);
+    }
+
     const samlConfigs = await this.configStore.getByIndex({
       name: IndexNames.EntityID,
       value: parsedResponse.issuer,
@@ -119,8 +123,14 @@ export class LogoutController {
 
     const { idpMetadata, defaultRedirectUrl }: SAMLConfig = samlConfigs[0];
 
-    if (await hasValidSignature(rawResponse, idpMetadata.thumbprint)) {
+    if (!(await hasValidSignature(rawResponse, idpMetadata.thumbprint))) {
       throw new JacksonError('Invalid signature.', 403);
+    }
+
+    try {
+      await this.sessionStore.delete(sessionId);
+    } catch (_err) {
+      // Ignore
     }
 
     return {
