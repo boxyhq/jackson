@@ -47,12 +47,6 @@ tap.before(async () => {
   await addMetadata(metadataPath);
 });
 
-// tap.beforeEach(async () => {});
-
-// tap.afterEach(async () => {
-//   await apiController.deleteConfig({ tenant: samlConfig.tenant, product: samlConfig.product });
-// });
-
 tap.teardown(async () => {
   process.exit(0);
 });
