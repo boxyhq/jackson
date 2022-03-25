@@ -41,4 +41,7 @@ a {
   .link-primary {
     @apply mt-2 flex items-center px-4 py-2 font-medium text-secondary/90 hover:font-bold dark:text-gray-400 dark:hover:text-gray-300 md:text-sm md:leading-6;
   }
+  .dot-pattern {
+    @apply bg-[#e5e5f7] bg-polka-pattern bg-[length:10px_10px] bg-[0%_10px] opacity-80;
+  }
 }
