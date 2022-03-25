@@ -28,6 +28,10 @@ export default function Error() {
     }
   }
 
+  if (statusCode === null) {
+    return null;
+  }
+
   return (
     <div className='flex h-full items-center justify-center p-8 md:px-[6%] md:py-[10%]'>
       <div className='dot-pattern relative -mt-10 flex  w-full flex-col items-center justify-center rounded-md p-5 text-[#0a2540] shadow-xl sm:h-[500px] sm:w-[500px]'>
