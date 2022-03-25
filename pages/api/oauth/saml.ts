@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import { JACKSON_ERROR_COOKIE_KEY, setCookie } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -15,7 +16,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (err: any) {
     console.error('callback error:', err);
     const { message, statusCode = 500 } = err;
-
-    res.status(statusCode).send(message);
+    // set error in cookie redirect to error page
+    setCookie(res, JACKSON_ERROR_COOKIE_KEY, { message, statusCode }, { path: '/error' });
+    res.redirect('/error');
   }
 }
