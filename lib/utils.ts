@@ -72,6 +72,8 @@ export const setCookie = (
   res.setHeader('Set-Cookie', serialize(name, stringValue, options));
 };
 
+export const JACKSON_ERROR_COOKIE_KEY = 'jackson_error';
+
 // returns the cookie with the given name,
 // or undefined if not found
 export function getCookie(name) {
@@ -79,4 +81,9 @@ export function getCookie(name) {
     new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[]\\\/\+^])/g, '\\$1') + '=([^;]*)')
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+export function deleteCookie(name, path) {
+  if (!name) return;
+  document.cookie = `${name}=; max-age=0; path=${path};`;
 }
