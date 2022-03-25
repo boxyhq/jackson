@@ -263,14 +263,12 @@ const hasValidSignature = async (xml: string, certThumbprint: string): Promise<b
 
     signed.loadSignature(signature.toString());
 
-    if (signed.checkSignature(xml)) {
-      if (calculatedThumbprint.toUpperCase() === certThumbprint.toUpperCase()) {
-        resolve(true);
-      } else {
-        reject(false);
-      }
+    try {
+      return resolve(
+        signed.checkSignature(xml) && calculatedThumbprint.toUpperCase() === certThumbprint.toUpperCase()
+      );
+    } catch (err) {
+      return reject(err);
     }
-
-    return reject(false);
   });
 };
