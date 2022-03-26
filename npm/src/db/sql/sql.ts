@@ -12,7 +12,7 @@ import { JacksonTTL } from './entity/JacksonTTL';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
-  private connection!: DataSource;
+  private dataSource!: DataSource;
   private storeRepository;
   private indexRepository;
   private ttlRepository;
@@ -26,7 +26,7 @@ class Sql implements DatabaseDriver {
   async init(): Promise<Sql> {
     while (true) {
       try {
-        this.connection = new DataSource({
+        this.dataSource = new DataSource({
           name: this.options.type! + Math.floor(Math.random() * 100000),
           type: this.options.type!,
           url: this.options.url,
@@ -35,7 +35,7 @@ class Sql implements DatabaseDriver {
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
         });
-        await this.connection.initialize();
+        await this.dataSource.initialize();
 
         break;
       } catch (err) {
@@ -45,9 +45,9 @@ class Sql implements DatabaseDriver {
       }
     }
 
-    this.storeRepository = this.connection.getRepository(JacksonStore);
-    this.indexRepository = this.connection.getRepository(JacksonIndex);
-    this.ttlRepository = this.connection.getRepository(JacksonTTL);
+    this.storeRepository = this.dataSource.getRepository(JacksonStore);
+    this.indexRepository = this.dataSource.getRepository(JacksonIndex);
+    this.ttlRepository = this.dataSource.getRepository(JacksonTTL);
 
     if (this.options.ttl && this.options.cleanupLimit) {
       this.ttlCleanup = async () => {
@@ -141,7 +141,7 @@ class Sql implements DatabaseDriver {
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
-    await this.connection.transaction(async (transactionalEntityManager) => {
+    await this.dataSource.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
 
       const store = new JacksonStore();

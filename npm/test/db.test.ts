@@ -173,6 +173,7 @@ tap.test('dbs', ({ end }) => {
 
       t.end();
     });
+
     tap.test('getAll(): ' + dbEngine, async (t) => {
       // getAll(pageOffset?: number, pageLimit?: number): Promise<unknown[]>;
 
@@ -199,6 +200,7 @@ tap.test('dbs', ({ end }) => {
 
       t.end();
     });
+
     tap.test('getByIndex(): ' + dbEngine, async (t) => {
       const ret1 = await configStore.getByIndex({
         name: 'name',
