@@ -3,7 +3,7 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings';
-import { Connection, createConnection, Like } from 'typeorm';
+import { DataSource, Like } from 'typeorm';
 import * as dbutils from '../utils';
 
 import { JacksonStore } from './entity/JacksonStore';
@@ -12,7 +12,7 @@ import { JacksonTTL } from './entity/JacksonTTL';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
-  private connection!: Connection;
+  private connection!: DataSource;
   private storeRepository;
   private indexRepository;
   private ttlRepository;
@@ -26,7 +26,7 @@ class Sql implements DatabaseDriver {
   async init(): Promise<Sql> {
     while (true) {
       try {
-        this.connection = await createConnection({
+        this.connection = new DataSource({
           name: this.options.type! + Math.floor(Math.random() * 100000),
           type: this.options.type!,
           url: this.options.url,
@@ -35,6 +35,7 @@ class Sql implements DatabaseDriver {
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
         });
+        await this.connection.initialize();
 
         break;
       } catch (err) {
@@ -87,7 +88,7 @@ class Sql implements DatabaseDriver {
   }
 
   async get(namespace: string, key: string): Promise<any> {
-    const res = await this.storeRepository.findOne({
+    const res = await this.storeRepository.findOneBy({
       key: dbutils.key(namespace, key),
     });
 
@@ -120,7 +121,7 @@ class Sql implements DatabaseDriver {
   }
 
   async getByIndex(namespace: string, idx: Index): Promise<any> {
-    const res = await this.indexRepository.find({
+    const res = await this.indexRepository.findBy({
       key: dbutils.keyForIndex(namespace, idx),
     });
 
@@ -161,7 +162,7 @@ class Sql implements DatabaseDriver {
       // no ttl support for secondary indexes
       for (const idx of indexes || []) {
         const key = dbutils.keyForIndex(namespace, idx);
-        const rec = await this.indexRepository.findOne({
+        const rec = await this.indexRepository.findOneBy({
           key,
           storeKey: store.key,
         });
