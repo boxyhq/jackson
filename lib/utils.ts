@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { serialize, type CookieSerializeOptions } from 'cookie';
 import env from '@lib/env';
 import micromatch from 'micromatch';
 
@@ -60,16 +59,14 @@ export const setCookie = (
   res: NextApiResponse,
   name: string,
   value: unknown,
-  options: CookieSerializeOptions = {}
+  options: { path?: string } = {}
 ) => {
   const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-
-  if (typeof options['maxAge'] === 'number') {
-    options.expires = new Date(Date.now() + options.maxAge);
-    options.maxAge /= 1000;
+  let cookieContents = name + '=' + stringValue;
+  if (options.path) {
+    cookieContents += '; Path=' + options.path;
   }
-
-  res.setHeader('Set-Cookie', serialize(name, stringValue, options));
+  res.setHeader('Set-Cookie', cookieContents);
 };
 
 export const JACKSON_ERROR_COOKIE_KEY = 'jackson_error';
