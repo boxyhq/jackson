@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import Logo from '../public/logo.png';
 import { LogoutIcon, MenuIcon, ShieldCheckIcon } from '@heroicons/react/outline';
-import useOnClickOutside from 'hooks/useOnClickOutside';
 import ActiveLink from './ActiveLink';
-import useKeyPress from 'hooks/useKeyPress';
-import useMediaQuery from 'hooks/useMediaQuery';
+import useOnClickOutside from '@lib/ui/hooks/useOnClickOutside';
+import useKeyPress from '@lib/ui/hooks/useKeyPress';
+import useMediaQuery from '@lib/ui/hooks/useMediaQuery';
 import { useSession, signOut } from 'next-auth/react';
 
 const navigation = [
