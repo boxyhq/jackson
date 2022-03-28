@@ -1,4 +1,4 @@
-import { getCookie, JACKSON_ERROR_COOKIE_KEY } from '@lib/utils';
+import { getErrorCookie } from '@lib/ui/utils';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -7,7 +7,7 @@ export default function Error() {
   const { pathname } = useRouter();
 
   useEffect(() => {
-    const _error = getCookie(JACKSON_ERROR_COOKIE_KEY) || '';
+    const _error = getErrorCookie() || '';
     try {
       const { statusCode, message } = JSON.parse(_error);
       setError({ statusCode, message });
