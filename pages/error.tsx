@@ -1,4 +1,4 @@
-import { deleteCookie, getCookie, JACKSON_ERROR_COOKIE_KEY } from '@lib/utils';
+import { getCookie, JACKSON_ERROR_COOKIE_KEY } from '@lib/utils';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -14,8 +14,6 @@ export default function Error() {
     } catch (err) {
       console.error('Unknown error format');
     }
-    // clear the cookie once read
-    deleteCookie(JACKSON_ERROR_COOKIE_KEY, pathname);
   }, [pathname]);
 
   const { statusCode, message } = error;

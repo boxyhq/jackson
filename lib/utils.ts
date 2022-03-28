@@ -79,8 +79,3 @@ export function getCookie(name) {
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
-
-export function deleteCookie(name, path) {
-  if (!name) return;
-  document.cookie = `${name}=; max-age=0; path=${path};`;
-}
