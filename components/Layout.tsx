@@ -14,7 +14,7 @@ const navigation = [
   {
     path: '/admin/saml/config',
     text: <span className='ml-4'>SAML Configurations</span>,
-    icon: <ShieldCheckIcon className='w-5 h-5' aria-hidden />,
+    icon: <ShieldCheckIcon className='h-5 w-5' aria-hidden />,
   },
 ];
 
@@ -67,10 +67,10 @@ function Layout({ children }: { children: ReactNode }) {
       </Head>
       <header
         role='banner'
-        className='fixed left-0 right-0 z-10 p-5 bg-white border-b border-gray-900/10 dark:border-gray-300/10 dark:bg-gray-900 md:px-12'>
+        className='fixed left-0 right-0 z-10 border-b border-gray-900/10 bg-white p-5 dark:border-gray-300/10 dark:bg-gray-900 md:px-12'>
         <div className='flex items-center justify-between'>
           <Link href='/'>
-            <a title='Go to dashboard' className='flex items-center ml-10 font-bold leading-10 md:ml-0'>
+            <a title='Go to dashboard' className='ml-10 flex items-center font-bold leading-10 md:ml-0'>
               <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} />
               <h1 className='ml-2 text-secondary hover:text-primary dark:text-white'>SAML Jackson</h1>
             </a>
@@ -78,7 +78,7 @@ function Layout({ children }: { children: ReactNode }) {
           <div className='relative'>
             <button
               type='button'
-              className='flex items-center justify-center w-8 h-8 uppercase rounded-full bg-secondary text-cyan-50'
+              className='flex h-8 w-8 items-center justify-center rounded-full bg-secondary uppercase text-cyan-50'
               aria-label='user settings'
               aria-expanded={isOpen}
               onClick={() => setIsOpen(!isOpen)}>
@@ -86,14 +86,14 @@ function Layout({ children }: { children: ReactNode }) {
             </button>
             {isOpen && (
               <ul
-                className='absolute right-0 z-50 py-1 overflow-hidden text-sm font-semibold bg-white rounded-lg shadow-lg dark:highlight-white/5 top-full w-36 text-slate-700 ring-1 ring-slate-900/10 dark:bg-slate-800 dark:text-slate-300 dark:ring-0'
+                className='dark:highlight-white/5 absolute right-0 top-full z-50 w-36 overflow-hidden rounded-lg bg-white py-1 text-sm font-semibold text-slate-700 shadow-lg ring-1 ring-slate-900/10 dark:bg-slate-800 dark:text-slate-300 dark:ring-0'
                 ref={userDropDownRef}>
                 <li>
                   <button
                     type='button'
-                    className='flex items-center justify-center w-full h-8 px-2 py-1 cursor-pointer'
+                    className='flex h-8 w-full cursor-pointer items-center justify-center px-2 py-1'
                     onClick={() => signOut()}>
-                    <LogoutIcon className='w-5 h-5' aria-hidden />
+                    <LogoutIcon className='h-5 w-5' aria-hidden />
                     Log out
                   </button>
                 </li>
@@ -114,7 +114,7 @@ function Layout({ children }: { children: ReactNode }) {
             aria-controls='menu'
             onClick={() => setIsSideNavOpen((curState) => !curState)}>
             <span className='sr-only'>Menu</span>
-            <MenuIcon aria-hidden='true' className='w-6 h-6 text-black dark:text-slate-50'></MenuIcon>
+            <MenuIcon aria-hidden='true' className='h-6 w-6 text-black dark:text-slate-50'></MenuIcon>
           </button>
           <ul
             className={`fixed top-0 bottom-0 left-0 w-60 border-r border-gray-900/10 p-6 transition-transform dark:border-gray-300/10 ${
@@ -140,9 +140,6 @@ function Layout({ children }: { children: ReactNode }) {
         className='relative top-[81px] h-[calc(100%_-_81px)] overflow-auto p-6 md:left-60 md:w-[calc(100%_-_theme(space.60))]'>
         {children}
       </main>
-      {/* <footer role="contentinfo">
-        <p>&copy; 2022 BoxyHQ, Inc.</p>
-      </footer> */}
     </>
   );
 }
