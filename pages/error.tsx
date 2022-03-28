@@ -32,10 +32,17 @@ export default function Error() {
   }
 
   return (
-    <div className='flex h-full items-center justify-center p-8 md:px-[6%] md:py-[10%]'>
-      <div className='dot-pattern relative -mt-10 flex  w-full flex-col items-center justify-center rounded-md p-5 text-[#0a2540] shadow-xl sm:h-[500px] sm:w-[500px]'>
+    <div className='h-full'>
+      <div className='h-[20%] translate-y-[100%] px-[20%] text-[hsl(152,56%,40%)]'>
+        <svg className='mb-5 h-10 w-10' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+          />
+        </svg>
         <h1 className='text-xl font-extrabold md:text-6xl'>{error.statusCode}</h1>
-        <h2 className='mt-2 text-lg md:text-4xl'>{statusText}</h2>
+        <h2 className='uppercase'>{statusText}</h2>
         <p className='mt-6 inline-block'>SAML error: </p>
         <p className='mr-2 text-xl font-bold'>{message}</p>
       </div>
