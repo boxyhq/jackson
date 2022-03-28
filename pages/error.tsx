@@ -17,6 +17,7 @@ export default function Error() {
     // clear the cookie once read
     deleteCookie(JACKSON_ERROR_COOKIE_KEY, pathname);
   }, [pathname]);
+
   const { statusCode, message } = error;
   let statusText = '';
   if (typeof statusCode === 'number') {
