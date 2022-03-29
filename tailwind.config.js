@@ -18,7 +18,6 @@ module.exports = {
       primary: withOpacityValue('--color-primary'),
       secondary: withOpacityValue('--color-secondary'),
     },
-    extend: {},
   },
   plugins: [],
 };
