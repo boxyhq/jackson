@@ -31,7 +31,12 @@ export interface IOAuthController {
 export interface IAdminController {
   getAllConfig(pageOffset?: number, pageLimit?: number);
 }
-
+export interface IHealthCheckController {
+  status(): Promise<{
+    status: number;
+  }>;
+  init(): Promise<void>;
+}
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;

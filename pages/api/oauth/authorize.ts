@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { OAuthReqBody } from '@boxyhq/saml-jackson';
+import { setErrorCookie } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -22,7 +23,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (err: any) {
     console.error('authorize error:', err);
     const { message, statusCode = 500 } = err;
-
-    res.status(statusCode).send(message);
+    // set error in cookie redirect to error page
+    setErrorCookie(res, { message, statusCode }, { path: '/error' });
+    res.redirect('/error');
   }
 }

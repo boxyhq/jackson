@@ -189,14 +189,20 @@ tap.test('dbs', ({ end }) => {
       }
       t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
       allRecordInput = {};
-      const allRecordsWithPaggination: any = await configStore.getAll(0, 2);
+      let allRecordsWithPaggination: any = await configStore.getAll(0, 2);
       for (const keyValue in allRecordsWithPaggination) {
         const keyVal = records[keyValue.toString()];
         allRecordInput[allRecordsWithPaggination[keyVal]];
       }
 
       t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
+      allRecordsWithPaggination = await configStore.getAll(0, 0);
+      for (const keyValue in allRecordsWithPaggination) {
+        const keyVal = records[keyValue.toString()];
+        allRecordInput[allRecordsWithPaggination[keyVal]];
+      }
 
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
       t.end();
     });
     tap.test('getByIndex(): ' + dbEngine, async (t) => {
@@ -318,9 +324,27 @@ tap.test('dbs', ({ end }) => {
   tap.test('db.new() error', async (t) => {
     try {
       await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'somedb',
+        engine: <DatabaseEngine>'mongo',
       });
 
+      await DB.new(<DatabaseOption>{
+        engine: <DatabaseEngine>'sql',
+        url: tap.expectUncaughtException().toString(),
+      });
+
+      t.ok(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'sql',
+          url: tap.expectUncaughtException().toString(),
+        },
+        'db must have connection'
+      );
+      await DB.new({
+        engine: <DatabaseEngine>'',
+      });
+      await DB.new(<DatabaseOption>{
+        engine: <DatabaseEngine>'somedb',
+      });
       t.fail('expecting an unsupported db error');
     } catch (err) {
       t.ok(err, 'got expected error');

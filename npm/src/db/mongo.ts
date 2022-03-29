@@ -20,15 +20,9 @@ class Mongo implements DatabaseDriver {
   }
 
   async init(): Promise<Mongo> {
-    try {
-      if (!this.options.url) {
-        throw Error('Please specify a db url');
-      }
-      this.client = new MongoClient(this.options.url);
-      await this.client.connect();
-    } catch (err) {
-      console.error(`error connecting to ${this.options.type} db: ${err}`);
-    }
+    const dbUrl = this.options.url as string;
+    this.client = new MongoClient(dbUrl);
+    await this.client.connect();
 
     this.db = this.client.db();
     this.collection = this.db.collection('jacksonStore');
