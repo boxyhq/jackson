@@ -179,7 +179,7 @@ export class APIController implements IAPIController {
     const record = {
       idpMetadata,
       defaultRedirectUrl,
-      redirectUrl: JSON.parse(redirectUrl), // redirectUrl is a stringified array
+      redirectUrl: extractRedirectUrls(redirectUrl),
       tenant,
       product,
       name,
@@ -330,7 +330,7 @@ export class APIController implements IAPIController {
       description: description ? description : _currentConfig.description,
       idpMetadata: newMetadata ? newMetadata : _currentConfig.idpMetadata,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
-      redirectUrl: redirectUrl ? JSON.parse(redirectUrl) : _currentConfig.redirectUrl,
+      redirectUrl: redirectUrl ? extractRedirectUrls(redirectUrl) : _currentConfig.redirectUrl,
     };
 
     await this.configStore.put(
@@ -529,4 +529,19 @@ const extractHostName = (url: string): string | null => {
   } catch (err) {
     return null;
   }
+};
+
+const extractRedirectUrls = (urls: string[] | string): string[] => {
+  if (!urls) {
+    return [];
+  }
+
+  if (typeof urls === 'string') {
+    if (urls.startsWith('[')) {
+      return JSON.parse(urls);
+    }
+    return [urls];
+  }
+
+  return urls;
 };

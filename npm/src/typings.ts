@@ -1,6 +1,6 @@
 export type IdPConfig = {
   defaultRedirectUrl: string;
-  redirectUrl: string;
+  redirectUrl: string[] | string;
   tenant: string;
   product: string;
   name: string;
