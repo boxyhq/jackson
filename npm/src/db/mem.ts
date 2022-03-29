@@ -59,16 +59,18 @@ class Mem implements DatabaseDriver {
     take += skip;
     const returnValue: string[] = [];
     if (namespace) {
-      for (const key in this.store) {
-        if (key.startsWith(namespace)) {
-          if (count >= take) {
-            break;
-          }
-          if (count >= skip) {
-            returnValue.push(this.store[key]);
-          }
-          count++;
+      const val: string[] = Array.from(
+        this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)]
+      );
+      const iterator: IterableIterator<string> = val.reverse().values();
+      for (const value of iterator) {
+        if (count >= take) {
+          break;
         }
+        if (count >= skip) {
+          returnValue.push(this.store[dbutils.keyFromParts(namespace, value)]);
+        }
+        count++;
       }
     }
     return returnValue || [];
@@ -89,9 +91,6 @@ class Mem implements DatabaseDriver {
     const k = dbutils.key(namespace, key);
 
     this.store[k] = val;
-
-    if (!Date.parse(this.store['createdAt'])) this.store['createdAt'] = new Date().toISOString();
-    this.store['modifiedAt'] = new Date().toISOString();
 
     // console.log(this.store)
     if (ttl) {
@@ -120,6 +119,26 @@ class Mem implements DatabaseDriver {
 
       cleanup.add(idxKey);
     }
+    let createdAtSet = this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)];
+    if (!createdAtSet) {
+      createdAtSet = new Set();
+      this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)] = createdAtSet;
+      this.store['createdAt'] = new Date().toISOString();
+      createdAtSet.add(key);
+    } else {
+      if (!this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)].has(key)) {
+        createdAtSet.add(key);
+        this.store['createdAt'] = new Date().toISOString();
+      }
+    }
+
+    let modifiedAtSet = this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)];
+    if (!modifiedAtSet) {
+      modifiedAtSet = new Set();
+      this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)] = modifiedAtSet;
+    }
+    modifiedAtSet.add(key);
+    this.store['modifiedAt'] = new Date().toISOString();
   }
 
   async delete(namespace: string, key: string): Promise<any> {
@@ -134,7 +153,8 @@ class Mem implements DatabaseDriver {
     for (const dbKey of dbKeys || []) {
       this.indexes[dbKey] && this.indexes[dbKey].delete(key);
     }
-
+    this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)].delete(key);
+    this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)].delete(key);
     delete this.cleanup[idxKey];
     delete this.ttlStore[k];
   }

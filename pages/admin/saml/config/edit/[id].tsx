@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import useSWR from 'swr';
-import { fetcher } from '@lib/utils';
+import { fetcher } from '@lib/ui/utils';
 import AddEdit from '@components/saml/AddEdit';
 import { useRouter } from 'next/router';
 

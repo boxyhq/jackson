@@ -5,7 +5,7 @@ import DB from './db/db';
 import readConfig from './read-config';
 import { JacksonOption } from './typings';
 import defaultDb from './db/defaultDb';
-
+import { HealthCheckController } from './controller/health-check';
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
     ...opts,
@@ -37,6 +37,7 @@ export const controllers = async (
   apiController: APIController;
   oauthController: OAuthController;
   adminController: AdminController;
+  healthCheckController: HealthCheckController;
 }> => {
   opts = defaultOpts(opts);
 
@@ -46,9 +47,12 @@ export const controllers = async (
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
+  const healthCheckStore = db.store('_health');
 
   const apiController = new APIController({ configStore });
   const adminController = new AdminController({ configStore });
+  const healthCheckController = new HealthCheckController({ healthCheckStore });
+  await healthCheckController.init();
   const oauthController = new OAuthController({
     configStore,
     sessionStore,
@@ -76,6 +80,7 @@ export const controllers = async (
     apiController,
     oauthController,
     adminController,
+    healthCheckController,
   };
 };
 

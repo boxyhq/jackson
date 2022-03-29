@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import useSWR from 'swr';
-import { fetcher } from '@lib/utils';
+import { fetcher } from '@lib/ui/utils';
 import Link from 'next/link';
 import { ArrowSmLeftIcon, ArrowSmRightIcon, PencilAltIcon } from '@heroicons/react/outline';
 import { useState } from 'react';

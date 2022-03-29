@@ -17,6 +17,7 @@
     "incremental": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
+    "downlevelIteration": true,
     "paths": {
       "@components/*": ["components/*"],
       "@lib/*": ["lib/*"],
