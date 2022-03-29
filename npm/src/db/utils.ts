@@ -26,3 +26,5 @@ export function isNumeric(num) {
   return !isNaN(num);
 }
 export const indexPrefix = '_index';
+export const createdAtPrefix = '_createdAt';
+export const modifiedAtPrefix = '_modifiedAt';
