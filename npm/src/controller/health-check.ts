@@ -25,23 +25,17 @@ export class HealthCheckController implements IHealthCheckController {
           status: 503,
         };
       }
-      try {
-        const response = await Promise.race([
-          this.healthCheckStore.get(healthKey),
-          new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000)),
-        ]);
+      const response = await Promise.race([
+        this.healthCheckStore.get(healthKey),
+        new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000)),
+      ]);
 
-        if (response === healthValue) {
-          return {
-            status: 200,
-          };
-        }
-      } catch (err) {
-        console.log(err);
+      if (response === healthValue) {
         return {
-          status: 503,
+          status: 200,
         };
       }
+
       return {
         status: 503,
       };
