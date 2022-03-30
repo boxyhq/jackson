@@ -14,9 +14,8 @@ export class APIController implements IAPIController {
     this.configStore = configStore;
   }
 
-  private _validateRedirectUrl({ redirectUrl, defaultRedirectUrl }) {
-    if (redirectUrl) {
-      const redirectUrlList = extractRedirectUrls(redirectUrl);
+  private _validateRedirectUrl({ redirectUrlList, defaultRedirectUrl }) {
+    if (redirectUrlList) {
       if (redirectUrlList.length > 10) {
         throw new JacksonError('Exceeded maximum number of allowed redirect urls', 400);
       }
@@ -42,8 +41,6 @@ export class APIController implements IAPIController {
     if (!redirectUrl) {
       throw new JacksonError('Please provide redirectUrl', 400);
     }
-
-    this._validateRedirectUrl({ redirectUrl, defaultRedirectUrl });
 
     if (!tenant) {
       throw new JacksonError('Please provide tenant', 400);
@@ -157,6 +154,8 @@ export class APIController implements IAPIController {
     metrics.increment('createConfig');
 
     this._validateIdPConfig(body);
+    const redirectUrlList = extractRedirectUrls(redirectUrl);
+    this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
     let metaData = rawMetadata;
     if (encodedRawMetadata) {
@@ -194,7 +193,7 @@ export class APIController implements IAPIController {
     const record = {
       idpMetadata,
       defaultRedirectUrl,
-      redirectUrl: extractRedirectUrls(redirectUrl),
+      redirectUrl: redirectUrlList,
       tenant,
       product,
       name,
@@ -306,7 +305,8 @@ export class APIController implements IAPIController {
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
-    this._validateRedirectUrl({ redirectUrl, defaultRedirectUrl });
+    const redirectUrlList = extractRedirectUrls(redirectUrl);
+    this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
     const _currentConfig = await this.getConfig(clientInfo);
 
@@ -347,7 +347,7 @@ export class APIController implements IAPIController {
       description: description ? description : _currentConfig.description,
       idpMetadata: newMetadata ? newMetadata : _currentConfig.idpMetadata,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
-      redirectUrl: redirectUrl ? extractRedirectUrls(redirectUrl) : _currentConfig.redirectUrl,
+      redirectUrl: redirectUrlList ? redirectUrlList : _currentConfig.redirectUrl,
     };
 
     await this.configStore.put(
