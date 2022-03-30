@@ -538,10 +538,13 @@ const extractRedirectUrls = (urls: string[] | string): string[] => {
 
   if (typeof urls === 'string') {
     if (urls.startsWith('[')) {
+      // redirectUrl is a stringified array
       return JSON.parse(urls);
     }
+    // redirectUrl is a single URL
     return [urls];
   }
 
+  // redirectUrl is an array of URLs
   return urls;
 };
