@@ -16,7 +16,7 @@ export class APIController implements IAPIController {
 
   private _validateRedirectUrl({ redirectUrlList, defaultRedirectUrl }) {
     if (redirectUrlList) {
-      if (redirectUrlList.length > 10) {
+      if (redirectUrlList.length > 100) {
         throw new JacksonError('Exceeded maximum number of allowed redirect urls', 400);
       }
       for (const url of redirectUrlList) {

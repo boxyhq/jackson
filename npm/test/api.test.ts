@@ -102,7 +102,7 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('when redirectUrl list is huge', async (t) => {
-          body['redirectUrl'] = Array(100).fill('http://localhost:8080');
+          body['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
             await apiController.config(body as IdPConfig);
             t.fail('Expecting JacksonError.');
