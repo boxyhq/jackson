@@ -146,3 +146,39 @@ export interface JacksonOption {
   db: DatabaseOption;
   clientSecretVerifier?: string;
 }
+
+export interface SLORequestParams {
+  nameId: string;
+  tenant: string;
+  product: string;
+  redirectUrl?: string;
+}
+
+interface Metadata {
+  sso: {
+    postUrl?: string;
+    redirectUrl: string;
+  };
+  slo: {
+    redirectUrl?: string;
+    postUrl?: string;
+  };
+  entityID: string;
+  thumbprint: string;
+  loginType: 'idp';
+  provider: string;
+}
+
+export interface SAMLConfig {
+  idpMetadata: Metadata;
+  certs: {
+    privateKey: string;
+    publicKey: string;
+  };
+  defaultRedirectUrl: string;
+}
+
+export interface ILogoutController {
+  createRequest(body: SLORequestParams): Promise<{ logoutUrl: string | null; logoutForm: string | null }>;
+  handleResponse(body: SAMLResponsePayload): Promise<any>;
+}
