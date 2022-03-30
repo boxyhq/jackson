@@ -15,12 +15,16 @@ export class APIController implements IAPIController {
   }
 
   private _validateRedirectUrl({ redirectUrl, defaultRedirectUrl }) {
-    const redirectUrlList = extractRedirectUrls(redirectUrl);
-    if (redirectUrlList.length > 10) {
-      throw new JacksonError('Exceeded maximum number of allowed redirect urls', 400);
+    if (redirectUrl) {
+      const redirectUrlList = extractRedirectUrls(redirectUrl);
+      if (redirectUrlList.length > 10) {
+        throw new JacksonError('Exceeded maximum number of allowed redirect urls', 400);
+      }
+      redirectUrlList.forEach((url) => validateAbsoluteUrl(url, 'redirectUrl is invalid'));
     }
-    redirectUrlList.forEach((url) => validateAbsoluteUrl(url, 'redirectUrl is invalid'));
-    validateAbsoluteUrl(defaultRedirectUrl, 'defaultRedirectUrl is invalid');
+    if (defaultRedirectUrl) {
+      validateAbsoluteUrl(defaultRedirectUrl, 'defaultRedirectUrl is invalid');
+    }
   }
 
   private _validateIdPConfig(body: IdPConfig): void {
