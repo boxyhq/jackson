@@ -5,13 +5,22 @@ import saml from '../saml/saml';
 import x509 from '../saml/x509';
 import { IAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames } from './utils';
+import { IndexNames, validateAbsoluteUrl } from './utils';
 
 export class APIController implements IAPIController {
   private configStore: Storable;
 
   constructor({ configStore }) {
     this.configStore = configStore;
+  }
+
+  private _validateRedirectUrl({ redirectUrl, defaultRedirectUrl }) {
+    const redirectUrlList = extractRedirectUrls(redirectUrl);
+    if (redirectUrlList.length > 10) {
+      throw new JacksonError('Exceeded maximum number of allowed redirect urls', 400);
+    }
+    redirectUrlList.forEach((url) => validateAbsoluteUrl(url, 'redirectUrl is invalid'));
+    validateAbsoluteUrl(defaultRedirectUrl, 'defaultRedirectUrl is invalid');
   }
 
   private _validateIdPConfig(body: IdPConfig): void {
@@ -29,6 +38,8 @@ export class APIController implements IAPIController {
     if (!redirectUrl) {
       throw new JacksonError('Please provide redirectUrl', 400);
     }
+
+    this._validateRedirectUrl({ redirectUrl, defaultRedirectUrl });
 
     if (!tenant) {
       throw new JacksonError('Please provide tenant', 400);
@@ -291,6 +302,8 @@ export class APIController implements IAPIController {
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
+    this._validateRedirectUrl({ redirectUrl, defaultRedirectUrl });
+
     const _currentConfig = await this.getConfig(clientInfo);
 
     if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {

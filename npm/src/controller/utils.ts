@@ -1,3 +1,5 @@
+import { JacksonError } from './error';
+
 export enum IndexNames {
   EntityID = 'entityID',
   TenantProduct = 'tenantProduct',
@@ -26,4 +28,12 @@ export const createRequestForm = (relayState: string, samlReqEnc: string, postUr
   ];
 
   return formElements.join('');
+};
+
+export const validateAbsoluteUrl = (url, message) => {
+  try {
+    new URL(url);
+  } catch (err) {
+    throw new JacksonError(message ? message : 'Invalid url', 400);
+  }
 };
