@@ -30,6 +30,7 @@ const options = <JacksonOption>{
   db: {
     engine: 'mem',
   },
+  clientSecretVerifier: 'TOP-SECRET',
 };
 
 const samlConfig = {
@@ -271,22 +272,55 @@ tap.test('token()', (t) => {
     t.end();
   });
 
-  t.test('Should throw an error if `code` is invalid', async (t) => {
-    const body: Partial<OAuthTokenReq> = {
+  t.test('Should throw an error if `code` or `client_secret` is invalid', async (t) => {
+    const bodyWithInvalidCode: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
-      client_secret: 'some-secret',
+      client_secret: options.clientSecretVerifier,
       code: 'invalid-code',
+    };
+    const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
+      grant_type: 'authorization_code',
+      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_secret: 'dummy',
+      code: code,
+    };
+
+    const bodyWithDummyCredentials: Partial<OAuthTokenReq> = {
+      grant_type: 'authorization_code',
+      client_id: `dummy`,
+      client_secret: 'dummy',
+      code: code,
     };
 
     try {
-      await oauthController.token(<OAuthTokenReq>body);
+      await oauthController.token(<OAuthTokenReq>bodyWithInvalidCode);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
       t.equal(message, 'Invalid code', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithInvalidClientSecret);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid client_secret', 'got expected error message');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithDummyCredentials);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid client_secret', 'got expected error message');
+      t.equal(statusCode, 401, 'got expected status code');
     }
 
     t.end();
@@ -296,7 +330,7 @@ tap.test('token()', (t) => {
     const body: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
-      client_secret: 'dummy',
+      client_secret: options.clientSecretVerifier,
       code: code,
     };
 
