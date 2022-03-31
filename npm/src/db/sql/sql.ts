@@ -30,7 +30,7 @@ class Sql implements DatabaseDriver {
           // name: this.options.type! + Math.floor(Math.random() * 100000),
           type: this.options.type!,
           url: this.options.url,
-          synchronize: process.env.NODE_ENV !== 'production', // don't sync on prod
+          synchronize: true,
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
