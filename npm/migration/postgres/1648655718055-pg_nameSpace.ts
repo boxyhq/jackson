@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class pgNameSpace1648655718055 implements MigrationInterface {
-    name = 'pgNameSpace1648655718055'
+export class pgNamespace1648655718055 implements MigrationInterface {
+    name = 'pgNamespace1648655718055'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "jackson_store" ADD "namespace" character varying(64)`);

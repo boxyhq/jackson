@@ -2,8 +2,8 @@ import { MigrationInterface, QueryRunner } from "typeorm"
 import { Collection, Db, MongoClient, UpdateOptions } from 'mongodb';
 
 
-export class nameSpaceUpdate1648661645038 implements MigrationInterface {
-    name = 'nameSpaceUpdate1648661645038'
+export class namespaceUpdate1648661645038 implements MigrationInterface {
+    name = 'namespaceUpdate1648661645038'
     private url = 'postgresql://postgres:postgres@localhost:5432/postgres'
     
     

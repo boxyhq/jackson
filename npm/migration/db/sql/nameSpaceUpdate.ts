@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class nameSpaceUpdate1648657197587 implements MigrationInterface {
-    name = 'nameSpaceUpdate1648657197587'
+export class namespaceUpdate1648657197587 implements MigrationInterface {
+    name = 'namespaceUpdate1648657197587'
     public async up(queryRunner: QueryRunner): Promise<void> {
         const response = await queryRunner.query("select jackson.key from jackson_store jackson")
         const responseJson = JSON.parse(JSON.stringify(response));
