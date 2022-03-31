@@ -390,7 +390,7 @@ export class OAuthController implements IOAuthController {
           }
         }
       } else {
-        if (client_secret !== this.opts.clientSecretVerifier || client_secret !== codeVal.clientSecret) {
+        if (client_secret !== this.opts.clientSecretVerifier && client_secret !== codeVal.clientSecret) {
           throw new JacksonError('Invalid client_secret', 401);
         }
       }
