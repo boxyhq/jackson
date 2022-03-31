@@ -106,7 +106,7 @@ class Sql implements DatabaseDriver {
   async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const response = await this.storeRepository.find({
-      where: { nameSpace: namespace },
+      where: { namespace: namespace },
       select: ['value', 'iv', 'tag'],
       order: {
         ['createdAt']: 'DESC',
@@ -150,7 +150,7 @@ class Sql implements DatabaseDriver {
       store.iv = val.iv;
       store.tag = val.tag;
       store.modifiedAt = new Date().toISOString();
-      store.nameSpace = namespace;
+      store.namespace = namespace;
       await transactionalEntityManager.save(store);
 
       if (ttl) {

@@ -46,5 +46,5 @@ export class JacksonStore {
     length: 64,
     nullable: true,
   })
-  nameSpace?: string;
+  namespace?: string;
 }

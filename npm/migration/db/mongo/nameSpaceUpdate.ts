@@ -24,7 +24,7 @@ export class nameSpaceUpdate1648661645038 implements MigrationInterface {
             const value = tokens2.join(searchTerm); 
             await this.collection.updateOne(
                 { _id: key },
-                { $set: { nameSpace: value } },
+                { $set: { namespace: value } },
                 function (err: any, result: any) {
                     if (err) {
                         console.log(err);
@@ -45,7 +45,7 @@ export class nameSpaceUpdate1648661645038 implements MigrationInterface {
             const key = response[k].toString();
             await this.collection.updateOne(
                 { _id: key },
-                { $set: { nameSpace: '' } },
+                { $set: { namespace: '' } },
                 function (err: any, result: any) {
                 if (err) {
                     console.log(err);
