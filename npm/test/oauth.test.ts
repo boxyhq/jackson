@@ -42,11 +42,13 @@ const samlConfig = {
   encodedRawMetadata: null,
 };
 
+const configRecords: Array<any> = [];
+
 const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
-
   for (const config of configs) {
-    await apiController.config(config);
+    const _record = await apiController.config(config);
+    configRecords.push(_record);
   }
 };
 
@@ -279,9 +281,17 @@ tap.test('token()', (t) => {
       client_secret: options.clientSecretVerifier,
       code: 'invalid-code',
     };
+    //encoded clientId and wrong secret
     const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_secret: 'dummy',
+      code: code,
+    };
+    //unencoded clientId with wrong secret
+    const bodyWithUnencodedClientId_InvalidClientSecret: Partial<OAuthTokenReq> = {
+      grant_type: 'authorization_code',
+      client_id: configRecords[0].clientID,
       client_secret: 'dummy',
       code: code,
     };
@@ -310,6 +320,16 @@ tap.test('token()', (t) => {
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
       t.equal(message, 'Invalid client_secret', 'got expected error message');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithUnencodedClientId_InvalidClientSecret);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid client_id or client_secret', 'got expected error message');
       t.equal(statusCode, 401, 'got expected status code');
     }
 
