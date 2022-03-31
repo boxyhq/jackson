@@ -307,7 +307,7 @@ export class APIController implements IAPIController {
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
-    const redirectUrlList = extractRedirectUrls(redirectUrl);
+    const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
     const _currentConfig = await this.getConfig(clientInfo);
