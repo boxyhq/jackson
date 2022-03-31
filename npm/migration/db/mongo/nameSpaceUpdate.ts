@@ -1,17 +1,18 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 import { Collection, Db, MongoClient, UpdateOptions } from 'mongodb';
-import { DatabaseOption } from "@boxyhq/saml-jackson/src/typings";
 
 
 export class nameSpaceUpdate1648661645038 implements MigrationInterface {
     name = 'nameSpaceUpdate1648661645038'
-    private options: DatabaseOption;
+    private url = 'postgresql://postgres:postgres@localhost:5432/postgres'
+    
+    
     private client!: MongoClient;
     private collection!: Collection;
     private db!: Db;
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        this.client = new MongoClient(this.options.url);
+        this.client = new MongoClient(this.url);
         await this.client.connect();
         this.db = this.client.db();
         this.collection = this.db.collection('jacksonStore');
@@ -31,11 +32,11 @@ export class nameSpaceUpdate1648661645038 implements MigrationInterface {
                 }
             );
         }
-
+        this.client.close();
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        this.client = new MongoClient(this.options.url);
+        this.client = new MongoClient(this.url);
         await this.client.connect();
         this.db = this.client.db();
         this.collection = this.db.collection('jacksonStore');
@@ -52,6 +53,7 @@ export class nameSpaceUpdate1648661645038 implements MigrationInterface {
                 }
             );
         }
+        this.client.close();
     }
 
 }
