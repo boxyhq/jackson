@@ -19,11 +19,13 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "db:migration:generate:postgres": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:generate -d typeorm.ts  migration/postgres/pg_${MIGRATION_NAME}",
-    "db:migration:generate:mysql": "cross-env DB_TYPE=mysql DB_URL=mysql://root:mysql@localhost:3307/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:generate -d typeorm.ts  migration/postgres/ms_${MIGRATION_NAME}",
-    "db:migration:generate:mariadb": "cross-env DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:generate -d typeorm.ts migration/postgres/md_${MIGRATION_NAME}",
+    "db:migration:generate:mysql": "cross-env DB_TYPE=mysql DB_URL=mysql://root:mysql@localhost:3307/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:generate -d typeorm.ts  migration/mysql/ms_${MIGRATION_NAME}",
+    "db:migration:generate:mariadb": "cross-env DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:generate -d typeorm.ts migration/mariadb/md_${MIGRATION_NAME}",
     "db:migration:run:postgres": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "db:migration:run:mysql": "cross-env DB_TYPE=mysql DB_URL=mysql://root:mysql@localhost:3307/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "db:migration:run:mariadb": "cross-env DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
+    "migration:create:postgres": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:create  migration/db/sql/nameSpaceUpdate",
+    "migration:create:mongo": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:create  migration/db/mongo/nameSpaceUpdate",
     "prepublishOnly": "npm run build",
     "test": "tap --ts --timeout=100 --coverage test/**/*.test.ts",
     "sort": "npx sort-package-json"

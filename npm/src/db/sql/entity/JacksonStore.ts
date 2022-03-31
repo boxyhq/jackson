@@ -40,4 +40,11 @@ export class JacksonStore {
     nullable: true,
   })
   modifiedAt?: string;
+
+  @Column({
+    type: 'varchar',
+    length: 64,
+    nullable: true,
+  })
+  nameSpace?: string;
 }

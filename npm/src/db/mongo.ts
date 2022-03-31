@@ -6,6 +6,7 @@ type _Document = {
   value: Encrypted;
   expiresAt?: Date;
   modifiedAt: string;
+  nameSpace: string;
   indexes: string[];
 };
 
@@ -45,9 +46,8 @@ class Mongo implements DatabaseDriver {
   }
 
   async getAll(namespace: string, offset: number, limit: number): Promise<unknown[]> {
-    const _namespaceMatch = new RegExp(`^${namespace}:.*`);
     const docs = await this.collection
-      .find({ _id: _namespaceMatch }, { sort: { createdAt: -1 }, skip: offset, limit: limit })
+      .find({ nameSpace: namespace }, { sort: { createdAt: -1 }, skip: offset, limit: limit })
       .toArray();
 
     if (docs) return docs.map(({ value }) => value);
@@ -77,7 +77,7 @@ class Mongo implements DatabaseDriver {
     if (ttl) {
       doc.expiresAt = new Date(Date.now() + ttl * 1000);
     }
-
+    doc.nameSpace = namespace;
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
       const idxKey = dbutils.keyForIndex(namespace, idx);
