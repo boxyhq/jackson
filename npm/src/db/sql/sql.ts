@@ -3,7 +3,7 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings';
-import { Connection, createConnection, Like } from 'typeorm';
+import { DataSource, Like } from 'typeorm';
 import * as dbutils from '../utils';
 
 import { JacksonStore } from './entity/JacksonStore';
@@ -12,7 +12,7 @@ import { JacksonTTL } from './entity/JacksonTTL';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
-  private connection!: Connection;
+  private dataSource!: DataSource;
   private storeRepository;
   private indexRepository;
   private ttlRepository;
@@ -26,8 +26,8 @@ class Sql implements DatabaseDriver {
   async init(): Promise<Sql> {
     while (true) {
       try {
-        this.connection = await createConnection({
-          name: this.options.type! + Math.floor(Math.random() * 100000),
+        this.dataSource = new DataSource({
+          // name: this.options.type! + Math.floor(Math.random() * 100000),
           type: this.options.type!,
           url: this.options.url,
           synchronize: true,
@@ -35,6 +35,7 @@ class Sql implements DatabaseDriver {
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
         });
+        await this.dataSource.initialize();
 
         break;
       } catch (err) {
@@ -44,9 +45,9 @@ class Sql implements DatabaseDriver {
       }
     }
 
-    this.storeRepository = this.connection.getRepository(JacksonStore);
-    this.indexRepository = this.connection.getRepository(JacksonIndex);
-    this.ttlRepository = this.connection.getRepository(JacksonTTL);
+    this.storeRepository = this.dataSource.getRepository(JacksonStore);
+    this.indexRepository = this.dataSource.getRepository(JacksonIndex);
+    this.ttlRepository = this.dataSource.getRepository(JacksonTTL);
 
     if (this.options.ttl && this.options.cleanupLimit) {
       this.ttlCleanup = async () => {
@@ -87,7 +88,7 @@ class Sql implements DatabaseDriver {
   }
 
   async get(namespace: string, key: string): Promise<any> {
-    const res = await this.storeRepository.findOne({
+    const res = await this.storeRepository.findOneBy({
       key: dbutils.key(namespace, key),
     });
 
@@ -120,7 +121,7 @@ class Sql implements DatabaseDriver {
   }
 
   async getByIndex(namespace: string, idx: Index): Promise<any> {
-    const res = await this.indexRepository.find({
+    const res = await this.indexRepository.findBy({
       key: dbutils.keyForIndex(namespace, idx),
     });
 
@@ -140,7 +141,7 @@ class Sql implements DatabaseDriver {
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
-    await this.connection.transaction(async (transactionalEntityManager) => {
+    await this.dataSource.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
 
       const store = new JacksonStore();
@@ -161,7 +162,7 @@ class Sql implements DatabaseDriver {
       // no ttl support for secondary indexes
       for (const idx of indexes || []) {
         const key = dbutils.keyForIndex(namespace, idx);
-        const rec = await this.indexRepository.findOne({
+        const rec = await this.indexRepository.findOneBy({
           key,
           storeKey: store.key,
         });
