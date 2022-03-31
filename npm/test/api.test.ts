@@ -87,6 +87,43 @@ tap.test('controller/api', async (t) => {
         t.end();
       });
 
+      t.test('when defaultRedirectUrl or redirectUrl is invalid', async (t) => {
+        const body: Partial<IdPConfig> = Object.assign({}, config[0]);
+
+        t.test('when defaultRedirectUrl is invalid', async (t) => {
+          body['defaultRedirectUrl'] = 'http://localhost::';
+          try {
+            await apiController.config(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'defaultRedirectUrl is invalid');
+            t.equal(err.statusCode, 400);
+          }
+        });
+
+        t.test('when redirectUrl list is huge', async (t) => {
+          body['redirectUrl'] = Array(101).fill('http://localhost:8080');
+          try {
+            await apiController.config(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
+            t.equal(err.statusCode, 400);
+          }
+        });
+
+        t.test('when redirectUrl list contains invalid', async (t) => {
+          body['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
+          try {
+            await apiController.config(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'redirectUrl is invalid');
+            t.equal(err.statusCode, 400);
+          }
+        });
+      });
+
       t.test('when `tenant` is empty', async (t) => {
         const body: Partial<IdPConfig> = Object.assign({}, config[0]);
         delete body['tenant'];
