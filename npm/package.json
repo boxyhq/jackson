@@ -24,8 +24,11 @@
     "db:migration:run:postgres": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "db:migration:run:mysql": "cross-env DB_TYPE=mysql DB_URL=mysql://root:mysql@localhost:3307/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "db:migration:run:mariadb": "cross-env DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
-    "migration:create:postgres": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:create  migration/db/sql/nameSpaceUpdate",
-    "migration:create:mongo": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:create  migration/db/mongo/nameSpaceUpdate",
+    "migration:create:postgres": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:creat -d typeorm.ts    migration/db/sql/1-namespaceUpdate",
+    "migration:create:mongo": "migrate-mongo create namespaceUpdate",
+    "migration:up:mongo": "migrate-mongo up",
+    "migration:down:mongo": "migrate-mongo up",
+    
     "prepublishOnly": "npm run build",
     "test": "tap --ts --timeout=100 --coverage test/**/*.test.ts",
     "sort": "npx sort-package-json"
@@ -53,7 +56,8 @@
     "typeorm": "0.3.3",
     "xml-crypto": "2.1.3",
     "xml2js": "0.4.23",
-    "xmlbuilder": "15.1.1"
+    "xmlbuilder": "15.1.1",
+    "migrate-mongo":"9.0.0"
   },
   "devDependencies": {
     "@types/node": "17.0.23",
