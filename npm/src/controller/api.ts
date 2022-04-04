@@ -5,13 +5,27 @@ import saml from '../saml/saml';
 import x509 from '../saml/x509';
 import { IAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames } from './utils';
+import { IndexNames, validateAbsoluteUrl } from './utils';
 
 export class APIController implements IAPIController {
   private configStore: Storable;
 
   constructor({ configStore }) {
     this.configStore = configStore;
+  }
+
+  private _validateRedirectUrl({ redirectUrlList, defaultRedirectUrl }) {
+    if (redirectUrlList) {
+      if (redirectUrlList.length > 100) {
+        throw new JacksonError('Exceeded maximum number of allowed redirect urls', 400);
+      }
+      for (const url of redirectUrlList) {
+        validateAbsoluteUrl(url, 'redirectUrl is invalid');
+      }
+    }
+    if (defaultRedirectUrl) {
+      validateAbsoluteUrl(defaultRedirectUrl, 'defaultRedirectUrl is invalid');
+    }
   }
 
   private _validateIdPConfig(body: IdPConfig): void {
@@ -142,6 +156,8 @@ export class APIController implements IAPIController {
     metrics.increment('createConfig');
 
     this._validateIdPConfig(body);
+    const redirectUrlList = extractRedirectUrls(redirectUrl);
+    this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
     let metaData = rawMetadata;
     if (encodedRawMetadata) {
@@ -179,7 +195,7 @@ export class APIController implements IAPIController {
     const record = {
       idpMetadata,
       defaultRedirectUrl,
-      redirectUrl: JSON.parse(redirectUrl), // redirectUrl is a stringified array
+      redirectUrl: redirectUrlList,
       tenant,
       product,
       name,
@@ -291,6 +307,9 @@ export class APIController implements IAPIController {
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
+    const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
+    this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
+
     const _currentConfig = await this.getConfig(clientInfo);
 
     if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
@@ -330,7 +349,7 @@ export class APIController implements IAPIController {
       description: description ? description : _currentConfig.description,
       idpMetadata: newMetadata ? newMetadata : _currentConfig.idpMetadata,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
-      redirectUrl: redirectUrl ? JSON.parse(redirectUrl) : _currentConfig.redirectUrl,
+      redirectUrl: redirectUrlList ? redirectUrlList : _currentConfig.redirectUrl,
     };
 
     await this.configStore.put(
@@ -529,4 +548,22 @@ const extractHostName = (url: string): string | null => {
   } catch (err) {
     return null;
   }
+};
+
+const extractRedirectUrls = (urls: string[] | string): string[] => {
+  if (!urls) {
+    return [];
+  }
+
+  if (typeof urls === 'string') {
+    if (urls.startsWith('[')) {
+      // redirectUrl is a stringified array
+      return JSON.parse(urls);
+    }
+    // redirectUrl is a single URL
+    return [urls];
+  }
+
+  // redirectUrl is an array of URLs
+  return urls;
 };

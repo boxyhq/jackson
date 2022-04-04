@@ -18,7 +18,7 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { createAuthorizeForm, IndexNames } from './utils';
+import { createRequestForm, IndexNames } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -179,7 +179,7 @@ export class OAuthController implements IOAuthController {
       });
     } else {
       // HTTP POST binding
-      authorizeForm = createAuthorizeForm(
+      authorizeForm = createRequestForm(
         relayState,
         encodeURI(Buffer.from(samlReq.request).toString('base64')),
         ssoUrl
@@ -388,6 +388,10 @@ export class OAuthController implements IOAuthController {
           if (client_secret !== this.opts.clientSecretVerifier) {
             throw new JacksonError('Invalid client_secret', 401);
           }
+        }
+      } else {
+        if (client_secret !== this.opts.clientSecretVerifier && client_secret !== codeVal.clientSecret) {
+          throw new JacksonError('Invalid client_secret', 401);
         }
       }
     } else if (codeVal && codeVal.session) {

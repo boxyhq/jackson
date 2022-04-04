@@ -30,6 +30,7 @@ const options = <JacksonOption>{
   db: {
     engine: 'mem',
   },
+  clientSecretVerifier: 'TOP-SECRET',
 };
 
 const samlConfig = {
@@ -41,11 +42,13 @@ const samlConfig = {
   encodedRawMetadata: null,
 };
 
+const configRecords: Array<any> = [];
+
 const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
-
   for (const config of configs) {
-    await apiController.config(config);
+    const _record = await apiController.config(config);
+    configRecords.push(_record);
   }
 };
 
@@ -271,16 +274,37 @@ tap.test('token()', (t) => {
     t.end();
   });
 
-  t.test('Should throw an error if `code` is invalid', async (t) => {
-    const body: Partial<OAuthTokenReq> = {
+  t.test('Should throw an error if `code` or `client_secret` is invalid', async (t) => {
+    const bodyWithInvalidCode: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
       client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
-      client_secret: 'some-secret',
+      client_secret: options.clientSecretVerifier,
       code: 'invalid-code',
+    };
+    //encoded clientId and wrong secret
+    const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
+      grant_type: 'authorization_code',
+      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_secret: 'dummy',
+      code: code,
+    };
+    //unencoded clientId with wrong secret
+    const bodyWithUnencodedClientId_InvalidClientSecret: Partial<OAuthTokenReq> = {
+      grant_type: 'authorization_code',
+      client_id: configRecords[0].clientID,
+      client_secret: 'dummy',
+      code: code,
+    };
+
+    const bodyWithDummyCredentials: Partial<OAuthTokenReq> = {
+      grant_type: 'authorization_code',
+      client_id: `dummy`,
+      client_secret: 'dummy',
+      code: code,
     };
 
     try {
-      await oauthController.token(<OAuthTokenReq>body);
+      await oauthController.token(<OAuthTokenReq>bodyWithInvalidCode);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
@@ -289,42 +313,114 @@ tap.test('token()', (t) => {
       t.equal(statusCode, 403, 'got expected status code');
     }
 
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithInvalidClientSecret);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid client_secret', 'got expected error message');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithUnencodedClientId_InvalidClientSecret);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid client_id or client_secret', 'got expected error message');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithDummyCredentials);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid client_secret', 'got expected error message');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
     t.end();
   });
 
   t.test('Should return the `access_token` for a valid request', async (t) => {
-    const body: Partial<OAuthTokenReq> = {
-      grant_type: 'authorization_code',
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
-      client_secret: 'dummy',
-      code: code,
-    };
+    t.test('encoded client_id', async (t) => {
+      const body: Partial<OAuthTokenReq> = {
+        grant_type: 'authorization_code',
+        client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+        client_secret: options.clientSecretVerifier,
+        code: code,
+      };
 
-    const stubRandomBytes = sinon
-      .stub(crypto, 'randomBytes')
-      .onFirstCall()
+      const stubRandomBytes = sinon
+        .stub(crypto, 'randomBytes')
+        .onFirstCall()
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .returns(token);
+
+      const response = await oauthController.token(<OAuthTokenReq>body);
+
+      t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
+      t.ok('access_token' in response, 'includes access_token');
+      t.ok('token_type' in response, 'includes token_type');
+      t.ok('expires_in' in response, 'includes expires_in');
+      t.match(response.access_token, token);
+      t.match(response.token_type, 'bearer');
+      t.match(response.expires_in, 300);
+
+      stubRandomBytes.restore();
+
+      t.end();
+    });
+
+    t.test('unencoded client_id', async (t) => {
+      const authBody = {
+        redirect_uri: samlConfig.defaultRedirectUrl,
+        state: 'state-123',
+        client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      };
+
+      const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+
+      const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
+
+      const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+      const responseBody = {
+        SAMLResponse: rawResponse,
+        RelayState: relayState,
+      };
+
+      sinon.stub(saml, 'validateAsync').resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
+
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .returns(token);
+      const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
 
-    const response = await oauthController.token(<OAuthTokenReq>body);
+      await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
-    t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
-    t.ok('access_token' in response, 'includes access_token');
-    t.ok('token_type' in response, 'includes token_type');
-    t.ok('expires_in' in response, 'includes expires_in');
-    t.match(response.access_token, token);
-    t.match(response.token_type, 'bearer');
-    t.match(response.expires_in, 300);
+      const body: Partial<OAuthTokenReq> = {
+        grant_type: 'authorization_code',
+        client_id: configRecords[0].clientID,
+        client_secret: configRecords[0].clientSecret,
+        code: code,
+      };
+      const tokenRes = await oauthController.token(<OAuthTokenReq>body);
 
-    stubRandomBytes.restore();
+      t.ok('access_token' in tokenRes, 'includes access_token');
+      t.ok('token_type' in tokenRes, 'includes token_type');
+      t.ok('expires_in' in tokenRes, 'includes expires_in');
+      t.match(tokenRes.access_token, token);
+      t.match(tokenRes.token_type, 'bearer');
+      t.match(tokenRes.expires_in, 300);
 
-    t.end();
-  });
+      stubRandomBytes.restore();
 
-  // TODO
-  t.test('Handle invalid client_id', async (t) => {
-    t.end();
+      t.end();
+    });
   });
 
   t.end();

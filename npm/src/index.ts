@@ -1,11 +1,14 @@
+import { AdminController } from './controller/admin';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
-import { AdminController } from './controller/admin';
+import { HealthCheckController } from './controller/health-check';
+import { LogoutController } from './controller/signout';
+
 import DB from './db/db';
+import defaultDb from './db/defaultDb';
 import readConfig from './read-config';
 import { JacksonOption } from './typings';
-import defaultDb from './db/defaultDb';
-import { HealthCheckController } from './controller/health-check';
+
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
     ...opts,
@@ -37,6 +40,7 @@ export const controllers = async (
   apiController: APIController;
   oauthController: OAuthController;
   adminController: AdminController;
+  logoutController: LogoutController;
   healthCheckController: HealthCheckController;
 }> => {
   opts = defaultOpts(opts);
@@ -61,6 +65,12 @@ export const controllers = async (
     opts,
   });
 
+  const logoutController = new LogoutController({
+    configStore,
+    sessionStore,
+    opts,
+  });
+
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
     const configs = await readConfig(opts.preLoadedConfig);
@@ -80,6 +90,7 @@ export const controllers = async (
     apiController,
     oauthController,
     adminController,
+    logoutController,
     healthCheckController,
   };
 };
