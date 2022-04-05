@@ -71,6 +71,9 @@ export class OAuthController implements IOAuthController {
       provider = 'saml',
     } = body;
 
+    let requestedTenant = tenant;
+    let requestedProduct = product;
+
     metrics.increment('oauthAuthorize');
 
     if (!redirect_uri) {
@@ -99,6 +102,9 @@ export class OAuthController implements IOAuthController {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
       const sp = getEncodedClientId(client_id);
       if (sp?.tenant) {
+        requestedTenant = sp.tenant;
+        requestedProduct = sp.product || '';
+
         const samlConfigs = await this.configStore.getByIndex({
           name: IndexNames.TenantProduct,
           value: dbutils.keyFromParts(sp.tenant, sp.product || ''),
@@ -149,9 +155,9 @@ export class OAuthController implements IOAuthController {
 
     const sessionId = crypto.randomBytes(16).toString('hex');
 
-    const requestedParams: Record<string, string> = {
-      tenant,
-      product,
+    const requested: Record<string, string> = {
+      tenant: requestedTenant,
+      product: requestedProduct,
       client_id,
       state,
     };
@@ -163,7 +169,7 @@ export class OAuthController implements IOAuthController {
       state,
       code_challenge,
       code_challenge_method,
-      requested: requestedParams,
+      requested,
     });
 
     const relayState = relayStatePrefix + sessionId;
@@ -225,9 +231,6 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML configuration not found.', 403);
     }
 
-    // TODO: Support multiple matches
-    const samlConfig = samlConfigs[0];
-
     let session;
 
     if (RelayState !== '') {
@@ -235,6 +238,18 @@ export class OAuthController implements IOAuthController {
       if (!session) {
         throw new JacksonError('Unable to validate state from the origin request.', 403);
       }
+    }
+
+    // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
+    const samlConfig = samlConfigs.filter((c) => {
+      return (
+        c.clientID === session?.requested?.client_id ||
+        (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
+      );
+    })[0];
+
+    if (!samlConfig) {
+      throw new JacksonError('SAML configuration not found.', 403);
     }
 
     const validateOpts: Record<string, string> = {
