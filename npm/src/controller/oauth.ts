@@ -241,12 +241,15 @@ export class OAuthController implements IOAuthController {
     }
 
     // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
-    const samlConfig = samlConfigs.filter((c) => {
-      return (
-        c.clientID === session?.requested?.client_id ||
-        (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
-      );
-    })[0];
+    const samlConfig =
+      samlConfigs.length === 1
+        ? samlConfigs[0]
+        : samlConfigs.filter((c) => {
+            return (
+              c.clientID === session?.requested?.client_id ||
+              (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
+            );
+          })[0];
 
     if (!samlConfig) {
       throw new JacksonError('SAML configuration not found.', 403);
