@@ -3,7 +3,10 @@ import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
-import saml from '../saml/saml';
+
+import { request, parseAsync, validateAsync } from '@boxyhq/saml20';
+import claims from '../saml/claims';
+
 import {
   IOAuthController,
   JacksonOption,
@@ -23,6 +26,20 @@ import { createRequestForm, IndexNames } from './utils';
 const deflateRawAsync = promisify(deflateRaw);
 
 const relayStatePrefix = 'boxyhq_jackson_';
+
+const validateResponse = async (rawResponse: string, validateOpts) => {
+  const profile = await validateAsync(rawResponse, validateOpts);
+  if (profile && profile.claims) {
+    // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
+    profile.claims = claims.map(profile.claims);
+
+    // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
+    if (!profile.claims.id) {
+      profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
+    }
+  }
+  return profile;
+};
 
 function getEncodedClientId(client_id: string): { tenant: string | null; product: string | null } | null {
   try {
@@ -145,7 +162,7 @@ export class OAuthController implements IOAuthController {
       post = true;
     }
 
-    const samlReq = saml.request({
+    const samlReq = request({
       ssoUrl,
       entityID: this.opts.samlAudience!,
       callbackUrl: this.opts.externalUrl + this.opts.samlPath,
@@ -220,7 +237,7 @@ export class OAuthController implements IOAuthController {
 
     const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
 
-    const parsedResp = await saml.parseAsync(rawResponse);
+    const parsedResp = await parseAsync(rawResponse);
 
     const samlConfigs = await this.configStore.getByIndex({
       name: IndexNames.EntityID,
@@ -264,7 +281,7 @@ export class OAuthController implements IOAuthController {
       validateOpts.inResponseTo = session.id;
     }
 
-    const profile = await saml.validateAsync(rawResponse, validateOpts);
+    const profile = await validateResponse(rawResponse, validateOpts);
 
     // store details against a code
     const code = crypto.randomBytes(20).toString('hex');

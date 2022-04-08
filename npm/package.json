@@ -36,7 +36,8 @@
     "statements": 70
   },
   "dependencies": {
-    "@boxyhq/saml20": "0.2.1",
+
+    "@boxyhq/saml20": "file:/Users/vishallodha/Desktop/boxyhq/jacksonExamples/saml20-maintained",
     "@opentelemetry/api-metrics": "0.27.0",
     "@peculiar/webcrypto": "1.3.2",
     "@peculiar/x509": "1.6.1",
