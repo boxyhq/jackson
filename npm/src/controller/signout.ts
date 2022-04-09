@@ -8,7 +8,7 @@ import xmlbuilder from 'xmlbuilder';
 import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
 
-import * as saml from '@boxyhq/saml20';
+import saml from '@boxyhq/saml20';
 import { JacksonOption, SAMLConfig, SAMLResponsePayload, SLORequestParams, Storable } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';

@@ -4,7 +4,7 @@ import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
 
-import * as saml from '@boxyhq/saml20';
+import saml from '@boxyhq/saml20';
 import claims from '../saml/claims';
 
 import {
