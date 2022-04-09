@@ -8,7 +8,7 @@ import xmlbuilder from 'xmlbuilder';
 import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
 
-import { PubKeyInfo, certToPEM } from '@boxyhq/saml20';
+import * as saml from '@boxyhq/saml20';
 import { JacksonOption, SAMLConfig, SAMLResponsePayload, SLORequestParams, Storable } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -205,7 +205,7 @@ const signXML = async (xml: string, signingKey: string, publicKey: string): Prom
   const sig = new SignedXml();
 
   sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
-  sig.keyInfoProvider = new PubKeyInfo(publicKey);
+  sig.keyInfoProvider = new saml.PubKeyInfo(publicKey);
   sig.signingKey = signingKey;
 
   sig.addReference(
@@ -253,7 +253,7 @@ const hasValidSignature = async (xml: string, certThumbprint: string): Promise<b
 
             calculatedThumbprint = thumbprint.calculate(base64cer);
 
-            return certToPEM(base64cer);
+            return saml.certToPEM(base64cer);
           }
         }
       },

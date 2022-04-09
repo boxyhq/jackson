@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
 
-import { parseMetadataAsync } from '@boxyhq/saml20';
+import * as saml from '@boxyhq/saml20';
 import x509 from '../saml/x509';
 import { IAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
@@ -165,7 +165,7 @@ export class APIController implements IAPIController {
       metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
-    const idpMetadata = await parseMetadataAsync(metaData!);
+    const idpMetadata = await saml.parseMetadataAsync(metaData!);
 
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);
@@ -322,7 +322,7 @@ export class APIController implements IAPIController {
     }
     let newMetadata;
     if (metaData) {
-      newMetadata = await parseMetadataAsync(metaData);
+      newMetadata = await saml.parseMetadataAsync(metaData);
 
       // extract provider
       let providerName = extractHostName(newMetadata.entityID);

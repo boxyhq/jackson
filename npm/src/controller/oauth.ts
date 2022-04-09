@@ -4,7 +4,7 @@ import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
 
-import { request, parseAsync, validateAsync } from '@boxyhq/saml20';
+import * as saml from '@boxyhq/saml20';
 import claims from '../saml/claims';
 
 import {
@@ -28,7 +28,7 @@ const deflateRawAsync = promisify(deflateRaw);
 const relayStatePrefix = 'boxyhq_jackson_';
 
 const validateResponse = async (rawResponse: string, validateOpts) => {
-  const profile = await validateAsync(rawResponse, validateOpts);
+  const profile = await saml.validateAsync(rawResponse, validateOpts);
   if (profile && profile.claims) {
     // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
     profile.claims = claims.map(profile.claims);
@@ -162,7 +162,7 @@ export class OAuthController implements IOAuthController {
       post = true;
     }
 
-    const samlReq = request({
+    const samlReq = saml.request({
       ssoUrl,
       entityID: this.opts.samlAudience!,
       callbackUrl: this.opts.externalUrl + this.opts.samlPath,
@@ -237,7 +237,7 @@ export class OAuthController implements IOAuthController {
 
     const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
 
-    const parsedResp = await parseAsync(rawResponse);
+    const parsedResp = await saml.parseAsync(rawResponse);
 
     const samlConfigs = await this.configStore.getByIndex({
       name: IndexNames.EntityID,
