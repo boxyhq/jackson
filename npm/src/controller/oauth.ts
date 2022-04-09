@@ -34,7 +34,7 @@ const validateResponse = async (rawResponse: string, validateOpts) => {
     profile.claims = claims.map(profile.claims);
 
     // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
-    if (!profile.claims.id) {
+    if (!profile.claims.id && profile.claims.email) {
       profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
     }
   }
