@@ -2,7 +2,7 @@ import { AdminController } from './controller/admin';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
-import { LogoutController } from './controller/signout';
+import { LogoutController } from './controller/logout';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
