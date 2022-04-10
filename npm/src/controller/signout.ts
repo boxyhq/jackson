@@ -12,7 +12,7 @@ import saml from '@boxyhq/saml20';
 import { JacksonOption, SAMLConfig, SAMLResponsePayload, SLORequestParams, Storable } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
-import { createRequestForm, IndexNames } from './utils';
+import { IndexNames } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -82,11 +82,10 @@ export class LogoutController {
 
     // HTTP-POST binding
     if ('postUrl' in slo) {
-      logoutForm = createRequestForm(
-        relayState,
-        encodeURI(Buffer.from(signedXML).toString('base64')),
-        slo.postUrl as string
-      );
+      logoutForm = saml.createPostForm(slo.postUrl as string, relayState, {
+        name: 'SAMLRequest',
+        value: Buffer.from(signedXML).toString('base64'),
+      });
     }
 
     return { logoutUrl, logoutForm };

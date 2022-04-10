@@ -21,7 +21,7 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { createRequestForm, IndexNames } from './utils';
+import { IndexNames } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -202,11 +202,10 @@ export class OAuthController implements IOAuthController {
       });
     } else {
       // HTTP POST binding
-      authorizeForm = createRequestForm(
-        relayState,
-        encodeURI(Buffer.from(samlReq.request).toString('base64')),
-        ssoUrl
-      );
+      authorizeForm = saml.createPostForm(ssoUrl, relayState, {
+        name: 'SAMLRequest',
+        value: Buffer.from(samlReq.request).toString('base64'),
+      });
     }
 
     return {
