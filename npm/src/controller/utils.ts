@@ -5,6 +5,8 @@ export enum IndexNames {
   TenantProduct = 'tenantProduct',
 }
 
+export const relayStatePrefix = 'boxyhq_jackson_';
+
 export const validateAbsoluteUrl = (url, message) => {
   try {
     new URL(url);

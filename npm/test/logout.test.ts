@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import tap from 'tap';
 import readConfig from '../src/read-config';
 import { IAPIController, ILogoutController, JacksonOption } from '../src/typings';
+import { relayStatePrefix } from '../src/controller/utils';
 
 let apiController: IAPIController;
 let logoutController: ILogoutController;
@@ -131,7 +132,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
 
   t.test('handleResponse', async (t) => {
     const sessionId = 'a0089b303b86a97080ff';
-    const relayState = `boxyhq_jackson_${sessionId}`;
+    const relayState = `${relayStatePrefix}${sessionId}`;
 
     const logoutResponseXML = await fs.readFile(path.join(__dirname, '/data/logout_response.xml'), 'utf8');
     const logoutResponseFailedXML = await fs.readFile(

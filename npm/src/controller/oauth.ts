@@ -21,11 +21,9 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { IndexNames } from './utils';
+import { relayStatePrefix, IndexNames } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
-
-const relayStatePrefix = 'boxyhq_jackson_';
 
 const validateResponse = async (rawResponse: string, validateOpts) => {
   const profile = await saml.validateAsync(rawResponse, validateOpts);
