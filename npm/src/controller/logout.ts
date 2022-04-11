@@ -17,6 +17,8 @@ import { IndexNames } from './utils';
 const deflateRawAsync = promisify(deflateRaw);
 
 const relayStatePrefix = 'boxyhq_jackson_';
+const logoutXPath = "/*[local-name(.)='LogoutRequest']";
+
 export class LogoutController {
   private configStore: Storable;
   private sessionStore: Storable;
@@ -201,21 +203,7 @@ const parseSAMLResponse = async (
 
 // Sign the XML
 const signXML = async (xml: string, signingKey: string, publicKey: string): Promise<string> => {
-  const sig = new SignedXml();
-
-  sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
-  sig.keyInfoProvider = new saml.PubKeyInfo(publicKey);
-  sig.signingKey = signingKey;
-
-  sig.addReference(
-    "/*[local-name(.)='LogoutRequest']",
-    ['http://www.w3.org/2000/09/xmldsig#enveloped-signature', 'http://www.w3.org/2001/10/xml-exc-c14n#'],
-    'http://www.w3.org/2001/04/xmlenc#sha256'
-  );
-
-  sig.computeSignature(xml);
-
-  return sig.getSignedXml();
+  return await saml.sign(xml, signingKey, publicKey, logoutXPath);
 };
 
 // Validate signature
