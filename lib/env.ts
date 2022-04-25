@@ -4,6 +4,7 @@ const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5225');
 const externalUrl = process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const samlPath = '/api/oauth/saml';
+const idpDiscoveryPath = '/idp/select';
 
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
 
@@ -28,6 +29,7 @@ export default {
   hostPort,
   externalUrl,
   samlPath,
+  idpDiscoveryPath,
   samlAudience,
   preLoadedConfig,
   apiKeys,

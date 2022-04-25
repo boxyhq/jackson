@@ -25,7 +25,6 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.idpEnabled = newOpts.idpEnabled === true;
-  newOpts.idpDiscoveryPath = '/idp/select';
   defaultDb(newOpts);
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
