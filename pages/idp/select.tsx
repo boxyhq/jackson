@@ -9,8 +9,6 @@ export default function IdPSelection() {
 
   const { idp: idpList, ...rest } = router.query as { idp?: string[] };
 
-  console.log(idpList);
-
   useEffect(() => {
     if (routerRef.current.isReady && !Array.isArray(idpList)) {
       routerRef.current.push('/error');
@@ -18,8 +16,6 @@ export default function IdPSelection() {
   }, [idpList]);
 
   const paramsToRelay = Object.entries(rest);
-
-  console.log(paramsToRelay);
 
   return (
     <form action='/api/oauth/authorize'>
