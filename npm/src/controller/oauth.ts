@@ -103,7 +103,7 @@ export class OAuthController implements IOAuthController {
       if (samlConfigs.length > 1) {
         if (idpSelected) {
           samlConfig = samlConfigs.find(({ clientID }) => clientID === idpSelected);
-        } else {
+        } else if (this.opts.idpDiscoveryPath) {
           // redirect to IdP selection page
           const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
             JSON.stringify({
@@ -148,7 +148,7 @@ export class OAuthController implements IOAuthController {
         if (samlConfigs.length > 1) {
           if (idpSelected) {
             samlConfig = samlConfigs.find(({ clientID }) => clientID === idpSelected);
-          } else {
+          } else if (this.opts.idpDiscoveryPath) {
             // redirect to IdP selection page
             const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
               JSON.stringify({
