@@ -57,6 +57,33 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
+  private resolveMultipleConfigMatches(
+    samlConfigs,
+    idp_hint,
+    authParams
+  ): { resolvedSamlConfig?: unknown; redirect_url?: string } {
+    if (samlConfigs.length > 1) {
+      if (idp_hint) {
+        return { resolvedSamlConfig: samlConfigs.find(({ clientID }) => clientID === idp_hint) };
+      } else if (this.opts.idpDiscoveryPath) {
+        // redirect to IdP selection page
+        const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
+          JSON.stringify({
+            provider,
+            clientID,
+          })
+        );
+        return {
+          redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
+            ...authParams,
+            idp: idpList,
+          }),
+        };
+      }
+    }
+    return {};
+  }
+
   public async authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
       response_type = 'code',
@@ -100,32 +127,24 @@ export class OAuthController implements IOAuthController {
       samlConfig = samlConfigs[0];
 
       // Support multiple matches
-      if (samlConfigs.length > 1) {
-        if (idpSelected) {
-          samlConfig = samlConfigs.find(({ clientID }) => clientID === idpSelected);
-        } else if (this.opts.idpDiscoveryPath) {
-          // redirect to IdP selection page
-          const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
-            JSON.stringify({
-              provider,
-              clientID,
-            })
-          );
-          return {
-            redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
-              response_type,
-              client_id,
-              redirect_uri,
-              state,
-              tenant,
-              product,
-              code_challenge,
-              code_challenge_method,
-              provider,
-              idp: idpList,
-            }),
-          };
-        }
+      const { resolvedSamlConfig, redirect_url } = this.resolveMultipleConfigMatches(samlConfigs, idp_hint, {
+        response_type,
+        client_id,
+        redirect_uri,
+        state,
+        tenant,
+        product,
+        code_challenge,
+        code_challenge_method,
+        provider,
+      });
+
+      if (redirect_url) {
+        return { redirect_url };
+      }
+
+      if (resolvedSamlConfig) {
+        samlConfig = resolvedSamlConfig;
       }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
@@ -145,32 +164,28 @@ export class OAuthController implements IOAuthController {
 
         samlConfig = samlConfigs[0];
         // Support multiple matches
-        if (samlConfigs.length > 1) {
-          if (idpSelected) {
-            samlConfig = samlConfigs.find(({ clientID }) => clientID === idpSelected);
-          } else if (this.opts.idpDiscoveryPath) {
-            // redirect to IdP selection page
-            const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
-              JSON.stringify({
-                provider,
-                clientID,
-              })
-            );
-            return {
-              redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
-                response_type,
-                client_id,
-                redirect_uri,
-                state,
-                tenant,
-                product,
-                code_challenge,
-                code_challenge_method,
-                provider,
-                idp: idpList,
-              }),
-            };
+        const { resolvedSamlConfig, redirect_url } = this.resolveMultipleConfigMatches(
+          samlConfigs,
+          idp_hint,
+          {
+            response_type,
+            client_id,
+            redirect_uri,
+            state,
+            tenant,
+            product,
+            code_challenge,
+            code_challenge_method,
+            provider,
           }
+        );
+
+        if (redirect_url) {
+          return { redirect_url };
+        }
+
+        if (resolvedSamlConfig) {
+          samlConfig = resolvedSamlConfig;
         }
       } else {
         samlConfig = await this.configStore.get(client_id);
