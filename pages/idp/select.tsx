@@ -29,7 +29,7 @@ export default function IdPSelection() {
               <div className='relative my-3 bg-white' key={clientID}>
                 <input
                   id={`radio-${clientID}`}
-                  name='idpSelected'
+                  name='idp_hint'
                   type='radio'
                   className={`peer sr-only`}
                   value={clientID}

@@ -69,7 +69,7 @@ export class OAuthController implements IOAuthController {
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       provider = 'saml',
-      idpSelected,
+      idp_hint,
     } = body;
 
     let requestedTenant = tenant;
