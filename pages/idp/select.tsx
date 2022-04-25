@@ -7,22 +7,22 @@ export default function IdPSelection() {
 
   routerRef.current = router;
 
-  const { idp: idpList, returnTo, ...rest } = router.query as { idp?: string[]; returnTo?: string };
+  const { idp: idpList, ...rest } = router.query as { idp?: string[] };
 
   console.log(idpList);
 
   useEffect(() => {
-    if (routerRef.current.isReady && (!returnTo || !Array.isArray(idpList))) {
+    if (routerRef.current.isReady && !Array.isArray(idpList)) {
       routerRef.current.push('/error');
     }
-  }, [idpList, returnTo]);
+  }, [idpList]);
 
   const paramsToRelay = Object.entries(rest);
 
   console.log(paramsToRelay);
 
   return (
-    <form action={returnTo as string}>
+    <form action='/api/oauth/authorize'>
       {paramsToRelay
         .filter(([, value]) => value !== undefined)
         .map(([key, value]) => (
@@ -47,7 +47,9 @@ export default function IdPSelection() {
           </div>
         );
       })}
-      <button type='submit'>Proceed</button>
+      <button type='submit' className='btn-primary'>
+        Proceed
+      </button>
     </form>
   );
 }
