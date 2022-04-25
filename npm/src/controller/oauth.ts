@@ -57,7 +57,9 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
-  public async authorize(body: OAuthReqBody): Promise<{ redirect_url: string; authorize_form: string }> {
+  public async authorize(
+    body: OAuthReqBody
+  ): Promise<{ redirect_url?: string; authorize_form?: string; redirect_to_idp_select?: string }> {
     const {
       response_type = 'code',
       client_id,
@@ -69,6 +71,7 @@ export class OAuthController implements IOAuthController {
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       provider = 'saml',
+      idpSelected,
     } = body;
 
     let requestedTenant = tenant;
@@ -96,8 +99,36 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('SAML configuration not found.', 403);
       }
 
-      // TODO: Support multiple matches
       samlConfig = samlConfigs[0];
+
+      // Support multiple matches
+      if (samlConfigs.length > 1) {
+        if (idpSelected) {
+          samlConfig = samlConfigs.find(({ clientID }) => clientID === idpSelected);
+        } else {
+          // redirect to IdP selection page
+          const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
+            JSON.stringify({
+              provider,
+              clientID,
+            })
+          );
+          return {
+            redirect_to_idp_select: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
+              response_type,
+              // client_id,
+              redirect_uri,
+              state,
+              tenant,
+              product,
+              code_challenge,
+              code_challenge_method,
+              provider,
+              idp: idpList,
+            }),
+          };
+        }
+      }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
       const sp = getEncodedClientId(client_id);
@@ -114,8 +145,35 @@ export class OAuthController implements IOAuthController {
           throw new JacksonError('SAML configuration not found.', 403);
         }
 
-        // TODO: Support multiple matches
         samlConfig = samlConfigs[0];
+        // Support multiple matches
+        if (samlConfigs.length > 1) {
+          if (idpSelected) {
+            samlConfig = samlConfigs.find(({ clientID }) => clientID === idpSelected);
+          } else {
+            // redirect to IdP selection page
+            const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
+              JSON.stringify({
+                provider,
+                clientID,
+              })
+            );
+            return {
+              redirect_to_idp_select: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
+                response_type,
+                client_id,
+                redirect_uri,
+                state,
+                // tenant,
+                // product,
+                code_challenge,
+                code_challenge_method,
+                provider,
+                idp: idpList,
+              }),
+            };
+          }
+        }
       } else {
         samlConfig = await this.configStore.get(client_id);
       }
