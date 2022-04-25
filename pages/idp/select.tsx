@@ -1,21 +1,15 @@
 import { useRouter } from 'next/router';
-import { useEffect, useRef } from 'react';
 
 export default function IdPSelection() {
   const router = useRouter();
-  const routerRef = useRef(router);
-
-  routerRef.current = router;
 
   const { idp: idpList, ...rest } = router.query as { idp?: string[] };
 
-  useEffect(() => {
-    if (routerRef.current.isReady && !Array.isArray(idpList)) {
-      routerRef.current.push('/error');
-    }
-  }, [idpList]);
-
   const paramsToRelay = Object.entries(rest);
+
+  if (!Array.isArray(idpList)) {
+    return <div>IdP list missing</div>;
+  }
 
   return (
     <form
