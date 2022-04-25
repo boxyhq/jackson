@@ -57,9 +57,7 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
-  public async authorize(
-    body: OAuthReqBody
-  ): Promise<{ redirect_url?: string; authorize_form?: string; redirect_to_idp_select?: string }> {
+  public async authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
       response_type = 'code',
       client_id,
@@ -114,9 +112,9 @@ export class OAuthController implements IOAuthController {
             })
           );
           return {
-            redirect_to_idp_select: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
+            redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
               response_type,
-              // client_id,
+              client_id,
               redirect_uri,
               state,
               tenant,
@@ -159,13 +157,13 @@ export class OAuthController implements IOAuthController {
               })
             );
             return {
-              redirect_to_idp_select: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
+              redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
                 response_type,
                 client_id,
                 redirect_uri,
                 state,
-                // tenant,
-                // product,
+                tenant,
+                product,
                 code_challenge,
                 code_challenge_method,
                 provider,
