@@ -11,11 +11,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const { oauthController } = await jackson();
-    const { redirect_url, authorize_form } = await oauthController.authorize(
+    const { redirect_url, authorize_form, redirect_to_idp_select } = await oauthController.authorize(
       req.query as unknown as OAuthReqBody
     );
-    if (redirect_url) {
-      res.redirect(302, redirect_url!);
+    if (redirect_to_idp_select && req.url) {
+      const proto = req.headers['x-forwarded-proto'] || req.connection.encrypted ? 'https' : 'http';
+
+      const originalURL = new URL(req.url, `${proto}://${req.headers.host}`);
+
+      res.redirect(
+        302,
+        redirect_to_idp_select + `&returnTo=${encodeURIComponent(originalURL.origin + originalURL.pathname)}`
+      );
+    } else if (redirect_url) {
+      res.redirect(302, redirect_url);
     } else {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(authorize_form);
