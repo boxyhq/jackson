@@ -50,7 +50,7 @@ export const controllers = async (
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
-  const healthCheckStore = db.store('_health');
+  const healthCheckStore = db.store('_health:check');
 
   const apiController = new APIController({ configStore });
   const adminController = new AdminController({ configStore });
