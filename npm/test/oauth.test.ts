@@ -13,7 +13,7 @@ import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../src/controller/error';
 import readConfig from '../src/read-config';
-import saml from '../src/saml/saml';
+import saml from '@boxyhq/saml20';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
