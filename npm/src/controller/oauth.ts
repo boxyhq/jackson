@@ -149,13 +149,13 @@ export class OAuthController implements IOAuthController {
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
       const sp = getEncodedClientId(client_id);
-      if (sp?.tenant) {
+      if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
-        requestedProduct = sp.product || '';
+        requestedProduct = sp.product;
 
         const samlConfigs = await this.configStore.getByIndex({
           name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(sp.tenant, sp.product || ''),
+          value: dbutils.keyFromParts(sp.tenant, sp.product),
         });
 
         if (!samlConfigs || samlConfigs.length === 0) {
