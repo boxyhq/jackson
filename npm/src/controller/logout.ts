@@ -1,21 +1,21 @@
-import { DOMParser as Dom } from '@xmldom/xmldom';
 import crypto from 'crypto';
-import thumbprint from 'thumbprint';
 import { promisify } from 'util';
-import { SignedXml, xpath as select } from 'xml-crypto';
 import xml2js from 'xml2js';
 import xmlbuilder from 'xmlbuilder';
 import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
-import saml from '../saml/saml';
+
+import saml from '@boxyhq/saml20';
 import { JacksonOption, SAMLConfig, SAMLResponsePayload, SLORequestParams, Storable } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
-import { createRequestForm, IndexNames } from './utils';
+import { IndexNames } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
 const relayStatePrefix = 'boxyhq_jackson_';
+const logoutXPath = "/*[local-name(.)='LogoutRequest']";
+
 export class LogoutController {
   private configStore: Storable;
   private sessionStore: Storable;
@@ -81,11 +81,10 @@ export class LogoutController {
 
     // HTTP-POST binding
     if ('postUrl' in slo) {
-      logoutForm = createRequestForm(
-        relayState,
-        encodeURI(Buffer.from(signedXML).toString('base64')),
-        slo.postUrl as string
-      );
+      logoutForm = saml.createPostForm(slo.postUrl as string, relayState, {
+        name: 'SAMLRequest',
+        value: Buffer.from(signedXML).toString('base64'),
+      });
     }
 
     return { logoutUrl, logoutForm };
@@ -123,7 +122,7 @@ export class LogoutController {
 
     const { idpMetadata, defaultRedirectUrl }: SAMLConfig = samlConfigs[0];
 
-    if (!(await hasValidSignature(rawResponse, idpMetadata.thumbprint))) {
+    if (!(await saml.validateSignature(rawResponse, null, idpMetadata.thumbprint))) {
       throw new JacksonError('Invalid signature.', 403);
     }
 
@@ -201,74 +200,5 @@ const parseSAMLResponse = async (
 
 // Sign the XML
 const signXML = async (xml: string, signingKey: string, publicKey: string): Promise<string> => {
-  const sig = new SignedXml();
-
-  sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
-  sig.keyInfoProvider = new saml.PubKeyInfo(publicKey);
-  sig.signingKey = signingKey;
-
-  sig.addReference(
-    "/*[local-name(.)='LogoutRequest']",
-    ['http://www.w3.org/2000/09/xmldsig#enveloped-signature', 'http://www.w3.org/2001/10/xml-exc-c14n#'],
-    'http://www.w3.org/2001/04/xmlenc#sha256'
-  );
-
-  sig.computeSignature(xml);
-
-  return sig.getSignedXml();
-};
-
-// Validate signature
-const hasValidSignature = async (xml: string, certThumbprint: string): Promise<boolean> => {
-  return new Promise((resolve, reject) => {
-    const doc = new Dom().parseFromString(xml);
-    const signed = new SignedXml();
-    let calculatedThumbprint;
-
-    const signature =
-      select(
-        doc,
-        "/*/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']"
-      )[0] ||
-      select(
-        doc,
-        "/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']"
-      )[0] ||
-      select(
-        doc,
-        "/*/*/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']"
-      )[0];
-
-    signed.keyInfoProvider = {
-      getKey: function getKey(keyInfo) {
-        if (certThumbprint) {
-          const embeddedSignature = keyInfo[0].getElementsByTagNameNS(
-            'http://www.w3.org/2000/09/xmldsig#',
-            'X509Certificate'
-          );
-
-          if (embeddedSignature.length > 0) {
-            const base64cer = embeddedSignature[0].firstChild.toString();
-
-            calculatedThumbprint = thumbprint.calculate(base64cer);
-
-            return saml.certToPEM(base64cer);
-          }
-        }
-      },
-      getKeyInfo: function getKeyInfo() {
-        return '<X509Data></X509Data>';
-      },
-    };
-
-    signed.loadSignature(signature.toString());
-
-    try {
-      return resolve(
-        signed.checkSignature(xml) && calculatedThumbprint.toUpperCase() === certThumbprint.toUpperCase()
-      );
-    } catch (err) {
-      return reject(err);
-    }
-  });
+  return await saml.sign(xml, signingKey, publicKey, logoutXPath);
 };
