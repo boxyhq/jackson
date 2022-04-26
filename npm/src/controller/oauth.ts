@@ -226,13 +226,16 @@ export class OAuthController implements IOAuthController {
 
     const sessionId = crypto.randomBytes(16).toString('hex');
 
-    const requested: Record<string, string> = {
-      tenant: requestedTenant,
-      product: requestedProduct,
-      idp_hint: idp_hint || '',
-      client_id,
-      state,
-    };
+    const requested = { client_id, state } as Record<string, string>;
+    if (requestedTenant) {
+      requested.tenant = requestedTenant;
+    }
+    if (requestedProduct) {
+      requested.product = requestedProduct;
+    }
+    if (idp_hint) {
+      requested.idp_hint = idp_hint;
+    }
 
     await this.sessionStore.put(sessionId, {
       id: samlReq.id,
