@@ -229,6 +229,7 @@ export class OAuthController implements IOAuthController {
     const requested: Record<string, string> = {
       tenant: requestedTenant,
       product: requestedProduct,
+      idp_hint: idp_hint || '',
       client_id,
       state,
     };
