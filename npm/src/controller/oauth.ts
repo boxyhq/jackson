@@ -111,13 +111,6 @@ export class OAuthController implements IOAuthController {
               appList
             ),
           };
-
-          // return {
-          //   redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
-          //     ...authParams,
-          //     app: appList,
-          //   }),
-          // };
         }
       }
     }
