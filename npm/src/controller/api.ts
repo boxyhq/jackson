@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
-import saml from '../saml/saml';
+
+import saml from '@boxyhq/saml20';
 import x509 from '../saml/x509';
 import { IAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
