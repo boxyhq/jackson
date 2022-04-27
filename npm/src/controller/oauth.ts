@@ -293,10 +293,16 @@ export class OAuthController implements IOAuthController {
       });
     } else {
       // HTTP POST binding
-      authorizeForm = saml.createPostForm(ssoUrl, relayState, {
-        name: 'SAMLRequest',
-        value: Buffer.from(samlReq.request).toString('base64'),
-      });
+      authorizeForm = saml.createPostForm(ssoUrl, [
+        {
+          name: 'RelayState',
+          value: relayState,
+        },
+        {
+          name: 'SAMLRequest',
+          value: Buffer.from(samlReq.request).toString('base64'),
+        },
+      ]);
     }
 
     return {
