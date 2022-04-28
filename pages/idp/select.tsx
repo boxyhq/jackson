@@ -62,7 +62,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
             {appList.map((idp) => {
               const { clientID, name, description, product } = idp;
               return (
-                <div className='relative my-3 border-b-[1px] bg-white last:border-b-0' key={clientID}>
+                <div className='relative my-2 border-b-[1px] bg-white last:border-b-0' key={clientID}>
                   <input
                     id={`radio-${clientID}`}
                     name='idp_hint'
@@ -74,9 +74,9 @@ export default function IdPSelection({ SAMLResponse, appList }) {
                   />
                   <label
                     htmlFor={`radio-${clientID}`}
-                    className='relative block w-full cursor-pointer overflow-hidden py-3 px-8 text-center text-[#3C454C] transition-colors hover:bg-primary/10 focus:bg-primary/30 peer-checked:bg-primary/25'>
-                    {name || product}
-                    {description && <span>{description}</span>}
+                    className='relative flex w-full cursor-pointer flex-col items-start overflow-hidden py-3 px-8 text-[#3C454C] transition-colors hover:bg-primary/10 focus:bg-primary/30 peer-checked:bg-primary/25'>
+                    <span className='font-bold'>{name || product}</span>
+                    {description && <span className='font-light'>{description}</span>}
                   </label>
                 </div>
               );
@@ -88,7 +88,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
     );
   }
 
-  return <div>Selection list empty</div>;
+  return <div className='text-black'>Selection list empty</div>;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
