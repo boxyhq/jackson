@@ -50,19 +50,19 @@ export default function IdPSelection({ SAMLResponse, appList }) {
         ref={formRef}
         action='/api/oauth/saml'
         method='post'
-        className='relative top-1/2 left-1/2  w-1/2 max-w-xl  -translate-x-1/2 -translate-y-1/2 overflow-auto text-center'>
+        className='relative top-1/2 left-1/2  w-1/2 max-w-xl  -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border-[1px] py-4 px-6 text-center'>
         {paramsToRelay
           .filter(([, value]) => value !== undefined)
           .map(([key, value]) => (
             <input key={key} type='hidden' name={key} value={value} />
           ))}
-        <fieldset className='border-8 p-4'>
-          <legend className='px-3 text-left text-black'>Select an App</legend>
+        <fieldset className='border-0'>
+          <legend className='mb-4 px-3 text-center text-lg font-bold text-black'>Select an App</legend>
           <div className='max-h-96 overflow-auto'>
             {appList.map((idp) => {
               const { clientID, name, description, product } = idp;
               return (
-                <div className='relative my-3 bg-white' key={clientID}>
+                <div className='relative my-3 border-b-[1px] bg-white last:border-b-0' key={clientID}>
                   <input
                     id={`radio-${clientID}`}
                     name='idp_hint'
@@ -74,7 +74,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
                   />
                   <label
                     htmlFor={`radio-${clientID}`}
-                    className='relative block w-full cursor-pointer overflow-hidden py-3 px-8 text-center text-[#3C454C] transition-colors peer-checked:bg-primary/25'>
+                    className='relative block w-full cursor-pointer overflow-hidden py-3 px-8 text-center text-[#3C454C] transition-colors hover:bg-primary/10 focus:bg-primary/30 peer-checked:bg-primary/25'>
                     {name || product}
                     {description && <span>{description}</span>}
                   </label>
