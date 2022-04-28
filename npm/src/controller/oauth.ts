@@ -21,7 +21,7 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { relayStatePrefix, IndexNames, forwardToAppSelection } from './utils';
+import { relayStatePrefix, IndexNames } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -103,13 +103,17 @@ export class OAuthController implements IOAuthController {
             description,
             clientID,
           }));
-
           return {
-            app_select_form: forwardToAppSelection(
-              this.opts.idpDiscoveryPath,
-              originalParams.SAMLResponse,
-              appList
-            ),
+            app_select_form: saml.createPostForm(this.opts.idpDiscoveryPath, [
+              {
+                name: 'SAMLResponse',
+                value: originalParams.SAMLResponse,
+              },
+              {
+                name: 'app',
+                value: encodeURIComponent(JSON.stringify(appList)),
+              },
+            ]),
           };
         }
       }
