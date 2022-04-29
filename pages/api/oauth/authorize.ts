@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       req.query as unknown as OAuthReqBody
     );
     if (redirect_url) {
-      res.redirect(302, redirect_url!);
+      res.redirect(302, redirect_url);
     } else {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(authorize_form);

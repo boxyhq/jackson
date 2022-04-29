@@ -72,7 +72,56 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
-  public async authorize(body: OAuthReqBody): Promise<{ redirect_url: string; authorize_form: string }> {
+  private resolveMultipleConfigMatches(
+    samlConfigs,
+    idp_hint,
+    originalParams,
+    isIdpFlow = false
+  ): { resolvedSamlConfig?: unknown; redirect_url?: string; app_select_form?: string } {
+    if (samlConfigs.length > 1) {
+      if (idp_hint) {
+        return { resolvedSamlConfig: samlConfigs.find(({ clientID }) => clientID === idp_hint) };
+      } else if (this.opts.idpDiscoveryPath) {
+        if (!isIdpFlow) {
+          // redirect to IdP selection page
+          const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
+            JSON.stringify({
+              provider,
+              clientID,
+            })
+          );
+          return {
+            redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
+              ...originalParams,
+              idp: idpList,
+            }),
+          };
+        } else {
+          const appList = samlConfigs.map(({ product, name, description, clientID }) => ({
+            product,
+            name,
+            description,
+            clientID,
+          }));
+          return {
+            app_select_form: saml.createPostForm(this.opts.idpDiscoveryPath, [
+              {
+                name: 'SAMLResponse',
+                value: originalParams.SAMLResponse,
+              },
+              {
+                name: 'app',
+                value: encodeURIComponent(JSON.stringify(appList)),
+              },
+            ]),
+          };
+        }
+      }
+    }
+    return {};
+  }
+
+  public async authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
       response_type = 'code',
       client_id,
@@ -84,6 +133,7 @@ export class OAuthController implements IOAuthController {
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       provider = 'saml',
+      idp_hint,
     } = body;
 
     let requestedTenant = tenant;
@@ -111,26 +161,69 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('SAML configuration not found.', 403);
       }
 
-      // TODO: Support multiple matches
       samlConfig = samlConfigs[0];
+
+      // Support multiple matches
+      const { resolvedSamlConfig, redirect_url } = this.resolveMultipleConfigMatches(samlConfigs, idp_hint, {
+        response_type,
+        client_id,
+        redirect_uri,
+        state,
+        tenant,
+        product,
+        code_challenge,
+        code_challenge_method,
+        provider,
+      });
+
+      if (redirect_url) {
+        return { redirect_url };
+      }
+
+      if (resolvedSamlConfig) {
+        samlConfig = resolvedSamlConfig;
+      }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
       const sp = getEncodedClientId(client_id);
-      if (sp?.tenant) {
+      if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
-        requestedProduct = sp.product || '';
+        requestedProduct = sp.product;
 
         const samlConfigs = await this.configStore.getByIndex({
           name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(sp.tenant, sp.product || ''),
+          value: dbutils.keyFromParts(sp.tenant, sp.product),
         });
 
         if (!samlConfigs || samlConfigs.length === 0) {
           throw new JacksonError('SAML configuration not found.', 403);
         }
 
-        // TODO: Support multiple matches
         samlConfig = samlConfigs[0];
+        // Support multiple matches
+        const { resolvedSamlConfig, redirect_url } = this.resolveMultipleConfigMatches(
+          samlConfigs,
+          idp_hint,
+          {
+            response_type,
+            client_id,
+            redirect_uri,
+            state,
+            tenant,
+            product,
+            code_challenge,
+            code_challenge_method,
+            provider,
+          }
+        );
+
+        if (redirect_url) {
+          return { redirect_url };
+        }
+
+        if (resolvedSamlConfig) {
+          samlConfig = resolvedSamlConfig;
+        }
       } else {
         samlConfig = await this.configStore.get(client_id);
       }
@@ -170,12 +263,16 @@ export class OAuthController implements IOAuthController {
 
     const sessionId = crypto.randomBytes(16).toString('hex');
 
-    const requested: Record<string, string> = {
-      tenant: requestedTenant,
-      product: requestedProduct,
-      client_id,
-      state,
-    };
+    const requested = { client_id, state } as Record<string, string>;
+    if (requestedTenant) {
+      requested.tenant = requestedTenant;
+    }
+    if (requestedProduct) {
+      requested.product = requestedProduct;
+    }
+    if (idp_hint) {
+      requested.idp_hint = idp_hint;
+    }
 
     await this.sessionStore.put(sessionId, {
       id: samlReq.id,
@@ -200,10 +297,16 @@ export class OAuthController implements IOAuthController {
       });
     } else {
       // HTTP POST binding
-      authorizeForm = saml.createPostForm(ssoUrl, relayState, {
-        name: 'SAMLRequest',
-        value: Buffer.from(samlReq.request).toString('base64'),
-      });
+      authorizeForm = saml.createPostForm(ssoUrl, [
+        {
+          name: 'RelayState',
+          value: relayState,
+        },
+        {
+          name: 'SAMLRequest',
+          value: Buffer.from(samlReq.request).toString('base64'),
+        },
+      ]);
     }
 
     return {
@@ -212,22 +315,22 @@ export class OAuthController implements IOAuthController {
     };
   }
 
-  public async samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }> {
-    const { SAMLResponse } = body;
+  public async samlResponse(
+    body: SAMLResponsePayload
+  ): Promise<{ redirect_url?: string; app_select_form?: string }> {
+    const { SAMLResponse, idp_hint } = body;
 
     let RelayState = body.RelayState || ''; // RelayState will contain the sessionId from earlier quasi-oauth flow
 
-    if (!this.opts.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
+    const isIdPFlow = !RelayState.startsWith(relayStatePrefix);
+
+    if (!this.opts.idpEnabled && isIdPFlow) {
       // IDP is disabled so block the request
 
       throw new JacksonError(
         'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
         403
       );
-    }
-
-    if (!RelayState.startsWith(relayStatePrefix)) {
-      RelayState = '';
     }
 
     RelayState = RelayState.replace(relayStatePrefix, '');
@@ -245,6 +348,24 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML configuration not found.', 403);
     }
 
+    let samlConfig = samlConfigs[0];
+
+    if (isIdPFlow) {
+      RelayState = '';
+      const { resolvedSamlConfig, app_select_form } = this.resolveMultipleConfigMatches(
+        samlConfigs,
+        idp_hint,
+        { SAMLResponse },
+        true
+      );
+      if (app_select_form) {
+        return { app_select_form };
+      }
+      if (resolvedSamlConfig) {
+        samlConfig = resolvedSamlConfig;
+      }
+    }
+
     let session;
 
     if (RelayState !== '') {
@@ -253,17 +374,18 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('Unable to validate state from the origin request.', 403);
       }
     }
-
-    // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
-    const samlConfig =
-      samlConfigs.length === 1
-        ? samlConfigs[0]
-        : samlConfigs.filter((c) => {
-            return (
-              c.clientID === session?.requested?.client_id ||
-              (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
-            );
-          })[0];
+    if (!isIdPFlow) {
+      // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
+      samlConfig =
+        samlConfigs.length === 1
+          ? samlConfigs[0]
+          : samlConfigs.filter((c) => {
+              return (
+                c.clientID === session?.requested?.client_id ||
+                (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
+              );
+            })[0];
+    }
 
     if (!samlConfig) {
       throw new JacksonError('SAML configuration not found.', 403);

@@ -23,7 +23,7 @@ export interface IAPIController {
 
 export interface IOAuthController {
   authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }>;
-  samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }>;
+  samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
@@ -42,16 +42,18 @@ export interface OAuthReqBody {
   client_id: string;
   redirect_uri: string;
   state: string;
-  tenant: string;
-  product: string;
+  tenant?: string;
+  product?: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
   provider: 'saml';
+  idp_hint?: string;
 }
 
 export interface SAMLResponsePayload {
   SAMLResponse: string;
   RelayState: string;
+  idp_hint?: string;
 }
 
 export interface OAuthTokenReq {
@@ -126,6 +128,7 @@ export interface JacksonOption {
   idpEnabled?: boolean;
   db: DatabaseOption;
   clientSecretVerifier?: string;
+  idpDiscoveryPath?: string;
 }
 
 export interface SLORequestParams {
