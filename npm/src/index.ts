@@ -2,7 +2,7 @@ import { AdminController } from './controller/admin';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
-import { LogoutController } from './controller/signout';
+import { LogoutController } from './controller/logout';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
@@ -25,7 +25,6 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.idpEnabled = newOpts.idpEnabled === true;
-
   defaultDb(newOpts);
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
@@ -51,7 +50,7 @@ export const controllers = async (
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
-  const healthCheckStore = db.store('_health');
+  const healthCheckStore = db.store('_health:check');
 
   const apiController = new APIController({ configStore });
   const adminController = new AdminController({ configStore });

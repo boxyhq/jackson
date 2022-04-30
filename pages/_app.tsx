@@ -7,7 +7,7 @@ import '../styles/globals.css';
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const { pathname } = useRouter();
 
-  if (pathname === '/error') {
+  if (pathname !== '/' && !pathname.startsWith('/admin')) {
     return <Component {...pageProps} />;
   }
 

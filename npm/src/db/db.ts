@@ -5,7 +5,6 @@ import mongo from './mongo';
 import redis from './redis';
 import sql from './sql/sql';
 import store from './store';
-import { isNumeric } from './utils';
 
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
