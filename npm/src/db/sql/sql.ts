@@ -30,7 +30,7 @@ class Sql implements DatabaseDriver {
           // name: this.options.type! + Math.floor(Math.random() * 100000),
           type: this.options.type!,
           url: this.options.url,
-          synchronize: true,
+          synchronize: process.env.NODE_ENV !== 'production', // don't sync on prod
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
@@ -106,7 +106,7 @@ class Sql implements DatabaseDriver {
   async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const response = await this.storeRepository.find({
-      where: { key: Like(`%${namespace}%`) },
+      where: { namespace: namespace },
       select: ['value', 'iv', 'tag'],
       order: {
         ['createdAt']: 'DESC',
@@ -150,6 +150,7 @@ class Sql implements DatabaseDriver {
       store.iv = val.iv;
       store.tag = val.tag;
       store.modifiedAt = new Date().toISOString();
+      store.namespace = namespace;
       await transactionalEntityManager.save(store);
 
       if (ttl) {

@@ -10,7 +10,7 @@ const AppDataSource = new DataSource(<DataSourceOptions>{
   migrationsTableName: '_jackson_migrations',
   logging: 'all',
   entities: ['src/db/sql/entity/**/*.ts'],
-  migrations: [`migration/${type}/**/*.ts`],
+  migrations: [`migration/${type}/**/*.ts`, 'migration/sql/**/*.ts'],
 });
 
 export default AppDataSource;
