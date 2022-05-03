@@ -25,7 +25,7 @@ You can also try our hosted demo showcasing the SAML IdP login flow [here](https
 
 ## Documentation
 
-For full documentation, visit [boxyhq.com/docs/jackson/introduction](https://boxyhq.com/docs/jackson/introduction)
+For full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
 
 ## Source code visualizer
 
