@@ -191,7 +191,7 @@ export class OAuthController implements IOAuthController {
       (access_type && access_type !== '' && access_type !== 'undefined' && access_type !== 'null')
     ) {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
-      const sp = getEncodedTenantProduct(client_id);
+      let sp = getEncodedTenantProduct(client_id);
 
       if (!sp && access_type) {
         sp = getEncodedTenantProduct(access_type);
