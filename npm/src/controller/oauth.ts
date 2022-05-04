@@ -39,7 +39,9 @@ const validateResponse = async (rawResponse: string, validateOpts) => {
   return profile;
 };
 
-function getEncodedClientId(client_id: string): { tenant: string | null; product: string | null } | null {
+function getEncodedTenantProduct(
+  client_id: string
+): { tenant: string | null; product: string | null } | null {
   try {
     const sp = new URLSearchParams(client_id);
     const tenant = sp.get('tenant');
@@ -185,7 +187,7 @@ export class OAuthController implements IOAuthController {
       }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
-      const sp = getEncodedClientId(client_id);
+      const sp = getEncodedTenantProduct(client_id);
       if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
         requestedProduct = sp.product;
@@ -531,7 +533,7 @@ export class OAuthController implements IOAuthController {
     } else if (client_id && client_secret) {
       // check if we have an encoded client_id
       if (client_id !== 'dummy') {
-        const sp = getEncodedClientId(client_id);
+        const sp = getEncodedTenantProduct(client_id);
         if (!sp) {
           // OAuth flow
           if (client_id !== codeVal.clientID || client_secret !== codeVal.clientSecret) {
