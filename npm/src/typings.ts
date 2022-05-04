@@ -44,6 +44,7 @@ export interface OAuthReqBody {
   state: string;
   tenant?: string;
   product?: string;
+  access_type?: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
   provider: 'saml';
