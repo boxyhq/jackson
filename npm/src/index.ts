@@ -3,6 +3,7 @@ import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
+import { SCIMController } from './controller/scim/config';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
@@ -42,6 +43,7 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
+  scimController: SCIMController;
 }> => {
   opts = defaultOpts(opts);
 
@@ -52,6 +54,7 @@ export const controllers = async (
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
+  const scimStore = db.store('scim:config');
 
   const apiController = new APIController({ configStore });
   const adminController = new AdminController({ configStore });
@@ -70,6 +73,8 @@ export const controllers = async (
     sessionStore,
     opts,
   });
+
+  const scimController = new SCIMController({ scimStore, opts });
 
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
@@ -92,6 +97,7 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
+    scimController,
   };
 };
 

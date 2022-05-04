@@ -37,6 +37,26 @@ export interface IHealthCheckController {
   }>;
   init(): Promise<void>;
 }
+
+export interface ILogoutController {
+  createRequest(body: SLORequestParams): Promise<{ logoutUrl: string | null; logoutForm: string | null }>;
+  handleResponse(body: SAMLResponsePayload): Promise<any>;
+}
+
+export interface ISCIMController {
+  create({
+    name,
+    tenant,
+    product,
+    webhook_url,
+  }: {
+    name: string;
+    tenant: string;
+    product: string;
+    webhook_url: string;
+  }): Promise<SCIMConfig>;
+}
+
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
@@ -159,7 +179,17 @@ export interface SAMLConfig {
   defaultRedirectUrl: string;
 }
 
-export interface ILogoutController {
-  createRequest(body: SLORequestParams): Promise<{ logoutUrl: string | null; logoutForm: string | null }>;
-  handleResponse(body: SAMLResponsePayload): Promise<any>;
+export interface SCIMConfig {
+  id: string;
+  name: string;
+  tenant: string;
+  product: string;
+  webhook: {
+    endpoint: string;
+    bearer_token: string;
+  };
+  scim: {
+    endpoint: string;
+    bearer_token: string;
+  };
 }
