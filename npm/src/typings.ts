@@ -56,7 +56,7 @@ export interface ISCIMController {
     webhook_url: string;
   }): Promise<SCIMConfig>;
   getById(id: string): Promise<SCIMConfig>;
-  sendEvent(id: string, event: SCIMEventType, payload: object): Promise<void>;
+  sendEvent(id: string, type: SCIMEventType, payload: object): Promise<void>;
 }
 
 export interface OAuthReqBody {
@@ -188,11 +188,11 @@ export interface SCIMConfig {
   product: string;
   webhook: {
     endpoint: string;
-    bearer_token: string;
+    secret: string;
   };
   scim: {
     endpoint: string;
-    bearer_token: string;
+    secret: string;
   };
 }
 

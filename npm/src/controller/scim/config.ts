@@ -38,11 +38,11 @@ export class SCIMController implements ISCIMController {
       product,
       webhook: {
         endpoint: webhook_url,
-        bearer_token: await createRandomString(25),
+        secret: await createRandomString(25),
       },
       scim: {
         endpoint: `${this.opts.externalUrl}/api/scim/v2.0/${id}`,
-        bearer_token: await createRandomString(25),
+        secret: await createRandomString(25),
       },
     };
 
@@ -67,32 +67,17 @@ export class SCIMController implements ISCIMController {
   }
 
   // Send the webhook event to the SP endpoint
-  public async sendEvent(id: string, event: SCIMEventType, payload: object): Promise<void> {
+  public async sendEvent(id: string, type: SCIMEventType, payload: object): Promise<void> {
     const config = await this.getById(id);
 
     // Add additional data to the payload
     payload['tenant'] = config.tenant;
     payload['product'] = config.product;
 
-    events.sendEvent(event, payload, {
-      endpoint: config.webhook.endpoint,
+    events.sendEvent(type, payload, {
+      webhook: config.webhook,
     });
 
     return;
   }
 }
-
-// config: {
-//   id: 'd41e5ae8148ba0c41fc4cc30e4e457ade44b65dd',
-//   name: 'config-1',
-//   tenant: 'product',
-//   product: 'flex',
-//   webhook: {
-//     endpoint: 'https://auth0.com/',
-//     bearer_token: 'DzccufgTksJOiyJJ8vSYTMI9e'
-//   },
-//   scim: {
-//     endpoint: 'http://localhost:5225/api/scim/v2.0/d41e5ae8148ba0c41fc4cc30e4e457ade44b65dd',
-//     bearer_token: 'TirF4dsQRQsbBHZG5OekgUIKE'
-//   }
-// }

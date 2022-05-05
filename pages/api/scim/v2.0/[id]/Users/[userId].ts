@@ -47,7 +47,7 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController } = await jackson();
 
   const body = JSON.parse(req.body);
-  const { id, userId } = req.query;
+  const { id } = req.query;
 
   scimController.sendEvent(<string>id, 'user.updated', body);
 

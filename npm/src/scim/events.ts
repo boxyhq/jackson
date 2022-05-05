@@ -1,41 +1,53 @@
-import type { SCIMEventType } from '../typings';
-import axios from 'axios';
+import type { SCIMConfig, SCIMEventType } from '../typings';
 import { transformUser, transformGroup } from './transform';
+import crypto from 'crypto';
+import axios from 'axios';
 
-const sendEvent = async (event: SCIMEventType, payload: object, options: any) => {
-  const type = getEventType(event);
-  const { endpoint } = options;
+const sendEvent = async (type: SCIMEventType, payload: object, options: Pick<SCIMConfig, 'webhook'>) => {
+  const objectType = getObjectType(type);
+  const { webhook } = options;
 
-  // TODO
-  // Implement webhook security
-
-  if (type === 'user') {
+  if (objectType === 'user') {
     payload = transformUser(payload);
   }
 
-  if (type === 'group') {
+  if (objectType === 'group') {
     payload = transformGroup(payload);
   }
 
-  axios.post(endpoint, {
-    event,
-    payload,
-  });
+  payload['event'] = type;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'BoxyHQ-Signature': await createSignatureString(webhook.secret, payload),
+  };
+
+  axios.post(webhook.endpoint, payload, { headers });
 
   return;
 };
 
-// Get the event type
-const getEventType = (event: SCIMEventType) => {
-  if (event.startsWith('user.')) {
+const getObjectType = (type: SCIMEventType) => {
+  if (type.startsWith('user.')) {
     return 'user';
   }
 
-  if (event.startsWith('group.')) {
+  if (type.startsWith('group.')) {
     return 'group';
   }
 
   throw new Error('Unknown event type');
+};
+
+const createSignatureString = async (secret: string, payload: object) => {
+  const timestamp = new Date().getTime();
+
+  const signature = crypto
+    .createHmac('sha256', secret)
+    .update(`${timestamp}.${JSON.stringify(payload)}`)
+    .digest('hex');
+
+  return `t=${timestamp},s=${signature}`;
 };
 
 export default {
