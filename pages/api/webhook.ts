@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { body, headers } = req;
 
-  console.log({ 'boxyhq-signature': headers['boxyhq-signature'], body });
+  //console.log({ 'boxyhq-signature': headers['boxyhq-signature'], body });
 
   return res.json({});
 }
