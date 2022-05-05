@@ -148,20 +148,39 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should return the Idp SSO URL', async (t) => {
-    const body = {
-      redirect_uri: samlConfig.defaultRedirectUrl,
-      state: 'state-123',
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
-    };
+    t.test('accepts client_id', async (t) => {
+      const body = {
+        redirect_uri: samlConfig.defaultRedirectUrl,
+        state: 'state-123',
+        client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      };
 
-    const response = await oauthController.authorize(<OAuthReqBody>body);
-    const params = new URLSearchParams(new URL(response.redirect_url!).search);
+      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
-    t.ok('redirect_url' in response, 'got the Idp authorize URL');
-    t.ok(params.has('RelayState'), 'RelayState present in the query string');
-    t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
 
-    t.end();
+      t.end();
+    });
+
+    t.test('accepts access_type', async (t) => {
+      const body = {
+        redirect_uri: samlConfig.defaultRedirectUrl,
+        state: 'state-123',
+        access_type: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      };
+
+      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+      t.end();
+    });
   });
 
   t.end();

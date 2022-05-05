@@ -39,7 +39,9 @@ const validateResponse = async (rawResponse: string, validateOpts) => {
   return profile;
 };
 
-function getEncodedClientId(client_id: string): { tenant: string | null; product: string | null } | null {
+function getEncodedTenantProduct(
+  client_id: string
+): { tenant: string | null; product: string | null } | null {
   try {
     const sp = new URLSearchParams(client_id);
     const tenant = sp.get('tenant');
@@ -129,6 +131,7 @@ export class OAuthController implements IOAuthController {
       state,
       tenant,
       product,
+      access_type,
       code_challenge,
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -183,9 +186,16 @@ export class OAuthController implements IOAuthController {
       if (resolvedSamlConfig) {
         samlConfig = resolvedSamlConfig;
       }
-    } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
+    } else if (
+      (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') ||
+      (access_type && access_type !== '' && access_type !== 'undefined' && access_type !== 'null')
+    ) {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
-      const sp = getEncodedClientId(client_id);
+      let sp = getEncodedTenantProduct(client_id);
+
+      if (!sp && access_type) {
+        sp = getEncodedTenantProduct(access_type);
+      }
       if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
         requestedProduct = sp.product;
@@ -531,7 +541,7 @@ export class OAuthController implements IOAuthController {
     } else if (client_id && client_secret) {
       // check if we have an encoded client_id
       if (client_id !== 'dummy') {
-        const sp = getEncodedClientId(client_id);
+        const sp = getEncodedTenantProduct(client_id);
         if (!sp) {
           // OAuth flow
           if (client_id !== codeVal.clientID || client_secret !== codeVal.clientSecret) {
