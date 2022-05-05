@@ -55,6 +55,8 @@ export interface ISCIMController {
     product: string;
     webhook_url: string;
   }): Promise<SCIMConfig>;
+  getById(id: string): Promise<SCIMConfig>;
+  sendEvent(id: string, event: SCIMEventType, payload: object): Promise<void>;
 }
 
 export interface OAuthReqBody {
@@ -193,3 +195,5 @@ export interface SCIMConfig {
     bearer_token: string;
   };
 }
+
+export type SCIMEventType = 'user.created' | 'user.updated' | 'user.deleted';

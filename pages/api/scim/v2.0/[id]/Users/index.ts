@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { sendEvent } from '@lib/webhook';
+import jackson from '@lib/jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -26,13 +26,12 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
-  const body = JSON.parse(req.body);
+  const { scimController } = await jackson();
 
-  sendEvent({
-    event: 'user.created',
-    type: 'user',
-    payload: body,
-  });
+  const body = JSON.parse(req.body);
+  const { id } = req.query;
+
+  scimController.sendEvent(<string>id, 'user.created', body);
 
   // id should come from the SP. Without id the response will fail
   body['id'] = '23a35c27-23d3-4c03-b4c5-6443c09e7171';

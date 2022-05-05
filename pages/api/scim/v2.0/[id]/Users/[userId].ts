@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import jackson from '@lib/jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -43,9 +44,12 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
-  const body = JSON.parse(req.body);
+  const { scimController } = await jackson();
 
-  console.log(body);
+  const body = JSON.parse(req.body);
+  const { id, userId } = req.query;
+
+  scimController.sendEvent(<string>id, 'user.updated', body);
 
   return res.json(body);
 };
