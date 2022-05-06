@@ -1,8 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { printRequest } from '@lib/utils';
+import { extractAuthToken } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { scimController } = await jackson();
   const { method } = req;
+  const { id } = req.query;
+
+  if (!(await scimController.validateAPISecret(id as string, extractAuthToken(req)))) {
+    return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
+  }
+
+  printRequest(req);
 
   switch (method) {
     case 'GET':
@@ -27,14 +37,12 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController } = await jackson();
-
-  const body = JSON.parse(req.body);
+  const user = JSON.parse(req.body);
   const { id } = req.query;
 
-  scimController.sendEvent(<string>id, 'user.created', body);
+  user['id'] = user.externalId;
 
-  // id should come from the SP. Without id the response will fail
-  body['id'] = '23a35c27-23d3-4c03-b4c5-6443c09e7171';
+  scimController.sendEvent(<string>id, 'user.created', user);
 
-  return res.json(body);
+  return res.json(user);
 };

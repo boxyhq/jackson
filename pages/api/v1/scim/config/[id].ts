@@ -1,5 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { extractAuthToken, validateApiKey } from '@lib/utils';
 import jackson from '@lib/jackson';
 
@@ -11,22 +10,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   switch (method) {
-    case 'POST':
-      return handlePost(req, res);
+    case 'GET':
+      return handleGet(req, res);
     default:
       res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
 }
 
-// Create a new SCIM configuration
-const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
+// Get SCIM configuration by id
+const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController } = await jackson();
 
-  const { name, tenant, product, webhook_url } = req.body;
+  const { id } = req.query;
 
   try {
-    const config = await scimController.create({ name, tenant, product, webhook_url });
+    const config = await scimController.getById(id as string);
 
     return res.status(201).json({ data: config, error: null });
   } catch (err: any) {

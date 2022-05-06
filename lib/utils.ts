@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import env from '@lib/env';
 import micromatch from 'micromatch';
 
@@ -38,4 +38,15 @@ export const setErrorCookie = (res: NextApiResponse, value: unknown, options: { 
     cookieContents += '; Path=' + options.path;
   }
   res.setHeader('Set-Cookie', cookieContents);
+};
+
+export const printRequest = (req: NextApiRequest) => {
+  const { body, query, method, url } = req;
+
+  console.log({
+    url,
+    method,
+    query,
+    body: body ? JSON.parse(body) : null,
+  });
 };

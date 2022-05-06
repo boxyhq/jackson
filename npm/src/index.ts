@@ -3,7 +3,7 @@ import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
-import { SCIMController } from './controller/scim/config';
+import { SCIMController } from './controller/scim';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';

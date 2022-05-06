@@ -7,6 +7,8 @@ const sendEvent = async (type: SCIMEventType, payload: object, options: Pick<SCI
   const objectType = getObjectType(type);
   const { webhook } = options;
 
+  payload['event'] = type;
+
   if (objectType === 'user') {
     payload = transformUser(payload);
   }
@@ -14,8 +16,6 @@ const sendEvent = async (type: SCIMEventType, payload: object, options: Pick<SCI
   if (objectType === 'group') {
     payload = transformGroup(payload);
   }
-
-  payload['event'] = type;
 
   const headers = {
     'Content-Type': 'application/json',
@@ -50,6 +50,4 @@ const createSignatureString = async (secret: string, payload: object) => {
   return `t=${timestamp},s=${signature}`;
 };
 
-export default {
-  sendEvent,
-};
+export { sendEvent };

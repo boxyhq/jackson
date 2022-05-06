@@ -1,21 +1,22 @@
-const tenant = 'boxyhq.com';
-const product = 'flex';
-
-export const transformUser = (user: any) => {
+const transformUser = (user: any) => {
   return {
     id: user.id,
-    first_name: user.name.givenName,
-    last_name: user.name.familyName,
-    username: user.userName,
+    firstName: user.name.givenName,
+    lastName: user.name.familyName,
+    email: user.emails[0],
     emails: user.emails,
+    username: user.userName,
     groups: user.groups,
-    state: user.active,
-    tenant,
-    product,
+    active: user.active,
+    tenant: user.tenant,
+    product: user.product,
+    event: user.event,
     raw: user,
   };
 };
 
-export const transformGroup = (group: any) => {
+const transformGroup = (group: any) => {
   return group;
 };
+
+export { transformUser, transformGroup };

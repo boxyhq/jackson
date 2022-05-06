@@ -1,8 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { extractAuthToken } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { scimController } = await jackson();
   const { method } = req;
+  const { id } = req.query;
+
+  if (!(await scimController.validateAPISecret(id as string, extractAuthToken(req)))) {
+    return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
+  }
 
   switch (method) {
     case 'GET':
@@ -45,7 +52,6 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController } = await jackson();
-
   const body = JSON.parse(req.body);
   const { id } = req.query;
 

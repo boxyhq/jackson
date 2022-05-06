@@ -49,14 +49,18 @@ export interface ISCIMController {
     tenant,
     product,
     webhook_url,
+    webhook_secret,
   }: {
     name: string;
     tenant: string;
     product: string;
     webhook_url: string;
+    webhook_secret: string;
   }): Promise<SCIMConfig>;
-  getById(id: string): Promise<SCIMConfig>;
+  get(id: string): Promise<SCIMConfig>;
+  delete(id: string): Promise<void>;
   sendEvent(id: string, type: SCIMEventType, payload: object): Promise<void>;
+  validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
 
 export interface OAuthReqBody {
@@ -191,7 +195,8 @@ export interface SCIMConfig {
     secret: string;
   };
   scim: {
-    endpoint: string;
+    path: string;
+    endpoint?: string;
     secret: string;
   };
 }
