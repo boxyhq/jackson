@@ -21,7 +21,7 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { relayStatePrefix, IndexNames } from './utils';
+import { relayStatePrefix, IndexNames, OAuthErrorResponse, getErrorMessage } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
