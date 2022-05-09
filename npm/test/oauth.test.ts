@@ -86,23 +86,18 @@ tap.test('authorize()', async (t) => {
 
   t.test('Should throw an error if `state` null', async (t) => {
     const body: Partial<OAuthReqBody> = {
-      redirect_uri: 'https://example.com/',
+      redirect_uri: samlConfig.defaultRedirectUrl,
       state: undefined,
+      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
     };
 
-    try {
-      await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
 
-      t.fail('Expecting JacksonError.');
-    } catch (err) {
-      const { message, statusCode } = err as JacksonError;
-      t.equal(
-        message,
-        'Please specify a state to safeguard against XSRF attacks.',
-        'got expected error message'
-      );
-      t.equal(statusCode, 400, 'got expected status code');
-    }
+    t.equal(
+      redirect_url,
+      `${body.redirect_uri}?error=invalid_request&error_description=Please+specify+a+state+to+safeguard+against+XSRF+attacks.`,
+      'got OAuth error'
+    );
 
     t.end();
   });
