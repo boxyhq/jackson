@@ -348,11 +348,10 @@ export class OAuthController implements IOAuthController {
         authorize_form: authorizeForm,
       };
     } catch (err: unknown) {
-      const error_description = getErrorMessage(err);
       return {
         redirect_url: OAuthErrorResponse({
           error: 'server_error',
-          error_description,
+          error_description: getErrorMessage(err),
           redirect_uri,
         }),
       };
@@ -440,12 +439,30 @@ export class OAuthController implements IOAuthController {
       audience: this.opts.samlAudience!,
     };
 
+    if (session && session.redirect_uri && !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)) {
+      throw new JacksonError('Redirect URL is not allowed.', 403);
+    }
+
     if (session && session.id) {
       validateOpts.inResponseTo = session.id;
     }
 
-    const profile = await validateResponse(rawResponse, validateOpts);
-
+    let profile;
+    try {
+      profile = await validateResponse(rawResponse, validateOpts);
+    } catch (err: unknown) {
+      if (!isIdPFlow && session?.redirect_uri) {
+        // return error to redirect_uri only for SP-initiated OAuth 2.0 flow
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'access_denied',
+            error_description: getErrorMessage(err),
+            redirect_uri: session.redirect_uri,
+          }),
+        };
+      }
+      throw err;
+    }
     // store details against a code
     const code = crypto.randomBytes(20).toString('hex');
 
@@ -460,10 +477,20 @@ export class OAuthController implements IOAuthController {
       codeVal.session = session;
     }
 
-    await this.codeStore.put(code, codeVal);
-
-    if (session && session.redirect_uri && !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)) {
-      throw new JacksonError('Redirect URL is not allowed.', 403);
+    try {
+      await this.codeStore.put(code, codeVal);
+    } catch (err: unknown) {
+      if (!isIdPFlow && session?.redirect_uri) {
+        // return error to redirect_uri only for SP-initiated OAuth 2.0 flow
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'server_error',
+            error_description: getErrorMessage(err),
+            redirect_uri: session.redirect_uri,
+          }),
+        };
+      }
+      throw err;
     }
 
     const params: Record<string, string> = {
