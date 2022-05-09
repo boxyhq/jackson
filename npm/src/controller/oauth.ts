@@ -148,10 +148,6 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Please specify a redirect URL.', 400);
     }
 
-    if (!state) {
-      throw new JacksonError('Please specify a state to safeguard against XSRF attacks.', 400);
-    }
-
     let samlConfig;
 
     if (tenant && product) {
@@ -249,6 +245,26 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
+    if (!state) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'invalid_request',
+          error_description: 'Please specify a state to safeguard against XSRF attacks.',
+          redirect_uri,
+        }),
+      };
+    }
+
+    if (response_type !== 'code') {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'unsupported_response_type',
+          error_description: 'Only Authorization Code grant is supported',
+          redirect_uri,
+        }),
+      };
+    }
+
     let ssoUrl;
     let post = false;
 
@@ -261,68 +277,86 @@ export class OAuthController implements IOAuthController {
       // HTTP-POST binding
       ssoUrl = sso.postUrl;
       post = true;
-    }
-
-    const samlReq = saml.request({
-      ssoUrl,
-      entityID: this.opts.samlAudience!,
-      callbackUrl: this.opts.externalUrl + this.opts.samlPath,
-      signingKey: samlConfig.certs.privateKey,
-      publicKey: samlConfig.certs.publicKey,
-    });
-
-    const sessionId = crypto.randomBytes(16).toString('hex');
-
-    const requested = { client_id, state } as Record<string, string>;
-    if (requestedTenant) {
-      requested.tenant = requestedTenant;
-    }
-    if (requestedProduct) {
-      requested.product = requestedProduct;
-    }
-    if (idp_hint) {
-      requested.idp_hint = idp_hint;
-    }
-
-    await this.sessionStore.put(sessionId, {
-      id: samlReq.id,
-      redirect_uri,
-      response_type,
-      state,
-      code_challenge,
-      code_challenge_method,
-      requested,
-    });
-
-    const relayState = relayStatePrefix + sessionId;
-
-    let redirectUrl;
-    let authorizeForm;
-
-    if (!post) {
-      // HTTP Redirect binding
-      redirectUrl = redirect.success(ssoUrl, {
-        RelayState: relayState,
-        SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
-      });
     } else {
-      // HTTP POST binding
-      authorizeForm = saml.createPostForm(ssoUrl, [
-        {
-          name: 'RelayState',
-          value: relayState,
-        },
-        {
-          name: 'SAMLRequest',
-          value: Buffer.from(samlReq.request).toString('base64'),
-        },
-      ]);
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'invalid_request',
+          error_description: 'SAML binding could not be retrieved',
+          redirect_uri,
+        }),
+      };
     }
 
-    return {
-      redirect_url: redirectUrl,
-      authorize_form: authorizeForm,
-    };
+    try {
+      const samlReq = saml.request({
+        ssoUrl,
+        entityID: this.opts.samlAudience!,
+        callbackUrl: this.opts.externalUrl + this.opts.samlPath,
+        signingKey: samlConfig.certs.privateKey,
+        publicKey: samlConfig.certs.publicKey,
+      });
+
+      const sessionId = crypto.randomBytes(16).toString('hex');
+
+      const requested = { client_id, state } as Record<string, string>;
+      if (requestedTenant) {
+        requested.tenant = requestedTenant;
+      }
+      if (requestedProduct) {
+        requested.product = requestedProduct;
+      }
+      if (idp_hint) {
+        requested.idp_hint = idp_hint;
+      }
+
+      await this.sessionStore.put(sessionId, {
+        id: samlReq.id,
+        redirect_uri,
+        response_type,
+        state,
+        code_challenge,
+        code_challenge_method,
+        requested,
+      });
+
+      const relayState = relayStatePrefix + sessionId;
+
+      let redirectUrl;
+      let authorizeForm;
+
+      if (!post) {
+        // HTTP Redirect binding
+        redirectUrl = redirect.success(ssoUrl, {
+          RelayState: relayState,
+          SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
+        });
+      } else {
+        // HTTP POST binding
+        authorizeForm = saml.createPostForm(ssoUrl, [
+          {
+            name: 'RelayState',
+            value: relayState,
+          },
+          {
+            name: 'SAMLRequest',
+            value: Buffer.from(samlReq.request).toString('base64'),
+          },
+        ]);
+      }
+      return {
+        redirect_url: redirectUrl,
+        authorize_form: authorizeForm,
+      };
+    } catch (err: unknown) {
+      const error_description = getErrorMessage(err);
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description,
+          redirect_uri,
+        }),
+      };
+    }
   }
 
   public async samlResponse(
