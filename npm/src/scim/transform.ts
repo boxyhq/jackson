@@ -1,17 +1,22 @@
 const transformUser = (user: any) => {
   return {
-    id: user.id,
-    firstName: user.name.givenName,
-    lastName: user.name.familyName,
-    email: user.emails[0],
-    emails: user.emails,
-    username: user.userName,
-    groups: user.groups,
-    active: user.active,
+    event: user.event,
     tenant: user.tenant,
     product: user.product,
-    event: user.event,
-    raw: user,
+    data: {
+      id: user.externalId,
+      first_name: user.name.givenName,
+      last_name: user.name.familyName,
+      email: user.emails[0].value,
+      raw: user,
+    },
+
+    // firstName: user.name.givenName,
+    // lastName: user.name.familyName,
+    // emails: user.emails,
+    // username: user.userName,
+    // groups: user.groups,
+    // active: user.active,
   };
 };
 

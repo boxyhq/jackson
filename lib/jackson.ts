@@ -6,6 +6,7 @@ import type {
   IOAuthController,
   IHealthCheckController,
   ISCIMController,
+  IUsersController,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -18,6 +19,7 @@ let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
 let scimController: ISCIMController;
+let usersController: IUsersController;
 
 const g = global as any;
 
@@ -28,7 +30,8 @@ export default async function init() {
     !g.adminController ||
     !g.healthCheckController ||
     !g.logoutController ||
-    !g.scimController
+    !g.scimController ||
+    !g.usersController
   ) {
     const ret = await jackson(env);
     apiController = ret.apiController;
@@ -37,6 +40,7 @@ export default async function init() {
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
     scimController = ret.scimController;
+    usersController = ret.usersController;
 
     g.apiController = apiController;
     g.oauthController = oauthController;
@@ -44,6 +48,7 @@ export default async function init() {
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
     g.scimController = scimController;
+    g.usersController = usersController;
     g.isJacksonReady = true;
   } else {
     apiController = g.apiController;
@@ -52,6 +57,7 @@ export default async function init() {
     logoutController = g.logoutController;
     healthCheckController = g.healthCheckController;
     scimController = g.scimController;
+    usersController = g.usersController;
   }
 
   return {
@@ -61,6 +67,7 @@ export default async function init() {
     logoutController,
     healthCheckController,
     scimController,
+    usersController,
   };
 }
 

@@ -4,11 +4,12 @@ import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
 import { SCIMController } from './controller/scim';
+import { UsersController } from './controller/users';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import readConfig from './read-config';
-import { JacksonOption } from './typings';
+import type { JacksonOption } from './typings';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -44,6 +45,7 @@ export const controllers = async (
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
   scimController: SCIMController;
+  usersController: UsersController;
 }> => {
   opts = defaultOpts(opts);
 
@@ -60,6 +62,7 @@ export const controllers = async (
   const adminController = new AdminController({ configStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
+
   const oauthController = new OAuthController({
     configStore,
     sessionStore,
@@ -75,6 +78,8 @@ export const controllers = async (
   });
 
   const scimController = new SCIMController({ scimStore, opts });
+
+  const usersController = new UsersController({ db });
 
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
@@ -98,6 +103,7 @@ export const controllers = async (
     logoutController,
     healthCheckController,
     scimController,
+    usersController,
   };
 };
 

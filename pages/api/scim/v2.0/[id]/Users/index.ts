@@ -36,13 +36,28 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController } = await jackson();
-  const user = JSON.parse(req.body);
+  const { scimController, usersController } = await jackson();
   const { id } = req.query;
 
-  user['id'] = user.externalId;
+  const body = JSON.parse(req.body);
 
-  scimController.sendEvent(<string>id, 'user.created', user);
+  body.id = body.externalId;
 
-  return res.json(user);
+  const { tenant, product } = await scimController.get(id as string);
+
+  await usersController.with(tenant, product).create({
+    id: body.externalId,
+    first_name: body.name.givenName,
+    last_name: body.name.familyName,
+    email: body.emails[0].value,
+    raw: body,
+  });
+
+  scimController.sendEvent(id as string, 'user.created', {
+    ...body,
+    tenant,
+    product,
+  });
+
+  return res.json(body);
 };

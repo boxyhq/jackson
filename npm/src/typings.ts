@@ -63,6 +63,13 @@ export interface ISCIMController {
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
 
+export interface IUsersController {
+  with(tenant: string, product: string): IUsersController;
+  create(param: object): Promise<void>;
+  get(id: string): Promise<User | null>;
+  update(id: string, data: object): Promise<User>;
+}
+
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
@@ -202,3 +209,11 @@ export interface SCIMConfig {
 }
 
 export type SCIMEventType = 'user.created' | 'user.updated' | 'user.deleted';
+
+export interface User {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  raw?: object;
+}

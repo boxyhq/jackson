@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { extractAuthToken } from '@lib/utils';
+import { extractAuthToken, printRequest } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { scimController } = await jackson();
   const { method } = req;
   const { id } = req.query;
+
+  printRequest(req);
 
   if (!(await scimController.validateAPISecret(id as string, extractAuthToken(req)))) {
     return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
@@ -23,39 +25,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { userId } = req.query;
+  const { scimController, usersController } = await jackson();
+  const { id, userId } = req.query;
 
-  return res.status(200).json({
-    schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
-    id: userId,
-    userName: 'kiran@boxyhq.com',
-    name: {
-      givenName: 'Test',
-      middleName: '',
-      familyName: 'User',
-    },
-    active: true,
-    emails: [
-      {
-        primary: true,
-        value: 'kiran@boxyhq.com',
-        type: 'work',
-        display: 'kiran@boxyhq.com',
-      },
-    ],
-    groups: [],
-    meta: {
-      resourceType: 'User',
-    },
-  });
+  const { tenant, product } = await scimController.get(id as string);
+
+  const user = await usersController.with(tenant, product).get(userId as string);
+
+  if (user === null) {
+    return res.status(404).json({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+      detail: 'User not found',
+      status: 404,
+    });
+  }
+
+  return res.json(user.raw);
 };
 
 const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController } = await jackson();
-  const body = JSON.parse(req.body);
-  const { id } = req.query;
+  const { scimController, usersController } = await jackson();
+  const { id, userId } = req.query;
 
-  scimController.sendEvent(<string>id, 'user.updated', body);
+  const body = JSON.parse(req.body);
+
+  const { tenant, product } = await scimController.get(id as string);
+
+  await usersController.with(tenant, product).update(userId as string, {
+    id: body.id,
+    first_name: body.name.givenName,
+    last_name: body.name.familyName,
+    email: body.emails[0].value,
+    raw: body,
+  });
+
+  scimController.sendEvent(<string>id, 'user.updated', {
+    ...body,
+    tenant,
+    product,
+  });
 
   return res.json(body);
 };

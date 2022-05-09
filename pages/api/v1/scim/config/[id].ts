@@ -25,7 +25,7 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
 
   try {
-    const config = await scimController.getById(id as string);
+    const config = await scimController.get(id as string);
 
     return res.status(201).json({ data: config, error: null });
   } catch (err: any) {

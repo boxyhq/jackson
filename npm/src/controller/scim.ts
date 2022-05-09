@@ -5,11 +5,11 @@ import { JacksonError } from './error';
 import { sendEvent } from '../scim';
 
 export class SCIMController implements ISCIMController {
-  private scimStore: Storable;
+  private store: Storable;
   private opts: JacksonOption;
 
   constructor({ scimStore, opts }: { scimStore: Storable; opts: JacksonOption }) {
-    this.scimStore = scimStore;
+    this.store = scimStore;
     this.opts = opts;
   }
 
@@ -48,7 +48,7 @@ export class SCIMController implements ISCIMController {
       },
     };
 
-    await this.scimStore.put(id, config);
+    await this.store.put(id, config);
 
     config.scim.endpoint = `${this.opts.externalUrl}${config.scim.path}`;
 
@@ -61,7 +61,7 @@ export class SCIMController implements ISCIMController {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
-    const config: SCIMConfig = await this.scimStore.get(id);
+    const config: SCIMConfig = await this.store.get(id);
 
     config.scim.endpoint = `${this.opts.externalUrl}${config.scim.path}`;
 
