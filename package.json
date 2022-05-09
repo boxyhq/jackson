@@ -71,7 +71,7 @@
     "autoprefixer": "10.4.7",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
-    "eslint": "8.14.0",
+    "eslint": "8.15.0",
     "eslint-config-next": "12.1.6",
     "eslint-config-prettier": "8.5.0",
     "husky": "7.0.4",
