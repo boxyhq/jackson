@@ -236,6 +236,10 @@ export class OAuthController implements IOAuthController {
         }
       } else {
         samlConfig = await this.configStore.get(client_id);
+        if (samlConfig) {
+          requestedTenant = samlConfig.tenant;
+          requestedProduct = samlConfig.product;
+        }
       }
     } else {
       throw new JacksonError('You need to specify client_id or tenant & product', 403);
