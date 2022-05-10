@@ -14,6 +14,7 @@ import tap from 'tap';
 import { JacksonError } from '../src/controller/error';
 import readConfig from '../src/read-config';
 import saml from '@boxyhq/saml20';
+import fixture0 from './data/metadata/fixture0';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
@@ -117,6 +118,24 @@ tap.test('authorize()', async (t) => {
     t.equal(
       redirect_url,
       `${body.redirect_uri}?error=unsupported_response_type&error_description=Only+Authorization+Code+grant+is+supported`,
+      'got OAuth error'
+    );
+
+    t.end();
+  });
+
+  t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
+    const body: Partial<OAuthReqBody> = {
+      redirect_uri: fixture0.defaultRedirectUrl,
+      state: 'state-123',
+      client_id: `tenant=${fixture0.tenant}&product=${fixture0.product}`,
+    };
+
+    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+
+    t.equal(
+      redirect_url,
+      `${body.redirect_uri}?error=invalid_request&error_description=SAML+binding+could+not+be+retrieved`,
       'got OAuth error'
     );
 
