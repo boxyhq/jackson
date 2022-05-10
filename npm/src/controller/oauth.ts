@@ -253,7 +253,7 @@ export class OAuthController implements IOAuthController {
       return {
         redirect_url: OAuthErrorResponse({
           error: 'invalid_request',
-          error_description: 'Please specify a state to safeguard against XSRF attacks.',
+          error_description: 'Please specify a state to safeguard against XSRF attacks',
           redirect_uri,
         }),
       };
