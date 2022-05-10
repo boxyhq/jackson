@@ -8,10 +8,12 @@ export class UsersController implements IUsersController {
     this.db = db;
   }
 
+  // Return the database store
   private store(): Storable {
     return this._store as Storable;
   }
 
+  // Create the store using the tenant and product
   public with(tenant: string, product: string): IUsersController {
     const namespace = `users:${tenant}:${product}`;
 
@@ -20,6 +22,7 @@ export class UsersController implements IUsersController {
     return this;
   }
 
+  // Create a new user
   public async create(param: {
     id: string;
     first_name: string;
@@ -32,12 +35,14 @@ export class UsersController implements IUsersController {
     await this.store().put(id, { id, first_name, last_name, email, raw });
   }
 
+  // Get a user by id
   public async get(id: string): Promise<User | null> {
     const user: User = await this.store().get(id);
 
     return user || null;
   }
 
+  // Update the user data
   public async update(
     id: string,
     param: {
@@ -58,5 +63,10 @@ export class UsersController implements IUsersController {
       email,
       raw,
     };
+  }
+
+  // Delete a user by id
+  public async delete(id: string): Promise<void> {
+    await this.store().delete(id);
   }
 }

@@ -68,6 +68,7 @@ export interface IUsersController {
   create(param: object): Promise<void>;
   get(id: string): Promise<User | null>;
   update(id: string, data: object): Promise<User>;
+  delete(id: string): Promise<void>;
 }
 
 export interface OAuthReqBody {

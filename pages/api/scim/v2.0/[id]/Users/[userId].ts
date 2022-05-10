@@ -15,16 +15,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case 'GET':
-      return handleGet(req, res);
+      return handleGET(req, res);
     case 'PUT':
-      return handlePut(req, res);
+      return handlePUT(req, res);
     default:
       res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
 }
 
-const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id, userId } = req.query;
 
@@ -43,23 +43,29 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.json(user.raw);
 };
 
-const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id, userId } = req.query;
 
   const body = JSON.parse(req.body);
 
+  const event = body.active ? 'user.updated' : 'user.deleted';
+
   const { tenant, product } = await scimController.get(id as string);
 
-  await usersController.with(tenant, product).update(userId as string, {
-    id: body.id,
-    first_name: body.name.givenName,
-    last_name: body.name.familyName,
-    email: body.emails[0].value,
-    raw: body,
-  });
+  if (event === 'user.updated') {
+    await usersController.with(tenant, product).update(userId as string, {
+      id: body.id,
+      first_name: body.name.givenName,
+      last_name: body.name.familyName,
+      email: body.emails[0].value,
+      raw: body,
+    });
+  } else if (event === 'user.deleted') {
+    await usersController.with(tenant, product).delete(userId as string);
+  }
 
-  scimController.sendEvent(<string>id, 'user.updated', {
+  scimController.sendEvent(<string>id, event, {
     ...body,
     tenant,
     product,
