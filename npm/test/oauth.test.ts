@@ -84,7 +84,7 @@ tap.test('authorize()', async (t) => {
     t.end();
   });
 
-  t.test('Should throw an error if `state` null', async (t) => {
+  t.test('Should return OAuth Error response if `state` is not set', async (t) => {
     const body: Partial<OAuthReqBody> = {
       redirect_uri: samlConfig.defaultRedirectUrl,
       state: undefined,
@@ -95,7 +95,28 @@ tap.test('authorize()', async (t) => {
 
     t.equal(
       redirect_url,
-      `${body.redirect_uri}?error=invalid_request&error_description=Please+specify+a+state+to+safeguard+against+XSRF+attacks.`,
+      `${body.redirect_uri}?error=invalid_request&error_description=Please+specify+a+state+to+safeguard+against+XSRF+attacks`,
+      'got OAuth error'
+    );
+
+    t.end();
+  });
+
+  t.test('Should return OAuth Error response if `response_type` is not `code`', async (t) => {
+    const body: Partial<OAuthReqBody> = {
+      redirect_uri: samlConfig.defaultRedirectUrl,
+      state: 'state-123',
+      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      response_type: 'token',
+    };
+
+    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+
+    t.equal(
+      redirect_url,
+      `${body.redirect_uri}?error=unsupported_response_type&error_description=Only+Authorization+Code+grant+is+supported`,
       'got OAuth error'
     );
 
