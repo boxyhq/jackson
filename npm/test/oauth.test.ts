@@ -142,6 +142,23 @@ tap.test('authorize()', async (t) => {
     t.end();
   });
 
+  t.test('Should return OAuth Error response if request creation fails', async (t) => {
+    const body: Partial<OAuthReqBody> = {
+      redirect_uri: samlConfig.defaultRedirectUrl,
+      state: 'state-123',
+      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+    };
+    const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
+    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    t.equal(
+      redirect_url,
+      `${body.redirect_uri}?error=server_error&error_description=Internal+error%3A+Fatal`,
+      'got OAuth error'
+    );
+    stubSamlRequest.restore();
+    t.end();
+  });
+
   t.test('Should throw an error if `client_id` is invalid', async (t) => {
     const body = {
       redirect_uri: 'https://example.com/',
