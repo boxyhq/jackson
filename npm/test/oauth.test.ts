@@ -257,6 +257,25 @@ tap.test('samlResponse()', async (t) => {
     t.end();
   });
 
+  t.test('Should return OAuth Error response if response validation fails', async (t) => {
+    const responseBody = {
+      SAMLResponse: rawResponse,
+      RelayState: relayState,
+    };
+
+    const stubValidateAsync = sinon.stub(saml, 'validateAsync').throws(Error('Internal error: Fatal'));
+
+    const response = await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
+
+    const params = new URLSearchParams(new URL(response.redirect_url!).search);
+    t.match(params.get('error'), 'access_denied');
+    t.match(params.get('error_description'), 'Internal error: Fatal');
+
+    stubValidateAsync.restore();
+
+    t.end();
+  });
+
   t.test('Should return a URL with code and state as query params', async (t) => {
     const responseBody = {
       SAMLResponse: rawResponse,
