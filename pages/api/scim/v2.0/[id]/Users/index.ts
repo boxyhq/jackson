@@ -1,18 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { printRequest } from '@lib/utils';
-import { extractAuthToken } from '@lib/utils';
+import { extractAuthToken, printRequest } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { scimController } = await jackson();
   const { method } = req;
   const { id } = req.query;
 
+  printRequest(req);
+
   if (!(await scimController.validateAPISecret(id as string, extractAuthToken(req)))) {
     return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
   }
-
-  printRequest(req);
 
   switch (method) {
     case 'GET':

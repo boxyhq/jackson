@@ -48,6 +48,6 @@ export const printRequest = (req: NextApiRequest) => {
     url,
     method,
     query,
-    body: body ? JSON.parse(body) : null,
+    body: body,
   });
 };

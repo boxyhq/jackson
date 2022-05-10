@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { extractAuthToken } from '@lib/utils';
+import { extractAuthToken, printRequest } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { scimController } = await jackson();
   const { method } = req;
   const { id } = req.query;
+
+  printRequest(req);
 
   if (!(await scimController.validateAPISecret(id as string, extractAuthToken(req)))) {
     return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
@@ -23,7 +25,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-  //
+  return res.status(200).json({
+    schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+    totalResults: 0,
+    startIndex: 1,
+    itemsPerPage: 0,
+    Resources: [],
+  });
 };
 
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
