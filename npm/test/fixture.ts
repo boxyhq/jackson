@@ -1,4 +1,4 @@
-import { OAuthReqBody } from '../src';
+import { OAuthReqBody, OAuthTokenReq } from '../src';
 import boxyhq from './data/metadata/boxyhq';
 import boxyhqNobinding from './data/metadata/boxyhq-nobinding';
 
@@ -53,6 +53,27 @@ export const saml_binding_absent: Partial<OAuthReqBody> = {
 };
 
 // END: Fixtures for authorize
+
+// BEGIN: Fixtures for token
+export const token_req_encoded_client_id: Partial<OAuthTokenReq> = {
+  grant_type: 'authorization_code',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  client_secret: 'TOP-SECRET',
+  code: '1234567890',
+};
+
+export const token_req_unencoded_client_id_gen = (configRecords) => {
+  const configRecord = configRecords.find(
+    (record) => `tenant=${record.tenant}&product=${record.product}` === authz_request_normal.client_id
+  );
+  return {
+    grant_type: 'authorization_code',
+    client_id: configRecord.clientID,
+    client_secret: configRecord.clientSecret,
+    code: '1234567890',
+  };
+};
+// END: Fixtures for token
 
 // BEGIN: Fixtures for api.test.ts
 export const saml_config = boxyhq;
