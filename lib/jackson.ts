@@ -7,6 +7,7 @@ import type {
   IHealthCheckController,
   ISCIMController,
   IUsersController,
+  IGroupsController,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -20,6 +21,7 @@ let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
 let scimController: ISCIMController;
 let usersController: IUsersController;
+let groupsController: IGroupsController;
 
 const g = global as any;
 
@@ -31,7 +33,8 @@ export default async function init() {
     !g.healthCheckController ||
     !g.logoutController ||
     !g.scimController ||
-    !g.usersController
+    !g.usersController ||
+    !g.groupsController
   ) {
     const ret = await jackson(env);
     apiController = ret.apiController;
@@ -41,6 +44,7 @@ export default async function init() {
     healthCheckController = ret.healthCheckController;
     scimController = ret.scimController;
     usersController = ret.usersController;
+    groupsController = ret.groupsController;
 
     g.apiController = apiController;
     g.oauthController = oauthController;
@@ -49,6 +53,7 @@ export default async function init() {
     g.healthCheckController = healthCheckController;
     g.scimController = scimController;
     g.usersController = usersController;
+    g.groupsController = groupsController;
     g.isJacksonReady = true;
   } else {
     apiController = g.apiController;
@@ -58,6 +63,7 @@ export default async function init() {
     healthCheckController = g.healthCheckController;
     scimController = g.scimController;
     usersController = g.usersController;
+    groupsController = g.groupsController;
   }
 
   return {
@@ -68,6 +74,7 @@ export default async function init() {
     healthCheckController,
     scimController,
     usersController,
+    groupsController,
   };
 }
 

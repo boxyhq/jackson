@@ -71,6 +71,14 @@ export interface IUsersController {
   delete(id: string): Promise<void>;
 }
 
+export interface IGroupsController {
+  with(tenant: string, product: string): IGroupsController;
+  create(param: object): Promise<void>;
+  get(id: string): Promise<Group | null>;
+  update(id: string, data: object): Promise<Group>;
+  delete(id: string): Promise<void>;
+}
+
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
@@ -216,5 +224,11 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
+  raw?: object;
+}
+
+export interface Group {
+  id: string;
+  name: string;
   raw?: object;
 }

@@ -1,6 +1,6 @@
-import type { IUsersController, Storable, User } from '../typings';
+import type { Storable, User } from '../typings';
 
-export class UsersController implements IUsersController {
+export class UsersController {
   private db: any;
   private _store: Storable | null = null;
 
@@ -14,7 +14,7 @@ export class UsersController implements IUsersController {
   }
 
   // Create the store using the tenant and product
-  public with(tenant: string, product: string): IUsersController {
+  public with(tenant: string, product: string): UsersController {
     const namespace = `users:${tenant}:${product}`;
 
     this._store = this._store || this.db.store(namespace);

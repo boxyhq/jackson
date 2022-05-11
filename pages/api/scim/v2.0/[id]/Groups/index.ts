@@ -15,16 +15,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case 'GET':
-      return handleGet(req, res);
+      return handleGET(req, res);
     case 'POST':
-      return handlePost(req, res);
+      return handlePOST(req, res);
     default:
       res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
 }
 
-const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
     totalResults: 0,
@@ -34,6 +34,13 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
-  //
+const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { scimController, usersController } = await jackson();
+  const { id } = req.query;
+
+  const body = JSON.parse(req.body);
+
+  body.id = 'abf4dd94-a4c0-4f67-89c9-76b03340cb9b';
+
+  return res.status(200).json(body);
 };
