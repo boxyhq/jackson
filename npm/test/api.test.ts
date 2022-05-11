@@ -5,7 +5,7 @@ import * as dbutils from '../src/db/utils';
 import controllers from '../src/index';
 import readConfig from '../src/read-config';
 import { IdPConfig, JacksonOption } from '../src/typings';
-import fixture1 from './data/metadata/fixture1';
+import { saml_config } from './fixture';
 
 let apiController;
 
@@ -36,15 +36,15 @@ tap.test('controller/api', async (t) => {
 
   t.afterEach(async () => {
     await apiController.deleteConfig({
-      tenant: fixture1.tenant,
-      product: fixture1.product,
+      tenant: saml_config.tenant,
+      product: saml_config.product,
     });
   });
 
   t.test('Create the config', async (t) => {
     t.test('when required fields are missing or invalid', async (t) => {
       t.test('when `encodedRawMetadata` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
         delete body['encodedRawMetadata'];
 
         try {
@@ -59,7 +59,7 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `defaultRedirectUrl` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
         delete body['defaultRedirectUrl'];
 
         try {
@@ -74,7 +74,7 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `redirectUrl` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
         delete body['redirectUrl'];
 
         try {
@@ -89,7 +89,7 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when defaultRedirectUrl or redirectUrl is invalid', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
         t.test('when defaultRedirectUrl is invalid', async (t) => {
           body['defaultRedirectUrl'] = 'http://localhost::';
@@ -126,7 +126,7 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `tenant` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
         delete body['tenant'];
 
         try {
@@ -141,7 +141,7 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `product` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
         delete body['product'];
 
         try {
@@ -156,7 +156,7 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `encodedRawMetadata` is not a valid XML', async (t) => {
-        const body = Object.assign({}, fixture1);
+        const body = Object.assign({}, saml_config);
         body['encodedRawMetadata'] = Buffer.from('not a valid XML', 'utf8').toString('base64');
 
         try {
@@ -171,7 +171,7 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when the request is good', async (t) => {
-      const body = Object.assign({}, fixture1);
+      const body = Object.assign({}, saml_config);
 
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID);
 
@@ -196,7 +196,7 @@ tap.test('controller/api', async (t) => {
   });
 
   t.test('Update the config', async (t) => {
-    const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+    const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
     t.test('When clientID is missing', async (t) => {
       const { client_secret: clientSecret } = await apiController.config(body as IdPConfig);
@@ -245,7 +245,7 @@ tap.test('controller/api', async (t) => {
 
   t.test('Get the config', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+      const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
       await apiController.config(body as IdPConfig);
 
@@ -259,7 +259,7 @@ tap.test('controller/api', async (t) => {
     t.test('when invalid request', async (t) => {
       let response;
 
-      const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+      const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
       await apiController.config(body);
 
@@ -294,7 +294,7 @@ tap.test('controller/api', async (t) => {
 
   t.test('Delete the config', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+      const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
       const { clientID, clientSecret } = await apiController.config(body);
 
@@ -313,7 +313,7 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when invalid request', async (t) => {
-      const body: Partial<IdPConfig> = Object.assign({}, fixture1);
+      const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
       const { clientID, clientSecret } = await apiController.config(body);
 

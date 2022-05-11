@@ -6,7 +6,7 @@ import tap from 'tap';
 import readConfig from '../src/read-config';
 import { IAPIController, ILogoutController, JacksonOption } from '../src/typings';
 import { relayStatePrefix } from '../src/controller/utils';
-import fixture1 from './data/metadata/fixture1';
+import { saml_config } from './fixture';
 
 let apiController: IAPIController;
 let logoutController: ILogoutController;
@@ -47,9 +47,9 @@ tap.teardown(async () => {
 tap.test('LogoutController -> createRequest', async (t) => {
   const body = {
     nameId: 'google-oauth2|146623609101108149256',
-    tenant: fixture1.tenant,
-    product: fixture1.product,
-    redirectUrl: fixture1.defaultRedirectUrl,
+    tenant: saml_config.tenant,
+    product: saml_config.product,
+    redirectUrl: saml_config.defaultRedirectUrl,
   };
 
   t.test('createRequest', async (t) => {
@@ -197,7 +197,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
       });
 
       t.ok('redirectUrl' in result);
-      t.match(result.redirectUrl, fixture1.defaultRedirectUrl);
+      t.match(result.redirectUrl, saml_config.defaultRedirectUrl);
 
       t.end();
     });

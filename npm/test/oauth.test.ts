@@ -14,8 +14,17 @@ import tap from 'tap';
 import { JacksonError } from '../src/controller/error';
 import readConfig from '../src/read-config';
 import saml from '@boxyhq/saml20';
-import fixture1 from './data/metadata/fixture1';
-import fixture3 from './data/metadata/fixture3';
+import fixture1 from './data/metadata/boxyhq';
+import {
+  authz_request_normal,
+  authz_request_normal_with_access_type,
+  invalid_client_id,
+  redirect_uri_not_allowed,
+  redirect_uri_not_set,
+  response_type_not_code,
+  saml_binding_absent,
+  state_not_set,
+} from './fixture';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
@@ -60,10 +69,7 @@ tap.teardown(async () => {
 
 tap.test('authorize()', async (t) => {
   t.test('Should throw an error if `redirect_uri` null', async (t) => {
-    const body: Partial<OAuthReqBody> = {
-      redirect_uri: undefined,
-      state: 'state',
-    };
+    const body = redirect_uri_not_set;
 
     try {
       await oauthController.authorize(<OAuthReqBody>body);
@@ -78,11 +84,7 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should return OAuth Error response if `state` is not set', async (t) => {
-    const body: Partial<OAuthReqBody> = {
-      redirect_uri: fixture1.defaultRedirectUrl,
-      state: undefined,
-      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-    };
+    const body = state_not_set;
 
     const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
 
@@ -96,14 +98,7 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should return OAuth Error response if `response_type` is not `code`', async (t) => {
-    const body: Partial<OAuthReqBody> = {
-      redirect_uri: fixture1.defaultRedirectUrl,
-      state: 'state-123',
-      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      response_type: 'token',
-    };
+    const body = response_type_not_code;
 
     const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
 
@@ -117,11 +112,7 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
-    const body: Partial<OAuthReqBody> = {
-      redirect_uri: fixture3.defaultRedirectUrl,
-      state: 'state-123',
-      client_id: `tenant=${fixture3.tenant}&product=${fixture3.product}`,
-    };
+    const body = saml_binding_absent;
 
     const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
 
@@ -135,11 +126,7 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should return OAuth Error response if request creation fails', async (t) => {
-    const body: Partial<OAuthReqBody> = {
-      redirect_uri: fixture1.defaultRedirectUrl,
-      state: 'state-123',
-      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-    };
+    const body = authz_request_normal;
     const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
     const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
     t.equal(
@@ -152,11 +139,7 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should throw an error if `client_id` is invalid', async (t) => {
-    const body = {
-      redirect_uri: 'https://example.com/',
-      state: 'state-123',
-      client_id: '27fa9a11875ec3a0',
-    };
+    const body = invalid_client_id;
 
     try {
       await oauthController.authorize(<OAuthReqBody>body);
@@ -172,11 +155,7 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should throw an error if `redirect_uri` is not allowed', async (t) => {
-    const body = {
-      redirect_uri: 'https://example.com/',
-      state: 'state-123',
-      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-    };
+    const body = redirect_uri_not_allowed;
 
     try {
       await oauthController.authorize(<OAuthReqBody>body);
@@ -193,11 +172,7 @@ tap.test('authorize()', async (t) => {
 
   t.test('Should return the Idp SSO URL', async (t) => {
     t.test('accepts client_id', async (t) => {
-      const body = {
-        redirect_uri: fixture1.defaultRedirectUrl,
-        state: 'state-123',
-        client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-      };
+      const body = authz_request_normal;
 
       const response = await oauthController.authorize(<OAuthReqBody>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
@@ -210,11 +185,7 @@ tap.test('authorize()', async (t) => {
     });
 
     t.test('accepts access_type', async (t) => {
-      const body = {
-        redirect_uri: fixture1.defaultRedirectUrl,
-        state: 'state-123',
-        access_type: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-      };
+      const body = authz_request_normal_with_access_type;
 
       const response = await oauthController.authorize(<OAuthReqBody>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
@@ -231,11 +202,7 @@ tap.test('authorize()', async (t) => {
 });
 
 tap.test('samlResponse()', async (t) => {
-  const authBody = {
-    redirect_uri: fixture1.defaultRedirectUrl,
-    state: 'state-123',
-    client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-  };
+  const authBody = authz_request_normal;
 
   const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
 
@@ -460,11 +427,11 @@ tap.test('token()', (t) => {
     });
 
     t.test('unencoded client_id', async (t) => {
-      const authBody = {
-        redirect_uri: fixture1.defaultRedirectUrl,
-        state: 'state-123',
-        client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-      };
+      // have to call authorize, because previous happy path deletes the code.
+      const authBody = authz_request_normal;
+      const configRecord = configRecords.find(
+        (record) => `tenant=${record.tenant}&product=${record.product}` === authBody.client_id
+      );
 
       const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
 
@@ -486,8 +453,8 @@ tap.test('token()', (t) => {
 
       const body: Partial<OAuthTokenReq> = {
         grant_type: 'authorization_code',
-        client_id: configRecords[0].clientID,
-        client_secret: configRecords[0].clientSecret,
+        client_id: configRecord.clientID,
+        client_secret: configRecord.clientSecret,
         code: code,
       };
       const tokenRes = await oauthController.token(<OAuthTokenReq>body);
