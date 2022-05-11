@@ -76,6 +76,7 @@ export interface Profile {
   email: string;
   firstName: string;
   lastName: string;
+  requested: Record<string, string>;
 }
 
 export interface Index {
