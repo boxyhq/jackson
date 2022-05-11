@@ -24,6 +24,8 @@ import {
   response_type_not_code,
   saml_binding_absent,
   state_not_set,
+  token_req_encoded_client_id,
+  token_req_unencoded_client_id_gen,
 } from './fixture';
 
 let apiController: IAPIController;
@@ -395,15 +397,9 @@ tap.test('token()', (t) => {
     t.end();
   });
 
-  t.test('Should return the `access_token` for a valid request', async (t) => {
+  t.test('Should return the `access_token`/`userprofile` for a valid request', async (t) => {
     t.test('encoded client_id', async (t) => {
-      const body: Partial<OAuthTokenReq> = {
-        grant_type: 'authorization_code',
-        client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-        client_secret: options.clientSecretVerifier,
-        code: code,
-      };
-
+      const body = token_req_encoded_client_id;
       const stubRandomBytes = sinon
         .stub(crypto, 'randomBytes')
         .onFirstCall()
@@ -429,9 +425,6 @@ tap.test('token()', (t) => {
     t.test('unencoded client_id', async (t) => {
       // have to call authorize, because previous happy path deletes the code.
       const authBody = authz_request_normal;
-      const configRecord = configRecords.find(
-        (record) => `tenant=${record.tenant}&product=${record.product}` === authBody.client_id
-      );
 
       const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
 
@@ -451,12 +444,8 @@ tap.test('token()', (t) => {
 
       await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
-      const body: Partial<OAuthTokenReq> = {
-        grant_type: 'authorization_code',
-        client_id: configRecord.clientID,
-        client_secret: configRecord.clientSecret,
-        code: code,
-      };
+      const body = token_req_unencoded_client_id_gen(configRecords);
+
       const tokenRes = await oauthController.token(<OAuthTokenReq>body);
 
       t.ok('access_token' in tokenRes, 'includes access_token');
@@ -465,6 +454,13 @@ tap.test('token()', (t) => {
       t.match(tokenRes.access_token, token);
       t.match(tokenRes.token_type, 'bearer');
       t.match(tokenRes.expires_in, 300);
+
+      const profile = await oauthController.userInfo(tokenRes.access_token);
+
+      t.equal(profile.requested.client_id, authz_request_normal.client_id);
+      t.equal(profile.requested.state, authz_request_normal.state);
+      t.equal(profile.requested.tenant, new URLSearchParams(authz_request_normal.client_id).get('tenant'));
+      t.equal(profile.requested.product, new URLSearchParams(authz_request_normal.client_id).get('product'));
 
       stubRandomBytes.restore();
 
