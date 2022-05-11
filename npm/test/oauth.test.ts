@@ -35,8 +35,6 @@ const options = <JacksonOption>{
   clientSecretVerifier: 'TOP-SECRET',
 };
 
-const samlConfig = fixture1;
-
 const configRecords: Array<any> = [];
 
 const addMetadata = async (metadataPath) => {
@@ -81,9 +79,9 @@ tap.test('authorize()', async (t) => {
 
   t.test('Should return OAuth Error response if `state` is not set', async (t) => {
     const body: Partial<OAuthReqBody> = {
-      redirect_uri: samlConfig.defaultRedirectUrl,
+      redirect_uri: fixture1.defaultRedirectUrl,
       state: undefined,
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
     };
 
     const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
@@ -99,9 +97,9 @@ tap.test('authorize()', async (t) => {
 
   t.test('Should return OAuth Error response if `response_type` is not `code`', async (t) => {
     const body: Partial<OAuthReqBody> = {
-      redirect_uri: samlConfig.defaultRedirectUrl,
+      redirect_uri: fixture1.defaultRedirectUrl,
       state: 'state-123',
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       response_type: 'token',
@@ -138,9 +136,9 @@ tap.test('authorize()', async (t) => {
 
   t.test('Should return OAuth Error response if request creation fails', async (t) => {
     const body: Partial<OAuthReqBody> = {
-      redirect_uri: samlConfig.defaultRedirectUrl,
+      redirect_uri: fixture1.defaultRedirectUrl,
       state: 'state-123',
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
     };
     const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
     const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
@@ -177,7 +175,7 @@ tap.test('authorize()', async (t) => {
     const body = {
       redirect_uri: 'https://example.com/',
       state: 'state-123',
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
     };
 
     try {
@@ -196,9 +194,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return the Idp SSO URL', async (t) => {
     t.test('accepts client_id', async (t) => {
       const body = {
-        redirect_uri: samlConfig.defaultRedirectUrl,
+        redirect_uri: fixture1.defaultRedirectUrl,
         state: 'state-123',
-        client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+        client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
       };
 
       const response = await oauthController.authorize(<OAuthReqBody>body);
@@ -213,9 +211,9 @@ tap.test('authorize()', async (t) => {
 
     t.test('accepts access_type', async (t) => {
       const body = {
-        redirect_uri: samlConfig.defaultRedirectUrl,
+        redirect_uri: fixture1.defaultRedirectUrl,
         state: 'state-123',
-        access_type: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+        access_type: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
       };
 
       const response = await oauthController.authorize(<OAuthReqBody>body);
@@ -234,9 +232,9 @@ tap.test('authorize()', async (t) => {
 
 tap.test('samlResponse()', async (t) => {
   const authBody = {
-    redirect_uri: samlConfig.defaultRedirectUrl,
+    redirect_uri: fixture1.defaultRedirectUrl,
     state: 'state-123',
-    client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+    client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
   };
 
   const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
@@ -361,14 +359,14 @@ tap.test('token()', (t) => {
   t.test('Should throw an error if `code` or `client_secret` is invalid', async (t) => {
     const bodyWithInvalidCode: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
       client_secret: options.clientSecretVerifier,
       code: 'invalid-code',
     };
     //encoded clientId and wrong secret
     const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
       grant_type: 'authorization_code',
-      client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
       client_secret: 'dummy',
       code: code,
     };
@@ -434,7 +432,7 @@ tap.test('token()', (t) => {
     t.test('encoded client_id', async (t) => {
       const body: Partial<OAuthTokenReq> = {
         grant_type: 'authorization_code',
-        client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+        client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
         client_secret: options.clientSecretVerifier,
         code: code,
       };
@@ -463,9 +461,9 @@ tap.test('token()', (t) => {
 
     t.test('unencoded client_id', async (t) => {
       const authBody = {
-        redirect_uri: samlConfig.defaultRedirectUrl,
+        redirect_uri: fixture1.defaultRedirectUrl,
         state: 'state-123',
-        client_id: `tenant=${samlConfig.tenant}&product=${samlConfig.product}`,
+        client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
       };
 
       const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);

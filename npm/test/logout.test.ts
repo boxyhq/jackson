@@ -22,8 +22,6 @@ const options = <JacksonOption>{
   },
 };
 
-const samlConfig = fixture1;
-
 // TODO: Move this to a helper file
 const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
@@ -49,9 +47,9 @@ tap.teardown(async () => {
 tap.test('LogoutController -> createRequest', async (t) => {
   const body = {
     nameId: 'google-oauth2|146623609101108149256',
-    tenant: samlConfig.tenant,
-    product: samlConfig.product,
-    redirectUrl: samlConfig.defaultRedirectUrl,
+    tenant: fixture1.tenant,
+    product: fixture1.product,
+    redirectUrl: fixture1.defaultRedirectUrl,
   };
 
   t.test('createRequest', async (t) => {
@@ -199,7 +197,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
       });
 
       t.ok('redirectUrl' in result);
-      t.match(result.redirectUrl, samlConfig.defaultRedirectUrl);
+      t.match(result.redirectUrl, fixture1.defaultRedirectUrl);
 
       t.end();
     });
