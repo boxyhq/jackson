@@ -21,7 +21,15 @@ const transformUser = (user: any) => {
 };
 
 const transformGroup = (group: any) => {
-  return group;
+  return {
+    event: group.event,
+    tenant: group.tenant,
+    product: group.product,
+    data: {
+      id: group.id,
+      name: group.name,
+    },
+  };
 };
 
 export { transformUser, transformGroup };

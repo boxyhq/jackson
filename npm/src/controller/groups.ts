@@ -1,4 +1,5 @@
 import type { Storable, Group } from '../typings';
+import { v4 as uuidv4 } from 'uuid';
 
 export class GroupsController {
   private _db: any;
@@ -23,17 +24,22 @@ export class GroupsController {
   }
 
   // Create a new group
-  public async create(param: { id: string; name: string; raw: object }): Promise<void> {
-    const { id, name, raw } = param;
+  public async create(param: { name: string; members: any; raw: object }): Promise<Group> {
+    const { name, members, raw } = param;
 
-    await this.store().put(id, { id, name, raw });
+    const id = uuidv4();
+    const group = { id, name, members, raw };
+
+    await this.store().put(id, group);
+
+    return group;
   }
 
   // Get a group by id
   public async get(id: string): Promise<Group | null> {
-    const user: Group = await this.store().get(id);
+    const group: Group = await this.store().get(id);
 
-    return user || null;
+    return group || null;
   }
 
   // Update the group data
@@ -41,16 +47,18 @@ export class GroupsController {
     id: string,
     param: {
       name: string;
+      members: any;
       raw: object;
     }
   ): Promise<Group> {
-    const { name, raw } = param;
+    const { name, members, raw } = param;
 
-    await this.store().put(id, { name, raw });
+    await this.store().put(id, { name, members, raw });
 
     return {
       id,
       name,
+      members,
       raw,
     };
   }

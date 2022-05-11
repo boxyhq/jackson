@@ -31,6 +31,7 @@ export interface IOAuthController {
 export interface IAdminController {
   getAllConfig(pageOffset?: number, pageLimit?: number);
 }
+
 export interface IHealthCheckController {
   status(): Promise<{
     status: number;
@@ -67,15 +68,15 @@ export interface IUsersController {
   with(tenant: string, product: string): IUsersController;
   create(param: object): Promise<void>;
   get(id: string): Promise<User | null>;
-  update(id: string, data: object): Promise<User>;
+  update(id: string, param: object): Promise<User>;
   delete(id: string): Promise<void>;
 }
 
 export interface IGroupsController {
   with(tenant: string, product: string): IGroupsController;
-  create(param: object): Promise<void>;
+  create(param: object): Promise<Group>;
   get(id: string): Promise<Group | null>;
-  update(id: string, data: object): Promise<Group>;
+  update(id: string, param: object): Promise<Group>;
   delete(id: string): Promise<void>;
 }
 
@@ -217,7 +218,13 @@ export interface SCIMConfig {
   };
 }
 
-export type SCIMEventType = 'user.created' | 'user.updated' | 'user.deleted';
+export type SCIMEventType =
+  | 'user.created'
+  | 'user.updated'
+  | 'user.deleted'
+  | 'group.created'
+  | 'group.updated'
+  | 'group.deleted';
 
 export interface User {
   id: string;
@@ -230,5 +237,6 @@ export interface User {
 export interface Group {
   id: string;
   name: string;
+  members: any[];
   raw?: object;
 }

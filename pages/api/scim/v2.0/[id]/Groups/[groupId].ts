@@ -18,6 +18,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return handleGET(req, res);
     case 'PUT':
       return handlePUT(req, res);
+    case 'DELETE':
+      return handleDELETE(req, res);
     default:
       res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
@@ -25,22 +27,65 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, usersController } = await jackson();
+  const { scimController, groupsController } = await jackson();
   const { id, groupId } = req.query;
+
+  const { tenant, product } = await scimController.get(id as string);
+
+  const group = await groupsController.with(tenant, product).get(groupId as string);
+
+  // TODO: Handle if the group doesn't exist
 
   return res.status(200).json({
     schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-    id: 'abf4dd94-a4c0-4f67-89c9-76b03340cb9b',
-    displayName: 'test',
-    members: [],
+    id: group?.id,
+    displayName: group?.name,
+    members: group?.members,
   });
 };
 
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
-  return res.status(200).json({
-    schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-    id: 'abf4dd94-a4c0-4f67-89c9-76b03340cb9b',
-    displayName: 'test',
-    members: [],
+  const { scimController, groupsController } = await jackson();
+  const { id, groupId } = req.query;
+
+  const body = JSON.parse(req.body);
+
+  const { tenant, product } = await scimController.get(id as string);
+
+  const group = await groupsController.with(tenant, product).update(groupId as string, {
+    name: body.displayName,
+    members: body.members,
+    raw: body,
   });
+
+  scimController.sendEvent(<string>id, 'group.updated', {
+    id: group.id,
+    name: group.name,
+    tenant,
+    product,
+  });
+
+  return res.status(200).json(body);
+};
+
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { scimController, groupsController } = await jackson();
+  const { id, groupId } = req.query;
+
+  const { tenant, product } = await scimController.get(id as string);
+
+  const group = await groupsController.with(tenant, product).get(groupId as string);
+
+  await groupsController.with(tenant, product).delete(groupId as string);
+
+  if (group != null) {
+    scimController.sendEvent(<string>id, 'group.deleted', {
+      id: group.id,
+      name: group.name,
+      tenant,
+      product,
+    });
+  }
+
+  return res.status(204).json(null);
 };
