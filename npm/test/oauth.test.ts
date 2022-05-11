@@ -14,7 +14,8 @@ import tap from 'tap';
 import { JacksonError } from '../src/controller/error';
 import readConfig from '../src/read-config';
 import saml from '@boxyhq/saml20';
-import fixture0 from './data/metadata/fixture0';
+import fixture1 from './data/metadata/fixture1';
+import fixture3 from './data/metadata/fixture3';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
@@ -34,14 +35,7 @@ const options = <JacksonOption>{
   clientSecretVerifier: 'TOP-SECRET',
 };
 
-const samlConfig = {
-  name: 'testConfig',
-  tenant: 'boxyhq.com',
-  product: 'crm',
-  redirectUrl: '["http://localhost:3366/*"]',
-  defaultRedirectUrl: 'http://localhost:3366/login/saml',
-  encodedRawMetadata: null,
-};
+const samlConfig = fixture1;
 
 const configRecords: Array<any> = [];
 
@@ -126,9 +120,9 @@ tap.test('authorize()', async (t) => {
 
   t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
     const body: Partial<OAuthReqBody> = {
-      redirect_uri: fixture0.defaultRedirectUrl,
+      redirect_uri: fixture3.defaultRedirectUrl,
       state: 'state-123',
-      client_id: `tenant=${fixture0.tenant}&product=${fixture0.product}`,
+      client_id: `tenant=${fixture3.tenant}&product=${fixture3.product}`,
     };
 
     const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);

@@ -1,3 +1,4 @@
+<!-- Fixture without POST/Redirect bindings -->
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://accounts.google.com/o/saml2" validUntil="2026-06-22T18:39:53.000Z">
 	<IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">

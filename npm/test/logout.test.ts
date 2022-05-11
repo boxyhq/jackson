@@ -6,6 +6,7 @@ import tap from 'tap';
 import readConfig from '../src/read-config';
 import { IAPIController, ILogoutController, JacksonOption } from '../src/typings';
 import { relayStatePrefix } from '../src/controller/utils';
+import fixture1 from './data/metadata/fixture1';
 
 let apiController: IAPIController;
 let logoutController: ILogoutController;
@@ -21,14 +22,7 @@ const options = <JacksonOption>{
   },
 };
 
-const samlConfig = {
-  name: 'testConfig',
-  tenant: 'boxyhq.com',
-  product: 'crm',
-  redirectUrl: '["http://localhost:3366/*"]',
-  defaultRedirectUrl: 'http://localhost:3366/login/saml',
-  encodedRawMetadata: null,
-};
+const samlConfig = fixture1;
 
 // TODO: Move this to a helper file
 const addMetadata = async (metadataPath) => {
