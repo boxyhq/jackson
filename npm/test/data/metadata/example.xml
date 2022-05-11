@@ -1,4 +1,4 @@
-<!-- Fixture for SLO -->
+<!-- For SLO -->
 <EntityDescriptor entityID="urn:dev-tyj7qyzz.auth0.com" xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
 	<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
 		<KeyDescriptor use="signing">
