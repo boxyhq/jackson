@@ -1,10 +1,10 @@
-import type { Storable, SCIMConfig, ISCIMController, JacksonOption, SCIMEventType } from '../typings';
+import type { Storable, SCIMConfig, JacksonOption, SCIMEventType } from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomString } from './utils';
 import { JacksonError } from './error';
 import { sendEvent } from '../scim';
 
-export class SCIMController implements ISCIMController {
+export class SCIMController {
   private store: Storable;
   private opts: JacksonOption;
 
@@ -78,13 +78,11 @@ export class SCIMController implements ISCIMController {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
-    const config = await this.get(id);
-
-    // Get the scim config
-    // Delete the users
-    // Delete the groups
+    // TODO: Delete the users and groups associated with the configuration
 
     await this.store.delete(id);
+
+    return;
   }
 
   // Send the webhook event to the SP endpoint
@@ -106,7 +104,7 @@ export class SCIMController implements ISCIMController {
     return;
   }
 
-  // Method to validate the API secret.
+  // Validate the API secret
   public async validateAPISecret(id: string, bearerToken: string | null): Promise<boolean> {
     if (!id) {
       throw new JacksonError('Missing required parameters.', 400);

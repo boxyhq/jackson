@@ -16,9 +16,7 @@ export class GroupsController {
 
   // Create the store using the tenant and product
   public with(tenant: string, product: string): GroupsController {
-    const namespace = `groups:${tenant}:${product}`;
-
-    this._store = this._store || this._db.store(namespace);
+    this._store = this._store || this._db.store(`groups:${tenant}:${product}`);
 
     return this;
   }
@@ -66,5 +64,7 @@ export class GroupsController {
   // Delete a group by id
   public async delete(id: string): Promise<void> {
     await this.store().delete(id);
+
+    return;
   }
 }
