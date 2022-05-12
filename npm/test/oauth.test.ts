@@ -14,10 +14,13 @@ import tap from 'tap';
 import { JacksonError } from '../src/controller/error';
 import readConfig from '../src/read-config';
 import saml from '@boxyhq/saml20';
-import fixture1 from './data/metadata/boxyhq';
 import {
   authz_request_normal,
   authz_request_normal_with_access_type,
+  bodyWithDummyCredentials,
+  bodyWithInvalidClientSecret,
+  bodyWithInvalidCode,
+  bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
   redirect_uri_not_allowed,
   redirect_uri_not_set,
@@ -326,34 +329,6 @@ tap.test('token()', (t) => {
   });
 
   t.test('Should throw an error if `code` or `client_secret` is invalid', async (t) => {
-    const bodyWithInvalidCode: Partial<OAuthTokenReq> = {
-      grant_type: 'authorization_code',
-      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-      client_secret: options.clientSecretVerifier,
-      code: 'invalid-code',
-    };
-    //encoded clientId and wrong secret
-    const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
-      grant_type: 'authorization_code',
-      client_id: `tenant=${fixture1.tenant}&product=${fixture1.product}`,
-      client_secret: 'dummy',
-      code: code,
-    };
-    //unencoded clientId with wrong secret
-    const bodyWithUnencodedClientId_InvalidClientSecret: Partial<OAuthTokenReq> = {
-      grant_type: 'authorization_code',
-      client_id: configRecords[0].clientID,
-      client_secret: 'dummy',
-      code: code,
-    };
-
-    const bodyWithDummyCredentials: Partial<OAuthTokenReq> = {
-      grant_type: 'authorization_code',
-      client_id: `dummy`,
-      client_secret: 'dummy',
-      code: code,
-    };
-
     try {
       await oauthController.token(<OAuthTokenReq>bodyWithInvalidCode);
 
@@ -375,6 +350,8 @@ tap.test('token()', (t) => {
     }
 
     try {
+      const bodyWithUnencodedClientId_InvalidClientSecret =
+        bodyWithUnencodedClientId_InvalidClientSecret_gen(configRecords);
       await oauthController.token(<OAuthTokenReq>bodyWithUnencodedClientId_InvalidClientSecret);
 
       t.fail('Expecting JacksonError.');

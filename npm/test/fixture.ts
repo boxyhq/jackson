@@ -55,11 +55,46 @@ export const saml_binding_absent: Partial<OAuthReqBody> = {
 // END: Fixtures for authorize
 
 // BEGIN: Fixtures for token
+const CODE = '1234567890';
+const CLIENT_SECRET_VERIFIER = 'TOP-SECRET';
+export const bodyWithInvalidCode: Partial<OAuthTokenReq> = {
+  grant_type: 'authorization_code',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  client_secret: CLIENT_SECRET_VERIFIER,
+  code: 'invalid-code',
+};
+//encoded clientId and wrong secret
+export const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
+  grant_type: 'authorization_code',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  client_secret: 'dummy',
+  code: CODE,
+};
+//unencoded clientId with wrong secret
+export const bodyWithUnencodedClientId_InvalidClientSecret_gen = (configRecords) => {
+  const configRecord = configRecords.find(
+    (record) => `tenant=${record.tenant}&product=${record.product}` === authz_request_normal.client_id
+  );
+  return {
+    grant_type: 'authorization_code',
+    client_id: configRecord.clientID,
+    client_secret: 'dummy',
+    code: CODE,
+  };
+};
+
+export const bodyWithDummyCredentials: Partial<OAuthTokenReq> = {
+  grant_type: 'authorization_code',
+  client_id: `dummy`,
+  client_secret: 'dummy',
+  code: CODE,
+};
+
 export const token_req_encoded_client_id: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
-  client_secret: 'TOP-SECRET',
-  code: '1234567890',
+  client_secret: CLIENT_SECRET_VERIFIER,
+  code: CODE,
 };
 
 export const token_req_unencoded_client_id_gen = (configRecords) => {
