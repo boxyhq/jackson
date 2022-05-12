@@ -3,13 +3,15 @@ import { transformUser, transformGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
 
-interface Payload {
-  tenant: string;
-  product: string;
-  data: any;
-}
-
-const sendEvent = async (type: SCIMEventType, payload: Payload, options: Pick<SCIMConfig, 'webhook'>) => {
+const sendEvent = async (
+  type: SCIMEventType,
+  payload: {
+    tenant: string;
+    product: string;
+    data: any;
+  },
+  options: Pick<SCIMConfig, 'webhook'>
+) => {
   const objectType: 'user' | 'group' = getObjectType(type);
   const { webhook } = options;
   const { tenant, product, data } = payload;

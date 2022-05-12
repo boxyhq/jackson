@@ -35,8 +35,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const group = await groupsController.with(tenant, product).get(groupId as string);
 
-  // TODO: Handle if the group doesn't exist
-
   return res.status(200).json({
     schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
     id: group?.id,
@@ -61,10 +59,8 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   scimController.sendEvent(<string>id, 'group.updated', {
+    ...body,
     id: group.id,
-    name: group.name,
-    tenant,
-    product,
   });
 
   return res.status(200).json(body);
@@ -83,10 +79,8 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (group != null) {
     scimController.sendEvent(<string>id, 'group.deleted', {
+      ...group.raw,
       id: group.id,
-      name: group.name,
-      tenant,
-      product,
     });
   }
 

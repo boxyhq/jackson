@@ -51,13 +51,12 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   scimController.sendEvent(<string>id, 'group.created', {
+    ...body,
     id: group.id,
-    name: group.name,
-    tenant,
-    product,
   });
 
-  body.id = group.id;
+  // We've to send back the id to the IdP
+  body['id'] = group.id;
 
   return res.status(200).json(body);
 };

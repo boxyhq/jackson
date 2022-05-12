@@ -22,11 +22,11 @@ export class GroupsController {
   }
 
   // Create a new group
-  public async create(param: { name: string; members: any; raw: object }): Promise<Group> {
+  public async create(param: { name: string; members: []; raw: object }): Promise<Group> {
     const { name, members, raw } = param;
 
     const id = uuidv4();
-    const group = { id, name, members, raw };
+    const group: Group = { id, name, members, raw };
 
     await this.store().put(id, group);
 
@@ -45,20 +45,17 @@ export class GroupsController {
     id: string,
     param: {
       name: string;
-      members: any;
+      members: [];
       raw: object;
     }
   ): Promise<Group> {
     const { name, members, raw } = param;
 
-    await this.store().put(id, { name, members, raw });
+    const group: Group = { id, name, members, raw };
 
-    return {
-      id,
-      name,
-      members,
-      raw,
-    };
+    await this.store().put(id, group);
+
+    return group;
   }
 
   // Delete a group by id

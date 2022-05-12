@@ -11,7 +11,9 @@ const transformUser = (user: any) => {
 const transformGroup = (group: any) => {
   return {
     id: group.id,
-    name: group.name,
+    name: group.displayName,
+    members: group.members,
+    raw: group,
   };
 };
 
