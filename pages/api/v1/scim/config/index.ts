@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case 'POST':
-      return handlePost(req, res);
+      return handlePOST(req, res);
     default:
       res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 // Create a new SCIM configuration
-const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController } = await jackson();
 
   const { name, tenant, product, webhook_url, webhook_secret } = req.body;

@@ -63,11 +63,11 @@ export class SCIMController implements ISCIMController {
 
     const config: SCIMConfig = await this.store.get(id);
 
-    config.scim.endpoint = `${this.opts.externalUrl}${config.scim.path}`;
-
     if (!config) {
       throw new JacksonError('Configuration not found.', 404);
     }
+
+    config.scim.endpoint = `${this.opts.externalUrl}${config.scim.path}`;
 
     return config;
   }
@@ -77,10 +77,22 @@ export class SCIMController implements ISCIMController {
     if (!id) {
       throw new JacksonError('Missing required parameters.', 400);
     }
+
+    const config = await this.get(id);
+
+    // Get the scim config
+    // Delete the users
+    // Delete the groups
+
+    await this.store.delete(id);
   }
 
   // Send the webhook event to the SP endpoint
   public async sendEvent(id: string, type: SCIMEventType, payload: object): Promise<void> {
+    if (!id || !type || !payload) {
+      throw new JacksonError('Missing required parameters.', 400);
+    }
+
     const config = await this.get(id);
 
     // Add additional data to the payload
