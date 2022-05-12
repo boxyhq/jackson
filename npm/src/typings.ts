@@ -60,7 +60,7 @@ export interface ISCIMController {
   }): Promise<SCIMConfig>;
   get(id: string): Promise<SCIMConfig>;
   delete(id: string): Promise<void>;
-  sendEvent(id: string, type: SCIMEventType, payload: object): Promise<void>;
+  sendEvent(id: string, type: SCIMEventType, data: object): Promise<void>;
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
 

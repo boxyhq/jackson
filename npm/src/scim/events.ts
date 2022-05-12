@@ -3,26 +3,41 @@ import { transformUser, transformGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
 
-const sendEvent = async (type: SCIMEventType, payload: object, options: Pick<SCIMConfig, 'webhook'>) => {
-  const objectType = getObjectType(type);
-  const { webhook } = options;
+interface Payload {
+  tenant: string;
+  product: string;
+  data: any;
+}
 
-  payload['event'] = type;
+const sendEvent = async (type: SCIMEventType, payload: Payload, options: Pick<SCIMConfig, 'webhook'>) => {
+  const objectType: 'user' | 'group' = getObjectType(type);
+  const { webhook } = options;
+  const { tenant, product, data } = payload;
+
+  // Create a payload to send to the webhook
+  const webhookPayload = {
+    event: type,
+    object: objectType,
+    tenant,
+    product,
+  };
 
   if (objectType === 'user') {
-    payload = transformUser(payload);
+    webhookPayload['data'] = transformUser(data);
   }
 
   if (objectType === 'group') {
-    payload = transformGroup(payload);
+    webhookPayload['data'] = transformGroup(data);
   }
 
   const headers = {
     'Content-Type': 'application/json',
-    'BoxyHQ-Signature': await createSignatureString(webhook.secret, payload),
+    'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
   };
 
-  axios.post(webhook.endpoint, payload, { headers });
+  // TODO: Handle the error like timeout, etc
+
+  axios.post(webhook.endpoint, webhookPayload, { headers });
 
   return;
 };

@@ -26,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
+// Get a group
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, groupsController } = await jackson();
   const { id, groupId } = req.query;
@@ -44,6 +45,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
+// Update a group
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, groupsController } = await jackson();
   const { id, groupId } = req.query;
@@ -68,6 +70,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json(body);
 };
 
+// Delete a group
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, groupsController } = await jackson();
   const { id, groupId } = req.query;

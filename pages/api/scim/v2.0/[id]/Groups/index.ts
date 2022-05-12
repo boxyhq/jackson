@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
+// Returns a list of groups. We'll never sync groups.
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
@@ -34,6 +35,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
+// Creates a new group
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, groupsController } = await jackson();
   const { id } = req.query;

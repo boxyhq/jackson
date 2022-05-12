@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
+// Returns a list of users. We'll never sync groups.
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
@@ -34,6 +35,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
+// Creates a new user
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id } = req.query;
@@ -49,11 +51,11 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     raw: body,
   });
 
+  // We've to send back the id to the IdP
+  body['id'] = user.id;
+
   scimController.sendEvent(id as string, 'user.created', {
     ...body,
-    id: user.id,
-    tenant,
-    product,
   });
 
   return res.json(body);

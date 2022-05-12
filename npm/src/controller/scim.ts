@@ -86,20 +86,24 @@ export class SCIMController {
   }
 
   // Send the webhook event to the SP endpoint
-  public async sendEvent(id: string, type: SCIMEventType, payload: object): Promise<void> {
-    if (!id || !type || !payload) {
+  public async sendEvent(id: string, type: SCIMEventType, data: object): Promise<void> {
+    if (!id || !type || !data) {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
-    const config = await this.get(id);
+    const { tenant, product, webhook } = await this.get(id);
 
-    // Add additional data to the payload
-    payload['tenant'] = config.tenant;
-    payload['product'] = config.product;
-
-    sendEvent(type, payload, {
-      webhook: config.webhook,
-    });
+    sendEvent(
+      type,
+      {
+        tenant,
+        product,
+        data,
+      },
+      {
+        webhook,
+      }
+    );
 
     return;
   }

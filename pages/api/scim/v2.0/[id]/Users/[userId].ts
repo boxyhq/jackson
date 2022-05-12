@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
+// Retrieve a user
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id, userId } = req.query;
@@ -43,6 +44,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.json(user.raw);
 };
 
+// Update a user
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id, userId } = req.query;
@@ -55,7 +57,6 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (event === 'user.updated') {
     await usersController.with(tenant, product).update(userId as string, {
-      id: body.id,
       first_name: body.name.givenName,
       last_name: body.name.familyName,
       email: body.emails[0].value,
@@ -67,8 +68,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
   scimController.sendEvent(<string>id, event, {
     ...body,
-    tenant,
-    product,
+    id: userId,
   });
 
   return res.json(body);
