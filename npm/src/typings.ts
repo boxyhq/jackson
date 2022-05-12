@@ -147,6 +147,10 @@ export interface Storable {
   getByIndex(idx: Index): Promise<any>;
 }
 
+export interface DatabaseStore {
+  store(namespace: string): Storable;
+}
+
 export interface Encrypted {
   iv?: string;
   tag?: string;

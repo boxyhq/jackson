@@ -1,11 +1,11 @@
-import type { Storable, Group } from '../typings';
+import type { Storable, Group, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
 
 export class GroupsController {
-  private _db: any;
+  private _db: DatabaseStore;
   private _store: Storable | null = null;
 
-  constructor({ db }: { db: any }) {
+  constructor({ db }: { db: DatabaseStore }) {
     this._db = db;
   }
 

@@ -1,10 +1,10 @@
-import type { Storable, User } from '../typings';
+import type { Storable, User, DatabaseStore } from '../typings';
 
 export class UsersController {
-  private db: any;
+  private db: DatabaseStore;
   private _store: Storable | null = null;
 
-  constructor({ db }: { db: any }) {
+  constructor({ db }: { db: DatabaseStore }) {
     this.db = db;
   }
 
