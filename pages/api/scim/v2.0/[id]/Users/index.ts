@@ -40,12 +40,9 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const body = JSON.parse(req.body);
 
-  body.id = body.externalId;
-
   const { tenant, product } = await scimController.get(id as string);
 
-  await usersController.with(tenant, product).create({
-    id: body.externalId,
+  const user = await usersController.with(tenant, product).create({
     first_name: body.name.givenName,
     last_name: body.name.familyName,
     email: body.emails[0].value,
@@ -54,6 +51,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   scimController.sendEvent(id as string, 'user.created', {
     ...body,
+    id: user.id,
     tenant,
     product,
   });

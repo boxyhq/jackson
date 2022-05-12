@@ -22,15 +22,19 @@ export class UsersController {
 
   // Create a new user
   public async create(param: {
-    id: string;
     first_name: string;
     last_name: string;
     email: string;
-    raw: object;
-  }): Promise<void> {
-    const { id, first_name, last_name, email, raw } = param;
+    raw: any;
+  }): Promise<User> {
+    const { first_name, last_name, email, raw } = param;
+    const { externalId } = raw;
 
-    await this.store().put(id, { id, first_name, last_name, email, raw });
+    const user = { id: externalId, first_name, last_name, email, raw };
+
+    await this.store().put(externalId, user);
+
+    return user;
   }
 
   // Get a user by id

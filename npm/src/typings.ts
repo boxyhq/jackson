@@ -66,17 +66,25 @@ export interface ISCIMController {
 
 export interface IUsersController {
   with(tenant: string, product: string): IUsersController;
-  create(param: object): Promise<void>;
+  create(param: { first_name: string; last_name: string; email: string; raw: any }): Promise<User>;
   get(id: string): Promise<User | null>;
-  update(id: string, param: object): Promise<User>;
+  update(
+    id: string,
+    param: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      raw: any;
+    }
+  ): Promise<User>;
   delete(id: string): Promise<void>;
 }
 
 export interface IGroupsController {
   with(tenant: string, product: string): IGroupsController;
-  create(param: object): Promise<Group>;
+  create(param: any): Promise<Group>;
   get(id: string): Promise<Group | null>;
-  update(id: string, param: object): Promise<Group>;
+  update(id: string, param: any): Promise<Group>;
   delete(id: string): Promise<void>;
 }
 

@@ -1,4 +1,6 @@
 const transformUser = (user: any) => {
+  console.log({ user });
+
   return {
     event: user.event,
     tenant: user.tenant,
