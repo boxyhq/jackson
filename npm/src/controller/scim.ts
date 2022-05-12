@@ -1,6 +1,6 @@
 import type { Storable, SCIMConfig, JacksonOption, SCIMEventType } from '../typings';
 import * as dbutils from '../db/utils';
-import { createRandomString } from './utils';
+import { createRandomSecret } from './utils';
 import { JacksonError } from './error';
 import { sendEvent } from '../scim';
 
@@ -44,7 +44,7 @@ export class SCIMController {
       },
       scim: {
         path: `/api/scim/v2.0/${id}`,
-        secret: await createRandomString(25),
+        secret: await createRandomSecret(16),
       },
     };
 
