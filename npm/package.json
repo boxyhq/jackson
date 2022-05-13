@@ -38,7 +38,7 @@
   "dependencies": {
     "@boxyhq/saml20": "1.0.2",
     "@opentelemetry/api-metrics": "0.27.0",
-    "@peculiar/webcrypto": "1.3.3",
+    "@peculiar/webcrypto": "1.4.0",
     "@peculiar/x509": "1.6.1",
     "mongodb": "4.5.0",
     "mysql2": "2.3.3",
