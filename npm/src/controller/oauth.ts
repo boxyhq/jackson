@@ -452,20 +452,18 @@ export class OAuthController implements IOAuthController {
     }
 
     let profile;
+    const redirect_uri = (session && session.redirect_uri) || samlConfig.defaultRedirectUrl;
     try {
       profile = await validateResponse(rawResponse, validateOpts);
     } catch (err: unknown) {
-      if (!isIdPFlow && session?.redirect_uri) {
-        // return error to redirect_uri only for SP-initiated OAuth 2.0 flow
-        return {
-          redirect_url: OAuthErrorResponse({
-            error: 'access_denied',
-            error_description: getErrorMessage(err),
-            redirect_uri: session.redirect_uri,
-          }),
-        };
-      }
-      throw err;
+      // return error to redirect_uri
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'access_denied',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+        }),
+      };
     }
     // store details against a code
     const code = crypto.randomBytes(20).toString('hex');
@@ -484,17 +482,14 @@ export class OAuthController implements IOAuthController {
     try {
       await this.codeStore.put(code, codeVal);
     } catch (err: unknown) {
-      if (!isIdPFlow && session?.redirect_uri) {
-        // return error to redirect_uri only for SP-initiated OAuth 2.0 flow
-        return {
-          redirect_url: OAuthErrorResponse({
-            error: 'server_error',
-            error_description: getErrorMessage(err),
-            redirect_uri: session.redirect_uri,
-          }),
-        };
-      }
-      throw err;
+      // return error to redirect_uri
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+        }),
+      };
     }
 
     const params: Record<string, string> = {
@@ -505,10 +500,7 @@ export class OAuthController implements IOAuthController {
       params.state = session.state;
     }
 
-    const redirectUrl = redirect.success(
-      (session && session.redirect_uri) || samlConfig.defaultRedirectUrl,
-      params
-    );
+    const redirectUrl = redirect.success(redirect_uri, params);
 
     // delete the session
     try {
