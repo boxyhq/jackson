@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { extractAuthToken, printRequest } from '@lib/utils';
+import { extractAuthToken, printRequest, bodyParser } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { scimController } = await jackson();
@@ -33,6 +33,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const user = await usersController.with(tenant, product).get(userId as string);
 
+  console.log({ user });
+
   if (user === null) {
     return res.status(404).json({
       schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
@@ -41,15 +43,18 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  return res.json(user.raw);
+  // TODO: Fix the id
+
+  return res.json({
+    ...user.raw,
+  });
 };
 
 // Update a user
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id, userId } = req.query;
-
-  const body = JSON.parse(req.body);
+  const body = bodyParser(req);
 
   const event = body.active ? 'user.updated' : 'user.deleted';
 
@@ -70,6 +75,8 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     ...body,
     id: userId,
   });
+
+  body['id'] = userId;
 
   return res.json(body);
 };

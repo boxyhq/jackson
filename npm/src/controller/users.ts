@@ -56,7 +56,7 @@ export class UsersController {
   ): Promise<User> {
     const { first_name, last_name, email, raw } = param;
 
-    await this.store().put(id, { first_name, last_name, email, raw });
+    await this.store().put(id, { id, first_name, last_name, email, raw });
 
     return {
       id,

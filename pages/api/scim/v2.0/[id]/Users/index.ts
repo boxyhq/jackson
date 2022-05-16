@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { extractAuthToken, printRequest } from '@lib/utils';
+import { extractAuthToken, printRequest, bodyParser } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { scimController } = await jackson();
@@ -39,8 +39,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id } = req.query;
-
-  const body = JSON.parse(req.body);
+  const body = bodyParser(req);
 
   const { tenant, product } = await scimController.get(id as string);
 

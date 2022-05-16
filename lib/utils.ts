@@ -42,12 +42,27 @@ export const setErrorCookie = (res: NextApiResponse, value: unknown, options: { 
 
 // Print the API request
 export const printRequest = (req: NextApiRequest) => {
-  const { body, query, method, url } = req;
+  const { body, query, method, url, headers } = req;
 
   console.log({
+    headers,
     url,
     method,
     query,
     body: body,
   });
+};
+
+const IsJsonString = (body: any): boolean => {
+  try {
+    const json = JSON.parse(body);
+
+    return typeof json === 'object';
+  } catch (e) {
+    return false;
+  }
+};
+
+export const bodyParser = (req: NextApiRequest): any => {
+  return IsJsonString(req.body) ? JSON.parse(req.body) : req.body;
 };
