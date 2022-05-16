@@ -33,7 +33,26 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const user = await usersController.with(tenant, product).get(userId as string);
 
-  console.log({ user });
+  if (user === null) {
+    return res.status(404).json({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+      detail: 'User not found',
+      status: 404,
+    });
+  }
+
+  return res.json(user.raw);
+};
+
+// Update a user
+const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { scimController, usersController } = await jackson();
+  const { id, userId } = req.query;
+  const body = bodyParser(req);
+
+  const { tenant, product } = await scimController.get(id as string);
+
+  const user = await usersController.with(tenant, product).get(userId as string);
 
   if (user === null) {
     return res.status(404).json({
@@ -43,22 +62,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  // TODO: Fix the id
-
-  return res.json({
-    ...user.raw,
-  });
-};
-
-// Update a user
-const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, usersController } = await jackson();
-  const { id, userId } = req.query;
-  const body = bodyParser(req);
-
   const event = body.active ? 'user.updated' : 'user.deleted';
-
-  const { tenant, product } = await scimController.get(id as string);
 
   if (event === 'user.updated') {
     await usersController.with(tenant, product).update(userId as string, {
@@ -72,11 +76,8 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   scimController.sendEvent(<string>id, event, {
-    ...body,
-    id: userId,
+    ...user.raw,
   });
 
-  body['id'] = userId;
-
-  return res.json(body);
+  return res.json(user.raw);
 };

@@ -51,12 +51,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   scimController.sendEvent(id as string, 'user.created', {
-    ...body,
-    id: user.id,
+    ...user.raw,
   });
 
-  // We've to send back the id to the IdP
-  body['id'] = user.id;
-
-  return res.json(body);
+  return res.json(user.raw);
 };

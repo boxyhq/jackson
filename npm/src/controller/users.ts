@@ -28,11 +28,13 @@ export class UsersController {
     raw: any;
   }): Promise<User> {
     const { first_name, last_name, email, raw } = param;
-    const { externalId } = raw;
+    const { externalId: id } = raw;
 
-    const user = { id: externalId, first_name, last_name, email, raw };
+    raw['id'] = id;
 
-    await this.store().put(externalId, user);
+    const user = { id, first_name, last_name, email, raw };
+
+    await this.store().put(id, user);
 
     return user;
   }
@@ -56,15 +58,13 @@ export class UsersController {
   ): Promise<User> {
     const { first_name, last_name, email, raw } = param;
 
-    await this.store().put(id, { id, first_name, last_name, email, raw });
+    raw['id'] = id;
 
-    return {
-      id,
-      first_name,
-      last_name,
-      email,
-      raw,
-    };
+    const user = { id, first_name, last_name, email, raw };
+
+    await this.store().put(id, user);
+
+    return user;
   }
 
   // Delete a user by id
