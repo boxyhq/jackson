@@ -13,6 +13,7 @@ export const authz_request_normal_with_access_type: Partial<OAuthReqBody> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
   access_type: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  client_id: 'dummy',
 };
 
 export const redirect_uri_not_set: Partial<OAuthReqBody> = {
