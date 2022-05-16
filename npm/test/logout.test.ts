@@ -6,6 +6,7 @@ import tap from 'tap';
 import readConfig from '../src/read-config';
 import { IAPIController, ILogoutController, JacksonOption } from '../src/typings';
 import { relayStatePrefix } from '../src/controller/utils';
+import { saml_config } from './fixture';
 
 let apiController: IAPIController;
 let logoutController: ILogoutController;
@@ -19,15 +20,6 @@ const options = <JacksonOption>{
   db: {
     engine: 'mem',
   },
-};
-
-const samlConfig = {
-  name: 'testConfig',
-  tenant: 'boxyhq.com',
-  product: 'crm',
-  redirectUrl: '["http://localhost:3366/*"]',
-  defaultRedirectUrl: 'http://localhost:3366/login/saml',
-  encodedRawMetadata: null,
 };
 
 // TODO: Move this to a helper file
@@ -55,9 +47,9 @@ tap.teardown(async () => {
 tap.test('LogoutController -> createRequest', async (t) => {
   const body = {
     nameId: 'google-oauth2|146623609101108149256',
-    tenant: samlConfig.tenant,
-    product: samlConfig.product,
-    redirectUrl: samlConfig.defaultRedirectUrl,
+    tenant: saml_config.tenant,
+    product: saml_config.product,
+    redirectUrl: saml_config.defaultRedirectUrl,
   };
 
   t.test('createRequest', async (t) => {
@@ -205,7 +197,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
       });
 
       t.ok('redirectUrl' in result);
-      t.match(result.redirectUrl, samlConfig.defaultRedirectUrl);
+      t.match(result.redirectUrl, saml_config.defaultRedirectUrl);
 
       t.end();
     });

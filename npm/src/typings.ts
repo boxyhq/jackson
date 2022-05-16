@@ -77,6 +77,7 @@ export interface Profile {
   email: string;
   firstName: string;
   lastName: string;
+  requested: Record<string, string>;
 }
 
 export interface Index {
@@ -167,4 +168,18 @@ export interface SAMLConfig {
 export interface ILogoutController {
   createRequest(body: SLORequestParams): Promise<{ logoutUrl: string | null; logoutForm: string | null }>;
   handleResponse(body: SAMLResponsePayload): Promise<any>;
+}
+
+export interface OAuthErrorHandlerParams {
+  // See Error Response section in https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/
+  error:
+    | 'invalid_request'
+    | 'access_denied'
+    | 'unauthorized_client'
+    | 'unsupported_response_type'
+    | 'invalid_scope'
+    | 'server_error'
+    | 'temporarily_unavailable';
+  error_description: string;
+  redirect_uri: string;
 }
