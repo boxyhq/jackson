@@ -187,11 +187,7 @@ export class OAuthController implements IOAuthController {
       if (resolvedSamlConfig) {
         samlConfig = resolvedSamlConfig;
       }
-    } else if (
-      (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') ||
-      (access_type && access_type !== '' && access_type !== 'undefined' && access_type !== 'null') ||
-      (scope && scope !== '' && scope !== 'undefined' && scope !== 'null')
-    ) {
+    } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
       let sp = getEncodedTenantProduct(client_id);
 
