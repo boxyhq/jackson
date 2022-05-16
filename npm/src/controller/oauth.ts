@@ -39,11 +39,9 @@ const validateResponse = async (rawResponse: string, validateOpts) => {
   return profile;
 };
 
-function getEncodedTenantProduct(
-  client_id: string
-): { tenant: string | null; product: string | null } | null {
+function getEncodedTenantProduct(param: string): { tenant: string | null; product: string | null } | null {
   try {
-    const sp = new URLSearchParams(client_id);
+    const sp = new URLSearchParams(param);
     const tenant = sp.get('tenant');
     const product = sp.get('product');
     if (tenant && product) {
