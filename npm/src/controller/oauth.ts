@@ -132,6 +132,7 @@ export class OAuthController implements IOAuthController {
       tenant,
       product,
       access_type,
+      scope,
       code_challenge,
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -188,13 +189,17 @@ export class OAuthController implements IOAuthController {
       }
     } else if (
       (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') ||
-      (access_type && access_type !== '' && access_type !== 'undefined' && access_type !== 'null')
+      (access_type && access_type !== '' && access_type !== 'undefined' && access_type !== 'null') ||
+      (scope && scope !== '' && scope !== 'undefined' && scope !== 'null')
     ) {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
       let sp = getEncodedTenantProduct(client_id);
 
       if (!sp && access_type) {
         sp = getEncodedTenantProduct(access_type);
+      }
+      if (!sp && scope) {
+        sp = getEncodedTenantProduct(scope);
       }
       if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
