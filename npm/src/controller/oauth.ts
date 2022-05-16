@@ -21,7 +21,7 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { relayStatePrefix, IndexNames } from './utils';
+import { relayStatePrefix, IndexNames, OAuthErrorResponse, getErrorMessage } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -148,10 +148,6 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Please specify a redirect URL.', 400);
     }
 
-    if (!state) {
-      throw new JacksonError('Please specify a state to safeguard against XSRF attacks.', 400);
-    }
-
     let samlConfig;
 
     if (tenant && product) {
@@ -253,6 +249,26 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
+    if (!state) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'invalid_request',
+          error_description: 'Please specify a state to safeguard against XSRF attacks',
+          redirect_uri,
+        }),
+      };
+    }
+
+    if (response_type !== 'code') {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'unsupported_response_type',
+          error_description: 'Only Authorization Code grant is supported',
+          redirect_uri,
+        }),
+      };
+    }
+
     let ssoUrl;
     let post = false;
 
@@ -265,68 +281,85 @@ export class OAuthController implements IOAuthController {
       // HTTP-POST binding
       ssoUrl = sso.postUrl;
       post = true;
-    }
-
-    const samlReq = saml.request({
-      ssoUrl,
-      entityID: this.opts.samlAudience!,
-      callbackUrl: this.opts.externalUrl + this.opts.samlPath,
-      signingKey: samlConfig.certs.privateKey,
-      publicKey: samlConfig.certs.publicKey,
-    });
-
-    const sessionId = crypto.randomBytes(16).toString('hex');
-
-    const requested = { client_id, state } as Record<string, string>;
-    if (requestedTenant) {
-      requested.tenant = requestedTenant;
-    }
-    if (requestedProduct) {
-      requested.product = requestedProduct;
-    }
-    if (idp_hint) {
-      requested.idp_hint = idp_hint;
-    }
-
-    await this.sessionStore.put(sessionId, {
-      id: samlReq.id,
-      redirect_uri,
-      response_type,
-      state,
-      code_challenge,
-      code_challenge_method,
-      requested,
-    });
-
-    const relayState = relayStatePrefix + sessionId;
-
-    let redirectUrl;
-    let authorizeForm;
-
-    if (!post) {
-      // HTTP Redirect binding
-      redirectUrl = redirect.success(ssoUrl, {
-        RelayState: relayState,
-        SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
-      });
     } else {
-      // HTTP POST binding
-      authorizeForm = saml.createPostForm(ssoUrl, [
-        {
-          name: 'RelayState',
-          value: relayState,
-        },
-        {
-          name: 'SAMLRequest',
-          value: Buffer.from(samlReq.request).toString('base64'),
-        },
-      ]);
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'invalid_request',
+          error_description: 'SAML binding could not be retrieved',
+          redirect_uri,
+        }),
+      };
     }
 
-    return {
-      redirect_url: redirectUrl,
-      authorize_form: authorizeForm,
-    };
+    try {
+      const samlReq = saml.request({
+        ssoUrl,
+        entityID: this.opts.samlAudience!,
+        callbackUrl: this.opts.externalUrl + this.opts.samlPath,
+        signingKey: samlConfig.certs.privateKey,
+        publicKey: samlConfig.certs.publicKey,
+      });
+
+      const sessionId = crypto.randomBytes(16).toString('hex');
+
+      const requested = { client_id, state } as Record<string, string>;
+      if (requestedTenant) {
+        requested.tenant = requestedTenant;
+      }
+      if (requestedProduct) {
+        requested.product = requestedProduct;
+      }
+      if (idp_hint) {
+        requested.idp_hint = idp_hint;
+      }
+
+      await this.sessionStore.put(sessionId, {
+        id: samlReq.id,
+        redirect_uri,
+        response_type,
+        state,
+        code_challenge,
+        code_challenge_method,
+        requested,
+      });
+
+      const relayState = relayStatePrefix + sessionId;
+
+      let redirectUrl;
+      let authorizeForm;
+
+      if (!post) {
+        // HTTP Redirect binding
+        redirectUrl = redirect.success(ssoUrl, {
+          RelayState: relayState,
+          SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
+        });
+      } else {
+        // HTTP POST binding
+        authorizeForm = saml.createPostForm(ssoUrl, [
+          {
+            name: 'RelayState',
+            value: relayState,
+          },
+          {
+            name: 'SAMLRequest',
+            value: Buffer.from(samlReq.request).toString('base64'),
+          },
+        ]);
+      }
+      return {
+        redirect_url: redirectUrl,
+        authorize_form: authorizeForm,
+      };
+    } catch (err: unknown) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+        }),
+      };
+    }
   }
 
   public async samlResponse(
@@ -410,12 +443,28 @@ export class OAuthController implements IOAuthController {
       audience: this.opts.samlAudience!,
     };
 
+    if (session && session.redirect_uri && !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)) {
+      throw new JacksonError('Redirect URL is not allowed.', 403);
+    }
+
     if (session && session.id) {
       validateOpts.inResponseTo = session.id;
     }
 
-    const profile = await validateResponse(rawResponse, validateOpts);
-
+    let profile;
+    const redirect_uri = (session && session.redirect_uri) || samlConfig.defaultRedirectUrl;
+    try {
+      profile = await validateResponse(rawResponse, validateOpts);
+    } catch (err: unknown) {
+      // return error to redirect_uri
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'access_denied',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+        }),
+      };
+    }
     // store details against a code
     const code = crypto.randomBytes(20).toString('hex');
 
@@ -430,10 +479,17 @@ export class OAuthController implements IOAuthController {
       codeVal.session = session;
     }
 
-    await this.codeStore.put(code, codeVal);
-
-    if (session && session.redirect_uri && !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)) {
-      throw new JacksonError('Redirect URL is not allowed.', 403);
+    try {
+      await this.codeStore.put(code, codeVal);
+    } catch (err: unknown) {
+      // return error to redirect_uri
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+        }),
+      };
     }
 
     const params: Record<string, string> = {
@@ -444,10 +500,7 @@ export class OAuthController implements IOAuthController {
       params.state = session.state;
     }
 
-    const redirectUrl = redirect.success(
-      (session && session.redirect_uri) || samlConfig.defaultRedirectUrl,
-      params
-    );
+    const redirectUrl = redirect.success(redirect_uri, params);
 
     // delete the session
     try {
