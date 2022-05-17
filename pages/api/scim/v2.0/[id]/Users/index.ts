@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Returns a list of users. We'll never sync groups.
+// Returns a list of users. We'll never sync users.
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
@@ -39,6 +39,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id } = req.query;
+
   const body = bodyParser(req);
 
   const { tenant, product } = await scimController.get(id as string);

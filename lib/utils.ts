@@ -45,7 +45,7 @@ export const printRequest = (req: NextApiRequest) => {
   const { body, query, method, url, headers } = req;
 
   console.log({
-    headers,
+    // headers,
     url,
     method,
     query,

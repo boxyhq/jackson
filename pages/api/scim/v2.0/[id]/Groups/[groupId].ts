@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { extractAuthToken, printRequest } from '@lib/utils';
+import { extractAuthToken, printRequest, bodyParser } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { scimController } = await jackson();
@@ -48,7 +48,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, groupsController } = await jackson();
   const { id, groupId } = req.query;
 
-  const body = JSON.parse(req.body);
+  const body = bodyParser(req);
 
   const { tenant, product } = await scimController.get(id as string);
 
@@ -59,11 +59,10 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   scimController.sendEvent(<string>id, 'group.updated', {
-    ...body,
-    id: group.id,
+    ...group.raw,
   });
 
-  return res.status(200).json(body);
+  return res.status(200).json(group.raw);
 };
 
 // Delete a group
@@ -80,7 +79,6 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   if (group != null) {
     scimController.sendEvent(<string>id, 'group.deleted', {
       ...group.raw,
-      id: group.id,
     });
   }
 

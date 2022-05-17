@@ -1,4 +1,5 @@
 import type { Storable, User, DatabaseStore } from '../typings';
+import { v4 as uuidv4 } from 'uuid';
 
 export class UsersController {
   private db: DatabaseStore;
@@ -28,7 +29,8 @@ export class UsersController {
     raw: any;
   }): Promise<User> {
     const { first_name, last_name, email, raw } = param;
-    const { externalId: id } = raw;
+
+    const id = uuidv4();
 
     raw['id'] = id;
 

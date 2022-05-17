@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { extractAuthToken, printRequest } from '@lib/utils';
+import { extractAuthToken, printRequest, bodyParser } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { scimController } = await jackson();
@@ -40,23 +40,19 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, groupsController } = await jackson();
   const { id } = req.query;
 
-  const body = JSON.parse(req.body);
+  const body = bodyParser(req);
 
   const { tenant, product } = await scimController.get(id as string);
 
   const group = await groupsController.with(tenant, product).create({
     name: body.displayName,
-    members: body.members,
+    members: body.members ?? [],
     raw: body,
   });
 
   scimController.sendEvent(<string>id, 'group.created', {
-    ...body,
-    id: group.id,
+    ...group.raw,
   });
 
-  // We've to send back the id to the IdP
-  body['id'] = group.id;
-
-  return res.status(200).json(body);
+  return res.status(200).json(group.raw);
 };

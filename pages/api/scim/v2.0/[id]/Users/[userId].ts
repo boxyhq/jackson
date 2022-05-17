@@ -18,6 +18,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return handleGET(req, res);
     case 'PUT':
       return handlePUT(req, res);
+    case 'DELETE':
+      return handleDELETE(req, res);
     default:
       res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
@@ -48,11 +50,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, usersController } = await jackson();
   const { id, userId } = req.query;
+
   const body = bodyParser(req);
 
   const { tenant, product } = await scimController.get(id as string);
 
-  const user = await usersController.with(tenant, product).get(userId as string);
+  let user = await usersController.with(tenant, product).get(userId as string);
 
   if (user === null) {
     return res.status(404).json({
@@ -65,7 +68,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const event = body.active ? 'user.updated' : 'user.deleted';
 
   if (event === 'user.updated') {
-    await usersController.with(tenant, product).update(userId as string, {
+    user = await usersController.with(tenant, product).update(userId as string, {
       first_name: body.name.givenName,
       last_name: body.name.familyName,
       email: body.emails[0].value,
@@ -80,4 +83,30 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   return res.json(user.raw);
+};
+
+// Delete a user
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { scimController, usersController } = await jackson();
+  const { id, userId } = req.query;
+
+  const { tenant, product } = await scimController.get(id as string);
+
+  const user = await usersController.with(tenant, product).get(userId as string);
+
+  if (user === null) {
+    return res.status(404).json({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+      detail: 'User not found',
+      status: 404,
+    });
+  }
+
+  await usersController.with(tenant, product).delete(userId as string);
+
+  scimController.sendEvent(<string>id, 'user.deleted', {
+    ...user.raw,
+  });
+
+  return res.status(204).json(null);
 };

@@ -26,6 +26,9 @@ export class GroupsController {
     const { name, members, raw } = param;
 
     const id = uuidv4();
+
+    raw['id'] = id;
+
     const group: Group = { id, name, members, raw };
 
     await this.store().put(id, group);
@@ -50,6 +53,8 @@ export class GroupsController {
     }
   ): Promise<Group> {
     const { name, members, raw } = param;
+
+    raw['id'] = id;
 
     const group: Group = { id, name, members, raw };
 
