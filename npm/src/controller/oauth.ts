@@ -39,11 +39,9 @@ const validateResponse = async (rawResponse: string, validateOpts) => {
   return profile;
 };
 
-function getEncodedTenantProduct(
-  client_id: string
-): { tenant: string | null; product: string | null } | null {
+function getEncodedTenantProduct(param: string): { tenant: string | null; product: string | null } | null {
   try {
-    const sp = new URLSearchParams(client_id);
+    const sp = new URLSearchParams(param);
     const tenant = sp.get('tenant');
     const product = sp.get('product');
     if (tenant && product) {
@@ -132,6 +130,7 @@ export class OAuthController implements IOAuthController {
       tenant,
       product,
       access_type,
+      scope,
       code_challenge,
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -182,15 +181,15 @@ export class OAuthController implements IOAuthController {
       if (resolvedSamlConfig) {
         samlConfig = resolvedSamlConfig;
       }
-    } else if (
-      (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') ||
-      (access_type && access_type !== '' && access_type !== 'undefined' && access_type !== 'null')
-    ) {
+    } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
       let sp = getEncodedTenantProduct(client_id);
 
       if (!sp && access_type) {
         sp = getEncodedTenantProduct(access_type);
+      }
+      if (!sp && scope) {
+        sp = getEncodedTenantProduct(scope);
       }
       if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
