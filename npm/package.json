@@ -51,7 +51,7 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "@types/node": "17.0.33",
+    "@types/node": "17.0.34",
     "@types/sinon": "10.0.11",
     "@types/tap": "15.0.7",
     "@typescript-eslint/eslint-plugin": "5.23.0",
