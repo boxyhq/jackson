@@ -39,7 +39,7 @@
     "@boxyhq/saml20": "1.0.2",
     "@opentelemetry/api-metrics": "0.27.0",
     "@peculiar/webcrypto": "1.4.0",
-    "@peculiar/x509": "1.6.1",
+    "@peculiar/x509": "1.6.3",
     "mongodb": "4.6.0",
     "mysql2": "2.3.3",
     "pg": "8.7.3",
