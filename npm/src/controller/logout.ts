@@ -81,10 +81,16 @@ export class LogoutController {
 
     // HTTP-POST binding
     if ('postUrl' in slo) {
-      logoutForm = saml.createPostForm(slo.postUrl as string, relayState, {
-        name: 'SAMLRequest',
-        value: Buffer.from(signedXML).toString('base64'),
-      });
+      logoutForm = saml.createPostForm(slo.postUrl as string, [
+        {
+          name: 'RelayState',
+          value: relayState,
+        },
+        {
+          name: 'SAMLRequest',
+          value: Buffer.from(signedXML).toString('base64'),
+        },
+      ]);
     }
 
     return { logoutUrl, logoutForm };

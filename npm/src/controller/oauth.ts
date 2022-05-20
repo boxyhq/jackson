@@ -21,7 +21,7 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { relayStatePrefix, IndexNames } from './utils';
+import { relayStatePrefix, IndexNames, OAuthErrorResponse, getErrorMessage } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -39,9 +39,9 @@ const validateResponse = async (rawResponse: string, validateOpts) => {
   return profile;
 };
 
-function getEncodedClientId(client_id: string): { tenant: string | null; product: string | null } | null {
+function getEncodedTenantProduct(param: string): { tenant: string | null; product: string | null } | null {
   try {
-    const sp = new URLSearchParams(client_id);
+    const sp = new URLSearchParams(param);
     const tenant = sp.get('tenant');
     const product = sp.get('product');
     if (tenant && product) {
@@ -72,7 +72,56 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
-  public async authorize(body: OAuthReqBody): Promise<{ redirect_url: string; authorize_form: string }> {
+  private resolveMultipleConfigMatches(
+    samlConfigs,
+    idp_hint,
+    originalParams,
+    isIdpFlow = false
+  ): { resolvedSamlConfig?: unknown; redirect_url?: string; app_select_form?: string } {
+    if (samlConfigs.length > 1) {
+      if (idp_hint) {
+        return { resolvedSamlConfig: samlConfigs.find(({ clientID }) => clientID === idp_hint) };
+      } else if (this.opts.idpDiscoveryPath) {
+        if (!isIdpFlow) {
+          // redirect to IdP selection page
+          const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
+            JSON.stringify({
+              provider,
+              clientID,
+            })
+          );
+          return {
+            redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
+              ...originalParams,
+              idp: idpList,
+            }),
+          };
+        } else {
+          const appList = samlConfigs.map(({ product, name, description, clientID }) => ({
+            product,
+            name,
+            description,
+            clientID,
+          }));
+          return {
+            app_select_form: saml.createPostForm(this.opts.idpDiscoveryPath, [
+              {
+                name: 'SAMLResponse',
+                value: originalParams.SAMLResponse,
+              },
+              {
+                name: 'app',
+                value: encodeURIComponent(JSON.stringify(appList)),
+              },
+            ]),
+          };
+        }
+      }
+    }
+    return {};
+  }
+
+  public async authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
       response_type = 'code',
       client_id,
@@ -80,10 +129,13 @@ export class OAuthController implements IOAuthController {
       state,
       tenant,
       product,
+      access_type,
+      scope,
       code_challenge,
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       provider = 'saml',
+      idp_hint,
     } = body;
 
     let requestedTenant = tenant;
@@ -93,10 +145,6 @@ export class OAuthController implements IOAuthController {
 
     if (!redirect_uri) {
       throw new JacksonError('Please specify a redirect URL.', 400);
-    }
-
-    if (!state) {
-      throw new JacksonError('Please specify a state to safeguard against XSRF attacks.', 400);
     }
 
     let samlConfig;
@@ -111,28 +159,82 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('SAML configuration not found.', 403);
       }
 
-      // TODO: Support multiple matches
       samlConfig = samlConfigs[0];
+
+      // Support multiple matches
+      const { resolvedSamlConfig, redirect_url } = this.resolveMultipleConfigMatches(samlConfigs, idp_hint, {
+        response_type,
+        client_id,
+        redirect_uri,
+        state,
+        tenant,
+        product,
+        code_challenge,
+        code_challenge_method,
+        provider,
+      });
+
+      if (redirect_url) {
+        return { redirect_url };
+      }
+
+      if (resolvedSamlConfig) {
+        samlConfig = resolvedSamlConfig;
+      }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
-      const sp = getEncodedClientId(client_id);
-      if (sp?.tenant) {
+      let sp = getEncodedTenantProduct(client_id);
+
+      if (!sp && access_type) {
+        sp = getEncodedTenantProduct(access_type);
+      }
+      if (!sp && scope) {
+        sp = getEncodedTenantProduct(scope);
+      }
+      if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
-        requestedProduct = sp.product || '';
+        requestedProduct = sp.product;
 
         const samlConfigs = await this.configStore.getByIndex({
           name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(sp.tenant, sp.product || ''),
+          value: dbutils.keyFromParts(sp.tenant, sp.product),
         });
 
         if (!samlConfigs || samlConfigs.length === 0) {
           throw new JacksonError('SAML configuration not found.', 403);
         }
 
-        // TODO: Support multiple matches
         samlConfig = samlConfigs[0];
+        // Support multiple matches
+        const { resolvedSamlConfig, redirect_url } = this.resolveMultipleConfigMatches(
+          samlConfigs,
+          idp_hint,
+          {
+            response_type,
+            client_id,
+            redirect_uri,
+            state,
+            tenant,
+            product,
+            code_challenge,
+            code_challenge_method,
+            provider,
+          }
+        );
+
+        if (redirect_url) {
+          return { redirect_url };
+        }
+
+        if (resolvedSamlConfig) {
+          samlConfig = resolvedSamlConfig;
+        }
       } else {
         samlConfig = await this.configStore.get(client_id);
+        if (samlConfig) {
+          requestedTenant = samlConfig.tenant;
+          requestedProduct = samlConfig.product;
+        }
       }
     } else {
       throw new JacksonError('You need to specify client_id or tenant & product', 403);
@@ -144,6 +246,26 @@ export class OAuthController implements IOAuthController {
 
     if (!allowed.redirect(redirect_uri, samlConfig.redirectUrl)) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
+    }
+
+    if (!state) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'invalid_request',
+          error_description: 'Please specify a state to safeguard against XSRF attacks',
+          redirect_uri,
+        }),
+      };
+    }
+
+    if (response_type !== 'code') {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'unsupported_response_type',
+          error_description: 'Only Authorization Code grant is supported',
+          redirect_uri,
+        }),
+      };
     }
 
     let ssoUrl;
@@ -158,76 +280,103 @@ export class OAuthController implements IOAuthController {
       // HTTP-POST binding
       ssoUrl = sso.postUrl;
       post = true;
-    }
-
-    const samlReq = saml.request({
-      ssoUrl,
-      entityID: this.opts.samlAudience!,
-      callbackUrl: this.opts.externalUrl + this.opts.samlPath,
-      signingKey: samlConfig.certs.privateKey,
-      publicKey: samlConfig.certs.publicKey,
-    });
-
-    const sessionId = crypto.randomBytes(16).toString('hex');
-
-    const requested: Record<string, string> = {
-      tenant: requestedTenant,
-      product: requestedProduct,
-      client_id,
-      state,
-    };
-
-    await this.sessionStore.put(sessionId, {
-      id: samlReq.id,
-      redirect_uri,
-      response_type,
-      state,
-      code_challenge,
-      code_challenge_method,
-      requested,
-    });
-
-    const relayState = relayStatePrefix + sessionId;
-
-    let redirectUrl;
-    let authorizeForm;
-
-    if (!post) {
-      // HTTP Redirect binding
-      redirectUrl = redirect.success(ssoUrl, {
-        RelayState: relayState,
-        SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
-      });
     } else {
-      // HTTP POST binding
-      authorizeForm = saml.createPostForm(ssoUrl, relayState, {
-        name: 'SAMLRequest',
-        value: Buffer.from(samlReq.request).toString('base64'),
-      });
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'invalid_request',
+          error_description: 'SAML binding could not be retrieved',
+          redirect_uri,
+        }),
+      };
     }
 
-    return {
-      redirect_url: redirectUrl,
-      authorize_form: authorizeForm,
-    };
+    try {
+      const samlReq = saml.request({
+        ssoUrl,
+        entityID: this.opts.samlAudience!,
+        callbackUrl: this.opts.externalUrl + this.opts.samlPath,
+        signingKey: samlConfig.certs.privateKey,
+        publicKey: samlConfig.certs.publicKey,
+      });
+
+      const sessionId = crypto.randomBytes(16).toString('hex');
+
+      const requested = { client_id, state } as Record<string, string>;
+      if (requestedTenant) {
+        requested.tenant = requestedTenant;
+      }
+      if (requestedProduct) {
+        requested.product = requestedProduct;
+      }
+      if (idp_hint) {
+        requested.idp_hint = idp_hint;
+      }
+
+      await this.sessionStore.put(sessionId, {
+        id: samlReq.id,
+        redirect_uri,
+        response_type,
+        state,
+        code_challenge,
+        code_challenge_method,
+        requested,
+      });
+
+      const relayState = relayStatePrefix + sessionId;
+
+      let redirectUrl;
+      let authorizeForm;
+
+      if (!post) {
+        // HTTP Redirect binding
+        redirectUrl = redirect.success(ssoUrl, {
+          RelayState: relayState,
+          SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
+        });
+      } else {
+        // HTTP POST binding
+        authorizeForm = saml.createPostForm(ssoUrl, [
+          {
+            name: 'RelayState',
+            value: relayState,
+          },
+          {
+            name: 'SAMLRequest',
+            value: Buffer.from(samlReq.request).toString('base64'),
+          },
+        ]);
+      }
+      return {
+        redirect_url: redirectUrl,
+        authorize_form: authorizeForm,
+      };
+    } catch (err: unknown) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+        }),
+      };
+    }
   }
 
-  public async samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }> {
-    const { SAMLResponse } = body;
+  public async samlResponse(
+    body: SAMLResponsePayload
+  ): Promise<{ redirect_url?: string; app_select_form?: string }> {
+    const { SAMLResponse, idp_hint } = body;
 
     let RelayState = body.RelayState || ''; // RelayState will contain the sessionId from earlier quasi-oauth flow
 
-    if (!this.opts.idpEnabled && !RelayState.startsWith(relayStatePrefix)) {
+    const isIdPFlow = !RelayState.startsWith(relayStatePrefix);
+
+    if (!this.opts.idpEnabled && isIdPFlow) {
       // IDP is disabled so block the request
 
       throw new JacksonError(
         'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
         403
       );
-    }
-
-    if (!RelayState.startsWith(relayStatePrefix)) {
-      RelayState = '';
     }
 
     RelayState = RelayState.replace(relayStatePrefix, '');
@@ -245,6 +394,24 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML configuration not found.', 403);
     }
 
+    let samlConfig = samlConfigs[0];
+
+    if (isIdPFlow) {
+      RelayState = '';
+      const { resolvedSamlConfig, app_select_form } = this.resolveMultipleConfigMatches(
+        samlConfigs,
+        idp_hint,
+        { SAMLResponse },
+        true
+      );
+      if (app_select_form) {
+        return { app_select_form };
+      }
+      if (resolvedSamlConfig) {
+        samlConfig = resolvedSamlConfig;
+      }
+    }
+
     let session;
 
     if (RelayState !== '') {
@@ -253,17 +420,18 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('Unable to validate state from the origin request.', 403);
       }
     }
-
-    // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
-    const samlConfig =
-      samlConfigs.length === 1
-        ? samlConfigs[0]
-        : samlConfigs.filter((c) => {
-            return (
-              c.clientID === session?.requested?.client_id ||
-              (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
-            );
-          })[0];
+    if (!isIdPFlow) {
+      // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
+      samlConfig =
+        samlConfigs.length === 1
+          ? samlConfigs[0]
+          : samlConfigs.filter((c) => {
+              return (
+                c.clientID === session?.requested?.client_id ||
+                (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
+              );
+            })[0];
+    }
 
     if (!samlConfig) {
       throw new JacksonError('SAML configuration not found.', 403);
@@ -274,12 +442,28 @@ export class OAuthController implements IOAuthController {
       audience: this.opts.samlAudience!,
     };
 
+    if (session && session.redirect_uri && !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)) {
+      throw new JacksonError('Redirect URL is not allowed.', 403);
+    }
+
     if (session && session.id) {
       validateOpts.inResponseTo = session.id;
     }
 
-    const profile = await validateResponse(rawResponse, validateOpts);
-
+    let profile;
+    const redirect_uri = (session && session.redirect_uri) || samlConfig.defaultRedirectUrl;
+    try {
+      profile = await validateResponse(rawResponse, validateOpts);
+    } catch (err: unknown) {
+      // return error to redirect_uri
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'access_denied',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+        }),
+      };
+    }
     // store details against a code
     const code = crypto.randomBytes(20).toString('hex');
 
@@ -294,10 +478,17 @@ export class OAuthController implements IOAuthController {
       codeVal.session = session;
     }
 
-    await this.codeStore.put(code, codeVal);
-
-    if (session && session.redirect_uri && !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)) {
-      throw new JacksonError('Redirect URL is not allowed.', 403);
+    try {
+      await this.codeStore.put(code, codeVal);
+    } catch (err: unknown) {
+      // return error to redirect_uri
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+        }),
+      };
     }
 
     const params: Record<string, string> = {
@@ -308,10 +499,7 @@ export class OAuthController implements IOAuthController {
       params.state = session.state;
     }
 
-    const redirectUrl = redirect.success(
-      (session && session.redirect_uri) || samlConfig.defaultRedirectUrl,
-      params
-    );
+    const redirectUrl = redirect.success(redirect_uri, params);
 
     // delete the session
     try {
@@ -409,7 +597,7 @@ export class OAuthController implements IOAuthController {
     } else if (client_id && client_secret) {
       // check if we have an encoded client_id
       if (client_id !== 'dummy') {
-        const sp = getEncodedClientId(client_id);
+        const sp = getEncodedTenantProduct(client_id);
         if (!sp) {
           // OAuth flow
           if (client_id !== codeVal.clientID || client_secret !== codeVal.clientSecret) {

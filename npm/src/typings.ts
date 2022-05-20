@@ -23,7 +23,7 @@ export interface IAPIController {
 
 export interface IOAuthController {
   authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }>;
-  samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url: string }>;
+  samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
@@ -93,16 +93,20 @@ export interface OAuthReqBody {
   client_id: string;
   redirect_uri: string;
   state: string;
-  tenant: string;
-  product: string;
+  tenant?: string;
+  product?: string;
+  access_type?: string;
+  scope?: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
   provider: 'saml';
+  idp_hint?: string;
 }
 
 export interface SAMLResponsePayload {
   SAMLResponse: string;
   RelayState: string;
+  idp_hint?: string;
 }
 
 export interface OAuthTokenReq {
@@ -124,6 +128,7 @@ export interface Profile {
   email: string;
   firstName: string;
   lastName: string;
+  requested: Record<string, string>;
 }
 
 export interface Index {
@@ -181,6 +186,7 @@ export interface JacksonOption {
   idpEnabled?: boolean;
   db: DatabaseOption;
   clientSecretVerifier?: string;
+  idpDiscoveryPath?: string;
 }
 
 export interface SLORequestParams {
@@ -251,4 +257,18 @@ export interface Group {
   name: string;
   members: any[];
   raw?: object;
+}
+
+export interface OAuthErrorHandlerParams {
+  // See Error Response section in https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/
+  error:
+    | 'invalid_request'
+    | 'access_denied'
+    | 'unauthorized_client'
+    | 'unsupported_response_type'
+    | 'invalid_scope'
+    | 'server_error'
+    | 'temporarily_unavailable';
+  error_description: string;
+  redirect_uri: string;
 }
