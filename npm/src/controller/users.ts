@@ -74,3 +74,10 @@ export class UsersController {
     await this.store().delete(id);
   }
 }
+
+// On update
+// Get the group members
+// Get the payload members
+// Compare the group members and find the delta
+// Find if it is an addition or a removal
+//
