@@ -1,6 +1,7 @@
 import type { OAuthErrorHandlerParams } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
+import crypto from 'crypto';
 
 export enum IndexNames {
   EntityID = 'entityID',
@@ -26,3 +27,12 @@ export function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   return String(error);
 }
+
+export const createRandomSecret = async (length: number) => {
+  return crypto
+    .randomBytes(length)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+};
