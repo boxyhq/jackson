@@ -28,12 +28,15 @@ class Sql implements DatabaseDriver {
       try {
         this.dataSource = new DataSource({
           // name: this.options.type! + Math.floor(Math.random() * 100000),
-          type: this.options.type!,
+          type: this.options.type! === 'planetscale' ? 'mysql' : this.options.type!,
           url: this.options.url,
-          synchronize: true,
+          //synchronize: true,
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
+          ssl: {
+            rejectUnauthorized: false,
+          },
         });
         await this.dataSource.initialize();
 
@@ -169,7 +172,7 @@ class Sql implements DatabaseDriver {
         if (!rec) {
           const ji = new JacksonIndex();
           ji.key = key;
-          ji.store = store;
+          ji.storeKey = store.key;
           await transactionalEntityManager.save(ji);
         }
       }
