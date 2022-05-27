@@ -4,22 +4,34 @@ import { v4 as uuidv4 } from 'uuid';
 export class GroupsController {
   private _db: DatabaseStore;
   private _store: Storable | null = null;
+  private _tenant = '';
+  private _product = '';
 
   constructor({ db }: { db: DatabaseStore }) {
     this._db = db;
   }
 
-  // Return the database store
-  private store(): Storable {
-    return this._store as Storable;
-  }
-
-  // Create the store using the tenant and product
   public with(tenant: string, product: string): GroupsController {
-    this._store = this._store || this._db.store(`groups:${tenant}:${product}`);
+    this._tenant = tenant;
+    this._product = product;
 
     return this;
+
+    // this._store = this._store || this._db.store(`groups:${tenant}:${product}`);
+
+    // return this;
   }
+
+  // Return the database store
+  private store(type: 'groups' | 'members'): Storable {
+    return this._db.store(`${type}:${this._tenant}:${this._product}`);
+
+    //return this._store || this._db.store(this.namespace(type));
+  }
+
+  // private namespace(type: 'groups' | 'members'): string {
+  //   return `${type}:${this._tenant}:${this._product}`;
+  // }
 
   // Create a new group
   public async create(param: { name: string; members: []; raw: object }): Promise<Group> {
@@ -31,14 +43,14 @@ export class GroupsController {
 
     const group: Group = { id, name, members, raw };
 
-    await this.store().put(id, group);
+    await this.store('groups').put(id, group);
 
     return group;
   }
 
   // Get a group by id
   public async get(id: string): Promise<Group | null> {
-    const group: Group = await this.store().get(id);
+    const group: Group = await this.store('groups').get(id);
 
     return group || null;
   }
@@ -58,15 +70,34 @@ export class GroupsController {
 
     const group: Group = { id, name, members, raw };
 
-    await this.store().put(id, group);
+    await this.store('groups').put(id, group);
 
     return group;
   }
 
   // Delete a group by id
   public async delete(id: string): Promise<void> {
-    await this.store().delete(id);
+    await this.store('groups').delete(id);
 
     return;
+  }
+
+  public async addUser(groupId: string, userId: string): Promise<void> {
+    const id = `${groupId}-${userId}`;
+
+    const data = {
+      group_id: groupId,
+      user_id: userId,
+    };
+
+    await this.store('members').put(id, data);
+
+    return;
+  }
+
+  public async removeUser(groupId: string, userId: string): Promise<void> {
+    const id = `${groupId}-${userId}`;
+
+    await this.store('members').delete(id);
   }
 }

@@ -86,6 +86,8 @@ export interface IGroupsController {
   get(id: string): Promise<Group | null>;
   update(id: string, param: any): Promise<Group>;
   delete(id: string): Promise<void>;
+  addUser(groupId: string, userId: string): Promise<void>;
+  removeUser(groupId: string, userId: string): Promise<void>;
 }
 
 export interface OAuthReqBody {

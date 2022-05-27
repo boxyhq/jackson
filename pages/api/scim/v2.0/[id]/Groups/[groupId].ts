@@ -18,6 +18,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return handleGET(req, res);
     case 'PUT':
       return handlePUT(req, res);
+    case 'PATCH':
+      return handlePATCH(req, res);
     case 'DELETE':
       return handleDELETE(req, res);
     default:
@@ -65,6 +67,28 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json(group.raw);
 };
 
+// Group membership updates
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { scimController, groupsController } = await jackson();
+  const { id, groupId } = req.query;
+
+  const body = bodyParser(req);
+  const operation = body.Operations[0];
+  const userId = operation.value[0].value;
+
+  const { tenant, product } = await scimController.get(id as string);
+
+  if (operation.op === 'add' && operation.path === 'members') {
+    await groupsController.with(tenant, product).addUser(groupId as string, userId);
+  }
+
+  if (operation.op === 'remove' && operation.path === 'members') {
+    await groupsController.with(tenant, product).removeUser(groupId as string, userId);
+  }
+
+  return res.status(204).end();
+};
+
 // Delete a group
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scimController, groupsController } = await jackson();
@@ -82,5 +106,14 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  return res.status(204).json(null);
+  return res.status(204).end();
 };
+
+// Update group  (/Groups)
+// '{"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"replace","value":{"id":"0a8c6814-f53a-4950-b775-1602771982e7","displayName":"Developers"}}]}'
+
+// User has been removed (/Groups)
+// {"Operations":[{"path":"members[value eq \\"34ef7e0a-16e4-4be2-bb81-c4e16e3f23be\\"]"}]}'
+
+// User has been removed (/Users)
+// '{"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"replace","value":{"active":false}}]}'
