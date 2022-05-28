@@ -23,6 +23,8 @@ export const OAuthErrorResponse = ({ error, error_description, redirect_uri }: O
 
 // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
 export function getErrorMessage(error: unknown) {
-  if (error instanceof Error) return error.message;
+  if (error instanceof Error) {
+    return error.message;
+  }
   return String(error);
 }

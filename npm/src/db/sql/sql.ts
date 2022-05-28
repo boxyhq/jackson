@@ -118,9 +118,7 @@ class Sql implements DatabaseDriver {
       take: offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit,
       skip: offsetAndLimitValueCheck ? 0 : pageOffset,
     });
-    const returnValue = JSON.parse(JSON.stringify(response));
-    if (returnValue) return returnValue;
-    return [];
+    return JSON.parse(JSON.stringify(response)) || [];
   }
 
   async getByIndex(namespace: string, idx: Index): Promise<any> {
@@ -131,13 +129,16 @@ class Sql implements DatabaseDriver {
     const ret: Encrypted[] = [];
 
     if (res) {
-      res.forEach((r) => {
-        ret.push({
-          value: r.store.value,
-          iv: r.store.iv,
-          tag: r.store.tag,
+      for (const r of res) {
+        const value = await this.storeRepository.findOneBy({
+          key: r.storeKey,
         });
-      });
+        ret.push({
+          value: value.value,
+          iv: value.iv,
+          tag: value.tag,
+        });
+      }
     }
 
     return ret;
@@ -182,6 +183,19 @@ class Sql implements DatabaseDriver {
   async delete(namespace: string, key: string): Promise<any> {
     const dbKey = dbutils.key(namespace, key);
     await this.ttlRepository.remove({ key: dbKey });
+
+    const response = await this.indexRepository.find({
+      where: { storeKey: dbKey },
+      select: ['id'],
+    });
+    const returnValue = response || [];
+
+    for (const r of returnValue) {
+      await this.indexRepository.remove({
+        id: r.id,
+      });
+    }
+
     return await this.storeRepository.remove({
       key: dbKey,
     });
