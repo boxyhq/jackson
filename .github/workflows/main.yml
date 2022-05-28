@@ -100,6 +100,8 @@ jobs:
         run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
       - run: npm run test
         working-directory: ./npm
+        env:
+          PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
       - run: |
           npm install
           npm run build
