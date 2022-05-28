@@ -3,11 +3,15 @@ import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
+import { SCIMController } from './controller/scim';
+import { UsersController } from './controller/users';
+import { GroupsController } from './controller/groups';
+import { SCIMUsers } from './controller/scim-users';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import readConfig from './read-config';
-import { JacksonOption } from './typings';
+import type { JacksonOption } from './typings';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -41,6 +45,10 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
+  scimController: SCIMController;
+  usersController: UsersController;
+  groupsController: GroupsController;
+  scimHandlers: any;
 }> => {
   opts = defaultOpts(opts);
 
@@ -51,11 +59,13 @@ export const controllers = async (
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
+  const scimStore = db.store('scim:config');
 
   const apiController = new APIController({ configStore });
   const adminController = new AdminController({ configStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
+
   const oauthController = new OAuthController({
     configStore,
     sessionStore,
@@ -69,6 +79,16 @@ export const controllers = async (
     sessionStore,
     opts,
   });
+
+  const scimController = new SCIMController({ scimStore, opts });
+  const usersController = new UsersController({ db });
+  const groupsController = new GroupsController({ db });
+
+  // const scimUsersHandler
+
+  const scimHandlers = {
+    users: new SCIMUsers({ db }),
+  };
 
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
@@ -91,6 +111,10 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
+    scimController,
+    usersController,
+    groupsController,
+    scimHandlers,
   };
 };
 

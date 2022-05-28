@@ -31,12 +31,65 @@ export interface IOAuthController {
 export interface IAdminController {
   getAllConfig(pageOffset?: number, pageLimit?: number);
 }
+
 export interface IHealthCheckController {
   status(): Promise<{
     status: number;
   }>;
   init(): Promise<void>;
 }
+
+export interface ILogoutController {
+  createRequest(body: SLORequestParams): Promise<{ logoutUrl: string | null; logoutForm: string | null }>;
+  handleResponse(body: SAMLResponsePayload): Promise<any>;
+}
+
+export interface ISCIMController {
+  create({
+    name,
+    tenant,
+    product,
+    webhook_url,
+    webhook_secret,
+  }: {
+    name: string;
+    tenant: string;
+    product: string;
+    webhook_url: string;
+    webhook_secret: string;
+  }): Promise<SCIMConfig>;
+  get(id: string): Promise<SCIMConfig>;
+  delete(id: string): Promise<void>;
+  sendEvent(id: string, type: SCIMEventType, data: object): Promise<void>;
+  validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
+}
+
+export interface IUsersController {
+  with(tenant: string, product: string): IUsersController;
+  create(param: { first_name: string; last_name: string; email: string; raw: any }): Promise<User>;
+  get(id: string): Promise<User | null>;
+  update(
+    id: string,
+    param: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      raw: any;
+    }
+  ): Promise<User>;
+  delete(id: string): Promise<void>;
+}
+
+export interface IGroupsController {
+  with(tenant: string, product: string): IGroupsController;
+  create(param: any): Promise<Group>;
+  get(id: string): Promise<Group | null>;
+  update(id: string, param: any): Promise<Group>;
+  delete(id: string): Promise<void>;
+  addUser(groupId: string, userId: string): Promise<void>;
+  removeUser(groupId: string, userId: string): Promise<void>;
+}
+
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
@@ -99,6 +152,10 @@ export interface Storable {
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
   getByIndex(idx: Index): Promise<any>;
+}
+
+export interface DatabaseStore {
+  store(namespace: string): Storable;
 }
 
 export interface Encrypted {
@@ -165,9 +222,45 @@ export interface SAMLConfig {
   defaultRedirectUrl: string;
 }
 
-export interface ILogoutController {
-  createRequest(body: SLORequestParams): Promise<{ logoutUrl: string | null; logoutForm: string | null }>;
-  handleResponse(body: SAMLResponsePayload): Promise<any>;
+export interface SCIMConfig {
+  id: string;
+  name: string;
+  tenant: string;
+  product: string;
+  webhook: {
+    endpoint: string;
+    secret: string;
+  };
+  scim: {
+    path: string;
+    endpoint?: string;
+    secret: string;
+  };
+}
+
+export type SCIMEventType =
+  | 'user.created'
+  | 'user.updated'
+  | 'user.deleted'
+  | 'group.created'
+  | 'group.updated'
+  | 'group.deleted'
+  | 'group.user_added'
+  | 'group.user_removed';
+
+export interface User {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  raw?: object;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  members: any[];
+  raw?: object;
 }
 
 export interface OAuthErrorHandlerParams {
