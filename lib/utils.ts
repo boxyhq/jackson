@@ -43,6 +43,7 @@ export const setErrorCookie = (res: NextApiResponse, value: unknown, options: { 
 // Print the API request
 export const printRequest = (req: NextApiRequest) => {
   const { body, query, method, url, headers } = req;
+  return;
 
   console.log({
     // headers,

@@ -36,53 +36,16 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Creates a new user
-// const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-//   const { scimController, usersController } = await jackson();
-//   const { id } = req.query;
-
-//   const body = bodyParser(req);
-
-//   const { tenant, product } = await scimController.get(id as string);
-
-//   const user = await usersController.with(tenant, product).create({
-//     first_name: body.name.givenName,
-//     last_name: body.name.familyName,
-//     email: body.emails[0].value,
-//     raw: body,
-//   });
-
-//   scimController.sendEvent(id as string, 'user.created', {
-//     ...user.raw,
-//   });
-
-//   return res.json(user.raw);
-// };
-
-// Creates a new user
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, usersController, scimHandlers } = await jackson();
+  const { scim } = await jackson();
   const { id } = req.query;
 
-  const body = bodyParser(req);
-
-  const result = await scimHandlers.users.with;
-
-  const { tenant, product } = await scimController.get(id as string);
-
-  const user = await usersController.with(tenant, product).create({
-    first_name: body.name.givenName,
-    last_name: body.name.familyName,
-    email: body.emails[0].value,
-    raw: body,
+  const result = await scim.users.create({
+    directory: id as string,
+    data: {
+      body: bodyParser(req),
+    },
   });
 
-  scimController.sendEvent(id as string, 'user.created', {
-    ...user.raw,
-  });
-
-  return res.json(user.raw);
+  return res.json(result);
 };
-
-// SCIMConfig
-// SCIMUsers
-// SCIMGroups

@@ -22,7 +22,7 @@ let healthCheckController: IHealthCheckController;
 let scimController: ISCIMController;
 let usersController: IUsersController;
 let groupsController: IGroupsController;
-let scimHandlers: any;
+let scim: any;
 
 const g = global as any;
 
@@ -36,7 +36,7 @@ export default async function init() {
     !g.scimController ||
     !g.usersController ||
     !g.groupsController ||
-    !g.scimHandlers
+    !g.scim
   ) {
     const ret = await jackson(env);
     apiController = ret.apiController;
@@ -47,7 +47,7 @@ export default async function init() {
     scimController = ret.scimController;
     usersController = ret.usersController;
     groupsController = ret.groupsController;
-    scimHandlers = ret.scimHandlers;
+    scim = ret.scim;
 
     g.apiController = apiController;
     g.oauthController = oauthController;
@@ -57,7 +57,7 @@ export default async function init() {
     g.scimController = scimController;
     g.usersController = usersController;
     g.groupsController = groupsController;
-    g.scimHandlers = scimHandlers;
+    g.scim = scim;
     g.isJacksonReady = true;
   } else {
     apiController = g.apiController;
@@ -68,7 +68,7 @@ export default async function init() {
     scimController = g.scimController;
     usersController = g.usersController;
     groupsController = g.groupsController;
-    scimHandlers = g.scimHandlers;
+    scim = g.scim;
   }
 
   return {
@@ -80,7 +80,7 @@ export default async function init() {
     scimController,
     usersController,
     groupsController,
-    scimHandlers,
+    scim,
   };
 }
 

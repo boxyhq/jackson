@@ -3,45 +3,58 @@ import { transformUser, transformGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
 
-const sendEvent = async (
-  type: SCIMEventType,
+interface Event {
+  action: SCIMEventType;
   payload: {
     tenant: string;
     product: string;
     data: any;
-  },
-  options: Pick<SCIMConfig, 'webhook'>
-) => {
-  const objectType: 'user' | 'group' = getObjectType(type);
-  const { webhook } = options;
-  const { tenant, product, data } = payload;
-
-  // Create a payload to send to the webhook
-  const webhookPayload = {
-    event: type,
-    object: objectType,
-    tenant,
-    product,
   };
+  options: Pick<SCIMConfig, 'webhook'>;
+}
 
-  if (objectType === 'user') {
-    webhookPayload['data'] = transformUser(data);
-  }
+// type: SCIMEventType,
+// payload: {
+//   tenant: string;
+//   product: string;
+//   data: any;
+// },
+// options: Pick<SCIMConfig, 'webhook'>
 
-  if (objectType === 'group') {
-    webhookPayload['data'] = transformGroup(data);
-  }
+const sendEvent = async (event: Event) => {
+  const { action, payload, options } = event;
+  console.log({ action, payload, options });
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
-  };
+  // const objectType: 'user' | 'group' = getObjectType(type);
+  // const { webhook } = options;
+  // const { tenant, product, data } = payload;
 
-  // TODO: Handle the error like timeout, etc
+  // // Create a payload to send to the webhook
+  // const webhookPayload = {
+  //   event: type,
+  //   object: objectType,
+  //   tenant,
+  //   product,
+  // };
 
-  axios.post(webhook.endpoint, webhookPayload, { headers });
+  // if (objectType === 'user') {
+  //   webhookPayload['data'] = transformUser(data);
+  // }
 
-  return;
+  // if (objectType === 'group') {
+  //   webhookPayload['data'] = transformGroup(data);
+  // }
+
+  // const headers = {
+  //   'Content-Type': 'application/json',
+  //   'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
+  // };
+
+  // // TODO: Handle the error like timeout, etc
+
+  // axios.post(webhook.endpoint, webhookPayload, { headers });
+
+  // return;
 };
 
 const getObjectType = (type: SCIMEventType) => {

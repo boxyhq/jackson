@@ -48,7 +48,7 @@ export const controllers = async (
   scimController: SCIMController;
   usersController: UsersController;
   groupsController: GroupsController;
-  scimHandlers: any;
+  scim: any;
 }> => {
   opts = defaultOpts(opts);
 
@@ -84,10 +84,10 @@ export const controllers = async (
   const usersController = new UsersController({ db });
   const groupsController = new GroupsController({ db });
 
-  // const scimUsersHandler
-
-  const scimHandlers = {
-    users: new SCIMUsers({ db }),
+  const scim = {
+    config: new SCIMController({ scimStore, opts }),
+    users: new SCIMUsers({ scimStore, opts, db }),
+    groups: null,
   };
 
   // write pre-loaded config if present
@@ -114,7 +114,7 @@ export const controllers = async (
     scimController,
     usersController,
     groupsController,
-    scimHandlers,
+    scim,
   };
 };
 

@@ -7,6 +7,7 @@ export class UsersController {
 
   constructor({ db }: { db: DatabaseStore }) {
     this.db = db;
+    console.log('UsersController');
   }
 
   // Return the database store
