@@ -121,4 +121,35 @@ export class SCIMUsers {
 
     return user.raw;
   }
+
+  public async delete({ directory: directoryId, data }: { directory: string; data: any }) {
+    const { tenant, product, webhook } = await this.getDirectory(directoryId);
+    const { user_id: userId } = data;
+
+    const user = await this.users().with(tenant, product).get(userId);
+
+    if (user === null) {
+      return {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+        detail: 'User not found',
+        status: 404,
+      };
+    }
+
+    await this.users().with(tenant, product).delete(userId);
+
+    sendEvent({
+      action: 'user.deleted',
+      payload: {
+        tenant,
+        product,
+        data: user,
+      },
+      options: {
+        webhook,
+      },
+    });
+
+    return user.raw;
+  }
 }

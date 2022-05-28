@@ -89,26 +89,15 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Delete a user
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, usersController } = await jackson();
+  const { scim } = await jackson();
   const { id, userId } = req.query;
 
-  const { tenant, product } = await scimController.get(id as string);
-
-  const user = await usersController.with(tenant, product).get(userId as string);
-
-  if (user === null) {
-    return res.status(404).json({
-      schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
-      detail: 'User not found',
-      status: 404,
-    });
-  }
-
-  await usersController.with(tenant, product).delete(userId as string);
-
-  scimController.sendEvent(<string>id, 'user.deleted', {
-    ...user.raw,
+  const result = await scim.users.delete({
+    directory: id as string,
+    data: {
+      user_id: userId as string,
+    },
   });
 
-  return res.status(204).json(null);
+  return res.json(result);
 };
