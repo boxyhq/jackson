@@ -3,7 +3,7 @@ import * as encrypter from './encrypter';
 import mem from './mem';
 import mongo from './mongo';
 import redis from './redis';
-import sql from './sql/sql';
+import prisma from './prisma';
 import store from './store';
 import planetscale from './planetscale/planetscale';
 
@@ -78,12 +78,12 @@ export default {
     switch (options.engine) {
       case 'redis':
         return new DB(await redis.new(options), encryptionKey);
-      case 'sql':
-        return new DB(await sql.new(options), encryptionKey);
-      case 'planetscale':
-        return new DB(await planetscale.new(options), encryptionKey);
       case 'mongo':
-        return new DB(await mongo.new(options), encryptionKey);
+      case 'sql':
+      case 'planetscale':
+        return new DB(await prisma.new(options), encryptionKey);
+      // return new DB(await planetscale.new(options), encryptionKey);
+      // return new DB(await mongo.new(options), encryptionKey);
       case 'mem':
         return new DB(await mem.new(options), encryptionKey);
       default:

@@ -1,6 +1,6 @@
 {
   "name": "@boxyhq/saml-jackson",
-  "version": "do-not-change",
+  "version": "1.0.0",
   "description": "SAML Jackson library",
   "keywords": [
     "SAML 2.0"
@@ -26,7 +26,8 @@
     "db:migration:run:mariadb": "cross-env DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "prepublishOnly": "npm run build",
     "test": "tap --ts --timeout=100 --coverage test/**/*.test.ts",
-    "sort": "npx sort-package-json"
+    "sort": "npx sort-package-json",
+    "postinstall": "prisma generate"
   },
   "tap": {
     "branches": 50,
@@ -40,6 +41,8 @@
     "@opentelemetry/api-metrics": "0.27.0",
     "@peculiar/webcrypto": "1.4.0",
     "@peculiar/x509": "1.6.3",
+    "@peculiar/x509": "1.6.4",
+    "@prisma/client": "^3.14.0",
     "mongodb": "4.6.0",
     "mysql2": "2.3.3",
     "pg": "8.7.3",
@@ -60,6 +63,7 @@
     "eslint": "8.15.0",
     "eslint-config-prettier": "8.5.0",
     "prettier": "2.6.2",
+    "prisma": "^3.14.0",
     "sinon": "14.0.0",
     "tap": "16.2.0",
     "ts-node": "10.7.0",

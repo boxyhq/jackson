@@ -1,0 +1,44 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Index {
+  id       Int    @id @default(autoincrement())
+  key      String @db.VarChar(250)
+  storeKey String @db.VarChar(250)
+  store    Store  @relation(fields: [storeKey], references: [key], onDelete: Cascade, onUpdate: NoAction)
+
+
+  @@index([storeKey])
+  @@index([key])
+  @@index([key, storeKey])
+  @@map("jackson_index")
+}
+
+model Store {
+  key        String    @id @db.VarChar(250)
+  value      String    @db.Text
+  iv         String?   @db.VarChar(64)
+  tag        String?   @db.VarChar(64)
+  createdAt  DateTime  @default(now()) @db.Timestamp(0)
+  modifiedAt DateTime? @db.Timestamp(0)
+  index      Index[]
+
+  @@map("jackson_store")
+}
+
+model Ttl {
+  key       String @id @db.VarChar(250)
+  expiresAt BigInt
+
+
+  @@index([expiresAt])
+  @@map("jackson_ttl")
+}
