@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
+import { JacksonStore } from './JacksonStore';
+
+import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToOne } from 'typeorm';
 
 @Index('_jackson_index_key_store', ['key', 'storeKey'])
 @Entity()
@@ -9,14 +11,20 @@ export class JacksonIndex {
   @Index('_jackson_index_key')
   @Column({
     type: 'varchar',
-    length: 250,
+    length: 1500,
   })
   key!: string;
 
-  @Index('_jackson_index_store')
   @Column({
     type: 'varchar',
-    length: 250,
+    length: 1500,
   })
   storeKey!: string;
+
+  @ManyToOne(() => JacksonStore, undefined, {
+    //inverseSide: 'in',
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  store?: JacksonStore;
 }

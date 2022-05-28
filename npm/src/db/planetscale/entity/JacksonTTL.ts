@@ -5,7 +5,7 @@ export class JacksonTTL {
   @Column({
     primary: true,
     type: 'varchar',
-    length: 1500,
+    length: 250,
   })
   key!: string;
 
