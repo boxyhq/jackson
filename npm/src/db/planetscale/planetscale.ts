@@ -10,7 +10,7 @@ import { JacksonStore } from './entity/JacksonStore';
 import { JacksonIndex } from './entity/JacksonIndex';
 import { JacksonTTL } from './entity/JacksonTTL';
 
-class Sql implements DatabaseDriver {
+class Planetscale implements DatabaseDriver {
   private options: DatabaseOption;
   private dataSource!: DataSource;
   private storeRepository;
@@ -23,7 +23,7 @@ class Sql implements DatabaseDriver {
     this.options = options;
   }
 
-  async init(): Promise<Sql> {
+  async init(): Promise<Planetscale> {
     while (true) {
       try {
         this.dataSource = new DataSource({
@@ -113,7 +113,6 @@ class Sql implements DatabaseDriver {
       select: ['value', 'iv', 'tag'],
       order: {
         ['createdAt']: 'DESC',
-        // ['createdAt']: 'ASC',
       },
       take: offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit,
       skip: offsetAndLimitValueCheck ? 0 : pageOffset,
@@ -203,7 +202,7 @@ class Sql implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption): Promise<Sql> => {
-    return await new Sql(options).init();
+  new: async (options: DatabaseOption): Promise<Planetscale> => {
+    return await new Planetscale(options).init();
   },
 };

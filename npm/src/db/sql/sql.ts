@@ -110,7 +110,6 @@ class Sql implements DatabaseDriver {
       select: ['value', 'iv', 'tag'],
       order: {
         ['createdAt']: 'DESC',
-        // ['createdAt']: 'ASC',
       },
       take: offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit,
       skip: offsetAndLimitValueCheck ? 0 : pageOffset,
