@@ -69,7 +69,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Group membership updates
 const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, groupsController } = await jackson();
+  const { scimController, groupsController, usersController } = await jackson();
   const { id, groupId } = req.query;
 
   const body = bodyParser(req);
@@ -78,12 +78,25 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { tenant, product } = await scimController.get(id as string);
 
+  const group = await groupsController.with(tenant, product).get(groupId as string);
+  const user = await usersController.with(tenant, product).get(userId);
+
   if (operation.op === 'add' && operation.path === 'members') {
     await groupsController.with(tenant, product).addUser(groupId as string, userId);
+
+    scimController.sendEvent(<string>id, 'group.user_added', {
+      ...group,
+      ...user,
+    });
   }
 
   if (operation.op === 'remove' && operation.path === 'members') {
     await groupsController.with(tenant, product).removeUser(groupId as string, userId);
+
+    scimController.sendEvent(<string>id, 'group.user_removed', {
+      ...group,
+      ...user,
+    });
   }
 
   return res.status(204).end();

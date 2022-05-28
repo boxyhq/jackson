@@ -16,22 +16,12 @@ export class GroupsController {
     this._product = product;
 
     return this;
-
-    // this._store = this._store || this._db.store(`groups:${tenant}:${product}`);
-
-    // return this;
   }
 
   // Return the database store
   private store(type: 'groups' | 'members'): Storable {
     return this._db.store(`${type}:${this._tenant}:${this._product}`);
-
-    //return this._store || this._db.store(this.namespace(type));
   }
-
-  // private namespace(type: 'groups' | 'members'): string {
-  //   return `${type}:${this._tenant}:${this._product}`;
-  // }
 
   // Create a new group
   public async create(param: { name: string; members: []; raw: object }): Promise<Group> {
@@ -99,5 +89,7 @@ export class GroupsController {
     const id = `${groupId}-${userId}`;
 
     await this.store('members').delete(id);
+
+    return;
   }
 }

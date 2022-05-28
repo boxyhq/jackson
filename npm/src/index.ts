@@ -6,6 +6,7 @@ import { LogoutController } from './controller/logout';
 import { SCIMController } from './controller/scim';
 import { UsersController } from './controller/users';
 import { GroupsController } from './controller/groups';
+import { SCIMUsers } from './controller/scim-users';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
@@ -47,6 +48,7 @@ export const controllers = async (
   scimController: SCIMController;
   usersController: UsersController;
   groupsController: GroupsController;
+  scimHandlers: any;
 }> => {
   opts = defaultOpts(opts);
 
@@ -82,6 +84,12 @@ export const controllers = async (
   const usersController = new UsersController({ db });
   const groupsController = new GroupsController({ db });
 
+  // const scimUsersHandler
+
+  const scimHandlers = {
+    users: new SCIMUsers({ db }),
+  };
+
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
     const configs = await readConfig(opts.preLoadedConfig);
@@ -106,6 +114,7 @@ export const controllers = async (
     scimController,
     usersController,
     groupsController,
+    scimHandlers,
   };
 };
 

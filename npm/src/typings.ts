@@ -244,7 +244,9 @@ export type SCIMEventType =
   | 'user.deleted'
   | 'group.created'
   | 'group.updated'
-  | 'group.deleted';
+  | 'group.deleted'
+  | 'group.user_added'
+  | 'group.user_removed';
 
 export interface User {
   id: string;
