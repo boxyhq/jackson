@@ -53,6 +53,13 @@ const mysqlDbConfig = <DatabaseOption>{
   cleanupLimit: 1,
 };
 
+const planetscaleDbConfig = <DatabaseOption>{
+  engine: 'planetscale',
+  url: process.env.PLANETSCALE_URL,
+  ttl: 1,
+  cleanupLimit: 1,
+};
+
 const mariadbDbConfig = <DatabaseOption>{
   engine: 'sql',
   url: 'mariadb://root@localhost:3306/mysql',
@@ -62,6 +69,13 @@ const mariadbDbConfig = <DatabaseOption>{
 };
 
 const dbs = [
+  {
+    ...planetscaleDbConfig,
+  },
+  {
+    ...planetscaleDbConfig,
+    encryptionKey,
+  },
   {
     ...memDbConfig,
   },
