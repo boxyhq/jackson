@@ -28,12 +28,15 @@ class Sql implements DatabaseDriver {
       try {
         this.dataSource = new DataSource({
           // name: this.options.type! + Math.floor(Math.random() * 100000),
-          type: this.options.type!,
+          type: 'mysql',
           url: this.options.url,
-          synchronize: true,
+          synchronize: false,
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
+          ssl: {
+            rejectUnauthorized: true,
+          },
         });
         await this.dataSource.initialize();
 
@@ -126,13 +129,16 @@ class Sql implements DatabaseDriver {
     const ret: Encrypted[] = [];
 
     if (res) {
-      res.forEach((r) => {
-        ret.push({
-          value: r.store.value,
-          iv: r.store.iv,
-          tag: r.store.tag,
+      for (const r of res) {
+        const value = await this.storeRepository.findOneBy({
+          key: r.storeKey,
         });
-      });
+        ret.push({
+          value: value.value,
+          iv: value.iv,
+          tag: value.tag,
+        });
+      }
     }
 
     return ret;
@@ -167,7 +173,7 @@ class Sql implements DatabaseDriver {
         if (!rec) {
           const ji = new JacksonIndex();
           ji.key = key;
-          ji.store = store;
+          ji.storeKey = store.key;
           await transactionalEntityManager.save(ji);
         }
       }
@@ -177,6 +183,19 @@ class Sql implements DatabaseDriver {
   async delete(namespace: string, key: string): Promise<any> {
     const dbKey = dbutils.key(namespace, key);
     await this.ttlRepository.remove({ key: dbKey });
+
+    const response = await this.indexRepository.find({
+      where: { storeKey: dbKey },
+      select: ['id'],
+    });
+    const returnValue = response || [];
+
+    for (const r of returnValue) {
+      await this.indexRepository.remove({
+        id: r.id,
+      });
+    }
+
     return await this.storeRepository.remove({
       key: dbKey,
     });

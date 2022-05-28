@@ -5,6 +5,7 @@ import mongo from './mongo';
 import redis from './redis';
 import sql from './sql/sql';
 import store from './store';
+import planetscale from './planetscale/planetscale';
 
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
@@ -79,6 +80,8 @@ export default {
         return new DB(await redis.new(options), encryptionKey);
       case 'sql':
         return new DB(await sql.new(options), encryptionKey);
+      case 'planetscale':
+        return new DB(await planetscale.new(options), encryptionKey);
       case 'mongo':
         return new DB(await mongo.new(options), encryptionKey);
       case 'mem':

@@ -109,9 +109,9 @@ export interface Encrypted {
 
 export type EncryptionKey = any;
 
-export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem';
+export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale';
 
-export type DatabaseType = 'postgres' | 'mysql' | 'mariadb' | 'planetscale';
+export type DatabaseType = 'postgres' | 'mysql' | 'mariadb';
 
 export interface DatabaseOption {
   engine?: DatabaseEngine;
