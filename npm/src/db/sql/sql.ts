@@ -34,6 +34,7 @@ class Sql implements DatabaseDriver {
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
+          ssl: this.options.ssl,
         });
         await this.dataSource.initialize();
 

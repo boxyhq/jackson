@@ -34,9 +34,7 @@ class Planetscale implements DatabaseDriver {
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
-          ssl: {
-            rejectUnauthorized: true,
-          },
+          ssl: this.options.ssl,
         });
         await this.dataSource.initialize();
 
