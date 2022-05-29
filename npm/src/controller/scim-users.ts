@@ -71,7 +71,7 @@ export class SCIMUsers {
   public async update({ directory: directoryId, data }: { directory: string; data: any }) {
     const { tenant, product, webhook } = await this.getDirectory(directoryId);
     const { user_id: userId } = data;
-    const { name, emails, active } = data.body;
+    const { active, Operations } = data.body;
 
     let user = await this.users().with(tenant, product).get(userId);
 
@@ -83,9 +83,25 @@ export class SCIMUsers {
       };
     }
 
-    const action: SCIMEventType = active ? 'user.updated' : 'user.deleted';
+    let action: SCIMEventType = 'user.updated';
+
+    // For PATCH
+    if ('Operations' in data.body) {
+      const operation = Operations[0];
+
+      if (operation.op === 'replace' && operation.value.active === false) {
+        action = 'user.deleted';
+      }
+    }
+
+    // For PUT
+    if ('active' in data.body) {
+      action = active ? 'user.updated' : 'user.deleted';
+    }
 
     if (action === 'user.updated') {
+      const { name, emails } = data.body;
+
       user = await this.users().with(tenant, product).update(userId, {
         first_name: name.givenName,
         last_name: name.familyName,

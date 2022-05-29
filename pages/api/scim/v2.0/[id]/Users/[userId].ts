@@ -43,7 +43,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.json(result);
 };
 
-// Update a specific User
+// Update a specific user
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scim } = await jackson();
   const { id, userId } = req.query;
@@ -59,10 +59,20 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.json(result);
 };
 
-// Update a specific User
+// Update a specific user
 const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { scim } = await jackson();
   const { id, userId } = req.query;
+
+  const result = await scim.users.update({
+    directory: id as string,
+    data: {
+      user_id: userId as string,
+      body: bodyParser(req),
+    },
+  });
+
+  return res.json(result);
 
   const body = bodyParser(req);
   const operation = body.Operations[0];
