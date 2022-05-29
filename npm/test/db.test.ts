@@ -37,7 +37,7 @@ const postgresDbConfig = <DatabaseOption>{
   url: 'postgresql://postgres:postgres@localhost:5432/postgres',
   type: 'postgres',
   ttl: 1,
-  cleanupLimit: 1,
+  cleanupLimit: 10,
 };
 
 const mongoDbConfig = <DatabaseOption>{
@@ -50,14 +50,14 @@ const mysqlDbConfig = <DatabaseOption>{
   url: 'mysql://root:mysql@localhost:3307/mysql',
   type: 'mysql',
   ttl: 1,
-  cleanupLimit: 1,
+  cleanupLimit: 10,
 };
 
 const planetscaleDbConfig = <DatabaseOption>{
   engine: 'planetscale',
   url: process.env.PLANETSCALE_URL,
   ttl: 1,
-  cleanupLimit: 1,
+  cleanupLimit: 10,
   ssl: {
     rejectUnauthorized: true,
   },
@@ -68,7 +68,7 @@ const mariadbDbConfig = <DatabaseOption>{
   url: 'mariadb://root@localhost:3306/mysql',
   type: 'mariadb',
   ttl: 1,
-  cleanupLimit: 1,
+  cleanupLimit: 10,
 };
 
 const dbs = [
