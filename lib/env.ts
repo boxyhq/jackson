@@ -12,6 +12,14 @@ const samlAudience = process.env.SAML_AUDIENCE;
 const preLoadedConfig = process.env.PRE_LOADED_CONFIG;
 
 const idpEnabled = process.env.IDP_ENABLED === 'true';
+
+let ssl;
+if (process.env.DB_SSL === 'true') {
+  ssl = {
+    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
+  };
+}
+
 const db = {
   engine: process.env.DB_ENGINE ? <DatabaseEngine>process.env.DB_ENGINE : undefined,
   url: process.env.DB_URL || process.env.DATABASE_URL,
@@ -20,6 +28,7 @@ const db = {
   cleanupLimit: process.env.DB_CLEANUP_LIMIT ? Number(process.env.DB_CLEANUP_LIMIT) : undefined,
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
   pageLimit: process.env.DB_PAGE_LIMIT ? Number(process.env.DB_PAGE_LIMIT) : undefined,
+  ssl,
 };
 
 const clientSecretVerifier = process.env.CLIENT_SECRET_VERIFIER;

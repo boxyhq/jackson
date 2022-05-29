@@ -58,6 +58,9 @@ const planetscaleDbConfig = <DatabaseOption>{
   url: process.env.PLANETSCALE_URL,
   ttl: 1,
   cleanupLimit: 1,
+  ssl: {
+    rejectUnauthorized: true,
+  },
 };
 
 const mariadbDbConfig = <DatabaseOption>{
