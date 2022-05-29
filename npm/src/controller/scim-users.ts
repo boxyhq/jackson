@@ -4,32 +4,25 @@ import { UsersController } from './users';
 import { sendEvent } from '../scim';
 
 export class SCIMUsers {
-  private directory: any;
-  private _users: InstanceType<typeof UsersController>;
-  private _config: InstanceType<typeof SCIMController>;
+  private directory: SCIMConfig | null;
+  private users: InstanceType<typeof UsersController>;
+  private config: InstanceType<typeof SCIMController>;
 
   constructor({ scimController, usersController }) {
-    this._users = usersController;
-    this._config = scimController;
-  }
-
-  private users() {
-    return this._users;
-  }
-
-  private config() {
-    return this._config;
+    this.users = usersController;
+    this.config = scimController;
+    this.directory = null;
   }
 
   public async getDirectory(directoryId: string): Promise<SCIMConfig> {
-    return this.directory || (this.directory = await this.config().get(directoryId));
+    return this.directory || (this.directory = await this.config.get(directoryId));
   }
 
   public async create({ directory: directoryId, data }: { directory: string; data: any }) {
     const { tenant, product, webhook } = await this.getDirectory(directoryId);
     const { name, emails } = data.body;
 
-    const user = await this.users().with(tenant, product).create({
+    const user = await this.users.with(tenant, product).create({
       first_name: name.givenName,
       last_name: name.familyName,
       email: emails[0].value,
@@ -55,7 +48,7 @@ export class SCIMUsers {
     const { tenant, product } = await this.getDirectory(directoryId);
     const { user_id: userId } = data;
 
-    const user = await this.users().with(tenant, product).get(userId);
+    const user = await this.users.with(tenant, product).get(userId);
 
     if (user === null) {
       return {
@@ -73,7 +66,7 @@ export class SCIMUsers {
     const { user_id: userId } = data;
     const { active, Operations } = data.body;
 
-    let user = await this.users().with(tenant, product).get(userId);
+    let user = await this.users.with(tenant, product).get(userId);
 
     if (user === null) {
       return {
@@ -102,14 +95,14 @@ export class SCIMUsers {
     if (action === 'user.updated') {
       const { name, emails } = data.body;
 
-      user = await this.users().with(tenant, product).update(userId, {
+      user = await this.users.with(tenant, product).update(userId, {
         first_name: name.givenName,
         last_name: name.familyName,
         email: emails[0].value,
         raw: data.body,
       });
     } else if (action === 'user.deleted') {
-      await this.users().with(tenant, product).delete(userId);
+      await this.users.with(tenant, product).delete(userId);
     }
 
     sendEvent({
@@ -131,7 +124,7 @@ export class SCIMUsers {
     const { tenant, product, webhook } = await this.getDirectory(directoryId);
     const { user_id: userId } = data;
 
-    const user = await this.users().with(tenant, product).get(userId);
+    const user = await this.users.with(tenant, product).get(userId);
 
     if (user === null) {
       return {
@@ -141,7 +134,7 @@ export class SCIMUsers {
       };
     }
 
-    await this.users().with(tenant, product).delete(userId);
+    await this.users.with(tenant, product).delete(userId);
 
     sendEvent({
       action: 'user.deleted',
