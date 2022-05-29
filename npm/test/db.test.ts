@@ -73,13 +73,6 @@ const mariadbDbConfig = <DatabaseOption>{
 
 const dbs = [
   {
-    ...planetscaleDbConfig,
-  },
-  {
-    ...planetscaleDbConfig,
-    encryptionKey,
-  },
-  {
     ...memDbConfig,
   },
   {
@@ -119,6 +112,13 @@ const dbs = [
   },
   {
     ...mariadbDbConfig,
+    encryptionKey,
+  },
+  {
+    ...planetscaleDbConfig,
+  },
+  {
+    ...planetscaleDbConfig,
     encryptionKey,
   },
 ];
