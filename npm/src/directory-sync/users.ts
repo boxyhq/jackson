@@ -1,25 +1,19 @@
-import type { SCIMConfig, SCIMEventType } from '../typings';
-import { SCIMController } from './scim';
-import { UsersController } from './users';
-import { sendEvent } from '../scim';
+import type { SCIMEventType } from '../typings';
+import { UsersController } from '../controller/users';
+import { sendEvent } from './events';
+import { DirectoryConfig } from './config';
 
-export class SCIMUsers {
-  private directory: SCIMConfig | null;
+export class DirectoryUsers {
   private users: InstanceType<typeof UsersController>;
-  private config: InstanceType<typeof SCIMController>;
+  private directory: InstanceType<typeof DirectoryConfig>;
 
-  constructor({ scimController, usersController }) {
-    this.users = usersController;
-    this.config = scimController;
-    this.directory = null;
-  }
-
-  public async getDirectory(directoryId: string): Promise<SCIMConfig> {
-    return this.directory || (this.directory = await this.config.get(directoryId));
+  constructor({ directory, users }) {
+    this.users = users;
+    this.directory = directory;
   }
 
   public async create({ directory: directoryId, data }: { directory: string; data: any }) {
-    const { tenant, product, webhook } = await this.getDirectory(directoryId);
+    const { tenant, product, webhook } = await this.directory.get(directoryId);
     const { name, emails } = data.body;
 
     const user = await this.users.with(tenant, product).create({
@@ -45,7 +39,7 @@ export class SCIMUsers {
   }
 
   public async get({ directory: directoryId, data }: { directory: string; data: any }) {
-    const { tenant, product } = await this.getDirectory(directoryId);
+    const { tenant, product } = await this.directory.get(directoryId);
     const { user_id: userId } = data;
 
     const user = await this.users.with(tenant, product).get(userId);
@@ -62,7 +56,7 @@ export class SCIMUsers {
   }
 
   public async update({ directory: directoryId, data }: { directory: string; data: any }) {
-    const { tenant, product, webhook } = await this.getDirectory(directoryId);
+    const { tenant, product, webhook } = await this.directory.get(directoryId);
     const { user_id: userId } = data;
     const { active, Operations } = data.body;
 
@@ -121,7 +115,7 @@ export class SCIMUsers {
   }
 
   public async delete({ directory: directoryId, data }: { directory: string; data: any }) {
-    const { tenant, product, webhook } = await this.getDirectory(directoryId);
+    const { tenant, product, webhook } = await this.directory.get(directoryId);
     const { user_id: userId } = data;
 
     const user = await this.users.with(tenant, product).get(userId);

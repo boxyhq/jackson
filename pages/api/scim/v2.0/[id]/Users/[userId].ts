@@ -3,11 +3,11 @@ import jackson from '@lib/jackson';
 import { extractAuthToken, bodyParser } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { scimController } = await jackson();
+  const { directorySync } = await jackson();
   const { method } = req;
   const { id } = req.query;
 
-  if (!(await scimController.validateAPISecret(id as string, extractAuthToken(req)))) {
+  if (!(await directorySync.directory.validateAPISecret(id as string, extractAuthToken(req)))) {
     return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
   }
 
@@ -28,10 +28,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Retrieve a user
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scim } = await jackson();
+  const { directorySync } = await jackson();
   const { id, userId } = req.query;
 
-  const result = await scim.users.get({
+  const result = await directorySync.users.get({
     directory: id as string,
     data: {
       user_id: userId as string,
@@ -43,10 +43,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Update a specific user
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scim } = await jackson();
+  const { directorySync } = await jackson();
   const { id, userId } = req.query;
 
-  const result = await scim.users.update({
+  const result = await directorySync.users.update({
     directory: id as string,
     data: {
       user_id: userId as string,
@@ -59,10 +59,10 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Update a specific user
 const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scim } = await jackson();
+  const { directorySync } = await jackson();
   const { id, userId } = req.query;
 
-  const result = await scim.users.update({
+  const result = await directorySync.users.update({
     directory: id as string,
     data: {
       user_id: userId as string,
@@ -75,10 +75,10 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Delete a user
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scim } = await jackson();
+  const { directorySync } = await jackson();
   const { id, userId } = req.query;
 
-  const result = await scim.users.delete({
+  const result = await directorySync.users.delete({
     directory: id as string,
     data: {
       user_id: userId as string,

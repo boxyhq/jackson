@@ -3,13 +3,13 @@ import jackson from '@lib/jackson';
 import { extractAuthToken, printRequest, bodyParser } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { scimController } = await jackson();
+  const { directorySync } = await jackson();
   const { method } = req;
   const { id } = req.query;
 
   printRequest(req);
 
-  if (!(await scimController.validateAPISecret(id as string, extractAuthToken(req)))) {
+  if (!(await directorySync.directory.validateAPISecret(id as string, extractAuthToken(req)))) {
     return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
   }
 

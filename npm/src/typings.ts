@@ -276,3 +276,39 @@ export interface OAuthErrorHandlerParams {
   error_description: string;
   redirect_uri: string;
 }
+
+export interface DirectoryConfig {
+  create({
+    name,
+    tenant,
+    product,
+    webhook_url,
+    webhook_secret,
+  }: {
+    name: string;
+    tenant: string;
+    product: string;
+    webhook_url: string;
+    webhook_secret: string;
+  }): Promise<SCIMConfig>;
+  get(id: string): Promise<SCIMConfig>;
+  delete(id: string): Promise<void>;
+  validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
+}
+
+export interface DirectoryUsers {
+  create({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  get({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  update({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  delete({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+}
+
+export interface DirectoryGroups {
+  create({ directory: directoryId, data }: { directory: string; data: any });
+}
+
+export interface DirectorySync {
+  directory: DirectoryConfig;
+  users: DirectoryUsers;
+  groups: DirectoryGroups;
+}

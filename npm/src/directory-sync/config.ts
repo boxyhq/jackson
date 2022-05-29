@@ -1,10 +1,9 @@
-import type { Storable, SCIMConfig, JacksonOption, SCIMEventType } from '../typings';
+import type { Storable, SCIMConfig, JacksonOption } from '../typings';
 import * as dbutils from '../db/utils';
-import { createRandomSecret } from './utils';
-import { JacksonError } from './error';
-import { sendEvent } from '../scim';
+import { createRandomSecret } from '../controller/utils';
+import { JacksonError } from '../controller/error';
 
-export class SCIMController {
+export class DirectoryConfig {
   private store: Storable;
   private opts: JacksonOption;
 
@@ -81,29 +80,6 @@ export class SCIMController {
     // TODO: Delete the users and groups associated with the configuration
 
     await this.store.delete(id);
-
-    return;
-  }
-
-  // Send the webhook event to the SP endpoint
-  public async sendEvent(id: string, type: SCIMEventType, data: object): Promise<void> {
-    if (!id || !type || !data) {
-      throw new JacksonError('Missing required parameters.', 400);
-    }
-
-    const { tenant, product, webhook } = await this.get(id);
-
-    sendEvent(
-      type,
-      {
-        tenant,
-        product,
-        data,
-      },
-      {
-        webhook,
-      }
-    );
 
     return;
   }

@@ -5,9 +5,7 @@ import type {
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
-  ISCIMController,
-  IUsersController,
-  IGroupsController,
+  DirectorySync,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -19,10 +17,7 @@ let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
-let scimController: ISCIMController;
-let usersController: IUsersController;
-let groupsController: IGroupsController;
-let scim: any;
+let directorySync: DirectorySync;
 
 const g = global as any;
 
@@ -33,10 +28,7 @@ export default async function init() {
     !g.adminController ||
     !g.healthCheckController ||
     !g.logoutController ||
-    !g.scimController ||
-    !g.usersController ||
-    !g.groupsController ||
-    !g.scim
+    !g.directorySync
   ) {
     const ret = await jackson(env);
     apiController = ret.apiController;
@@ -44,20 +36,14 @@ export default async function init() {
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
-    scimController = ret.scimController;
-    usersController = ret.usersController;
-    groupsController = ret.groupsController;
-    scim = ret.scim;
+    directorySync = ret.directorySync;
 
     g.apiController = apiController;
     g.oauthController = oauthController;
     g.adminController = adminController;
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
-    g.scimController = scimController;
-    g.usersController = usersController;
-    g.groupsController = groupsController;
-    g.scim = scim;
+    g.directorySync = directorySync;
     g.isJacksonReady = true;
   } else {
     apiController = g.apiController;
@@ -65,10 +51,7 @@ export default async function init() {
     adminController = g.adminController;
     logoutController = g.logoutController;
     healthCheckController = g.healthCheckController;
-    scimController = g.scimController;
-    usersController = g.usersController;
-    groupsController = g.groupsController;
-    scim = g.scim;
+    directorySync = g.directorySync;
   }
 
   return {
@@ -77,10 +60,7 @@ export default async function init() {
     adminController,
     logoutController,
     healthCheckController,
-    scimController,
-    usersController,
-    groupsController,
-    scim,
+    directorySync,
   };
 }
 

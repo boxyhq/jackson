@@ -1,18 +1,16 @@
+import type { JacksonOption } from './typings';
+import type { DirectorySync } from './directory-sync';
+
+import DB from './db/db';
+import defaultDb from './db/defaultDb';
+import readConfig from './read-config';
+
 import { AdminController } from './controller/admin';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
-import { SCIMController } from './controller/scim';
-import { UsersController } from './controller/users';
-import { GroupsController } from './controller/groups';
-import { SCIMUsers } from './controller/scim-users';
-import { SCIMGroups } from './controller/scim-groups';
-
-import DB from './db/db';
-import defaultDb from './db/defaultDb';
-import readConfig from './read-config';
-import type { JacksonOption } from './typings';
+import initDirectorySync from './directory-sync';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -46,9 +44,7 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
-  scimController: SCIMController;
-  groupsController: GroupsController;
-  scim: any;
+  directorySync: DirectorySync;
 }> => {
   opts = defaultOpts(opts);
 
@@ -59,7 +55,6 @@ export const controllers = async (
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
-  const scimStore = db.store('scim:config');
 
   const apiController = new APIController({ configStore });
   const adminController = new AdminController({ configStore });
@@ -80,15 +75,7 @@ export const controllers = async (
     opts,
   });
 
-  const scimController = new SCIMController({ scimStore, opts });
-  const usersController = new UsersController({ db });
-  const groupsController = new GroupsController({ db });
-
-  const scim = {
-    config: scimController,
-    users: new SCIMUsers({ scimController, usersController }),
-    groups: new SCIMGroups({ scimController, groupsController }),
-  };
+  const directorySync = initDirectorySync({ db, opts });
 
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
@@ -111,9 +98,7 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
-    scimController,
-    groupsController,
-    scim,
+    directorySync,
   };
 };
 

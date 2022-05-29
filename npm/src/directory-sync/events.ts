@@ -13,14 +13,6 @@ interface Event {
   options: Pick<SCIMConfig, 'webhook'>;
 }
 
-// type: SCIMEventType,
-// payload: {
-//   tenant: string;
-//   product: string;
-//   data: any;
-// },
-// options: Pick<SCIMConfig, 'webhook'>
-
 const sendEvent = async (event: Event) => {
   const { action, payload, options } = event;
   console.log({ action, payload, options });
