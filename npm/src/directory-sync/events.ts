@@ -15,38 +15,37 @@ interface Event {
 
 const sendEvent = async (event: Event) => {
   const { action, payload, options } = event;
-  console.log({ action, payload, options });
 
-  // const objectType: 'user' | 'group' = getObjectType(type);
-  // const { webhook } = options;
-  // const { tenant, product, data } = payload;
+  const objectType: 'user' | 'group' = getObjectType(action);
+  const { webhook } = options;
+  const { tenant, product, data } = payload;
 
-  // // Create a payload to send to the webhook
-  // const webhookPayload = {
-  //   event: type,
-  //   object: objectType,
-  //   tenant,
-  //   product,
-  // };
+  // Create a payload to send to the webhook
+  const webhookPayload = {
+    event: action,
+    object: objectType,
+    tenant,
+    product,
+  };
 
-  // if (objectType === 'user') {
-  //   webhookPayload['data'] = transformUser(data);
-  // }
+  if (objectType === 'user') {
+    webhookPayload['data'] = transformUser(data);
+  }
 
-  // if (objectType === 'group') {
-  //   webhookPayload['data'] = transformGroup(data);
-  // }
+  if (objectType === 'group') {
+    webhookPayload['data'] = transformGroup(data);
+  }
 
-  // const headers = {
-  //   'Content-Type': 'application/json',
-  //   'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
-  // };
+  const headers = {
+    'Content-Type': 'application/json',
+    'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
+  };
 
-  // // TODO: Handle the error like timeout, etc
+  // TODO: Handle the error like timeout, etc
 
-  // axios.post(webhook.endpoint, webhookPayload, { headers });
+  axios.post(webhook.endpoint, webhookPayload, { headers });
 
-  // return;
+  return;
 };
 
 const getObjectType = (type: SCIMEventType) => {
