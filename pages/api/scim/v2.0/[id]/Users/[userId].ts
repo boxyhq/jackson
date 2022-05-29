@@ -18,8 +18,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return handleGET(req, res);
     case 'PUT':
       return handlePUT(req, res);
-    // case 'PATCH':
-    //   return handlePATCH(req, res);
+    case 'PATCH':
+      return handlePATCH(req, res);
     case 'DELETE':
       return handleDELETE(req, res);
     default:
@@ -59,33 +59,27 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.json(result);
 };
 
-// Update a specific User (PATCH) Not Done
-// const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
-//   const { scimController, usersController } = await jackson();
-//   const { id, userId } = req.query;
+// Update a specific User
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { scim } = await jackson();
+  const { id, userId } = req.query;
 
-//   const { tenant, product } = await scimController.get(id as string);
+  const body = bodyParser(req);
+  const operation = body.Operations[0];
 
-//   const user = await usersController.with(tenant, product).get(userId as string);
+  if (operation.op === 'replace' && operation.value.active === false) {
+    const result = await scim.users.delete({
+      directory: id as string,
+      data: {
+        user_id: userId as string,
+      },
+    });
 
-//   if (user === null) {
-//     return res.status(404).json({
-//       schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
-//       detail: 'User not found',
-//       status: 404,
-//     });
-//   }
+    return res.json(result);
+  }
 
-//   await usersController.with(tenant, product).delete(userId as string);
-
-//   scimController.sendEvent(<string>id, 'user.deleted', {
-//     ...user.raw,
-//   });
-
-//   return res.status(204).json(null);
-// };
-
-// {"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"replace","value":{"active":false}}]}
+  return res.end();
+};
 
 // Delete a user
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {

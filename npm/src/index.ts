@@ -86,7 +86,7 @@ export const controllers = async (
 
   const scim = {
     config: new SCIMController({ scimStore, opts }),
-    users: new SCIMUsers({ scimStore, opts, db }),
+    users: new SCIMUsers({ scimController, usersController }),
     groups: null,
   };
 

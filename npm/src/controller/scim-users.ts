@@ -1,35 +1,24 @@
-import type { DatabaseStore, JacksonOption, SCIMConfig, SCIMEventType, Storable, User } from '../typings';
+import type { SCIMConfig, SCIMEventType } from '../typings';
 import { SCIMController } from './scim';
 import { UsersController } from './users';
 import { sendEvent } from '../scim';
 
 export class SCIMUsers {
   private directory: any;
+  private _users: InstanceType<typeof UsersController>;
+  private _config: InstanceType<typeof SCIMController>;
 
-  private _users: null | InstanceType<typeof UsersController>;
-  private _config: null | InstanceType<typeof SCIMController>;
-
-  private db: DatabaseStore;
-  private scimStore: Storable;
-  private opts: JacksonOption;
-
-  constructor({ scimStore, opts, db }) {
-    this._users = null;
-    this._config = null;
-
-    this.db = db;
-    this.scimStore = scimStore;
-    this.opts = opts;
+  constructor({ scimController, usersController }) {
+    this._users = usersController;
+    this._config = scimController;
   }
 
   private users() {
-    return this._users || (this._users = new UsersController({ db: this.db }));
+    return this._users;
   }
 
   private config() {
-    return (
-      this._config || (this._config = new SCIMController({ scimStore: this.scimStore, opts: this.opts }))
-    );
+    return this._config;
   }
 
   public async getDirectory(directoryId: string): Promise<SCIMConfig> {
