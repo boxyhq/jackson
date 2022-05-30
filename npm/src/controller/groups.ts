@@ -74,7 +74,10 @@ export class GroupsController {
       user_id: userId,
     };
 
-    await this.store('members').put(id, data);
+    await this.store('members').put(id, data, {
+      name: 'groupId',
+      value: groupId,
+    });
 
     return;
   }
@@ -85,5 +88,18 @@ export class GroupsController {
     await this.store('members').delete(id);
 
     return;
+  }
+
+  public async getUsers(groupId: string): Promise<{ user_id: string }[]> {
+    const users: { user_id: string }[] = await this.store('members').getByIndex({
+      name: 'groupId',
+      value: groupId,
+    });
+
+    if (users.length === 0) {
+      return [];
+    }
+
+    return users;
   }
 }
