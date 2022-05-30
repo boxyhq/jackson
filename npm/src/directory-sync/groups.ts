@@ -15,7 +15,9 @@ export class DirectoryGroups {
     const { tenant, product, webhook } = await this.directory.get(directoryId);
     const { displayName, members } = data.body;
 
-    const group = await this.groups.with(tenant, product).create({
+    this.groups.setTenantAndProduct(tenant, product);
+
+    const group = await this.groups.create({
       name: displayName,
     });
 
@@ -47,7 +49,9 @@ export class DirectoryGroups {
     const { tenant, product } = await this.directory.get(directoryId);
     const { group_id: groupId } = data;
 
-    const group = await this.groups.with(tenant, product).get(groupId);
+    this.groups.setTenantAndProduct(tenant, product);
+
+    const group = await this.groups.get(groupId);
 
     return {
       schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
@@ -64,7 +68,9 @@ export class DirectoryGroups {
       body: { displayName, members },
     } = data;
 
-    const group = await this.groups.with(tenant, product).update(groupId, {
+    this.groups.setTenantAndProduct(tenant, product);
+
+    const group = await this.groups.update(groupId, {
       name: displayName,
     });
 
@@ -92,14 +98,60 @@ export class DirectoryGroups {
     };
   }
 
+  public async updateOp({ directory: directoryId, data }: { directory: string; data: any }) {
+    const { tenant, product, webhook } = await this.directory.get(directoryId);
+    const {
+      group_id: groupId,
+      body: { Operations },
+    } = data;
+
+    this.groups.setTenantAndProduct(tenant, product);
+
+    const group = await this.groups.get(groupId);
+
+    const { op, path, value } = Operations[0];
+
+    // Add group members
+    if (op === 'add' && path === 'members') {
+      await this.addUsers(groupId, value);
+    }
+
+    // Update group name
+    if (op === 'replace') {
+      await this.groups.update(groupId, {
+        name: value.displayName,
+      });
+    }
+
+    sendEvent({
+      action: 'group.updated',
+      payload: {
+        tenant,
+        product,
+        data: group,
+      },
+      options: {
+        webhook,
+      },
+    });
+
+    return {
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+      id: group?.id,
+      displayName: group?.name,
+      members: await this.getUsers(groupId),
+    };
+  }
+
   public async delete({ directory: directoryId, data }: { directory: string; data: any }) {
     const { tenant, product, webhook } = await this.directory.get(directoryId);
     const { group_id: groupId } = data;
 
-    const group = await this.groups.with(tenant, product).get(groupId);
+    this.groups.setTenantAndProduct(tenant, product);
 
-    await this.groups.with(tenant, product).delete(groupId);
+    const group = await this.groups.get(groupId);
 
+    await this.groups.delete(groupId);
     await this.removeUsers(groupId);
 
     sendEvent({

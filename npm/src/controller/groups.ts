@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class GroupsController {
   private _db: DatabaseStore;
-  private _store: Storable | null = null;
   private _tenant = '';
   private _product = '';
 
@@ -16,6 +15,11 @@ export class GroupsController {
     this._product = product;
 
     return this;
+  }
+
+  public setTenantAndProduct(tenant: string, product: string) {
+    this._tenant = tenant;
+    this._product = product;
   }
 
   // Return the database store

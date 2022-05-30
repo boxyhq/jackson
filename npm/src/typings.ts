@@ -306,6 +306,7 @@ export interface DirectoryGroups {
   get({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
   update({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
   delete({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  updateOp({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
 }
 
 export interface DirectorySync {
