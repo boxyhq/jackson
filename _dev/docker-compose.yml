@@ -26,7 +26,8 @@ services:
       - "3307:3306"
     restart: always
     environment:
-      MYSQL_DATABASE: mysql
+      # prisma cannot migrate on system db mysql
+      MYSQL_DATABASE: jackson
       MYSQL_ROOT_PASSWORD: mysql
   maria:
     image: mariadb:10.4.22
