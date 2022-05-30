@@ -72,34 +72,34 @@ const mariadbDbConfig = <DatabaseOption>{
 };
 
 const dbs = [
-  {
-    ...memDbConfig,
-  },
-  {
-    ...memDbConfig,
-    encryptionKey,
-  },
-  {
-    ...redisDbConfig,
-  },
-  {
-    ...redisDbConfig,
-    encryptionKey,
-  },
-  {
-    ...postgresDbConfig,
-  },
-  {
-    ...postgresDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mongoDbConfig,
-  },
-  {
-    ...mongoDbConfig,
-    encryptionKey,
-  },
+  // {
+  //   ...memDbConfig,
+  // },
+  // {
+  //   ...memDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...redisDbConfig,
+  // },
+  // {
+  //   ...redisDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...postgresDbConfig,
+  // },
+  // {
+  //   ...postgresDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mongoDbConfig,
+  // },
+  // {
+  //   ...mongoDbConfig,
+  //   encryptionKey,
+  // },
   // {
   //   ...mysqlDbConfig,
   // },
@@ -107,13 +107,13 @@ const dbs = [
   //   ...mysqlDbConfig,
   //   encryptionKey,
   // },
-  {
-    ...mariadbDbConfig,
-  },
-  {
-    ...mariadbDbConfig,
-    encryptionKey,
-  },
+  // {
+  //   ...mariadbDbConfig,
+  // },
+  // {
+  //   ...mariadbDbConfig,
+  //   encryptionKey,
+  // },
   {
     ...planetscaleDbConfig,
   },
