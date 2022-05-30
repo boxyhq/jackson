@@ -100,13 +100,13 @@ const dbs = [
     ...mongoDbConfig,
     encryptionKey,
   },
-  {
-    ...mysqlDbConfig,
-  },
-  {
-    ...mysqlDbConfig,
-    encryptionKey,
-  },
+  // {
+  //   ...mysqlDbConfig,
+  // },
+  // {
+  //   ...mysqlDbConfig,
+  //   encryptionKey,
+  // },
   {
     ...mariadbDbConfig,
   },

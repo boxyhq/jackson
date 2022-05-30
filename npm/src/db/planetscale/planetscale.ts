@@ -27,7 +27,7 @@ class Planetscale implements DatabaseDriver {
     while (true) {
       try {
         this.dataSource = new DataSource({
-          name: 'planetscale' + Math.floor(Math.random() * 100000),
+          // name: 'planetscale' + Math.floor(Math.random() * 100000),
           type: 'mysql',
           url: this.options.url,
           synchronize: false,
