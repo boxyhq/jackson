@@ -114,13 +114,13 @@ const dbs = [
     ...mariadbDbConfig,
     encryptionKey,
   },
-  // {
-  //   ...planetscaleDbConfig,
-  // },
-  // {
-  //   ...planetscaleDbConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...planetscaleDbConfig,
+  },
+  {
+    ...planetscaleDbConfig,
+    encryptionKey,
+  },
 ];
 
 tap.before(async () => {

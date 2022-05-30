@@ -27,7 +27,7 @@ class Sql implements DatabaseDriver {
     while (true) {
       try {
         this.dataSource = new DataSource({
-          // name: this.options.type! + Math.floor(Math.random() * 100000),
+          name: this.options.type! + Math.floor(Math.random() * 100000),
           type: this.options.type!,
           url: this.options.url,
           synchronize: true,
