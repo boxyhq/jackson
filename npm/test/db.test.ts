@@ -6,7 +6,7 @@ const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
 const configStores: Storable[] = [];
 const ttlStores: Storable[] = [];
-const ttl = 3;
+const ttl = 2;
 
 const record1 = {
   id: '1',
@@ -72,53 +72,53 @@ const mariadbDbConfig = <DatabaseOption>{
 };
 
 const dbs = [
-  // {
-  //   ...memDbConfig,
-  // },
-  // {
-  //   ...memDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...redisDbConfig,
-  // },
-  // {
-  //   ...redisDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...postgresDbConfig,
-  // },
-  // {
-  //   ...postgresDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mysqlDbConfig,
-  // },
-  // {
-  //   ...mysqlDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  //   encryptionKey,
-  // },
   {
     ...planetscaleDbConfig,
   },
   {
     ...planetscaleDbConfig,
+    encryptionKey,
+  },
+  {
+    ...memDbConfig,
+  },
+  {
+    ...memDbConfig,
+    encryptionKey,
+  },
+  {
+    ...redisDbConfig,
+  },
+  {
+    ...redisDbConfig,
+    encryptionKey,
+  },
+  {
+    ...postgresDbConfig,
+  },
+  {
+    ...postgresDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mongoDbConfig,
+  },
+  {
+    ...mongoDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mysqlDbConfig,
+  },
+  {
+    ...mysqlDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mariadbDbConfig,
+  },
+  {
+    ...mariadbDbConfig,
     encryptionKey,
   },
 ];
