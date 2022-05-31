@@ -100,15 +100,24 @@ export class DirectoryGroups {
     const group = await this.groups.get(groupId);
 
     // Add group members
-    if (op === 'add' && path === 'members') {
+    if (op === 'add') {
       await this.addGroupMembers(directory, group, value);
     }
 
     // Remove group members
-    else if (op === 'remove' && path === 'members') {
-      await this.groups.removeUser(groupId, value[0].value);
+    else if (op === 'remove') {
+      let userId = '';
 
-      sendEvent('group.user_removed', { tenant, product, group }, { webhook });
+      if (path === 'members' && value.length > 0) {
+        userId = value[0].value;
+      }
+
+      // Pattern: members[value eq \"f0f159bf-00fd-4815-b4b4-ef5e9c29071f\"]
+      if (path.startsWith('members[value eq')) {
+        userId = path.split('"')[1];
+      }
+
+      await this.removeGroupMember(directory, group, userId);
     }
 
     // Update group name
@@ -147,13 +156,6 @@ export class DirectoryGroups {
       status: 200,
       data: {},
     };
-  }
-
-  // Add given users to a group
-  private async addUsers(groupId: string, members: { value: string }[]): Promise<void> {
-    for (const member of members) {
-      await this.groups.addUser(groupId, member.value);
-    }
   }
 
   // Add or remove users from a group
@@ -214,6 +216,19 @@ export class DirectoryGroups {
     }
 
     return;
+  }
+
+  // Remove member from a group
+  public async removeGroupMember(directory: SCIMConfig, group: Group, userId) {
+    const { tenant, product, webhook } = directory;
+
+    this.users.setTenantAndProduct(tenant, product);
+
+    const user = await this.users.get(userId);
+
+    await this.groups.removeUser(group.id, userId);
+
+    sendEvent('group.user_removed', { tenant, product, group, user }, { webhook });
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method

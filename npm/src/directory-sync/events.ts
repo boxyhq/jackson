@@ -26,6 +26,8 @@ const sendEvent = async (action: SCIMEventType, payload: any, options: Pick<SCIM
     webhookPayload['data'] = transformUserGroup(payload.user, payload.group);
   }
 
+  console.log(webhookPayload);
+
   const headers = {
     'Content-Type': 'application/json',
     'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
