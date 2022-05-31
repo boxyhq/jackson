@@ -6,10 +6,6 @@ import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings'
 import { DataSource, Like } from 'typeorm';
 import * as dbutils from '../utils';
 
-import { JacksonStore } from './entity/JacksonStore';
-import { JacksonIndex } from './entity/JacksonIndex';
-import { JacksonTTL } from './entity/JacksonTTL';
-
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
   private dataSource!: DataSource;
@@ -19,18 +15,22 @@ class Sql implements DatabaseDriver {
   private ttlCleanup;
   private timerId;
 
+  private JacksonStore;
+  private JacksonIndex;
+  private JacksonTTL;
+
   constructor(options: DatabaseOption) {
     this.options = options;
   }
 
-  async init(): Promise<Sql> {
+  async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
     while (true) {
       try {
         this.dataSource = new DataSource({
           // name: this.options.type! + Math.floor(Math.random() * 100000),
-          type: this.options.type!,
+          type: this.options.engine === 'planetscale' ? 'mysql' : this.options.type!,
           url: this.options.url,
-          synchronize: true,
+          synchronize: this.options.engine !== 'planetscale',
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
@@ -45,6 +45,10 @@ class Sql implements DatabaseDriver {
         continue;
       }
     }
+
+    this.JacksonStore = JacksonStore;
+    this.JacksonIndex = JacksonIndex;
+    this.JacksonTTL = JacksonTTL;
 
     this.storeRepository = this.dataSource.getRepository(JacksonStore);
     this.indexRepository = this.dataSource.getRepository(JacksonIndex);
@@ -126,13 +130,20 @@ class Sql implements DatabaseDriver {
     const ret: Encrypted[] = [];
 
     if (res) {
-      res.forEach((r) => {
+      for (const r of res) {
+        let value = r.store;
+        if (this.options.engine === 'planetscale') {
+          value = await this.storeRepository.findOneBy({
+            key: r.storeKey,
+          });
+        }
+
         ret.push({
-          value: r.store.value,
-          iv: r.store.iv,
-          tag: r.store.tag,
+          value: value.value,
+          iv: value.iv,
+          tag: value.tag,
         });
-      });
+      }
     }
 
     return ret;
@@ -142,7 +153,7 @@ class Sql implements DatabaseDriver {
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
 
-      const store = new JacksonStore();
+      const store = new this.JacksonStore();
       store.key = dbKey;
       store.value = val.value;
       store.iv = val.iv;
@@ -151,7 +162,7 @@ class Sql implements DatabaseDriver {
       await transactionalEntityManager.save(store);
 
       if (ttl) {
-        const ttlRec = new JacksonTTL();
+        const ttlRec = new this.JacksonTTL();
         ttlRec.key = dbKey;
         ttlRec.expiresAt = Date.now() + ttl * 1000;
         await transactionalEntityManager.save(ttlRec);
@@ -165,9 +176,13 @@ class Sql implements DatabaseDriver {
           storeKey: store.key,
         });
         if (!rec) {
-          const ji = new JacksonIndex();
+          const ji = new this.JacksonIndex();
           ji.key = key;
-          ji.store = store;
+          if (this.options.engine === 'planetscale') {
+            ji.storeKey = store.key;
+          } else {
+            ji.store = store;
+          }
           await transactionalEntityManager.save(ji);
         }
       }
@@ -177,6 +192,21 @@ class Sql implements DatabaseDriver {
   async delete(namespace: string, key: string): Promise<any> {
     const dbKey = dbutils.key(namespace, key);
     await this.ttlRepository.remove({ key: dbKey });
+
+    if (this.options.engine === 'planetscale') {
+      const response = await this.indexRepository.find({
+        where: { storeKey: dbKey },
+        select: ['id'],
+      });
+      const returnValue = response || [];
+
+      for (const r of returnValue) {
+        await this.indexRepository.remove({
+          id: r.id,
+        });
+      }
+    }
+
     return await this.storeRepository.remove({
       key: dbKey,
     });
@@ -184,7 +214,7 @@ class Sql implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption): Promise<Sql> => {
-    return await new Sql(options).init();
+  new: async (options: DatabaseOption, entities): Promise<Sql> => {
+    return await new Sql(options).init(entities);
   },
 };
