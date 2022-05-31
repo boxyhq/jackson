@@ -306,7 +306,7 @@ export interface DirectoryGroups {
   create(directoryId: string, body: any): Promise<any>;
   get(directoryId: string, groupId: string): Promise<any>;
   update(directoryId: string, groupId: string, body: any): Promise<any>;
-  updateOp(directoryId: string, groupId: string, body: any): Promise<any>;
+  updateOperation(directoryId: string, groupId: string, body: any): Promise<any>;
   delete(directoryId: string, groupId: string): Promise<any>;
   handleRequest(request: DirectorySyncRequest): Promise<any>;
 }

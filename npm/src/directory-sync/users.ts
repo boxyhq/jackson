@@ -4,12 +4,12 @@ import { sendEvent } from './events';
 import { DirectoryConfig } from './config';
 
 export class DirectoryUsers {
-  private users: InstanceType<typeof UsersController>;
   private directory: InstanceType<typeof DirectoryConfig>;
+  private users: InstanceType<typeof UsersController>;
 
   constructor({ directory, users }) {
-    this.users = users;
     this.directory = directory;
+    this.users = users;
   }
 
   public async create(directoryId: string, body: any) {
@@ -23,7 +23,7 @@ export class DirectoryUsers {
       raw: body,
     });
 
-    sendEvent('user.created', { tenant, product, ...user }, { webhook });
+    sendEvent('user.created', { tenant, product, user }, { webhook });
 
     return {
       status: 201,
@@ -99,7 +99,7 @@ export class DirectoryUsers {
       await this.users.with(tenant, product).delete(userId);
     }
 
-    sendEvent(action, { tenant, product, ...user }, { webhook });
+    sendEvent(action, { tenant, product, user }, { webhook });
 
     return {
       status: 200,
@@ -125,7 +125,7 @@ export class DirectoryUsers {
 
     await this.users.with(tenant, product).delete(userId);
 
-    sendEvent('user.deleted', { tenant, product, ...user }, { webhook });
+    sendEvent('user.deleted', { tenant, product, user }, { webhook });
 
     return {
       status: 200,
@@ -150,24 +150,26 @@ export class DirectoryUsers {
   public async handleRequest(request: DirectorySyncRequest) {
     const { method, directory_id: directoryId, user_id: userId, body } = request;
 
+    if (userId) {
+      // Update an existing user
+      if (method === 'PUT' || method === 'PATCH') {
+        return await this.update(directoryId, userId, body);
+      }
+
+      // Get a user
+      if (method === 'GET') {
+        return await this.get(directoryId, userId);
+      }
+
+      // Delete a user
+      if (method === 'DELETE') {
+        return await this.delete(directoryId, userId);
+      }
+    }
+
     // Create a new user
     if (method === 'POST') {
       return await this.create(directoryId, body);
-    }
-
-    // Update an existing user
-    if ((method === 'PUT' || method === 'PATCH') && userId) {
-      return await this.update(directoryId, userId, body);
-    }
-
-    // Get a user
-    if (method === 'GET' && userId) {
-      return await this.get(directoryId, userId);
-    }
-
-    // Delete a user
-    if (method === 'DELETE' && userId) {
-      return await this.delete(directoryId, userId);
     }
 
     // Get all users

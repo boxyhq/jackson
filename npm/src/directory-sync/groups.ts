@@ -1,19 +1,24 @@
+import { User } from 'next-auth';
 import { GroupsController } from '../controller/groups';
-import { DirectorySyncRequest } from '../typings';
+import { UsersController } from '../controller/users';
+import { DirectorySyncRequest, Group, SCIMConfig } from '../typings';
 import { DirectoryConfig } from './config';
 import { sendEvent } from './events';
 
 export class DirectoryGroups {
-  private groups: InstanceType<typeof GroupsController>;
   private directory: InstanceType<typeof DirectoryConfig>;
+  private users: InstanceType<typeof UsersController>;
+  private groups: InstanceType<typeof GroupsController>;
 
-  constructor({ directory, groups }) {
-    this.groups = groups;
+  constructor({ directory, users, groups }) {
     this.directory = directory;
+    this.users = users;
+    this.groups = groups;
   }
 
   public async create(directoryId: string, body: any) {
-    const { tenant, product, webhook } = await this.directory.get(directoryId);
+    const directory = await this.directory.get(directoryId);
+    const { tenant, product, webhook } = directory;
     const { displayName, members } = body;
 
     this.groups.setTenantAndProduct(tenant, product);
@@ -22,11 +27,9 @@ export class DirectoryGroups {
       name: displayName,
     });
 
-    if (members) {
-      await this.addUsers(group.id, members);
-    }
+    sendEvent('group.created', { tenant, product, group }, { webhook });
 
-    sendEvent('group.created', { tenant, product, ...group }, { webhook });
+    this.addGroupMembers(directory, group, members);
 
     return {
       status: 201,
@@ -71,7 +74,7 @@ export class DirectoryGroups {
       await this.addOrRemoveUsers(groupId, members);
     }
 
-    sendEvent('group.updated', { tenant, product, ...group }, { webhook });
+    sendEvent('group.updated', { tenant, product, group }, { webhook });
 
     return {
       status: 200,
@@ -84,8 +87,11 @@ export class DirectoryGroups {
     };
   }
 
-  public async updateOp(directoryId: string, groupId: string, body: any) {
-    const { tenant, product, webhook } = await this.directory.get(directoryId);
+  // Update a group using a patch operation.
+  // Some identity providers send a PATCH request to update a group and group members.
+  public async updateOperation(directoryId: string, groupId: string, body: any) {
+    const directory = await this.directory.get(directoryId);
+    const { tenant, product, webhook } = directory;
     const { Operations } = body;
     const { op, path, value } = Operations[0];
 
@@ -95,27 +101,23 @@ export class DirectoryGroups {
 
     // Add group members
     if (op === 'add' && path === 'members') {
-      //await this.addUsers(groupId, value);
-
-      //await this.groups.addUser(groupId, value[0].value)
-
-      sendEvent('group.user_added', { tenant, product, ...group }, { webhook });
+      await this.addGroupMembers(directory, group, value);
     }
 
     // Remove group members
-    if (op === 'remove' && path === 'members') {
-      await this.removeUsers(groupId, value);
+    else if (op === 'remove' && path === 'members') {
+      await this.groups.removeUser(groupId, value[0].value);
 
-      sendEvent('group.user_removed', { tenant, product, ...group }, { webhook });
+      sendEvent('group.user_removed', { tenant, product, group }, { webhook });
     }
 
     // Update group name
-    if (op === 'replace') {
+    else if (op === 'replace') {
       const group = await this.groups.update(groupId, {
         name: value.displayName,
       });
 
-      sendEvent('group.updated', { tenant, product, ...group }, { webhook });
+      sendEvent('group.updated', { tenant, product, group }, { webhook });
     }
 
     return {
@@ -136,10 +138,10 @@ export class DirectoryGroups {
 
     const group = await this.groups.get(groupId);
 
+    await this.groups.removeAllUsers(groupId);
     await this.groups.delete(groupId);
-    await this.removeAllUsers(groupId);
 
-    sendEvent('group.deleted', { tenant, product, ...group }, { webhook });
+    sendEvent('group.deleted', { tenant, product, group }, { webhook });
 
     return {
       status: 200,
@@ -151,26 +153,6 @@ export class DirectoryGroups {
   private async addUsers(groupId: string, members: { value: string }[]): Promise<void> {
     for (const member of members) {
       await this.groups.addUser(groupId, member.value);
-    }
-  }
-
-  // Remove all users from a group
-  private async removeAllUsers(groupId: string): Promise<void> {
-    const users = await this.groups.getUsers(groupId);
-
-    if (users.length === 0) {
-      return;
-    }
-
-    for (const user of users) {
-      await this.groups.removeUser(groupId, user.user_id);
-    }
-  }
-
-  // Remove given users from a group
-  private async removeUsers(groupId: string, members: { value: string }[]): Promise<void> {
-    for (const member of members) {
-      await this.groups.removeUser(groupId, member.value);
     }
   }
 
@@ -211,33 +193,58 @@ export class DirectoryGroups {
     };
   }
 
+  // Add members to a group
+  public async addGroupMembers(directory: SCIMConfig, group: Group, members: { value: string }[]) {
+    const { tenant, product, webhook } = directory;
+
+    if (members.length === 0) {
+      return;
+    }
+
+    this.groups.setTenantAndProduct(tenant, product);
+    this.users.setTenantAndProduct(tenant, product);
+
+    for (const member of members) {
+      const userId = member.value;
+
+      await this.groups.addUser(group.id, userId);
+      const user = await this.users.get(userId);
+
+      sendEvent('group.user_added', { tenant, product, user, group }, { webhook });
+    }
+
+    return;
+  }
+
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(request: DirectorySyncRequest) {
     const { method, directory_id: directoryId, group_id: groupId, body } = request;
 
+    if (groupId) {
+      // Get a user
+      if (method === 'GET') {
+        return await this.get(directoryId, groupId);
+      }
+
+      // Update a group
+      if (method === 'PUT') {
+        return await this.update(directoryId, groupId, body);
+      }
+
+      // Update a group (using patch)
+      if (method === 'PATCH') {
+        return await this.updateOperation(directoryId, groupId, body);
+      }
+
+      // Delete a group
+      if (method === 'DELETE') {
+        return await this.delete(directoryId, groupId);
+      }
+    }
+
     // Create a new group
     if (method === 'POST') {
       return await this.create(directoryId, body);
-    }
-
-    // Get a user
-    if (method === 'GET' && groupId) {
-      return await this.get(directoryId, groupId);
-    }
-
-    // Update a group
-    if (method === 'PUT' && groupId) {
-      return await this.update(directoryId, groupId, body);
-    }
-
-    // Update a group (using patch)
-    if (method === 'PATCH' && groupId) {
-      return await this.updateOp(directoryId, groupId, body);
-    }
-
-    // Delete a group
-    if (method === 'DELETE' && groupId) {
-      return await this.delete(directoryId, groupId);
     }
 
     // Get all groups

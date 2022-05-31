@@ -41,10 +41,8 @@ export class GroupsController {
   }
 
   // Get a group by id
-  public async get(id: string): Promise<Group | null> {
-    const group: Group = await this.store('groups').get(id);
-
-    return group || null;
+  public async get(id: string): Promise<Group> {
+    return await this.store('groups').get(id);
   }
 
   // Update the group data
@@ -86,14 +84,6 @@ export class GroupsController {
     return;
   }
 
-  public async removeUser(groupId: string, userId: string): Promise<void> {
-    const id = `${groupId}-${userId}`;
-
-    await this.store('members').delete(id);
-
-    return;
-  }
-
   public async getUsers(groupId: string): Promise<{ user_id: string }[]> {
     const users: { user_id: string }[] = await this.store('members').getByIndex({
       name: 'groupId',
@@ -105,5 +95,27 @@ export class GroupsController {
     }
 
     return users;
+  }
+
+  public async removeUser(groupId: string, userId: string): Promise<void> {
+    const id = `${groupId}-${userId}`;
+
+    await this.store('members').delete(id);
+
+    return;
+  }
+
+  public async removeAllUsers(groupId: string): Promise<void> {
+    const users = await this.getUsers(groupId);
+
+    if (users.length === 0) {
+      return;
+    }
+
+    for (const user of users) {
+      await this.removeUser(groupId, user.user_id);
+    }
+
+    return;
   }
 }

@@ -15,19 +15,16 @@ const sendEvent = async (action: SCIMEventType, payload: any, options: Pick<SCIM
   };
 
   if (['user.created', 'user.updated', 'user.deleted'].includes(action)) {
-    webhookPayload['data'] = transformUser(payload);
+    webhookPayload['data'] = transformUser(payload.user);
   }
 
   if (['group.created', 'group.updated', 'group.deleted'].includes(action)) {
-    webhookPayload['data'] = transformGroup(payload);
+    webhookPayload['data'] = transformGroup(payload.group);
   }
 
   if (['group.user_added', 'group.user_removed'].includes(action)) {
-    webhookPayload['data'] = transformUserGroup(payload);
+    webhookPayload['data'] = transformUserGroup(payload.user, payload.group);
   }
-
-  console.log({ payload });
-  console.log({ webhookPayload });
 
   const headers = {
     'Content-Type': 'application/json',

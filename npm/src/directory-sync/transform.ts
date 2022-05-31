@@ -1,25 +1,26 @@
-const transformUser = (payload: any) => {
+import { Group, User } from '../typings';
+
+const transformUser = (user: User) => {
   return {
-    id: payload.id,
-    first_name: payload.first_name,
-    last_name: payload.last_name,
-    email: payload.email,
-    active: payload.raw.active,
-    raw: payload.raw,
+    id: user.id,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    raw: user.raw,
   };
 };
 
-const transformGroup = (payload: any) => {
+const transformGroup = (group: Group) => {
   return {
-    id: payload.id,
-    name: payload.name,
+    id: group.id,
+    name: group.name,
   };
 };
 
-const transformUserGroup = (payload: any) => {
+const transformUserGroup = (user: User, group: Group) => {
   return {
-    id: payload.id,
-    name: payload.name,
+    ...transformUser(user),
+    group: transformGroup(group),
   };
 };
 
