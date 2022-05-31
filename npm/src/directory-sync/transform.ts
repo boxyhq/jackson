@@ -1,20 +1,26 @@
-const transformUser = (user: any) => {
+const transformUser = (payload: any) => {
   return {
-    id: user.id,
-    first_name: user.name.givenName,
-    last_name: user.name.familyName,
-    email: user.emails[0].value,
-    raw: user,
+    id: payload.id,
+    first_name: payload.first_name,
+    last_name: payload.last_name,
+    email: payload.email,
+    active: payload.raw.active,
+    raw: payload.raw,
   };
 };
 
-const transformGroup = (group: any) => {
+const transformGroup = (payload: any) => {
   return {
-    id: group.id,
-    name: group.displayName,
-    members: group.members,
-    raw: group,
+    id: payload.id,
+    name: payload.name,
   };
 };
 
-export { transformUser, transformGroup };
+const transformUserGroup = (payload: any) => {
+  return {
+    id: payload.id,
+    name: payload.name,
+  };
+};
+
+export { transformUser, transformGroup, transformUserGroup };

@@ -26,17 +26,7 @@ export class DirectoryGroups {
       await this.addUsers(group.id, members);
     }
 
-    sendEvent({
-      action: 'group.created',
-      payload: {
-        tenant,
-        product,
-        data: group,
-      },
-      options: {
-        webhook,
-      },
-    });
+    sendEvent('group.created', { tenant, product, ...group }, { webhook });
 
     return {
       status: 201,
@@ -81,17 +71,7 @@ export class DirectoryGroups {
       await this.addOrRemoveUsers(groupId, members);
     }
 
-    sendEvent({
-      action: 'group.updated',
-      payload: {
-        tenant,
-        product,
-        data: group,
-      },
-      options: {
-        webhook,
-      },
-    });
+    sendEvent('group.updated', { tenant, product, ...group }, { webhook });
 
     return {
       status: 200,
@@ -115,32 +95,28 @@ export class DirectoryGroups {
 
     // Add group members
     if (op === 'add' && path === 'members') {
-      await this.addUsers(groupId, value);
+      //await this.addUsers(groupId, value);
+
+      //await this.groups.addUser(groupId, value[0].value)
+
+      sendEvent('group.user_added', { tenant, product, ...group }, { webhook });
     }
 
     // Remove group members
     if (op === 'remove' && path === 'members') {
       await this.removeUsers(groupId, value);
+
+      sendEvent('group.user_removed', { tenant, product, ...group }, { webhook });
     }
 
     // Update group name
     if (op === 'replace') {
-      await this.groups.update(groupId, {
+      const group = await this.groups.update(groupId, {
         name: value.displayName,
       });
-    }
 
-    sendEvent({
-      action: 'group.updated',
-      payload: {
-        tenant,
-        product,
-        data: group,
-      },
-      options: {
-        webhook,
-      },
-    });
+      sendEvent('group.updated', { tenant, product, ...group }, { webhook });
+    }
 
     return {
       status: 200,
@@ -163,17 +139,7 @@ export class DirectoryGroups {
     await this.groups.delete(groupId);
     await this.removeAllUsers(groupId);
 
-    sendEvent({
-      action: 'group.deleted',
-      payload: {
-        tenant,
-        product,
-        data: group,
-      },
-      options: {
-        webhook,
-      },
-    });
+    sendEvent('group.deleted', { tenant, product, ...group }, { webhook });
 
     return {
       status: 200,

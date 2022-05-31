@@ -23,17 +23,7 @@ export class DirectoryUsers {
       raw: body,
     });
 
-    sendEvent({
-      action: 'user.created',
-      payload: {
-        tenant,
-        product,
-        data: user,
-      },
-      options: {
-        webhook,
-      },
-    });
+    sendEvent('user.created', { tenant, product, ...user }, { webhook });
 
     return {
       status: 201,
@@ -109,17 +99,7 @@ export class DirectoryUsers {
       await this.users.with(tenant, product).delete(userId);
     }
 
-    sendEvent({
-      action,
-      payload: {
-        tenant,
-        product,
-        data: user,
-      },
-      options: {
-        webhook,
-      },
-    });
+    sendEvent(action, { tenant, product, ...user }, { webhook });
 
     return {
       status: 200,
@@ -145,17 +125,7 @@ export class DirectoryUsers {
 
     await this.users.with(tenant, product).delete(userId);
 
-    sendEvent({
-      action: 'user.deleted',
-      payload: {
-        tenant,
-        product,
-        data: user,
-      },
-      options: {
-        webhook,
-      },
-    });
+    sendEvent('user.deleted', { tenant, product, ...user }, { webhook });
 
     return {
       status: 200,

@@ -1,44 +1,33 @@
 import type { SCIMConfig, SCIMEventType } from '../typings';
-import { transformUser, transformGroup } from './transform';
+import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
 
-interface Event {
-  action: SCIMEventType;
-  payload: {
-    tenant: string;
-    product: string;
-    data: any;
-  };
-  options: Pick<SCIMConfig, 'webhook'>;
-}
-
-const sendEvent = async (event: Event) => {
-  const { action, payload, options } = event;
-
-  console.log({ action, payload });
-
-  return;
-
-  const objectType: 'user' | 'group' = getObjectType(action);
+const sendEvent = async (action: SCIMEventType, payload: any, options: Pick<SCIMConfig, 'webhook'>) => {
   const { webhook } = options;
-  const { tenant, product, data } = payload;
+  const { tenant, product } = payload;
 
   // Create a payload to send to the webhook
   const webhookPayload = {
     event: action,
-    object: objectType,
     tenant,
     product,
   };
 
-  if (objectType === 'user') {
-    webhookPayload['data'] = transformUser(data);
+  if (['user.created', 'user.updated', 'user.deleted'].includes(action)) {
+    webhookPayload['data'] = transformUser(payload);
   }
 
-  if (objectType === 'group') {
-    webhookPayload['data'] = transformGroup(data);
+  if (['group.created', 'group.updated', 'group.deleted'].includes(action)) {
+    webhookPayload['data'] = transformGroup(payload);
   }
+
+  if (['group.user_added', 'group.user_removed'].includes(action)) {
+    webhookPayload['data'] = transformUserGroup(payload);
+  }
+
+  console.log({ payload });
+  console.log({ webhookPayload });
 
   const headers = {
     'Content-Type': 'application/json',
@@ -50,18 +39,6 @@ const sendEvent = async (event: Event) => {
   axios.post(webhook.endpoint, webhookPayload, { headers });
 
   return;
-};
-
-const getObjectType = (type: SCIMEventType) => {
-  if (type.startsWith('user.')) {
-    return 'user';
-  }
-
-  if (type.startsWith('group.')) {
-    return 'group';
-  }
-
-  throw new Error('Unknown event type');
 };
 
 const createSignatureString = async (secret: string, payload: object) => {
