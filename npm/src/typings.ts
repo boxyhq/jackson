@@ -153,7 +153,7 @@ interface Metadata {
   };
   entityID: string;
   thumbprint: string;
-  loginType: 'idp';
+  loginType: 'idp' | 'sp';
   provider: string;
 }
 
