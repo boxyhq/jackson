@@ -20,12 +20,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Create a new SCIM configuration
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController } = await jackson();
+  const { directorySync } = await jackson();
 
   const { name, tenant, product, webhook_url, webhook_secret } = req.body;
 
   try {
-    const config = await scimController.create({ name, tenant, product, webhook_url, webhook_secret });
+    const config = await directorySync.directory.create({
+      name,
+      tenant,
+      product,
+      webhook_url,
+      webhook_secret,
+    });
 
     return res.status(201).json({ data: config, error: null });
   } catch (err: any) {
