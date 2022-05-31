@@ -181,12 +181,14 @@ export class DirectoryGroups {
     };
   }
 
+  // Add given users to a group
   private async addUsers(groupId: string, members: { value: string }[]): Promise<void> {
     for (const member of members) {
       await this.groups.addUser(groupId, member.value);
     }
   }
 
+  // Remove all users from a group
   private async removeAllUsers(groupId: string): Promise<void> {
     const users = await this.groups.getUsers(groupId);
 
@@ -199,20 +201,14 @@ export class DirectoryGroups {
     }
   }
 
+  // Remove given users from a group
   private async removeUsers(groupId: string, members: { value: string }[]): Promise<void> {
     for (const member of members) {
       await this.groups.removeUser(groupId, member.value);
     }
   }
 
-  private async getUsers(groupId: string): Promise<{ value: string }[]> {
-    const users = await this.groups.getUsers(groupId);
-
-    return users.map((user) => ({
-      value: user.user_id,
-    }));
-  }
-
+  // Add or remove users from a group
   private async addOrRemoveUsers(groupId: string, members: { value: string }[]): Promise<void> {
     const users = await this.groups.getUsers(groupId);
 
@@ -226,6 +222,14 @@ export class DirectoryGroups {
     for (const user of usersToRemove) {
       await this.groups.removeUser(groupId, user.user_id);
     }
+  }
+
+  private async getUsers(groupId: string): Promise<{ value: string }[]> {
+    const users = await this.groups.getUsers(groupId);
+
+    return users.map((user) => ({
+      value: user.user_id,
+    }));
   }
 
   public async getAll() {

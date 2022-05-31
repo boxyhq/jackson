@@ -295,19 +295,19 @@ export interface DirectoryConfig {
 }
 
 export interface DirectoryUsers {
-  create({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
-  get({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
-  update({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
-  delete({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  create(directoryId: string, body: any): Promise<any>;
+  get(directoryId: string, userId: string): Promise<any>;
+  update(directoryId: string, userId: string, body: any): Promise<any>;
+  delete(directoryId: string, userId: string): Promise<any>;
   handleRequest(request: DirectorySyncRequest): Promise<any>;
 }
 
 export interface DirectoryGroups {
-  create({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
-  get({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
-  update({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
-  delete({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
-  updateOp({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  create(directoryId: string, body: any): Promise<any>;
+  get(directoryId: string, groupId: string): Promise<any>;
+  update(directoryId: string, groupId: string, body: any): Promise<any>;
+  updateOp(directoryId: string, groupId: string, body: any): Promise<any>;
+  delete(directoryId: string, groupId: string): Promise<any>;
   handleRequest(request: DirectorySyncRequest): Promise<any>;
 }
 
