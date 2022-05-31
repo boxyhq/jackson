@@ -118,6 +118,11 @@ export class DirectoryGroups {
       await this.addUsers(groupId, value);
     }
 
+    // Remove group members
+    if (op === 'remove' && path === 'members') {
+      await this.removeUsers(groupId, value);
+    }
+
     // Update group name
     if (op === 'replace') {
       await this.groups.update(groupId, {
@@ -156,7 +161,7 @@ export class DirectoryGroups {
     const group = await this.groups.get(groupId);
 
     await this.groups.delete(groupId);
-    await this.removeUsers(groupId);
+    await this.removeAllUsers(groupId);
 
     sendEvent({
       action: 'group.deleted',
@@ -182,7 +187,7 @@ export class DirectoryGroups {
     }
   }
 
-  private async removeUsers(groupId: string): Promise<void> {
+  private async removeAllUsers(groupId: string): Promise<void> {
     const users = await this.groups.getUsers(groupId);
 
     if (users.length === 0) {
@@ -191,6 +196,12 @@ export class DirectoryGroups {
 
     for (const user of users) {
       await this.groups.removeUser(groupId, user.user_id);
+    }
+  }
+
+  private async removeUsers(groupId: string, members: { value: string }[]): Promise<void> {
+    for (const member of members) {
+      await this.groups.removeUser(groupId, member.value);
     }
   }
 
