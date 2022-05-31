@@ -16,7 +16,9 @@ export class DirectoryUsers {
     const { tenant, product, webhook } = await this.directory.get(directoryId);
     const { name, emails } = body;
 
-    const user = await this.users.with(tenant, product).create({
+    this.users.setTenantAndProduct(tenant, product);
+
+    const user = await this.users.create({
       first_name: name.givenName,
       last_name: name.familyName,
       email: emails[0].value,
@@ -34,18 +36,9 @@ export class DirectoryUsers {
   public async get(directoryId: string, userId: string) {
     const { tenant, product } = await this.directory.get(directoryId);
 
-    const user = await this.users.with(tenant, product).get(userId);
+    this.users.setTenantAndProduct(tenant, product);
 
-    if (user === null) {
-      return {
-        status: 404,
-        data: {
-          schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
-          detail: 'User not found',
-          status: 404,
-        },
-      };
-    }
+    const user = await this.users.get(userId);
 
     return {
       status: 200,
@@ -57,18 +50,9 @@ export class DirectoryUsers {
     const { tenant, product, webhook } = await this.directory.get(directoryId);
     const { active, Operations } = body;
 
-    let user = await this.users.with(tenant, product).get(userId);
+    this.users.setTenantAndProduct(tenant, product);
 
-    if (user === null) {
-      return {
-        status: 404,
-        data: {
-          schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
-          detail: 'User not found',
-          status: 404,
-        },
-      };
-    }
+    let user = await this.users.get(userId);
 
     let action: SCIMEventType = 'user.updated';
 
@@ -89,14 +73,14 @@ export class DirectoryUsers {
     if (action === 'user.updated') {
       const { name, emails } = body;
 
-      user = await this.users.with(tenant, product).update(userId, {
+      user = await this.users.update(userId, {
         first_name: name.givenName,
         last_name: name.familyName,
         email: emails[0].value,
         raw: body,
       });
     } else if (action === 'user.deleted') {
-      await this.users.with(tenant, product).delete(userId);
+      await this.users.delete(userId);
     }
 
     sendEvent(action, { tenant, product, user }, { webhook });
@@ -110,20 +94,11 @@ export class DirectoryUsers {
   public async delete(directoryId: string, userId: string) {
     const { tenant, product, webhook } = await this.directory.get(directoryId);
 
-    const user = await this.users.with(tenant, product).get(userId);
+    this.users.setTenantAndProduct(tenant, product);
 
-    if (user === null) {
-      return {
-        status: 404,
-        data: {
-          schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
-          detail: 'User not found',
-          status: 404,
-        },
-      };
-    }
+    const user = await this.users.get(userId);
 
-    await this.users.with(tenant, product).delete(userId);
+    await this.users.delete(userId);
 
     sendEvent('user.deleted', { tenant, product, user }, { webhook });
 

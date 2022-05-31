@@ -1,4 +1,3 @@
-import { User } from 'next-auth';
 import { GroupsController } from '../controller/groups';
 import { UsersController } from '../controller/users';
 import { DirectorySyncRequest, Group, SCIMConfig } from '../typings';
@@ -158,22 +157,6 @@ export class DirectoryGroups {
     };
   }
 
-  // Add or remove users from a group
-  private async addOrRemoveUsers(groupId: string, members: { value: string }[]): Promise<void> {
-    const users = await this.groups.getUsers(groupId);
-
-    const usersToAdd = members.filter((member) => !users.some((user) => user.user_id === member.value));
-    const usersToRemove = users.filter((user) => !members.some((member) => member.value === user.user_id));
-
-    for (const user of usersToAdd) {
-      await this.groups.addUser(groupId, user.value);
-    }
-
-    for (const user of usersToRemove) {
-      await this.groups.removeUser(groupId, user.user_id);
-    }
-  }
-
   private async getUsers(groupId: string): Promise<{ value: string }[]> {
     const users = await this.groups.getUsers(groupId);
 
@@ -229,6 +212,22 @@ export class DirectoryGroups {
     await this.groups.removeUser(group.id, userId);
 
     sendEvent('group.user_removed', { tenant, product, group, user }, { webhook });
+  }
+
+  // Add or remove users from a group
+  public async addOrRemoveUsers(groupId: string, members: { value: string }[]): Promise<void> {
+    const users = await this.groups.getUsers(groupId);
+
+    const usersToAdd = members.filter((member) => !users.some((user) => user.user_id === member.value));
+    const usersToRemove = users.filter((user) => !members.some((member) => member.value === user.user_id));
+
+    for (const user of usersToAdd) {
+      await this.groups.addUser(groupId, user.value);
+    }
+
+    for (const user of usersToRemove) {
+      await this.groups.removeUser(groupId, user.user_id);
+    }
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
