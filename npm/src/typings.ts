@@ -299,6 +299,7 @@ export interface DirectoryUsers {
   get({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
   update({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
   delete({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  handleRequest(request: DirectorySyncRequest): Promise<any>;
 }
 
 export interface DirectoryGroups {
@@ -313,4 +314,11 @@ export interface DirectorySync {
   directory: DirectoryConfig;
   users: DirectoryUsers;
   groups: DirectoryGroups;
+}
+
+export interface DirectorySyncRequest {
+  method: string;
+  directory_id: string;
+  user_id?: string | undefined;
+  body?: any | undefined;
 }
