@@ -258,7 +258,7 @@ tap.test('samlResponse()', async (t) => {
       RelayState: relayState,
     };
 
-    const stubValidateAsync = sinon.stub(saml, 'validateAsync').throws(Error('Internal error: Fatal'));
+    const stubValidate = sinon.stub(saml, 'validate').throws(Error('Internal error: Fatal'));
 
     const response = await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
@@ -266,7 +266,7 @@ tap.test('samlResponse()', async (t) => {
     t.match(params.get('error'), 'access_denied');
     t.match(params.get('error_description'), 'Internal error: Fatal');
 
-    stubValidateAsync.restore();
+    stubValidate.restore();
 
     t.end();
   });
@@ -277,8 +277,8 @@ tap.test('samlResponse()', async (t) => {
       RelayState: relayState,
     };
 
-    const stubValidateAsync = sinon
-      .stub(saml, 'validateAsync')
+    const stubValidate = sinon
+      .stub(saml, 'validate')
       .resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -289,7 +289,7 @@ tap.test('samlResponse()', async (t) => {
 
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
-    t.ok(stubValidateAsync.calledOnce, 'validateAsync called once');
+    t.ok(stubValidate.calledOnce, 'validate called once');
     t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
     t.ok('redirect_url' in response, 'response contains redirect_url');
     t.ok(params.has('code'), 'query string includes code');
@@ -297,7 +297,7 @@ tap.test('samlResponse()', async (t) => {
     t.match(params.get('state'), authBody.state, 'state value is valid');
 
     stubRandomBytes.restore();
-    stubValidateAsync.restore();
+    stubValidate.restore();
 
     t.end();
   });
@@ -427,7 +427,7 @@ tap.test('token()', (t) => {
         RelayState: relayState,
       };
 
-      sinon.stub(saml, 'validateAsync').resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
+      sinon.stub(saml, 'validate').resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
