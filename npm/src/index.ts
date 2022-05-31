@@ -1,5 +1,4 @@
-import type { JacksonOption } from './typings';
-import type { DirectorySync } from './directory-sync';
+import type { DirectorySync, JacksonOption } from './typings';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
