@@ -18,8 +18,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return handleGET(req, res);
     case 'PUT':
       return handlePUT(req, res);
-    case 'PATCH':
-      return handlePATCH(req, res);
+    // case 'PATCH':
+    //   return handlePATCH(req, res);
     case 'DELETE':
       return handleDELETE(req, res);
     default:
@@ -30,103 +30,81 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Get a group
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, groupsController } = await jackson();
+  const { directorySync } = await jackson();
   const { id, groupId } = req.query;
 
-  const { tenant, product } = await scimController.get(id as string);
-
-  const group = await groupsController.with(tenant, product).get(groupId as string);
-
-  return res.status(200).json({
-    schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-    id: group?.id,
-    displayName: group?.name,
-    members: group?.members,
+  const result = await directorySync.groups.get({
+    directory: id as string,
+    data: {
+      group_id: groupId as string,
+    },
   });
+
+  return res.json(result);
 };
 
 // Update a group
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, groupsController } = await jackson();
+  const { directorySync } = await jackson();
   const { id, groupId } = req.query;
 
-  const body = bodyParser(req);
-
-  const { tenant, product } = await scimController.get(id as string);
-
-  const group = await groupsController.with(tenant, product).update(groupId as string, {
-    name: body.displayName,
-    members: body.members,
-    raw: body,
+  const result = await directorySync.groups.update({
+    directory: id as string,
+    data: {
+      group_id: groupId as string,
+      body: bodyParser(req),
+    },
   });
 
-  scimController.sendEvent(<string>id, 'group.updated', {
-    ...group.raw,
-  });
-
-  return res.status(200).json(group.raw);
+  return res.json(result);
 };
 
 // Group membership updates
-const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, groupsController, usersController } = await jackson();
-  const { id, groupId } = req.query;
+// const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
+//   const { scimController, groupsController, usersController } = await jackson();
+//   const { id, groupId } = req.query;
 
-  const body = bodyParser(req);
-  const operation = body.Operations[0];
-  const userId = operation.value[0].value;
+//   const body = bodyParser(req);
+//   const operation = body.Operations[0];
+//   const userId = operation.value[0].value;
 
-  const { tenant, product } = await scimController.get(id as string);
+//   const { tenant, product } = await scimController.get(id as string);
 
-  const group = await groupsController.with(tenant, product).get(groupId as string);
-  const user = await usersController.with(tenant, product).get(userId);
+//   const group = await groupsController.with(tenant, product).get(groupId as string);
+//   const user = await usersController.with(tenant, product).get(userId);
 
-  if (operation.op === 'add' && operation.path === 'members') {
-    await groupsController.with(tenant, product).addUser(groupId as string, userId);
+//   if (operation.op === 'add' && operation.path === 'members') {
+//     await groupsController.with(tenant, product).addUser(groupId as string, userId);
 
-    scimController.sendEvent(<string>id, 'group.user_added', {
-      ...group,
-      ...user,
-    });
-  }
+//     scimController.sendEvent(<string>id, 'group.user_added', {
+//       ...group,
+//       ...user,
+//     });
+//   }
 
-  if (operation.op === 'remove' && operation.path === 'members') {
-    await groupsController.with(tenant, product).removeUser(groupId as string, userId);
+//   if (operation.op === 'remove' && operation.path === 'members') {
+//     await groupsController.with(tenant, product).removeUser(groupId as string, userId);
 
-    scimController.sendEvent(<string>id, 'group.user_removed', {
-      ...group,
-      ...user,
-    });
-  }
+//     scimController.sendEvent(<string>id, 'group.user_removed', {
+//       ...group,
+//       ...user,
+//     });
+//   }
 
-  return res.status(204).end();
-};
+//   return res.status(204).end();
+// };
 
 // Delete a group
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { scimController, groupsController } = await jackson();
+  const { directorySync } = await jackson();
   const { id, groupId } = req.query;
 
-  const { tenant, product } = await scimController.get(id as string);
-
-  const group = await groupsController.with(tenant, product).get(groupId as string);
-
-  await groupsController.with(tenant, product).delete(groupId as string);
-
-  if (group != null) {
-    scimController.sendEvent(<string>id, 'group.deleted', {
-      ...group.raw,
-    });
-  }
+  await directorySync.groups.delete({
+    directory: id as string,
+    data: {
+      group_id: groupId as string,
+    },
+  });
 
   return res.status(204).end();
 };
-
-// Update group  (/Groups)
-// '{"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"replace","value":{"id":"0a8c6814-f53a-4950-b775-1602771982e7","displayName":"Developers"}}]}'
-
-// User has been removed (/Groups)
-// {"Operations":[{"path":"members[value eq \\"34ef7e0a-16e4-4be2-bb81-c4e16e3f23be\\"]"}]}'
-
-// User has been removed (/Users)
-// '{"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"replace","value":{"active":false}}]}'

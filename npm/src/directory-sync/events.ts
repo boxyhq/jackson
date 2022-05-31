@@ -16,6 +16,10 @@ interface Event {
 const sendEvent = async (event: Event) => {
   const { action, payload, options } = event;
 
+  console.log({ action, payload });
+
+  return;
+
   const objectType: 'user' | 'group' = getObjectType(action);
   const { webhook } = options;
   const { tenant, product, data } = payload;

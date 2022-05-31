@@ -259,8 +259,6 @@ export interface User {
 export interface Group {
   id: string;
   name: string;
-  members: any[];
-  raw?: object;
 }
 
 export interface OAuthErrorHandlerParams {
@@ -304,7 +302,10 @@ export interface DirectoryUsers {
 }
 
 export interface DirectoryGroups {
-  create({ directory: directoryId, data }: { directory: string; data: any });
+  create({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  get({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  update({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
+  delete({ directory: directoryId, data }: { directory: string; data: any }): Promise<any>;
 }
 
 export interface DirectorySync {
