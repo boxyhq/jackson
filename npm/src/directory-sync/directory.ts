@@ -3,7 +3,7 @@ import * as dbutils from '../db/utils';
 import { createRandomSecret } from '../controller/utils';
 import { JacksonError } from '../controller/error';
 
-export class DirectoryConfig {
+export class Directory {
   private store: Storable;
   private opts: JacksonOption;
 
@@ -23,10 +23,10 @@ export class DirectoryConfig {
     name: string;
     tenant: string;
     product: string;
-    webhook_url: string;
-    webhook_secret: string;
+    webhook_url?: string;
+    webhook_secret?: string;
   }): Promise<SCIMConfig> {
-    if (!name || !tenant || !product || !webhook_url || !webhook_secret) {
+    if (!name || !tenant || !product) {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
@@ -37,15 +37,19 @@ export class DirectoryConfig {
       name,
       tenant,
       product,
-      webhook: {
-        endpoint: webhook_url,
-        secret: webhook_secret,
-      },
       scim: {
         path: `/api/scim/v2.0/${id}`,
         secret: await createRandomSecret(16),
       },
     };
+
+    // Webhook is optional. If webhook_url is provided, create a webhook.
+    if (webhook_url && webhook_secret) {
+      config.webhook = {
+        endpoint: webhook_url,
+        secret: webhook_secret,
+      };
+    }
 
     await this.store.put(id, config);
 

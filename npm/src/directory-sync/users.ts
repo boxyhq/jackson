@@ -1,10 +1,10 @@
-import type { DirectorySyncRequest, SCIMEventType } from '../typings';
+import type { DirectorySyncRequest, DirectorySyncEventType } from '../typings';
 import { UsersController } from '../controller/users';
 import { sendEvent } from './events';
-import { DirectoryConfig } from './config';
+import { Directory } from './directory';
 
 export class DirectoryUsers {
-  private directory: InstanceType<typeof DirectoryConfig>;
+  private directory: InstanceType<typeof Directory>;
   private users: InstanceType<typeof UsersController>;
 
   constructor({ directory, users }) {
@@ -55,7 +55,7 @@ export class DirectoryUsers {
 
     this.users.setTenantAndProduct(tenant, product);
 
-    let action: SCIMEventType = 'user.updated';
+    let action: DirectorySyncEventType = 'user.updated';
 
     // For PATCH
     if ('Operations' in body) {

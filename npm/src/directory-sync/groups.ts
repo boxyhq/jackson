@@ -1,11 +1,11 @@
 import type { DirectorySyncRequest, Group, SCIMConfig } from '../typings';
 import { GroupsController } from '../controller/groups';
 import { UsersController } from '../controller/users';
-import { DirectoryConfig } from './config';
+import { Directory } from './directory';
 import { sendEvent } from './events';
 
 export class DirectoryGroups {
-  private directory: InstanceType<typeof DirectoryConfig>;
+  private directory: InstanceType<typeof Directory>;
   private users: InstanceType<typeof UsersController>;
   private groups: InstanceType<typeof GroupsController>;
 

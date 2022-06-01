@@ -1,10 +1,10 @@
-import type { SCIMConfig, SCIMEventType, Group, User } from '../typings';
+import type { SCIMConfig, DirectorySyncEventType, Group, User } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
 
 const sendEvent = async (
-  action: SCIMEventType,
+  action: DirectorySyncEventType,
   payload: {
     directory: SCIMConfig;
     group?: Group;
@@ -13,6 +13,11 @@ const sendEvent = async (
 ) => {
   const { directory, group, user } = payload;
   const { tenant, product, webhook } = directory;
+
+  // If there is no webhook, then we don't need to send an event
+  if (webhook === undefined) {
+    return;
+  }
 
   // Create a payload to send to the webhook
   const webhookPayload = {
@@ -43,8 +48,6 @@ const sendEvent = async (
     'Content-Type': 'application/json',
     'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
   };
-
-  // TODO: Handle the error like timeout, etc
 
   axios.post(webhook.endpoint, webhookPayload, { headers });
 

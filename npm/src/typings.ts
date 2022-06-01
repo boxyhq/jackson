@@ -44,26 +44,6 @@ export interface ILogoutController {
   handleResponse(body: SAMLResponsePayload): Promise<any>;
 }
 
-export interface ISCIMController {
-  create({
-    name,
-    tenant,
-    product,
-    webhook_url,
-    webhook_secret,
-  }: {
-    name: string;
-    tenant: string;
-    product: string;
-    webhook_url: string;
-    webhook_secret: string;
-  }): Promise<SCIMConfig>;
-  get(id: string): Promise<SCIMConfig>;
-  delete(id: string): Promise<void>;
-  sendEvent(id: string, type: SCIMEventType, data: object): Promise<void>;
-  validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
-}
-
 export interface IUsersController {
   with(tenant: string, product: string): IUsersController;
   create(param: { first_name: string; last_name: string; email: string; raw: any }): Promise<User>;
@@ -222,23 +202,21 @@ export interface SAMLConfig {
   defaultRedirectUrl: string;
 }
 
-export interface SCIMConfig {
-  id: string;
-  name: string;
-  tenant: string;
-  product: string;
-  webhook: {
-    endpoint: string;
-    secret: string;
-  };
-  scim: {
-    path: string;
-    endpoint?: string;
-    secret: string;
-  };
+// See Error Response section in https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/
+export interface OAuthErrorHandlerParams {
+  error:
+    | 'invalid_request'
+    | 'access_denied'
+    | 'unauthorized_client'
+    | 'unsupported_response_type'
+    | 'invalid_scope'
+    | 'server_error'
+    | 'temporarily_unavailable';
+  error_description: string;
+  redirect_uri: string;
 }
 
-export type SCIMEventType =
+export type DirectorySyncEventType =
   | 'user.created'
   | 'user.updated'
   | 'user.deleted'
@@ -262,21 +240,23 @@ export interface Group {
   raw?: object;
 }
 
-export interface OAuthErrorHandlerParams {
-  // See Error Response section in https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/
-  error:
-    | 'invalid_request'
-    | 'access_denied'
-    | 'unauthorized_client'
-    | 'unsupported_response_type'
-    | 'invalid_scope'
-    | 'server_error'
-    | 'temporarily_unavailable';
-  error_description: string;
-  redirect_uri: string;
+export interface SCIMConfig {
+  id: string;
+  name: string;
+  tenant: string;
+  product: string;
+  scim: {
+    path: string;
+    endpoint?: string;
+    secret: string;
+  };
+  webhook?: {
+    endpoint: string;
+    secret: string;
+  };
 }
 
-export interface DirectoryConfig {
+export interface Directory {
   create({
     name,
     tenant,
@@ -313,7 +293,7 @@ export interface DirectoryGroups {
 }
 
 export interface DirectorySync {
-  directory: DirectoryConfig;
+  directory: Directory;
   users: DirectoryUsers;
   groups: DirectoryGroups;
 }
