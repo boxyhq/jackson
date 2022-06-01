@@ -23,9 +23,9 @@ export class DirectoryGroups {
       raw: body,
     });
 
-    sendEvent('group.created', { directory, group });
-
     this.addGroupMembers(directory, group, members, false);
+
+    sendEvent('group.created', { directory, group });
 
     return {
       status: 201,
@@ -169,7 +169,7 @@ export class DirectoryGroups {
     members: { value: string }[],
     sendWebhookEvent = true
   ) {
-    if (members.length === 0) {
+    if (members && members.length === 0) {
       return;
     }
 
@@ -230,33 +230,39 @@ export class DirectoryGroups {
     this.users.setTenantAndProduct(tenant, product);
 
     if (groupId) {
-      // Get a user
+      // Retrieve specific Group
+      // GET /Groups/$groupId
       if (method === 'GET') {
         return await this.get(groupId);
       }
 
-      // Update a group
+      // Create a new group
+      // POST /Groups
+      if (method === 'POST') {
+        return await this.create(directory, body);
+      }
+
+      // Update a specific Group name
+      // PUT /Groups/$groupId
       if (method === 'PUT') {
         return await this.update(directory, groupId, body);
       }
 
-      // Update a group (using patch)
+      // Update specific Group membership
+      // PATCH /Groups/$groupId
       if (method === 'PATCH') {
         return await this.updateOperation(directory, groupId, body);
       }
 
-      // Delete a group
+      // Delete a specific Group
+      // DELETE /Groups/$groupId
       if (method === 'DELETE') {
         return await this.delete(directory, groupId);
       }
     }
 
-    // Create a new group
-    if (method === 'POST') {
-      return await this.create(directory, body);
-    }
-
-    // Get all groups
+    // Retrieve Groups
+    // GET /Groups
     if (method === 'GET') {
       return await this.getAll();
     }

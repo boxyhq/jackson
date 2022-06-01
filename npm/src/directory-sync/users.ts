@@ -114,33 +114,39 @@ export class DirectoryUsers {
     this.users.setTenantAndProduct(tenant, product);
 
     if (userId) {
-      // Update an existing user
-      if (method === 'PUT') {
-        return await this.update(directory, userId, body);
-      }
-
-      // Update an existing user (Using PATCH)
-      if (method === 'PATCH') {
-        return await this.updateOperation(directory, userId, body);
-      }
-
-      // Get a user
+      // Retrieve a specific User
+      // GET /Users/$userId
       if (method === 'GET') {
         return await this.get(userId);
       }
 
+      // Update a specific User
+      // PUT /Users/$userId
+      if (method === 'PUT') {
+        return await this.update(directory, userId, body);
+      }
+
+      // Update a specific User
+      // PATCH /Users/$userId
+      if (method === 'PATCH') {
+        return await this.updateOperation(directory, userId, body);
+      }
+
       // Delete a user
+      // DELETE /Users/$userId
       if (method === 'DELETE') {
         return await this.delete(directory, userId);
       }
     }
 
     // Create a new user
+    // POST /Users
     if (method === 'POST') {
       return await this.create(directory, body);
     }
 
-    // Get all users
+    // Retrieve Users
+    // GET /Users
     if (method === 'GET') {
       return await this.getAll();
     }
