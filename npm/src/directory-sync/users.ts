@@ -1,4 +1,5 @@
-import type { DirectorySyncRequest, DirectorySyncEventType } from '../typings';
+import type { DirectorySyncRequest, DirectoryConfig } from '../typings';
+import { GroupsController } from '../controller/groups';
 import { UsersController } from '../controller/users';
 import { sendEvent } from './events';
 import { Directory } from './directory';
@@ -6,18 +7,16 @@ import { Directory } from './directory';
 export class DirectoryUsers {
   private directory: InstanceType<typeof Directory>;
   private users: InstanceType<typeof UsersController>;
+  private groups: InstanceType<typeof GroupsController>;
 
-  constructor({ directory, users }) {
+  constructor({ directory, users, groups }) {
     this.directory = directory;
     this.users = users;
+    this.groups = groups;
   }
 
-  public async create(directoryId: string, body: any) {
-    const directory = await this.directory.get(directoryId);
-    const { tenant, product } = directory;
+  public async create(directory: DirectoryConfig, body: any) {
     const { name, emails } = body;
-
-    this.users.setTenantAndProduct(tenant, product);
 
     const user = await this.users.create({
       first_name: name.givenName,
@@ -34,12 +33,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async get(directoryId: string, userId: string) {
-    const directory = await this.directory.get(directoryId);
-    const { tenant, product } = directory;
-
-    this.users.setTenantAndProduct(tenant, product);
-
+  public async get(userId: string) {
     const user = await this.users.get(userId);
 
     return {
@@ -48,58 +42,43 @@ export class DirectoryUsers {
     };
   }
 
-  public async update(directoryId: string, userId: string, body: any) {
-    const directory = await this.directory.get(directoryId);
-    const { tenant, product } = directory;
-    const { active, Operations } = body;
+  public async update(directory: DirectoryConfig, userId: string, body: any) {
+    const { active, name, emails } = body;
 
-    this.users.setTenantAndProduct(tenant, product);
-
-    let action: DirectorySyncEventType = 'user.updated';
-
-    // For PATCH
-    if ('Operations' in body) {
-      const operation = Operations[0];
-
-      if (operation.op === 'replace' && operation.value.active === false) {
-        action = 'user.deleted';
-      }
-    }
-
-    // For PUT
-    if ('active' in body) {
-      action = active ? 'user.updated' : 'user.deleted';
-    }
-
-    let user = await this.users.get(userId);
-
-    if (action === 'user.updated') {
-      const { name, emails } = body;
-
-      user = await this.users.update(userId, {
+    // Update the user
+    if (active === true) {
+      const user = await this.users.update(userId, {
         first_name: name.givenName,
         last_name: name.familyName,
         email: emails[0].value,
         raw: body,
       });
-    } else if (action === 'user.deleted') {
-      await this.users.delete(userId);
+
+      sendEvent('user.updated', { directory, user });
+
+      return {
+        status: 200,
+        data: user.raw,
+      };
     }
 
-    sendEvent(action, { directory, user });
-
-    return {
-      status: 200,
-      data: user.raw,
-    };
+    // Delete the user
+    if (active === false) {
+      return await this.delete(directory, userId);
+    }
   }
 
-  public async delete(directoryId: string, userId: string) {
-    const directory = await this.directory.get(directoryId);
-    const { tenant, product } = directory;
+  public async updateOperation(directory: DirectoryConfig, userId: string, body: any) {
+    const { Operations } = body;
+    const operation = Operations[0];
 
-    this.users.setTenantAndProduct(tenant, product);
+    // Delete the user
+    if (operation.op === 'replace' && operation.value.active === false) {
+      return await this.delete(directory, userId);
+    }
+  }
 
+  public async delete(directory: DirectoryConfig, userId: string) {
     const user = await this.users.get(userId);
 
     await this.users.delete(userId);
@@ -129,26 +108,36 @@ export class DirectoryUsers {
   public async handleRequest(request: DirectorySyncRequest) {
     const { method, directory_id: directoryId, user_id: userId, body } = request;
 
+    const directory = await this.directory.get(directoryId);
+    const { tenant, product } = directory;
+
+    this.users.setTenantAndProduct(tenant, product);
+
     if (userId) {
       // Update an existing user
-      if (method === 'PUT' || method === 'PATCH') {
-        return await this.update(directoryId, userId, body);
+      if (method === 'PUT') {
+        return await this.update(directory, userId, body);
+      }
+
+      // Update an existing user (Using PATCH)
+      if (method === 'PATCH') {
+        return await this.updateOperation(directory, userId, body);
       }
 
       // Get a user
       if (method === 'GET') {
-        return await this.get(directoryId, userId);
+        return await this.get(userId);
       }
 
       // Delete a user
       if (method === 'DELETE') {
-        return await this.delete(directoryId, userId);
+        return await this.delete(directory, userId);
       }
     }
 
     // Create a new user
     if (method === 'POST') {
-      return await this.create(directoryId, body);
+      return await this.create(directory, body);
     }
 
     // Get all users

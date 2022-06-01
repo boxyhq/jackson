@@ -1,4 +1,4 @@
-import type { DirectorySyncRequest, Group, SCIMConfig } from '../typings';
+import type { DirectorySyncRequest, Group, DirectoryConfig } from '../typings';
 import { GroupsController } from '../controller/groups';
 import { UsersController } from '../controller/users';
 import { Directory } from './directory';
@@ -15,12 +15,8 @@ export class DirectoryGroups {
     this.groups = groups;
   }
 
-  public async create(directoryId: string, body: any) {
-    const directory = await this.directory.get(directoryId);
-    const { tenant, product } = directory;
+  public async create(directory: DirectoryConfig, body: any) {
     const { displayName, members } = body;
-
-    this.groups.setTenantAndProduct(tenant, product);
 
     const group = await this.groups.create({
       name: displayName,
@@ -42,11 +38,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async get(directoryId: string, groupId: string) {
-    const { tenant, product } = await this.directory.get(directoryId);
-
-    this.groups.setTenantAndProduct(tenant, product);
-
+  public async get(groupId: string) {
     const group = await this.groups.get(groupId);
 
     return {
@@ -60,12 +52,8 @@ export class DirectoryGroups {
     };
   }
 
-  public async update(directoryId: string, groupId: string, body: any) {
-    const directory = await this.directory.get(directoryId);
-    const { tenant, product } = directory;
+  public async update(directory: DirectoryConfig, groupId: string, body: any) {
     const { displayName, members } = body;
-
-    this.groups.setTenantAndProduct(tenant, product);
 
     const group = await this.groups.update(groupId, {
       name: displayName,
@@ -73,7 +61,7 @@ export class DirectoryGroups {
     });
 
     if (members && members.length > 0) {
-      await this.addOrRemoveMembers(directory, group, members);
+      await this.addOrRemoveGroupMembers(directory, group, members);
     }
 
     sendEvent('group.updated', { directory, group });
@@ -91,13 +79,9 @@ export class DirectoryGroups {
 
   // Update a group using a patch operation.
   // Some identity providers send a PATCH request to update a group and group members.
-  public async updateOperation(directoryId: string, groupId: string, body: any) {
-    const directory = await this.directory.get(directoryId);
-    const { tenant, product } = directory;
+  public async updateOperation(directory: DirectoryConfig, groupId: string, body: any) {
     const { Operations } = body;
     const { op, path, value } = Operations[0];
-
-    this.groups.setTenantAndProduct(tenant, product);
 
     const group = await this.groups.get(groupId);
 
@@ -143,12 +127,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async delete(directoryId: string, groupId: string) {
-    const directory = await this.directory.get(directoryId);
-    const { tenant, product } = directory;
-
-    this.groups.setTenantAndProduct(tenant, product);
-
+  public async delete(directory: DirectoryConfig, groupId: string) {
     const group = await this.groups.get(groupId);
 
     await this.groups.removeAllUsers(groupId);
@@ -185,7 +164,7 @@ export class DirectoryGroups {
 
   // Add members to a group
   public async addGroupMembers(
-    directory: SCIMConfig,
+    directory: DirectoryConfig,
     group: Group,
     members: { value: string }[],
     sendWebhookEvent = true
@@ -193,11 +172,6 @@ export class DirectoryGroups {
     if (members.length === 0) {
       return;
     }
-
-    const { tenant, product } = directory;
-
-    this.groups.setTenantAndProduct(tenant, product);
-    this.users.setTenantAndProduct(tenant, product);
 
     for (const member of members) {
       const user = await this.users.get(member.value);
@@ -213,10 +187,10 @@ export class DirectoryGroups {
   }
 
   // Remove members from a group
-  public async removeGroupMembers(directory: SCIMConfig, group: Group, members: { user_id: string }[]) {
-    const { tenant, product } = directory;
-
-    this.users.setTenantAndProduct(tenant, product);
+  public async removeGroupMembers(directory: DirectoryConfig, group: Group, members: { user_id: string }[]) {
+    if (members.length === 0) {
+      return;
+    }
 
     for (const member of members) {
       const user = await this.users.get(member.user_id);
@@ -230,14 +204,12 @@ export class DirectoryGroups {
   }
 
   // Add or remove users from a group
-  public async addOrRemoveMembers(
-    directory: SCIMConfig,
+  public async addOrRemoveGroupMembers(
+    directory: DirectoryConfig,
     group: Group,
     members: { value: string }[]
   ): Promise<void> {
-    const { tenant, product } = directory;
-
-    const users = await this.groups.with(tenant, product).getAllUsers(group.id);
+    const users = await this.groups.getAllUsers(group.id);
 
     const usersToAdd = members.filter((member) => !users.some((user) => user.user_id === member.value));
     const usersToRemove = users.filter((user) => !members.some((member) => member.value === user.user_id));
@@ -250,31 +222,38 @@ export class DirectoryGroups {
   public async handleRequest(request: DirectorySyncRequest) {
     const { method, directory_id: directoryId, group_id: groupId, body } = request;
 
+    const directory = await this.directory.get(directoryId);
+
+    const { tenant, product } = directory;
+
+    this.groups.setTenantAndProduct(tenant, product);
+    this.users.setTenantAndProduct(tenant, product);
+
     if (groupId) {
       // Get a user
       if (method === 'GET') {
-        return await this.get(directoryId, groupId);
+        return await this.get(groupId);
       }
 
       // Update a group
       if (method === 'PUT') {
-        return await this.update(directoryId, groupId, body);
+        return await this.update(directory, groupId, body);
       }
 
       // Update a group (using patch)
       if (method === 'PATCH') {
-        return await this.updateOperation(directoryId, groupId, body);
+        return await this.updateOperation(directory, groupId, body);
       }
 
       // Delete a group
       if (method === 'DELETE') {
-        return await this.delete(directoryId, groupId);
+        return await this.delete(directory, groupId);
       }
     }
 
     // Create a new group
     if (method === 'POST') {
-      return await this.create(directoryId, body);
+      return await this.create(directory, body);
     }
 
     // Get all groups

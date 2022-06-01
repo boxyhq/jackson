@@ -7,7 +7,6 @@ const transformUser = (user: User) => {
     last_name: user.last_name,
     email: user.email,
     raw: user.raw,
-    object: 'user',
   };
 };
 
@@ -16,7 +15,6 @@ const transformGroup = (group: Group) => {
     id: group.id,
     name: group.name,
     raw: group.raw,
-    object: 'group',
   };
 };
 

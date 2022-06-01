@@ -32,7 +32,6 @@ export class GroupsController {
     const { name, raw } = param;
 
     const id = uuidv4();
-
     const group: Group = { id, name, raw };
 
     await this.store('groups').put(id, group);

@@ -240,7 +240,7 @@ export interface Group {
   raw?: object;
 }
 
-export interface SCIMConfig {
+export interface DirectoryConfig {
   id: string;
   name: string;
   tenant: string;
@@ -269,26 +269,26 @@ export interface Directory {
     product: string;
     webhook_url: string;
     webhook_secret: string;
-  }): Promise<SCIMConfig>;
-  get(id: string): Promise<SCIMConfig>;
+  }): Promise<DirectoryConfig>;
+  get(id: string): Promise<DirectoryConfig>;
   delete(id: string): Promise<void>;
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
 
 export interface DirectoryUsers {
-  create(directoryId: string, body: any): Promise<any>;
-  get(directoryId: string, userId: string): Promise<any>;
-  update(directoryId: string, userId: string, body: any): Promise<any>;
-  delete(directoryId: string, userId: string): Promise<any>;
+  create(directory: DirectoryConfig, body: any): Promise<any>;
+  get(string, userId: string): Promise<any>;
+  update(directory: DirectoryConfig, userId: string, body: any): Promise<any>;
+  delete(directory: DirectoryConfig, userId: string): Promise<any>;
   handleRequest(request: DirectorySyncRequest): Promise<any>;
 }
 
 export interface DirectoryGroups {
-  create(directoryId: string, body: any): Promise<any>;
-  get(directoryId: string, groupId: string): Promise<any>;
-  update(directoryId: string, groupId: string, body: any): Promise<any>;
-  updateOperation(directoryId: string, groupId: string, body: any): Promise<any>;
-  delete(directoryId: string, groupId: string): Promise<any>;
+  create(directory: DirectoryConfig, body: any): Promise<any>;
+  get(groupId: string): Promise<any>;
+  update(directory: DirectoryConfig, groupId: string, body: any): Promise<any>;
+  updateOperation(directory: DirectoryConfig, groupId: string, body: any): Promise<any>;
+  delete(directory: DirectoryConfig, groupId: string): Promise<any>;
   handleRequest(request: DirectorySyncRequest): Promise<any>;
 }
 

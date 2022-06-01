@@ -1,4 +1,4 @@
-import type { SCIMConfig, DirectorySyncEventType, Group, User } from '../typings';
+import type { DirectoryConfig, DirectorySyncEventType, Group, User } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
@@ -6,7 +6,7 @@ import axios from 'axios';
 const sendEvent = async (
   action: DirectorySyncEventType,
   payload: {
-    directory: SCIMConfig;
+    directory: DirectoryConfig;
     group?: Group;
     user?: User;
   }

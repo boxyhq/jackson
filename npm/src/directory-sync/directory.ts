@@ -1,4 +1,4 @@
-import type { Storable, SCIMConfig, JacksonOption } from '../typings';
+import type { Storable, DirectoryConfig, JacksonOption } from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomSecret } from '../controller/utils';
 import { JacksonError } from '../controller/error';
@@ -25,14 +25,14 @@ export class Directory {
     product: string;
     webhook_url?: string;
     webhook_secret?: string;
-  }): Promise<SCIMConfig> {
+  }): Promise<DirectoryConfig> {
     if (!name || !tenant || !product) {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
     const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
 
-    const config: SCIMConfig = {
+    const config: DirectoryConfig = {
       id,
       name,
       tenant,
@@ -59,12 +59,12 @@ export class Directory {
   }
 
   // Get a SCIM configuration by id
-  public async get(id: string): Promise<SCIMConfig> {
+  public async get(id: string): Promise<DirectoryConfig> {
     if (!id) {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
-    const config: SCIMConfig = await this.store.get(id);
+    const config: DirectoryConfig = await this.store.get(id);
 
     if (!config) {
       throw new JacksonError('Configuration not found.', 404);
@@ -98,7 +98,7 @@ export class Directory {
       throw new JacksonError('Missing bearer token.', 400);
     }
 
-    const config: SCIMConfig = await this.get(id);
+    const config: DirectoryConfig = await this.get(id);
 
     if (config.scim.secret === bearerToken) {
       return true;

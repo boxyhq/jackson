@@ -15,7 +15,7 @@ const directorySync = ({ db, opts }): DirectorySync => {
 
   return {
     directory,
-    users: new DirectoryUsers({ directory, users }),
+    users: new DirectoryUsers({ directory, users, groups }),
     groups: new DirectoryGroups({ directory, users, groups }),
   };
 };
