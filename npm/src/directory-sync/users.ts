@@ -13,7 +13,8 @@ export class DirectoryUsers {
   }
 
   public async create(directoryId: string, body: any) {
-    const { tenant, product, webhook } = await this.directory.get(directoryId);
+    const directory = await this.directory.get(directoryId);
+    const { tenant, product } = directory;
     const { name, emails } = body;
 
     this.users.setTenantAndProduct(tenant, product);
@@ -25,7 +26,7 @@ export class DirectoryUsers {
       raw: body,
     });
 
-    sendEvent('user.created', { tenant, product, user }, { webhook });
+    sendEvent('user.created', { directory, user });
 
     return {
       status: 201,
@@ -34,7 +35,8 @@ export class DirectoryUsers {
   }
 
   public async get(directoryId: string, userId: string) {
-    const { tenant, product } = await this.directory.get(directoryId);
+    const directory = await this.directory.get(directoryId);
+    const { tenant, product } = directory;
 
     this.users.setTenantAndProduct(tenant, product);
 
@@ -47,12 +49,11 @@ export class DirectoryUsers {
   }
 
   public async update(directoryId: string, userId: string, body: any) {
-    const { tenant, product, webhook } = await this.directory.get(directoryId);
+    const directory = await this.directory.get(directoryId);
+    const { tenant, product } = directory;
     const { active, Operations } = body;
 
     this.users.setTenantAndProduct(tenant, product);
-
-    let user = await this.users.get(userId);
 
     let action: SCIMEventType = 'user.updated';
 
@@ -70,6 +71,8 @@ export class DirectoryUsers {
       action = active ? 'user.updated' : 'user.deleted';
     }
 
+    let user = await this.users.get(userId);
+
     if (action === 'user.updated') {
       const { name, emails } = body;
 
@@ -83,7 +86,7 @@ export class DirectoryUsers {
       await this.users.delete(userId);
     }
 
-    sendEvent(action, { tenant, product, user }, { webhook });
+    sendEvent(action, { directory, user });
 
     return {
       status: 200,
@@ -92,7 +95,8 @@ export class DirectoryUsers {
   }
 
   public async delete(directoryId: string, userId: string) {
-    const { tenant, product, webhook } = await this.directory.get(directoryId);
+    const directory = await this.directory.get(directoryId);
+    const { tenant, product } = directory;
 
     this.users.setTenantAndProduct(tenant, product);
 
@@ -100,7 +104,7 @@ export class DirectoryUsers {
 
     await this.users.delete(userId);
 
-    sendEvent('user.deleted', { tenant, product, user }, { webhook });
+    sendEvent('user.deleted', { directory, user });
 
     return {
       status: 200,

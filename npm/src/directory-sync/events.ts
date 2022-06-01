@@ -1,29 +1,40 @@
-import type { SCIMConfig, SCIMEventType } from '../typings';
+import type { SCIMConfig, SCIMEventType, Group, User } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
 
-const sendEvent = async (action: SCIMEventType, payload: any, options: Pick<SCIMConfig, 'webhook'>) => {
-  const { webhook } = options;
-  const { tenant, product } = payload;
+const sendEvent = async (
+  action: SCIMEventType,
+  payload: {
+    directory: SCIMConfig;
+    group?: Group;
+    user?: User;
+  }
+) => {
+  const { directory, group, user } = payload;
+  const { tenant, product, webhook } = directory;
 
   // Create a payload to send to the webhook
   const webhookPayload = {
+    directory_id: directory.id,
     event: action,
     tenant,
     product,
   };
 
-  if (['user.created', 'user.updated', 'user.deleted'].includes(action)) {
-    webhookPayload['data'] = transformUser(payload.user);
+  // User events
+  if (['user.created', 'user.updated', 'user.deleted'].includes(action) && user) {
+    webhookPayload['data'] = transformUser(user);
   }
 
-  if (['group.created', 'group.updated', 'group.deleted'].includes(action)) {
-    webhookPayload['data'] = transformGroup(payload.group);
+  // Group events
+  if (['group.created', 'group.updated', 'group.deleted'].includes(action) && group) {
+    webhookPayload['data'] = transformGroup(group);
   }
 
-  if (['group.user_added', 'group.user_removed'].includes(action)) {
-    webhookPayload['data'] = transformUserGroup(payload.user, payload.group);
+  // Group membership events
+  if (['group.user_added', 'group.user_removed'].includes(action) && user && group) {
+    webhookPayload['data'] = transformUserGroup(user, group);
   }
 
   console.log(webhookPayload);

@@ -9,6 +9,7 @@ export const validateApiKey = (token) => {
 export const extractAuthToken = (req: NextApiRequest) => {
   const authHeader = req.headers['authorization'];
   const parts = (authHeader || '').split(' ');
+
   if (parts.length > 1) {
     return parts[1];
   }

@@ -259,6 +259,7 @@ export interface User {
 export interface Group {
   id: string;
   name: string;
+  raw?: object;
 }
 
 export interface OAuthErrorHandlerParams {
