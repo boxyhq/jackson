@@ -79,4 +79,9 @@ export class UsersController {
   public async delete(id: string): Promise<void> {
     await this.store().delete(id);
   }
+
+  // Get all users
+  public async all(): Promise<User[]> {
+    return (await this.store().getAll()) as User[];
+  }
 }

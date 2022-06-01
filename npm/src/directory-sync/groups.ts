@@ -236,12 +236,6 @@ export class DirectoryGroups {
         return await this.get(groupId);
       }
 
-      // Create a new group
-      // POST /Groups
-      if (method === 'POST') {
-        return await this.create(directory, body);
-      }
-
       // Update a specific Group name
       // PUT /Groups/$groupId
       if (method === 'PUT') {
@@ -259,6 +253,12 @@ export class DirectoryGroups {
       if (method === 'DELETE') {
         return await this.delete(directory, groupId);
       }
+    }
+
+    // Create a new group
+    // POST /Groups
+    if (method === 'POST') {
+      return await this.create(directory, body);
     }
 
     // Retrieve Groups

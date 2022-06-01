@@ -92,6 +92,14 @@ export class DirectoryUsers {
   }
 
   public async getAll() {
+    // count=100
+    // filter	userName eq "kiran@cedextechnologies.com"
+    // startIndex	1
+
+    const users = await this.users.all();
+
+    console.log({ users });
+
     return {
       status: 200,
       data: {
@@ -131,6 +139,7 @@ export class DirectoryUsers {
       if (method === 'PATCH') {
         return await this.updateOperation(directory, userId, body);
       }
+      3;
 
       // Delete a user
       // DELETE /Users/$userId
