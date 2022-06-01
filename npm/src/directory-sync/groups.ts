@@ -163,7 +163,7 @@ export class DirectoryGroups {
   }
 
   public async getUsers(groupId: string): Promise<{ value: string }[]> {
-    const users = await this.groups.getUsers(groupId);
+    const users = await this.groups.getAllUsers(groupId);
 
     return users.map((user) => ({
       value: user.user_id,
@@ -202,7 +202,7 @@ export class DirectoryGroups {
     for (const member of members) {
       const user = await this.users.get(member.value);
 
-      await this.groups.addUser(group.id, member.value);
+      await this.groups.addUserToGroup(group.id, member.value);
 
       if (sendWebhookEvent) {
         sendEvent('group.user_added', { directory, group, user });
@@ -221,7 +221,7 @@ export class DirectoryGroups {
     for (const member of members) {
       const user = await this.users.get(member.user_id);
 
-      await this.groups.removeUser(group.id, member.user_id);
+      await this.groups.removeUserFromGroup(group.id, member.user_id);
 
       sendEvent('group.user_removed', { directory, group, user });
     }
@@ -237,7 +237,7 @@ export class DirectoryGroups {
   ): Promise<void> {
     const { tenant, product } = directory;
 
-    const users = await this.groups.with(tenant, product).getUsers(group.id);
+    const users = await this.groups.with(tenant, product).getAllUsers(group.id);
 
     const usersToAdd = members.filter((member) => !users.some((user) => user.user_id === member.value));
     const usersToRemove = users.filter((user) => !members.some((member) => member.value === user.user_id));
