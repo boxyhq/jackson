@@ -149,7 +149,7 @@ export class DirectoryGroups {
     }));
   }
 
-  public async getAll(queryParams: { count: number; startIndex: number }) {
+  public async getAll() {
     const groups = await this.groups.getAll();
 
     return {
@@ -259,7 +259,7 @@ export class DirectoryGroups {
     // Retrieve Groups
     // GET /Groups
     if (method === 'GET' && queryParams) {
-      return await this.getAll(queryParams);
+      return await this.getAll();
     }
   }
 }
