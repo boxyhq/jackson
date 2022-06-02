@@ -149,15 +149,17 @@ export class DirectoryGroups {
     }));
   }
 
-  public async getAll() {
+  public async getAll(queryParams: { count: number; startIndex: number }) {
+    const groups = await this.groups.getAll();
+
     return {
       status: 200,
       data: {
         schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
-        totalResults: 0,
+        totalResults: groups.length,
+        itemsPerPage: groups.length,
         startIndex: 1,
-        itemsPerPage: 0,
-        Resources: [],
+        Resources: groups.map((group) => group.raw),
       },
     };
   }
@@ -213,7 +215,7 @@ export class DirectoryGroups {
 
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(request: DirectorySyncRequest) {
-    const { method, directory_id: directoryId, group_id: groupId, body } = request;
+    const { method, directory_id: directoryId, group_id: groupId, body, query_params: queryParams } = request;
 
     const directory = await this.directory.get(directoryId);
 
@@ -256,8 +258,8 @@ export class DirectoryGroups {
 
     // Retrieve Groups
     // GET /Groups
-    if (method === 'GET') {
-      return await this.getAll();
+    if (method === 'GET' && queryParams) {
+      return await this.getAll(queryParams);
     }
   }
 }

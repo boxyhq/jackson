@@ -128,4 +128,9 @@ export class GroupsController {
 
     return !!(await this.store('members').get(id));
   }
+
+  // Get all groups
+  public async getAll(): Promise<Group[]> {
+    return (await this.store('groups').getAll()) as Group[];
+  }
 }
