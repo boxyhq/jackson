@@ -46,7 +46,7 @@
     "@heroicons/react": "1.0.6",
     "@opentelemetry/api-metrics": "0.27.0",
     "@opentelemetry/exporter-metrics-otlp-http": "0.27.0",
-    "@opentelemetry/sdk-metrics-base": "0.27.0",
+    "@opentelemetry/sdk-metrics-base": "0.29.1",
     "@supabase/ui": "0.36.5",
     "cors": "2.8.5",
     "micromatch": "4.0.5",
