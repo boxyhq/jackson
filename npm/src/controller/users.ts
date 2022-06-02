@@ -81,7 +81,7 @@ export class UsersController {
   }
 
   // Get all users
-  public async all(): Promise<User[]> {
+  public async getAll(): Promise<User[]> {
     return (await this.store().getAll()) as User[];
   }
 }

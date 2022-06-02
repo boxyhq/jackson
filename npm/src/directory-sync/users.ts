@@ -91,14 +91,24 @@ export class DirectoryUsers {
     };
   }
 
-  public async getAll() {
-    // count=100
-    // filter	userName eq "kiran@cedextechnologies.com"
-    // startIndex	1
+  public async getAll(queryParams: { count: number; startIndex: number; filter?: string }) {
+    const { count, startIndex, filter } = queryParams;
 
-    const users = await this.users.all();
+    // Retrieve a list of Users
+    if (count && startIndex && filter === undefined) {
+      const users = await this.users.getAll();
 
-    console.log({ users });
+      return {
+        status: 200,
+        data: {
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+          startIndex: 1,
+          totalResults: users.length,
+          itemsPerPage: users.length,
+          Resources: users.map((user) => user.raw),
+        },
+      };
+    }
 
     return {
       status: 200,
@@ -114,7 +124,7 @@ export class DirectoryUsers {
 
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(request: DirectorySyncRequest) {
-    const { method, directory_id: directoryId, user_id: userId, body } = request;
+    const { method, directory_id: directoryId, user_id: userId, body, query_params: queryParams } = request;
 
     const directory = await this.directory.get(directoryId);
     const { tenant, product } = directory;
@@ -156,8 +166,8 @@ export class DirectoryUsers {
 
     // Retrieve Users
     // GET /Users
-    if (method === 'GET') {
-      return await this.getAll();
+    if (method === 'GET' && queryParams) {
+      return await this.getAll(queryParams);
     }
   }
 }

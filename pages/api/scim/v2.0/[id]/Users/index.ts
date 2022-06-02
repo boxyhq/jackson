@@ -15,6 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     method: method as string,
     directory_id: id as string,
     body: bodyParser(req),
+    query_params: {
+      count: parseInt(req.query.count as string),
+      startIndex: parseInt(req.query.startIndex as string),
+      filter: req.query.filter as string,
+    },
   };
 
   const { status, data } = await directorySync.users.handleRequest(request);

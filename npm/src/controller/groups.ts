@@ -124,4 +124,11 @@ export class GroupsController {
 
     return;
   }
+
+  // Check if a user is a member of a group
+  public async isUserInGroup(groupId: string, userId: string): Promise<boolean> {
+    const id = `${groupId}-${userId}`;
+
+    return !!(await this.store('members').get(id));
+  }
 }

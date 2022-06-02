@@ -301,7 +301,12 @@ export interface DirectorySync {
 export interface DirectorySyncRequest {
   method: string;
   directory_id: string;
-  user_id?: string | undefined;
-  group_id?: string | undefined;
-  body?: any | undefined;
+  user_id?: string;
+  group_id?: string;
+  body?: any;
+  query_params?: {
+    count: number;
+    startIndex: number;
+    filter?: string;
+  };
 }

@@ -23,7 +23,7 @@ export class DirectoryGroups {
       raw: body,
     });
 
-    this.addGroupMembers(directory, group, members, false);
+    await this.addGroupMembers(directory, group, members);
 
     sendEvent('group.created', { directory, group });
 
@@ -163,24 +163,19 @@ export class DirectoryGroups {
   }
 
   // Add members to a group
-  public async addGroupMembers(
-    directory: DirectoryConfig,
-    group: Group,
-    members: { value: string }[],
-    sendWebhookEvent = true
-  ) {
+  public async addGroupMembers(directory: DirectoryConfig, group: Group, members: { value: string }[]) {
     if (members && members.length === 0) {
       return;
     }
 
     for (const member of members) {
-      const user = await this.users.get(member.value);
+      if (await this.groups.isUserInGroup(group.id, member.value)) {
+        continue;
+      }
 
       await this.groups.addUserToGroup(group.id, member.value);
 
-      if (sendWebhookEvent) {
-        sendEvent('group.user_added', { directory, group, user });
-      }
+      sendEvent('group.user_added', { directory, group, user: await this.users.get(member.value) });
     }
 
     return;
@@ -193,11 +188,9 @@ export class DirectoryGroups {
     }
 
     for (const member of members) {
-      const user = await this.users.get(member.user_id);
-
       await this.groups.removeUserFromGroup(group.id, member.user_id);
 
-      sendEvent('group.user_removed', { directory, group, user });
+      sendEvent('group.user_removed', { directory, group, user: await this.users.get(member.user_id) });
     }
 
     return;
