@@ -1,5 +1,6 @@
 import type { Storable, Group, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
+import * as dbutils from '../db/utils';
 
 export class GroupsController {
   private _db: DatabaseStore;
@@ -84,7 +85,7 @@ export class GroupsController {
 
   // Add a user to a group
   public async addUserToGroup(groupId: string, userId: string): Promise<void> {
-    const id = `${groupId}-${userId}`;
+    const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
 
     await this.store('members').put(
       id,
@@ -103,11 +104,9 @@ export class GroupsController {
 
   // Remove a user from a group
   public async removeUserFromGroup(groupId: string, userId: string): Promise<void> {
-    const id = `${groupId}-${userId}`;
+    const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
 
     await this.store('members').delete(id);
-
-    return;
   }
 
   // Remove all users from a group
@@ -121,13 +120,11 @@ export class GroupsController {
     for (const user of users) {
       await this.removeUserFromGroup(groupId, user.user_id);
     }
-
-    return;
   }
 
   // Check if a user is a member of a group
   public async isUserInGroup(groupId: string, userId: string): Promise<boolean> {
-    const id = `${groupId}-${userId}`;
+    const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
 
     return !!(await this.store('members').get(id));
   }
