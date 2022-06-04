@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { method } = req;
 
   if (!validateApiKey(extractAuthToken(req))) {
-    //return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
+    return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
   }
 
   switch (method) {
@@ -20,11 +20,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Get all the configurations
+// Get the configurations
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySync } = await jackson();
 
+  const { tenant, product } = req.query;
+
   try {
+    // If tenant and product are specified, get the configuration by tenant and product
+    if (tenant && product) {
+      const directory = await directorySync.directories.getByTenantAndProduct(
+        tenant as string,
+        product as string
+      );
+
+      return res.status(200).json({ data: directory, error: null });
+    }
+
+    // otherwise, get all configurations
     const directories = await directorySync.directories.list();
 
     return res.status(200).json({ data: directories, error: null });

@@ -240,7 +240,7 @@ export interface Group {
   raw?: object;
 }
 
-export interface DirectoryConfig {
+export interface Directory {
   id: string;
   name: string;
   tenant: string;
@@ -256,7 +256,7 @@ export interface DirectoryConfig {
   };
 }
 
-export interface Directories {
+export interface DirectoryConfig {
   create({
     name,
     tenant,
@@ -269,28 +269,31 @@ export interface Directories {
     product: string;
     webhook_url: string;
     webhook_secret: string;
-  }): Promise<DirectoryConfig>;
-  get(id: string): Promise<DirectoryConfig>;
-  list(): Promise<DirectoryConfig[]>;
+  }): Promise<Directory>;
+  get(id: string): Promise<Directory>;
+  getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;
+  list(): Promise<Directory[]>;
+  listUsers(id: string): Promise<User[]>;
+  listGroups(id: string): Promise<Group[]>;
   delete(id: string): Promise<void>;
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
 
 export interface DirectoryUsers {
-  create(directory: DirectoryConfig, body: any): Promise<DirectorySyncResponse>;
+  create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
   get(userId: string): Promise<DirectorySyncResponse>;
-  update(directory: DirectoryConfig, userId: string, body: any): Promise<DirectorySyncResponse>;
-  updateOperation(directory: DirectoryConfig, userId: string, body: any): Promise<DirectorySyncResponse>;
-  delete(directory: DirectoryConfig, userId: string): Promise<DirectorySyncResponse>;
+  update(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
+  updateOperation(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
+  delete(directory: Directory, userId: string): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
 }
 
 export interface DirectoryGroups {
-  create(directory: DirectoryConfig, body: any): Promise<DirectorySyncResponse>;
+  create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
   get(groupId: string): Promise<DirectorySyncResponse>;
-  update(directory: DirectoryConfig, groupId: string, body: any): Promise<DirectorySyncResponse>;
-  updateOperation(directory: DirectoryConfig, groupId: string, body: any): Promise<DirectorySyncResponse>;
-  delete(directory: DirectoryConfig, groupId: string): Promise<DirectorySyncResponse>;
+  update(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse>;
+  updateOperation(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse>;
+  delete(directory: Directory, groupId: string): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
 }
 
@@ -321,7 +324,7 @@ export interface GroupsRequestHandler {
 }
 
 export interface DirectorySync {
-  directories: Directories;
+  directories: DirectoryConfig;
   usersRequest: UsersRequestHandler;
   groupsRequest: GroupsRequestHandler;
   users: any;

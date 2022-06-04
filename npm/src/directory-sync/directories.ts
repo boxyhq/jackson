@@ -1,16 +1,32 @@
-import type { Storable, DirectoryConfig, JacksonOption, DatabaseStore } from '../typings';
+import type { Storable, Directory, JacksonOption, DatabaseStore, User, Group } from '../typings';
+import type { GroupsController } from '../controller/groups';
+import type { UsersController } from '../controller/users';
 import * as dbutils from '../db/utils';
 import { createRandomSecret } from '../controller/utils';
 import { JacksonError } from '../controller/error';
 
-export class Directories {
+export class DirectoryConfig {
   private _store: Storable | null = null;
   private opts: JacksonOption;
   private db: DatabaseStore;
+  private users: UsersController;
+  private groups: GroupsController;
 
-  constructor({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) {
+  constructor({
+    db,
+    opts,
+    users,
+    groups,
+  }: {
+    db: DatabaseStore;
+    opts: JacksonOption;
+    users: UsersController;
+    groups: GroupsController;
+  }) {
     this.opts = opts;
     this.db = db;
+    this.users = users;
+    this.groups = groups;
   }
 
   // Return the database store
@@ -31,14 +47,14 @@ export class Directories {
     product: string;
     webhook_url?: string;
     webhook_secret?: string;
-  }): Promise<DirectoryConfig> {
+  }): Promise<Directory> {
     if (!name || !tenant || !product) {
-      throw new JacksonError('Missing required parameters name or tenant or product.', 400);
+      throw new JacksonError('Missing required parameters.', 400);
     }
 
     const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
 
-    const directory: DirectoryConfig = {
+    const directory: Directory = {
       id,
       name,
       tenant,
@@ -63,12 +79,12 @@ export class Directories {
   }
 
   // Get the configuration by id
-  public async get(id: string): Promise<DirectoryConfig> {
+  public async get(id: string): Promise<Directory> {
     if (!id) {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
-    const directory: DirectoryConfig = await this.store().get(id);
+    const directory: Directory = await this.store().get(id);
 
     if (!directory) {
       throw new JacksonError('Directory configuration not found.', 404);
@@ -77,9 +93,18 @@ export class Directories {
     return this.transform(directory);
   }
 
+  // Get the configuration by tenant and product
+  public async getByTenantAndProduct(tenant: string, product: string): Promise<Directory> {
+    if (!tenant || !product) {
+      throw new JacksonError('Missing required parameters.', 400);
+    }
+
+    return this.get(dbutils.keyDigest(dbutils.keyFromParts(tenant, product)));
+  }
+
   // Get all configurations
-  public async list(): Promise<DirectoryConfig[]> {
-    const directories = (await this.store().getAll()) as DirectoryConfig[];
+  public async list(): Promise<Directory[]> {
+    const directories = (await this.store().getAll()) as Directory[];
 
     return directories.map((directory) => {
       return this.transform(directory);
@@ -99,10 +124,18 @@ export class Directories {
     return;
   }
 
-  private transform(directory: DirectoryConfig): DirectoryConfig {
-    directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+  // Get all users in a directory
+  public async listUsers(id: string): Promise<User[]> {
+    const { tenant, product } = await this.get(id);
 
-    return directory;
+    return await this.users.list({ tenant, product });
+  }
+
+  // Get all groups in a directory
+  public async listGroups(id: string): Promise<Group[]> {
+    const { tenant, product } = await this.get(id);
+
+    return await this.groups.list({ tenant, product });
   }
 
   // Validate the API secret
@@ -115,12 +148,18 @@ export class Directories {
       throw new JacksonError('Missing bearer token.', 400);
     }
 
-    const config: DirectoryConfig = await this.get(id);
+    const config: Directory = await this.get(id);
 
     if (config.scim.secret === bearerToken) {
       return true;
     }
 
     return false;
+  }
+
+  private transform(directory: Directory): Directory {
+    directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+
+    return directory;
   }
 }

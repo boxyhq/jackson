@@ -1,11 +1,16 @@
-import type { DirectorySyncRequest, Group, DirectoryConfig, DirectorySyncResponse } from '../typings';
-import { GroupsController } from '../controller/groups';
-import { UsersController } from '../controller/users';
-import { Directories } from './directories';
+import type {
+  DirectorySyncRequest,
+  Group,
+  DirectoryConfig,
+  DirectorySyncResponse,
+  Directory,
+} from '../typings';
+import type { GroupsController } from '../controller/groups';
+import type { UsersController } from '../controller/users';
 import { sendEvent } from './events';
 
 export class DirectoryGroups {
-  private directories: Directories;
+  private directories: DirectoryConfig;
   private users: UsersController;
   private groups: GroupsController;
 
@@ -14,7 +19,7 @@ export class DirectoryGroups {
     users,
     groups,
   }: {
-    directories: Directories;
+    directories: DirectoryConfig;
     users: UsersController;
     groups: GroupsController;
   }) {
@@ -23,7 +28,7 @@ export class DirectoryGroups {
     this.groups = groups;
   }
 
-  public async create(directory: DirectoryConfig, body: any): Promise<DirectorySyncResponse> {
+  public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     const group = await this.groups.create({
@@ -60,11 +65,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async update(
-    directory: DirectoryConfig,
-    groupId: string,
-    body: any
-  ): Promise<DirectorySyncResponse> {
+  public async update(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     const group = await this.groups.update(groupId, {
@@ -92,7 +93,7 @@ export class DirectoryGroups {
   // Update a group using a patch operation.
   // Some identity providers send a PATCH request to update a group and group members.
   public async updateOperation(
-    directory: DirectoryConfig,
+    directory: Directory,
     groupId: string,
     body: any
   ): Promise<DirectorySyncResponse> {
@@ -143,7 +144,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async delete(directory: DirectoryConfig, groupId: string): Promise<DirectorySyncResponse> {
+  public async delete(directory: Directory, groupId: string): Promise<DirectorySyncResponse> {
     const group = await this.groups.get(groupId);
 
     await this.groups.removeAllUsers(groupId);
@@ -181,7 +182,7 @@ export class DirectoryGroups {
   }
 
   // Add members to a group
-  public async addGroupMembers(directory: DirectoryConfig, group: Group, members: { value: string }[]) {
+  public async addGroupMembers(directory: Directory, group: Group, members: { value: string }[]) {
     if (members && members.length === 0) {
       return;
     }
@@ -200,7 +201,7 @@ export class DirectoryGroups {
   }
 
   // Remove members from a group
-  public async removeGroupMembers(directory: DirectoryConfig, group: Group, members: { user_id: string }[]) {
+  public async removeGroupMembers(directory: Directory, group: Group, members: { user_id: string }[]) {
     if (members.length === 0) {
       return;
     }
@@ -216,7 +217,7 @@ export class DirectoryGroups {
 
   // Add or remove users from a group
   public async addOrRemoveGroupMembers(
-    directory: DirectoryConfig,
+    directory: Directory,
     group: Group,
     members: { value: string }[]
   ): Promise<void> {

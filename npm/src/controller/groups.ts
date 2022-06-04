@@ -138,8 +138,13 @@ export class GroupsController {
     return !!(await this.store('members').get(id));
   }
 
-  // Get all groups
+  // Get all groups in a directory
   public async getAll(): Promise<Group[]> {
     return (await this.store('groups').getAll()) as Group[];
+  }
+
+  // Get the groups by tenant and product
+  public async list({ tenant, product }: { tenant: string; product: string }): Promise<Group[]> {
+    return await this.with(tenant, product).getAll();
   }
 }

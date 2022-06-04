@@ -1,5 +1,5 @@
 import type { DirectorySync } from '../typings';
-import { Directories } from './directories';
+import { DirectoryConfig } from './directories';
 import { DirectoryUsers } from './users';
 import { DirectoryGroups } from './groups';
 import { UsersController } from '../controller/users';
@@ -10,14 +10,14 @@ const directorySync = ({ db, opts }): DirectorySync => {
   const users = new UsersController({ db });
   const groups = new GroupsController({ db });
 
-  const directories = new Directories({ db, opts });
+  const directories = new DirectoryConfig({ db, opts, users, groups });
   const directoryUsers = new DirectoryUsers({ directories, users, groups });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
 
   return {
     directories,
-    users: {},
-    groups: {},
+    users,
+    groups,
     usersRequest: new UsersRequestHandler({ directoryUsers }),
     groupsRequest: new GroupsRequestHandler({ directoryGroups }),
   };

@@ -1,11 +1,10 @@
-import type { DirectorySyncRequest, DirectoryConfig, DirectorySyncResponse } from '../typings';
-import { GroupsController } from '../controller/groups';
-import { UsersController } from '../controller/users';
+import type { DirectorySyncRequest, DirectoryConfig, Directory, DirectorySyncResponse } from '../typings';
+import type { GroupsController } from '../controller/groups';
+import type { UsersController } from '../controller/users';
 import { sendEvent } from './events';
-import { Directories } from './directories';
 
 export class DirectoryUsers {
-  private directories: Directories;
+  private directories: DirectoryConfig;
   private users: UsersController;
   private groups: GroupsController;
 
@@ -14,7 +13,7 @@ export class DirectoryUsers {
     users,
     groups,
   }: {
-    directories: Directories;
+    directories: DirectoryConfig;
     users: UsersController;
     groups: GroupsController;
   }) {
@@ -23,7 +22,7 @@ export class DirectoryUsers {
     this.groups = groups;
   }
 
-  public async create(directory: DirectoryConfig, body: any): Promise<DirectorySyncResponse> {
+  public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
     const { name, emails } = body;
 
     const user = await this.users.create({
@@ -50,7 +49,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async update(directory: DirectoryConfig, userId: string, body: any): Promise<DirectorySyncResponse> {
+  public async update(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse> {
     const { active, name, emails } = body;
 
     // Update the user
@@ -82,7 +81,7 @@ export class DirectoryUsers {
   }
 
   public async updateOperation(
-    directory: DirectoryConfig,
+    directory: Directory,
     userId: string,
     body: any
   ): Promise<DirectorySyncResponse> {
@@ -100,7 +99,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async delete(directory: DirectoryConfig, userId: string) {
+  public async delete(directory: Directory, userId: string) {
     const user = await this.users.get(userId);
 
     await this.users.delete(userId);

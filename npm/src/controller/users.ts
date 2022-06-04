@@ -1,4 +1,4 @@
-import type { Storable, User, DatabaseStore } from '../typings';
+import type { Storable, User, DatabaseStore, Index } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
 
 export class UsersController {
@@ -91,8 +91,13 @@ export class UsersController {
     await this.store().delete(id);
   }
 
-  // Get all users
+  // Get all users in a directory
   public async getAll(): Promise<User[]> {
     return (await this.store().getAll()) as User[];
+  }
+
+  // Get the users by tenant and product
+  public async list({ tenant, product }: { tenant: string; product: string }): Promise<User[]> {
+    return await this.with(tenant, product).getAll();
   }
 }
