@@ -2,10 +2,10 @@ import type { DirectorySyncRequest, DirectoryConfig, DirectorySyncResponse } fro
 import { GroupsController } from '../controller/groups';
 import { UsersController } from '../controller/users';
 import { sendEvent } from './events';
-import { Directory } from './directory';
+import { Directories } from './directories';
 
 export class DirectoryUsers {
-  private directory: InstanceType<typeof Directory>;
+  private directory: InstanceType<typeof Directories>;
   private users: InstanceType<typeof UsersController>;
   private groups: InstanceType<typeof GroupsController>;
 

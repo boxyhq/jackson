@@ -3,7 +3,7 @@ import * as dbutils from '../db/utils';
 import { createRandomSecret } from '../controller/utils';
 import { JacksonError } from '../controller/error';
 
-export class Directory {
+export class Directories {
   private _store: Storable | null = null;
   private opts: JacksonOption;
   private db: DatabaseStore;
@@ -18,7 +18,7 @@ export class Directory {
     return this._store || (this._store = this.db.store(`scim:config`));
   }
 
-  // Create a new SCIM configuration
+  // Create the configuration
   public async create({
     name,
     tenant,
@@ -33,12 +33,12 @@ export class Directory {
     webhook_secret?: string;
   }): Promise<DirectoryConfig> {
     if (!name || !tenant || !product) {
-      throw new JacksonError('Missing required parameters.', 400);
+      throw new JacksonError('Missing required parameters name or tenant or product.', 400);
     }
 
     const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
 
-    const config: DirectoryConfig = {
+    const directory: DirectoryConfig = {
       id,
       name,
       tenant,
@@ -51,40 +51,45 @@ export class Directory {
 
     // Webhook is optional. If webhook_url is provided, create a webhook.
     if (webhook_url && webhook_secret) {
-      config.webhook = {
+      directory.webhook = {
         endpoint: webhook_url,
         secret: webhook_secret,
       };
     }
 
-    await this.store().put(id, config);
+    await this.store().put(id, directory);
 
-    config.scim.endpoint = `${this.opts.externalUrl}${config.scim.path}`;
-
-    return config;
+    return this.transform(directory);
   }
 
-  // Get a SCIM configuration by id
+  // Get the configuration by id
   public async get(id: string): Promise<DirectoryConfig> {
     if (!id) {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
-    const config: DirectoryConfig = await this.store().get(id);
+    const directory: DirectoryConfig = await this.store().get(id);
 
-    if (!config) {
-      throw new JacksonError('Configuration not found.', 404);
+    if (!directory) {
+      throw new JacksonError('Directory configuration not found.', 404);
     }
 
-    config.scim.endpoint = `${this.opts.externalUrl}${config.scim.path}`;
-
-    return config;
+    return this.transform(directory);
   }
 
-  // Delete a SCIM configuration by id
+  // Get all configurations
+  public async list(): Promise<DirectoryConfig[]> {
+    const directories = (await this.store().getAll()) as DirectoryConfig[];
+
+    return directories.map((directory) => {
+      return this.transform(directory);
+    });
+  }
+
+  // Delete a configuration by id
   public async delete(id: string): Promise<void> {
     if (!id) {
-      throw new JacksonError('Missing required parameters.', 400);
+      throw new JacksonError('Missing required parameter.', 400);
     }
 
     // TODO: Delete the users and groups associated with the configuration
@@ -94,10 +99,16 @@ export class Directory {
     return;
   }
 
+  private transform(directory: DirectoryConfig): DirectoryConfig {
+    directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+
+    return directory;
+  }
+
   // Validate the API secret
   public async validateAPISecret(id: string, bearerToken: string | null): Promise<boolean> {
     if (!id) {
-      throw new JacksonError('Missing required parameters.', 400);
+      throw new JacksonError('Missing required parameter.', 400);
     }
 
     if (!bearerToken) {

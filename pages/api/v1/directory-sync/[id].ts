@@ -18,16 +18,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Get SCIM configuration by id
+// Get configuration by id
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySync } = await jackson();
 
   const { id } = req.query;
 
   try {
-    const config = await directorySync.directory.get(id as string);
+    const directory = await directorySync.directories.get(id as string);
 
-    return res.status(201).json({ data: config, error: null });
+    return res.status(201).json({ data: directory, error: null });
   } catch (err: any) {
     const { message, statusCode = 500 } = err;
 

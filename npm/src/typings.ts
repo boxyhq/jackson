@@ -256,7 +256,7 @@ export interface DirectoryConfig {
   };
 }
 
-export interface Directory {
+export interface Directories {
   create({
     name,
     tenant,
@@ -271,6 +271,7 @@ export interface Directory {
     webhook_secret: string;
   }): Promise<DirectoryConfig>;
   get(id: string): Promise<DirectoryConfig>;
+  list(): Promise<DirectoryConfig[]>;
   delete(id: string): Promise<void>;
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
@@ -320,7 +321,9 @@ export interface GroupsRequestHandler {
 }
 
 export interface DirectorySync {
-  directory: Directory;
+  directories: Directories;
   usersRequest: UsersRequestHandler;
   groupsRequest: GroupsRequestHandler;
+  users: any;
+  groups: any;
 }

@@ -6,10 +6,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { method } = req;
 
   if (!validateApiKey(extractAuthToken(req))) {
-    return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
+    //return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
   }
 
   switch (method) {
+    case 'GET':
+      return handleGET(req, res);
     case 'POST':
       return handlePOST(req, res);
     default:
@@ -18,14 +20,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Create a new SCIM configuration
+// Get all the configurations
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { directorySync } = await jackson();
+
+  try {
+    const directories = await directorySync.directories.list();
+
+    return res.status(200).json({ data: directories, error: null });
+  } catch (err: any) {
+    const { message, statusCode = 500 } = err;
+
+    return res.status(statusCode).json({ data: null, error: { message } });
+  }
+};
+
+// Create a new configuration
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySync } = await jackson();
 
   const { name, tenant, product, webhook_url, webhook_secret } = req.body;
 
   try {
-    const config = await directorySync.directory.create({
+    const directory = await directorySync.directories.create({
       name,
       tenant,
       product,
@@ -33,7 +50,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
       webhook_secret,
     });
 
-    return res.status(201).json({ data: config, error: null });
+    return res.status(201).json({ data: directory, error: null });
   } catch (err: any) {
     const { message, statusCode = 500 } = err;
 
