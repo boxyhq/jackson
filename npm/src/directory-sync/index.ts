@@ -10,21 +10,17 @@ const directorySync = ({ db, opts }): DirectorySync => {
   const users = new UsersController({ db });
   const groups = new GroupsController({ db });
 
-  const directory = new Directories({ db, opts });
-  const directoryUsers = new DirectoryUsers({ directory, users, groups });
-  const directoryGroups = new DirectoryGroups({ directory, users, groups });
+  const directories = new Directories({ db, opts });
+  const directoryUsers = new DirectoryUsers({ directories, users, groups });
+  const directoryGroups = new DirectoryGroups({ directories, users, groups });
 
   return {
-    directories: directory,
-    usersRequest: new UsersRequestHandler({ directoryUsers }),
-    groupsRequest: new GroupsRequestHandler({ directoryGroups }),
+    directories,
     users: {},
     groups: {},
+    usersRequest: new UsersRequestHandler({ directoryUsers }),
+    groupsRequest: new GroupsRequestHandler({ directoryGroups }),
   };
 };
 
 export default directorySync;
-
-// Example
-// users.list()
-// users.retrieve()

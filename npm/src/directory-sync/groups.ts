@@ -5,12 +5,20 @@ import { Directories } from './directories';
 import { sendEvent } from './events';
 
 export class DirectoryGroups {
-  private directory: InstanceType<typeof Directories>;
-  private users: InstanceType<typeof UsersController>;
-  private groups: InstanceType<typeof GroupsController>;
+  private directories: Directories;
+  private users: UsersController;
+  private groups: GroupsController;
 
-  constructor({ directory, users, groups }) {
-    this.directory = directory;
+  constructor({
+    directories,
+    users,
+    groups,
+  }: {
+    directories: Directories;
+    users: UsersController;
+    groups: GroupsController;
+  }) {
+    this.directories = directories;
     this.users = users;
     this.groups = groups;
   }
@@ -225,7 +233,7 @@ export class DirectoryGroups {
   public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
     const { method, directory_id: directoryId, group_id: groupId, body, query_params: queryParams } = request;
 
-    const directory = await this.directory.get(directoryId);
+    const directory = await this.directories.get(directoryId);
 
     const { tenant, product } = directory;
 
