@@ -1,4 +1,4 @@
-import type { DirectorySyncRequest, Group, DirectoryConfig } from '../typings';
+import type { DirectorySyncRequest, Group, DirectoryConfig, DirectorySyncResponse } from '../typings';
 import { GroupsController } from '../controller/groups';
 import { UsersController } from '../controller/users';
 import { Directory } from './directory';
@@ -15,7 +15,7 @@ export class DirectoryGroups {
     this.groups = groups;
   }
 
-  public async create(directory: DirectoryConfig, body: any) {
+  public async create(directory: DirectoryConfig, body: any): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     const group = await this.groups.create({
@@ -38,7 +38,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async get(groupId: string) {
+  public async get(groupId: string): Promise<DirectorySyncResponse> {
     const group = await this.groups.get(groupId);
 
     return {
@@ -52,7 +52,11 @@ export class DirectoryGroups {
     };
   }
 
-  public async update(directory: DirectoryConfig, groupId: string, body: any) {
+  public async update(
+    directory: DirectoryConfig,
+    groupId: string,
+    body: any
+  ): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     const group = await this.groups.update(groupId, {
@@ -79,7 +83,11 @@ export class DirectoryGroups {
 
   // Update a group using a patch operation.
   // Some identity providers send a PATCH request to update a group and group members.
-  public async updateOperation(directory: DirectoryConfig, groupId: string, body: any) {
+  public async updateOperation(
+    directory: DirectoryConfig,
+    groupId: string,
+    body: any
+  ): Promise<DirectorySyncResponse> {
     const { Operations } = body;
     const { op, path, value } = Operations[0];
 
@@ -127,7 +135,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async delete(directory: DirectoryConfig, groupId: string) {
+  public async delete(directory: DirectoryConfig, groupId: string): Promise<DirectorySyncResponse> {
     const group = await this.groups.get(groupId);
 
     await this.groups.removeAllUsers(groupId);
@@ -149,7 +157,7 @@ export class DirectoryGroups {
     }));
   }
 
-  public async getAll() {
+  public async getAll(): Promise<DirectorySyncResponse> {
     const groups = await this.groups.getAll();
 
     return {
@@ -214,7 +222,7 @@ export class DirectoryGroups {
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncRequest) {
+  public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
     const { method, directory_id: directoryId, group_id: groupId, body, query_params: queryParams } = request;
 
     const directory = await this.directory.get(directoryId);
@@ -261,5 +269,10 @@ export class DirectoryGroups {
     if (method === 'GET' && queryParams) {
       return await this.getAll();
     }
+
+    return {
+      status: 404,
+      data: {},
+    };
   }
 }

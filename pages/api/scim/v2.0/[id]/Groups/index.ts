@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   };
 
-  const { status, data } = await directorySync.groups.handleRequest(request);
+  const { status, data } = await directorySync.groupsRequest.handle(request);
 
   return res.status(status).json(data);
 }

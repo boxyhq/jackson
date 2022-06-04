@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     body: bodyParser(req),
   };
 
-  const { status, data } = await directorySync.users.handleRequest(request);
+  const { status, data } = await directorySync.usersRequest.handle(request);
 
   return res.status(status).json(data);
 }

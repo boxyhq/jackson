@@ -1,4 +1,4 @@
-import type { DirectorySyncRequest, DirectoryConfig } from '../typings';
+import type { DirectorySyncRequest, DirectoryConfig, DirectorySyncResponse } from '../typings';
 import { GroupsController } from '../controller/groups';
 import { UsersController } from '../controller/users';
 import { sendEvent } from './events';
@@ -15,7 +15,7 @@ export class DirectoryUsers {
     this.groups = groups;
   }
 
-  public async create(directory: DirectoryConfig, body: any) {
+  public async create(directory: DirectoryConfig, body: any): Promise<DirectorySyncResponse> {
     const { name, emails } = body;
 
     const user = await this.users.create({
@@ -33,7 +33,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async get(userId: string) {
+  public async get(userId: string): Promise<DirectorySyncResponse> {
     const user = await this.users.get(userId);
 
     return {
@@ -42,7 +42,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async update(directory: DirectoryConfig, userId: string, body: any) {
+  public async update(directory: DirectoryConfig, userId: string, body: any): Promise<DirectorySyncResponse> {
     const { active, name, emails } = body;
 
     // Update the user
@@ -66,9 +66,18 @@ export class DirectoryUsers {
     if (active === false) {
       return await this.delete(directory, userId);
     }
+
+    return {
+      status: 200,
+      data: null,
+    };
   }
 
-  public async updateOperation(directory: DirectoryConfig, userId: string, body: any) {
+  public async updateOperation(
+    directory: DirectoryConfig,
+    userId: string,
+    body: any
+  ): Promise<DirectorySyncResponse> {
     const { Operations } = body;
     const operation = Operations[0];
 
@@ -76,6 +85,11 @@ export class DirectoryUsers {
     if (operation.op === 'replace' && operation.value.active === false) {
       return await this.delete(directory, userId);
     }
+
+    return {
+      status: 200,
+      data: null,
+    };
   }
 
   public async delete(directory: DirectoryConfig, userId: string) {
@@ -91,7 +105,11 @@ export class DirectoryUsers {
     };
   }
 
-  public async getAll(queryParams: { count: number; startIndex: number; filter?: string }) {
+  public async getAll(queryParams: {
+    count: number;
+    startIndex: number;
+    filter?: string;
+  }): Promise<DirectorySyncResponse> {
     const { count, startIndex, filter } = queryParams;
 
     // Retrieve a list of Users
@@ -123,7 +141,7 @@ export class DirectoryUsers {
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncRequest) {
+  public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
     const { method, directory_id: directoryId, user_id: userId, body, query_params: queryParams } = request;
 
     const directory = await this.directory.get(directoryId);
@@ -169,5 +187,10 @@ export class DirectoryUsers {
     if (method === 'GET' && queryParams) {
       return await this.getAll(queryParams);
     }
+
+    return {
+      status: 404,
+      data: {},
+    };
   }
 }
