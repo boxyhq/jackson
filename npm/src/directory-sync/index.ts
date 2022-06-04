@@ -1,15 +1,12 @@
 import type { DirectorySync } from '../typings';
-
-import { UsersController } from '../controller/users';
-import { GroupsController } from '../controller/groups';
 import { Directory } from './directory';
 import { DirectoryUsers } from './users';
 import { DirectoryGroups } from './groups';
+import { UsersController } from '../controller/users';
+import { GroupsController } from '../controller/groups';
 
 const directorySync = ({ db, opts }): DirectorySync => {
-  const scimStore = db.store('scim:config');
-
-  const directory = new Directory({ scimStore, opts });
+  const directory = new Directory({ db, opts });
   const users = new UsersController({ db });
   const groups = new GroupsController({ db });
 

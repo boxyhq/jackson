@@ -2,10 +2,10 @@ import type { Storable, User, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
 
 export class UsersController {
-  private db: DatabaseStore;
   private _store: Storable | null = null;
-  private _tenant = '';
-  private _product = '';
+  private db: DatabaseStore;
+  private tenant = '';
+  private product = '';
 
   constructor({ db }: { db: DatabaseStore }) {
     this.db = db;
@@ -13,20 +13,19 @@ export class UsersController {
 
   // Return the database store
   private store(): Storable {
-    return this._store || (this._store = this.db.store(`users:${this._tenant}:${this._product}`));
+    return this._store || (this._store = this.db.store(`users:${this.tenant}:${this.product}`));
   }
 
-  // Create the store using the tenant and product
   public with(tenant: string, product: string): UsersController {
-    this._tenant = tenant;
-    this._product = product;
+    this.tenant = tenant;
+    this.product = product;
 
     return this;
   }
 
   public setTenantAndProduct(tenant: string, product: string) {
-    this._tenant = tenant;
-    this._product = product;
+    this.tenant = tenant;
+    this.product = product;
   }
 
   // Create a new user
@@ -42,7 +41,13 @@ export class UsersController {
 
     raw['id'] = id;
 
-    const user = { id, first_name, last_name, email, raw };
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      raw,
+    };
 
     await this.store().put(id, user);
 
@@ -68,7 +73,13 @@ export class UsersController {
 
     raw['id'] = id;
 
-    const user = { id, first_name, last_name, email, raw };
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      raw,
+    };
 
     await this.store().put(id, user);
 

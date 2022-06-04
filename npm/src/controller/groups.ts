@@ -3,29 +3,29 @@ import { v4 as uuidv4 } from 'uuid';
 import * as dbutils from '../db/utils';
 
 export class GroupsController {
-  private _db: DatabaseStore;
-  private _tenant = '';
-  private _product = '';
+  private db: DatabaseStore;
+  private tenant = '';
+  private product = '';
 
   constructor({ db }: { db: DatabaseStore }) {
-    this._db = db;
+    this.db = db;
+  }
+
+  // Return the database store
+  private store(type: 'groups' | 'members'): Storable {
+    return this.db.store(`${type}:${this.tenant}:${this.product}`);
   }
 
   public with(tenant: string, product: string): GroupsController {
-    this._tenant = tenant;
-    this._product = product;
+    this.tenant = tenant;
+    this.product = product;
 
     return this;
   }
 
   public setTenantAndProduct(tenant: string, product: string) {
-    this._tenant = tenant;
-    this._product = product;
-  }
-
-  // Return the database store
-  private store(type: 'groups' | 'members'): Storable {
-    return this._db.store(`${type}:${this._tenant}:${this._product}`);
+    this.tenant = tenant;
+    this.product = product;
   }
 
   // Create a new group
@@ -33,7 +33,12 @@ export class GroupsController {
     const { name, raw } = param;
 
     const id = uuidv4();
-    const group: Group = { id, name, raw };
+
+    const group: Group = {
+      id,
+      name,
+      raw,
+    };
 
     await this.store('groups').put(id, group);
 
@@ -55,7 +60,11 @@ export class GroupsController {
   ): Promise<Group> {
     const { name, raw } = param;
 
-    const group: Group = { id, name, raw };
+    const group: Group = {
+      id,
+      name,
+      raw,
+    };
 
     await this.store('groups').put(id, group);
 

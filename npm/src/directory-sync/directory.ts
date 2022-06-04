@@ -1,15 +1,21 @@
-import type { Storable, DirectoryConfig, JacksonOption } from '../typings';
+import type { Storable, DirectoryConfig, JacksonOption, DatabaseStore } from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomSecret } from '../controller/utils';
 import { JacksonError } from '../controller/error';
 
 export class Directory {
-  private store: Storable;
+  private _store: Storable | null = null;
   private opts: JacksonOption;
+  private db: DatabaseStore;
 
-  constructor({ scimStore, opts }: { scimStore: Storable; opts: JacksonOption }) {
-    this.store = scimStore;
+  constructor({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) {
     this.opts = opts;
+    this.db = db;
+  }
+
+  // Return the database store
+  private store(): Storable {
+    return this._store || (this._store = this.db.store(`scim:config`));
   }
 
   // Create a new SCIM configuration
@@ -51,7 +57,7 @@ export class Directory {
       };
     }
 
-    await this.store.put(id, config);
+    await this.store().put(id, config);
 
     config.scim.endpoint = `${this.opts.externalUrl}${config.scim.path}`;
 
@@ -64,7 +70,7 @@ export class Directory {
       throw new JacksonError('Missing required parameters.', 400);
     }
 
-    const config: DirectoryConfig = await this.store.get(id);
+    const config: DirectoryConfig = await this.store().get(id);
 
     if (!config) {
       throw new JacksonError('Configuration not found.', 404);
@@ -83,7 +89,7 @@ export class Directory {
 
     // TODO: Delete the users and groups associated with the configuration
 
-    await this.store.delete(id);
+    await this.store().delete(id);
 
     return;
   }
