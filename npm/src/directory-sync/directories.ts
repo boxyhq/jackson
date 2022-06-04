@@ -125,15 +125,15 @@ export class DirectoryConfig {
   }
 
   // Get all users in a directory
-  public async listUsers(id: string): Promise<User[]> {
-    const { tenant, product } = await this.get(id);
+  public async listUsers({ directory }: { directory: string }): Promise<User[]> {
+    const { tenant, product } = await this.get(directory);
 
     return await this.users.list({ tenant, product });
   }
 
   // Get all groups in a directory
-  public async listGroups(id: string): Promise<Group[]> {
-    const { tenant, product } = await this.get(id);
+  public async listGroups({ directory }: { directory: string }): Promise<Group[]> {
+    const { tenant, product } = await this.get(directory);
 
     return await this.groups.list({ tenant, product });
   }

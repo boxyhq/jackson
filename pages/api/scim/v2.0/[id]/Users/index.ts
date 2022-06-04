@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { method } = req;
   const { id } = req.query;
 
-  if (!(await directorySync.directory.validateAPISecret(id as string, extractAuthToken(req)))) {
+  if (!(await directorySync.directories.validateAPISecret(id as string, extractAuthToken(req)))) {
     return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
   }
 

@@ -226,6 +226,18 @@ export type DirectorySyncEventType =
   | 'group.user_added'
   | 'group.user_removed';
 
+export interface UsersController {
+  with(tenant: string, product: string): UsersController;
+  setTenantAndProduct(tenant: string, product: string): void;
+  list({ tenant, product }: { tenant: string; product: string }): Promise<User[]>;
+}
+
+export interface GroupsController {
+  with(tenant: string, product: string): GroupsController;
+  setTenantAndProduct(tenant: string, product: string): void;
+  list({ tenant, product }: { tenant: string; product: string }): Promise<Group[]>;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -273,8 +285,8 @@ export interface DirectoryConfig {
   get(id: string): Promise<Directory>;
   getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;
   list(): Promise<Directory[]>;
-  listUsers(id: string): Promise<User[]>;
-  listGroups(id: string): Promise<Group[]>;
+  listUsers({ directory }: { directory: string }): Promise<User[]>;
+  listGroups({ directory }: { directory: string }): Promise<Group[]>;
   delete(id: string): Promise<void>;
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
@@ -327,6 +339,6 @@ export interface DirectorySync {
   directories: DirectoryConfig;
   usersRequest: UsersRequestHandler;
   groupsRequest: GroupsRequestHandler;
-  users: any;
-  groups: any;
+  users: UsersController;
+  groups: GroupsController;
 }
