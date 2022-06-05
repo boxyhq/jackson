@@ -2,6 +2,7 @@ import { NextPage } from 'next';
 import { Input, Button } from '@supabase/ui'
 import React from 'react';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
 const newDirectory = {
   name: '',
@@ -30,18 +31,16 @@ const New: NextPage = () => {
     });
 
     setLoading(false);
-
-    if(!rawResponse.ok) {
-      // TODO: handle error
-    }
-
+  
     const { data, error } = await rawResponse.json();
 
     if(error) {
-      // TODO: handle error
+      toast.error(error.message);
+      return;
     }
 
     if(data) {
+      toast.success('Directory created successfully');
       router.replace('/admin/directory-sync');
     }
   }

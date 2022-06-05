@@ -10,9 +10,9 @@ const Index: NextPage = (props: any) => {
     <div>
       <div className='flex items-center justify-between'>
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Directory Sync</h2>
-        <Link href={'/admin/directory-sync/new'}>
+        <Link href="/admin/directory-sync/new">
           <a className='btn-primary'>
-            Create New
+            + Create New
           </a>
         </Link>
       </div>
