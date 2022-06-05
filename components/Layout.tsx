@@ -16,6 +16,12 @@ const navigation = [
     text: <span className='ml-4'>SAML Configurations</span>,
     icon: <ShieldCheckIcon className='h-5 w-5' aria-hidden />,
   },
+
+  {
+    path: '/admin/directory-sync',
+    text: <span className='ml-4'>Directory Sync</span>,
+    icon: <ShieldCheckIcon className='h-5 w-5' aria-hidden />,
+  },
 ];
 
 function Layout({ children }: { children: ReactNode }) {
