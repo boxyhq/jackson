@@ -51,7 +51,7 @@ const Index: NextPage = (props: any) => {
                   {directory.product}
                 </td>
                 <td>
-                  <Link href={`/admin/directory-sync/${directory.id}`}>
+                  <Link href={`/admin/directory-sync/${directory.id}/edit`}>
                     <a className='link-primary'>
                       <PencilAltIcon className='h-5 w-5 text-secondary' />
                     </a>

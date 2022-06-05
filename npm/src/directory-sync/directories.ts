@@ -93,6 +93,31 @@ export class DirectoryConfig {
     return this.transform(directory);
   }
 
+  // Update the configuration
+  public async update(
+    id: string,
+    param: {
+      name: string;
+      webhook_url: string;
+      webhook_secret: string;
+    }
+  ): Promise<Directory> {
+    const { name, webhook_url, webhook_secret } = param;
+
+    const directory = {
+      ...(await this.get(id)),
+      name,
+      webhook: {
+        endpoint: webhook_url,
+        secret: webhook_secret,
+      },
+    };
+
+    await this.store().put(id, directory);
+
+    return directory;
+  }
+
   // Get the configuration by tenant and product
   public async getByTenantAndProduct(tenant: string, product: string): Promise<Directory> {
     if (!tenant || !product) {

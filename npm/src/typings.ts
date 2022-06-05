@@ -283,6 +283,14 @@ export interface DirectoryConfig {
     webhook_secret: string;
   }): Promise<Directory>;
   get(id: string): Promise<Directory>;
+  update(
+    id: string,
+    param: {
+      name: string;
+      webhook_url: string;
+      webhook_secret: string;
+    }
+  ): Promise<Directory>;
   getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;
   list(): Promise<Directory[]>;
   listUsers({ directory }: { directory: string }): Promise<User[]>;
