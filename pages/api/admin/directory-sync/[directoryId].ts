@@ -1,10 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { checkSession } from '@lib/middleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
-
-  // TODO: Add authentication
 
   switch (method) {
     case 'PUT':
@@ -13,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
-}
+};
 
 // Update a directory configuration
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -36,3 +35,5 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(statusCode).json({ data: null, error: { message } });
   }
 };
+
+export default checkSession(handler);
