@@ -13,43 +13,47 @@ const Info: NextPage = (props: any) => {
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
       <DirectoryTab directory={directory} activeTab="directory" />
-      <div className="relative overflow-x-auto rounded border">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <tbody>
-            <DetailsRow label="Tenant" value={directory.tenant} />
-            <DetailsRow label="Product" value={directory.product} />
-            <DetailsRow label="SCIM Endpoint" value={<Input value={directory.scim.endpoint} copy readOnly />} type="input" />
-            <DetailsRow label="SCIM Token" value={<Input value={directory.scim.secret} copy reveal readOnly />} type="input" />
-
+      <div className="overflow-hidden flex">
+        <div className='w-2/3 rounded border'>
+          <dl>
+            <div className="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b">
+              <dt className="text-sm font-medium text-gray-500">Directory ID</dt>
+              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{directory.id}</dd>
+            </div>
+            <div className="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b">
+              <dt className="text-sm font-medium text-gray-500">Tenant</dt>
+              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{directory.tenant}</dd>
+            </div>
+            <div className="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b">
+              <dt className="text-sm font-medium text-gray-500">Product</dt>
+              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{directory.product}</dd>
+            </div>
+            <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b bg-gray-100">
+              <dt className="text-sm font-medium text-gray-500 pt-2">SCIM Endpoint</dt>
+              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><Input value={directory.scim.endpoint} copy readOnly /></dd>
+            </div>
+            <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b bg-gray-100">
+              <dt className="text-sm font-medium text-gray-500 pt-2">SCIM Token</dt>
+              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><Input value={directory.scim.secret} copy reveal readOnly /></dd>
+            </div>
             {directory.webhook.endpoint && directory.webhook.secret && (
               <>
-                <DetailsRow label="Webhook Endpoint" value={directory.webhook.endpoint} />
-                <DetailsRow label="Webhook Secret" value={<Input value={directory.webhook.secret} copy reveal readOnly />} type="input" />
+                <div className="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b">
+                  <dt className="text-sm font-medium text-gray-500">Webhook Endpoint</dt>
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{directory.webhook.endpoint}</dd>
+                </div>
+                <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-gray-500 pt-2">Webhook Secret</dt>
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><Input value={directory.webhook.secret} copy reveal readOnly /></dd>
+                </div>
               </>
             )}
-          </tbody>
-        </table>
+          </dl>
+        </div>
       </div>
     </div>
   );
 };
-
-const DetailsRow = (props: any) => {
-  const { label, value, type = "string", lastRaw = false } = props;
-
-  const padding = (type === 'input') ? 'py-2' : 'py-4';
-
-  return (
-    <tr className={`border-b bg-white dark:bg-gray-800 dark:border-gray-700`}>
-      <th scope="row" className={`${padding} px-6 font-medium text-gray-900 dark:text-white whitespace-nowrap`}>
-        {label}
-      </th>
-      <td className={`${padding} px-6`}>
-        {value}
-      </td>
-    </tr>
-  );
-}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
