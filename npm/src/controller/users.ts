@@ -1,8 +1,7 @@
-import type { Storable, User, DatabaseStore, Index } from '../typings';
+import type { Storable, User, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
 
 export class UsersController {
-  private _store: Storable | null = null;
   private db: DatabaseStore;
   private tenant = '';
   private product = '';
@@ -13,7 +12,7 @@ export class UsersController {
 
   // Return the database store
   private store(): Storable {
-    return this._store || (this._store = this.db.store(`users:${this.tenant}:${this.product}`));
+    return this.db.store(`users:${this.tenant}:${this.product}`);
   }
 
   public with(tenant: string, product: string): UsersController {

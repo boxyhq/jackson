@@ -41,7 +41,7 @@ const New: NextPage = () => {
 
     if(data) {
       toast.success('Directory created successfully');
-      router.replace('/admin/directory-sync');
+      router.replace(`/admin/directory-sync/${data.id}`);
     }
   }
 

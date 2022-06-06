@@ -29,7 +29,7 @@ const DirectoryTab = (props: any) => {
   const classNames = 'inline-block p-4 rounded-t-lg border-b-2';
 
   return (
-    <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+    <div className="mb-5 text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
       <ul className="flex flex-wrap -mb-px">
         {menus.map((menu) => {
           return (

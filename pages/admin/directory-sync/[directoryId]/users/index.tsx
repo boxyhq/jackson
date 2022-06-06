@@ -13,7 +13,7 @@ const UsersList: NextPage = (props: any) => {
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
       <DirectoryTab directory={directory} activeTab="users" />
-      <div>
+      <div className='rounded border'>
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -59,6 +59,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const directory = await directorySync.directories.get(directoryId as string);
   const users = await directorySync.directories.listUsers({ directory: directory.id });
+
+  console.log(users)
 
   return {
     props: {
