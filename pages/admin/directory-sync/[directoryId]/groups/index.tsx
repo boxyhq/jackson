@@ -3,6 +3,8 @@ import React from 'react';
 import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import EmptyState from '@components/EmptyState';
+import Link from 'next/link';
+import { EyeIcon } from '@heroicons/react/outline';
 
 const GroupsList: NextPage = (props: any) => {
   const { directory, groups } = props;
@@ -31,6 +33,7 @@ const GroupsList: NextPage = (props: any) => {
               <th scope="col" className="px-6 py-3">
                 Users
               </th>
+              <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -39,6 +42,13 @@ const GroupsList: NextPage = (props: any) => {
                 <tr key={group.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <td className="px-6 py-3">{group.name}</td>
                   <td className="px-6 py-3">{group.raw.members.length} Users</td>
+                  <td className="px-6 py-3">
+                    <Link href={`/admin/directory-sync/${directory.id}/groups/${group.id}`}>
+                      <a>
+                        <EyeIcon className='h-5 w-5' />
+                      </a>
+                    </Link>
+                  </td>
                 </tr>
               )
             })}

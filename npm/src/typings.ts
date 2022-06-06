@@ -237,6 +237,7 @@ export interface GroupsController {
   with(tenant: string, product: string): GroupsController;
   setTenantAndProduct(tenant: string, product: string): void;
   list({ tenant, product }: { tenant: string; product: string }): Promise<Group[]>;
+  get(id: string): Promise<Group>;
 }
 
 export interface User {

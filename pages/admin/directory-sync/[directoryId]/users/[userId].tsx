@@ -1,15 +1,11 @@
 import { NextPage, GetServerSideProps } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
-import { Badge } from '@supabase/ui'
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import { EyeIcon } from '@heroicons/react/outline';
-import Link from 'next/link';
+import PrettyPrintJson from '@components/PrettyPrintJson';
 
 const UserInfo: NextPage = (props: any) => {
   const { directory, user } = props;
-
-  console.log(user)
 
   return (
     <div>
@@ -18,21 +14,11 @@ const UserInfo: NextPage = (props: any) => {
       </div>
       <DirectoryTab directory={directory} activeTab="users" />
       <div className='rounded border'>
-        <PrettyPrintJson data={user.raw} /> 
+        <PrettyPrintJson data={user} /> 
       </div>
     </div>
   );
 };
-
-const PrettyPrintJson = (props: any) => {
-  const { data } = props;
-
-  return (
-    <div className='p-4 bg-slate-100 text-sm'>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
-  );
-}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId, userId } = context.query;
