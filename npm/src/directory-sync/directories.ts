@@ -31,7 +31,7 @@ export class DirectoryConfig {
 
   // Return the database store
   private store(): Storable {
-    return this._store || (this._store = this.db.store(`scim:config`));
+    return this._store || (this._store = this.db.store('dsync:config'));
   }
 
   // Create the configuration

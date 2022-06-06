@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import Logo from '../public/logo.png';
-import { LogoutIcon, MenuIcon, ShieldCheckIcon } from '@heroicons/react/outline';
+import { LogoutIcon, MenuIcon, ShieldCheckIcon, UsersIcon, SupportIcon } from '@heroicons/react/outline';
 import ActiveLink from './ActiveLink';
 import useOnClickOutside from '@lib/ui/hooks/useOnClickOutside';
 import useKeyPress from '@lib/ui/hooks/useKeyPress';
@@ -20,7 +20,13 @@ const navigation = [
   {
     path: '/admin/directory-sync',
     text: <span className='ml-4'>Directory Sync</span>,
-    icon: <ShieldCheckIcon className='h-5 w-5' aria-hidden />,
+    icon: <UsersIcon className='h-5 w-5' aria-hidden />,
+  },
+
+  {
+    path: 'https://boxyhq.com/docs',
+    text: <span className='ml-4'>Docs</span>,
+    icon: <SupportIcon className='h-5 w-5' aria-hidden />,
   },
 ];
 
