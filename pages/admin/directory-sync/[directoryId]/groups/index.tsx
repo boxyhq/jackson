@@ -2,15 +2,24 @@ import { NextPage, GetServerSideProps } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
+import EmptyState from '@components/EmptyState';
 
 const GroupsList: NextPage = (props: any) => {
   const { directory, groups } = props;
 
+  if(groups.length === 0) {
+    return (
+      <>
+        <Header title={directory.name} />
+        <DirectoryTab directory={directory} activeTab="groups" />
+        <EmptyState title="No groups found" />
+      </>
+    )
+  }
+
   return (
-    <div>
-      <div className='flex items-center justify-between mb-4'>
-        <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
-      </div>
+    <>
+      <Header title={directory.name} />
       <DirectoryTab directory={directory} activeTab="groups" />
       <div className='rounded border'>
         <table className="table-fixed w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -36,9 +45,17 @@ const GroupsList: NextPage = (props: any) => {
           </tbody>
         </table>
       </div>
-    </div>
+    </>
   );
 };
+
+const Header = ({title}) => {
+  return (
+    <div className='flex items-center justify-between mb-4'>
+      <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{title}</h2>
+    </div>
+  )
+}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
