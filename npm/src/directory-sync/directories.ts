@@ -54,6 +54,8 @@ export class DirectoryConfig {
 
     const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
 
+    const hasWebhook = webhook_url && webhook_secret;
+
     const directory: Directory = {
       id,
       name,
@@ -63,15 +65,11 @@ export class DirectoryConfig {
         path: `/api/scim/v2.0/${id}`,
         secret: await createRandomSecret(16),
       },
+      webhook: {
+        endpoint: hasWebhook ? webhook_url : '',
+        secret: hasWebhook ? webhook_secret : '',
+      },
     };
-
-    // Webhook is optional. If webhook_url is provided, create a webhook.
-    if (webhook_url && webhook_secret) {
-      directory.webhook = {
-        endpoint: webhook_url,
-        secret: webhook_secret,
-      };
-    }
 
     await this.store().put(id, directory);
 

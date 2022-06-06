@@ -262,7 +262,7 @@ export interface Directory {
     endpoint?: string;
     secret: string;
   };
-  webhook?: {
+  webhook: {
     endpoint: string;
     secret: string;
   };
