@@ -2,7 +2,8 @@ import { NextPage, GetServerSideProps } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import PrettyPrintJson from '@components/PrettyPrintJson';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
+import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 const GroupInfo: NextPage = (props: any) => {
   const { directory, group } = props;
@@ -13,8 +14,10 @@ const GroupInfo: NextPage = (props: any) => {
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
       <DirectoryTab directory={directory} activeTab="groups" />
-      <div className='rounded border'>
-        <PrettyPrintJson data={group} /> 
+      <div className='text-sm border rounded'>
+        <SyntaxHighlighter language="json" style={coy}>
+          {JSON.stringify(group, null, 3)}
+        </SyntaxHighlighter>
       </div>
     </div>
   );

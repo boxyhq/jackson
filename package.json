@@ -57,6 +57,7 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-hot-toast": "^2.2.0",
+    "react-syntax-highlighter": "^15.5.0",
     "swr": "1.3.0"
   },
   "devDependencies": {
