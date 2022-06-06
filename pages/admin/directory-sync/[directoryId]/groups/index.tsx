@@ -1,6 +1,7 @@
 import { NextPage, GetServerSideProps } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
+import DirectoryTab from '@components/dsync/DirectoryTab';
 
 const GroupsList: NextPage = (props: any) => {
   const { directory, groups } = props;
@@ -10,6 +11,7 @@ const GroupsList: NextPage = (props: any) => {
       <div className='flex items-center justify-between mb-4'>
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
+      <DirectoryTab directory={directory} activeTab="groups" />
       <div>
         <table className="table-fixed w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

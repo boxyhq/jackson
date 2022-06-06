@@ -2,6 +2,7 @@ import { NextPage, GetServerSideProps } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import { Input } from '@supabase/ui'
+import DirectoryTab from '@components/dsync/DirectoryTab';
 
 const Info: NextPage = (props: any) => {
   const { directory } = props;
@@ -11,6 +12,8 @@ const Info: NextPage = (props: any) => {
       <div className='flex items-center justify-between mb-4'>
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
+      <DirectoryTab directory={directory} activeTab="directory" />
+      
       <div className="flex flex-col space-y-3">
         <div className="grid grid-cols-6 gap-4">
           <span>Tenant</span>
