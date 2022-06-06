@@ -3,6 +3,8 @@ import React from 'react';
 import jackson from '@lib/jackson';
 import { Badge } from '@supabase/ui'
 import DirectoryTab from '@components/dsync/DirectoryTab';
+import { EyeIcon } from '@heroicons/react/outline';
+import Link from 'next/link';
 
 const UsersList: NextPage = (props: any) => {
   const { directory, users } = props;
@@ -32,6 +34,7 @@ const UsersList: NextPage = (props: any) => {
               <th scope="col" className="px-6 py-3">
                 Groups
               </th>
+              <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -43,6 +46,13 @@ const UsersList: NextPage = (props: any) => {
                   <td className="px-6 py-3">{user.email}</td>
                   <td className="px-6 py-3">{user.raw.active ? <Badge size="small">Active</Badge> : <Badge size="small" color="red">Suspended</Badge>}</td>
                   <td className="px-6 py-3">Groups</td>
+                  <td className="px-6 py-3">
+                    <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
+                      <a>
+                        <EyeIcon className='h-5 w-5' />
+                      </a>
+                    </Link>
+                  </td>
                 </tr>
               )
             })}
@@ -57,15 +67,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
   const { directorySync } = await jackson();
 
-  const directory = await directorySync.directories.get(directoryId as string);
-  const users = await directorySync.directories.listUsers({ directory: directory.id });
-
-  console.log(users)
-
   return {
     props: {
-      directory,
-      users
+      directory: await directorySync.directories.get(directoryId as string),
+      users: await directorySync.directories.listUsers({ directory: directoryId as string })
     },
   }
 }
