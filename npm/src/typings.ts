@@ -380,8 +380,9 @@ export interface WebhookEvents {
       user?: User;
     }
   ): Promise<void>;
-  getAll(): Promise<WebhookEventLog[]>;
   setTenantAndProduct(tenant: string, product: string): WebhookEvents;
   with(tenant: string, product: string): WebhookEvents;
+  getAll(): Promise<WebhookEventLog[]>;
+  get(id: string): Promise<WebhookEventLog>;
   updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
 }
