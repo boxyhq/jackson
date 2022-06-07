@@ -2,11 +2,11 @@ import type { NextPage, GetServerSideProps } from 'next';
 import type { WebhookEventLog, Directory } from "@lib/jackson";
 import React from 'react';
 import jackson from '@lib/jackson';
-import { Badge } from '@supabase/ui'
-import DirectoryTab from '@components/dsync/DirectoryTab';
+import { Badge, Alert } from '@supabase/ui'
 import { EyeIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
 import EmptyState from '@components/EmptyState';
+import DirectoryTab from '@components/dsync/DirectoryTab';
 
 const Events: NextPage<{ directory: Directory, events: WebhookEventLog[] }> = ({ directory, events }) => {
   if(events.length === 0) {
@@ -23,6 +23,13 @@ const Events: NextPage<{ directory: Directory, events: WebhookEventLog[] }> = ({
     <>
       <Header title={directory.name} />
       <DirectoryTab directory={directory} activeTab="events" />
+      
+      { !directory.log_webhook_events && 
+        <Alert title="Alert" variant="warning" className='w-3/4 mb-4'>
+          Webhook events are not being logged for this directory. <Link href={`/admin/directory-sync/${directory.id}/edit`}><a className='underline'>Enable logging</a></Link>
+        </Alert>
+      }
+      
       <div className='rounded border w-3/4'>
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
