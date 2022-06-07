@@ -89,15 +89,20 @@ export class WebhookEvents {
 
     this.setTenantAndProduct(tenant, product);
 
-    // Log the event
-    const log = await this.log(directory, webhookPayload);
+    // Log the events only if `log_webhook_events` is true
+    const log = directory.log_webhook_events ? await this.log(directory, webhookPayload) : undefined;
+
+    let status = 200;
 
     try {
-      // Send the webhook event
       await axios.post(webhook.endpoint, webhookPayload, { headers });
-      await this.updateStatus(log, 200);
     } catch (err: any) {
-      await this.updateStatus(log, err.response.status);
+      status = err.response ? err.response.status : 500;
+    }
+
+    if (log) {
+      // Update the event log with the status code
+      await this.updateStatus(log, status);
     }
 
     return;

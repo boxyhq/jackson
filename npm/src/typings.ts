@@ -263,6 +263,7 @@ export interface Directory {
   tenant: string;
   product: string;
   type: DirectoryType;
+  log_webhook_events: boolean;
   scim: {
     path: string;
     endpoint?: string;
@@ -297,6 +298,7 @@ export interface DirectoryConfig {
       name: string;
       webhook_url: string;
       webhook_secret: string;
+      log_webhook_events: boolean;
     }
   ): Promise<Directory>;
   getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;

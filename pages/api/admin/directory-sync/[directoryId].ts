@@ -19,13 +19,14 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directoryId } = req.query;
   const { directorySync } = await jackson();
 
-  const { name, webhook_url, webhook_secret } = req.body;
+  const { name, webhook_url, webhook_secret, log_webhook_events } = req.body;
 
   try {
     const directory = await directorySync.directories.update(directoryId as string, {
       name,
       webhook_url,
       webhook_secret,
+      log_webhook_events,
     });
 
     return res.status(201).json({ data: directory, error: null });

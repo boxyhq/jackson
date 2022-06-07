@@ -72,6 +72,7 @@ export class DirectoryConfig {
       tenant,
       product,
       type,
+      log_webhook_events: false,
       scim: {
         path: `/api/scim/v2.0/${id}`,
         secret: await createRandomSecret(16),
@@ -109,13 +110,15 @@ export class DirectoryConfig {
       name: string;
       webhook_url: string;
       webhook_secret: string;
+      log_webhook_events: boolean;
     }
   ): Promise<Directory> {
-    const { name, webhook_url, webhook_secret } = param;
+    const { name, webhook_url, webhook_secret, log_webhook_events } = param;
 
     const directory = {
       ...(await this.get(id)),
       name,
+      log_webhook_events,
       webhook: {
         endpoint: webhook_url,
         secret: webhook_secret,

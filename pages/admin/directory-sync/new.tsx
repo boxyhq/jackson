@@ -60,7 +60,7 @@ const New: NextPage = () => {
       <div className='flex items-center justify-between mb-4'>
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>New Configuration</h2>
       </div>
-      <div className='min-w-[28rem] border rounded border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
+      <div className='w-1/2 border rounded border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <Input label='Directory name' id='name' className='mb-3' required onChange={onChange} />
           <Select label="Directory provider" id="type" onChange={onChange} className='mb-3' required>
