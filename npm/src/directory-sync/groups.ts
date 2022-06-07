@@ -4,28 +4,32 @@ import type {
   DirectoryConfig,
   DirectorySyncResponse,
   Directory,
+  WebhookEvents,
 } from '../typings';
 import type { GroupsController } from '../controller/groups';
 import type { UsersController } from '../controller/users';
-import { sendEvent } from './events';
 
 export class DirectoryGroups {
   private directories: DirectoryConfig;
   private users: UsersController;
   private groups: GroupsController;
+  private webhookEvents: WebhookEvents;
 
   constructor({
     directories,
     users,
     groups,
+    webhookEvents,
   }: {
     directories: DirectoryConfig;
     users: UsersController;
     groups: GroupsController;
+    webhookEvents: WebhookEvents;
   }) {
     this.directories = directories;
     this.users = users;
     this.groups = groups;
+    this.webhookEvents = webhookEvents;
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
@@ -38,7 +42,7 @@ export class DirectoryGroups {
 
     await this.addGroupMembers(directory, group, members);
 
-    sendEvent('group.created', { directory, group });
+    this.webhookEvents.send('group.created', { directory, group });
 
     return {
       status: 201,
@@ -77,7 +81,7 @@ export class DirectoryGroups {
       await this.addOrRemoveGroupMembers(directory, group, members);
     }
 
-    sendEvent('group.updated', { directory, group });
+    this.webhookEvents.send('group.updated', { directory, group });
 
     return {
       status: 200,
@@ -130,7 +134,7 @@ export class DirectoryGroups {
         raw: group.raw,
       });
 
-      sendEvent('group.updated', { directory, group: updatedGroup });
+      this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
     }
 
     return {
@@ -150,7 +154,7 @@ export class DirectoryGroups {
     await this.groups.removeAllUsers(groupId);
     await this.groups.delete(groupId);
 
-    sendEvent('group.deleted', { directory, group });
+    this.webhookEvents.send('group.deleted', { directory, group });
 
     return {
       status: 200,
@@ -194,7 +198,11 @@ export class DirectoryGroups {
 
       await this.groups.addUserToGroup(group.id, member.value);
 
-      sendEvent('group.user_added', { directory, group, user: await this.users.get(member.value) });
+      this.webhookEvents.send('group.user_added', {
+        directory,
+        group,
+        user: await this.users.get(member.value),
+      });
     }
 
     return;
@@ -209,7 +217,11 @@ export class DirectoryGroups {
     for (const member of members) {
       await this.groups.removeUserFromGroup(group.id, member.user_id);
 
-      sendEvent('group.user_removed', { directory, group, user: await this.users.get(member.user_id) });
+      this.webhookEvents.send('group.user_removed', {
+        directory,
+        group,
+        user: await this.users.get(member.user_id),
+      });
     }
 
     return;

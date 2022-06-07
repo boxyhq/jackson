@@ -19,11 +19,11 @@ const DirectoryTab = (props: any) => {
       href: `/admin/directory-sync/${directory.id}/groups`,
       active: activeTab === 'groups'
     },
-    // {
-    //   name: 'Events',
-    //   href: `/admin/directory-sync/${directory.id}/events`,
-    //   active: activeTab === 'events'
-    // },
+    {
+      name: 'Events',
+      href: `/admin/directory-sync/${directory.id}/events`,
+      active: activeTab === 'events'
+    },
   ];
 
   const classNames = 'inline-block p-4 rounded-t-lg border-b-2';

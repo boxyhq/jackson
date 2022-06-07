@@ -40,9 +40,6 @@ const UsersList: NextPage = (props: any) => {
               <th scope="col" className="px-6 py-3">
                 State
               </th>
-              <th scope="col" className="px-6 py-3">
-                Groups
-              </th>
               <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
@@ -54,7 +51,6 @@ const UsersList: NextPage = (props: any) => {
                   <td className="px-6 py-3">{user.last_name}</td>
                   <td className="px-6 py-3">{user.email}</td>
                   <td className="px-6 py-3">{user.raw.active ? <Badge size="small">Active</Badge> : <Badge size="small" color="red">Suspended</Badge>}</td>
-                  <td className="px-6 py-3">Groups</td>
                   <td className="px-6 py-3">
                     <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
                       <a>

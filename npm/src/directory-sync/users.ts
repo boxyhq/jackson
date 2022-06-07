@@ -1,25 +1,34 @@
-import type { DirectorySyncRequest, DirectoryConfig, Directory, DirectorySyncResponse } from '../typings';
+import type {
+  DirectorySyncRequest,
+  DirectoryConfig,
+  Directory,
+  DirectorySyncResponse,
+  WebhookEvents,
+} from '../typings';
 import type { GroupsController } from '../controller/groups';
 import type { UsersController } from '../controller/users';
-import { sendEvent } from './events';
 
 export class DirectoryUsers {
   private directories: DirectoryConfig;
   private users: UsersController;
   private groups: GroupsController;
+  private webhookEvents: WebhookEvents;
 
   constructor({
     directories,
     users,
     groups,
+    webhookEvents,
   }: {
     directories: DirectoryConfig;
     users: UsersController;
     groups: GroupsController;
+    webhookEvents: WebhookEvents;
   }) {
     this.directories = directories;
     this.users = users;
     this.groups = groups;
+    this.webhookEvents = webhookEvents;
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
@@ -32,7 +41,7 @@ export class DirectoryUsers {
       raw: body,
     });
 
-    sendEvent('user.created', { directory, user });
+    this.webhookEvents.send('user.created', { directory, user });
 
     return {
       status: 201,
@@ -61,7 +70,7 @@ export class DirectoryUsers {
         raw: body,
       });
 
-      sendEvent('user.updated', { directory, user });
+      this.webhookEvents.send('user.updated', { directory, user });
 
       return {
         status: 200,
@@ -104,7 +113,7 @@ export class DirectoryUsers {
 
     await this.users.delete(userId);
 
-    sendEvent('user.deleted', { directory, user });
+    this.webhookEvents.send('user.deleted', { directory, user });
 
     return {
       status: 200,

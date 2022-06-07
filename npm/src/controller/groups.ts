@@ -13,6 +13,10 @@ export class GroupsController {
 
   // Return the database store
   private store(type: 'groups' | 'members'): Storable {
+    if (!this.tenant || !this.product) {
+      throw new Error('Set tenant and product before using store.');
+    }
+
     return this.db.store(`${type}:${this.tenant}:${this.product}`);
   }
 

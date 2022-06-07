@@ -12,6 +12,10 @@ export class UsersController {
 
   // Return the database store
   private store(): Storable {
+    if (!this.tenant || !this.product) {
+      throw new Error('Set tenant and product before using store.');
+    }
+
     return this.db.store(`users:${this.tenant}:${this.product}`);
   }
 

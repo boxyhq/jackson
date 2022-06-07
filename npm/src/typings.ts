@@ -238,6 +238,7 @@ export interface GroupsController {
   setTenantAndProduct(tenant: string, product: string): void;
   list({ tenant, product }: { tenant: string; product: string }): Promise<Group[]>;
   get(id: string): Promise<Group>;
+  getAllUsers(groupId: string): Promise<{ user_id: string }[]>;
 }
 
 export interface User {
@@ -351,4 +352,31 @@ export interface DirectorySync {
   groupsRequest: GroupsRequestHandler;
   users: UsersController;
   groups: GroupsController;
+  events: WebhookEvents;
+}
+
+export interface WebhookEventLog {
+  id: string;
+  event: string;
+  payload: any;
+  createdAt: Date;
+  delivered?: boolean;
+}
+
+export interface WebhookEventLogger {
+  setTenantAndProduct(tenant: string, product: string);
+  create(event: string, payload: any): Promise<WebhookEventLog>;
+  get(id: string): Promise<WebhookEventLog>;
+  getAll(): Promise<WebhookEventLog[]>;
+}
+
+export interface WebhookEvents {
+  send(
+    action: DirectorySyncEventType,
+    payload: {
+      directory: Directory;
+      group?: Group;
+      user?: User;
+    }
+  ): Promise<void>;
 }
