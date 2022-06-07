@@ -19,16 +19,15 @@ export class UsersController {
     return this.db.store(`users:${this.tenant}:${this.product}`);
   }
 
-  public with(tenant: string, product: string): UsersController {
+  public setTenantAndProduct(tenant: string, product: string): UsersController {
     this.tenant = tenant;
     this.product = product;
 
     return this;
   }
 
-  public setTenantAndProduct(tenant: string, product: string) {
-    this.tenant = tenant;
-    this.product = product;
+  public with(tenant: string, product: string): UsersController {
+    return this.setTenantAndProduct(tenant, product);
   }
 
   // Create a new user

@@ -13,7 +13,7 @@ const Info: NextPage<{ directory: Directory }> = ({ directory }) => {
       </div>
       <DirectoryTab directory={directory} activeTab="directory" />
       <div className="overflow-hidden flex">
-        <div className='w-2/3 rounded border'>
+        <div className='w-3/4 rounded border'>
           <dl>
             <div className="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b">
               <dt className="text-sm font-medium text-gray-500">Directory ID</dt>

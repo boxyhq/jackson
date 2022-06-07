@@ -362,17 +362,13 @@ export interface DirectorySync {
 
 export interface WebhookEventLog {
   id: string;
+  directory_id: string;
   event: string;
+  webhook_endpoint: string;
   payload: any;
-  createdAt: Date;
+  created_at: Date;
+  status_code?: number;
   delivered?: boolean;
-}
-
-export interface WebhookEventLogger {
-  setTenantAndProduct(tenant: string, product: string);
-  create(event: string, payload: any): Promise<WebhookEventLog>;
-  get(id: string): Promise<WebhookEventLog>;
-  getAll(): Promise<WebhookEventLog[]>;
 }
 
 export interface WebhookEvents {
@@ -384,4 +380,8 @@ export interface WebhookEvents {
       user?: User;
     }
   ): Promise<void>;
+  getAll(): Promise<WebhookEventLog[]>;
+  setTenantAndProduct(tenant: string, product: string): WebhookEvents;
+  with(tenant: string, product: string): WebhookEvents;
+  updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
 }

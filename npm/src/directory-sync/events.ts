@@ -5,17 +5,42 @@ import type {
   User,
   DatabaseStore,
   WebhookEventLog,
+  Storable,
 } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
-import { WebhookEventLogger } from './logs';
+import { v4 as uuidv4 } from 'uuid';
 
 export class WebhookEvents {
-  private logger: WebhookEventLogger;
+  private db: DatabaseStore;
+  private tenant = '';
+  private product = '';
 
   constructor({ db }: { db: DatabaseStore }) {
-    this.logger = new WebhookEventLogger({ db });
+    this.db = db;
+  }
+
+  // Return the database store
+  private store(): Storable {
+    if (!this.tenant || !this.product) {
+      throw new Error('Set tenant and product before using store.');
+    }
+
+    return this.db.store(`dsync:logs:${this.tenant}:${this.product}`);
+  }
+
+  // Set the tenant and product
+  public setTenantAndProduct(tenant: string, product: string): WebhookEvents {
+    this.tenant = tenant;
+    this.product = product;
+
+    return this;
+  }
+
+  // Set the tenant and product
+  public with(tenant: string, product: string): WebhookEvents {
+    return this.setTenantAndProduct(tenant, product);
   }
 
   public async send(
@@ -62,18 +87,60 @@ export class WebhookEvents {
       'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
     };
 
-    // Log the event
-    await this.logger.setTenantAndProduct(tenant, product).create(action, webhookPayload);
+    this.setTenantAndProduct(tenant, product);
 
-    // Send the event
-    axios.post(webhook.endpoint, webhookPayload, { headers });
+    // Log the event
+    const log = await this.log(directory, webhookPayload);
+
+    try {
+      // Send the webhook event
+      await axios.post(webhook.endpoint, webhookPayload, { headers });
+      await this.updateStatus(log, 200);
+    } catch (err: any) {
+      await this.updateStatus(log, err.response.status);
+    }
 
     return;
   }
 
-  // public async getAll(): Promise<WebhookEventLog[]> {
-  //   //
-  // }
+  public async log(directory: Directory, webhookPayload: any): Promise<WebhookEventLog> {
+    const { event } = webhookPayload;
+
+    const id = uuidv4();
+
+    const log: WebhookEventLog = {
+      id,
+      directory_id: directory.id,
+      event,
+      webhook_endpoint: directory.webhook.endpoint,
+      payload: webhookPayload,
+      created_at: new Date(),
+    };
+
+    await this.store().put(id, log);
+
+    return log;
+  }
+
+  public async updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog> {
+    const updatedLog = {
+      ...log,
+      status_code: statusCode,
+      delivered: statusCode === 200,
+    };
+
+    await this.store().put(log.id, updatedLog);
+
+    return updatedLog;
+  }
+
+  public async get(id: string): Promise<WebhookEventLog> {
+    return await this.store().get(id);
+  }
+
+  public async getAll(): Promise<WebhookEventLog[]> {
+    return (await this.store().getAll()) as WebhookEventLog[];
+  }
 }
 
 const createSignatureString = async (secret: string, payload: object) => {

@@ -1,4 +1,5 @@
-import { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
+import type { WebhookEventLog, Directory } from "@lib/jackson";
 import React from 'react';
 import jackson from '@lib/jackson';
 import { Badge } from '@supabase/ui'
@@ -7,9 +8,7 @@ import { EyeIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
 import EmptyState from '@components/EmptyState';
 
-const Events: NextPage = (props: any) => {
-  const { directory, events } = props;
-
+const Events: NextPage<{ directory: Directory, events: WebhookEventLog[] }> = ({ directory, events }) => {
   if(events.length === 0) {
     return (
       <>
@@ -23,36 +22,32 @@ const Events: NextPage = (props: any) => {
   return (
     <>
       <Header title={directory.name} />
-      <DirectoryTab directory={directory} activeTab="users" />
-      <div className='rounded border'>
-        {/* <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <DirectoryTab directory={directory} activeTab="events" />
+      <div className='rounded border w-3/4'>
+        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-6 py-3">
-                First Name
+                Event Type
               </th>
               <th scope="col" className="px-6 py-3">
-                Last Name
+                Sent At
               </th>
               <th scope="col" className="px-6 py-3">
-                Email
-              </th>
-              <th scope="col" className="px-6 py-3">
-                State
+                Status Code
               </th>
               <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => {
+            {events.map((event) => {
               return (
-                <tr key={user.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="px-6 py-3">{user.first_name}</td>
-                  <td className="px-6 py-3">{user.last_name}</td>
-                  <td className="px-6 py-3">{user.email}</td>
-                  <td className="px-6 py-3">{user.raw.active ? <Badge size="small">Active</Badge> : <Badge size="small" color="red">Suspended</Badge>}</td>
+                <tr key={event.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <td className="px-6 py-3 font-semibold">{event.event}</td>
+                  <td className="px-6 py-3">{event.created_at.toString()}</td>
+                  <td className="px-6 py-3">{event.status_code === 200 ? <Badge color="green">200</Badge> : <Badge color="red">{`${event.status_code}`}</Badge> }</td>
                   <td className="px-6 py-3">
-                    <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
+                    <Link href={`/admin/directory-sync/${directory.id}/events/${event.id}`}>
                       <a>
                         <EyeIcon className='h-5 w-5' />
                       </a>
@@ -62,7 +57,7 @@ const Events: NextPage = (props: any) => {
               )
             })}
           </tbody>
-        </table> */}
+        </table>
       </div>
     </>
   );
@@ -80,10 +75,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
   const { directorySync } = await jackson();
 
+  const directory = await directorySync.directories.get(directoryId as string);
+  const events = await directorySync.events.with(directory.tenant, directory.product).getAll();
+
   return {
     props: {
-      directory: await directorySync.directories.get(directoryId as string),
-      events: []
+      directory,
+      events,
     },
   }
 }

@@ -22,7 +22,7 @@ const GroupsList: NextPage<{ directory: Directory, groups: Group[] }> = ({ direc
     <>
       <Header title={directory.name} />
       <DirectoryTab directory={directory} activeTab="groups" />
-      <div className='rounded border'>
+      <div className='rounded border w-3/4'>
         <table className="table-fixed w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
