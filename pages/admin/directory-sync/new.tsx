@@ -1,5 +1,5 @@
-import { NextPage } from 'next';
-import { Input, Button } from '@supabase/ui'
+import type { NextPage } from 'next';
+import { Input, Button, Select } from '@supabase/ui'
 import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -10,6 +10,7 @@ const newDirectory = {
   product: '',
   webhook_url: '',
   webhook_secret: '',
+  type: '',
 };
 
 const New: NextPage = () => {
@@ -45,7 +46,7 @@ const New: NextPage = () => {
     }
   }
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = event.target as HTMLInputElement;
 
     setDirectory({
@@ -62,6 +63,12 @@ const New: NextPage = () => {
       <div className='min-w-[28rem] border rounded border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
           <Input label='Directory name' id='name' className='mb-3' required onChange={onChange} />
+          <Select label="Directory provider" id="type" onChange={onChange} className='mb-3' required>
+            <Select.Option value=''>Select IdP</Select.Option>
+            <Select.Option value='okta'>Okta</Select.Option>
+            <Select.Option value='onelogin'>OneLogin</Select.Option>
+            <Select.Option value='azure'>Azure AD</Select.Option>
+          </Select>
           <Input label='Tenant' id='tenant' className='mb-3' required onChange={onChange} />
           <Input label='Product' id='product' className='mb-3' required onChange={onChange} />
           <Input label='Webhook URL' id='webhook_url' className='mb-3' onChange={onChange} />

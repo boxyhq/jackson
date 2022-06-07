@@ -42,7 +42,7 @@ const Index: NextPage<{ directories: Directory[] }> = ({ directories }) => {
           {directories.map((directory) => {
             return (
               <tr key={directory.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-6">{directory.type} {directory.name}</td>
+                <td className="px-6">{directory.name}</td>
                 <td className="px-6">{directory.tenant}</td>
                 <td className="px-6">{directory.product}</td>
                 <td className="px-6">
