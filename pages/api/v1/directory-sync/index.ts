@@ -52,13 +52,14 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySync } = await jackson();
 
-  const { name, tenant, product, webhook_url, webhook_secret } = req.body;
+  const { name, tenant, type, product, webhook_url, webhook_secret } = req.body;
 
   try {
     const directory = await directorySync.directories.create({
       name,
       tenant,
       product,
+      type,
       webhook_url,
       webhook_secret,
     });
