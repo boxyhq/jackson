@@ -1,13 +1,12 @@
-import { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
+import type { Directory, Group } from '@lib/jackson';
 import React from 'react';
 import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
-const GroupInfo: NextPage = (props: any) => {
-  const { directory, group } = props;
-
+const GroupInfo: NextPage<{ directory: Directory, group: Group }> = ({ directory, group }) => {
   return (
     <div>
       <div className='flex items-center justify-between mb-4'>

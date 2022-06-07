@@ -1,4 +1,5 @@
-import { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
+import type { Directory, User } from '@lib/jackson';
 import React from 'react';
 import jackson from '@lib/jackson';
 import { Badge } from '@supabase/ui'
@@ -7,9 +8,7 @@ import { EyeIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
 import EmptyState from '@components/EmptyState';
 
-const UsersList: NextPage = (props: any) => {
-  const { directory, users } = props;
-
+const UsersList: NextPage<{ directory: Directory, users: User[] }> = ({ directory, users }) => {
   if(users.length === 0) {
     return (
       <>
@@ -50,7 +49,7 @@ const UsersList: NextPage = (props: any) => {
                   <td className="px-6 py-3">{user.first_name}</td>
                   <td className="px-6 py-3">{user.last_name}</td>
                   <td className="px-6 py-3">{user.email}</td>
-                  <td className="px-6 py-3">{user.raw.active ? <Badge size="small">Active</Badge> : <Badge size="small" color="red">Suspended</Badge>}</td>
+                  <td className="px-6 py-3">{user.raw?.active ? <Badge size="small">Active</Badge> : <Badge size="small" color="red">Suspended</Badge>}</td>
                   <td className="px-6 py-3">
                     <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
                       <a>

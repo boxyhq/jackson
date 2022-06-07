@@ -1,13 +1,12 @@
-import { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
+import type { Directory } from '@lib/jackson';
 import { Input, Button } from '@supabase/ui'
 import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import jackson from '@lib/jackson';
 
-const Edit: NextPage = (props: any) => {
-  const { id, name, webhook, } = props.directory;
-
+const Edit: NextPage<{ directory: Directory }> = ({ directory: { id, name, webhook } }) => {
   const router = useRouter();
   const [directory, setDirectory] = React.useState({ 
     name,

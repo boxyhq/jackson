@@ -246,20 +246,23 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
-  raw?: object;
+  raw?: any;
 }
 
 export interface Group {
   id: string;
   name: string;
-  raw?: object;
+  raw?: any;
 }
+
+export type DirectoryType = 'azure' | 'onelogin' | 'okta';
 
 export interface Directory {
   id: string;
   name: string;
   tenant: string;
   product: string;
+  type: DirectoryType;
   scim: {
     path: string;
     endpoint?: string;
@@ -278,12 +281,14 @@ export interface DirectoryConfig {
     product,
     webhook_url,
     webhook_secret,
+    type,
   }: {
     name: string;
     tenant: string;
     product: string;
     webhook_url: string;
     webhook_secret: string;
+    type: DirectoryType;
   }): Promise<Directory>;
   get(id: string): Promise<Directory>;
   update(

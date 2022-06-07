@@ -1,12 +1,11 @@
-import { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
+import type { Directory } from '@lib/jackson';
 import Link from 'next/link';
 import jackson from '@lib/jackson';
 import { PencilAltIcon, DatabaseIcon } from '@heroicons/react/outline';
 import EmptyState from '@components/EmptyState';
 
-const Index: NextPage = (props: any) => {
-  const { directories } = props;
-
+const Index: NextPage<{ directories: Directory[] }> = ({ directories }) => {
   if(directories.length === 0) {
     return (
       <>
@@ -18,7 +17,7 @@ const Index: NextPage = (props: any) => {
       </>
     )
   }
-    
+
   return (
     <>
       <Header />
@@ -43,7 +42,7 @@ const Index: NextPage = (props: any) => {
           {directories.map((directory) => {
             return (
               <tr key={directory.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-6">{directory.name}</td>
+                <td className="px-6">{directory.type} {directory.name}</td>
                 <td className="px-6">{directory.tenant}</td>
                 <td className="px-6">{directory.product}</td>
                 <td className="px-6">

@@ -1,4 +1,5 @@
-import { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
+import type { Directory, Group } from '@lib/jackson';
 import React from 'react';
 import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
@@ -6,9 +7,7 @@ import EmptyState from '@components/EmptyState';
 import Link from 'next/link';
 import { EyeIcon } from '@heroicons/react/outline';
 
-const GroupsList: NextPage = (props: any) => {
-  const { directory, groups } = props;
-
+const GroupsList: NextPage<{ directory: Directory, groups: Group[] }> = ({ directory, groups }) => {
   if(groups.length === 0) {
     return (
       <>

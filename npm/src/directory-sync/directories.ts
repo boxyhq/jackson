@@ -1,4 +1,12 @@
-import type { Storable, Directory, JacksonOption, DatabaseStore, User, Group } from '../typings';
+import type {
+  Storable,
+  Directory,
+  JacksonOption,
+  DatabaseStore,
+  User,
+  Group,
+  DirectoryType,
+} from '../typings';
 import type { GroupsController } from '../controller/groups';
 import type { UsersController } from '../controller/users';
 import * as dbutils from '../db/utils';
@@ -41,12 +49,14 @@ export class DirectoryConfig {
     product,
     webhook_url,
     webhook_secret,
+    type,
   }: {
     name: string;
     tenant: string;
     product: string;
     webhook_url?: string;
     webhook_secret?: string;
+    type: DirectoryType;
   }): Promise<Directory> {
     if (!name || !tenant || !product) {
       throw new JacksonError('Missing required parameters.', 400);
@@ -61,6 +71,7 @@ export class DirectoryConfig {
       name,
       tenant,
       product,
+      type,
       scim: {
         path: `/api/scim/v2.0/${id}`,
         secret: await createRandomSecret(16),

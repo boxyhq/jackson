@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import type { Directory } from '@lib/jackson';
 
-const DirectoryTab = (props: any) => {
+const DirectoryTab = (props: { directory: Directory, activeTab: string }) => {
   const { directory, activeTab } = props;
 
   const menus = [

@@ -6,6 +6,10 @@ import type {
   IOAuthController,
   IHealthCheckController,
   DirectorySync,
+  DirectoryType,
+  Directory,
+  User,
+  Group,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -64,4 +68,4 @@ export default async function init() {
   };
 }
 
-export type { IdPConfig };
+export type { IdPConfig, DirectoryType, Directory, User, Group };

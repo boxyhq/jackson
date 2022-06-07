@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { DirectoryType } from '@lib/jackson';
 import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
 
@@ -18,13 +19,14 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySync } = await jackson();
 
-  const { name, tenant, product, webhook_url, webhook_secret } = req.body;
+  const { name, tenant, product, type, webhook_url, webhook_secret } = req.body;
 
   try {
     const directory = await directorySync.directories.create({
       name,
       tenant,
       product,
+      type: type as DirectoryType,
       webhook_url,
       webhook_secret,
     });

@@ -1,12 +1,11 @@
-import { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
+import type { Directory } from '@lib/jackson';
 import React from 'react';
 import jackson from '@lib/jackson';
 import { Input } from '@supabase/ui'
 import DirectoryTab from '@components/dsync/DirectoryTab';
 
-const Info: NextPage = (props: any) => {
-  const { directory } = props;
-
+const Info: NextPage<{ directory: Directory }> = ({ directory }) => {
   return (
     <div>
       <div className='flex items-center justify-between mb-4'>
