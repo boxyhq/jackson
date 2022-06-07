@@ -41,7 +41,7 @@ export class DirectoryUsers {
       raw: body,
     });
 
-    this.webhookEvents.send('user.created', { directory, user });
+    await this.webhookEvents.send('user.created', { directory, user });
 
     return {
       status: 201,
@@ -70,7 +70,7 @@ export class DirectoryUsers {
         raw: body,
       });
 
-      this.webhookEvents.send('user.updated', { directory, user });
+      await this.webhookEvents.send('user.updated', { directory, user });
 
       return {
         status: 200,
@@ -113,7 +113,7 @@ export class DirectoryUsers {
 
     await this.users.delete(userId);
 
-    this.webhookEvents.send('user.deleted', { directory, user });
+    await this.webhookEvents.send('user.deleted', { directory, user });
 
     return {
       status: 200,

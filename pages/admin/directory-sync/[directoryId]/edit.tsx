@@ -79,8 +79,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
   const { directorySync } = await jackson();
 
-  console.log(await directorySync.directories.get(directoryId as string))
-
   return {
     props: {
       directory: await directorySync.directories.get(directoryId as string)

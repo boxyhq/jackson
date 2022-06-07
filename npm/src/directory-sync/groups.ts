@@ -40,9 +40,9 @@ export class DirectoryGroups {
       raw: body,
     });
 
-    await this.addGroupMembers(directory, group, members);
+    await this.webhookEvents.send('group.created', { directory, group });
 
-    this.webhookEvents.send('group.created', { directory, group });
+    await this.addGroupMembers(directory, group, members);
 
     return {
       status: 201,
@@ -81,7 +81,7 @@ export class DirectoryGroups {
       await this.addOrRemoveGroupMembers(directory, group, members);
     }
 
-    this.webhookEvents.send('group.updated', { directory, group });
+    await this.webhookEvents.send('group.updated', { directory, group });
 
     return {
       status: 200,
@@ -127,14 +127,14 @@ export class DirectoryGroups {
       await this.removeGroupMembers(directory, group, [{ user_id: userId }]);
     }
 
-    // Update the group name if there is a name change
-    else if (op === 'replace' && group.name != value.displayName) {
+    // Update group
+    else if (op === 'replace') {
       const updatedGroup = await this.groups.update(groupId, {
         name: value.displayName,
         raw: group.raw,
       });
 
-      this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
+      await this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
     }
 
     return {
@@ -154,7 +154,7 @@ export class DirectoryGroups {
     await this.groups.removeAllUsers(groupId);
     await this.groups.delete(groupId);
 
-    this.webhookEvents.send('group.deleted', { directory, group });
+    await this.webhookEvents.send('group.deleted', { directory, group });
 
     return {
       status: 200,
@@ -198,7 +198,7 @@ export class DirectoryGroups {
 
       await this.groups.addUserToGroup(group.id, member.value);
 
-      this.webhookEvents.send('group.user_added', {
+      await this.webhookEvents.send('group.user_added', {
         directory,
         group,
         user: await this.users.get(member.value),
@@ -217,7 +217,7 @@ export class DirectoryGroups {
     for (const member of members) {
       await this.groups.removeUserFromGroup(group.id, member.user_id);
 
-      this.webhookEvents.send('group.user_removed', {
+      await this.webhookEvents.send('group.user_removed', {
         directory,
         group,
         user: await this.users.get(member.user_id),
