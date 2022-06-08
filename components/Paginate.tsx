@@ -11,12 +11,12 @@ const Paginate = ({
   itemsCount: number;
   path: string;
 }) => {
-  const nextPageUrl = itemsCount === pageLimit ? `${path}offset=${pageOffset + pageLimit}` : '#';
-  const previousPageUrl = pageOffset > 0 ? `${path}offset=${pageOffset - pageLimit}` : '#';
-
   if ((itemsCount === 0 && pageOffset === 0) || (itemsCount < pageLimit && pageOffset === 0)) {
     return null;
   }
+
+  const nextPageUrl = itemsCount === pageLimit ? `${path}offset=${pageOffset + pageLimit}` : '#';
+  const previousPageUrl = pageOffset > 0 ? `${path}offset=${pageOffset - pageLimit}` : '#';
 
   return (
     <div className='flex justify-center py-3 px-3'>

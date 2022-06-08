@@ -4,9 +4,14 @@ import Link from 'next/link';
 import jackson from '@lib/jackson';
 import { PencilAltIcon, DatabaseIcon } from '@heroicons/react/outline';
 import EmptyState from '@components/EmptyState';
+import Paginate from '@components/Paginate';
 
-const Index: NextPage<{ directories: Directory[] }> = ({ directories }) => {
-  if (directories.length === 0) {
+const Index: NextPage<{ directories: Directory[]; pageOffset: number; pageLimit: number }> = ({
+  directories,
+  pageOffset,
+  pageLimit,
+}) => {
+  if (directories.length === 0 && pageOffset === 0) {
     return (
       <>
         <Header />
@@ -63,6 +68,12 @@ const Index: NextPage<{ directories: Directory[] }> = ({ directories }) => {
           })}
         </tbody>
       </table>
+      <Paginate
+        pageOffset={pageOffset}
+        pageLimit={pageLimit}
+        itemsCount={directories.length}
+        path={`/admin/directory-sync?`}
+      />
     </>
   );
 };
@@ -78,12 +89,18 @@ const Header = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { offset = 0 } = context.query;
   const { directorySync } = await jackson();
+
+  const pageOffset = parseInt(offset as string);
+  const pageLimit = 25;
 
   return {
     props: {
-      directories: await directorySync.directories.list(),
+      directories: await directorySync.directories.list({ pageOffset, pageLimit }),
+      pageOffset,
+      pageLimit,
     },
   };
 };

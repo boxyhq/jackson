@@ -118,8 +118,14 @@ export class DirectoryConfig {
   }
 
   // Get all configurations
-  public async list(): Promise<Directory[]> {
-    const directories = (await this.store().getAll()) as Directory[];
+  public async list({
+    pageOffset,
+    pageLimit,
+  }: {
+    pageOffset: number;
+    pageLimit: number;
+  }): Promise<Directory[]> {
+    const directories = (await this.store().getAll(pageOffset, pageLimit)) as Directory[];
 
     return directories.map((directory) => {
       return this.transform(directory);

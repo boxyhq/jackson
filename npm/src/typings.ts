@@ -303,7 +303,7 @@ export interface DirectoryConfig {
     }
   ): Promise<Directory>;
   getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;
-  list(): Promise<Directory[]>;
+  list({ pageOffset, pageLimit }: { pageOffset: number; pageLimit: number }): Promise<Directory[]>;
   delete(id: string): Promise<void>;
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }

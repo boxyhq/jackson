@@ -91,7 +91,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directorySync } = await jackson();
 
   const pageOffset = parseInt(offset as string);
-  const pageLimit = 5;
+  const pageLimit = 25;
 
   const directory = await directorySync.directories.get(directoryId as string);
 
