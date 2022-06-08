@@ -137,7 +137,7 @@ export class DirectoryUsers {
       users = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
     } else {
       // Fetch all the existing Users
-      users = await this.users.getAll();
+      users = await this.users.list({ pageOffset: 0, pageLimit: 10 });
     }
 
     return {

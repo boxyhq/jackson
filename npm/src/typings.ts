@@ -228,16 +228,16 @@ export type DirectorySyncEventType =
 
 export interface UsersController {
   with(tenant: string, product: string): UsersController;
-  setTenantAndProduct(tenant: string, product: string): void;
-  list({ tenant, product }: { tenant: string; product: string }): Promise<User[]>;
+  setTenantAndProduct(tenant: string, product: string): UsersController;
+  list({ pageOffset, pageLimit }: { pageOffset: number; pageLimit: number }): Promise<User[]>;
   get(id: string): Promise<User>;
   search(userName: string): Promise<User[]>;
 }
 
 export interface GroupsController {
   with(tenant: string, product: string): GroupsController;
-  setTenantAndProduct(tenant: string, product: string): void;
-  list({ tenant, product }: { tenant: string; product: string }): Promise<Group[]>;
+  setTenantAndProduct(tenant: string, product: string): GroupsController;
+  list({ pageOffset, pageLimit }: { pageOffset: number; pageLimit: number }): Promise<Group[]>;
   get(id: string): Promise<Group>;
   getAllUsers(groupId: string): Promise<{ user_id: string }[]>;
 }
@@ -304,8 +304,6 @@ export interface DirectoryConfig {
   ): Promise<Directory>;
   getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;
   list(): Promise<Directory[]>;
-  listUsers({ directory }: { directory: string }): Promise<User[]>;
-  listGroups({ directory }: { directory: string }): Promise<Group[]>;
   delete(id: string): Promise<void>;
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }

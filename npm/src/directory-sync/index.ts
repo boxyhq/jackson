@@ -12,7 +12,7 @@ const directorySync = ({ db, opts }): DirectorySync => {
   const groups = new GroupsController({ db });
 
   const webhookEvents = new WebhookEvents({ db });
-  const directories = new DirectoryConfig({ db, opts, users, groups });
+  const directories = new DirectoryConfig({ db, opts });
   const directoryUsers = new DirectoryUsers({ directories, users, groups, webhookEvents });
   const directoryGroups = new DirectoryGroups({ directories, users, groups, webhookEvents });
 

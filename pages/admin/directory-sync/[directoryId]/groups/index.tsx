@@ -2,13 +2,19 @@ import type { NextPage, GetServerSideProps } from 'next';
 import type { Directory, Group } from '@lib/jackson';
 import React from 'react';
 import jackson from '@lib/jackson';
-import DirectoryTab from '@components/dsync/DirectoryTab';
 import EmptyState from '@components/EmptyState';
 import Link from 'next/link';
 import { EyeIcon } from '@heroicons/react/outline';
+import Paginate from '@components/Paginate';
+import DirectoryTab from '@components/dsync/DirectoryTab';
 
-const GroupsList: NextPage<{ directory: Directory; groups: Group[] }> = ({ directory, groups }) => {
-  if (groups.length === 0) {
+const GroupsList: NextPage<{
+  directory: Directory;
+  groups: Group[];
+  pageOffset: number;
+  pageLimit: number;
+}> = ({ directory, groups, pageOffset, pageLimit }) => {
+  if (groups.length === 0 && pageOffset === 0) {
     return (
       <>
         <Header title={directory.name} />
@@ -53,6 +59,12 @@ const GroupsList: NextPage<{ directory: Directory; groups: Group[] }> = ({ direc
             })}
           </tbody>
         </table>
+        <Paginate
+          pageOffset={pageOffset}
+          pageLimit={pageLimit}
+          itemsCount={groups.length}
+          path={`/admin/directory-sync/${directory.id}/groups?`}
+        />
       </div>
     </>
   );
@@ -67,13 +79,24 @@ const Header = ({ title }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { directoryId } = context.query;
+  const { directoryId, offset = 0 } = context.query;
   const { directorySync } = await jackson();
+
+  const pageOffset = parseInt(offset as string);
+  const pageLimit = 1;
+
+  const directory = await directorySync.directories.get(directoryId as string);
+
+  const groups = await directorySync.groups
+    .setTenantAndProduct(directory.tenant, directory.product)
+    .list({ pageOffset, pageLimit });
 
   return {
     props: {
-      directory: await directorySync.directories.get(directoryId as string),
-      groups: await directorySync.directories.listGroups({ directory: directoryId as string }),
+      directory,
+      groups,
+      pageOffset,
+      pageLimit,
     },
   };
 };

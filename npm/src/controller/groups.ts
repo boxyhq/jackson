@@ -20,16 +20,15 @@ export class GroupsController {
     return this.db.store(`${type}:${this.tenant}:${this.product}`);
   }
 
-  public with(tenant: string, product: string): GroupsController {
+  public setTenantAndProduct(tenant: string, product: string): GroupsController {
     this.tenant = tenant;
     this.product = product;
 
     return this;
   }
 
-  public setTenantAndProduct(tenant: string, product: string) {
-    this.tenant = tenant;
-    this.product = product;
+  public with(tenant: string, product: string): GroupsController {
+    return this.setTenantAndProduct(tenant, product);
   }
 
   // Create a new group
@@ -143,12 +142,7 @@ export class GroupsController {
   }
 
   // Get all groups in a directory
-  public async getAll(): Promise<Group[]> {
-    return (await this.store('groups').getAll()) as Group[];
-  }
-
-  // Get the groups by tenant and product
-  public async list({ tenant, product }: { tenant: string; product: string }): Promise<Group[]> {
-    return await this.with(tenant, product).getAll();
+  public async list({ pageOffset, pageLimit }: { pageOffset: number; pageLimit: number }): Promise<Group[]> {
+    return (await this.store('groups').getAll(pageOffset, pageLimit)) as Group[];
   }
 }

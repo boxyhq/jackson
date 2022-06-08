@@ -1,12 +1,4 @@
-import type {
-  Storable,
-  Directory,
-  JacksonOption,
-  DatabaseStore,
-  User,
-  Group,
-  DirectoryType,
-} from '../typings';
+import type { Storable, Directory, JacksonOption, DatabaseStore, DirectoryType } from '../typings';
 import type { GroupsController } from '../controller/groups';
 import type { UsersController } from '../controller/users';
 import * as dbutils from '../db/utils';
@@ -17,24 +9,10 @@ export class DirectoryConfig {
   private _store: Storable | null = null;
   private opts: JacksonOption;
   private db: DatabaseStore;
-  private users: UsersController;
-  private groups: GroupsController;
 
-  constructor({
-    db,
-    opts,
-    users,
-    groups,
-  }: {
-    db: DatabaseStore;
-    opts: JacksonOption;
-    users: UsersController;
-    groups: GroupsController;
-  }) {
+  constructor({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) {
     this.opts = opts;
     this.db = db;
-    this.users = users;
-    this.groups = groups;
   }
 
   // Return the database store
@@ -149,6 +127,7 @@ export class DirectoryConfig {
   }
 
   // Delete a configuration by id
+  // Note: This feature is not yet implemented
   public async delete(id: string): Promise<void> {
     if (!id) {
       throw new JacksonError('Missing required parameter.', 400);
@@ -159,20 +138,6 @@ export class DirectoryConfig {
     await this.store().delete(id);
 
     return;
-  }
-
-  // Get all users in a directory
-  public async listUsers({ directory }: { directory: string }): Promise<User[]> {
-    const { tenant, product } = await this.get(directory);
-
-    return await this.users.list({ tenant, product });
-  }
-
-  // Get all groups in a directory
-  public async listGroups({ directory }: { directory: string }): Promise<Group[]> {
-    const { tenant, product } = await this.get(directory);
-
-    return await this.groups.list({ tenant, product });
   }
 
   // Validate the API secret

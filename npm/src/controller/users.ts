@@ -97,13 +97,8 @@ export class UsersController {
   }
 
   // Get all users in a directory
-  public async getAll(): Promise<User[]> {
-    return (await this.store().getAll()) as User[];
-  }
-
-  // Get the users by tenant and product
-  public async list({ tenant, product }: { tenant: string; product: string }): Promise<User[]> {
-    return await this.with(tenant, product).getAll();
+  public async list({ pageOffset, pageLimit }: { pageOffset: number; pageLimit: number }): Promise<User[]> {
+    return (await this.store().getAll(pageOffset, pageLimit)) as User[];
   }
 
   // Search users by userName
