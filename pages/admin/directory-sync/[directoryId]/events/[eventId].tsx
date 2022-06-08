@@ -13,7 +13,7 @@ const EventInfo: NextPage<{ directory: Directory; event: WebhookEventLog }> = ({
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
       <DirectoryTab directory={directory} activeTab='events' />
-      <div className='rounded border text-sm'>
+      <div className='w-3/4 rounded border text-sm'>
         <SyntaxHighlighter language='json' style={coy}>
           {JSON.stringify(event, null, 3)}
         </SyntaxHighlighter>

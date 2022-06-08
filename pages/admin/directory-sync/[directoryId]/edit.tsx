@@ -63,7 +63,7 @@ const Edit: NextPage<{ directory: Directory }> = ({
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Update Configuration</h2>
       </div>
       <div className='flex overflow-hidden'>
-        <div className='w-1/2 rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+        <div className='w-3/4 rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
           <form onSubmit={onSubmit}>
             <Input
               label='Directory name'

@@ -18,7 +18,7 @@ const Index: NextPage<{ directories: Directory[] }> = ({ directories }) => {
   return (
     <>
       <Header />
-      <table className='w-3/4 rounded border text-left text-sm text-gray-500 dark:text-gray-400'>
+      <table className='w-full rounded border text-left text-sm text-gray-500 dark:text-gray-400'>
         <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
           <tr>
             <th scope='col' className='px-6 py-3'>

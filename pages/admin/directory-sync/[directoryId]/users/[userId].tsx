@@ -13,7 +13,7 @@ const UserInfo: NextPage<{ directory: Directory; user: User }> = ({ directory, u
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
       <DirectoryTab directory={directory} activeTab='users' />
-      <div className='rounded border text-sm'>
+      <div className='w-3/4 rounded border text-sm'>
         <SyntaxHighlighter language='json' style={coy}>
           {JSON.stringify(user, null, 3)}
         </SyntaxHighlighter>

@@ -13,7 +13,7 @@ const GroupInfo: NextPage<{ directory: Directory; group: Group }> = ({ directory
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
       <DirectoryTab directory={directory} activeTab='groups' />
-      <div className='rounded border text-sm'>
+      <div className='w-3/4 rounded border text-sm'>
         <SyntaxHighlighter language='json' style={coy}>
           {JSON.stringify(group, null, 3)}
         </SyntaxHighlighter>
