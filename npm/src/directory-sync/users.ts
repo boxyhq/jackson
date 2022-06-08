@@ -4,6 +4,7 @@ import type {
   Directory,
   DirectorySyncResponse,
   WebhookEvents,
+  User,
 } from '../typings';
 import type { GroupsController } from '../controller/groups';
 import type { UsersController } from '../controller/users';
@@ -126,32 +127,27 @@ export class DirectoryUsers {
     startIndex: number;
     filter?: string;
   }): Promise<DirectorySyncResponse> {
-    const { count, startIndex, filter } = queryParams;
+    const { startIndex, filter } = queryParams;
 
-    // Retrieve a list of Users
-    if (count && startIndex && filter === undefined) {
-      const users = await this.users.getAll();
+    let users: User[] = [];
 
-      return {
-        status: 200,
-        data: {
-          schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
-          startIndex: 1,
-          totalResults: users.length,
-          itemsPerPage: users.length,
-          Resources: users.map((user) => user.raw),
-        },
-      };
+    if (filter) {
+      // Search users by userName
+      // filter: userName eq "john@example.com"
+      users = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+    } else {
+      // Fetch all the existing Users
+      users = await this.users.getAll();
     }
 
     return {
       status: 200,
       data: {
         schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
-        totalResults: 0,
-        startIndex: 1,
-        itemsPerPage: 0,
-        Resources: [],
+        startIndex: startIndex,
+        totalResults: users.length,
+        itemsPerPage: users.length,
+        Resources: users.map((user) => user.raw),
       },
     };
   }

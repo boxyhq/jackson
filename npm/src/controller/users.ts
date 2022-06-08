@@ -51,7 +51,10 @@ export class UsersController {
       raw,
     };
 
-    await this.store().put(id, user);
+    await this.store().put(id, user, {
+      name: 'userName',
+      value: email,
+    });
 
     return user;
   }
@@ -101,5 +104,10 @@ export class UsersController {
   // Get the users by tenant and product
   public async list({ tenant, product }: { tenant: string; product: string }): Promise<User[]> {
     return await this.with(tenant, product).getAll();
+  }
+
+  // Search users by userName
+  public async search(userName: string): Promise<User[]> {
+    return (await this.store().getByIndex({ name: 'userName', value: userName })) as User[];
   }
 }

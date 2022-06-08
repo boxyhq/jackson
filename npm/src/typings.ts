@@ -231,6 +231,7 @@ export interface UsersController {
   setTenantAndProduct(tenant: string, product: string): void;
   list({ tenant, product }: { tenant: string; product: string }): Promise<User[]>;
   get(id: string): Promise<User>;
+  search(userName: string): Promise<User[]>;
 }
 
 export interface GroupsController {

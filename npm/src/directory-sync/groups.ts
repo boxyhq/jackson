@@ -186,8 +186,12 @@ export class DirectoryGroups {
   }
 
   // Add members to a group
-  public async addGroupMembers(directory: Directory, group: Group, members: { value: string }[]) {
-    if (members && members.length === 0) {
+  public async addGroupMembers(
+    directory: Directory,
+    group: Group,
+    members: { value: string }[] | undefined
+  ): Promise<void> {
+    if (members === undefined || (members && members.length === 0)) {
       return;
     }
 
