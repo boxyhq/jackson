@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { Input, Button, Select } from '@supabase/ui'
+import { Input, Button, Select } from '@supabase/ui';
 import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -32,19 +32,19 @@ const New: NextPage = () => {
     });
 
     setLoading(false);
-  
+
     const { data, error } = await rawResponse.json();
 
-    if(error) {
+    if (error) {
       toast.error(error.message);
       return;
     }
 
-    if(data) {
+    if (data) {
       toast.success('Directory created successfully');
       router.replace(`/admin/directory-sync/${data.id}`);
     }
-  }
+  };
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = event.target as HTMLInputElement;
@@ -53,17 +53,17 @@ const New: NextPage = () => {
       ...directory,
       [target.id]: target.value,
     });
-  }
+  };
 
   return (
     <div>
-      <div className='flex items-center justify-between mb-4'>
+      <div className='mb-4 flex items-center justify-between'>
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>New Configuration</h2>
       </div>
-      <div className='w-1/2 border rounded border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+      <div className='w-1/2 rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <Input label='Directory name' id='name' className='mb-3' required onChange={onChange} />
-          <Select label="Directory provider" id="type" onChange={onChange} className='mb-3' required>
+          <Select label='Directory provider' id='type' onChange={onChange} className='mb-3' required>
             <Select.Option value=''>Select IdP</Select.Option>
             <Select.Option value='okta'>Okta</Select.Option>
             <Select.Option value='onelogin'>OneLogin</Select.Option>
@@ -73,7 +73,9 @@ const New: NextPage = () => {
           <Input label='Product' id='product' className='mb-3' required onChange={onChange} />
           <Input label='Webhook URL' id='webhook_url' className='mb-3' onChange={onChange} />
           <Input label='Webhook secret' id='webhook_secret' className='mb-3' onChange={onChange} />
-          <Button size='small' loading={loading}>Save Changes</Button>
+          <Button size='small' loading={loading}>
+            Save Changes
+          </Button>
         </form>
       </div>
     </div>

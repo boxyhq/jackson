@@ -7,29 +7,29 @@ import EmptyState from '@components/EmptyState';
 import Link from 'next/link';
 import { EyeIcon } from '@heroicons/react/outline';
 
-const GroupsList: NextPage<{ directory: Directory, groups: Group[] }> = ({ directory, groups }) => {
-  if(groups.length === 0) {
+const GroupsList: NextPage<{ directory: Directory; groups: Group[] }> = ({ directory, groups }) => {
+  if (groups.length === 0) {
     return (
       <>
         <Header title={directory.name} />
-        <DirectoryTab directory={directory} activeTab="groups" />
-        <EmptyState title="No groups found" />
+        <DirectoryTab directory={directory} activeTab='groups' />
+        <EmptyState title='No groups found' />
       </>
-    )
+    );
   }
 
   return (
     <>
       <Header title={directory.name} />
-      <DirectoryTab directory={directory} activeTab="groups" />
-      <div className='rounded border w-3/4'>
-        <table className="table-fixed w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <DirectoryTab directory={directory} activeTab='groups' />
+      <div className='w-3/4 rounded border'>
+        <table className='w-full table-fixed text-left text-sm text-gray-500 dark:text-gray-400'>
+          <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
             <tr>
-              <th scope="col" className="px-6 py-3 w-5/6">
+              <th scope='col' className='w-5/6 px-6 py-3'>
                 Name
               </th>
-              <th scope="col" className="px-6 py-3 w-1/6">
+              <th scope='col' className='w-1/6 px-6 py-3'>
                 Actions
               </th>
             </tr>
@@ -37,9 +37,11 @@ const GroupsList: NextPage<{ directory: Directory, groups: Group[] }> = ({ direc
           <tbody>
             {groups.map((group) => {
               return (
-                <tr key={group.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="px-6 py-3">{group.name}</td>
-                  <td className="px-6 py-3">
+                <tr
+                  key={group.id}
+                  className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
+                  <td className='px-6 py-3'>{group.name}</td>
+                  <td className='px-6 py-3'>
                     <Link href={`/admin/directory-sync/${directory.id}/groups/${group.id}`}>
                       <a>
                         <EyeIcon className='h-5 w-5' />
@@ -47,7 +49,7 @@ const GroupsList: NextPage<{ directory: Directory, groups: Group[] }> = ({ direc
                     </Link>
                   </td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
@@ -56,13 +58,13 @@ const GroupsList: NextPage<{ directory: Directory, groups: Group[] }> = ({ direc
   );
 };
 
-const Header = ({title}) => {
+const Header = ({ title }) => {
   return (
-    <div className='flex items-center justify-between mb-4'>
+    <div className='mb-4 flex items-center justify-between'>
       <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{title}</h2>
     </div>
-  )
-}
+  );
+};
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
@@ -73,7 +75,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       directory: await directorySync.directories.get(directoryId as string),
       groups: await directorySync.directories.listGroups({ directory: directoryId as string }),
     },
-  }
-}
+  };
+};
 
 export default GroupsList;

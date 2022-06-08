@@ -6,15 +6,15 @@ import DirectoryTab from '@components/dsync/DirectoryTab';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
-const GroupInfo: NextPage<{ directory: Directory, group: Group }> = ({ directory, group }) => {
+const GroupInfo: NextPage<{ directory: Directory; group: Group }> = ({ directory, group }) => {
   return (
     <div>
-      <div className='flex items-center justify-between mb-4'>
+      <div className='mb-4 flex items-center justify-between'>
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
       </div>
-      <DirectoryTab directory={directory} activeTab="groups" />
-      <div className='text-sm border rounded'>
-        <SyntaxHighlighter language="json" style={coy}>
+      <DirectoryTab directory={directory} activeTab='groups' />
+      <div className='rounded border text-sm'>
+        <SyntaxHighlighter language='json' style={coy}>
           {JSON.stringify(group, null, 3)}
         </SyntaxHighlighter>
       </div>
@@ -28,16 +28,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const directory = await directorySync.directories.get(directoryId as string);
 
-  const group = await directorySync.groups
-    .with(directory.tenant, directory.product)
-    .get(groupId as string);
+  const group = await directorySync.groups.with(directory.tenant, directory.product).get(groupId as string);
 
   return {
     props: {
       directory,
       group,
     },
-  }
-}
+  };
+};
 
 export default GroupInfo;
