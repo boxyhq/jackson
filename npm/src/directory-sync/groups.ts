@@ -171,7 +171,7 @@ export class DirectoryGroups {
   }
 
   public async getAll(): Promise<DirectorySyncResponse> {
-    const groups = await this.groups.getAll();
+    const groups = await this.groups.list({ pageOffset: undefined, pageLimit: undefined });
 
     return {
       status: 200,

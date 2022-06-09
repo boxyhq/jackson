@@ -142,7 +142,13 @@ export class GroupsController {
   }
 
   // Get all groups in a directory
-  public async list({ pageOffset, pageLimit }: { pageOffset: number; pageLimit: number }): Promise<Group[]> {
+  public async list({
+    pageOffset,
+    pageLimit,
+  }: {
+    pageOffset?: number;
+    pageLimit?: number;
+  }): Promise<Group[]> {
     return (await this.store('groups').getAll(pageOffset, pageLimit)) as Group[];
   }
 }

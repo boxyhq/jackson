@@ -97,7 +97,7 @@ export class UsersController {
   }
 
   // Get all users in a directory
-  public async list({ pageOffset, pageLimit }: { pageOffset: number; pageLimit: number }): Promise<User[]> {
+  public async list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]> {
     return (await this.store().getAll(pageOffset, pageLimit)) as User[];
   }
 
