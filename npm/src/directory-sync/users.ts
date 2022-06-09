@@ -139,7 +139,7 @@ export class DirectoryUsers {
       totalResults = users.length;
     } else {
       // Fetch all the existing Users (Paginated)
-      totalResults = (await this.users.list({})).length;
+      totalResults = (await this.users.list({})).length; // At this moment, we don't have method to count the database records.
       users = await this.users.list({ pageOffset: startIndex - 1, pageLimit: count });
     }
 
