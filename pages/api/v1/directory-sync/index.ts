@@ -38,7 +38,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // otherwise, get all configurations
-    const directories = await directorySync.directories.list();
+    const directories = await directorySync.directories.list({});
 
     return res.status(200).json({ data: directories, error: null });
   } catch (err: any) {

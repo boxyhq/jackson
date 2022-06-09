@@ -1,6 +1,7 @@
 import type { Storable, Group, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
 import * as dbutils from '../db/utils';
+import { JacksonError } from './error';
 
 export class GroupsController {
   private db: DatabaseStore;
@@ -50,7 +51,13 @@ export class GroupsController {
 
   // Get a group by id
   public async get(id: string): Promise<Group> {
-    return await this.store('groups').get(id);
+    const group = await this.store('groups').get(id);
+
+    if (!group) {
+      throw new JacksonError(`Group with id ${id} not found.`, 404);
+    }
+
+    return group;
   }
 
   // Update the group data

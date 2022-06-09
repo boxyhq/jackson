@@ -1,5 +1,6 @@
 import type { Storable, User, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
+import { JacksonError } from './error';
 
 export class UsersController {
   private db: DatabaseStore;
@@ -61,7 +62,13 @@ export class UsersController {
 
   // Get a user by id
   public async get(id: string): Promise<User> {
-    return await this.store().get(id);
+    const user = await this.store().get(id);
+
+    if (!user) {
+      throw new JacksonError(`User with id ${id} not found.`, 404);
+    }
+
+    return user;
   }
 
   // Update the user data

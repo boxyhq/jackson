@@ -157,9 +157,8 @@ export class DirectoryUsers {
     const { method, directory_id: directoryId, user_id: userId, body, query_params: queryParams } = request;
 
     const directory = await this.directories.get(directoryId);
-    const { tenant, product } = directory;
 
-    this.users.setTenantAndProduct(tenant, product);
+    this.users.setTenantAndProduct(directory.tenant, directory.product);
 
     if (userId) {
       // Retrieve a specific User
