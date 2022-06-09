@@ -127,26 +127,29 @@ export class DirectoryUsers {
     startIndex: number;
     filter?: string;
   }): Promise<DirectorySyncResponse> {
-    const { startIndex, filter } = queryParams;
+    const { startIndex, filter, count } = queryParams;
 
     let users: User[] = [];
+    let totalResults = 0;
 
     if (filter) {
       // Search users by userName
       // filter: userName eq "john@example.com"
       users = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+      totalResults = users.length;
     } else {
-      // Fetch all the existing Users
-      users = await this.users.list({ pageOffset: 0, pageLimit: 1000 });
+      // Fetch all the existing Users (Paginated)
+      totalResults = (await this.users.list({})).length;
+      users = await this.users.list({ pageOffset: startIndex - 1, pageLimit: count });
     }
 
     return {
       status: 200,
       data: {
         schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
-        startIndex: startIndex,
-        totalResults: users.length,
-        itemsPerPage: users.length,
+        startIndex,
+        totalResults,
+        itemsPerPage: count,
         Resources: users.map((user) => user.raw),
       },
     };

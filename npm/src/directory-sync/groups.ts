@@ -42,7 +42,7 @@ export class DirectoryGroups {
 
     await this.webhookEvents.send('group.created', { directory, group });
 
-    await this.addGroupMembers(directory, group, members);
+    await this.addGroupMembers(directory, group, members, false);
 
     return {
       status: 201,
@@ -189,7 +189,8 @@ export class DirectoryGroups {
   public async addGroupMembers(
     directory: Directory,
     group: Group,
-    members: { value: string }[] | undefined
+    members: { value: string }[] | undefined,
+    sendWebhookEvent = true
   ): Promise<void> {
     if (members === undefined || (members && members.length === 0)) {
       return;
@@ -202,11 +203,14 @@ export class DirectoryGroups {
 
       await this.groups.addUserToGroup(group.id, member.value);
 
-      await this.webhookEvents.send('group.user_added', {
-        directory,
-        group,
-        user: await this.users.get(member.value),
-      });
+      if (sendWebhookEvent) {
+        // For custom Okta SAML app, we don't send webhook event for adding group members (IdP doesn't support it).
+        await this.webhookEvents.send('group.user_added', {
+          directory,
+          group,
+          user: await this.users.get(member.value),
+        });
+      }
     }
 
     return;
