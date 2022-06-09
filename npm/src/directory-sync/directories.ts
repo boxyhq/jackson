@@ -1,6 +1,4 @@
 import type { Storable, Directory, JacksonOption, DatabaseStore, DirectoryType } from '../typings';
-import type { GroupsController } from '../controller/groups';
-import type { UsersController } from '../controller/users';
 import * as dbutils from '../db/utils';
 import { createRandomSecret } from '../controller/utils';
 import { JacksonError } from '../controller/error';

@@ -1,10 +1,10 @@
 import * as path from 'path';
 import sinon from 'sinon';
 import tap from 'tap';
-import * as dbutils from '../src/db/utils';
-import controllers from '../src/index';
-import readConfig from '../src/read-config';
-import { IdPConfig, JacksonOption } from '../src/typings';
+import * as dbutils from '../../src/db/utils';
+import controllers from '../../src/index';
+import readConfig from '../../src/read-config';
+import { IdPConfig, JacksonOption } from '../../src/typings';
 import { saml_config } from './fixture';
 
 let apiController;

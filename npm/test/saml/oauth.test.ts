@@ -8,11 +8,11 @@ import {
   OAuthReqBody,
   OAuthTokenReq,
   SAMLResponsePayload,
-} from '../src/typings';
+} from '../../src/typings';
 import sinon from 'sinon';
 import tap from 'tap';
-import { JacksonError } from '../src/controller/error';
-import readConfig from '../src/read-config';
+import { JacksonError } from '../../src/controller/error';
+import readConfig from '../../src/read-config';
 import saml from '@boxyhq/saml20';
 import {
   authz_request_normal,
@@ -61,7 +61,7 @@ const addMetadata = async (metadataPath) => {
 };
 
 tap.before(async () => {
-  const controller = await (await import('../src/index')).default(options);
+  const controller = await (await import('../../src/index')).default(options);
 
   apiController = controller.apiController;
   oauthController = controller.oauthController;
