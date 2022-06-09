@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { extractAuthToken, bodyParser } from '@lib/utils';
+import { extractAuthToken } from '@lib/auth';
+import { bodyParser } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { directorySync } = await jackson();

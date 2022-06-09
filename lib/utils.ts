@@ -1,21 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import env from '@lib/env';
 import micromatch from 'micromatch';
-
-export const validateApiKey = (token) => {
-  return env.apiKeys.includes(token);
-};
-
-export const extractAuthToken = (req: NextApiRequest) => {
-  const authHeader = req.headers['authorization'];
-  const parts = (authHeader || '').split(' ');
-
-  if (parts.length > 1) {
-    return parts[1];
-  }
-
-  return null;
-};
 
 export const validateEmailWithACL = (email) => {
   const NEXTAUTH_ACL = process.env.NEXTAUTH_ACL || undefined;
@@ -39,20 +23,6 @@ export const setErrorCookie = (res: NextApiResponse, value: unknown, options: { 
     cookieContents += '; Path=' + options.path;
   }
   res.setHeader('Set-Cookie', cookieContents);
-};
-
-// Print the API request
-export const printRequest = (req: NextApiRequest) => {
-  const { body, query, method, url, headers } = req;
-  return;
-
-  console.log({
-    // headers,
-    url,
-    method,
-    query,
-    body: body,
-  });
 };
 
 const IsJsonString = (body: any): boolean => {
