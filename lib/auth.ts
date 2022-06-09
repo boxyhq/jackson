@@ -1,10 +1,14 @@
 import env from '@lib/env';
 
-export const validateApiKey = (token: string) => {
+export const validateApiKey = (token: string | null) => {
+  if (!token) {
+    return false;
+  }
+
   return env.apiKeys.includes(token);
 };
 
-export const extractAuthToken = (req) => {
+export const extractAuthToken = (req): string | null => {
   let authHeader = '';
 
   if (typeof req.headers.get === 'function') {
@@ -14,7 +18,7 @@ export const extractAuthToken = (req) => {
     authHeader = req.headers.authorization || '';
   }
 
-  const parts = (authHeader || '').split(' ');
+  const parts = authHeader.split(' ');
 
   return parts.length > 1 ? parts[1] : null;
 };
