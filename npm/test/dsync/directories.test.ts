@@ -40,7 +40,7 @@ tap.test('Directories / ', async (t) => {
     const newDirectory = await directorySync.directories.create(directories[0]);
 
     t.ok(newDirectory);
-    t.match(newDirectory, directories[0]);
+    t.hasStrict(newDirectory, directories[0]);
     t.type(newDirectory.scim, 'object');
     t.type(newDirectory.webhook, 'object');
 
@@ -52,7 +52,7 @@ tap.test('Directories / ', async (t) => {
     const directoryFetched = await directorySync.directories.get(newDirectory.id);
 
     t.ok(directoryFetched);
-    t.match(directoryFetched, directories[0]);
+    t.hasStrict(directoryFetched, directories[0]);
     t.match(directoryFetched.id, newDirectory.id);
 
     t.end();
@@ -89,7 +89,7 @@ tap.test('Directories / ', async (t) => {
     );
 
     t.ok(directoryFetched);
-    t.match(directoryFetched, directories[0]);
+    t.hasStrict(directoryFetched, directories[0]);
     t.match(directoryFetched, newDirectory);
 
     t.end();
@@ -133,8 +133,8 @@ tap.test('Directories / ', async (t) => {
 
     t.ok(directoriesList);
     t.equal(directoriesList.length, 2);
-    t.match(directoriesList[1], directories[0]);
-    t.match(directoriesList[0], directories[1]);
+    t.hasStrict(directoriesList[1], directories[0]);
+    t.hasStrict(directoriesList[0], directories[1]);
 
     t.end();
   });
