@@ -1,5 +1,5 @@
 import type { JacksonError } from '../../src/controller/error';
-import { JacksonOption, DirectorySync } from '../../src/typings';
+import { JacksonOption, DirectorySync, Directory } from '../../src/typings';
 import tap from 'tap';
 import * as dbutils from '../../src/db/utils';
 import directories from './data/directories';
@@ -21,24 +21,24 @@ tap.before(async () => {
   directorySync = jackson.directorySync;
 });
 
-tap.afterEach(async () => {
-  // Delete the directories after each test
-  await Promise.all(
-    directories.map(async (directory) => {
-      const directoryId = dbutils.keyDigest(dbutils.keyFromParts(directory.tenant, directory.product));
-      await directorySync.directories.delete(directoryId);
-    })
-  );
-});
-
 tap.teardown(async () => {
   process.exit(0);
 });
 
 tap.test('Directories / ', async (t) => {
-  t.test('should be able to create a directory', async (t) => {
-    const newDirectory = await directorySync.directories.create(directories[0]);
+  let newDirectory: Directory;
 
+  tap.beforeEach(async () => {
+    // Create a directory before each test
+    newDirectory = await directorySync.directories.create(directories[0]);
+  });
+
+  tap.afterEach(async () => {
+    // Delete the directory after each test
+    await directorySync.directories.delete(newDirectory.id);
+  });
+
+  t.test('should be able to create a directory', async (t) => {
     t.ok(newDirectory);
     t.hasStrict(newDirectory, directories[0]);
     t.type(newDirectory.scim, 'object');
@@ -48,7 +48,6 @@ tap.test('Directories / ', async (t) => {
   });
 
   t.test('should be able to get a directory', async (t) => {
-    const newDirectory = await directorySync.directories.create(directories[0]);
     const directoryFetched = await directorySync.directories.get(newDirectory.id);
 
     t.ok(directoryFetched);
@@ -59,8 +58,6 @@ tap.test('Directories / ', async (t) => {
   });
 
   t.test('should be able to update a directory', async (t) => {
-    const newDirectory = await directorySync.directories.create(directories[0]);
-
     const toUpdate = {
       name: 'BoxyHQ',
       webhook_url: 'https://my-cool-app.com/webhook',
@@ -81,8 +78,6 @@ tap.test('Directories / ', async (t) => {
   });
 
   t.test('should be able to get a directory by tenant and product', async (t) => {
-    const newDirectory = await directorySync.directories.create(directories[0]);
-
     const directoryFetched = await directorySync.directories.getByTenantAndProduct(
       newDirectory.tenant,
       newDirectory.product
@@ -96,8 +91,6 @@ tap.test('Directories / ', async (t) => {
   });
 
   t.test('should be able to delete a directory', async (t) => {
-    const newDirectory = await directorySync.directories.create(directories[0]);
-
     await directorySync.directories.delete(newDirectory.id);
 
     try {
@@ -114,8 +107,6 @@ tap.test('Directories / ', async (t) => {
   });
 
   t.test('should be able to validate the SCIM secret', async (t) => {
-    const newDirectory = await directorySync.directories.create(directories[0]);
-
     const { secret } = newDirectory.scim;
 
     t.ok(newDirectory);
@@ -126,7 +117,7 @@ tap.test('Directories / ', async (t) => {
   });
 
   t.test('should be able to get all directories', async (t) => {
-    await directorySync.directories.create(directories[0]);
+    // Create a second directory
     await directorySync.directories.create(directories[1]);
 
     const directoriesList = await directorySync.directories.list({});
