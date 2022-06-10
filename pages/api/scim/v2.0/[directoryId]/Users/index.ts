@@ -14,9 +14,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const request = {
     method: method as string,
-    directory_id: directoryId as string,
     body: bodyParser(req),
-    query_params: {
+    query: {
+      directory_id: directoryId as string,
       count: parseInt(req.query.count as string),
       startIndex: parseInt(req.query.startIndex as string),
       filter: req.query.filter as string,

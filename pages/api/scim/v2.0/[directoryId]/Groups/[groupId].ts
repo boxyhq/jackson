@@ -14,9 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const request = {
     method: method as string,
-    directory_id: directoryId as string,
-    group_id: groupId as string,
     body: bodyParser(req),
+    query: {
+      directory_id: directoryId as string,
+      group_id: groupId as string,
+    },
   };
 
   const { status, data } = await directorySync.groupsRequest.handle(request);

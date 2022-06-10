@@ -252,7 +252,8 @@ export class DirectoryGroups {
 
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
-    const { method, directory_id: directoryId, group_id: groupId, body, query_params: queryParams } = request;
+    const { method, body, query } = request;
+    const { directory_id: directoryId, group_id: groupId } = query;
 
     const directory = await this.directories.get(directoryId);
 
@@ -295,7 +296,7 @@ export class DirectoryGroups {
 
     // Retrieve Groups
     // GET /Groups
-    if (method === 'GET' && queryParams) {
+    if (method === 'GET' && query) {
       return await this.getAll();
     }
 

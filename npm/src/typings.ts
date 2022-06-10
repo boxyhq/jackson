@@ -241,6 +241,7 @@ export interface GroupsController {
   list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<Group[]>;
   get(id: string): Promise<Group>;
   getAllUsers(groupId: string): Promise<{ user_id: string }[]>;
+  delete(id: string): Promise<void>;
 }
 
 export interface User {
@@ -329,13 +330,13 @@ export interface DirectoryGroups {
 
 export interface DirectorySyncRequest {
   method: string;
-  directory_id: string;
-  user_id?: string;
-  group_id?: string;
   body?: any;
-  query_params?: {
-    count: number;
-    startIndex: number;
+  query: {
+    directory_id: string;
+    user_id?: string;
+    group_id?: string;
+    count?: number;
+    startIndex?: number;
     filter?: string;
   };
 }

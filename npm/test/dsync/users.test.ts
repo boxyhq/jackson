@@ -1,4 +1,4 @@
-import { JacksonOption, DirectorySync, DirectorySyncResponse } from '../../src/typings';
+import { JacksonOption, DirectorySync } from '../../src/typings';
 import tap from 'tap';
 import users from './data/users';
 import directories from './data/directories';

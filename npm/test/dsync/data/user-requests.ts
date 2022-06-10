@@ -2,21 +2,23 @@ const requests = {
   // POST /Users
   create: (directoryId: string, user: any) => {
     return {
-      directory_id: directoryId,
       method: 'POST',
       body: user,
+      query: {
+        directory_id: directoryId,
+      },
     };
   },
 
   // GET /Users?filter=userName eq "userName"
   filterByUsername: (directoryId: string, userName: string) => {
     return {
-      directory_id: directoryId,
       method: 'GET',
-      query_params: {
+      query: {
         filter: `userName eq "${userName}"`,
         count: 1,
         startIndex: 1,
+        directory_id: directoryId,
       },
     };
   },
@@ -24,28 +26,30 @@ const requests = {
   // GET /Users/{userId}
   getById: (directoryId: string, userId: string) => {
     return {
-      directory_id: directoryId,
       method: 'GET',
-      user_id: userId,
+      query: {
+        directory_id: directoryId,
+        user_id: userId,
+      },
     };
   },
 
   // PUT /Users/{userId}
   updateById: (directoryId: string, userId: string, user: any) => {
     return {
-      directory_id: directoryId,
       method: 'PUT',
-      user_id: userId,
       body: user,
+      query: {
+        directory_id: directoryId,
+        user_id: userId,
+      },
     };
   },
 
   // PATCH /Users/{userId}
   updateOperationById: (directoryId: string, userId: string) => {
     return {
-      directory_id: directoryId,
       method: 'PATCH',
-      user_id: userId,
       body: {
         Operations: [
           {
@@ -56,17 +60,21 @@ const requests = {
           },
         ],
       },
+      query: {
+        directory_id: directoryId,
+        user_id: userId,
+      },
     };
   },
 
   // GET /Users/
   getAll: (directoryId: string) => {
     return {
-      directory_id: directoryId,
       method: 'GET',
-      query_params: {
+      query: {
         count: 1,
         startIndex: 1,
+        directory_id: directoryId,
       },
     };
   },
@@ -74,9 +82,11 @@ const requests = {
   // DELETE /Users/{userId}
   deleteById: (directoryId: string, userId: string) => {
     return {
-      directory_id: directoryId,
       method: 'DELETE',
-      user_id: userId,
+      query: {
+        directory_id: directoryId,
+        user_id: userId,
+      },
     };
   },
 };

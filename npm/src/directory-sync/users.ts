@@ -159,7 +159,8 @@ export class DirectoryUsers {
 
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
-    const { method, directory_id: directoryId, user_id: userId, body, query_params: queryParams } = request;
+    const { method, body, query } = request;
+    const { directory_id: directoryId, user_id: userId } = query;
 
     const directory = await this.directories.get(directoryId);
 
@@ -199,8 +200,12 @@ export class DirectoryUsers {
 
     // Retrieve Users
     // GET /Users
-    if (method === 'GET' && queryParams) {
-      return await this.getAll(queryParams);
+    if (method === 'GET' && query) {
+      return await this.getAll({
+        count: query.count as number,
+        startIndex: query.startIndex as number,
+        filter: query.filter,
+      });
     }
 
     return {

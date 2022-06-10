@@ -38,6 +38,8 @@ export class GroupsController {
 
     const id = uuidv4();
 
+    raw['id'] = id;
+
     const group: Group = {
       id,
       name,
