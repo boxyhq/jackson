@@ -232,6 +232,7 @@ export interface UsersController {
   list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]>;
   get(id: string): Promise<User>;
   search(userName: string): Promise<User[]>;
+  delete(id: string): Promise<void>;
 }
 
 export interface GroupsController {
@@ -288,8 +289,8 @@ export interface DirectoryConfig {
     name: string;
     tenant: string;
     product: string;
-    webhook_url: string;
-    webhook_secret: string;
+    webhook_url?: string;
+    webhook_secret?: string;
     type: DirectoryType;
   }): Promise<Directory>;
   get(id: string): Promise<Directory>;

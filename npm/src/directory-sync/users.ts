@@ -81,7 +81,7 @@ export class DirectoryUsers {
 
     // Delete the user
     if (active === false) {
-      return await this.delete(directory, userId);
+      return await this.delete(directory, userId, false);
     }
 
     return {
@@ -100,7 +100,7 @@ export class DirectoryUsers {
 
     // Delete the user
     if (operation.op === 'replace' && operation.value.active === false) {
-      return await this.delete(directory, userId);
+      return await this.delete(directory, userId, false);
     }
 
     return {
@@ -109,10 +109,12 @@ export class DirectoryUsers {
     };
   }
 
-  public async delete(directory: Directory, userId: string) {
+  public async delete(directory: Directory, userId: string, active = true): Promise<DirectorySyncResponse> {
     const user = await this.users.get(userId);
 
     await this.users.delete(userId);
+
+    user.raw.active = active;
 
     await this.webhookEvents.send('user.deleted', { directory, user });
 
@@ -181,7 +183,6 @@ export class DirectoryUsers {
       if (method === 'PATCH') {
         return await this.updateOperation(directory, userId, body);
       }
-      3;
 
       // Delete a user
       // DELETE /Users/$userId
