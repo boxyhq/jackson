@@ -36,7 +36,7 @@
     "statements": 70
   },
   "dependencies": {
-    "@boxyhq/saml20": "1.0.2",
+    "@boxyhq/saml20": "1.0.3",
     "@opentelemetry/api-metrics": "0.27.0",
     "@peculiar/webcrypto": "1.4.0",
     "@peculiar/x509": "1.6.4",
@@ -52,11 +52,11 @@
     "axios": "^0.27.2"
   },
   "devDependencies": {
-    "@types/node": "17.0.35",
+    "@types/node": "17.0.38",
     "@types/sinon": "10.0.11",
     "@types/tap": "15.0.7",
-    "@typescript-eslint/eslint-plugin": "5.26.0",
-    "@typescript-eslint/parser": "5.26.0",
+    "@typescript-eslint/eslint-plugin": "5.27.0",
+    "@typescript-eslint/parser": "5.27.0",
     "cross-env": "7.0.3",
     "eslint": "8.16.0",
     "eslint-config-prettier": "8.5.0",

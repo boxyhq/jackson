@@ -26,7 +26,7 @@ import { relayStatePrefix, IndexNames, OAuthErrorResponse, getErrorMessage } fro
 const deflateRawAsync = promisify(deflateRaw);
 
 const validateResponse = async (rawResponse: string, validateOpts) => {
-  const profile = await saml.validateAsync(rawResponse, validateOpts);
+  const profile = await saml.validate(rawResponse, validateOpts);
   if (profile && profile.claims) {
     // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
     profile.claims = claims.map(profile.claims);
@@ -383,11 +383,13 @@ export class OAuthController implements IOAuthController {
 
     const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
 
-    const parsedResp = await saml.parseAsync(rawResponse);
-
+    const issuer = saml.parseIssuer(rawResponse);
+    if (!issuer) {
+      throw new JacksonError('Issuer not found.', 403);
+    }
     const samlConfigs = await this.configStore.getByIndex({
       name: IndexNames.EntityID,
-      value: parsedResp?.issuer,
+      value: issuer,
     });
 
     if (!samlConfigs || samlConfigs.length === 0) {
@@ -440,6 +442,7 @@ export class OAuthController implements IOAuthController {
     const validateOpts: Record<string, string> = {
       thumbprint: samlConfig.idpMetadata.thumbprint,
       audience: this.opts.samlAudience!,
+      privateKey: samlConfig.certs.privateKey,
     };
 
     if (session && session.redirect_uri && !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)) {
