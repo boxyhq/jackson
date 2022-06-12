@@ -28,6 +28,7 @@ tap.teardown(async () => {
 tap.test('Directory users / ', async (t) => {
   // Create a directory before starting the tests
   const { id: directoryId } = await directorySync.directories.create(directories[0]);
+
   let createdUser: any;
 
   tap.beforeEach(async () => {

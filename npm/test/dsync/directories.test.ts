@@ -1,7 +1,6 @@
 import type { JacksonError } from '../../src/controller/error';
 import { JacksonOption, DirectorySync, Directory } from '../../src/typings';
 import tap from 'tap';
-import * as dbutils from '../../src/db/utils';
 import directories from './data/directories';
 
 const options = <JacksonOption>{

@@ -1,6 +1,6 @@
 import { Group, User } from '../typings';
 
-const transformUser = (user: User) => {
+const transformUser = (user: User): User => {
   return {
     id: user.id,
     first_name: user.first_name,
@@ -10,7 +10,7 @@ const transformUser = (user: User) => {
   };
 };
 
-const transformGroup = (group: Group) => {
+const transformGroup = (group: Group): Group => {
   return {
     id: group.id,
     name: group.name,
@@ -18,7 +18,7 @@ const transformGroup = (group: Group) => {
   };
 };
 
-const transformUserGroup = (user: User, group: Group) => {
+const transformUserGroup = (user: User, group: Group): User | { group: Group } => {
   return {
     ...transformUser(user),
     group: transformGroup(group),

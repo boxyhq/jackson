@@ -1,3 +1,5 @@
+import { type } from 'os';
+
 export type IdPConfig = {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
@@ -42,32 +44,6 @@ export interface IHealthCheckController {
 export interface ILogoutController {
   createRequest(body: SLORequestParams): Promise<{ logoutUrl: string | null; logoutForm: string | null }>;
   handleResponse(body: SAMLResponsePayload): Promise<any>;
-}
-
-export interface IUsersController {
-  with(tenant: string, product: string): IUsersController;
-  create(param: { first_name: string; last_name: string; email: string; raw: any }): Promise<User>;
-  get(id: string): Promise<User | null>;
-  update(
-    id: string,
-    param: {
-      first_name: string;
-      last_name: string;
-      email: string;
-      raw: any;
-    }
-  ): Promise<User>;
-  delete(id: string): Promise<void>;
-}
-
-export interface IGroupsController {
-  with(tenant: string, product: string): IGroupsController;
-  create(param: any): Promise<Group>;
-  get(id: string): Promise<Group | null>;
-  update(id: string, param: any): Promise<Group>;
-  delete(id: string): Promise<void>;
-  addUser(groupId: string, userId: string): Promise<void>;
-  removeUser(groupId: string, userId: string): Promise<void>;
 }
 
 export interface OAuthReqBody {
@@ -244,23 +220,29 @@ export interface GroupsController {
   delete(id: string): Promise<void>;
 }
 
-export interface User {
+export type User = {
   id: string;
   email: string;
   first_name: string;
   last_name: string;
   raw?: any;
-}
+};
 
-export interface Group {
+export type Group = {
   id: string;
   name: string;
   raw?: any;
+};
+
+export enum IdentityProviders {
+  azure = 'Azure',
+  onelogin = 'OneLogin',
+  okta = 'Okta',
 }
 
-export type DirectoryType = 'azure' | 'onelogin' | 'okta';
+export type DirectoryType = keyof typeof IdentityProviders;
 
-export interface Directory {
+export type Directory = {
   id: string;
   name: string;
   tenant: string;
@@ -276,7 +258,7 @@ export interface Directory {
     endpoint: string;
     secret: string;
   };
-}
+};
 
 export interface DirectoryConfig {
   create({
@@ -328,7 +310,7 @@ export interface DirectoryGroups {
   handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
 }
 
-export interface DirectorySyncRequest {
+export type DirectorySyncRequest = {
   method: string;
   body?: any;
   query: {
@@ -339,12 +321,12 @@ export interface DirectorySyncRequest {
     startIndex?: number;
     filter?: string;
   };
-}
+};
 
-export interface DirectorySyncResponse {
+export type DirectorySyncResponse = {
   status: number;
   data?: any;
-}
+};
 
 export interface UsersRequestHandler {
   handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
@@ -354,16 +336,16 @@ export interface GroupsRequestHandler {
   handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
 }
 
-export interface DirectorySync {
+export type DirectorySync = {
   directories: DirectoryConfig;
   usersRequest: UsersRequestHandler;
   groupsRequest: GroupsRequestHandler;
   users: UsersController;
   groups: GroupsController;
   events: WebhookEvents;
-}
+};
 
-export interface WebhookEventLog {
+export type WebhookEventLog = {
   id: string;
   directory_id: string;
   event: string;
@@ -372,7 +354,7 @@ export interface WebhookEventLog {
   created_at: Date;
   status_code?: number;
   delivered?: boolean;
-}
+};
 
 export interface WebhookEvents {
   send(
