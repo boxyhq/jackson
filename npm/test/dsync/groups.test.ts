@@ -202,7 +202,7 @@ tap.test('Directory groups / ', async (t) => {
     t.end();
   });
 
-  t.test('Should be able remove a member to an existing group - PATCH request', async (t) => {
+  t.test('Should be able remove a member from an existing group - PATCH request', async (t) => {
     const { data: user1 } = await directorySync.usersRequest.handle(
       usersRequest.create(directoryId, users[0])
     );

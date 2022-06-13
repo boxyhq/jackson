@@ -273,16 +273,18 @@ export class DirectoryGroups {
     this.groups.setTenantAndProduct(tenant, product);
     this.users.setTenantAndProduct(tenant, product);
 
-    if (method === 'POST' && body) {
-      return await this.create(directory, body);
-    }
-
+    // Get a specific group
     if (method === 'GET' && groupId) {
       return await this.get(groupId);
     }
 
+    // Get all groups
     if (method === 'GET' && query) {
       return await this.getAll();
+    }
+
+    if (method === 'POST' && body) {
+      return await this.create(directory, body);
     }
 
     if (method === 'PUT' && groupId) {

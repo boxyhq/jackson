@@ -166,20 +166,22 @@ export class DirectoryUsers {
 
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
-    if (method === 'POST') {
-      return this.create(directory, body);
-    }
-
+    // Get a specific user
     if (method === 'GET' && userId) {
       return await this.get(userId);
     }
 
+    // Get all the users
     if (method === 'GET' && query) {
       return await this.getAll({
         count: query.count as number,
         startIndex: query.startIndex as number,
         filter: query.filter,
       });
+    }
+
+    if (method === 'POST') {
+      return this.create(directory, body);
     }
 
     if (method === 'PUT' && userId) {
