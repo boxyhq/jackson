@@ -1,6 +1,8 @@
+import type { DirectorySyncRequest } from '../../../src/typings';
+
 const requests = {
   // POST /Users
-  create: (directoryId: string, user: any) => {
+  create: (directoryId: string, user: any): DirectorySyncRequest => {
     return {
       method: 'POST',
       body: user,
@@ -11,7 +13,7 @@ const requests = {
   },
 
   // GET /Users?filter=userName eq "userName"
-  filterByUsername: (directoryId: string, userName: string) => {
+  filterByUsername: (directoryId: string, userName: string): DirectorySyncRequest => {
     return {
       method: 'GET',
       query: {
@@ -24,7 +26,7 @@ const requests = {
   },
 
   // GET /Users/{userId}
-  getById: (directoryId: string, userId: string) => {
+  getById: (directoryId: string, userId: string): DirectorySyncRequest => {
     return {
       method: 'GET',
       query: {
@@ -35,7 +37,7 @@ const requests = {
   },
 
   // PUT /Users/{userId}
-  updateById: (directoryId: string, userId: string, user: any) => {
+  updateById: (directoryId: string, userId: string, user: any): DirectorySyncRequest => {
     return {
       method: 'PUT',
       body: user,
@@ -47,7 +49,7 @@ const requests = {
   },
 
   // PATCH /Users/{userId}
-  updateOperationById: (directoryId: string, userId: string) => {
+  updateOperationById: (directoryId: string, userId: string): DirectorySyncRequest => {
     return {
       method: 'PATCH',
       body: {
@@ -68,7 +70,7 @@ const requests = {
   },
 
   // GET /Users/
-  getAll: (directoryId: string) => {
+  getAll: (directoryId: string): DirectorySyncRequest => {
     return {
       method: 'GET',
       query: {
@@ -80,7 +82,7 @@ const requests = {
   },
 
   // DELETE /Users/{userId}
-  deleteById: (directoryId: string, userId: string) => {
+  deleteById: (directoryId: string, userId: string): DirectorySyncRequest => {
     return {
       method: 'DELETE',
       query: {

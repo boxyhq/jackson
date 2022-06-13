@@ -1,5 +1,7 @@
+import type { DirectorySyncGroupRequest } from '../../../src/typings';
+
 const requests = {
-  create: (directoryId: string, group: any) => {
+  create: (directoryId: string, group: any): DirectorySyncGroupRequest => {
     return {
       method: 'POST',
       body: group,
@@ -9,7 +11,7 @@ const requests = {
     };
   },
 
-  getById: (directoryId: string, groupId: string) => {
+  getById: (directoryId: string, groupId: string): DirectorySyncGroupRequest => {
     return {
       method: 'GET',
       query: {
@@ -19,13 +21,46 @@ const requests = {
     };
   },
 
-  getAll: (directoryId: string) => {
+  updateById: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
+    return {
+      method: 'PUT',
+      body: group,
+      query: {
+        directory_id: directoryId,
+        group_id: groupId,
+      },
+    };
+  },
+
+  getAll: (directoryId: string): DirectorySyncGroupRequest => {
     return {
       method: 'GET',
       query: {
         count: 1,
         startIndex: 1,
         directory_id: directoryId,
+      },
+    };
+  },
+
+  addMembers: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
+    return {
+      method: 'PUT',
+      body: group,
+      query: {
+        directory_id: directoryId,
+        group_id: groupId,
+      },
+    };
+  },
+
+  removeMembers: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
+    return {
+      method: 'PUT',
+      body: group,
+      query: {
+        directory_id: directoryId,
+        group_id: groupId,
       },
     };
   },

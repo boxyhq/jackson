@@ -1,10 +1,11 @@
 import type {
-  DirectorySyncRequest,
   Group,
   DirectoryConfig,
   DirectorySyncResponse,
   Directory,
   WebhookEvents,
+  DirectorySyncGroupMember,
+  DirectorySyncGroupRequest,
 } from '../typings';
 import type { GroupsController } from '../controller/groups';
 import type { UsersController } from '../controller/users';
@@ -32,7 +33,10 @@ export class DirectoryGroups {
     this.webhookEvents = webhookEvents;
   }
 
-  public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
+  public async create(
+    directory: Directory,
+    body: DirectorySyncGroupRequest['body']
+  ): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     const group = await this.groups.create({
@@ -69,7 +73,11 @@ export class DirectoryGroups {
     };
   }
 
-  public async update(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse> {
+  public async update(
+    directory: Directory,
+    groupId: string,
+    body: DirectorySyncGroupRequest['body']
+  ): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     const group = await this.groups.update(groupId, {
@@ -124,7 +132,7 @@ export class DirectoryGroups {
         userId = path.split('"')[1];
       }
 
-      await this.removeGroupMembers(directory, group, [{ user_id: userId }]);
+      await this.removeGroupMembers(directory, group, [{ value: userId }]);
     }
 
     // Update group
@@ -162,7 +170,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async getUsers(groupId: string): Promise<{ value: string }[]> {
+  public async getUsers(groupId: string): Promise<DirectorySyncGroupMember[]> {
     const users = await this.groups.getAllUsers(groupId);
 
     return users.map((user) => ({
@@ -189,7 +197,7 @@ export class DirectoryGroups {
   public async addGroupMembers(
     directory: Directory,
     group: Group,
-    members: { value: string }[] | undefined,
+    members: DirectorySyncGroupMember[] | undefined,
     sendWebhookEvent = true
   ): Promise<void> {
     if (members === undefined || (members && members.length === 0)) {
@@ -217,18 +225,18 @@ export class DirectoryGroups {
   }
 
   // Remove members from a group
-  public async removeGroupMembers(directory: Directory, group: Group, members: { user_id: string }[]) {
+  public async removeGroupMembers(directory: Directory, group: Group, members: DirectorySyncGroupMember[]) {
     if (members.length === 0) {
       return;
     }
 
     for (const member of members) {
-      await this.groups.removeUserFromGroup(group.id, member.user_id);
+      await this.groups.removeUserFromGroup(group.id, member.value);
 
       await this.webhookEvents.send('group.user_removed', {
         directory,
         group,
-        user: await this.users.get(member.user_id),
+        user: await this.users.get(member.value),
       });
     }
 
@@ -239,19 +247,22 @@ export class DirectoryGroups {
   public async addOrRemoveGroupMembers(
     directory: Directory,
     group: Group,
-    members: { value: string }[]
+    members: DirectorySyncGroupMember[]
   ): Promise<void> {
     const users = await this.groups.getAllUsers(group.id);
 
     const usersToAdd = members.filter((member) => !users.some((user) => user.user_id === member.value));
-    const usersToRemove = users.filter((user) => !members.some((member) => member.value === user.user_id));
+
+    const usersToRemove = users
+      .filter((user) => !members.some((member) => member.value === user.user_id))
+      .map((user) => ({ value: user.user_id }));
 
     await this.addGroupMembers(directory, group, usersToAdd);
     await this.removeGroupMembers(directory, group, usersToRemove);
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
+  public async handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse> {
     const { method, body, query } = request;
     const { directory_id: directoryId, group_id: groupId } = query;
 
@@ -262,42 +273,28 @@ export class DirectoryGroups {
     this.groups.setTenantAndProduct(tenant, product);
     this.users.setTenantAndProduct(tenant, product);
 
-    if (groupId) {
-      // Retrieve specific Group
-      // GET /Groups/$groupId
-      if (method === 'GET') {
-        return await this.get(groupId);
-      }
-
-      // Update a specific Group name
-      // PUT /Groups/$groupId
-      if (method === 'PUT') {
-        return await this.update(directory, groupId, body);
-      }
-
-      // Update specific Group membership
-      // PATCH /Groups/$groupId
-      if (method === 'PATCH') {
-        return await this.updateOperation(directory, groupId, body);
-      }
-
-      // Delete a specific Group
-      // DELETE /Groups/$groupId
-      if (method === 'DELETE') {
-        return await this.delete(directory, groupId);
-      }
-    }
-
-    // Create a new group
-    // POST /Groups
-    if (method === 'POST') {
+    if (method === 'POST' && body) {
       return await this.create(directory, body);
     }
 
-    // Retrieve Groups
-    // GET /Groups
+    if (method === 'GET' && groupId) {
+      return await this.get(groupId);
+    }
+
     if (method === 'GET' && query) {
       return await this.getAll();
+    }
+
+    if (method === 'PUT' && groupId) {
+      return await this.update(directory, groupId, body);
+    }
+
+    if (method === 'PATCH' && groupId) {
+      return await this.updateOperation(directory, groupId, body);
+    }
+
+    if (method === 'DELETE' && groupId) {
+      return await this.delete(directory, groupId);
     }
 
     return {

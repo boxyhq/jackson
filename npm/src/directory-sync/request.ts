@@ -3,6 +3,7 @@ import type {
   DirectorySyncResponse,
   DirectoryGroups,
   DirectoryUsers,
+  DirectorySyncGroupRequest,
 } from '../typings';
 
 export class UsersRequestHandler {
@@ -24,7 +25,7 @@ export class GroupsRequestHandler {
     this.directoryGroups = directoryGroups;
   }
 
-  async handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
+  async handle(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse> {
     return await this.directoryGroups.handleRequest(request);
   }
 }

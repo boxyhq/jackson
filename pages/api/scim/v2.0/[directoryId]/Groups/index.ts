@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { HTTPMethod } from '@lib/jackson';
 import jackson from '@lib/jackson';
 import { extractAuthToken } from '@lib/auth';
 import { bodyParser } from '@lib/utils';
@@ -13,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const request = {
-    method: method as string,
+    method: method as HTTPMethod,
     body: bodyParser(req),
     query: {
       count: parseInt(req.query.count as string),

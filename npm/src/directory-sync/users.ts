@@ -1,10 +1,10 @@
 import type {
-  DirectorySyncRequest,
   DirectoryConfig,
   Directory,
   DirectorySyncResponse,
   WebhookEvents,
   User,
+  DirectorySyncUserRequest,
 } from '../typings';
 import type { GroupsController } from '../controller/groups';
 import type { UsersController } from '../controller/users';
@@ -158,7 +158,7 @@ export class DirectoryUsers {
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
+  public async handleRequest(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse> {
     const { method, body, query } = request;
     const { directory_id: directoryId, user_id: userId } = query;
 
@@ -166,46 +166,32 @@ export class DirectoryUsers {
 
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
-    if (userId) {
-      // Retrieve a specific User
-      // GET /Users/$userId
-      if (method === 'GET') {
-        return await this.get(userId);
-      }
-
-      // Update a specific User
-      // PUT /Users/$userId
-      if (method === 'PUT') {
-        return await this.update(directory, userId, body);
-      }
-
-      // Update a specific User
-      // PATCH /Users/$userId
-      if (method === 'PATCH') {
-        return await this.updateOperation(directory, userId, body);
-      }
-
-      // Delete a user
-      // DELETE /Users/$userId
-      if (method === 'DELETE') {
-        return await this.delete(directory, userId);
-      }
-    }
-
-    // Create a new user
-    // POST /Users
     if (method === 'POST') {
-      return await this.create(directory, body);
+      return this.create(directory, body);
     }
 
-    // Retrieve Users
-    // GET /Users
+    if (method === 'GET' && userId) {
+      return await this.get(userId);
+    }
+
     if (method === 'GET' && query) {
       return await this.getAll({
         count: query.count as number,
         startIndex: query.startIndex as number,
         filter: query.filter,
       });
+    }
+
+    if (method === 'PUT' && userId) {
+      return await this.update(directory, userId, body);
+    }
+
+    if (method === 'PATCH' && userId) {
+      return await this.updateOperation(directory, userId, body);
+    }
+
+    if (method === 'DELETE' && userId) {
+      return await this.delete(directory, userId);
     }
 
     return {

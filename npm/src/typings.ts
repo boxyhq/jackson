@@ -242,6 +242,8 @@ export enum IdentityProviders {
 
 export type DirectoryType = keyof typeof IdentityProviders;
 
+export type HTTPMethod = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
+
 export type Directory = {
   id: string;
   name: string;
@@ -304,18 +306,32 @@ export interface DirectoryUsers {
 export interface DirectoryGroups {
   create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
   get(groupId: string): Promise<DirectorySyncResponse>;
-  update(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse>;
+  update(
+    directory: Directory,
+    groupId: string,
+    body: {
+      displayName: string;
+      members: { value: string }[];
+    }
+  ): Promise<DirectorySyncResponse>;
   updateOperation(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse>;
   delete(directory: Directory, groupId: string): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
+  getAll(): Promise<DirectorySyncResponse>;
 }
 
-export type DirectorySyncRequest = {
-  method: string;
+export type DirectorySyncGroupMember = { value: string; email?: string };
+
+export type DirectorySyncResponse = {
+  status: number;
+  data?: any;
+};
+
+export type DirectorySyncGroupRequest = {
+  method: HTTPMethod;
   body?: any;
   query: {
-    directory_id: string;
-    user_id?: string;
+    directory_id: Directory['id'];
     group_id?: string;
     count?: number;
     startIndex?: number;
@@ -323,17 +339,26 @@ export type DirectorySyncRequest = {
   };
 };
 
-export type DirectorySyncResponse = {
-  status: number;
-  data?: any;
+export type DirectorySyncUserRequest = {
+  method: HTTPMethod;
+  body?: any;
+  query: {
+    directory_id: Directory['id'];
+    user_id?: string;
+    count?: number;
+    startIndex?: number;
+    filter?: string;
+  };
 };
+
+export type DirectorySyncRequest = DirectorySyncGroupRequest | DirectorySyncUserRequest;
 
 export interface UsersRequestHandler {
   handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
 }
 
 export interface GroupsRequestHandler {
-  handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
+  handle(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
 }
 
 export type DirectorySync = {
@@ -347,7 +372,7 @@ export type DirectorySync = {
 
 export type WebhookEventLog = {
   id: string;
-  directory_id: string;
+  directory_id: Directory['id'];
   event: string;
   webhook_endpoint: string;
   payload: any;
