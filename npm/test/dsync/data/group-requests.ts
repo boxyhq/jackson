@@ -32,6 +32,16 @@ const requests = {
     };
   },
 
+  deleteById: (directoryId: string, groupId: string): DirectorySyncGroupRequest => {
+    return {
+      method: 'DELETE',
+      query: {
+        directory_id: directoryId,
+        group_id: groupId,
+      },
+    };
+  },
+
   getAll: (directoryId: string): DirectorySyncGroupRequest => {
     return {
       method: 'GET',
@@ -43,10 +53,18 @@ const requests = {
     };
   },
 
-  addMembers: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
+  addMembers: (directoryId: string, groupId: string, members: any): DirectorySyncGroupRequest => {
     return {
-      method: 'PUT',
-      body: group,
+      method: 'PATCH',
+      body: {
+        Operations: [
+          {
+            op: 'add',
+            path: 'members',
+            value: members,
+          },
+        ],
+      },
       query: {
         directory_id: directoryId,
         group_id: groupId,
@@ -54,10 +72,43 @@ const requests = {
     };
   },
 
-  removeMembers: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
+  removeMembers: (
+    directoryId: string,
+    groupId: string,
+    members: any,
+    path: string
+  ): DirectorySyncGroupRequest => {
     return {
-      method: 'PUT',
-      body: group,
+      method: 'PATCH',
+      body: {
+        Operations: [
+          {
+            op: 'remove',
+            path,
+            value: members,
+          },
+        ],
+      },
+      query: {
+        directory_id: directoryId,
+        group_id: groupId,
+      },
+    };
+  },
+
+  updateName: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
+    return {
+      method: 'PATCH',
+      body: {
+        Operations: [
+          {
+            op: 'replace',
+            value: {
+              displayName: group.displayName,
+            },
+          },
+        ],
+      },
       query: {
         directory_id: directoryId,
         group_id: groupId,

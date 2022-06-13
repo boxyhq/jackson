@@ -300,32 +300,24 @@ export interface DirectoryUsers {
   update(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
   updateOperation(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
   delete(directory: Directory, userId: string): Promise<DirectorySyncResponse>;
-  handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
+  handleRequest(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse>;
 }
 
 export interface DirectoryGroups {
   create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
   get(groupId: string): Promise<DirectorySyncResponse>;
+  getAll(): Promise<DirectorySyncResponse>;
   update(
     directory: Directory,
     groupId: string,
-    body: {
-      displayName: string;
-      members: { value: string }[];
-    }
+    body: DirectorySyncGroupRequest['body']
   ): Promise<DirectorySyncResponse>;
   updateOperation(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse>;
   delete(directory: Directory, groupId: string): Promise<DirectorySyncResponse>;
-  handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
-  getAll(): Promise<DirectorySyncResponse>;
+  handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
 }
 
 export type DirectorySyncGroupMember = { value: string; email?: string };
-
-export type DirectorySyncResponse = {
-  status: number;
-  data?: any;
-};
 
 export type DirectorySyncGroupRequest = {
   method: HTTPMethod;
@@ -351,10 +343,13 @@ export type DirectorySyncUserRequest = {
   };
 };
 
-export type DirectorySyncRequest = DirectorySyncGroupRequest | DirectorySyncUserRequest;
+export type DirectorySyncResponse = {
+  status: number;
+  data?: any;
+};
 
 export interface UsersRequestHandler {
-  handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
+  handle(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse>;
 }
 
 export interface GroupsRequestHandler {

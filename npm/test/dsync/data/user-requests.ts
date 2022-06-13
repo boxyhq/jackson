@@ -1,8 +1,8 @@
-import type { DirectorySyncRequest } from '../../../src/typings';
+import type { DirectorySyncUserRequest } from '../../../src/typings';
 
 const requests = {
   // POST /Users
-  create: (directoryId: string, user: any): DirectorySyncRequest => {
+  create: (directoryId: string, user: any): DirectorySyncUserRequest => {
     return {
       method: 'POST',
       body: user,
@@ -13,7 +13,7 @@ const requests = {
   },
 
   // GET /Users?filter=userName eq "userName"
-  filterByUsername: (directoryId: string, userName: string): DirectorySyncRequest => {
+  filterByUsername: (directoryId: string, userName: string): DirectorySyncUserRequest => {
     return {
       method: 'GET',
       query: {
@@ -26,7 +26,7 @@ const requests = {
   },
 
   // GET /Users/{userId}
-  getById: (directoryId: string, userId: string): DirectorySyncRequest => {
+  getById: (directoryId: string, userId: string): DirectorySyncUserRequest => {
     return {
       method: 'GET',
       query: {
@@ -37,7 +37,7 @@ const requests = {
   },
 
   // PUT /Users/{userId}
-  updateById: (directoryId: string, userId: string, user: any): DirectorySyncRequest => {
+  updateById: (directoryId: string, userId: string, user: any): DirectorySyncUserRequest => {
     return {
       method: 'PUT',
       body: user,
@@ -49,7 +49,7 @@ const requests = {
   },
 
   // PATCH /Users/{userId}
-  updateOperationById: (directoryId: string, userId: string): DirectorySyncRequest => {
+  updateOperationById: (directoryId: string, userId: string): DirectorySyncUserRequest => {
     return {
       method: 'PATCH',
       body: {
@@ -70,7 +70,7 @@ const requests = {
   },
 
   // GET /Users/
-  getAll: (directoryId: string): DirectorySyncRequest => {
+  getAll: (directoryId: string): DirectorySyncUserRequest => {
     return {
       method: 'GET',
       query: {
@@ -82,7 +82,7 @@ const requests = {
   },
 
   // DELETE /Users/{userId}
-  deleteById: (directoryId: string, userId: string): DirectorySyncRequest => {
+  deleteById: (directoryId: string, userId: string): DirectorySyncUserRequest => {
     return {
       method: 'DELETE',
       query: {

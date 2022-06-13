@@ -1,5 +1,5 @@
 import type {
-  DirectorySyncRequest,
+  DirectorySyncUserRequest,
   DirectorySyncResponse,
   DirectoryGroups,
   DirectoryUsers,
@@ -13,7 +13,7 @@ export class UsersRequestHandler {
     this.directoryUsers = directoryUsers;
   }
 
-  async handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
+  async handle(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse> {
     return await this.directoryUsers.handleRequest(request);
   }
 }

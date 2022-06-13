@@ -112,7 +112,7 @@ export class DirectoryGroups {
     const { Operations } = body;
     const { op, path, value } = Operations[0];
 
-    const group = await this.groups.get(groupId);
+    let group = await this.groups.get(groupId);
 
     // Add group members
     if (op === 'add') {
@@ -137,12 +137,12 @@ export class DirectoryGroups {
 
     // Update group
     else if (op === 'replace') {
-      const updatedGroup = await this.groups.update(groupId, {
+      group = await this.groups.update(groupId, {
         name: value.displayName,
         raw: group.raw,
       });
 
-      await this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
+      await this.webhookEvents.send('group.updated', { directory, group });
     }
 
     return {

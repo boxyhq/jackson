@@ -79,7 +79,7 @@ tap.test('Directory groups / ', async (t) => {
     t.end();
   });
 
-  t.test('Should be able to update the group name', async (t) => {
+  t.test('Should be able to update the group name - POST request', async (t) => {
     const { status, data } = await directorySync.groupsRequest.handle(
       requests.updateById(directoryId, createdGroup.id, {
         displayName: 'Developers Updated',
@@ -93,7 +93,22 @@ tap.test('Directory groups / ', async (t) => {
     t.end();
   });
 
-  t.test('Should be able add a member to an existing group', async (t) => {
+  t.test('Should be able to update the group name - PATCH request', async (t) => {
+    const { status, data } = await directorySync.groupsRequest.handle(
+      requests.updateName(directoryId, createdGroup.id, {
+        ...createdGroup,
+        displayName: 'Developers Updated',
+      })
+    );
+
+    t.ok(data);
+    t.equal(status, 200);
+    t.equal(data.displayName, 'Developers Updated');
+
+    t.end();
+  });
+
+  t.test('Should be able to add or remove the group members - PUT request', async (t) => {
     const { data: user1 } = await directorySync.usersRequest.handle(
       usersRequest.create(directoryId, users[0])
     );
@@ -102,41 +117,174 @@ tap.test('Directory groups / ', async (t) => {
       usersRequest.create(directoryId, users[1])
     );
 
-    const members = [
-      {
-        value: user1.id,
-      },
-      {
-        value: user2.id,
-      },
-    ];
-
     const { status, data } = await directorySync.groupsRequest.handle(
-      requests.addMembers(directoryId, createdGroup.id, {
+      requests.updateById(directoryId, createdGroup.id, {
         ...createdGroup,
-        members,
+        members: [
+          {
+            value: user1.id,
+          },
+          {
+            value: user2.id,
+          },
+        ],
       })
     );
 
     t.ok(data);
     t.equal(status, 200);
+    t.equal(data.members.length, 2);
+    t.equal(data.members[0].value, user1.id);
+    t.equal(data.members[1].value, user2.id);
+
+    // Removing the user1 from the group (Body has the user2 id only)
+    const { data: data1 } = await directorySync.groupsRequest.handle(
+      requests.updateById(directoryId, createdGroup.id, {
+        ...createdGroup,
+        members: [
+          {
+            value: user2.id,
+          },
+        ],
+      })
+    );
+
+    t.ok(data1);
+    t.equal(data1.members.length, 1);
+    t.equal(data1.members[0].value, user2.id);
 
     t.end();
   });
 
-  t.test('Should be able remove a member to an existing group', async (t) => {
-    // const { status, data } = await directorySync.groupsRequest.handle(
-    //   requests.removeMembers(directoryId, createdGroup.id, {
-    //     ...groups[0],
-    //     members: [],
-    //   })
-    // );
+  t.test('Should be able add a member to an existing group - PATCH request', async (t) => {
+    const { data: user1 } = await directorySync.usersRequest.handle(
+      usersRequest.create(directoryId, users[0])
+    );
+
+    const response1 = await directorySync.groupsRequest.handle(
+      requests.addMembers(directoryId, createdGroup.id, [
+        {
+          value: user1.id,
+        },
+      ])
+    );
+
+    t.ok(response1.data);
+    t.equal(response1.status, 200);
+    t.equal(response1.data.members.length, 1);
+    t.equal(response1.data.members[0].value, user1.id);
+
+    // Add another member
+    const { data: user2 } = await directorySync.usersRequest.handle(
+      usersRequest.create(directoryId, users[1])
+    );
+
+    // Fetch the group again
+    const group = await directorySync.groupsRequest.handle(requests.getById(directoryId, createdGroup.id));
+
+    // Add the second member
+    group.data.members.push({ value: user2.id });
+
+    const response2 = await directorySync.groupsRequest.handle(
+      requests.addMembers(directoryId, createdGroup.id, group.data.members)
+    );
+
+    t.ok(response2.data);
+    t.equal(response2.status, 200);
+    t.equal(response2.data.members.length, 2);
+    t.equal(response2.data.members[0].value, user1.id);
+    t.equal(response2.data.members[1].value, user2.id);
+
+    // Clean up
+    await directorySync.users.delete(user1.id);
+    await directorySync.users.delete(user2.id);
+
+    t.end();
+  });
+
+  t.test('Should be able remove a member to an existing group - PATCH request', async (t) => {
+    const { data: user1 } = await directorySync.usersRequest.handle(
+      usersRequest.create(directoryId, users[0])
+    );
+
+    const { data: user2 } = await directorySync.usersRequest.handle(
+      usersRequest.create(directoryId, users[1])
+    );
+
+    // Add 2 members
+    const response1 = await directorySync.groupsRequest.handle(
+      requests.addMembers(directoryId, createdGroup.id, [
+        {
+          value: user1.id,
+        },
+        {
+          value: user2.id,
+        },
+      ])
+    );
+
+    t.ok(response1.data);
+    t.equal(response1.status, 200);
+
+    // Remove the first member
+    const response2 = await directorySync.groupsRequest.handle(
+      requests.removeMembers(
+        directoryId,
+        createdGroup.id,
+        [
+          {
+            value: user1.id,
+          },
+        ],
+        'members'
+      )
+    );
+
+    t.ok(response2.data);
+    t.equal(response2.status, 200);
+    t.equal(response2.data.members.length, 1);
+    t.equal(response2.data.members[0].value, user2.id);
+
+    // Remove the second member
+    const response3 = await directorySync.groupsRequest.handle(
+      requests.removeMembers(
+        directoryId,
+        createdGroup.id,
+        [
+          {
+            value: user2.id,
+          },
+        ],
+        `members[value eq "${user2.id}"]`
+      )
+    );
+
+    t.ok(response3.data);
+    t.equal(response3.status, 200);
+    t.equal(response3.data.members.length, 0);
+
+    // Clean up
+    await directorySync.users.delete(user1.id);
+    await directorySync.users.delete(user2.id);
+
+    t.end();
+  });
+
+  t.test('Should be able to delete a group', async (t) => {
+    const { status } = await directorySync.groupsRequest.handle(
+      requests.deleteById(directoryId, createdGroup.id)
+    );
+
+    t.equal(status, 200);
+
+    // Try to get the group
+    try {
+      await directorySync.groupsRequest.handle(requests.getById(directoryId, createdGroup.id));
+    } catch (e: any) {
+      t.equal(e.statusCode, 404);
+      t.equal(e.message, `Group with id ${createdGroup.id} not found.`);
+    }
 
     t.end();
   });
 });
-
-// Add member
-// Remove member
-// Get the group, test member array
-// Delete
