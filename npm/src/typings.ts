@@ -295,10 +295,11 @@ export interface DirectoryConfig {
 
 export interface DirectoryUsers {
   create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
-  get(userId: string): Promise<DirectorySyncResponse>;
-  updatePUT(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
-  updatePATCH(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
-  delete(directory: Directory, userId: string): Promise<DirectorySyncResponse>;
+  get(user: User): Promise<DirectorySyncResponse>;
+  updatePUT(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
+  updatePATCH(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
+  delete(directory: Directory, user: User, active: boolean): Promise<DirectorySyncResponse>;
+  getAll(queryParams: { count: number; startIndex: number; filter?: string }): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse>;
 }
 

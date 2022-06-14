@@ -50,38 +50,36 @@ export class DirectoryUsers {
     };
   }
 
-  public async get(userId: string): Promise<DirectorySyncResponse> {
-    const user = await this.users.get(userId);
-
+  public async get(user: User): Promise<DirectorySyncResponse> {
     return {
       status: 200,
       data: user.raw,
     };
   }
 
-  public async updatePUT(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse> {
+  public async updatePUT(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
     const { active, name, emails } = body;
 
     // Update the user
     if (active === true) {
-      const user = await this.users.update(userId, {
+      const updatedUser = await this.users.update(user.id, {
         first_name: name.givenName,
         last_name: name.familyName,
         email: emails[0].value,
         raw: body,
       });
 
-      await this.webhookEvents.send('user.updated', { directory, user });
+      await this.webhookEvents.send('user.updated', { directory, user: updatedUser });
 
       return {
         status: 200,
-        data: user.raw,
+        data: updatedUser.raw,
       };
     }
 
     // Delete the user
     if (active === false) {
-      return await this.delete(directory, userId, false);
+      return await this.delete(directory, user, false);
     }
 
     return {
@@ -90,13 +88,13 @@ export class DirectoryUsers {
     };
   }
 
-  public async updatePATCH(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse> {
+  public async updatePATCH(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
     const { Operations } = body;
     const operation = Operations[0];
 
     // Delete the user
     if (operation.op === 'replace' && operation.value.active === false) {
-      return await this.delete(directory, userId, false);
+      return await this.delete(directory, user, false);
     }
 
     return {
@@ -105,10 +103,8 @@ export class DirectoryUsers {
     };
   }
 
-  public async delete(directory: Directory, userId: string, active = true): Promise<DirectorySyncResponse> {
-    const user = await this.users.get(userId);
-
-    await this.users.delete(userId);
+  public async delete(directory: Directory, user: User, active = true): Promise<DirectorySyncResponse> {
+    await this.users.delete(user.id);
 
     user.raw.active = active;
 
@@ -159,12 +155,13 @@ export class DirectoryUsers {
     const { directory_id: directoryId, user_id: userId } = query;
 
     const directory = await this.directories.get(directoryId);
+    const user = userId ? await this.users.get(userId) : null;
 
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
     // Get a specific user
-    if (method === 'GET' && userId) {
-      return await this.get(userId);
+    if (method === 'GET' && user) {
+      return await this.get(user);
     }
 
     // Get all the users
@@ -180,16 +177,16 @@ export class DirectoryUsers {
       return this.create(directory, body);
     }
 
-    if (method === 'PUT' && userId) {
-      return await this.updatePUT(directory, userId, body);
+    if (method === 'PUT' && user) {
+      return await this.updatePUT(directory, user, body);
     }
 
-    if (method === 'PATCH' && userId) {
-      return await this.updatePATCH(directory, userId, body);
+    if (method === 'PATCH' && user) {
+      return await this.updatePATCH(directory, user, body);
     }
 
-    if (method === 'DELETE' && userId) {
-      return await this.delete(directory, userId);
+    if (method === 'DELETE' && user) {
+      return await this.delete(directory, user);
     }
 
     return {
