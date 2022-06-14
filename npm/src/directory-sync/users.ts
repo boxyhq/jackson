@@ -59,7 +59,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async update(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse> {
+  public async updatePUT(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse> {
     const { active, name, emails } = body;
 
     // Update the user
@@ -90,11 +90,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async updateOperation(
-    directory: Directory,
-    userId: string,
-    body: any
-  ): Promise<DirectorySyncResponse> {
+  public async updatePATCH(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse> {
     const { Operations } = body;
     const operation = Operations[0];
 
@@ -185,11 +181,11 @@ export class DirectoryUsers {
     }
 
     if (method === 'PUT' && userId) {
-      return await this.update(directory, userId, body);
+      return await this.updatePUT(directory, userId, body);
     }
 
     if (method === 'PATCH' && userId) {
-      return await this.updateOperation(directory, userId, body);
+      return await this.updatePATCH(directory, userId, body);
     }
 
     if (method === 'DELETE' && userId) {

@@ -73,7 +73,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async update(
+  public async updatePUT(
     directory: Directory,
     groupId: string,
     body: DirectorySyncGroupRequest['body']
@@ -104,15 +104,11 @@ export class DirectoryGroups {
 
   // Update a group using a patch operation.
   // Some identity providers send a PATCH request to update a group and group members.
-  public async updateOperation(
-    directory: Directory,
-    groupId: string,
-    body: any
-  ): Promise<DirectorySyncResponse> {
+  public async updatePATCH(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse> {
     const { Operations } = body;
     const { op, path, value } = Operations[0];
 
-    let group = await this.groups.get(groupId);
+    const group = await this.groups.get(groupId);
 
     // Add group members
     if (op === 'add') {
@@ -127,7 +123,7 @@ export class DirectoryGroups {
         userId = value[0].value;
       }
 
-      // Pattern: members[value eq \"f0f159bf-00fd-4815-b4b4-ef5e9c29071f\"]
+      // Path like: members[value eq \"f0f159bf-00fd-4815-b4b4-ef5e9c29071f\"]
       if (path.startsWith('members[value eq')) {
         userId = path.split('"')[1];
       }
@@ -137,7 +133,7 @@ export class DirectoryGroups {
 
     // Update group
     else if (op === 'replace') {
-      group = await this.groups.update(groupId, {
+      await this.groups.update(groupId, {
         name: value.displayName,
         raw: group.raw,
       });
@@ -199,7 +195,7 @@ export class DirectoryGroups {
     group: Group,
     members: DirectorySyncGroupMember[] | undefined,
     sendWebhookEvent = true
-  ): Promise<void> {
+  ) {
     if (members === undefined || (members && members.length === 0)) {
       return;
     }
@@ -286,11 +282,11 @@ export class DirectoryGroups {
     }
 
     if (method === 'PUT' && groupId) {
-      return await this.update(directory, groupId, body);
+      return await this.updatePUT(directory, groupId, body);
     }
 
     if (method === 'PATCH' && groupId) {
-      return await this.updateOperation(directory, groupId, body);
+      return await this.updatePATCH(directory, groupId, body);
     }
 
     if (method === 'DELETE' && groupId) {
