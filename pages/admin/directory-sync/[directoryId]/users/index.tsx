@@ -19,7 +19,9 @@ const UsersList: NextPage<{
       <>
         <Header title={directory.name} />
         <DirectoryTab directory={directory} activeTab='users' />
-        <EmptyState title='No users found' />
+        <div className='w-3/4'>
+          <EmptyState title='No users found' />
+        </div>
       </>
     );
   }

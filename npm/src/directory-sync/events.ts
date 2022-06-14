@@ -146,6 +146,20 @@ export class WebhookEvents {
   public async getAll(): Promise<WebhookEventLog[]> {
     return (await this.store().getAll()) as WebhookEventLog[];
   }
+
+  public async delete(id: string) {
+    await this.store().delete(id);
+  }
+
+  public async clear() {
+    const events = await this.getAll();
+
+    await Promise.all(
+      events.map(async (event) => {
+        await this.delete(event.id);
+      })
+    );
+  }
 }
 
 const createSignatureString = async (secret: string, payload: object) => {

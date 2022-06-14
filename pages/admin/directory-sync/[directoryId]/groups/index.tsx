@@ -19,7 +19,9 @@ const GroupsList: NextPage<{
       <>
         <Header title={directory.name} />
         <DirectoryTab directory={directory} activeTab='groups' />
-        <EmptyState title='No groups found' />
+        <div className='w-3/4'>
+          <EmptyState title='No groups found' />
+        </div>
       </>
     );
   }

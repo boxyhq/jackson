@@ -9,6 +9,7 @@ import type {
 } from '../typings';
 import type { GroupsController } from '../controller/groups';
 import type { UsersController } from '../controller/users';
+import { parseGroupOperations, toGroupMembers } from './utils';
 
 export class DirectoryGroups {
   private directories: DirectoryConfig;
@@ -46,7 +47,7 @@ export class DirectoryGroups {
 
     await this.webhookEvents.send('group.created', { directory, group });
 
-    await this.addGroupMembers(directory, group, members, false);
+    // await this.addGroupMembers(directory, group, members, false);
 
     return {
       status: 201,
@@ -61,35 +62,7 @@ export class DirectoryGroups {
 
   public async get(groupId: string): Promise<DirectorySyncResponse> {
     const group = await this.groups.get(groupId);
-
-    return {
-      status: 200,
-      data: {
-        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-        id: group?.id,
-        displayName: group?.name,
-        members: await this.getUsers(groupId),
-      },
-    };
-  }
-
-  public async updatePUT(
-    directory: Directory,
-    groupId: string,
-    body: DirectorySyncGroupRequest['body']
-  ): Promise<DirectorySyncResponse> {
-    const { displayName, members } = body;
-
-    const group = await this.groups.update(groupId, {
-      name: displayName,
-      raw: body,
-    });
-
-    if (members && members.length > 0) {
-      await this.addOrRemoveGroupMembers(directory, group, members);
-    }
-
-    await this.webhookEvents.send('group.updated', { directory, group });
+    const users = await this.groups.getAllUsers(groupId);
 
     return {
       status: 200,
@@ -97,57 +70,65 @@ export class DirectoryGroups {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
         id: group.id,
         displayName: group.name,
-        members: await this.getUsers(groupId),
+        members: toGroupMembers(users),
       },
     };
   }
 
-  // Update a group using a patch operation.
-  // Some identity providers send a PATCH request to update a group and group members.
+  // Update group displayName
+  public async updateDisplayName(
+    directory: Directory,
+    group: Group,
+    body: DirectorySyncGroupRequest['body']
+  ) {
+    const { displayName } = body;
+    const { id: groupId } = group;
+
+    const updatedGroup = await this.groups.update(groupId, {
+      name: displayName,
+      raw: {
+        ...group.raw,
+        ...body,
+      },
+    });
+
+    await this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
+  }
+
   public async updatePATCH(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse> {
     const { Operations } = body;
-    const { op, path, value } = Operations[0];
+
+    const operation = parseGroupOperations(Operations);
 
     const group = await this.groups.get(groupId);
 
     // Add group members
-    if (op === 'add') {
-      await this.addGroupMembers(directory, group, value);
+    if (operation.action === 'addGroupMember') {
+      await this.addGroupMembers(directory, group, operation.members);
     }
 
     // Remove group members
-    else if (op === 'remove') {
-      let userId = '';
-
-      if (path === 'members' && value.length > 0) {
-        userId = value[0].value;
-      }
-
-      // Path like: members[value eq \"f0f159bf-00fd-4815-b4b4-ef5e9c29071f\"]
-      if (path.startsWith('members[value eq')) {
-        userId = path.split('"')[1];
-      }
-
-      await this.removeGroupMembers(directory, group, [{ value: userId }]);
+    if (operation.action === 'removeGroupMember') {
+      await this.removeGroupMembers(directory, group, operation.members);
     }
 
-    // Update group
-    else if (op === 'replace') {
-      await this.groups.update(groupId, {
-        name: value.displayName,
-        raw: group.raw,
+    // Update group name
+    if (operation.action === 'updateGroupName') {
+      await this.updateDisplayName(directory, group, {
+        displayName: operation.displayName,
       });
-
-      await this.webhookEvents.send('group.updated', { directory, group });
     }
+
+    const updatedGroup = await this.groups.get(groupId);
+    const users = await this.groups.getAllUsers(groupId);
 
     return {
       status: 200,
       data: {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-        id: group?.id,
-        displayName: group?.name,
-        members: await this.getUsers(groupId),
+        id: updatedGroup.id,
+        displayName: updatedGroup.name,
+        members: toGroupMembers(users),
       },
     };
   }
@@ -166,14 +147,6 @@ export class DirectoryGroups {
     };
   }
 
-  public async getUsers(groupId: string): Promise<DirectorySyncGroupMember[]> {
-    const users = await this.groups.getAllUsers(groupId);
-
-    return users.map((user) => ({
-      value: user.user_id,
-    }));
-  }
-
   public async getAll(): Promise<DirectorySyncResponse> {
     const groups = await this.groups.list({ pageOffset: undefined, pageLimit: undefined });
 
@@ -189,8 +162,7 @@ export class DirectoryGroups {
     };
   }
 
-  // Add members to a group
-  public async addGroupMembers(
+  private async addGroupMembers(
     directory: Directory,
     group: Group,
     members: DirectorySyncGroupMember[] | undefined,
@@ -208,7 +180,6 @@ export class DirectoryGroups {
       await this.groups.addUserToGroup(group.id, member.value);
 
       if (sendWebhookEvent) {
-        // For custom Okta SAML app, we don't send webhook event for adding group members (IdP doesn't support it).
         await this.webhookEvents.send('group.user_added', {
           directory,
           group,
@@ -216,12 +187,9 @@ export class DirectoryGroups {
         });
       }
     }
-
-    return;
   }
 
-  // Remove members from a group
-  public async removeGroupMembers(directory: Directory, group: Group, members: DirectorySyncGroupMember[]) {
+  private async removeGroupMembers(directory: Directory, group: Group, members: DirectorySyncGroupMember[]) {
     if (members.length === 0) {
       return;
     }
@@ -235,27 +203,57 @@ export class DirectoryGroups {
         user: await this.users.get(member.value),
       });
     }
+  }
 
-    return;
+  // TODO: Need rework
+  public async updatePUT(
+    directory: Directory,
+    groupId: string,
+    body: DirectorySyncGroupRequest['body']
+  ): Promise<DirectorySyncResponse> {
+    const { displayName, members } = body;
+
+    const group = await this.groups.update(groupId, {
+      name: displayName,
+      raw: body,
+    });
+
+    if (members && members.length > 0) {
+      //  await this.addOrRemoveGroupMembers(directory, group, members);
+    }
+
+    await this.webhookEvents.send('group.updated', { directory, group });
+
+    const users = await this.groups.getAllUsers(groupId);
+
+    return {
+      status: 200,
+      data: {
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        id: group.id,
+        displayName: group.name,
+        members: toGroupMembers(users),
+      },
+    };
   }
 
   // Add or remove users from a group
-  public async addOrRemoveGroupMembers(
-    directory: Directory,
-    group: Group,
-    members: DirectorySyncGroupMember[]
-  ): Promise<void> {
-    const users = await this.groups.getAllUsers(group.id);
+  // public async addOrRemoveGroupMembers(
+  //   directory: Directory,
+  //   group: Group,
+  //   members: DirectorySyncGroupMember[]
+  // ): Promise<void> {
+  //   const users = await this.groups.getAllUsers(group.id);
 
-    const usersToAdd = members.filter((member) => !users.some((user) => user.user_id === member.value));
+  //   const usersToAdd = members.filter((member) => !users.some((user) => user.user_id === member.value));
 
-    const usersToRemove = users
-      .filter((user) => !members.some((member) => member.value === user.user_id))
-      .map((user) => ({ value: user.user_id }));
+  //   const usersToRemove = users
+  //     .filter((user) => !members.some((member) => member.value === user.user_id))
+  //     .map((user) => ({ value: user.user_id }));
 
-    await this.addGroupMembers(directory, group, usersToAdd);
-    await this.removeGroupMembers(directory, group, usersToRemove);
-  }
+  //   await this.addGroupMembers(directory, group, usersToAdd);
+  //   await this.removeGroupMembers(directory, group, usersToRemove);
+  // }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse> {

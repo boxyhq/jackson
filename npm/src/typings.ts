@@ -1,5 +1,3 @@
-import { type } from 'os';
-
 export type IdPConfig = {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
@@ -390,4 +388,6 @@ export interface WebhookEvents {
   getAll(): Promise<WebhookEventLog[]>;
   get(id: string): Promise<WebhookEventLog>;
   updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
+  clear(): Promise<void>;
+  delete(id: string): Promise<void>;
 }

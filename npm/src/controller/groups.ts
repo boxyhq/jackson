@@ -84,10 +84,8 @@ export class GroupsController {
   }
 
   // Delete a group by id
-  public async delete(id: string): Promise<void> {
+  public async delete(id: string) {
     await this.store('groups').delete(id);
-
-    return;
   }
 
   // Get all users in a group
@@ -105,7 +103,7 @@ export class GroupsController {
   }
 
   // Add a user to a group
-  public async addUserToGroup(groupId: string, userId: string): Promise<void> {
+  public async addUserToGroup(groupId: string, userId: string) {
     const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
 
     await this.store('members').put(
@@ -119,19 +117,17 @@ export class GroupsController {
         value: groupId,
       }
     );
-
-    return;
   }
 
   // Remove a user from a group
-  public async removeUserFromGroup(groupId: string, userId: string): Promise<void> {
+  public async removeUserFromGroup(groupId: string, userId: string) {
     const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
 
     await this.store('members').delete(id);
   }
 
   // Remove all users from a group
-  public async removeAllUsers(groupId: string): Promise<void> {
+  public async removeAllUsers(groupId: string) {
     const users = await this.getAllUsers(groupId);
 
     if (users.length === 0) {
