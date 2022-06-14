@@ -297,22 +297,22 @@ export interface DirectoryConfig {
 export interface DirectoryUsers {
   create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
   get(userId: string): Promise<DirectorySyncResponse>;
-  update(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
-  updateOperation(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
+  updatePUT(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
+  updatePATCH(directory: Directory, userId: string, body: any): Promise<DirectorySyncResponse>;
   delete(directory: Directory, userId: string): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse>;
 }
 
 export interface DirectoryGroups {
-  create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
+  create(directory: Directory, body: DirectorySyncGroupRequest['body']): Promise<DirectorySyncResponse>;
   get(groupId: string): Promise<DirectorySyncResponse>;
   getAll(): Promise<DirectorySyncResponse>;
-  update(
+  updatePUT(
     directory: Directory,
     groupId: string,
     body: DirectorySyncGroupRequest['body']
   ): Promise<DirectorySyncResponse>;
-  updateOperation(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse>;
+  updatePATCH(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse>;
   delete(directory: Directory, groupId: string): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
 }
