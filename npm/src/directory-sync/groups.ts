@@ -268,10 +268,8 @@ export class DirectoryGroups {
 
     const directory = await this.directories.get(directoryId);
 
-    const { tenant, product } = directory;
-
-    this.groups.setTenantAndProduct(tenant, product);
-    this.users.setTenantAndProduct(tenant, product);
+    this.users.setTenantAndProduct(directory.tenant, directory.product);
+    this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
     // Get a specific group
     if (method === 'GET' && groupId) {

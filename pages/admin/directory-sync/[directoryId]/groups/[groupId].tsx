@@ -27,7 +27,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directorySync } = await jackson();
 
   const directory = await directorySync.directories.get(directoryId as string);
-
   const group = await directorySync.groups.with(directory.tenant, directory.product).get(groupId as string);
 
   return {

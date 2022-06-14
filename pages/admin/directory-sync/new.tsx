@@ -4,19 +4,17 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
-const newDirectory = {
-  name: '',
-  tenant: '',
-  product: '',
-  webhook_url: '',
-  webhook_secret: '',
-  type: '',
-};
-
 const New: NextPage = () => {
   const router = useRouter();
-  const [directory, setDirectory] = React.useState(newDirectory);
   const [loading, setLoading] = React.useState(false);
+  const [directory, setDirectory] = React.useState({
+    name: '',
+    tenant: '',
+    product: '',
+    webhook_url: '',
+    webhook_secret: '',
+    type: '',
+  });
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
