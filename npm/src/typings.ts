@@ -232,13 +232,14 @@ export type Group = {
   raw?: any;
 };
 
-export enum IdentityProviders {
-  azure = 'Azure',
-  onelogin = 'OneLogin',
-  okta = 'Okta',
+export enum DirectorySyncProviders {
+  'azure-scim-v2' = 'Azure SCIM v2.0',
+  'onelogin-scim-v2' = 'OneLogin SCIM v2.0',
+  'okta-scim-v2' = 'Okta SCIM v2.0',
+  'okta-saml' = 'Okta SAML App',
 }
 
-export type DirectoryType = keyof typeof IdentityProviders;
+export type DirectoryType = keyof typeof DirectorySyncProviders;
 
 export type HTTPMethod = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
 
@@ -303,15 +304,37 @@ export interface DirectoryUsers {
 
 export interface DirectoryGroups {
   create(directory: Directory, body: DirectorySyncGroupRequest['body']): Promise<DirectorySyncResponse>;
-  get(groupId: string): Promise<DirectorySyncResponse>;
+  get(group: Group): Promise<DirectorySyncResponse>;
+  updateDisplayName(
+    directory: Directory,
+    group: Group,
+    body: DirectorySyncGroupRequest['body']
+  ): Promise<Group>;
+  delete(directory: Directory, group: Group): Promise<DirectorySyncResponse>;
   getAll(): Promise<DirectorySyncResponse>;
+  addGroupMembers(
+    directory: Directory,
+    group: Group,
+    members: DirectorySyncGroupMember[] | undefined,
+    sendWebhookEvent: boolean
+  ): Promise<void>;
+  removeGroupMembers(
+    directory: Directory,
+    group: Group,
+    members: DirectorySyncGroupMember[],
+    sendWebhookEvent: boolean
+  ): Promise<void>;
+  updatePATCH(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   updatePUT(
     directory: Directory,
-    groupId: string,
+    group: Group,
     body: DirectorySyncGroupRequest['body']
   ): Promise<DirectorySyncResponse>;
-  updatePATCH(directory: Directory, groupId: string, body: any): Promise<DirectorySyncResponse>;
-  delete(directory: Directory, groupId: string): Promise<DirectorySyncResponse>;
+  addOrRemoveGroupMembers(
+    directory: Directory,
+    group: Group,
+    members: DirectorySyncGroupMember[]
+  ): Promise<void>;
   handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
 }
 

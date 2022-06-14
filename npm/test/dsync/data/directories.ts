@@ -5,14 +5,14 @@ const directories = <Directory[]>[
     name: 'BoxyHQ',
     tenant: 'boxyhq.com',
     product: 'jackson',
-    type: 'okta',
+    type: 'okta-scim-v2',
     log_webhook_events: false,
   },
   {
     name: 'Cal',
     tenant: 'cal.com',
     product: 'jackson',
-    type: 'onelogin',
+    type: 'okta-saml',
     log_webhook_events: false,
   },
 ];

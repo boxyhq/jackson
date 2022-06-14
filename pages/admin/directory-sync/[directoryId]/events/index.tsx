@@ -17,22 +17,13 @@ const Events: NextPage<{ directory: Directory; events: WebhookEventLog[] }> = ({
   const clearEvents = async () => {
     setLoading(true);
 
-    const rawResponse = await fetch(`/api/admin/directory-sync/${directory.id}/events`, {
+    await fetch(`/api/admin/directory-sync/${directory.id}/events`, {
       method: 'DELETE',
     });
 
-    const { data, error } = await rawResponse.json();
-
     setLoading(false);
 
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-
-    if (data === null && error === null) {
-      router.reload();
-    }
+    router.reload();
   };
 
   if (events.length === 0) {
