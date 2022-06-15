@@ -196,9 +196,7 @@ export class OAuthController implements IOAuthController {
         sp = getEncodedTenantProduct(access_type);
       }
       if (!sp && requestedScopes) {
-        const encodedParams = requestedScopes.find(
-          (scope) => scope.includes('=') && scope.includes('&')
-        )?.[0]; // for now assume only one encoded param i.e. for tenant/product
+        const encodedParams = requestedScopes.find((scope) => scope.includes('=') && scope.includes('&')); // for now assume only one encoded param i.e. for tenant/product
         if (encodedParams) {
           sp = getEncodedTenantProduct(encodedParams);
         }
