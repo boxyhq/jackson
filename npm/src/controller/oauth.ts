@@ -57,6 +57,10 @@ function getEncodedTenantProduct(param: string): { tenant: string | null; produc
   }
 }
 
+function getScopeValues(scope?: string): string[] {
+  return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
+}
+
 export class OAuthController implements IOAuthController {
   private configStore: Storable;
   private sessionStore: Storable;
@@ -148,6 +152,8 @@ export class OAuthController implements IOAuthController {
     }
 
     let samlConfig;
+    const requestedScopes = getScopeValues(scope);
+    const requestedOIDCFlow = requestedScopes.includes('openid');
 
     if (tenant && product) {
       const samlConfigs = await this.configStore.getByIndex({
@@ -188,8 +194,13 @@ export class OAuthController implements IOAuthController {
       if (!sp && access_type) {
         sp = getEncodedTenantProduct(access_type);
       }
-      if (!sp && scope) {
-        sp = getEncodedTenantProduct(scope);
+      if (!sp && requestedScopes) {
+        const encodedParams = requestedScopes.find(
+          (scope) => scope.includes('=') && scope.includes('&')
+        )?.[0]; // for now assume only one encoded param i.e. for tenant/product
+        if (encodedParams) {
+          sp = getEncodedTenantProduct(encodedParams);
+        }
       }
       if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
@@ -301,7 +312,7 @@ export class OAuthController implements IOAuthController {
 
       const sessionId = crypto.randomBytes(16).toString('hex');
 
-      const requested = { client_id, state } as Record<string, string>;
+      const requested = { client_id, state } as Record<string, string | boolean | string[]>;
       if (requestedTenant) {
         requested.tenant = requestedTenant;
       }
@@ -310,6 +321,12 @@ export class OAuthController implements IOAuthController {
       }
       if (idp_hint) {
         requested.idp_hint = idp_hint;
+      }
+      if (requestedOIDCFlow) {
+        requested.oidc = true;
+      }
+      if (requestedScopes) {
+        requested.scope = requestedScopes;
       }
 
       await this.sessionStore.put(sessionId, {
