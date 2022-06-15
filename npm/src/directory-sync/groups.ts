@@ -103,11 +103,7 @@ export class DirectoryGroups {
   }
 
   // Update group displayName
-  public async updateDisplayName(
-    directory: Directory,
-    group: Group,
-    body: DirectorySyncGroupRequest['body']
-  ): Promise<Group> {
+  public async updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group> {
     const { displayName } = body;
 
     const updatedGroup = await this.groups.update(group.id, {
@@ -158,11 +154,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async updatePUT(
-    directory: Directory,
-    group: Group,
-    body: DirectorySyncGroupRequest['body']
-  ): Promise<DirectorySyncResponse> {
+  public async updatePUT(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     // Update group name

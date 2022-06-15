@@ -6,6 +6,7 @@ import { UsersController } from '../controller/users';
 import { GroupsController } from '../controller/groups';
 import { UsersRequestHandler, GroupsRequestHandler } from './request';
 import { WebhookEvents } from './events';
+import { getDirectorySyncProviders } from './utils';
 
 const directorySync = ({ db, opts }): DirectorySync => {
   const users = new UsersController({ db });
@@ -23,6 +24,9 @@ const directorySync = ({ db, opts }): DirectorySync => {
     usersRequest: new UsersRequestHandler({ directoryUsers }),
     groupsRequest: new GroupsRequestHandler({ directoryGroups }),
     events: webhookEvents,
+    providers: () => {
+      return getDirectorySyncProviders();
+    },
   };
 };
 

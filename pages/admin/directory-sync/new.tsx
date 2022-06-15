@@ -1,10 +1,11 @@
-import type { NextPage } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
 import { Input, Button, Select } from '@supabase/ui';
 import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import jackson from '@lib/jackson';
 
-const New: NextPage = () => {
+const New: NextPage<{ providers: any }> = ({ providers }) => {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
   const [directory, setDirectory] = React.useState({
@@ -62,10 +63,14 @@ const New: NextPage = () => {
         <form onSubmit={onSubmit}>
           <Input label='Directory name' id='name' className='mb-3' required onChange={onChange} />
           <Select label='Directory provider' id='type' onChange={onChange} className='mb-3' required>
-            <Select.Option value=''>Select IdP</Select.Option>
-            <Select.Option value='okta'>Okta</Select.Option>
-            <Select.Option value='onelogin'>OneLogin</Select.Option>
-            <Select.Option value='azure'>Azure AD</Select.Option>
+            <Select.Option value=''>Select Directory Sync Provider</Select.Option>
+            {Object.keys(providers).map((key) => {
+              return (
+                <Select.Option key={key} value={key}>
+                  {providers[key]}
+                </Select.Option>
+              );
+            })}
           </Select>
           <Input label='Tenant' id='tenant' className='mb-3' required onChange={onChange} />
           <Input label='Product' id='product' className='mb-3' required onChange={onChange} />
@@ -78,6 +83,16 @@ const New: NextPage = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const { directorySync } = await jackson();
+
+  return {
+    props: {
+      providers: directorySync.providers(),
+    },
+  };
 };
 
 export default New;

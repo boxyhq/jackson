@@ -261,6 +261,8 @@ export type Directory = {
   };
 };
 
+export type DirectorySyncGroupMember = { value: string; email?: string };
+
 export interface DirectoryConfig {
   create({
     name,
@@ -306,11 +308,7 @@ export interface DirectoryUsers {
 export interface DirectoryGroups {
   create(directory: Directory, body: DirectorySyncGroupRequest['body']): Promise<DirectorySyncResponse>;
   get(group: Group): Promise<DirectorySyncResponse>;
-  updateDisplayName(
-    directory: Directory,
-    group: Group,
-    body: DirectorySyncGroupRequest['body']
-  ): Promise<Group>;
+  updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group>;
   delete(directory: Directory, group: Group): Promise<DirectorySyncResponse>;
   getAll(): Promise<DirectorySyncResponse>;
   addGroupMembers(
@@ -326,11 +324,7 @@ export interface DirectoryGroups {
     sendWebhookEvent: boolean
   ): Promise<void>;
   updatePATCH(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
-  updatePUT(
-    directory: Directory,
-    group: Group,
-    body: DirectorySyncGroupRequest['body']
-  ): Promise<DirectorySyncResponse>;
+  updatePUT(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   addOrRemoveGroupMembers(
     directory: Directory,
     group: Group,
@@ -338,8 +332,6 @@ export interface DirectoryGroups {
   ): Promise<void>;
   handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
 }
-
-export type DirectorySyncGroupMember = { value: string; email?: string };
 
 export type DirectorySyncGroupRequest = {
   method: HTTPMethod;
@@ -382,9 +374,12 @@ export type DirectorySync = {
   directories: DirectoryConfig;
   usersRequest: UsersRequestHandler;
   groupsRequest: GroupsRequestHandler;
-  users: UsersController;
   groups: GroupsController;
+  users: UsersController;
   events: WebhookEvents;
+  providers: () => {
+    [K in string]: string;
+  };
 };
 
 export type WebhookEventLog = {

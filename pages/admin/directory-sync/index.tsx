@@ -6,11 +6,12 @@ import { PencilAltIcon, DatabaseIcon } from '@heroicons/react/outline';
 import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 
-const Index: NextPage<{ directories: Directory[]; pageOffset: number; pageLimit: number }> = ({
-  directories,
-  pageOffset,
-  pageLimit,
-}) => {
+const Index: NextPage<{
+  directories: Directory[];
+  pageOffset: number;
+  pageLimit: number;
+  providers: { [key: string]: string };
+}> = ({ directories, pageOffset, pageLimit, providers }) => {
   if (directories.length === 0 && pageOffset === 0) {
     return (
       <>
@@ -36,6 +37,9 @@ const Index: NextPage<{ directories: Directory[]; pageOffset: number; pageLimit:
               Product
             </th>
             <th scope='col' className='px-6 py-3'>
+              Type
+            </th>
+            <th scope='col' className='px-6 py-3'>
               Actions
             </th>
           </tr>
@@ -49,6 +53,7 @@ const Index: NextPage<{ directories: Directory[]; pageOffset: number; pageLimit:
                 <td className='px-6'>{directory.name}</td>
                 <td className='px-6'>{directory.tenant}</td>
                 <td className='px-6'>{directory.product}</td>
+                <td className='px-6'>{providers[directory.type]}</td>
                 <td className='px-6'>
                   <div className='flex flex-row'>
                     <Link href={`/admin/directory-sync/${directory.id}`}>
@@ -98,6 +103,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
+      providers: directorySync.providers(),
       directories: await directorySync.directories.list({ pageOffset, pageLimit }),
       pageOffset,
       pageLimit,

@@ -1,4 +1,5 @@
 import type { DirectorySyncGroupMember } from '../typings';
+import { DirectorySyncProviders } from '../typings';
 
 const parseGroupOperations = (
   operations: {
@@ -63,4 +64,12 @@ const toGroupMembers = (users: { user_id: string }[]): DirectorySyncGroupMember[
   }));
 };
 
-export { parseGroupOperations, toGroupMembers };
+// List of directory sync providers
+const getDirectorySyncProviders = (): { [K: string]: string } => {
+  return Object.entries(DirectorySyncProviders).reduce((acc, [key, value]) => {
+    acc[key] = value;
+    return acc;
+  }, {});
+};
+
+export { parseGroupOperations, toGroupMembers, getDirectorySyncProviders };
