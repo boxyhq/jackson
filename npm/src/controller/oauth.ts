@@ -135,6 +135,7 @@ export class OAuthController implements IOAuthController {
       product,
       access_type,
       scope,
+      claims,
       code_challenge,
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -324,6 +325,9 @@ export class OAuthController implements IOAuthController {
       }
       if (requestedOIDCFlow) {
         requested.oidc = true;
+        if (claims) {
+          requested.claims = claims;
+        }
       }
       if (requestedScopes) {
         requested.scope = requestedScopes;
