@@ -6,13 +6,14 @@ import { setErrorCookie } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    if (req.method !== 'GET') {
+    if (req.method !== 'GET' && req.method !== 'POST') {
       throw new Error('Method not allowed');
     }
 
     const { oauthController } = await jackson();
+    const requestParams = req.method === 'GET' ? req.query : req.body;
     const { redirect_url, authorize_form } = await oauthController.authorize(
-      req.query as unknown as OAuthReqBody
+      requestParams as unknown as OAuthReqBody
     );
     if (redirect_url) {
       res.redirect(302, redirect_url);
