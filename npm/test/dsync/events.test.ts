@@ -1,33 +1,31 @@
-import { JacksonOption, DirectorySync, Directory } from '../../src/typings';
+import { DirectorySync, Directory } from '../../src/typings';
 import tap from 'tap';
 import groups from './data/groups';
 import users from './data/users';
-import directories from './data/directories';
 import { default as usersRequest } from './data/user-requests';
 import { default as groupRequest } from './data/group-requests';
-
-const options = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  db: {
-    engine: 'mem',
-  },
-};
+import { getFakeDirectory } from './data/directories';
+import { getDatabaseOption } from '../utils';
 
 let directorySync: DirectorySync;
 let directory: Directory;
+const fakeDirectory = getFakeDirectory();
+
+const webhook: Directory['webhook'] = {
+  endpoint: 'https://eoproni1f0eod8i.m.pipedream.net',
+  secret: 'secret',
+};
 
 tap.before(async () => {
-  const jackson = await (await import('../../src/index')).default(options);
+  const jackson = await (await import('../../src/index')).default(getDatabaseOption());
 
   directorySync = jackson.directorySync;
 
   // Create a directory before starting the test
   directory = await directorySync.directories.create({
-    ...directories[2],
-    webhook_url: directories[2].webhook.endpoint,
-    webhook_secret: directories[2].webhook.secret,
+    ...fakeDirectory,
+    webhook_url: webhook.endpoint,
+    webhook_secret: webhook.secret,
   });
 
   // Turn on webhook event logging for the directory
@@ -36,26 +34,28 @@ tap.before(async () => {
   });
 
   directorySync.events.setTenantAndProduct(directory.tenant, directory.product);
+  directorySync.users.setTenantAndProduct(directory.tenant, directory.product);
 });
 
 tap.teardown(async () => {
+  // Delete the directory after the test
+  await directorySync.directories.delete(directory.id);
+
   process.exit(0);
 });
 
 tap.test('Webhook Events / ', async (t) => {
   tap.afterEach(async () => {
-    // Clear the webhook events logs after each test
     await directorySync.events.clear();
   });
 
   t.test("Should be able to get the directory's webhook", async (t) => {
-    t.match(directory.webhook.endpoint, directories[2].webhook.endpoint);
-    t.match(directory.webhook.secret, directories[2].webhook.secret);
+    t.match(directory.webhook.endpoint, webhook.endpoint);
+    t.match(directory.webhook.secret, webhook.secret);
 
     t.end();
   });
 
-  // No events should be logged if the directory has no webhook
   t.test('Should not log events if the directory has no webhook', async (t) => {
     await directorySync.directories.update(directory.id, {
       webhook: {
@@ -74,8 +74,8 @@ tap.test('Webhook Events / ', async (t) => {
     // Restore the directory's webhook
     await directorySync.directories.update(directory.id, {
       webhook: {
-        endpoint: directories[2].webhook.endpoint,
-        secret: directories[2].webhook.secret,
+        endpoint: webhook.endpoint,
+        secret: webhook.secret,
       },
     });
   });
@@ -146,6 +146,8 @@ tap.test('Webhook Events / ', async (t) => {
     t.match(events[2].payload.event, 'user.created');
     t.match(events[2].payload.directory_id, directory.id);
     t.hasStrict(events[2].payload.data.raw, createdUser);
+
+    await directorySync.users.clear();
 
     t.end();
   });
@@ -227,8 +229,9 @@ tap.test('Webhook Events / ', async (t) => {
     t.hasStrict(events[1].payload.data.raw, createdUser);
     t.hasStrict(events[1].payload.data.group.raw.displayName, addedMember.displayName);
 
+    await directorySync.users.clear();
+
     await directorySync.groupsRequest.handle(groupRequest.deleteById(directory.id, createdGroup.id));
-    await directorySync.usersRequest.handle(usersRequest.deleteById(directory.id, createdUser.id));
 
     t.end();
   });

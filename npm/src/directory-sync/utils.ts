@@ -65,6 +65,7 @@ const toGroupMembers = (users: { user_id: string }[]): DirectorySyncGroupMember[
 };
 
 // List of directory sync providers
+// TODO: Fix the return type
 const getDirectorySyncProviders = (): { [K: string]: string } => {
   return Object.entries(DirectorySyncProviders).reduce((acc, [key, value]) => {
     acc[key] = value;

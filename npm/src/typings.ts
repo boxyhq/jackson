@@ -207,6 +207,7 @@ export interface UsersController {
   get(id: string): Promise<User>;
   search(userName: string): Promise<User[]>;
   delete(id: string): Promise<void>;
+  clear(): Promise<void>;
 }
 
 export interface GroupsController {

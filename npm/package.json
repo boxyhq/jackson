@@ -40,6 +40,7 @@
     "@opentelemetry/api-metrics": "0.27.0",
     "@peculiar/webcrypto": "1.4.0",
     "@peculiar/x509": "1.6.4",
+    "axios": "^0.27.2",
     "mongodb": "4.6.0",
     "mysql2": "2.3.3",
     "pg": "8.7.3",
@@ -48,10 +49,10 @@
     "ripemd160": "2.0.2",
     "typeorm": "0.3.6",
     "xml2js": "0.4.23",
-    "xmlbuilder": "15.1.1",
-    "axios": "^0.27.2"
+    "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.2.0",
     "@types/node": "17.0.38",
     "@types/sinon": "10.0.11",
     "@types/tap": "15.0.7",

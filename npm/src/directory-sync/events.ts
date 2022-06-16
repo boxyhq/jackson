@@ -90,7 +90,7 @@ export class WebhookEvents {
 
     this.setTenantAndProduct(tenant, product);
 
-    // Log the events only if `log_webhook_events` is true
+    // Log the events only if `log_webhook_events` is enabled
     const log = directory.log_webhook_events ? await this.log(directory, webhookPayload) : undefined;
 
     let status = 200;
@@ -102,7 +102,6 @@ export class WebhookEvents {
     }
 
     if (log) {
-      // Update the event log with the status code
       await this.updateStatus(log, status);
     }
 
@@ -110,14 +109,12 @@ export class WebhookEvents {
   }
 
   public async log(directory: Directory, webhookPayload: any): Promise<WebhookEventLog> {
-    const { event } = webhookPayload;
-
     const id = uuidv4();
 
     const log: WebhookEventLog = {
       id,
       directory_id: directory.id,
-      event,
+      event: webhookPayload.event,
       webhook_endpoint: directory.webhook.endpoint,
       payload: webhookPayload,
       created_at: new Date(),

@@ -1,31 +1,12 @@
-import { Directory } from '../../../src/typings';
+import { Directory, DirectoryType } from '../../../src/typings';
+import { faker } from '@faker-js/faker';
 
-const directories = <Directory[]>[
-  {
-    name: 'BoxyHQ',
-    tenant: 'boxyhq.com',
-    product: 'jackson',
-    type: 'okta-scim-v2',
+export const getFakeDirectory = () => {
+  return {
+    name: faker.company.companyName(),
+    tenant: faker.internet.domainName(),
+    product: faker.commerce.productName(),
+    type: 'okta-saml' as DirectoryType,
     log_webhook_events: false,
-  },
-  {
-    name: 'Cal',
-    tenant: 'cal.com',
-    product: 'jackson',
-    type: 'okta-saml',
-    log_webhook_events: false,
-  },
-  {
-    name: 'Aviyel',
-    tenant: 'aviyel.com',
-    product: 'jackson',
-    type: 'okta-saml',
-    log_webhook_events: false,
-    webhook: {
-      endpoint: 'https://eoproni1f0eod8i.m.pipedream.net',
-      secret: 'secret',
-    },
-  },
-];
-
-export default directories;
+  } as Directory;
+};

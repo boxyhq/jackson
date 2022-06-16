@@ -113,4 +113,15 @@ export class UsersController {
   public async search(userName: string): Promise<User[]> {
     return (await this.store().getByIndex({ name: 'userName', value: userName })) as User[];
   }
+
+  // Clear all the users
+  public async clear() {
+    const users = await this.list({});
+
+    await Promise.all(
+      users.map(async (user) => {
+        return this.delete(user.id);
+      })
+    );
+  }
 }

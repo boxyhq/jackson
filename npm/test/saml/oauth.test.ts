@@ -31,6 +31,7 @@ import {
   token_req_encoded_client_id,
   token_req_unencoded_client_id_gen,
 } from './fixture';
+import { getDatabaseOption } from '../utils';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
@@ -40,15 +41,7 @@ const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-const options = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  db: {
-    engine: 'mem',
-  },
-  clientSecretVerifier: 'TOP-SECRET',
-};
+const options = { ...getDatabaseOption(), clientSecretVerifier: 'TOP-SECRET' };
 
 const configRecords: Array<any> = [];
 

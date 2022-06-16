@@ -4,24 +4,17 @@ import tap from 'tap';
 import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
 import readConfig from '../../src/read-config';
-import { IdPConfig, JacksonOption } from '../../src/typings';
+import { IdPConfig } from '../../src/typings';
 import { saml_config } from './fixture';
+import { getDatabaseOption } from '../utils';
 
 let apiController;
 
 const CLIENT_ID = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
-const OPTIONS = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  db: {
-    engine: 'mem',
-  },
-};
 
 tap.before(async () => {
-  const controller = await controllers(OPTIONS);
+  const controller = await controllers(getDatabaseOption());
 
   apiController = controller.apiController;
 });
