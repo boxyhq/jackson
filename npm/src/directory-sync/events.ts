@@ -11,6 +11,7 @@ import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { storeNamespacePrefix } from '../controller/utils';
 
 export class WebhookEvents {
   private db: DatabaseStore;
@@ -27,7 +28,7 @@ export class WebhookEvents {
       throw new Error('Set tenant and product before using store.');
     }
 
-    return this.db.store(`dsync:logs:${this.tenant}:${this.product}`);
+    return this.db.store(`${storeNamespacePrefix.dsync.logs}:${this.tenant}:${this.product}`);
   }
 
   // Set the tenant and product
@@ -151,6 +152,7 @@ export class WebhookEvents {
     await this.store().delete(id);
   }
 
+  // Clear all the events
   public async clear() {
     const events = await this.getAll();
 

@@ -282,12 +282,7 @@ export interface DirectoryConfig {
   get(id: string): Promise<Directory>;
   update(
     id: string,
-    param: {
-      name: string;
-      webhook_url: string;
-      webhook_secret: string;
-      log_webhook_events: boolean;
-    }
+    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim'>
   ): Promise<Directory>;
   getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;
   list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<Directory[]>;
@@ -406,7 +401,7 @@ export interface WebhookEvents {
   with(tenant: string, product: string): WebhookEvents;
   getAll(): Promise<WebhookEventLog[]>;
   get(id: string): Promise<WebhookEventLog>;
-  updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
   clear(): Promise<void>;
   delete(id: string): Promise<void>;
+  updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
 }

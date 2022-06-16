@@ -1,7 +1,6 @@
 import type { DirectorySyncUserRequest } from '../../../src/typings';
 
 const requests = {
-  // POST /Users
   create: (directoryId: string, user: any): DirectorySyncUserRequest => {
     return {
       method: 'POST',

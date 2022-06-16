@@ -8,6 +8,20 @@ export enum IndexNames {
   TenantProduct = 'tenantProduct',
 }
 
+// The namespace prefix for the database store
+export const storeNamespacePrefix = {
+  dsync: {
+    config: 'dsync:config',
+    logs: 'dsync:logs',
+    users: 'dsync:users',
+    groups: 'dsync:groups',
+    members: 'dsync:members',
+  },
+  saml: {
+    config: 'saml:config',
+  },
+};
+
 export const relayStatePrefix = 'boxyhq_jackson_';
 
 export const validateAbsoluteUrl = (url, message) => {

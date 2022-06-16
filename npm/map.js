@@ -14,6 +14,11 @@ const map = {
     'src/controller/groups.ts',
     'src/directory-sync/request.ts',
   ],
+  'test/dsync/events.test.ts': [
+    'src/directory-sync/events.ts',
+    'src/directory-sync/users.ts',
+    'src/directory-sync/groups.ts',
+  ],
 };
 
 module.exports = (testFile) => {

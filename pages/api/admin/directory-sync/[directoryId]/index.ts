@@ -24,9 +24,11 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const directory = await directorySync.directories.update(directoryId as string, {
       name,
-      webhook_url,
-      webhook_secret,
       log_webhook_events,
+      webhook: {
+        endpoint: webhook_url,
+        secret: webhook_secret,
+      },
     });
 
     return res.status(201).json({ data: directory, error: null });

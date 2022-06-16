@@ -15,6 +15,17 @@ const directories = <Directory[]>[
     type: 'okta-saml',
     log_webhook_events: false,
   },
+  {
+    name: 'Aviyel',
+    tenant: 'aviyel.com',
+    product: 'jackson',
+    type: 'okta-saml',
+    log_webhook_events: false,
+    webhook: {
+      endpoint: 'https://eoproni1f0eod8i.m.pipedream.net',
+      secret: 'secret',
+    },
+  },
 ];
 
 export default directories;

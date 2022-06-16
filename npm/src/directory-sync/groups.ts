@@ -34,10 +34,7 @@ export class DirectoryGroups {
     this.webhookEvents = webhookEvents;
   }
 
-  public async create(
-    directory: Directory,
-    body: DirectorySyncGroupRequest['body']
-  ): Promise<DirectorySyncResponse> {
+  public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     const group = await this.groups.create({

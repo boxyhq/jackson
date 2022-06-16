@@ -1,6 +1,7 @@
 import type { Storable, User, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
 import { JacksonError } from './error';
+import { storeNamespacePrefix } from '../controller/utils';
 
 export class UsersController {
   private db: DatabaseStore;
@@ -17,7 +18,7 @@ export class UsersController {
       throw new Error('Set tenant and product before using store.');
     }
 
-    return this.db.store(`users:${this.tenant}:${this.product}`);
+    return this.db.store(`${storeNamespacePrefix.dsync.users}:${this.tenant}:${this.product}`);
   }
 
   public setTenantAndProduct(tenant: string, product: string): UsersController {

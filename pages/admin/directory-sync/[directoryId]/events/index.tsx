@@ -7,7 +7,6 @@ import { EyeIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
 import EmptyState from '@components/EmptyState';
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
 
 const Events: NextPage<{ directory: Directory; events: WebhookEventLog[] }> = ({ directory, events }) => {

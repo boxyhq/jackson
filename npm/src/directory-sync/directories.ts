@@ -2,6 +2,7 @@ import type { Storable, Directory, JacksonOption, DatabaseStore, DirectoryType }
 import * as dbutils from '../db/utils';
 import { createRandomSecret } from '../controller/utils';
 import { JacksonError } from '../controller/error';
+import { storeNamespacePrefix } from '../controller/utils';
 
 export class DirectoryConfig {
   private _store: Storable | null = null;
@@ -15,7 +16,7 @@ export class DirectoryConfig {
 
   // Return the database store
   private store(): Storable {
-    return this._store || (this._store = this.db.store('dsync:config'));
+    return this._store || (this._store = this.db.store(storeNamespacePrefix.dsync.config));
   }
 
   // Create the configuration
@@ -79,29 +80,32 @@ export class DirectoryConfig {
     return this.transform(directory);
   }
 
-  // Update the configuration
+  // Update the configuration. Partial updates are supported
   public async update(
     id: string,
-    param: {
-      name: string;
-      webhook_url: string;
-      webhook_secret: string;
-      log_webhook_events: boolean;
-    }
+    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim'>
   ): Promise<Directory> {
-    const { name, webhook_url, webhook_secret, log_webhook_events } = param;
+    const { name, log_webhook_events, webhook, type } = param;
 
-    const directory = {
-      ...(await this.get(id)),
-      name,
-      log_webhook_events,
-      webhook: {
-        endpoint: webhook_url,
-        secret: webhook_secret,
-      },
-    };
+    const directory = await this.get(id);
 
-    await this.store().put(id, directory);
+    if (name) {
+      directory.name = name;
+    }
+
+    if (log_webhook_events !== undefined) {
+      directory.log_webhook_events = log_webhook_events;
+    }
+
+    if (webhook) {
+      directory.webhook = webhook;
+    }
+
+    if (type) {
+      directory.type = type;
+    }
+
+    await this.store().put(id, { ...directory });
 
     return directory;
   }

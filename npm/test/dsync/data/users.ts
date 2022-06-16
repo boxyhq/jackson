@@ -29,7 +29,7 @@ const users = [
     emails: [
       {
         primary: true,
-        value: 'Kiran@boxyhq.com',
+        value: 'kiran@boxyhq.com',
         type: 'work',
       },
     ],

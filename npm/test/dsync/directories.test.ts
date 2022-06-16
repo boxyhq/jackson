@@ -1,5 +1,5 @@
 import type { JacksonError } from '../../src/controller/error';
-import { JacksonOption, DirectorySync, Directory } from '../../src/typings';
+import { JacksonOption, DirectorySync, Directory, DirectoryType } from '../../src/typings';
 import tap from 'tap';
 import directories from './data/directories';
 
@@ -58,20 +58,33 @@ tap.test('Directories / ', async (t) => {
 
   t.test('should be able to update a directory', async (t) => {
     const toUpdate = {
-      name: 'BoxyHQ',
-      webhook_url: 'https://my-cool-app.com/webhook',
-      webhook_secret: 'secret',
+      name: 'BoxyHQ 1',
+      webhook: {
+        endpoint: 'https://my-cool-app.com/webhook',
+        secret: 'secret',
+      },
       log_webhook_events: true,
+      type: 'okta-saml' as DirectoryType,
     };
 
-    const updatedDirectory = await directorySync.directories.update(newDirectory.id, toUpdate);
+    let updatedDirectory = await directorySync.directories.update(newDirectory.id, toUpdate);
 
     t.ok(updatedDirectory);
     t.match(newDirectory.id, updatedDirectory.id);
     t.match(updatedDirectory.name, toUpdate.name);
-    t.match(updatedDirectory.webhook.endpoint, toUpdate.webhook_url);
-    t.match(updatedDirectory.webhook.secret, toUpdate.webhook_secret);
+    t.match(updatedDirectory.webhook.endpoint, toUpdate.webhook.endpoint);
+    t.match(updatedDirectory.webhook.secret, toUpdate.webhook.secret);
     t.match(updatedDirectory.log_webhook_events, toUpdate.log_webhook_events);
+
+    // Partial update
+    updatedDirectory = await directorySync.directories.update(newDirectory.id, {
+      name: 'BoxyHQ 2',
+      log_webhook_events: false,
+    });
+
+    t.ok(updatedDirectory);
+    t.match(updatedDirectory.name, 'BoxyHQ 2');
+    t.match(updatedDirectory.log_webhook_events, false);
 
     t.end();
   });

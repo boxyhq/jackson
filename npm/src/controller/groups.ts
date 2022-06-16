@@ -2,6 +2,7 @@ import type { Storable, Group, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
+import { storeNamespacePrefix } from '../controller/utils';
 
 export class GroupsController {
   private db: DatabaseStore;
@@ -18,7 +19,7 @@ export class GroupsController {
       throw new Error('Set tenant and product before using store.');
     }
 
-    return this.db.store(`${type}:${this.tenant}:${this.product}`);
+    return this.db.store(`${storeNamespacePrefix.dsync[type]}:${this.tenant}:${this.product}`);
   }
 
   public setTenantAndProduct(tenant: string, product: string): GroupsController {
