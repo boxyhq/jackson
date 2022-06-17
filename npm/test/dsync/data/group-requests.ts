@@ -1,16 +1,24 @@
 import type { DirectorySyncGroupRequest } from '../../../src/typings';
 
 const requests = {
+  // Create a group
+  // POST /api/scim/v2.0/{directoryId}/Groups
   create: (directoryId: string, group: any): DirectorySyncGroupRequest => {
     return {
       method: 'POST',
-      body: group,
+      body: {
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        displayName: group.displayName,
+        members: [],
+      },
       query: {
         directory_id: directoryId,
       },
     };
   },
 
+  // Get a group by id
+  // GET /api/scim/v2.0/{directoryId}/Groups/{groupId}
   getById: (directoryId: string, groupId: string): DirectorySyncGroupRequest => {
     return {
       method: 'GET',
@@ -21,6 +29,8 @@ const requests = {
     };
   },
 
+  // Update a group by id
+  // PUT /api/scim/v2.0/{directoryId}/Groups/{groupId}
   updateById: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
     return {
       method: 'PUT',
@@ -32,6 +42,8 @@ const requests = {
     };
   },
 
+  // Delete a group by id
+  // DELETE /api/scim/v2.0/{directoryId}/Groups/{groupId}
   deleteById: (directoryId: string, groupId: string): DirectorySyncGroupRequest => {
     return {
       method: 'DELETE',
@@ -42,6 +54,8 @@ const requests = {
     };
   },
 
+  // Get all groups
+  // GET /api/scim/v2.0/{directoryId}/Groups
   getAll: (directoryId: string): DirectorySyncGroupRequest => {
     return {
       method: 'GET',
@@ -57,6 +71,7 @@ const requests = {
     return {
       method: 'PATCH',
       body: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
         Operations: [
           {
             op: 'add',
@@ -81,11 +96,12 @@ const requests = {
     return {
       method: 'PATCH',
       body: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
         Operations: [
           {
             op: 'remove',
-            path,
             value: members,
+            path,
           },
         ],
       },
@@ -100,10 +116,12 @@ const requests = {
     return {
       method: 'PATCH',
       body: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
         Operations: [
           {
             op: 'replace',
             value: {
+              id: groupId,
               displayName: group.displayName,
             },
           },

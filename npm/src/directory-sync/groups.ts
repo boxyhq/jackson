@@ -116,7 +116,7 @@ export class DirectoryGroups {
     return updatedGroup;
   }
 
-  public async updatePATCH(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
+  public async patch(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
     const { Operations } = body;
 
     const operation = parseGroupOperations(Operations);
@@ -151,7 +151,7 @@ export class DirectoryGroups {
     };
   }
 
-  public async updatePUT(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
+  public async update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
     // Update group name
@@ -269,11 +269,11 @@ export class DirectoryGroups {
     }
 
     if (method === 'PUT' && group) {
-      return await this.updatePUT(directory, group, body);
+      return await this.update(directory, group, body);
     }
 
     if (method === 'PATCH' && group) {
-      return await this.updatePATCH(directory, group, body);
+      return await this.patch(directory, group, body);
     }
 
     if (method === 'DELETE' && group) {

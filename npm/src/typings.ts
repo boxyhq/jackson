@@ -319,8 +319,8 @@ export interface DirectoryGroups {
     members: DirectorySyncGroupMember[],
     sendWebhookEvent: boolean
   ): Promise<void>;
-  updatePATCH(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
-  updatePUT(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
+  update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
+  patch(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   addOrRemoveGroupMembers(
     directory: Directory,
     group: Group,
