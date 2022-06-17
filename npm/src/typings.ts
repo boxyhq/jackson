@@ -389,6 +389,14 @@ export type WebhookEventLog = {
   delivered?: boolean;
 };
 
+export type WebhookPayload = {
+  directory_id: Directory['id'];
+  event: DirectorySyncEventType;
+  tenant: string;
+  product: string;
+  data: User | Group | { group: Group };
+};
+
 export interface WebhookEvents {
   send(
     action: DirectorySyncEventType,

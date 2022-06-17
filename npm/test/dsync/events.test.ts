@@ -6,13 +6,16 @@ import { default as usersRequest } from './data/user-requests';
 import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
 import { getDatabaseOption } from '../utils';
+import axios from 'axios';
+import sinon from 'sinon';
+import { createPayload, createSignatureString } from '../../src/directory-sync/events';
 
 let directorySync: DirectorySync;
 let directory: Directory;
 const fakeDirectory = getFakeDirectory();
 
 const webhook: Directory['webhook'] = {
-  endpoint: 'https://eoproni1f0eod8i.m.pipedream.net',
+  endpoint: 'http://localhost',
   secret: 'secret',
 };
 
@@ -115,6 +118,10 @@ tap.test('Webhook Events / ', async (t) => {
   });
 
   t.test('Should send user related events', async (t) => {
+    const mock = sinon.mock(axios);
+
+    mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
+
     // Create the user
     const { data: createdUser } = await directorySync.usersRequest.handle(
       usersRequest.create(directory.id, users[0])
@@ -129,6 +136,9 @@ tap.test('Webhook Events / ', async (t) => {
     const { data: deletedUser } = await directorySync.usersRequest.handle(
       usersRequest.deleteById(directory.id, createdUser.id)
     );
+
+    mock.verify();
+    mock.restore();
 
     const events = await directorySync.events.getAll();
 
@@ -153,6 +163,10 @@ tap.test('Webhook Events / ', async (t) => {
   });
 
   t.test('Should send group related events', async (t) => {
+    const mock = sinon.mock(axios);
+
+    mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
+
     // Create the group
     const { data: createdGroup } = await directorySync.groupsRequest.handle(
       groupRequest.create(directory.id, groups[0])
@@ -167,6 +181,9 @@ tap.test('Webhook Events / ', async (t) => {
     const { data: deletedGroup } = await directorySync.groupsRequest.handle(
       groupRequest.deleteById(directory.id, createdGroup.id)
     );
+
+    mock.verify();
+    mock.restore();
 
     const events = await directorySync.events.getAll();
 
@@ -189,6 +206,10 @@ tap.test('Webhook Events / ', async (t) => {
   });
 
   t.test('Should send group membership related events', async (t) => {
+    const mock = sinon.mock(axios);
+
+    mock.expects('post').exactly(4).withArgs(webhook.endpoint).throws();
+
     // Create the user
     const { data: createdUser } = await directorySync.usersRequest.handle(
       usersRequest.create(directory.id, users[0])
@@ -214,6 +235,9 @@ tap.test('Webhook Events / ', async (t) => {
       )
     );
 
+    mock.verify();
+    mock.restore();
+
     const events = await directorySync.events.getAll();
 
     t.ok(events);
@@ -229,9 +253,70 @@ tap.test('Webhook Events / ', async (t) => {
     t.hasStrict(events[1].payload.data.raw, createdUser);
     t.hasStrict(events[1].payload.data.group.raw.displayName, addedMember.displayName);
 
-    await directorySync.users.clear();
+    await directorySync.users.delete(createdUser.id);
+    await directorySync.groups.delete(createdGroup.id);
 
-    await directorySync.groupsRequest.handle(groupRequest.deleteById(directory.id, createdGroup.id));
+    t.end();
+  });
+
+  t.test('createPayload()', async (t) => {
+    // Create an user
+    const { data: createdUser } = await directorySync.usersRequest.handle(
+      usersRequest.create(directory.id, users[0])
+    );
+
+    const user = await directorySync.users.get(createdUser.id);
+
+    const webhookPayload = createPayload('user.created', {
+      directory,
+      user,
+    });
+
+    t.match(webhookPayload.event, 'user.created');
+    t.match(webhookPayload.directory_id, directory.id);
+    t.strictSame(webhookPayload.data, user);
+
+    // Create the group
+    const { data: createdGroup } = await directorySync.groupsRequest.handle(
+      groupRequest.create(directory.id, groups[0])
+    );
+
+    const group = await directorySync.groups.get(createdGroup.id);
+
+    const webhookPayload2 = createPayload('group.created', {
+      directory,
+      group,
+    });
+
+    t.match(webhookPayload2.event, 'group.created');
+    t.match(webhookPayload2.directory_id, directory.id);
+    t.strictSame(webhookPayload2.data, group);
+
+    await directorySync.users.delete(createdUser.id);
+    await directorySync.groups.delete(createdGroup.id);
+
+    t.end();
+  });
+
+  t.test('createSignatureString()', async (t) => {
+    const payload = {
+      event: 'user.created',
+      directory_id: directory.id,
+      tenant: directory.tenant,
+      product: directory.product,
+    };
+
+    const signatureString = await createSignatureString(directory.webhook.secret, payload);
+    const parts = signatureString.split(',');
+
+    t.ok(signatureString);
+    t.ok(parts[0].match(/^t=[0-9a-f]/));
+    t.ok(parts[1].match(/^s=[0-9a-f]/));
+
+    // Empty secret should create an empty signature
+    const emptySignatureString = await createSignatureString('', payload);
+
+    t.match(emptySignatureString, '');
 
     t.end();
   });

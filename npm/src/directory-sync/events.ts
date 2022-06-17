@@ -6,6 +6,7 @@ import type {
   DatabaseStore,
   WebhookEventLog,
   Storable,
+  WebhookPayload,
 } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
@@ -52,43 +53,18 @@ export class WebhookEvents {
       user?: User;
     }
   ) {
-    const { directory, group, user } = payload;
+    const { directory } = payload;
     const { tenant, product, webhook } = directory;
 
     // If there is no webhook, then we don't need to send an event
-    if (!webhook.endpoint) {
+    if (webhook.endpoint === '') {
       return;
     }
 
-    // Create a payload to send to the webhook
-    const webhookPayload = {
-      directory_id: directory.id,
-      event: action,
-      tenant,
-      product,
-    };
-
-    // User events
-    if (['user.created', 'user.updated', 'user.deleted'].includes(action) && user) {
-      webhookPayload['data'] = transformUser(user);
-    }
-
-    // Group events
-    if (['group.created', 'group.updated', 'group.deleted'].includes(action) && group) {
-      webhookPayload['data'] = transformGroup(group);
-    }
-
-    // Group membership events
-    if (['group.user_added', 'group.user_removed'].includes(action) && user && group) {
-      webhookPayload['data'] = transformUserGroup(user, group);
-    }
-
-    const headers = {
-      'Content-Type': 'application/json',
-      'BoxyHQ-Signature': await createSignatureString(webhook.secret, webhookPayload),
-    };
-
     this.setTenantAndProduct(tenant, product);
+
+    const webhookPayload = createPayload(action, payload);
+    const headers = await createHeader(webhook.secret, webhookPayload);
 
     // Log the events only if `log_webhook_events` is enabled
     const log = directory.log_webhook_events ? await this.log(directory, webhookPayload) : undefined;
@@ -161,7 +137,54 @@ export class WebhookEvents {
   }
 }
 
-const createSignatureString = async (secret: string, payload: object) => {
+// Create a webhook payload
+export const createPayload = (
+  action: string,
+  payload: {
+    directory: Directory;
+    group?: Group;
+    user?: User;
+  }
+): WebhookPayload => {
+  const { directory, group, user } = payload;
+  const { tenant, product } = directory;
+
+  // Create a payload to send to the webhook
+  const webhookPayload = {
+    directory_id: directory.id,
+    event: action,
+    tenant,
+    product,
+  } as WebhookPayload;
+
+  // User events
+  if (['user.created', 'user.updated', 'user.deleted'].includes(action) && user) {
+    webhookPayload['data'] = transformUser(user);
+  }
+
+  // Group events
+  if (['group.created', 'group.updated', 'group.deleted'].includes(action) && group) {
+    webhookPayload['data'] = transformGroup(group);
+  }
+
+  // Group membership events
+  if (['group.user_added', 'group.user_removed'].includes(action) && user && group) {
+    webhookPayload['data'] = transformUserGroup(user, group);
+  }
+
+  return webhookPayload;
+};
+
+// Create request headers
+export const createHeader = async (secret: string, webhookPayload: any) => {
+  return {
+    'Content-Type': 'application/json',
+    'BoxyHQ-Signature': await createSignatureString(secret, webhookPayload),
+  };
+};
+
+// Create a signature string
+export const createSignatureString = async (secret: string, payload: object) => {
   if (!secret) {
     return '';
   }
