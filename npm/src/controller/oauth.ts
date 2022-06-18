@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
+import * as jose from 'jose';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
 
@@ -647,6 +648,16 @@ export class OAuthController implements IOAuthController {
       ...codeVal.profile,
       requested: codeVal.requested,
     };
+    const requestedOIDCFlow = !!codeVal.requested.oidc;
+    if (requestedOIDCFlow) {
+      const id_token = await new jose.SignJWT({})
+        .setIssuer(this.opts.externalUrl)
+        .setSubject(codeVal.profile.claims.id)
+        .setAudience(codeVal.clientID)
+        .setExpirationTime('5m') //  identity token only really needs to be valid long enough for it to be verified by the client application.
+        .sign(this.opts.jwtSigningKeys.private);
+      tokenVal.id_token = id_token;
+    }
 
     await this.tokenStore.put(token, tokenVal);
 
@@ -657,11 +668,17 @@ export class OAuthController implements IOAuthController {
       // ignore error
     }
 
-    return {
+    const tokenResponse: OAuthTokenRes = {
       access_token: token,
       token_type: 'bearer',
       expires_in: this.opts.db.ttl!,
     };
+
+    if (requestedOIDCFlow) {
+      tokenResponse.id_token = tokenVal.id_token;
+    }
+
+    return tokenResponse;
   }
 
   /**
