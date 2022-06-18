@@ -91,7 +91,7 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - run: npm install
+      - run: npm install --legacy-peer-deps
       - run: npm run build
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
@@ -100,7 +100,7 @@ jobs:
       - run: npm run test
         working-directory: ./npm
       - run: |
-          npm install
+          npm install --legacy-peer-deps
           npm run build
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
@@ -364,7 +364,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
-      - run: npm install
+      - run: npm install --legacy-peer-deps
         working-directory: ./npm
 
       - name: Publish NPM
