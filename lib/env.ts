@@ -23,6 +23,10 @@ const db = {
 };
 
 const clientSecretVerifier = process.env.CLIENT_SECRET_VERIFIER;
+const jwtSigningKeys = {
+  private: Buffer.from(process.env.RSA_PRIVATE_KEY || '', 'base64'),
+  public: Buffer.from(process.env.RSA_PUBLIC_KEY || '', 'base64'),
+};
 
 export default {
   hostUrl,
@@ -36,4 +40,5 @@ export default {
   idpEnabled,
   db,
   clientSecretVerifier,
+  jwtSigningKeys,
 };

@@ -133,6 +133,10 @@ export interface JacksonOption {
   db: DatabaseOption;
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
+  jwtSigningKeys: {
+    private: Buffer;
+    public: Buffer;
+  };
 }
 
 export interface SLORequestParams {
