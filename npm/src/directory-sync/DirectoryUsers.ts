@@ -57,7 +57,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async updatePUT(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
+  public async update(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
     const { active, name, emails } = body;
 
     // Update the user
@@ -88,7 +88,7 @@ export class DirectoryUsers {
     };
   }
 
-  public async updatePATCH(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
+  public async patch(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
     const { Operations } = body;
     const operation = Operations[0];
 
@@ -178,11 +178,11 @@ export class DirectoryUsers {
     }
 
     if (method === 'PUT' && user) {
-      return await this.updatePUT(directory, user, body);
+      return await this.update(directory, user, body);
     }
 
     if (method === 'PATCH' && user) {
-      return await this.updatePATCH(directory, user, body);
+      return await this.patch(directory, user, body);
     }
 
     if (method === 'DELETE' && user) {

@@ -302,11 +302,11 @@ export interface DirectoryConfig {
     webhook_secret?: string;
     type: DirectoryType;
   }): Promise<Directory>;
-  get(id: string): Promise<Directory>;
   update(
     id: string,
     param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim'>
   ): Promise<Directory>;
+  get(id: string): Promise<Directory>;
   getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;
   list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<Directory[]>;
   delete(id: string): Promise<void>;
@@ -316,8 +316,8 @@ export interface DirectoryConfig {
 export interface DirectoryUsers {
   create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
   get(user: User): Promise<DirectorySyncResponse>;
-  updatePUT(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
-  updatePATCH(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
+  update(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
+  patch(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
   delete(directory: Directory, user: User, active: boolean): Promise<DirectorySyncResponse>;
   getAll(queryParams: { count: number; startIndex: number; filter?: string }): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse>;
@@ -341,13 +341,13 @@ export interface DirectoryGroups {
     members: DirectorySyncGroupMember[],
     sendWebhookEvent: boolean
   ): Promise<void>;
-  update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
-  patch(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   addOrRemoveGroupMembers(
     directory: Directory,
     group: Group,
     members: DirectorySyncGroupMember[]
   ): Promise<void>;
+  update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
+  patch(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
 }
 
