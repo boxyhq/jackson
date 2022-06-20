@@ -1,197 +1,127 @@
-import type {
-  DirectoryConfig,
-  Directory,
-  DirectorySyncResponse,
-  WebhookEvents,
-  User,
-  DirectorySyncUserRequest,
-} from '../typings';
-import type { GroupsController } from '../controller/groups';
-import type { UsersController } from '../controller/users';
+import type { Storable, User, DatabaseStore } from '../typings';
+import { v4 as uuidv4 } from 'uuid';
+import { JacksonError } from '../controller/error';
+import { storeNamespacePrefix } from '../controller/utils';
 
-export class DirectoryUsers {
-  private directories: DirectoryConfig;
-  private users: UsersController;
-  private groups: GroupsController;
-  private webhookEvents: WebhookEvents;
+export class Users {
+  private db: DatabaseStore;
+  private tenant = '';
+  private product = '';
 
-  constructor({
-    directories,
-    users,
-    groups,
-    webhookEvents,
-  }: {
-    directories: DirectoryConfig;
-    users: UsersController;
-    groups: GroupsController;
-    webhookEvents: WebhookEvents;
-  }) {
-    this.directories = directories;
-    this.users = users;
-    this.groups = groups;
-    this.webhookEvents = webhookEvents;
+  constructor({ db }: { db: DatabaseStore }) {
+    this.db = db;
   }
 
-  public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
-    const { name, emails } = body;
+  // Return the database store
+  private store(): Storable {
+    if (!this.tenant || !this.product) {
+      throw new Error('Set tenant and product before using store.');
+    }
 
-    const user = await this.users.create({
-      first_name: name.givenName,
-      last_name: name.familyName,
-      email: emails[0].value,
-      raw: body,
+    return this.db.store(`${storeNamespacePrefix.dsync.users}:${this.tenant}:${this.product}`);
+  }
+
+  public setTenantAndProduct(tenant: string, product: string): Users {
+    this.tenant = tenant;
+    this.product = product;
+
+    return this;
+  }
+
+  public with(tenant: string, product: string): Users {
+    return this.setTenantAndProduct(tenant, product);
+  }
+
+  // Create a new user
+  public async create(param: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    raw: any;
+  }): Promise<User> {
+    const { first_name, last_name, email, raw } = param;
+
+    const id = uuidv4();
+
+    raw['id'] = id;
+
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      raw,
+    };
+
+    await this.store().put(id, user, {
+      name: 'userName',
+      value: email,
     });
 
-    await this.webhookEvents.send('user.created', { directory, user });
-
-    return {
-      status: 201,
-      data: user.raw,
-    };
+    return user;
   }
 
-  public async get(user: User): Promise<DirectorySyncResponse> {
-    return {
-      status: 200,
-      data: user.raw,
-    };
+  // Get a user by id
+  public async get(id: string): Promise<User> {
+    const user = await this.store().get(id);
+
+    if (!user) {
+      throw new JacksonError(`User with id ${id} not found.`, 404);
+    }
+
+    return user;
   }
 
-  public async updatePUT(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
-    const { active, name, emails } = body;
-
-    // Update the user
-    if (active === true) {
-      const updatedUser = await this.users.update(user.id, {
-        first_name: name.givenName,
-        last_name: name.familyName,
-        email: emails[0].value,
-        raw: body,
-      });
-
-      await this.webhookEvents.send('user.updated', { directory, user: updatedUser });
-
-      return {
-        status: 200,
-        data: updatedUser.raw,
-      };
+  // Update the user data
+  public async update(
+    id: string,
+    param: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      raw: object;
     }
+  ): Promise<User> {
+    const { first_name, last_name, email, raw } = param;
 
-    // Delete the user
-    if (active === false) {
-      return await this.delete(directory, user, false);
-    }
+    raw['id'] = id;
 
-    return {
-      status: 200,
-      data: null,
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      raw,
     };
+
+    await this.store().put(id, user);
+
+    return user;
   }
 
-  public async updatePATCH(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
-    const { Operations } = body;
-    const operation = Operations[0];
-
-    // Delete the user
-    if (operation.op === 'replace' && operation.value.active === false) {
-      return await this.delete(directory, user, false);
-    }
-
-    return {
-      status: 200,
-      data: null,
-    };
+  // Delete a user by id
+  public async delete(id: string): Promise<void> {
+    await this.store().delete(id);
   }
 
-  public async delete(directory: Directory, user: User, active = true): Promise<DirectorySyncResponse> {
-    await this.users.delete(user.id);
-
-    user.raw.active = active;
-
-    await this.webhookEvents.send('user.deleted', { directory, user });
-
-    return {
-      status: 200,
-      data: user.raw,
-    };
+  // Get all users in a directory
+  public async list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]> {
+    return (await this.store().getAll(pageOffset, pageLimit)) as User[];
   }
 
-  public async getAll(queryParams: {
-    count: number;
-    startIndex: number;
-    filter?: string;
-  }): Promise<DirectorySyncResponse> {
-    const { startIndex, filter, count } = queryParams;
-
-    let users: User[] = [];
-    let totalResults = 0;
-
-    if (filter) {
-      // Search users by userName
-      // filter: userName eq "john@example.com"
-      users = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
-      totalResults = users.length;
-    } else {
-      // Fetch all the existing Users (Paginated)
-      totalResults = (await this.users.list({})).length; // At this moment, we don't have method to count the database records.
-      users = await this.users.list({ pageOffset: startIndex - 1, pageLimit: count });
-    }
-
-    return {
-      status: 200,
-      data: {
-        schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
-        startIndex,
-        totalResults,
-        itemsPerPage: count,
-        Resources: users.map((user) => user.raw),
-      },
-    };
+  // Search users by userName
+  public async search(userName: string): Promise<User[]> {
+    return (await this.store().getByIndex({ name: 'userName', value: userName })) as User[];
   }
 
-  // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse> {
-    const { method, body, query } = request;
-    const { directory_id: directoryId, user_id: userId } = query;
+  // Clear all the users
+  public async clear() {
+    const users = await this.list({});
 
-    const directory = await this.directories.get(directoryId);
-    const user = userId ? await this.users.get(userId) : null;
-
-    this.users.setTenantAndProduct(directory.tenant, directory.product);
-
-    // Get a specific user
-    if (method === 'GET' && user) {
-      return await this.get(user);
-    }
-
-    // Get all the users
-    if (method === 'GET' && query) {
-      return await this.getAll({
-        count: query.count as number,
-        startIndex: query.startIndex as number,
-        filter: query.filter,
-      });
-    }
-
-    if (method === 'POST') {
-      return this.create(directory, body);
-    }
-
-    if (method === 'PUT' && user) {
-      return await this.updatePUT(directory, user, body);
-    }
-
-    if (method === 'PATCH' && user) {
-      return await this.updatePATCH(directory, user, body);
-    }
-
-    if (method === 'DELETE' && user) {
-      return await this.delete(directory, user);
-    }
-
-    return {
-      status: 404,
-      data: {},
-    };
+    await Promise.all(
+      users.map(async (user) => {
+        return this.delete(user.id);
+      })
+    );
   }
 }

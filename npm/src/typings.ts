@@ -200,9 +200,19 @@ export type DirectorySyncEventType =
   | 'group.user_added'
   | 'group.user_removed';
 
-export interface UsersController {
-  with(tenant: string, product: string): UsersController;
-  setTenantAndProduct(tenant: string, product: string): UsersController;
+export interface Users {
+  with(tenant: string, product: string): Users;
+  setTenantAndProduct(tenant: string, product: string): Users;
+  create(param: { first_name: string; last_name: string; email: string; raw: any }): Promise<User>;
+  update(
+    id: string,
+    param: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      raw: object;
+    }
+  ): Promise<User>;
   list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]>;
   get(id: string): Promise<User>;
   search(userName: string): Promise<User[]>;
@@ -210,13 +220,25 @@ export interface UsersController {
   clear(): Promise<void>;
 }
 
-export interface GroupsController {
-  with(tenant: string, product: string): GroupsController;
-  setTenantAndProduct(tenant: string, product: string): GroupsController;
+export interface Groups {
+  with(tenant: string, product: string): Groups;
+  setTenantAndProduct(tenant: string, product: string): Groups;
+  create(param: { name: string; raw: any }): Promise<Group>;
+  removeAllUsers(groupId: string);
   list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<Group[]>;
   get(id: string): Promise<Group>;
   getAllUsers(groupId: string): Promise<{ user_id: string }[]>;
   delete(id: string): Promise<void>;
+  update(
+    id: string,
+    param: {
+      name: string;
+      raw: any;
+    }
+  ): Promise<Group>;
+  addUserToGroup(groupId: string, userId: string);
+  isUserInGroup(groupId: string, userId: string): Promise<boolean>;
+  removeUserFromGroup(groupId: string, userId: string);
 }
 
 export type User = {
@@ -370,8 +392,8 @@ export type DirectorySync = {
   directories: DirectoryConfig;
   usersRequest: UsersRequestHandler;
   groupsRequest: GroupsRequestHandler;
-  groups: GroupsController;
-  users: UsersController;
+  groups: Groups;
+  users: Users;
   events: WebhookEvents;
   providers: () => {
     [K in string]: string;

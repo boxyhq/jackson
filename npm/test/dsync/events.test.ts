@@ -8,7 +8,7 @@ import { getFakeDirectory } from './data/directories';
 import { getDatabaseOption } from '../utils';
 import axios from 'axios';
 import sinon from 'sinon';
-import { createPayload, createSignatureString } from '../../src/directory-sync/events';
+import { createPayload, createSignatureString } from '../../src/directory-sync/WebhookEvents';
 
 let directorySync: DirectorySync;
 let directory: Directory;

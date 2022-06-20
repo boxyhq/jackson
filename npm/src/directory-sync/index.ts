@@ -1,16 +1,16 @@
 import type { DirectorySync } from '../typings';
-import { DirectoryConfig } from './directories';
-import { DirectoryUsers } from './users';
-import { DirectoryGroups } from './groups';
-import { UsersController } from '../controller/users';
-import { GroupsController } from '../controller/groups';
-import { UsersRequestHandler, GroupsRequestHandler } from './request';
-import { WebhookEvents } from './events';
+import { DirectoryConfig } from './DirectoryConfig';
+import { DirectoryUsers } from './DirectoryUsers';
+import { DirectoryGroups } from './DirectoryGroups';
+import { Users } from './Users';
+import { Groups } from './Groups';
+import { WebhookEvents } from './WebhookEvents';
 import { getDirectorySyncProviders } from './utils';
+import { UsersRequestHandler, GroupsRequestHandler } from './request';
 
 const directorySync = ({ db, opts }): DirectorySync => {
-  const users = new UsersController({ db });
-  const groups = new GroupsController({ db });
+  const users = new Users({ db });
+  const groups = new Groups({ db });
 
   const webhookEvents = new WebhookEvents({ db });
   const directories = new DirectoryConfig({ db, opts });
