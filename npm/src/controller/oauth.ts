@@ -137,6 +137,7 @@ export class OAuthController implements IOAuthController {
       access_type,
       scope,
       claims,
+      nonce,
       code_challenge,
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -326,6 +327,9 @@ export class OAuthController implements IOAuthController {
         requested.oidc = true;
         if (claims) {
           requested.claims = claims;
+        }
+        if (nonce) {
+          requested.nonce = nonce;
         }
       }
       if (requestedScopes) {
@@ -650,7 +654,7 @@ export class OAuthController implements IOAuthController {
     };
     const requestedOIDCFlow = !!codeVal.requested.oidc;
     if (requestedOIDCFlow) {
-      const id_token = await new jose.SignJWT({})
+      const id_token = await new jose.SignJWT({ nonce: codeVal.requested.nonce })
         .setIssuer(this.opts.externalUrl)
         .setSubject(codeVal.profile.claims.id)
         .setAudience(codeVal.clientID)
