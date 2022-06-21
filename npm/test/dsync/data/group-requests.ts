@@ -29,6 +29,18 @@ const requests = {
     };
   },
 
+  // Filter by displayName
+  // GET /api/scim/v2.0/{directoryId}/Groups?filter=displayName eq "{displayName}"
+  filterByDisplayName: (directoryId: string, displayName: string): DirectorySyncGroupRequest => {
+    return {
+      method: 'GET',
+      query: {
+        directory_id: directoryId,
+        filter: `displayName eq "${displayName}"`,
+      },
+    };
+  },
+
   // Update a group by id
   // PUT /api/scim/v2.0/{directoryId}/Groups/{groupId}
   updateById: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {

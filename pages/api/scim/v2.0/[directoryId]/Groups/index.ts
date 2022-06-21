@@ -19,6 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     query: {
       count: parseInt(req.query.count as string),
       startIndex: parseInt(req.query.startIndex as string),
+      filter: req.query.filter as string,
       directory_id: directoryId as string,
     },
   };

@@ -47,7 +47,10 @@ export class Groups {
       raw,
     };
 
-    await this.store('groups').put(id, group);
+    await this.store('groups').put(id, group, {
+      name: 'displayName',
+      value: name,
+    });
 
     return group;
   }
@@ -145,6 +148,11 @@ export class Groups {
     const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
 
     return !!(await this.store('members').get(id));
+  }
+
+  // Search groups by displayName
+  public async search(displayName: string): Promise<Group[]> {
+    return (await this.store('groups').getByIndex({ name: 'displayName', value: displayName })) as Group[];
   }
 
   // Get all groups in a directory

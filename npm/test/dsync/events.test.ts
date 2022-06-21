@@ -267,11 +267,17 @@ tap.test('Webhook Events / ', async (t) => {
 
     const user = await directorySync.users.get(createdUser.id);
 
+    if (user === null) {
+      t.fail('User not found');
+      return;
+    }
+
     const webhookPayload = createPayload('user.created', {
       directory,
       user,
     });
 
+    t.ok(user);
     t.match(webhookPayload.event, 'user.created');
     t.match(webhookPayload.directory_id, directory.id);
     t.strictSame(webhookPayload.data, user);

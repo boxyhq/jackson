@@ -7,6 +7,7 @@ import Link from 'next/link';
 import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 import DirectoryTab from '@components/dsync/DirectoryTab';
+import { Badge } from '@supabase/ui';
 
 const UsersList: NextPage<{
   directory: Directory;
@@ -44,6 +45,9 @@ const UsersList: NextPage<{
                 Email
               </th>
               <th scope='col' className='px-6 py-3'>
+                Status
+              </th>
+              <th scope='col' className='px-6 py-3'>
                 Actions
               </th>
             </tr>
@@ -57,6 +61,9 @@ const UsersList: NextPage<{
                   <td className='px-6 py-3'>{user.first_name}</td>
                   <td className='px-6 py-3'>{user.last_name}</td>
                   <td className='px-6 py-3'>{user.email}</td>
+                  <td className='px-6 py-3'>
+                    {user.active ? <Badge color='green'>Active</Badge> : <Badge color='red'>Suspended</Badge>}
+                  </td>
                   <td className='px-6 py-3'>
                     <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
                       <a>

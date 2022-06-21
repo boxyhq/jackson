@@ -1,6 +1,5 @@
 import type { Storable, User, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
-import { JacksonError } from '../controller/error';
 import { storeNamespacePrefix } from '../controller/utils';
 
 export class Users {
@@ -37,9 +36,10 @@ export class Users {
     first_name: string;
     last_name: string;
     email: string;
+    active: boolean;
     raw: any;
   }): Promise<User> {
-    const { first_name, last_name, email, raw } = param;
+    const { first_name, last_name, email, active, raw } = param;
 
     const id = uuidv4();
 
@@ -50,6 +50,7 @@ export class Users {
       first_name,
       last_name,
       email,
+      active,
       raw,
     };
 
@@ -62,14 +63,10 @@ export class Users {
   }
 
   // Get a user by id
-  public async get(id: string): Promise<User> {
+  public async get(id: string): Promise<User | null> {
     const user = await this.store().get(id);
 
-    if (!user) {
-      throw new JacksonError(`User with id ${id} not found.`, 404);
-    }
-
-    return user;
+    return user || null;
   }
 
   // Update the user data
@@ -79,10 +76,11 @@ export class Users {
       first_name: string;
       last_name: string;
       email: string;
+      active: boolean;
       raw: object;
     }
   ): Promise<User> {
-    const { first_name, last_name, email, raw } = param;
+    const { first_name, last_name, email, active, raw } = param;
 
     raw['id'] = id;
 
@@ -91,6 +89,7 @@ export class Users {
       first_name,
       last_name,
       email,
+      active,
       raw,
     };
 

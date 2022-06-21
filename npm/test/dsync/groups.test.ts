@@ -62,6 +62,20 @@ tap.test('Directory groups / ', async (t) => {
     t.end();
   });
 
+  t.test('Should be able to get the group by displayName', async (t) => {
+    const { status, data } = await directorySync.groupsRequest.handle(
+      groupsRequest.filterByDisplayName(directory.id, createdGroup.displayName)
+    );
+
+    t.ok(data);
+    t.equal(status, 200);
+    t.hasStrict(data.Resources[0], createdGroup);
+    t.hasStrict(data.Resources[0], groups[0]);
+    t.equal(data.Resources.length, 1);
+
+    t.end();
+  });
+
   t.test('Should be able to get all groups', async (t) => {
     const { status, data } = await directorySync.groupsRequest.handle(groupsRequest.getAll(directory.id));
 

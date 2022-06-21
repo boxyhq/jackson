@@ -109,39 +109,6 @@ tap.test('Directory users / ', async (t) => {
     t.equal(status, 200);
     t.hasStrict(data, toUpdate);
 
-    // Make sure the user was deleted
-    const { data: user } = await directorySync.usersRequest.handle(
-      requests.filterByUsername(directory.id, data.userName)
-    );
-
-    t.hasStrict(user.Resources, []);
-    t.hasStrict(user.totalResults, 0);
-
-    t.end();
-  });
-
-  t.test('Should delete the user if active:false', async (t) => {
-    const toUpdate = {
-      ...users[0],
-      active: false,
-    };
-
-    const { status, data: updatedUser } = await directorySync.usersRequest.handle(
-      requests.updateById(directory.id, createdUser.id, toUpdate)
-    );
-
-    t.ok(updatedUser);
-    t.equal(status, 200);
-    t.hasStrict(updatedUser, toUpdate);
-
-    // Make sure the user was deleted
-    const { data: user } = await directorySync.usersRequest.handle(
-      requests.filterByUsername(directory.id, createdUser.userName)
-    );
-
-    t.hasStrict(user.Resources, []);
-    t.hasStrict(user.totalResults, 0);
-
     t.end();
   });
 

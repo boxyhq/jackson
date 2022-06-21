@@ -84,8 +84,19 @@ export class DirectoryGroups {
     };
   }
 
-  public async getAll(): Promise<DirectorySyncResponse> {
-    const groups = await this.groups.list({ pageOffset: undefined, pageLimit: undefined });
+  public async getAll(queryParams: { filter?: string }): Promise<DirectorySyncResponse> {
+    const { filter } = queryParams;
+
+    let groups: Group[] = [];
+
+    if (filter) {
+      // Filter by group displayName
+      // filter: displayName eq "Developer"
+      groups = await this.groups.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+    } else {
+      // Fetch all the existing group
+      groups = await this.groups.list({ pageOffset: undefined, pageLimit: undefined });
+    }
 
     return {
       status: 200,
@@ -192,11 +203,13 @@ export class DirectoryGroups {
 
       await this.groups.addUserToGroup(group.id, member.value);
 
-      if (sendWebhookEvent) {
+      const user = await this.users.get(member.value);
+
+      if (sendWebhookEvent && user) {
         await this.webhookEvents.send('group.user_added', {
           directory,
           group,
-          user: await this.users.get(member.value),
+          user,
         });
       }
     }
@@ -215,11 +228,14 @@ export class DirectoryGroups {
     for (const member of members) {
       await this.groups.removeUserFromGroup(group.id, member.value);
 
-      if (sendWebhookEvent) {
+      const user = await this.users.get(member.value);
+
+      // User may not exist in the directory, so we need to check if the user exists
+      if (sendWebhookEvent && user) {
         await this.webhookEvents.send('group.user_removed', {
           directory,
           group,
-          user: await this.users.get(member.value),
+          user,
         });
       }
     }
@@ -262,7 +278,9 @@ export class DirectoryGroups {
 
     // Get all groups
     if (method === 'GET' && query) {
-      return await this.getAll();
+      return await this.getAll({
+        filter: query.filter,
+      });
     }
 
     if (method === 'POST' && body) {
