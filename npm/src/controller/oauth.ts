@@ -653,8 +653,10 @@ export class OAuthController implements IOAuthController {
       requested: codeVal.requested,
     };
     const requestedOIDCFlow = !!codeVal.requested.oidc;
+    const requestHasNonce = !!codeVal.requested.nonce;
     if (requestedOIDCFlow) {
-      const id_token = await new jose.SignJWT({ nonce: codeVal.requested.nonce })
+      const claims = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
+      const id_token = await new jose.SignJWT(claims)
         .setIssuer(this.opts.externalUrl)
         .setSubject(codeVal.profile.claims.id)
         .setAudience(codeVal.clientID)
