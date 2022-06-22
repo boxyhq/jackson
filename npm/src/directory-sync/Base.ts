@@ -3,11 +3,13 @@ import { storeNamespacePrefix } from '../controller/utils';
 
 export class Base {
   protected db: DatabaseStore;
-  protected tenant = '';
-  protected product = '';
+  protected tenant: string;
+  protected product: string;
 
   constructor({ db }: { db: DatabaseStore }) {
     this.db = db;
+    this.product = '';
+    this.tenant = '';
   }
 
   // Return the database store
@@ -19,11 +21,20 @@ export class Base {
     return this.db.store(`${storeNamespacePrefix.dsync[type]}:${this.tenant}:${this.product}`);
   }
 
+  setTenant(tenant: string): this {
+    this.tenant = tenant;
+    return this;
+  }
+
+  setProduct(product: string): this {
+    this.product = product;
+    return this;
+  }
+
   // Set the tenant and product
   setTenantAndProduct(tenant: string, product: string): this {
-    this.tenant = tenant;
-    this.product = product;
-
+    this.setTenant(tenant);
+    this.setProduct(product);
     return this;
   }
 
