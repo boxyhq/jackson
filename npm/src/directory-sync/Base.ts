@@ -33,13 +33,11 @@ export class Base {
 
   // Set the tenant and product
   setTenantAndProduct(tenant: string, product: string): this {
-    this.setTenant(tenant);
-    this.setProduct(product);
-    return this;
+    return this.setTenant(tenant).setProduct(product);
   }
 
   // Set the tenant and product
   with(tenant: string, product: string): this {
-    return this.setTenantAndProduct(tenant, product);
+    return this.setTenant(tenant).setProduct(product);
   }
 }
