@@ -1,34 +1,10 @@
-import type { Storable, User, DatabaseStore } from '../typings';
+import type { User, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
-import { storeNamespacePrefix } from '../controller/utils';
+import { Base } from './Base';
 
-export class Users {
-  private db: DatabaseStore;
-  private tenant = '';
-  private product = '';
-
+export class Users extends Base {
   constructor({ db }: { db: DatabaseStore }) {
-    this.db = db;
-  }
-
-  // Return the database store
-  private store(): Storable {
-    if (!this.tenant || !this.product) {
-      throw new Error('Set tenant and product before using store.');
-    }
-
-    return this.db.store(`${storeNamespacePrefix.dsync.users}:${this.tenant}:${this.product}`);
-  }
-
-  public setTenantAndProduct(tenant: string, product: string): Users {
-    this.tenant = tenant;
-    this.product = product;
-
-    return this;
-  }
-
-  public with(tenant: string, product: string): Users {
-    return this.setTenantAndProduct(tenant, product);
+    super({ db });
   }
 
   // Create a new user
@@ -54,7 +30,7 @@ export class Users {
       raw,
     };
 
-    await this.store().put(id, user, {
+    await this.store('users').put(id, user, {
       name: 'userName',
       value: email,
     });
@@ -64,7 +40,7 @@ export class Users {
 
   // Get a user by id
   public async get(id: string): Promise<User | null> {
-    const user = await this.store().get(id);
+    const user = await this.store('users').get(id);
 
     return user || null;
   }
@@ -93,24 +69,24 @@ export class Users {
       raw,
     };
 
-    await this.store().put(id, user);
+    await this.store('users').put(id, user);
 
     return user;
   }
 
   // Delete a user by id
   public async delete(id: string): Promise<void> {
-    await this.store().delete(id);
+    await this.store('users').delete(id);
   }
 
   // Get all users in a directory
   public async list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]> {
-    return (await this.store().getAll(pageOffset, pageLimit)) as User[];
+    return (await this.store('users').getAll(pageOffset, pageLimit)) as User[];
   }
 
   // Search users by userName
   public async search(userName: string): Promise<User[]> {
-    return (await this.store().getByIndex({ name: 'userName', value: userName })) as User[];
+    return (await this.store('users').getByIndex({ name: 'userName', value: userName })) as User[];
   }
 
   // Clear all the users

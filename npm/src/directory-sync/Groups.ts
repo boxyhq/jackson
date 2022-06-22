@@ -1,36 +1,12 @@
-import type { Storable, Group, DatabaseStore } from '../typings';
+import type { Group, DatabaseStore } from '../typings';
 import { v4 as uuidv4 } from 'uuid';
 import * as dbutils from '../db/utils';
-import { storeNamespacePrefix } from '../controller/utils';
 import { JacksonError } from '../controller/error';
+import { Base } from './Base';
 
-export class Groups {
-  private db: DatabaseStore;
-  private tenant = '';
-  private product = '';
-
+export class Groups extends Base {
   constructor({ db }: { db: DatabaseStore }) {
-    this.db = db;
-  }
-
-  // Return the database store
-  private store(type: 'groups' | 'members'): Storable {
-    if (!this.tenant || !this.product) {
-      throw new Error('Set tenant and product before using store.');
-    }
-
-    return this.db.store(`${storeNamespacePrefix.dsync[type]}:${this.tenant}:${this.product}`);
-  }
-
-  public setTenantAndProduct(tenant: string, product: string): Groups {
-    this.tenant = tenant;
-    this.product = product;
-
-    return this;
-  }
-
-  public with(tenant: string, product: string): Groups {
-    return this.setTenantAndProduct(tenant, product);
+    super({ db });
   }
 
   // Create a new group

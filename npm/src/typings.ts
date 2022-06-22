@@ -200,9 +200,18 @@ export type DirectorySyncEventType =
   | 'group.user_added'
   | 'group.user_removed';
 
-export interface Users {
-  with(tenant: string, product: string): Users;
-  setTenantAndProduct(tenant: string, product: string): Users;
+export interface Base {
+  store(type: 'groups' | 'members' | 'users'): Storable;
+  setTenantAndProduct(tenant: string, product: string): this;
+  with(tenant: string, product: string): this;
+}
+
+export interface Users extends Base {
+  list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]>;
+  get(id: string): Promise<User | null>;
+  search(userName: string): Promise<User[]>;
+  delete(id: string): Promise<void>;
+  clear(): Promise<void>;
   create(param: {
     first_name: string;
     last_name: string;
@@ -220,22 +229,19 @@ export interface Users {
       raw: object;
     }
   ): Promise<User>;
-  list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]>;
-  get(id: string): Promise<User | null>;
-  search(userName: string): Promise<User[]>;
-  delete(id: string): Promise<void>;
-  clear(): Promise<void>;
 }
 
-export interface Groups {
-  with(tenant: string, product: string): Groups;
-  setTenantAndProduct(tenant: string, product: string): Groups;
+export interface Groups extends Base {
   create(param: { name: string; raw: any }): Promise<Group>;
   removeAllUsers(groupId: string): Promise<void>;
   list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<Group[]>;
   get(id: string): Promise<Group>;
   getAllUsers(groupId: string): Promise<{ user_id: string }[]>;
   delete(id: string): Promise<void>;
+  addUserToGroup(groupId: string, userId: string): Promise<void>;
+  isUserInGroup(groupId: string, userId: string): Promise<boolean>;
+  removeUserFromGroup(groupId: string, userId: string): Promise<void>;
+  search(displayName: string): Promise<Group[]>;
   update(
     id: string,
     param: {
@@ -243,10 +249,6 @@ export interface Groups {
       raw: any;
     }
   ): Promise<Group>;
-  addUserToGroup(groupId: string, userId: string): Promise<void>;
-  isUserInGroup(groupId: string, userId: string): Promise<boolean>;
-  removeUserFromGroup(groupId: string, userId: string): Promise<void>;
-  search(displayName: string): Promise<Group[]>;
 }
 
 export type User = {
