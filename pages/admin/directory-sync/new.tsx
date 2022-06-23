@@ -86,11 +86,11 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   return {
     props: {
-      providers: directorySync.providers(),
+      providers: directorySyncController.providers(),
     },
   };
 };

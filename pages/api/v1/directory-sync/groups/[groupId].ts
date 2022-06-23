@@ -15,16 +15,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Get a group by id
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { tenant, product, groupId } = req.query;
 
-  directorySync.groups.setTenantAndProduct(<string>tenant, <string>product);
+  directorySyncController.groups.setTenantAndProduct(<string>tenant, <string>product);
 
   try {
     const data = {
-      ...(await directorySync.groups.get(<string>groupId)),
-      members: await directorySync.groups.getAllUsers(<string>groupId),
+      ...(await directorySyncController.groups.get(<string>groupId)),
+      members: await directorySyncController.groups.getAllUsers(<string>groupId),
     };
 
     return res.status(200).json({ data, error: null });

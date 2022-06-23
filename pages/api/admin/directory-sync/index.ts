@@ -17,12 +17,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Create a new configuration
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { name, tenant, product, type, webhook_url, webhook_secret } = req.body;
 
   try {
-    const directory = await directorySync.directories.create({
+    const directory = await directorySyncController.directories.create({
       name,
       tenant,
       product,

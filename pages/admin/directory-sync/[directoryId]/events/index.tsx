@@ -123,10 +123,10 @@ const WebhookEventLoggingAlert = ({ directory }: { directory: Directory }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
-  const directory = await directorySync.directories.get(directoryId as string);
-  const events = await directorySync.events.with(directory.tenant, directory.product).getAll();
+  const directory = await directorySyncController.directories.get(directoryId as string);
+  const events = await directorySyncController.events.with(directory.tenant, directory.product).getAll();
 
   return {
     props: {

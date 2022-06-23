@@ -17,12 +17,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 // Delete all events
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directoryId } = req.query;
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
-  const { tenant, product } = await directorySync.directories.get(directoryId as string);
+  const { tenant, product } = await directorySyncController.directories.get(directoryId as string);
 
   try {
-    await directorySync.events.setTenantAndProduct(tenant, product).clear();
+    await directorySyncController.events.setTenantAndProduct(tenant, product).clear();
 
     return res.status(201).json({ data: null, error: null });
   } catch (err: any) {

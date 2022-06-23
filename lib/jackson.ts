@@ -23,7 +23,7 @@ let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
-let directorySync: DirectorySync;
+let directorySyncController: DirectorySync;
 
 const g = global as any;
 
@@ -42,14 +42,14 @@ export default async function init() {
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
-    directorySync = ret.directorySync;
+    directorySyncController = ret.directorySync;
 
     g.apiController = apiController;
     g.oauthController = oauthController;
     g.adminController = adminController;
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
-    g.directorySync = directorySync;
+    g.directorySync = directorySyncController;
     g.isJacksonReady = true;
   } else {
     apiController = g.apiController;
@@ -57,7 +57,7 @@ export default async function init() {
     adminController = g.adminController;
     logoutController = g.logoutController;
     healthCheckController = g.healthCheckController;
-    directorySync = g.directorySync;
+    directorySyncController = g.directorySync;
   }
 
   return {
@@ -66,7 +66,7 @@ export default async function init() {
     adminController,
     logoutController,
     healthCheckController,
-    directorySync,
+    directorySyncController,
   };
 }
 

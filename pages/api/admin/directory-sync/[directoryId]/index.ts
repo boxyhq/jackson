@@ -17,12 +17,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 // Update a directory configuration
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directoryId } = req.query;
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { name, webhook_url, webhook_secret, log_webhook_events } = req.body;
 
   try {
-    const directory = await directorySync.directories.update(directoryId as string, {
+    const directory = await directorySyncController.directories.update(directoryId as string, {
       name,
       log_webhook_events,
       webhook: {

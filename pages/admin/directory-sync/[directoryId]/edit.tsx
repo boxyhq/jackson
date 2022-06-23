@@ -106,11 +106,11 @@ const Edit: NextPage<{ directory: Directory }> = ({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   return {
     props: {
-      directory: await directorySync.directories.get(directoryId as string),
+      directory: await directorySyncController.directories.get(directoryId as string),
     },
   };
 };

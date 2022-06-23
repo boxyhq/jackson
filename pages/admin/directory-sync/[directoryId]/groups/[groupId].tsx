@@ -24,10 +24,12 @@ const GroupInfo: NextPage<{ directory: Directory; group: Group }> = ({ directory
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId, groupId } = context.query;
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
-  const directory = await directorySync.directories.get(directoryId as string);
-  const group = await directorySync.groups.with(directory.tenant, directory.product).get(groupId as string);
+  const directory = await directorySyncController.directories.get(directoryId as string);
+  const group = await directorySyncController.groups
+    .with(directory.tenant, directory.product)
+    .get(groupId as string);
 
   return {
     props: {

@@ -15,12 +15,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Get the users
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { tenant, product } = req.query;
 
   try {
-    const users = await directorySync.users.setTenantAndProduct(<string>tenant, <string>product).list({});
+    const users = await directorySyncController.users
+      .setTenantAndProduct(<string>tenant, <string>product)
+      .list({});
 
     return res.status(200).json({ data: users, error: null });
   } catch (err: any) {

@@ -24,10 +24,12 @@ const EventInfo: NextPage<{ directory: Directory; event: WebhookEventLog }> = ({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId, eventId } = context.query;
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
-  const directory = await directorySync.directories.get(directoryId as string);
-  const event = await directorySync.events.with(directory.tenant, directory.product).get(eventId as string);
+  const directory = await directorySyncController.directories.get(directoryId as string);
+  const event = await directorySyncController.events
+    .with(directory.tenant, directory.product)
+    .get(eventId as string);
 
   return {
     props: {

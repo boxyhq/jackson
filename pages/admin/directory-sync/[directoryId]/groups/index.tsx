@@ -82,14 +82,14 @@ const Header = ({ title }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId, offset = 0 } = context.query;
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const pageOffset = parseInt(offset as string);
   const pageLimit = 25;
 
-  const directory = await directorySync.directories.get(directoryId as string);
+  const directory = await directorySyncController.directories.get(directoryId as string);
 
-  const groups = await directorySync.groups
+  const groups = await directorySyncController.groups
     .setTenantAndProduct(directory.tenant, directory.product)
     .list({ pageOffset, pageLimit });
 

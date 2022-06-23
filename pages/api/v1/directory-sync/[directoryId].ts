@@ -15,12 +15,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Get directory by id
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { directoryId } = req.query;
 
   try {
-    const directory = await directorySync.directories.get(directoryId as string);
+    const directory = await directorySyncController.directories.get(directoryId as string);
 
     return res.status(200).json({ data: directory, error: null });
   } catch (err: any) {

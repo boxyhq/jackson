@@ -5,11 +5,16 @@ import { extractAuthToken } from '@lib/auth';
 import { bodyParser } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
   const { method } = req;
   const { directoryId, userId } = req.query;
 
-  if (!(await directorySync.directories.validateAPISecret(directoryId as string, extractAuthToken(req)))) {
+  if (
+    !(await directorySyncController.directories.validateAPISecret(
+      directoryId as string,
+      extractAuthToken(req)
+    ))
+  ) {
     return res.status(401).json({ data: null, error: { message: 'Unauthorized' } });
   }
 
@@ -22,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   };
 
-  const { status, data } = await directorySync.usersRequest.handle(request);
+  const { status, data } = await directorySyncController.usersRequest.handle(request);
 
   return res.status(status).json(data);
 }

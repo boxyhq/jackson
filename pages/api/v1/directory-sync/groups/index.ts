@@ -15,12 +15,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Get the groups
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { tenant, product } = req.query;
 
   try {
-    const groups = await directorySync.groups.setTenantAndProduct(<string>tenant, <string>product).list({});
+    const groups = await directorySyncController.groups
+      .setTenantAndProduct(<string>tenant, <string>product)
+      .list({});
 
     return res.status(200).json({ data: groups, error: null });
   } catch (err: any) {

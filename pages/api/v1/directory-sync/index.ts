@@ -17,14 +17,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Get the configurations
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { tenant, product } = req.query;
 
   try {
     // If tenant and product are specified, get the configuration by tenant and product
     if (tenant && product) {
-      const directory = await directorySync.directories.getByTenantAndProduct(
+      const directory = await directorySyncController.directories.getByTenantAndProduct(
         tenant as string,
         product as string
       );
@@ -33,7 +33,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // otherwise, get all configurations
-    const directories = await directorySync.directories.list({});
+    const directories = await directorySyncController.directories.list({});
 
     return res.status(200).json({ data: directories, error: null });
   } catch (err: any) {
@@ -45,12 +45,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Create a new configuration
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { name, tenant, type, product, webhook_url, webhook_secret } = req.body;
 
   try {
-    const directory = await directorySync.directories.create({
+    const directory = await directorySyncController.directories.create({
       name,
       tenant,
       product,

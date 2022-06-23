@@ -24,10 +24,12 @@ const UserInfo: NextPage<{ directory: Directory; user: User }> = ({ directory, u
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId, userId } = context.query;
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
-  const directory = await directorySync.directories.get(directoryId as string);
-  const user = await directorySync.users.with(directory.tenant, directory.product).get(userId as string);
+  const directory = await directorySyncController.directories.get(directoryId as string);
+  const user = await directorySyncController.users
+    .with(directory.tenant, directory.product)
+    .get(userId as string);
 
   return {
     props: {

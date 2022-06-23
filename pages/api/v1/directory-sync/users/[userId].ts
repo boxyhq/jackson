@@ -15,12 +15,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Get a user by id
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directorySync } = await jackson();
+  const { directorySyncController } = await jackson();
 
   const { tenant, product, userId } = req.query;
 
   try {
-    const user = await directorySync.users
+    const user = await directorySyncController.users
       .setTenantAndProduct(<string>tenant, <string>product)
       .get(<string>userId);
 
