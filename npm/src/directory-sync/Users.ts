@@ -1,5 +1,4 @@
 import type { User, DatabaseStore } from '../typings';
-import { v4 as uuidv4 } from 'uuid';
 import { Base } from './Base';
 
 export class Users extends Base {
@@ -17,7 +16,7 @@ export class Users extends Base {
   }): Promise<User> {
     const { first_name, last_name, email, active, raw } = param;
 
-    const id = uuidv4();
+    const id = this.createId();
 
     raw['id'] = id;
 

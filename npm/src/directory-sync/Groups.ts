@@ -1,5 +1,4 @@
 import type { Group, DatabaseStore } from '../typings';
-import { v4 as uuidv4 } from 'uuid';
 import * as dbutils from '../db/utils';
 import { JacksonError } from '../controller/error';
 import { Base } from './Base';
@@ -13,7 +12,7 @@ export class Groups extends Base {
   public async create(param: { name: string; raw: any }): Promise<Group> {
     const { name, raw } = param;
 
-    const id = uuidv4();
+    const id = this.createId();
 
     raw['id'] = id;
 

@@ -1,5 +1,6 @@
 import type { Storable, DatabaseStore } from '../typings';
 import { storeNamespacePrefix } from '../controller/utils';
+import { v4 as uuidv4 } from 'uuid';
 
 export class Base {
   protected db: DatabaseStore;
@@ -39,5 +40,9 @@ export class Base {
   // Set the tenant and product
   with(tenant: string, product: string): this {
     return this.setTenant(tenant).setProduct(product);
+  }
+
+  createId(): string {
+    return uuidv4();
   }
 }

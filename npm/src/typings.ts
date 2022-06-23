@@ -204,6 +204,7 @@ export interface Base {
   store(type: 'groups' | 'members' | 'users'): Storable;
   setTenantAndProduct(tenant: string, product: string): this;
   with(tenant: string, product: string): this;
+  createId(): string;
 }
 
 export interface Users extends Base {
