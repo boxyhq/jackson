@@ -10,7 +10,6 @@ import type {
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 import { Base } from './Base';
 
 export class WebhookEvents extends Base {
@@ -58,7 +57,7 @@ export class WebhookEvents extends Base {
   }
 
   public async log(directory: Directory, webhookPayload: any): Promise<WebhookEventLog> {
-    const id = uuidv4();
+    const id = this.createId();
 
     const log: WebhookEventLog = {
       id,
