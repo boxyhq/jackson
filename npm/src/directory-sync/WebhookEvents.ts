@@ -5,44 +5,17 @@ import type {
   User,
   DatabaseStore,
   WebhookEventLog,
-  Storable,
   WebhookPayload,
 } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import { storeNamespacePrefix } from '../controller/utils';
+import { Base } from './Base';
 
-export class WebhookEvents {
-  private db: DatabaseStore;
-  private tenant = '';
-  private product = '';
-
+export class WebhookEvents extends Base {
   constructor({ db }: { db: DatabaseStore }) {
-    this.db = db;
-  }
-
-  // Return the database store
-  private store(): Storable {
-    if (!this.tenant || !this.product) {
-      throw new Error('Set tenant and product before using store.');
-    }
-
-    return this.db.store(`${storeNamespacePrefix.dsync.logs}:${this.tenant}:${this.product}`);
-  }
-
-  // Set the tenant and product
-  public setTenantAndProduct(tenant: string, product: string): WebhookEvents {
-    this.tenant = tenant;
-    this.product = product;
-
-    return this;
-  }
-
-  // Set the tenant and product
-  public with(tenant: string, product: string): WebhookEvents {
-    return this.setTenantAndProduct(tenant, product);
+    super({ db });
   }
 
   public async send(
@@ -96,7 +69,7 @@ export class WebhookEvents {
       created_at: new Date(),
     };
 
-    await this.store().put(id, log);
+    await this.store('logs').put(id, log);
 
     return log;
   }
@@ -108,21 +81,21 @@ export class WebhookEvents {
       delivered: statusCode === 200,
     };
 
-    await this.store().put(log.id, updatedLog);
+    await this.store('logs').put(log.id, updatedLog);
 
     return updatedLog;
   }
 
   public async get(id: string): Promise<WebhookEventLog> {
-    return await this.store().get(id);
+    return await this.store('logs').get(id);
   }
 
   public async getAll(): Promise<WebhookEventLog[]> {
-    return (await this.store().getAll()) as WebhookEventLog[];
+    return (await this.store('logs').getAll()) as WebhookEventLog[];
   }
 
   public async delete(id: string) {
-    await this.store().delete(id);
+    await this.store('logs').delete(id);
   }
 
   // Clear all the events

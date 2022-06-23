@@ -431,7 +431,7 @@ export type WebhookPayload = {
   data: User | Group | { group: Group };
 };
 
-export interface WebhookEvents {
+export interface WebhookEvents extends Base {
   send(
     action: DirectorySyncEventType,
     payload: {
@@ -440,8 +440,6 @@ export interface WebhookEvents {
       user?: User;
     }
   ): Promise<void>;
-  setTenantAndProduct(tenant: string, product: string): WebhookEvents;
-  with(tenant: string, product: string): WebhookEvents;
   getAll(): Promise<WebhookEventLog[]>;
   get(id: string): Promise<WebhookEventLog>;
   clear(): Promise<void>;

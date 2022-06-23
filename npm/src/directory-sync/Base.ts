@@ -13,7 +13,7 @@ export class Base {
   }
 
   // Return the database store
-  store(type: 'groups' | 'members' | 'users'): Storable {
+  store(type: 'groups' | 'members' | 'users' | 'logs'): Storable {
     if (!this.tenant || !this.product) {
       throw new Error('Set tenant and product before using store.');
     }
