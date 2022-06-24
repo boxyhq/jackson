@@ -135,9 +135,10 @@ export interface JacksonOption {
   db: DatabaseOption;
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
+  jwsAlg: string;
   jwtSigningKeys: {
-    private: Buffer;
-    public: Buffer;
+    private: string;
+    public: string;
   };
 }
 
