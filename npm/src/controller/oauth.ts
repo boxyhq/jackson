@@ -22,7 +22,13 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { relayStatePrefix, IndexNames, OAuthErrorResponse, getErrorMessage } from './utils';
+import {
+  relayStatePrefix,
+  IndexNames,
+  OAuthErrorResponse,
+  getErrorMessage,
+  loadJWSPrivateKey,
+} from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -656,12 +662,14 @@ export class OAuthController implements IOAuthController {
     const requestHasNonce = !!codeVal.requested.nonce;
     if (requestedOIDCFlow) {
       const claims = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
+      const signingKey = await loadJWSPrivateKey(this.opts.jwtSigningKeys.private, this.opts.jwsAlg);
       const id_token = await new jose.SignJWT(claims)
+        .setProtectedHeader({ alg: this.opts.jwsAlg })
         .setIssuer(this.opts.externalUrl)
         .setSubject(codeVal.profile.claims.id)
         .setAudience(codeVal.clientID)
         .setExpirationTime('5m') //  identity token only really needs to be valid long enough for it to be verified by the client application.
-        .sign(this.opts.jwtSigningKeys.private);
+        .sign(signingKey);
       tokenVal.id_token = id_token;
     }
 
@@ -718,6 +726,10 @@ export class OAuthController implements IOAuthController {
    */
   public async userInfo(token: string): Promise<Profile> {
     const rsp = await this.tokenStore.get(token);
+    // To be used later, for now we return email in the profile anyway
+    // scopes_supported = ["openid","email"]
+    const requestedOIDCFlow = !!rsp.requested.oidc;
+    const requestedScope = rsp.requested.scope;
 
     metrics.increment('oauthUserInfo');
 
