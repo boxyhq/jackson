@@ -4,7 +4,7 @@ import env from '@lib/env';
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).json({
     issuer: env.samlAudience,
-    authorization_endpoint: 'https://example.com/oauth2/authorize',
+    authorization_endpoint: `${env.externalUrl}/api/oauth/authorize`,
     token_endpoint: `${env.externalUrl}/api/oauth/token`,
     userinfo_endpoint: `${env.externalUrl}/api/oauth/userinfo`,
     jwks_uri: `${env.externalUrl}/api/jwks`,
