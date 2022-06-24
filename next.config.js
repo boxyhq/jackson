@@ -19,7 +19,11 @@ module.exports = {
     return [
       {
         source: '/.well-known/openid-configuration',
-        destination: '/api/.well-known/openid-configuration',
+        destination: '/api/well-known/openid-configuration',
+      },
+      {
+        source: '/oauth/jwks',
+        destination: '/api/oauth/jwks',
       },
     ];
   },

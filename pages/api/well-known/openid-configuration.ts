@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import env from '../../../lib/env';
+import env from '@lib/env';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).json({
