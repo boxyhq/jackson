@@ -665,9 +665,10 @@ export class OAuthController implements IOAuthController {
       const signingKey = await loadJWSPrivateKey(this.opts.jwtSigningKeys.private, this.opts.jwsAlg);
       const id_token = await new jose.SignJWT(claims)
         .setProtectedHeader({ alg: this.opts.jwsAlg })
-        .setIssuer(this.opts.externalUrl)
+        .setIssuedAt()
+        .setIssuer(this.opts.samlAudience || '')
         .setSubject(codeVal.profile.claims.id)
-        .setAudience(codeVal.clientID)
+        .setAudience(tokenVal.requested.client_id)
         .setExpirationTime('5m') //  identity token only really needs to be valid long enough for it to be verified by the client application.
         .sign(signingKey);
       tokenVal.id_token = id_token;
