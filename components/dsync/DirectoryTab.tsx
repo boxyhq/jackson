@@ -21,7 +21,7 @@ const DirectoryTab = (props: { directory: Directory; activeTab: string }) => {
       active: activeTab === 'groups',
     },
     {
-      name: 'Events',
+      name: 'Webhook Events',
       href: `/admin/directory-sync/${directory.id}/events`,
       active: activeTab === 'events',
     },
