@@ -1,4 +1,5 @@
-import type { User, DatabaseStore } from '../typings';
+import type { User, DatabaseStore, ApiError } from '../typings';
+import { JacksonError } from '../controller/error';
 import { Base } from './Base';
 
 export class Users extends Base {
@@ -13,35 +14,51 @@ export class Users extends Base {
     email: string;
     active: boolean;
     raw: any;
-  }): Promise<User> {
-    const { first_name, last_name, email, active, raw } = param;
+  }): Promise<{ data: User | null; error: ApiError | null }> {
+    try {
+      const { first_name, last_name, email, active, raw } = param;
 
-    const id = this.createId();
+      const id = this.createId();
 
-    raw['id'] = id;
+      raw['id'] = id;
 
-    const user = {
-      id,
-      first_name,
-      last_name,
-      email,
-      active,
-      raw,
-    };
+      const user = {
+        id,
+        first_name,
+        last_name,
+        email,
+        active,
+        raw,
+      };
 
-    await this.store('users').put(id, user, {
-      name: 'userName',
-      value: email,
-    });
+      await this.store('users').put(id, user, {
+        name: 'userName',
+        value: email,
+      });
 
-    return user;
+      return { data: user, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Get a user by id
-  public async get(id: string): Promise<User | null> {
-    const user = await this.store('users').get(id);
+  public async get(id: string): Promise<{ data: User | null; error: ApiError | null }> {
+    try {
+      const user = await this.store('users').get(id);
 
-    return user || null;
+      if (user === null) {
+        throw new JacksonError('User not found', 404);
+      }
+
+      return { data: user, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Update the user data
@@ -54,43 +71,89 @@ export class Users extends Base {
       active: boolean;
       raw: object;
     }
-  ): Promise<User> {
-    const { first_name, last_name, email, active, raw } = param;
+  ): Promise<{ data: User | null; error: ApiError | null }> {
+    try {
+      const { first_name, last_name, email, active, raw } = param;
 
-    raw['id'] = id;
+      raw['id'] = id;
 
-    const user = {
-      id,
-      first_name,
-      last_name,
-      email,
-      active,
-      raw,
-    };
+      const user = {
+        id,
+        first_name,
+        last_name,
+        email,
+        active,
+        raw,
+      };
 
-    await this.store('users').put(id, user);
+      await this.store('users').put(id, user);
 
-    return user;
+      return { data: user, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Delete a user by id
-  public async delete(id: string): Promise<void> {
-    await this.store('users').delete(id);
+  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+    try {
+      const { data, error } = await this.get(id);
+
+      if (error || !data) {
+        throw error;
+      }
+
+      await this.store('users').delete(id);
+
+      return { data: null, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Get all users in a directory
-  public async list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]> {
-    return (await this.store('users').getAll(pageOffset, pageLimit)) as User[];
+  public async list({
+    pageOffset,
+    pageLimit,
+  }: {
+    pageOffset?: number;
+    pageLimit?: number;
+  }): Promise<{ data: User[] | null; error: ApiError | null }> {
+    try {
+      const users = (await this.store('users').getAll(pageOffset, pageLimit)) as User[];
+
+      return { data: users, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Search users by userName
-  public async search(userName: string): Promise<User[]> {
-    return (await this.store('users').getByIndex({ name: 'userName', value: userName })) as User[];
+  public async search(userName: string): Promise<{ data: User[] | null; error: ApiError | null }> {
+    try {
+      const users = (await this.store('users').getByIndex({ name: 'userName', value: userName })) as User[];
+
+      return { data: users, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Clear all the users
   public async clear() {
-    const users = await this.list({});
+    const { data: users, error } = await this.list({});
+
+    if (!users || error) {
+      return;
+    }
 
     await Promise.all(
       users.map(async (user) => {

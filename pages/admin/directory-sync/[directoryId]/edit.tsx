@@ -108,9 +108,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId } = context.query;
   const { directorySyncController } = await jackson();
 
+  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
+
   return {
     props: {
-      directory: await directorySyncController.directories.get(directoryId as string),
+      directory,
     },
   };
 };

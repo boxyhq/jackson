@@ -19,17 +19,15 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directoryId } = req.query;
   const { directorySyncController } = await jackson();
 
-  const { tenant, product } = await directorySyncController.directories.get(directoryId as string);
+  const { data: directory, error } = await directorySyncController.directories.get(directoryId as string);
 
-  try {
-    await directorySyncController.events.setTenantAndProduct(tenant, product).clear();
-
-    return res.status(201).json({ data: null, error: null });
-  } catch (err: any) {
-    const { message, statusCode = 500 } = err;
-
-    return res.status(statusCode).json({ data: null, error: { message } });
+  if (!directory) {
+    return res.status(404).json({ data: null, error });
   }
+
+  await directorySyncController.events.setTenantAndProduct(directory.tenant, directory.product).clear();
+
+  return res.status(201).json({ data: null, error: null });
 };
 
 export default checkSession(handler);

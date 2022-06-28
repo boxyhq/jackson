@@ -24,15 +24,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { tenant, product, userId } = req.query;
 
-  try {
-    const user = await directorySyncController.users
-      .setTenantAndProduct(<string>tenant, <string>product)
-      .get(<string>userId);
+  const { data, error } = await directorySyncController.users
+    .setTenantAndProduct(<string>tenant, <string>product)
+    .get(<string>userId);
 
-    return res.status(200).json({ data: user, error: null });
-  } catch (err: any) {
-    const { message, statusCode = 500 } = err;
-
-    return res.status(statusCode).json({ data: null, error: { message } });
-  }
+  return res.status(error ? error.code : 200).json({ data, error });
 };

@@ -208,10 +208,16 @@ export interface Base {
 }
 
 export interface Users extends Base {
-  list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<User[]>;
-  get(id: string): Promise<User | null>;
-  search(userName: string): Promise<User[]>;
-  delete(id: string): Promise<void>;
+  list({
+    pageOffset,
+    pageLimit,
+  }: {
+    pageOffset?: number;
+    pageLimit?: number;
+  }): Promise<{ data: User[] | null; error: ApiError | null }>;
+  get(id: string): Promise<{ data: User | null; error: ApiError | null }>;
+  search(userName: string): Promise<{ data: User[] | null; error: ApiError | null }>;
+  delete(id: string): Promise<{ data: null; error: ApiError | null }>;
   clear(): Promise<void>;
   create(param: {
     first_name: string;
@@ -219,7 +225,7 @@ export interface Users extends Base {
     email: string;
     active: boolean;
     raw: any;
-  }): Promise<User>;
+  }): Promise<{ data: User | null; error: ApiError | null }>;
   update(
     id: string,
     param: {
@@ -229,27 +235,33 @@ export interface Users extends Base {
       active: boolean;
       raw: object;
     }
-  ): Promise<User>;
+  ): Promise<{ data: User | null; error: ApiError | null }>;
 }
 
 export interface Groups extends Base {
-  create(param: { name: string; raw: any }): Promise<Group>;
+  create(param: { name: string; raw: any }): Promise<{ data: Group | null; error: ApiError | null }>;
   removeAllUsers(groupId: string): Promise<void>;
-  list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<Group[]>;
-  get(id: string): Promise<Group>;
+  list({
+    pageOffset,
+    pageLimit,
+  }: {
+    pageOffset?: number;
+    pageLimit?: number;
+  }): Promise<{ data: Group[] | null; error: ApiError | null }>;
+  get(id: string): Promise<{ data: Group | null; error: ApiError | null }>;
   getAllUsers(groupId: string): Promise<{ user_id: string }[]>;
-  delete(id: string): Promise<void>;
+  delete(id: string): Promise<{ data: null; error: ApiError | null }>;
   addUserToGroup(groupId: string, userId: string): Promise<void>;
   isUserInGroup(groupId: string, userId: string): Promise<boolean>;
   removeUserFromGroup(groupId: string, userId: string): Promise<void>;
-  search(displayName: string): Promise<Group[]>;
+  search(displayName: string): Promise<{ data: Group[] | null; error: ApiError | null }>;
   update(
     id: string,
     param: {
       name: string;
       raw: any;
     }
-  ): Promise<Group>;
+  ): Promise<{ data: Group | null; error: ApiError | null }>;
 }
 
 export type User = {
@@ -272,7 +284,6 @@ export enum DirectorySyncProviders {
   'onelogin-scim-v2' = 'OneLogin SCIM v2.0',
   'okta-scim-v2' = 'Okta SCIM v2.0',
   'jumpcloud-scim-v2' = 'JumpCloud v2.0',
-  'okta-saml' = 'Okta SAML App',
 }
 
 export type DirectoryType = keyof typeof DirectorySyncProviders;
@@ -314,14 +325,23 @@ export interface DirectoryConfig {
     webhook_url?: string;
     webhook_secret?: string;
     type: DirectoryType;
-  }): Promise<Directory>;
+  }): Promise<{ data: Directory | null; error: ApiError | null }>;
   update(
     id: string,
     param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim'>
-  ): Promise<Directory>;
-  get(id: string): Promise<Directory>;
-  getByTenantAndProduct(tenant: string, product: string): Promise<Directory>;
-  list({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<Directory[]>;
+  ): Promise<{ data: Directory | null; error: ApiError | null }>;
+  get(id: string): Promise<{ data: Directory | null; error: ApiError | null }>;
+  getByTenantAndProduct(
+    tenant: string,
+    product: string
+  ): Promise<{ data: Directory | null; error: ApiError | null }>;
+  list({
+    pageOffset,
+    pageLimit,
+  }: {
+    pageOffset?: number;
+    pageLimit?: number;
+  }): Promise<{ data: Directory[] | null; error: ApiError | null }>;
   delete(id: string): Promise<void>;
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
@@ -437,8 +457,8 @@ export interface WebhookEvents extends Base {
     action: DirectorySyncEventType,
     payload: {
       directory: Directory;
-      group?: Group;
-      user?: User;
+      group?: Group | null;
+      user?: User | null;
     }
   ): Promise<void>;
   getAll(): Promise<WebhookEventLog[]>;
@@ -446,4 +466,9 @@ export interface WebhookEvents extends Base {
   clear(): Promise<void>;
   delete(id: string): Promise<void>;
   updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
+}
+
+export interface ApiError {
+  message: string;
+  code: number;
 }

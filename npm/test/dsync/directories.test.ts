@@ -26,7 +26,14 @@ tap.test('Directories / ', async (t) => {
 
     fakeDirectory = getFakeDirectory();
 
-    directory = await directorySync.directories.create(fakeDirectory);
+    const { data, error } = await directorySync.directories.create(fakeDirectory);
+
+    if (error || !data) {
+      t.fail("Couldn't create a directory");
+      return;
+    }
+
+    directory = data;
   });
 
   t.test('should be able to create a directory', async (t) => {
@@ -40,16 +47,62 @@ tap.test('Directories / ', async (t) => {
     t.end();
   });
 
+  t.test('should not be able to create a directory without required params', async (t) => {
+    const { data, error } = await directorySync.directories.create({
+      name: '',
+      tenant: '',
+      product: '',
+      type: 'azure-scim-v2',
+    });
+
+    t.ok(error);
+    t.notOk(data);
+    t.equal(error?.code, 400);
+    t.equal(error?.message, 'Missing required parameters.');
+
+    t.end();
+  });
+
   t.test('should be able to get a directory', async (t) => {
-    const directoryFetched = await directorySync.directories.get(directory.id);
+    const { data: directoryFetched } = await directorySync.directories.get(directory.id);
 
     t.ok(directoryFetched);
     t.hasStrict(directoryFetched, fakeDirectory);
-    t.match(directoryFetched.id, directory.id);
+    t.match(directoryFetched?.id, directory.id);
 
     await directorySync.directories.delete(directory.id);
 
     t.end();
+  });
+
+  t.test("should not be able to get a directory that doesn't exist", async (t) => {
+    const { data, error } = await directorySync.directories.get('fake-id');
+
+    t.ok(error);
+    t.notOk(data);
+    t.equal(error?.code, 404);
+    t.equal(error?.message, 'Directory configuration not found.');
+  });
+
+  t.test('should not be able to get a directory without an id', async (t) => {
+    const { data, error } = await directorySync.directories.get('');
+
+    t.ok(error);
+    t.notOk(data);
+    t.equal(error?.code, 400);
+    t.equal(error?.message, 'Missing required parameters.');
+  });
+
+  // Should not be able to update a directory without an id
+  t.test('should not be able to update a directory without an id', async (t) => {
+    const { data, error } = await directorySync.directories.update('', {
+      log_webhook_events: false,
+    });
+
+    t.ok(error);
+    t.notOk(data);
+    t.equal(error?.code, 500);
+    t.equal(error?.message, 'Missing required parameters.');
   });
 
   t.test('should be able to update a directory', async (t) => {
@@ -60,27 +113,27 @@ tap.test('Directories / ', async (t) => {
         secret: 'secret',
       },
       log_webhook_events: true,
-      type: 'okta-saml' as DirectoryType,
+      type: 'jumpcloud-scim-v2' as DirectoryType,
     };
 
-    let updatedDirectory = await directorySync.directories.update(directory.id, toUpdate);
+    const { data: updatedDirectory } = await directorySync.directories.update(directory.id, toUpdate);
 
     t.ok(updatedDirectory);
-    t.match(directory.id, updatedDirectory.id);
-    t.match(updatedDirectory.name, toUpdate.name);
-    t.match(updatedDirectory.webhook.endpoint, toUpdate.webhook.endpoint);
-    t.match(updatedDirectory.webhook.secret, toUpdate.webhook.secret);
-    t.match(updatedDirectory.log_webhook_events, toUpdate.log_webhook_events);
+    t.match(directory.id, updatedDirectory?.id);
+    t.match(updatedDirectory?.name, toUpdate.name);
+    t.match(updatedDirectory?.webhook.endpoint, toUpdate.webhook.endpoint);
+    t.match(updatedDirectory?.webhook.secret, toUpdate.webhook.secret);
+    t.match(updatedDirectory?.log_webhook_events, toUpdate.log_webhook_events);
 
     // Partial update
-    updatedDirectory = await directorySync.directories.update(directory.id, {
+    const { data: anotherDirectory } = await directorySync.directories.update(directory.id, {
       name: 'BoxyHQ 2',
       log_webhook_events: false,
     });
 
-    t.ok(updatedDirectory);
-    t.match(updatedDirectory.name, 'BoxyHQ 2');
-    t.match(updatedDirectory.log_webhook_events, false);
+    t.ok(anotherDirectory);
+    t.match(anotherDirectory?.name, 'BoxyHQ 2');
+    t.match(anotherDirectory?.log_webhook_events, false);
 
     await directorySync.directories.delete(directory.id);
 
@@ -88,7 +141,7 @@ tap.test('Directories / ', async (t) => {
   });
 
   t.test('should be able to get a directory by tenant and product', async (t) => {
-    const directoryFetched = await directorySync.directories.getByTenantAndProduct(
+    const { data: directoryFetched } = await directorySync.directories.getByTenantAndProduct(
       directory.tenant,
       directory.product
     );
@@ -105,15 +158,9 @@ tap.test('Directories / ', async (t) => {
   t.test('should be able to delete a directory', async (t) => {
     await directorySync.directories.delete(directory.id);
 
-    try {
-      await directorySync.directories.get(directory.id);
-      t.fail('Should not be able to get a directory that was deleted');
-    } catch (err) {
-      const { message, statusCode } = err as JacksonError;
+    const { data } = await directorySync.directories.get(directory.id);
 
-      t.equal(message, 'Directory configuration not found.');
-      t.equal(statusCode, 404);
-    }
+    t.notOk(data);
 
     t.end();
   });
@@ -139,6 +186,18 @@ tap.test('Directories / ', async (t) => {
 
     t.end();
   });
+
+  t.test(
+    'should not be able to get a directory by tenant and product without tenant and product',
+    async (t) => {
+      const { data, error } = await directorySync.directories.getByTenantAndProduct('', '');
+
+      t.ok(error);
+      t.notOk(data);
+      t.equal(error?.code, 400);
+      t.equal(error?.message, 'Missing required parameters.');
+    }
+  );
 
   t.end();
 });

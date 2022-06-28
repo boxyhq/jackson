@@ -6,7 +6,7 @@ export const getFakeDirectory = () => {
     name: faker.company.companyName(),
     tenant: faker.internet.domainName(),
     product: faker.commerce.productName(),
-    type: 'okta-saml' as DirectoryType,
+    type: 'okta-scim-v2' as DirectoryType,
     log_webhook_events: false,
   } as Directory;
 };

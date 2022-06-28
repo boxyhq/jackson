@@ -25,11 +25,18 @@ tap.before(async () => {
   directorySync = jackson.directorySync;
 
   // Create a directory before starting the test
-  directory = await directorySync.directories.create({
+  const { data, error } = await directorySync.directories.create({
     ...fakeDirectory,
     webhook_url: webhook.endpoint,
     webhook_secret: webhook.secret,
   });
+
+  if (error || !data) {
+    tap.fail("Couldn't create a directory");
+    return;
+  }
+
+  directory = data;
 
   // Turn on webhook event logging for the directory
   await directorySync.directories.update(directory.id, {
@@ -265,12 +272,7 @@ tap.test('Webhook Events / ', async (t) => {
       usersRequest.create(directory.id, users[0])
     );
 
-    const user = await directorySync.users.get(createdUser.id);
-
-    if (user === null) {
-      t.fail('User not found');
-      return;
-    }
+    const { data: user } = await directorySync.users.get(createdUser.id);
 
     const webhookPayload = createPayload('user.created', {
       directory,
@@ -287,7 +289,7 @@ tap.test('Webhook Events / ', async (t) => {
       groupRequest.create(directory.id, groups[0])
     );
 
-    const group = await directorySync.groups.get(createdGroup.id);
+    const { data: group } = await directorySync.groups.get(createdGroup.id);
 
     const webhookPayload2 = createPayload('group.created', {
       directory,

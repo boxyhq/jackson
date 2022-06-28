@@ -100,11 +100,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const pageOffset = parseInt(offset as string);
   const pageLimit = 25;
+  const { data: directories } = await directorySyncController.directories.list({ pageOffset, pageLimit });
 
   return {
     props: {
       providers: directorySyncController.providers(),
-      directories: await directorySyncController.directories.list({ pageOffset, pageLimit }),
+      directories,
       pageOffset,
       pageLimit,
     },

@@ -16,7 +16,14 @@ tap.before(async () => {
 
   directorySync = jackson.directorySync;
 
-  directory = await directorySync.directories.create(fakeDirectory);
+  const { data, error } = await directorySync.directories.create(fakeDirectory);
+
+  if (error || !data) {
+    tap.fail("Couldn't create a directory");
+    return;
+  }
+
+  directory = data;
 });
 
 tap.teardown(async () => {

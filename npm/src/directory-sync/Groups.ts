@@ -1,4 +1,4 @@
-import type { Group, DatabaseStore } from '../typings';
+import type { Group, DatabaseStore, ApiError } from '../typings';
 import * as dbutils from '../db/utils';
 import { JacksonError } from '../controller/error';
 import { Base } from './Base';
@@ -9,36 +9,51 @@ export class Groups extends Base {
   }
 
   // Create a new group
-  public async create(param: { name: string; raw: any }): Promise<Group> {
-    const { name, raw } = param;
+  public async create(param: {
+    name: string;
+    raw: any;
+  }): Promise<{ data: Group | null; error: ApiError | null }> {
+    try {
+      const { name, raw } = param;
 
-    const id = this.createId();
+      const id = this.createId();
 
-    raw['id'] = id;
+      raw['id'] = id;
 
-    const group: Group = {
-      id,
-      name,
-      raw,
-    };
+      const group: Group = {
+        id,
+        name,
+        raw,
+      };
 
-    await this.store('groups').put(id, group, {
-      name: 'displayName',
-      value: name,
-    });
+      await this.store('groups').put(id, group, {
+        name: 'displayName',
+        value: name,
+      });
 
-    return group;
+      return { data: group, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Get a group by id
-  public async get(id: string): Promise<Group> {
-    const group = await this.store('groups').get(id);
+  public async get(id: string): Promise<{ data: Group | null; error: ApiError | null }> {
+    try {
+      const group = await this.store('groups').get(id);
 
-    if (!group) {
-      throw new JacksonError(`Group with id ${id} not found.`, 404);
+      if (!group) {
+        throw new JacksonError(`Group with id ${id} not found.`, 404);
+      }
+
+      return { data: group, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
     }
-
-    return group;
   }
 
   // Update the group data
@@ -48,23 +63,43 @@ export class Groups extends Base {
       name: string;
       raw: any;
     }
-  ): Promise<Group> {
-    const { name, raw } = param;
+  ): Promise<{ data: Group | null; error: ApiError | null }> {
+    try {
+      const { name, raw } = param;
 
-    const group: Group = {
-      id,
-      name,
-      raw,
-    };
+      const group: Group = {
+        id,
+        name,
+        raw,
+      };
 
-    await this.store('groups').put(id, group);
+      await this.store('groups').put(id, group);
 
-    return group;
+      return { data: group, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Delete a group by id
-  public async delete(id: string) {
-    await this.store('groups').delete(id);
+  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+    try {
+      const { data, error } = await this.get(id);
+
+      if (error || !data) {
+        throw error;
+      }
+
+      await this.store('groups').delete(id);
+
+      return { data: null, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Get all users in a group
@@ -126,8 +161,19 @@ export class Groups extends Base {
   }
 
   // Search groups by displayName
-  public async search(displayName: string): Promise<Group[]> {
-    return (await this.store('groups').getByIndex({ name: 'displayName', value: displayName })) as Group[];
+  public async search(displayName: string): Promise<{ data: Group[] | null; error: ApiError | null }> {
+    try {
+      const groups = (await this.store('groups').getByIndex({
+        name: 'displayName',
+        value: displayName,
+      })) as Group[];
+
+      return { data: groups, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 
   // Get all groups in a directory
@@ -137,7 +183,15 @@ export class Groups extends Base {
   }: {
     pageOffset?: number;
     pageLimit?: number;
-  }): Promise<Group[]> {
-    return (await this.store('groups').getAll(pageOffset, pageLimit)) as Group[];
+  }): Promise<{ data: Group[] | null; error: ApiError | null }> {
+    try {
+      const groups = (await this.store('groups').getAll(pageOffset, pageLimit)) as Group[];
+
+      return { data: groups, error: null };
+    } catch (err: any) {
+      const { message, statusCode = 500 } = err;
+
+      return { data: null, error: { message, code: statusCode } };
+    }
   }
 }

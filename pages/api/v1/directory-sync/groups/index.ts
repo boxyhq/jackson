@@ -24,15 +24,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { tenant, product } = req.query;
 
-  try {
-    const groups = await directorySyncController.groups
-      .setTenantAndProduct(<string>tenant, <string>product)
-      .list({});
+  const { data, error } = await directorySyncController.groups
+    .setTenantAndProduct(<string>tenant, <string>product)
+    .list({});
 
-    return res.status(200).json({ data: groups, error: null });
-  } catch (err: any) {
-    const { message, statusCode = 500 } = err;
-
-    return res.status(statusCode).json({ data: null, error: { message } });
-  }
+  return res.status(error ? error.code : 200).json({ data, error });
 };

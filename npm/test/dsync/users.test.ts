@@ -14,7 +14,14 @@ tap.before(async () => {
 
   directorySync = jackson.directorySync;
 
-  directory = await directorySync.directories.create(fakeDirectory);
+  const { data, error } = await directorySync.directories.create(fakeDirectory);
+
+  if (error || !data) {
+    tap.fail("Couldn't create a directory");
+    return;
+  }
+
+  directory = data;
 });
 
 tap.teardown(async () => {
@@ -151,9 +158,9 @@ tap.test('Directory users / ', async (t) => {
     await directorySync.users.clear();
 
     // Make sure all the user was deleted
-    const users = await directorySync.users.list({});
+    const { data: users } = await directorySync.users.list({});
 
-    t.equal(users.length, 0);
+    t.equal(users?.length, 0);
 
     t.end();
   });

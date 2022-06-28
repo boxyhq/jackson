@@ -26,16 +26,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   directorySyncController.groups.setTenantAndProduct(<string>tenant, <string>product);
 
-  try {
-    const data = {
-      ...(await directorySyncController.groups.get(<string>groupId)),
-      members: await directorySyncController.groups.getAllUsers(<string>groupId),
-    };
+  const { data: group, error } = await directorySyncController.groups.get(<string>groupId);
 
-    return res.status(200).json({ data, error: null });
-  } catch (err: any) {
-    const { message, statusCode = 500 } = err;
-
-    return res.status(statusCode).json({ data: null, error: { message } });
+  // Get the members of the group if it exists
+  if (group) {
+    group['members'] = await directorySyncController.groups.getAllUsers(<string>groupId);
   }
+
+  return res.status(error ? error.code : 200).json({ data: group, error });
 };

@@ -21,22 +21,16 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { name, webhook_url, webhook_secret, log_webhook_events } = req.body;
 
-  try {
-    const directory = await directorySyncController.directories.update(directoryId as string, {
-      name,
-      log_webhook_events,
-      webhook: {
-        endpoint: webhook_url,
-        secret: webhook_secret,
-      },
-    });
+  const { data, error } = await directorySyncController.directories.update(directoryId as string, {
+    name,
+    log_webhook_events,
+    webhook: {
+      endpoint: webhook_url,
+      secret: webhook_secret,
+    },
+  });
 
-    return res.status(201).json({ data: directory, error: null });
-  } catch (err: any) {
-    const { message, statusCode = 500 } = err;
-
-    return res.status(statusCode).json({ data: null, error: { message } });
-  }
+  return res.status(error ? error.code : 201).json({ data, error });
 };
 
 export default checkSession(handler);

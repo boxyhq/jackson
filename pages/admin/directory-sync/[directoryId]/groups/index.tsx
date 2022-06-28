@@ -87,9 +87,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const pageOffset = parseInt(offset as string);
   const pageLimit = 25;
 
-  const directory = await directorySyncController.directories.get(directoryId as string);
+  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
 
-  const groups = await directorySyncController.groups
+  if (!directory) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const { data: groups } = await directorySyncController.groups
     .setTenantAndProduct(directory.tenant, directory.product)
     .list({ pageOffset, pageLimit });
 

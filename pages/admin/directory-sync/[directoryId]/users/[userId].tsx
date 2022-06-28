@@ -26,8 +26,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { directoryId, userId } = context.query;
   const { directorySyncController } = await jackson();
 
-  const directory = await directorySyncController.directories.get(directoryId as string);
-  const user = await directorySyncController.users
+  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
+
+  if (!directory) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const { data: user } = await directorySyncController.users
     .with(directory.tenant, directory.product)
     .get(userId as string);
 

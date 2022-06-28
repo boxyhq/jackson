@@ -7,6 +7,7 @@ import type {
   DirectorySyncUserRequest,
   Groups,
   Users,
+  ApiError,
 } from '../typings';
 
 export class DirectoryUsers {
@@ -35,7 +36,7 @@ export class DirectoryUsers {
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
     const { name, emails } = body;
 
-    const user = await this.users.create({
+    const { data: user } = await this.users.create({
       first_name: name.givenName,
       last_name: name.familyName,
       email: emails[0].value,
@@ -47,7 +48,7 @@ export class DirectoryUsers {
 
     return {
       status: 201,
-      data: user.raw,
+      data: user?.raw,
     };
   }
 
@@ -61,7 +62,7 @@ export class DirectoryUsers {
   public async update(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
     const { name, emails, active } = body;
 
-    const updatedUser = await this.users.update(user.id, {
+    const { data: updatedUser } = await this.users.update(user.id, {
       first_name: name.givenName,
       last_name: name.familyName,
       email: emails[0].value,
@@ -73,7 +74,7 @@ export class DirectoryUsers {
 
     return {
       status: 200,
-      data: updatedUser.raw,
+      data: updatedUser?.raw,
     };
   }
 
@@ -83,7 +84,7 @@ export class DirectoryUsers {
 
     // Update the user
     if (operation.op === 'replace') {
-      const updatedUser = await this.users.update(user.id, {
+      const { data: updatedUser } = await this.users.update(user.id, {
         ...user,
         ...operation.value,
         raw: { ...user.raw, ...operation.value },
@@ -93,7 +94,7 @@ export class DirectoryUsers {
 
       return {
         status: 200,
-        data: updatedUser.raw,
+        data: updatedUser?.raw,
       };
     }
 
@@ -121,18 +122,24 @@ export class DirectoryUsers {
   }): Promise<DirectorySyncResponse> {
     const { startIndex, filter, count } = queryParams;
 
-    let users: User[] = [];
+    let users: User[] | null = [];
     let totalResults = 0;
 
     if (filter) {
       // Search users by userName
       // filter: userName eq "john@example.com"
-      users = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
-      totalResults = users.length;
+      const { data } = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+
+      users = data;
+      totalResults = users ? users.length : 0;
     } else {
       // Fetch all the existing Users (Paginated)
-      totalResults = (await this.users.list({})).length; // At this moment, we don't have method to count the database records.
-      users = await this.users.list({ pageOffset: startIndex - 1, pageLimit: count });
+      // At this moment, we don't have method to count the database records.
+      const { data: allUsers } = await this.users.list({});
+      const { data } = await this.users.list({ pageOffset: startIndex - 1, pageLimit: count });
+
+      users = data;
+      totalResults = allUsers ? allUsers.length : 0;
     }
 
     return {
@@ -142,8 +149,15 @@ export class DirectoryUsers {
         startIndex,
         totalResults,
         itemsPerPage: count,
-        Resources: users.map((user) => user.raw),
+        Resources: users ? users.map((user) => user.raw) : [],
       },
+    };
+  }
+
+  private respondWithError(error: ApiError | null) {
+    return {
+      status: error ? error.code : 500,
+      data: null,
     };
   }
 
@@ -152,40 +166,48 @@ export class DirectoryUsers {
     const { method, body, query } = request;
     const { directory_id: directoryId, user_id: userId } = query;
 
-    const directory = await this.directories.get(directoryId);
+    // Get the directory
+    const { data: directory, error } = await this.directories.get(directoryId);
+
+    if (error || !directory) {
+      return this.respondWithError(error);
+    }
 
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
-    const user = userId ? await this.users.get(userId) : null;
+    // Get the user
+    const { data: user } = userId ? await this.users.get(userId) : { data: null };
 
-    // Get a specific user
-    if (method === 'GET' && user) {
-      return await this.get(user);
-    }
+    if (user) {
+      // Get a specific user
+      if (method === 'GET') {
+        return await this.get(user);
+      }
 
-    // Get all the users
-    if (method === 'GET' && query) {
-      return await this.getAll({
-        count: query.count as number,
-        startIndex: query.startIndex as number,
-        filter: query.filter,
-      });
+      if (method === 'PUT') {
+        return await this.update(directory, user, body);
+      }
+
+      if (method === 'PATCH') {
+        return await this.patch(directory, user, body);
+      }
+
+      if (method === 'DELETE') {
+        return await this.delete(directory, user);
+      }
     }
 
     if (method === 'POST') {
       return this.create(directory, body);
     }
 
-    if (method === 'PUT' && user) {
-      return await this.update(directory, user, body);
-    }
-
-    if (method === 'PATCH' && user) {
-      return await this.patch(directory, user, body);
-    }
-
-    if (method === 'DELETE' && user) {
-      return await this.delete(directory, user);
+    // Get all the users
+    if (method === 'GET') {
+      return await this.getAll({
+        count: query.count as number,
+        startIndex: query.startIndex as number,
+        filter: query.filter,
+      });
     }
 
     return {

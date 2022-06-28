@@ -114,8 +114,8 @@ export const createPayload = (
   action: string,
   payload: {
     directory: Directory;
-    group?: Group;
-    user?: User;
+    group?: Group | null;
+    user?: User | null;
   }
 ): WebhookPayload => {
   const { directory, group, user } = payload;

@@ -8,6 +8,7 @@ import type {
   DirectorySyncGroupRequest,
   Users,
   Groups,
+  ApiError,
 } from '../typings';
 import { parseGroupOperations, toGroupMembers } from './utils';
 
@@ -37,7 +38,7 @@ export class DirectoryGroups {
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
     const { displayName, members } = body;
 
-    const group = await this.groups.create({
+    const { data: group } = await this.groups.create({
       name: displayName,
       raw: body,
     });
@@ -45,16 +46,16 @@ export class DirectoryGroups {
     await this.webhookEvents.send('group.created', { directory, group });
 
     // Okta SAML app doesn't send individual group membership events, so we need to add the members here
-    if (directory.type === 'okta-saml') {
-      await this.addGroupMembers(directory, group, members, false);
-    }
+    // if (directory.type === 'okta-saml' && group) {
+    //   await this.addGroupMembers(directory, group, members, false);
+    // }
 
     return {
       status: 201,
       data: {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-        id: group.id,
-        displayName: group.name,
+        id: group?.id,
+        displayName: group?.name,
         members: members ?? [],
       },
     };
@@ -87,25 +88,29 @@ export class DirectoryGroups {
   public async getAll(queryParams: { filter?: string }): Promise<DirectorySyncResponse> {
     const { filter } = queryParams;
 
-    let groups: Group[] = [];
+    let groups: Group[] | null = [];
 
     if (filter) {
       // Filter by group displayName
       // filter: displayName eq "Developer"
-      groups = await this.groups.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+      const { data } = await this.groups.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+
+      groups = data;
     } else {
       // Fetch all the existing group
-      groups = await this.groups.list({ pageOffset: undefined, pageLimit: undefined });
+      const { data } = await this.groups.list({ pageOffset: undefined, pageLimit: undefined });
+
+      groups = data;
     }
 
     return {
       status: 200,
       data: {
         schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
-        totalResults: groups.length,
-        itemsPerPage: groups.length,
+        totalResults: groups ? groups.length : 0,
+        itemsPerPage: groups ? groups.length : 0,
         startIndex: 1,
-        Resources: groups.map((group) => group.raw),
+        Resources: groups ? groups.map((group) => group.raw) : [],
       },
     };
   }
@@ -114,13 +119,17 @@ export class DirectoryGroups {
   public async updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group> {
     const { displayName } = body;
 
-    const updatedGroup = await this.groups.update(group.id, {
+    const { data: updatedGroup, error } = await this.groups.update(group.id, {
       name: displayName,
       raw: {
         ...group.raw,
         ...body,
       },
     });
+
+    if (error || !updatedGroup) {
+      throw error;
+    }
 
     await this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
 
@@ -149,14 +158,14 @@ export class DirectoryGroups {
       });
     }
 
-    const updatedGroup = await this.groups.get(group.id);
+    const { data: updatedGroup } = await this.groups.get(group.id);
 
     return {
       status: 200,
       data: {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-        id: updatedGroup.id,
-        displayName: updatedGroup.name,
+        id: updatedGroup?.id,
+        displayName: updatedGroup?.name,
         members: toGroupMembers(await this.groups.getAllUsers(group.id)),
       },
     };
@@ -203,7 +212,7 @@ export class DirectoryGroups {
 
       await this.groups.addUserToGroup(group.id, member.value);
 
-      const user = await this.users.get(member.value);
+      const { data: user } = await this.users.get(member.value);
 
       if (sendWebhookEvent && user) {
         await this.webhookEvents.send('group.user_added', {
@@ -228,7 +237,7 @@ export class DirectoryGroups {
     for (const member of members) {
       await this.groups.removeUserFromGroup(group.id, member.value);
 
-      const user = await this.users.get(member.value);
+      const { data: user } = await this.users.get(member.value);
 
       // User may not exist in the directory, so we need to check if the user exists
       if (sendWebhookEvent && user) {
@@ -259,21 +268,53 @@ export class DirectoryGroups {
     await this.removeGroupMembers(directory, group, usersToRemove, false);
   }
 
+  private respondWithError(error: ApiError | null) {
+    return {
+      status: error ? error.code : 500,
+      data: null,
+    };
+  }
+
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse> {
     const { method, body, query } = request;
     const { directory_id: directoryId, group_id: groupId } = query;
 
-    const directory = await this.directories.get(directoryId);
+    // Get the directory
+    const { data: directory, error } = await this.directories.get(directoryId);
+
+    if (error || !directory) {
+      return this.respondWithError(error);
+    }
 
     this.users.setTenantAndProduct(directory.tenant, directory.product);
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
-    const group = groupId ? await this.groups.get(groupId) : null;
+    // Get the group
+    const { data: group } = groupId ? await this.groups.get(groupId) : { data: null };
 
-    // Get a specific group
-    if (method === 'GET' && group) {
-      return await this.get(group);
+    if (group) {
+      // Get a specific group
+      if (method === 'GET') {
+        return await this.get(group);
+      }
+
+      if (method === 'PUT') {
+        return await this.update(directory, group, body);
+      }
+
+      if (method === 'PATCH') {
+        return await this.patch(directory, group, body);
+      }
+
+      if (method === 'DELETE') {
+        return await this.delete(directory, group);
+      }
+    }
+
+    // Create a group
+    if (method === 'POST') {
+      return await this.create(directory, body);
     }
 
     // Get all groups
@@ -281,22 +322,6 @@ export class DirectoryGroups {
       return await this.getAll({
         filter: query.filter,
       });
-    }
-
-    if (method === 'POST' && body) {
-      return await this.create(directory, body);
-    }
-
-    if (method === 'PUT' && group) {
-      return await this.update(directory, group, body);
-    }
-
-    if (method === 'PATCH' && group) {
-      return await this.patch(directory, group, body);
-    }
-
-    if (method === 'DELETE' && group) {
-      return await this.delete(directory, group);
     }
 
     return {

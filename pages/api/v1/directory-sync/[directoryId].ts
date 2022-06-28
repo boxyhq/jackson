@@ -24,13 +24,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { directoryId } = req.query;
 
-  try {
-    const directory = await directorySyncController.directories.get(directoryId as string);
+  const { data, error } = await directorySyncController.directories.get(directoryId as string);
 
-    return res.status(200).json({ data: directory, error: null });
-  } catch (err: any) {
-    const { message, statusCode = 500 } = err;
-
-    return res.status(statusCode).json({ data: null, error: { message } });
-  }
+  return res.status(error ? error.code : 200).json({ data, error });
 };
