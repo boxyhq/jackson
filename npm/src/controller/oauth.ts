@@ -662,7 +662,6 @@ export class OAuthController implements IOAuthController {
     const requestHasNonce = !!codeVal.requested.nonce;
     if (requestedOIDCFlow) {
       let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
-      console.log(`🚀`, codeVal.profile);
       claims = {
         ...claims,
         id: codeVal.profile.claims.id,
