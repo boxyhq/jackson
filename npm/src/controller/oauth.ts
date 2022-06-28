@@ -661,7 +661,14 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = !!codeVal.requested.oidc;
     const requestHasNonce = !!codeVal.requested.nonce;
     if (requestedOIDCFlow) {
-      const claims = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
+      let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
+      claims = {
+        ...claims,
+        id: codeVal.profile.id,
+        email: codeVal.profile.email,
+        firstName: codeVal.profile.firstName,
+        lastName: codeVal.profile.lastName,
+      };
       const signingKey = await loadJWSPrivateKey(this.opts.jwtSigningKeys.private, this.opts.jwsAlg);
       const id_token = await new jose.SignJWT(claims)
         .setProtectedHeader({ alg: this.opts.jwsAlg })
