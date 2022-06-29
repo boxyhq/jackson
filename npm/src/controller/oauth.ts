@@ -734,10 +734,6 @@ export class OAuthController implements IOAuthController {
    */
   public async userInfo(token: string): Promise<Profile> {
     const rsp = await this.tokenStore.get(token);
-    // To be used later, for now we return email in the profile anyway
-    // scopes_supported = ["openid","email"]
-    const requestedOIDCFlow = !!rsp.requested.oidc;
-    const requestedScope = rsp.requested.scope;
 
     metrics.increment('oauthUserInfo');
 
