@@ -214,6 +214,11 @@ export class DirectoryConfig {
   }
 
   private transform(directory: Directory): Directory {
+    // Add the flag to ensure SCIM compliance when using Azure AD
+    if (directory.type === 'azure-scim-v2') {
+      directory.scim.path = `${directory.scim.path}/?aadOptscim062020`;
+    }
+
     directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
 
     return directory;
