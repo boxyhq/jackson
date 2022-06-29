@@ -11,5 +11,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     null,
     2
   );
-  res.status(200).send(jwks);
+  res.status(200).setHeader('Content-Type', 'application/json').send(jwks);
 }
