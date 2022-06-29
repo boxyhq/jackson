@@ -10,7 +10,9 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       if (slug?.[0]) {
         res.json(await apiController.getConfig({ clientID: slug[0] }));
       } else {
-        res.json(await adminController.getAllConfig(+pageOffset as number, +pageLimit as number));
+        res.json(
+          await adminController.getAllConfig(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
+        );
       }
     } else if (req.method === 'POST') {
       res.json(await apiController.config(req.body));
