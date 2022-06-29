@@ -46,7 +46,6 @@ export interface OAuthReqBody {
   product?: string;
   access_type?: string;
   scope?: string;
-  claims?: string;
   nonce?: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
