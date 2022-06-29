@@ -51,7 +51,7 @@
     "@supabase/ui": "0.36.5",
     "cors": "2.8.5",
     "micromatch": "4.0.5",
-    "next": "12.1.6",
+    "next": "12.2.0",
     "next-auth": "4.6.1",
     "nodemailer": "6.7.5",
     "raw-body": "2.5.1",
