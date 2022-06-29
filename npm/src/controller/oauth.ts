@@ -142,7 +142,6 @@ export class OAuthController implements IOAuthController {
       product,
       access_type,
       scope,
-      claims,
       nonce,
       code_challenge,
       code_challenge_method = '',
@@ -331,9 +330,6 @@ export class OAuthController implements IOAuthController {
       }
       if (requestedOIDCFlow) {
         requested.oidc = true;
-        if (claims) {
-          requested.claims = claims;
-        }
         if (nonce) {
           requested.nonce = nonce;
         }
