@@ -22,6 +22,10 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
     throw new Error('samlPath is required');
   }
 
+  if (!newOpts.jwtSigningKeys.private || !newOpts.jwtSigningKeys.public) {
+    throw new Error('jwtSigningKeys are required');
+  }
+
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.idpEnabled = newOpts.idpEnabled === true;
@@ -29,6 +33,8 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
   newOpts.db.pageLimit = newOpts.db.pageLimit || 50;
+
+  newOpts.jwsAlg = newOpts.jwsAlg || 'RS256';
 
   return newOpts;
 };
