@@ -28,6 +28,7 @@ import {
   OAuthErrorResponse,
   getErrorMessage,
   loadJWSPrivateKey,
+  isJWSKeyPairLoaded,
 } from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
@@ -263,6 +264,17 @@ export class OAuthController implements IOAuthController {
 
     if (!allowed.redirect(redirect_uri, samlConfig.redirectUrl)) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
+    }
+
+    if (requestedOIDCFlow && !isJWSKeyPairLoaded(this.opts.jwtSigningKeys)) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description:
+            'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded',
+          redirect_uri,
+        }),
+      };
     }
 
     if (!state) {
@@ -657,6 +669,9 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = !!codeVal.requested.oidc;
     const requestHasNonce = !!codeVal.requested.nonce;
     if (requestedOIDCFlow) {
+      if (!isJWSKeyPairLoaded(this.opts.jwtSigningKeys)) {
+        throw new JacksonError('JWT signing keys are not loaded', 500);
+      }
       let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
       claims = {
         ...claims,

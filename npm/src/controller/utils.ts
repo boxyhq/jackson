@@ -33,3 +33,10 @@ export async function loadJWSPrivateKey(key: string, alg: string): Promise<jose.
   const privateKey = await jose.importPKCS8(pkcs8, alg);
   return privateKey;
 }
+
+export function isJWSKeyPairLoaded(jwsKeyPair: { private: string; public: string }) {
+  if (!jwsKeyPair.private || !jwsKeyPair.public) {
+    return false;
+  }
+  return true;
+}
