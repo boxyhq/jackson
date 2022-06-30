@@ -23,6 +23,13 @@ export const authz_request_normal_with_scope: Partial<OAuthReqBody> = {
   client_id: 'dummy',
 };
 
+export const authz_request_normal_oidc_flow: Partial<OAuthReqBody> = {
+  redirect_uri: boxyhq.defaultRedirectUrl,
+  state: 'state-123',
+  scope: `openid`,
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+};
+
 export const redirect_uri_not_set: Partial<OAuthReqBody> = {
   redirect_uri: undefined,
   state: 'state',
