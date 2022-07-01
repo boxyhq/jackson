@@ -414,6 +414,7 @@ tap.test('token()', (t) => {
         t.ok('access_token' in response, 'includes access_token');
         t.ok('token_type' in response, 'includes token_type');
         t.ok('expires_in' in response, 'includes expires_in');
+        t.notOk('id_token' in response, 'does not include id_token');
         t.match(response.access_token, token);
         t.match(response.token_type, 'bearer');
         t.match(response.expires_in, 300);
@@ -454,6 +455,7 @@ tap.test('token()', (t) => {
         t.ok('access_token' in tokenRes, 'includes access_token');
         t.ok('token_type' in tokenRes, 'includes token_type');
         t.ok('expires_in' in tokenRes, 'includes expires_in');
+        t.notOk('id_token' in tokenRes, 'does not include id_token');
         t.match(tokenRes.access_token, token);
         t.match(tokenRes.token_type, 'bearer');
         t.match(tokenRes.expires_in, 300);
