@@ -9,7 +9,13 @@ export const validateApiKey = (token: string | null) => {
 };
 
 export const extractAuthToken = (req): string | null => {
-  const authHeader = req.headers.authorization || '';
+  let authHeader = '';
+
+  if (typeof req.headers.get === 'function') {
+    authHeader = req.headers.get('authorization') || '';
+  } else {
+    authHeader = req.headers.authorization || '';
+  }
 
   const parts = authHeader.split(' ');
 
