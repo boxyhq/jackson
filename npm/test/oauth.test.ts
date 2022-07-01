@@ -508,6 +508,13 @@ tap.test('token()', (t) => {
         t.ok('token_type' in tokenRes, 'includes token_type');
         t.ok('expires_in' in tokenRes, 'includes expires_in');
         t.ok('id_token' in tokenRes, 'includes id_token');
+        if (tokenRes.id_token) {
+          const claims = jose.decodeJwt(tokenRes.id_token);
+          const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
+          t.match(protectedHeader.alg, options.jwsAlg);
+          t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
+          t.match(claims.iss, options.samlAudience);
+        }
         t.match(tokenRes.access_token, token);
         t.match(tokenRes.token_type, 'bearer');
         t.match(tokenRes.expires_in, 300);
