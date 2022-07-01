@@ -8,11 +8,11 @@ import {
   OAuthReqBody,
   OAuthTokenReq,
   SAMLResponsePayload,
-} from '../src/typings';
+} from '../../src/typings';
 import sinon from 'sinon';
 import tap from 'tap';
-import { JacksonError } from '../src/controller/error';
-import readConfig from '../src/read-config';
+import { JacksonError } from '../../src/controller/error';
+import readConfig from '../../src/read-config';
 import saml from '@boxyhq/saml20';
 import {
   authz_request_normal,
@@ -31,6 +31,7 @@ import {
   token_req_encoded_client_id,
   token_req_unencoded_client_id_gen,
 } from './fixture';
+import { getDatabaseOption } from '../utils';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
@@ -40,15 +41,7 @@ const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-const options = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  db: {
-    engine: 'mem',
-  },
-  clientSecretVerifier: 'TOP-SECRET',
-};
+const options = { ...getDatabaseOption(), clientSecretVerifier: 'TOP-SECRET' };
 
 const configRecords: Array<any> = [];
 
@@ -61,7 +54,7 @@ const addMetadata = async (metadataPath) => {
 };
 
 tap.before(async () => {
-  const controller = await (await import('../src/index')).default(options);
+  const controller = await (await import('../../src/index')).default(options);
 
   apiController = controller.apiController;
   oauthController = controller.oauthController;

@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-
 import jackson from '@lib/jackson';
-import { extractAuthToken } from '@lib/utils';
+import { extractAuthToken } from '@lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {

@@ -1,13 +1,15 @@
+import type { DirectorySync, JacksonOption } from './typings';
+
+import DB from './db/db';
+import defaultDb from './db/defaultDb';
+import readConfig from './read-config';
+
 import { AdminController } from './controller/admin';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
-
-import DB from './db/db';
-import defaultDb from './db/defaultDb';
-import readConfig from './read-config';
-import { JacksonOption } from './typings';
+import initDirectorySync from './directory-sync';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -41,6 +43,7 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
+  directorySync: DirectorySync;
 }> => {
   opts = defaultOpts(opts);
 
@@ -56,6 +59,7 @@ export const controllers = async (
   const adminController = new AdminController({ configStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
+
   const oauthController = new OAuthController({
     configStore,
     sessionStore,
@@ -69,6 +73,8 @@ export const controllers = async (
     sessionStore,
     opts,
   });
+
+  const directorySync = initDirectorySync({ db, opts });
 
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
@@ -91,6 +97,7 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
+    directorySync,
   };
 };
 
