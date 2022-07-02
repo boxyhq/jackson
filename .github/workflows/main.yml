@@ -102,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: e2e-test-artifact-for-debug
-          path: ${{ github.workspace }}/test-results/oidc-discovery--Desktop-Chrome/oidc-discovery-diff.png
+          path: ${{ github.workspace }}/test-results/oidc-discovery--Desktop-Chrome/
       - run: npm run test
         working-directory: ./npm
       - run: |
