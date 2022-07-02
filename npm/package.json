@@ -45,7 +45,7 @@
     "mongodb": "4.7.0",
     "mysql2": "2.3.3",
     "pg": "8.7.3",
-    "redis": "4.1.0",
+    "redis": "4.1.1",
     "reflect-metadata": "0.1.13",
     "ripemd160": "2.0.2",
     "typeorm": "0.3.7",
