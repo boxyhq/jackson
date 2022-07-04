@@ -99,12 +99,12 @@ jobs:
         run: npx playwright install chromium
       - name: e2e tests
         run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
-      - name: debug step for e2e # Use this to find out the diff and update the snapshot by downloading the published artifact
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: e2e-test-artifact-for-debug
-          path: ${{ github.workspace }}/test-results/
+      # - name: debug step for e2e # Use this to find out the diff and update the snapshot by downloading the published artifact
+      #   if: ${{ failure() }}
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: e2e-test-artifact-for-debug
+      #     path: ${{ github.workspace }}/test-results/
       - run: npm run test
         working-directory: ./npm
       - run: |
