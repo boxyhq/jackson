@@ -182,4 +182,5 @@ export interface OAuthErrorHandlerParams {
     | 'temporarily_unavailable';
   error_description: string;
   redirect_uri: string;
+  state?: string;
 }
