@@ -1,11 +1,11 @@
-import type { NextPage, GetServerSideProps } from 'next';
-import type { Directory } from '@lib/jackson';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import { Input } from '@supabase/ui';
 import DirectoryTab from '@components/dsync/DirectoryTab';
+import { inferSSRProps } from '@lib/inferSSRProps';
 
-const Info: NextPage<{ directory: Directory }> = ({ directory }) => {
+const Info: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory }) => {
   return (
     <div>
       <div className='mb-4 flex items-center justify-between'>
@@ -62,11 +62,17 @@ const Info: NextPage<{ directory: Directory }> = ({ directory }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId } = context.query;
   const { directorySyncController } = await jackson();
 
   const { data: directory } = await directorySyncController.directories.get(directoryId as string);
+
+  if (!directory) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {

@@ -1,5 +1,5 @@
-import type { NextPage, GetServerSideProps } from 'next';
-import type { WebhookEventLog, Directory } from '@lib/jackson';
+import type { NextPage, GetServerSidePropsContext } from 'next';
+import type { Directory } from '@lib/jackson';
 import React from 'react';
 import jackson from '@lib/jackson';
 import { Badge, Alert, Button } from '@supabase/ui';
@@ -8,8 +8,9 @@ import Link from 'next/link';
 import EmptyState from '@components/EmptyState';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import { useRouter } from 'next/router';
+import { inferSSRProps } from '@lib/inferSSRProps';
 
-const Events: NextPage<{ directory: Directory; events: WebhookEventLog[] }> = ({ directory, events }) => {
+const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, events }) => {
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
 
@@ -121,7 +122,7 @@ const WebhookEventLoggingAlert = ({ directory }: { directory: Directory }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId } = context.query;
   const { directorySyncController } = await jackson();
 

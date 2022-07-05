@@ -1,5 +1,4 @@
-import type { NextPage, GetServerSideProps } from 'next';
-import type { Directory, Group } from '@lib/jackson';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import EmptyState from '@components/EmptyState';
@@ -7,14 +6,15 @@ import Link from 'next/link';
 import { EyeIcon } from '@heroicons/react/outline';
 import Paginate from '@components/Paginate';
 import DirectoryTab from '@components/dsync/DirectoryTab';
+import { inferSSRProps } from '@lib/inferSSRProps';
 
-const GroupsList: NextPage<{
-  directory: Directory;
-  groups: Group[];
-  pageOffset: number;
-  pageLimit: number;
-}> = ({ directory, groups, pageOffset, pageLimit }) => {
-  if (groups.length === 0 && pageOffset === 0) {
+const GroupsList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
+  directory,
+  groups,
+  pageOffset,
+  pageLimit,
+}) => {
+  if (groups?.length === 0 && pageOffset === 0) {
     return (
       <>
         <Header title={directory.name} />
@@ -43,28 +43,29 @@ const GroupsList: NextPage<{
             </tr>
           </thead>
           <tbody>
-            {groups.map((group) => {
-              return (
-                <tr
-                  key={group.id}
-                  className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
-                  <td className='px-6 py-3'>{group.name}</td>
-                  <td className='px-6 py-3'>
-                    <Link href={`/admin/directory-sync/${directory.id}/groups/${group.id}`}>
-                      <a>
-                        <EyeIcon className='h-5 w-5' />
-                      </a>
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
+            {groups &&
+              groups.map((group) => {
+                return (
+                  <tr
+                    key={group.id}
+                    className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
+                    <td className='px-6 py-3'>{group.name}</td>
+                    <td className='px-6 py-3'>
+                      <Link href={`/admin/directory-sync/${directory.id}/groups/${group.id}`}>
+                        <a>
+                          <EyeIcon className='h-5 w-5' />
+                        </a>
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
         <Paginate
           pageOffset={pageOffset}
           pageLimit={pageLimit}
-          itemsCount={groups.length}
+          itemsCount={groups ? groups.length : 0}
           path={`/admin/directory-sync/${directory.id}/groups?`}
         />
       </div>
@@ -80,7 +81,7 @@ const Header = ({ title }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId, offset = 0 } = context.query;
   const { directorySyncController } = await jackson();
 

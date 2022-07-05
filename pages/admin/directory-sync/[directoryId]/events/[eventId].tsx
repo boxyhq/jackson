@@ -1,12 +1,12 @@
-import type { NextPage, GetServerSideProps } from 'next';
-import type { Directory, WebhookEventLog } from '@lib/jackson';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { inferSSRProps } from '@lib/inferSSRProps';
 
-const EventInfo: NextPage<{ directory: Directory; event: WebhookEventLog }> = ({ directory, event }) => {
+const EventInfo: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, event }) => {
   return (
     <div>
       <div className='mb-4 flex items-center justify-between'>
@@ -22,7 +22,7 @@ const EventInfo: NextPage<{ directory: Directory; event: WebhookEventLog }> = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId, eventId } = context.query;
   const { directorySyncController } = await jackson();
 
@@ -37,6 +37,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const event = await directorySyncController.events
     .with(directory.tenant, directory.product)
     .get(eventId as string);
+
+  if (!event) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {

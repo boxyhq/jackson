@@ -1,18 +1,17 @@
-import type { NextPage, GetServerSideProps } from 'next';
-import type { Directory } from '@lib/jackson';
+import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import jackson from '@lib/jackson';
 import { PencilAltIcon, DatabaseIcon } from '@heroicons/react/outline';
 import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 
-const Index: NextPage<{
-  directories: Directory[];
-  pageOffset: number;
-  pageLimit: number;
-  providers: { [key: string]: string };
-}> = ({ directories, pageOffset, pageLimit, providers }) => {
-  if (directories.length === 0 && pageOffset === 0) {
+const Index = ({
+  directories,
+  pageOffset,
+  pageLimit,
+  providers,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  if (directories?.length === 0 && pageOffset === 0) {
     return (
       <>
         <Header />
@@ -45,38 +44,39 @@ const Index: NextPage<{
           </tr>
         </thead>
         <tbody>
-          {directories.map((directory) => {
-            return (
-              <tr
-                key={directory.id}
-                className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
-                <td className='px-6'>{directory.name}</td>
-                <td className='px-6'>{directory.tenant}</td>
-                <td className='px-6'>{directory.product}</td>
-                <td className='px-6'>{providers[directory.type]}</td>
-                <td className='px-6'>
-                  <div className='flex flex-row'>
-                    <Link href={`/admin/directory-sync/${directory.id}`}>
-                      <a className='link-primary'>
-                        <DatabaseIcon className='h-5 w-5 text-secondary' />
-                      </a>
-                    </Link>
-                    <Link href={`/admin/directory-sync/${directory.id}/edit`}>
-                      <a className='link-primary'>
-                        <PencilAltIcon className='h-5 w-5 text-secondary' />
-                      </a>
-                    </Link>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+          {directories &&
+            directories.map((directory) => {
+              return (
+                <tr
+                  key={directory.id}
+                  className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
+                  <td className='px-6'>{directory.name}</td>
+                  <td className='px-6'>{directory.tenant}</td>
+                  <td className='px-6'>{directory.product}</td>
+                  <td className='px-6'>{providers[directory.type]}</td>
+                  <td className='px-6'>
+                    <div className='flex flex-row'>
+                      <Link href={`/admin/directory-sync/${directory.id}`}>
+                        <a className='link-primary'>
+                          <DatabaseIcon className='h-5 w-5 text-secondary' />
+                        </a>
+                      </Link>
+                      <Link href={`/admin/directory-sync/${directory.id}/edit`}>
+                        <a className='link-primary'>
+                          <PencilAltIcon className='h-5 w-5 text-secondary' />
+                        </a>
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
       <Paginate
         pageOffset={pageOffset}
         pageLimit={pageLimit}
-        itemsCount={directories.length}
+        itemsCount={directories ? directories.length : 0}
         path={`/admin/directory-sync?`}
       />
     </>
@@ -94,7 +94,7 @@ const Header = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { offset = 0 } = context.query;
   const { directorySyncController } = await jackson();
 

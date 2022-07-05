@@ -1,12 +1,12 @@
-import type { NextPage, GetServerSideProps } from 'next';
-import type { Directory, User } from '@lib/jackson';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { inferSSRProps } from '@lib/inferSSRProps';
 
-const UserInfo: NextPage<{ directory: Directory; user: User }> = ({ directory, user }) => {
+const UserInfo: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, user }) => {
   return (
     <div>
       <div className='mb-4 flex items-center justify-between'>
@@ -22,7 +22,7 @@ const UserInfo: NextPage<{ directory: Directory; user: User }> = ({ directory, u
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId, userId } = context.query;
   const { directorySyncController } = await jackson();
 
@@ -37,6 +37,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { data: user } = await directorySyncController.users
     .with(directory.tenant, directory.product)
     .get(userId as string);
+
+  if (!user) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {

@@ -1,12 +1,12 @@
-import type { NextPage, GetServerSideProps } from 'next';
-import type { Directory } from '@lib/jackson';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import { Input, Button, Checkbox } from '@supabase/ui';
 import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import jackson from '@lib/jackson';
+import { inferSSRProps } from '@lib/inferSSRProps';
 
-const Edit: NextPage<{ directory: Directory }> = ({
+const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
 }) => {
   const router = useRouter();
@@ -104,11 +104,17 @@ const Edit: NextPage<{ directory: Directory }> = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId } = context.query;
   const { directorySyncController } = await jackson();
 
   const { data: directory } = await directorySyncController.directories.get(directoryId as string);
+
+  if (!directory) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {

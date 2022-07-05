@@ -1,5 +1,4 @@
-import type { NextPage, GetServerSideProps } from 'next';
-import type { Directory, User } from '@lib/jackson';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import { EyeIcon } from '@heroicons/react/outline';
@@ -8,14 +7,15 @@ import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import { Badge } from '@supabase/ui';
+import { inferSSRProps } from '@lib/inferSSRProps';
 
-const UsersList: NextPage<{
-  directory: Directory;
-  users: User[];
-  pageOffset: number;
-  pageLimit: number;
-}> = ({ directory, users, pageOffset, pageLimit }) => {
-  if (users.length === 0 && pageOffset === 0) {
+const UsersList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
+  directory,
+  users,
+  pageOffset,
+  pageLimit,
+}) => {
+  if (users?.length === 0 && pageOffset === 0) {
     return (
       <>
         <Header title={directory.name} />
@@ -53,33 +53,38 @@ const UsersList: NextPage<{
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => {
-              return (
-                <tr
-                  key={user.id}
-                  className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
-                  <td className='px-6 py-3'>{user.first_name}</td>
-                  <td className='px-6 py-3'>{user.last_name}</td>
-                  <td className='px-6 py-3'>{user.email}</td>
-                  <td className='px-6 py-3'>
-                    {user.active ? <Badge color='green'>Active</Badge> : <Badge color='red'>Suspended</Badge>}
-                  </td>
-                  <td className='px-6 py-3'>
-                    <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
-                      <a>
-                        <EyeIcon className='h-5 w-5' />
-                      </a>
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
+            {users &&
+              users.map((user) => {
+                return (
+                  <tr
+                    key={user.id}
+                    className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
+                    <td className='px-6 py-3'>{user.first_name}</td>
+                    <td className='px-6 py-3'>{user.last_name}</td>
+                    <td className='px-6 py-3'>{user.email}</td>
+                    <td className='px-6 py-3'>
+                      {user.active ? (
+                        <Badge color='green'>Active</Badge>
+                      ) : (
+                        <Badge color='red'>Suspended</Badge>
+                      )}
+                    </td>
+                    <td className='px-6 py-3'>
+                      <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
+                        <a>
+                          <EyeIcon className='h-5 w-5' />
+                        </a>
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
         <Paginate
           pageOffset={pageOffset}
           pageLimit={pageLimit}
-          itemsCount={users.length}
+          itemsCount={users ? users.length : 0}
           path={`/admin/directory-sync/${directory.id}/users?`}
         />
       </div>
@@ -95,7 +100,7 @@ const Header = ({ title }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId, offset = 0 } = context.query;
   const { directorySyncController } = await jackson();
 
