@@ -264,6 +264,7 @@ export class OAuthController implements IOAuthController {
           error: 'unsupported_response_type',
           error_description: 'Only Authorization Code grant is supported',
           redirect_uri,
+          state,
         }),
       };
     }
@@ -286,6 +287,7 @@ export class OAuthController implements IOAuthController {
           error: 'invalid_request',
           error_description: 'SAML binding could not be retrieved',
           redirect_uri,
+          state,
         }),
       };
     }
@@ -356,6 +358,7 @@ export class OAuthController implements IOAuthController {
           error: 'server_error',
           error_description: getErrorMessage(err),
           redirect_uri,
+          state,
         }),
       };
     }
@@ -464,6 +467,7 @@ export class OAuthController implements IOAuthController {
           error: 'access_denied',
           error_description: getErrorMessage(err),
           redirect_uri,
+          state: session?.requested?.state,
         }),
       };
     }
@@ -490,6 +494,7 @@ export class OAuthController implements IOAuthController {
           error: 'server_error',
           error_description: getErrorMessage(err),
           redirect_uri,
+          state: session?.requested?.state,
         }),
       };
     }
