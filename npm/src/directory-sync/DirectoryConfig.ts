@@ -100,11 +100,7 @@ export class DirectoryConfig {
     try {
       const { name, log_webhook_events, webhook, type } = param;
 
-      const { data: directory, error } = await this.get(id);
-
-      if (error || !directory) {
-        throw error;
-      }
+      const directory = await this.store().get(id);
 
       if (name) {
         directory.name = name;
