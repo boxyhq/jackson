@@ -52,7 +52,7 @@
     "cors": "2.8.5",
     "micromatch": "4.0.5",
     "next": "12.2.0",
-    "next-auth": "4.7.0",
+    "next-auth": "4.8.0",
     "nodemailer": "6.7.6",
     "raw-body": "2.5.1",
     "react": "18.2.0",
