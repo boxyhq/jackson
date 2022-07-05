@@ -37,8 +37,8 @@ export class DirectoryUsers {
     const { name, emails } = body;
 
     const { data: user } = await this.users.create({
-      first_name: name.givenName,
-      last_name: name.familyName,
+      first_name: name && 'givenName' in name ? name.givenName : '',
+      last_name: name && 'familyName' in name ? name.familyName : '',
       email: emails[0].value,
       active: true,
       raw: body,
