@@ -30,6 +30,7 @@ jobs:
       DEBUG: pw:webserver
       SAML_AUDIENCE: https://saml.boxyhq.com
       JACKSON_API_KEYS: secret
+      JWS_ALG: RS256
       RSA_PUBLIC_KEY: ${{ secrets.RSA_PUBLIC_KEY }}
       RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
     strategy:
