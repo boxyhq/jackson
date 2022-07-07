@@ -52,8 +52,10 @@ const options = <JacksonOption>{
     engine: 'mem',
   },
   clientSecretVerifier: 'TOP-SECRET',
-  jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
-  jwsAlg: 'RS256',
+  openid: {
+    jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
+    jwsAlg: 'RS256',
+  },
 };
 
 const configRecords: Array<any> = [];
