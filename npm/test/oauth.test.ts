@@ -513,7 +513,7 @@ tap.test('token()', (t) => {
         if (tokenRes.id_token) {
           const claims = jose.decodeJwt(tokenRes.id_token);
           const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
-          t.match(protectedHeader.alg, options.jwsAlg);
+          t.match(protectedHeader.alg, options.openid.jwsAlg);
           t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
           t.match(claims.iss, options.samlAudience);
         }
