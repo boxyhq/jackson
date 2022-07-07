@@ -5,8 +5,8 @@ test('should return public key in jwk format', async ({ request }) => {
   const response = await request.get('/oauth/jwks');
   const jwks = await response.json();
 
-  const spki = Buffer.from(process.env.RSA_PUBLIC_KEY || '', 'base64').toString('ascii');
-  const importedPublicKey = await jose.importSPKI(spki, process.env.JWS_ALG || '');
+  const spki = Buffer.from(process.env.OPENID_RSA_PUBLIC_KEY || '', 'base64').toString('ascii');
+  const importedPublicKey = await jose.importSPKI(spki, process.env.OPENID_JWS_ALG || '');
 
   const publicKeyJWK = await jose.exportJWK(importedPublicKey);
   const jwkThumbprint = await jose.calculateJwkThumbprint(publicKeyJWK);
@@ -16,7 +16,7 @@ test('should return public key in jwk format', async ({ request }) => {
       {
         ...publicKeyJWK,
         kid: jwkThumbprint,
-        alg: process.env.JWS_ALG,
+        alg: process.env.OPENID_JWS_ALG,
         use: 'sig',
       },
     ],
