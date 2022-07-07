@@ -1,7 +1,24 @@
+import * as jose from 'jose';
 import { test, expect } from '@playwright/test';
 
-test('', async ({ page }) => {
-  await page.goto('/oauth/jwks');
-  // Snapshot testing
-  await expect(page).toHaveScreenshot('jwks.png');
+test('should return public key in jwk format', async ({ request }) => {
+  const response = await request.get('/oauth/jwks');
+  const jwks = await response.json();
+
+  const spki = Buffer.from(process.env.RSA_PUBLIC_KEY || '', 'base64').toString('ascii');
+  const importedPublicKey = await jose.importSPKI(spki, process.env.JWS_ALG || '');
+
+  const publicKeyJWK = await jose.exportJWK(importedPublicKey);
+  const jwkThumbprint = await jose.calculateJwkThumbprint(publicKeyJWK);
+
+  expect(jwks).toStrictEqual({
+    keys: [
+      {
+        ...publicKeyJWK,
+        kid: jwkThumbprint,
+        alg: process.env.JWS_ALG,
+        use: 'sig',
+      },
+    ],
+  });
 });
