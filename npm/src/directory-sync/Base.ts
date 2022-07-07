@@ -4,13 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class Base {
   protected db: DatabaseStore;
-  protected tenant: string;
-  protected product: string;
+  protected tenant: null | string = null;
+  protected product: null | string = null;
 
   constructor({ db }: { db: DatabaseStore }) {
     this.db = db;
-    this.product = '';
-    this.tenant = '';
   }
 
   // Return the database store
@@ -24,11 +22,13 @@ export class Base {
 
   setTenant(tenant: string): this {
     this.tenant = tenant;
+
     return this;
   }
 
   setProduct(product: string): this {
     this.product = product;
+
     return this;
   }
 

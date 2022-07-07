@@ -202,6 +202,8 @@ export type DirectorySyncEventType =
 
 export interface Base {
   store(type: 'groups' | 'members' | 'users'): Storable;
+  setTenant(tenant: string): this;
+  setProduct(product: string): this;
   setTenantAndProduct(tenant: string, product: string): this;
   with(tenant: string, product: string): this;
   createId(): string;

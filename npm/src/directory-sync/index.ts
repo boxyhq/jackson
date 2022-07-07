@@ -9,11 +9,12 @@ import { getDirectorySyncProviders } from './utils';
 import { UsersRequestHandler, GroupsRequestHandler } from './request';
 
 const directorySync = ({ db, opts }): DirectorySync => {
+  const webhookEvents = new WebhookEvents({ db });
+  const directories = new DirectoryConfig({ db, opts });
+
   const users = new Users({ db });
   const groups = new Groups({ db });
 
-  const webhookEvents = new WebhookEvents({ db });
-  const directories = new DirectoryConfig({ db, opts });
   const directoryUsers = new DirectoryUsers({ directories, users, groups, webhookEvents });
   const directoryGroups = new DirectoryGroups({ directories, users, groups, webhookEvents });
 

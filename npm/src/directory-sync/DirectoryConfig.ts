@@ -1,7 +1,7 @@
 import type { Storable, Directory, JacksonOption, DatabaseStore, DirectoryType, ApiError } from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomSecret } from '../controller/utils';
-import { JacksonError } from '../controller/error';
+import { apiError, JacksonError } from '../controller/error';
 import { storeNamespacePrefix } from '../controller/utils';
 
 export class DirectoryConfig {
@@ -65,9 +65,7 @@ export class DirectoryConfig {
 
       return { data: this.transform(directory), error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -86,9 +84,7 @@ export class DirectoryConfig {
 
       return { data: this.transform(directory), error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -98,6 +94,10 @@ export class DirectoryConfig {
     param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim'>
   ): Promise<{ data: Directory | null; error: ApiError | null }> {
     try {
+      if (!id) {
+        throw new JacksonError('Missing required parameters.', 400);
+      }
+
       const { name, log_webhook_events, webhook, type } = param;
 
       const directory = await this.store().get(id);
@@ -122,9 +122,7 @@ export class DirectoryConfig {
 
       return { data: this.transform(directory), error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -140,9 +138,7 @@ export class DirectoryConfig {
 
       return await this.get(dbutils.keyDigest(dbutils.keyFromParts(tenant, product)));
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -166,9 +162,7 @@ export class DirectoryConfig {
         error: null,
       };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 

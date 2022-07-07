@@ -1,4 +1,3 @@
-import type { JacksonError } from '../../src/controller/error';
 import { DirectorySync, Directory, DirectoryType } from '../../src/typings';
 import tap from 'tap';
 import { getFakeDirectory } from './data/directories';
@@ -93,7 +92,6 @@ tap.test('Directories / ', async (t) => {
     t.equal(error?.message, 'Missing required parameters.');
   });
 
-  // Should not be able to update a directory without an id
   t.test('should not be able to update a directory without an id', async (t) => {
     const { data, error } = await directorySync.directories.update('', {
       log_webhook_events: false,
@@ -101,7 +99,7 @@ tap.test('Directories / ', async (t) => {
 
     t.ok(error);
     t.notOk(data);
-    t.equal(error?.code, 500);
+    t.equal(error?.code, 400);
     t.equal(error?.message, 'Missing required parameters.');
   });
 

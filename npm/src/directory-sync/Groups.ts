@@ -1,6 +1,6 @@
 import type { Group, DatabaseStore, ApiError } from '../typings';
 import * as dbutils from '../db/utils';
-import { JacksonError } from '../controller/error';
+import { apiError, JacksonError } from '../controller/error';
 import { Base } from './Base';
 
 export class Groups extends Base {
@@ -33,9 +33,7 @@ export class Groups extends Base {
 
       return { data: group, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -50,9 +48,7 @@ export class Groups extends Base {
 
       return { data: group, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -77,9 +73,7 @@ export class Groups extends Base {
 
       return { data: group, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -96,9 +90,7 @@ export class Groups extends Base {
 
       return { data: null, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -170,9 +162,7 @@ export class Groups extends Base {
 
       return { data: groups, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -189,9 +179,7 @@ export class Groups extends Base {
 
       return { data: groups, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 }

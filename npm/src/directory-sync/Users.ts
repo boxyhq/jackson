@@ -1,5 +1,5 @@
 import type { User, DatabaseStore, ApiError } from '../typings';
-import { JacksonError } from '../controller/error';
+import { apiError, JacksonError } from '../controller/error';
 import { Base } from './Base';
 
 export class Users extends Base {
@@ -38,9 +38,7 @@ export class Users extends Base {
 
       return { data: user, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -55,9 +53,7 @@ export class Users extends Base {
 
       return { data: user, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -90,9 +86,7 @@ export class Users extends Base {
 
       return { data: user, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -109,9 +103,7 @@ export class Users extends Base {
 
       return { data: null, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -128,9 +120,7 @@ export class Users extends Base {
 
       return { data: users, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
@@ -141,9 +131,7 @@ export class Users extends Base {
 
       return { data: users, error: null };
     } catch (err: any) {
-      const { message, statusCode = 500 } = err;
-
-      return { data: null, error: { message, code: statusCode } };
+      return apiError(err);
     }
   }
 
