@@ -30,7 +30,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
   newOpts.db.pageLimit = newOpts.db.pageLimit || 50;
 
-  newOpts.jwsAlg = newOpts.jwsAlg || 'RS256';
+  newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
 
   return newOpts;
 };

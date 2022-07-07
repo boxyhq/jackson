@@ -266,7 +266,7 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
-    if (requestedOIDCFlow && !isJWSKeyPairLoaded(this.opts.jwtSigningKeys)) {
+    if (requestedOIDCFlow && !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys)) {
       return {
         redirect_url: OAuthErrorResponse({
           error: 'server_error',
@@ -674,7 +674,8 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = !!codeVal.requested.oidc;
     const requestHasNonce = !!codeVal.requested.nonce;
     if (requestedOIDCFlow) {
-      if (!isJWSKeyPairLoaded(this.opts.jwtSigningKeys)) {
+      const { jwtSigningKeys, jwsAlg } = this.opts.openid;
+      if (!isJWSKeyPairLoaded(jwtSigningKeys)) {
         throw new JacksonError('JWT signing keys are not loaded', 500);
       }
       let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
@@ -685,9 +686,9 @@ export class OAuthController implements IOAuthController {
         firstName: codeVal.profile.claims.firstName,
         lastName: codeVal.profile.claims.lastName,
       };
-      const signingKey = await loadJWSPrivateKey(this.opts.jwtSigningKeys.private, this.opts.jwsAlg);
+      const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg);
       const id_token = await new jose.SignJWT(claims)
-        .setProtectedHeader({ alg: this.opts.jwsAlg })
+        .setProtectedHeader({ alg: jwsAlg })
         .setIssuedAt()
         .setIssuer(this.opts.samlAudience || '')
         .setSubject(codeVal.profile.claims.id)
