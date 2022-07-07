@@ -118,7 +118,7 @@ tap.test('authorize()', async (t) => {
 
     t.equal(
       redirect_url,
-      `${body.redirect_uri}?error=unsupported_response_type&error_description=Only+Authorization+Code+grant+is+supported`,
+      `${body.redirect_uri}?error=unsupported_response_type&error_description=Only+Authorization+Code+grant+is+supported&state=${body.state}`,
       'got OAuth error'
     );
 
@@ -132,7 +132,7 @@ tap.test('authorize()', async (t) => {
 
     t.equal(
       redirect_url,
-      `${body.redirect_uri}?error=invalid_request&error_description=SAML+binding+could+not+be+retrieved`,
+      `${body.redirect_uri}?error=invalid_request&error_description=SAML+binding+could+not+be+retrieved&state=${body.state}`,
       'got OAuth error'
     );
 
@@ -145,7 +145,7 @@ tap.test('authorize()', async (t) => {
     const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
     t.equal(
       redirect_url,
-      `${body.redirect_uri}?error=server_error&error_description=Internal+error%3A+Fatal`,
+      `${body.redirect_uri}?error=server_error&error_description=Internal+error%3A+Fatal&state=${body.state}`,
       'got OAuth error'
     );
     stubSamlRequest.restore();
