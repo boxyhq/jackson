@@ -43,7 +43,7 @@ export const setErrorCookie = (res: NextApiResponse, value: unknown, options: { 
 
 export const importJWTPublicKey = async (key: string): Promise<jose.KeyLike> => {
   const spki = Buffer.from(key, 'base64').toString('ascii');
-  const publicKey = await jose.importSPKI(spki, env.jwsAlg);
+  const publicKey = await jose.importSPKI(spki, env.openid.jwsAlg);
   return publicKey;
 };
 
