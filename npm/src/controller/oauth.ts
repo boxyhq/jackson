@@ -693,7 +693,7 @@ export class OAuthController implements IOAuthController {
         .setIssuer(this.opts.samlAudience || '')
         .setSubject(codeVal.profile.claims.id)
         .setAudience(tokenVal.requested.client_id)
-        .setExpirationTime(Math.floor(new Date().getTime() / 1000) + this.opts.db.ttl!) //  identity token only really needs to be valid long enough for it to be verified by the client application.
+        .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.
         .sign(signingKey);
       tokenVal.id_token = id_token;
     }
