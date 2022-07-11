@@ -37,6 +37,33 @@ export interface IHealthCheckController {
   }>;
   init(): Promise<void>;
 }
+
+export interface IOidcDiscoveryController {
+  openidConfig(): {
+    issuer: string;
+    authorization_endpoint: string;
+    token_endpoint: string;
+    userinfo_endpoint: string;
+    jwks_uri: string;
+    response_types_supported: Array<string>;
+    subject_types_supported: Array<string>;
+    id_token_signing_alg_values_supported: Array<string>;
+    grant_types_supported: Array<string>;
+    code_challenge_methods_supported: Array<string>;
+  };
+
+  jwks(): Promise<{
+    keys: {
+      kty: string;
+      n: string;
+      e: string;
+      kid: string;
+      alg: string;
+      use: string;
+    }[];
+  }>;
+}
+
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
