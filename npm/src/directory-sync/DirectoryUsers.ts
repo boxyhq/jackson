@@ -10,6 +10,8 @@ import type {
   ApiError,
 } from '../typings';
 
+import { parseUserOperations } from './utils';
+
 export class DirectoryUsers {
   private directories: DirectoryConfig;
   private users: Users;
@@ -80,14 +82,14 @@ export class DirectoryUsers {
 
   public async patch(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
     const { Operations } = body;
-    const operation = Operations[0];
 
-    // Update the user
-    if (operation.op === 'replace') {
+    const operation = parseUserOperations(Operations);
+
+    if (operation.action === 'updateUser') {
       const { data: updatedUser } = await this.users.update(user.id, {
         ...user,
-        ...operation.value,
-        raw: { ...user.raw, ...operation.value },
+        ...operation.attributes,
+        raw: { ...user.raw, ...operation.raw },
       });
 
       await this.webhookEvents.send('user.updated', { directory, user: updatedUser });

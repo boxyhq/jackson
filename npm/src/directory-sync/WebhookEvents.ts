@@ -56,7 +56,7 @@ export class WebhookEvents extends Base {
     return;
   }
 
-  public async log(directory: Directory, webhookPayload: any): Promise<WebhookEventLog> {
+  public async log(directory: Directory, webhookPayload: WebhookPayload): Promise<WebhookEventLog> {
     const id = this.createId();
 
     const log: WebhookEventLog = {
