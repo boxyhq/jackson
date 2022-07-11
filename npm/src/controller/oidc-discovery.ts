@@ -1,5 +1,6 @@
 import { IOidcDiscoveryController, JacksonOption } from '../typings';
-import { exportPublicKeyJWK, generateJwkThumbprint, importJWTPublicKey } from './utils';
+import { JacksonError } from './error';
+import { exportPublicKeyJWK, generateJwkThumbprint, importJWTPublicKey, isJWSKeyPairLoaded } from './utils';
 
 export class OidcDiscoveryController implements IOidcDiscoveryController {
   private opts: JacksonOption;
@@ -23,6 +24,10 @@ export class OidcDiscoveryController implements IOidcDiscoveryController {
     };
   }
   async jwks() {
+    const { jwtSigningKeys } = this.opts.openid;
+    if (!isJWSKeyPairLoaded(jwtSigningKeys)) {
+      throw new JacksonError('JWT signing keys are not loaded', 501);
+    }
     const importedPublicKey = await importJWTPublicKey(
       this.opts.openid.jwtSigningKeys.public,
       this.opts.openid.jwsAlg
