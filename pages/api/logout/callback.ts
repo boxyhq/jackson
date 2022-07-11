@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    throw new Error(`Method ${req.method} not allowed`);
+    throw { message: 'Method not allowed', statusCode: 405 };
   }
 
   const { SAMLResponse, RelayState } = req.body;
