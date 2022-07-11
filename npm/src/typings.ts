@@ -1,3 +1,5 @@
+import { type JWK } from 'jose';
+
 export type IdPConfig = {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
@@ -53,14 +55,7 @@ export interface IOidcDiscoveryController {
   };
 
   jwks(): Promise<{
-    keys: {
-      kty: string;
-      n: string;
-      e: string;
-      kid: string;
-      alg: string;
-      use: string;
-    }[];
+    keys: JWK[];
   }>;
 }
 

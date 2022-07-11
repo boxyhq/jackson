@@ -7,9 +7,10 @@ export class OidcDiscoveryController implements IOidcDiscoveryController {
   constructor({ opts }) {
     this.opts = opts;
   }
+
   openidConfig() {
     return {
-      issuer: this.opts.samlAudience,
+      issuer: this.opts.samlAudience!,
       authorization_endpoint: `${this.opts.externalUrl}/api/oauth/authorize`,
       token_endpoint: `${this.opts.externalUrl}/api/oauth/token`,
       userinfo_endpoint: `${this.opts.externalUrl}/api/oauth/userinfo`,
@@ -28,7 +29,9 @@ export class OidcDiscoveryController implements IOidcDiscoveryController {
     );
     const publicKeyJWK = await exportPublicKeyJWK(importedPublicKey);
     const jwkThumbprint = await generateJwkThumbprint(publicKeyJWK);
-    const jwks = { keys: [{ ...publicKeyJWK, kid: jwkThumbprint, alg: env.openid.jwsAlg, use: 'sig' }] };
+    const jwks = {
+      keys: [{ ...publicKeyJWK, kid: jwkThumbprint, alg: this.opts.openid.jwsAlg, use: 'sig' }],
+    };
 
     return jwks;
   }
