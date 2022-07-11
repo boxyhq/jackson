@@ -40,19 +40,3 @@ export const setErrorCookie = (res: NextApiResponse, value: unknown, options: { 
   }
   res.setHeader('Set-Cookie', cookieContents);
 };
-
-export const importJWTPublicKey = async (key: string): Promise<jose.KeyLike> => {
-  const spki = Buffer.from(key, 'base64').toString('ascii');
-  const publicKey = await jose.importSPKI(spki, env.openid.jwsAlg);
-  return publicKey;
-};
-
-export const exportPublicKeyJWK = async (key: jose.KeyLike): Promise<jose.JWK> => {
-  const publicJWK = await jose.exportJWK(key);
-  return publicJWK;
-};
-
-export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
-  const thumbprint = await jose.calculateJwkThumbprint(jwk);
-  return thumbprint;
-};

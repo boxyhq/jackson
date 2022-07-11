@@ -1,19 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import env from '@lib/env';
-import { exportPublicKeyJWK, generateJwkThumbprint, importJWTPublicKey } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     throw { message: 'Method not allowed', statusCode: 405 };
   }
-  const importedPublicKey = await importJWTPublicKey(env.openid.jwtSigningKeys.public);
-  const publicKeyJWK = await exportPublicKeyJWK(importedPublicKey);
-  const jwkThumbprint = await generateJwkThumbprint(publicKeyJWK);
-  const jwks = JSON.stringify(
-    { keys: [{ ...publicKeyJWK, kid: jwkThumbprint, alg: env.openid.jwsAlg, use: 'sig' }] },
-    null,
-    2
-  );
-  res.status(200).setHeader('Content-Type', 'application/json').send(jwks);
+  const { oidcDiscoveryController } = await jackson();
+  const jwks = await oidcDiscoveryController.jwks();
+
+  const response = JSON.stringify(jwks, null, 2);
+  res.status(200).setHeader('Content-Type', 'application/json').send(response);
 }
