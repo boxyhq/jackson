@@ -23,6 +23,7 @@ export class OidcDiscoveryController implements IOidcDiscoveryController {
       code_challenge_methods_supported: ['plain', 'S256'],
     };
   }
+
   async jwks() {
     const { jwtSigningKeys } = this.opts.openid;
     if (!isJWSKeyPairLoaded(jwtSigningKeys)) {
