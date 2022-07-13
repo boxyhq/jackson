@@ -266,7 +266,10 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
-    if (requestedOIDCFlow && !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys)) {
+    if (
+      requestedOIDCFlow &&
+      (!this.opts.openid.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
+    ) {
       return {
         redirect_url: OAuthErrorResponse({
           error: 'server_error',
@@ -675,7 +678,7 @@ export class OAuthController implements IOAuthController {
     const requestHasNonce = !!codeVal.requested.nonce;
     if (requestedOIDCFlow) {
       const { jwtSigningKeys, jwsAlg } = this.opts.openid;
-      if (!isJWSKeyPairLoaded(jwtSigningKeys)) {
+      if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
         throw new JacksonError('JWT signing keys are not loaded', 500);
       }
       let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};

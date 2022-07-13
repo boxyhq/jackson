@@ -158,7 +158,7 @@ export interface JacksonOption {
   idpDiscoveryPath?: string;
   openid: {
     jwsAlg: string;
-    jwtSigningKeys: {
+    jwtSigningKeys?: {
       private: string;
       public: string;
     };

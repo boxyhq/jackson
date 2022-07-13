@@ -25,20 +25,16 @@ export class OidcDiscoveryController implements IOidcDiscoveryController {
   }
 
   async jwks() {
-    const { jwtSigningKeys } = this.opts.openid;
-    if (!isJWSKeyPairLoaded(jwtSigningKeys)) {
+    const { jwtSigningKeys, jwsAlg } = this.opts.openid;
+    if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
       throw new JacksonError('JWT signing keys are not loaded', 501);
     }
-    const importedPublicKey = await importJWTPublicKey(
-      this.opts.openid.jwtSigningKeys.public,
-      this.opts.openid.jwsAlg
-    );
+    const importedPublicKey = await importJWTPublicKey(jwtSigningKeys.public, jwsAlg);
     const publicKeyJWK = await exportPublicKeyJWK(importedPublicKey);
     const jwkThumbprint = await generateJwkThumbprint(publicKeyJWK);
     const jwks = {
-      keys: [{ ...publicKeyJWK, kid: jwkThumbprint, alg: this.opts.openid.jwsAlg, use: 'sig' }],
+      keys: [{ ...publicKeyJWK, kid: jwkThumbprint, alg: jwsAlg, use: 'sig' }],
     };
-
     return jwks;
   }
 }
