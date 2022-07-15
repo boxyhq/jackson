@@ -131,7 +131,6 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
       method: isEditView ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Api-Key secret',
       },
       body: JSON.stringify({ ...rest, encodedRawMetadata, redirectUrl: JSON.stringify(redirectUrlList) }),
     });
@@ -160,7 +159,6 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Api-Key secret',
       },
       body: JSON.stringify({ clientID: samlConfig?.clientID, clientSecret: samlConfig?.clientSecret }),
     });
