@@ -23,6 +23,7 @@
     "sort": "npx sort-package-json",
     "postgres": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=postgres DB_URL=postgres://postgres:postgres@localhost:5432/postgres npm run dev",
     "mysql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mysql DB_URL=mysql://root:mysql@localhost:3307/mysql npm run dev",
+    "planetscale": "cross-env JACKSON_API_KEYS=secret DB_SSL=true DB_ENGINE=planetscale DB_URL=${PLANETSCALE_URL} npm run dev",
     "mariadb": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql npm run dev",
     "start": "next start -p 5225",
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
