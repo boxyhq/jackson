@@ -128,8 +128,9 @@ tap.before(async () => {
     const opts = dbs[idx];
     const db = await DB.new(opts);
 
-    configStores.push(db.store('saml:config'));
-    ttlStores.push(db.store('oauth:session', ttl));
+    const randomSession = Date.now();
+    configStores.push(db.store('saml:config:' + randomSession));
+    ttlStores.push(db.store('oauth:session:' + randomSession, ttl));
   }
 });
 
