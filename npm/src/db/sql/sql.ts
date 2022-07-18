@@ -24,11 +24,11 @@ class Sql implements DatabaseDriver {
   }
 
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
+    const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
     while (true) {
       try {
         this.dataSource = new DataSource({
-          // name: this.options.type! + Math.floor(Math.random() * 100000),
-          type: this.options.engine === 'planetscale' ? 'mysql' : this.options.type!,
+          type: sqlType,
           url: this.options.url,
           synchronize: this.options.engine !== 'planetscale',
           migrationsTableName: '_jackson_migrations',
@@ -40,7 +40,7 @@ class Sql implements DatabaseDriver {
 
         break;
       } catch (err) {
-        console.error(`error connecting to ${this.options.type} db: ${err}`);
+        console.error(`error connecting to engine: ${this.options.engine}, type: ${sqlType} db: ${err}`);
         await dbutils.sleep(1000);
         continue;
       }
