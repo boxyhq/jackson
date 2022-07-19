@@ -133,7 +133,7 @@ export interface Encrypted {
 
 export type EncryptionKey = any;
 
-export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem';
+export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale';
 
 export type DatabaseType = 'postgres' | 'mysql' | 'mariadb';
 
@@ -145,6 +145,7 @@ export interface DatabaseOption {
   cleanupLimit?: number;
   encryptionKey?: string;
   pageLimit?: number;
+  ssl?: any;
 }
 
 export interface JacksonOption {
