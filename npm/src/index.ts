@@ -31,6 +31,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
   newOpts.db.pageLimit = newOpts.db.pageLimit || 50;
 
+  newOpts.openid = newOpts.openid || {};
   newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
 
   return newOpts;
