@@ -1,6 +1,6 @@
 {
   "name": "@boxyhq/saml-jackson",
-  "version": "1.0.0",
+  "version": "do-not-change",
   "description": "SAML Jackson library",
   "keywords": [
     "SAML 2.0"
