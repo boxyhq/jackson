@@ -52,7 +52,7 @@ export class DirectoryConfig {
         type,
         log_webhook_events: false,
         scim: {
-          path: `/api/scim/v2.0/${id}`,
+          path: `${this.opts.scimPath}/${id}`,
           secret: await createRandomSecret(16),
         },
         webhook: {

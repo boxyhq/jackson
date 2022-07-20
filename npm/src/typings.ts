@@ -143,6 +143,7 @@ export interface JacksonOption {
   db: DatabaseOption;
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
+  scimPath?: string;
 }
 
 export interface SLORequestParams {
