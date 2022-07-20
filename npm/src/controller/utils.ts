@@ -17,12 +17,19 @@ export const validateAbsoluteUrl = (url, message) => {
   }
 };
 
-export const OAuthErrorResponse = ({ error, error_description, redirect_uri }: OAuthErrorHandlerParams) => {
-  return redirect.success(redirect_uri, { error, error_description });
+export const OAuthErrorResponse = ({
+  error,
+  error_description,
+  redirect_uri,
+  state,
+}: OAuthErrorHandlerParams) => {
+  return redirect.success(redirect_uri, { error, error_description, state });
 };
 
 // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
 export function getErrorMessage(error: unknown) {
-  if (error instanceof Error) return error.message;
+  if (error instanceof Error) {
+    return error.message;
+  }
   return String(error);
 }
