@@ -10,7 +10,7 @@ import type {
   Directory,
   User,
   Group,
-  WebhookEventLog,
+  DirectorySyncEvent,
   HTTPMethod,
 } from '@boxyhq/saml-jackson';
 
@@ -70,4 +70,4 @@ export default async function init() {
   };
 }
 
-export type { IdPConfig, DirectoryType, Directory, User, Group, WebhookEventLog, HTTPMethod };
+export type { IdPConfig, DirectoryType, Directory, User, Group, DirectorySyncEvent, HTTPMethod };

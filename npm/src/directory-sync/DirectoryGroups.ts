@@ -3,36 +3,32 @@ import type {
   DirectoryConfig,
   DirectorySyncResponse,
   Directory,
-  WebhookEvents,
   DirectorySyncGroupMember,
   DirectorySyncGroupRequest,
   Users,
   Groups,
   ApiError,
+  IDirectoryGroups,
 } from '../typings';
 import { parseGroupOperations, toGroupMembers } from './utils';
 
-export class DirectoryGroups {
+export class DirectoryGroups implements IDirectoryGroups {
   private directories: DirectoryConfig;
   private users: Users;
   private groups: Groups;
-  private webhookEvents: WebhookEvents;
 
   constructor({
     directories,
     users,
     groups,
-    webhookEvents,
   }: {
     directories: DirectoryConfig;
     users: Users;
     groups: Groups;
-    webhookEvents: WebhookEvents;
   }) {
     this.directories = directories;
     this.users = users;
     this.groups = groups;
-    this.webhookEvents = webhookEvents;
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
@@ -43,12 +39,7 @@ export class DirectoryGroups {
       raw: body,
     });
 
-    await this.webhookEvents.send('group.created', { directory, group });
-
-    // Okta SAML app doesn't send individual group membership events, so we need to add the members here
-    // if (directory.type === 'okta-saml' && group) {
-    //   await this.addGroupMembers(directory, group, members, false);
-    // }
+    // await this.webhookEvents.send('group.created', { directory, group });
 
     return {
       status: 201,
@@ -77,7 +68,7 @@ export class DirectoryGroups {
     await this.groups.removeAllUsers(group.id);
     await this.groups.delete(group.id);
 
-    await this.webhookEvents.send('group.deleted', { directory, group });
+    // await this.webhookEvents.send('group.deleted', { directory, group });
 
     return {
       status: 200,
@@ -131,7 +122,7 @@ export class DirectoryGroups {
       throw error;
     }
 
-    await this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
+    // await this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
 
     return updatedGroup;
   }
@@ -215,11 +206,11 @@ export class DirectoryGroups {
       const { data: user } = await this.users.get(member.value);
 
       if (sendWebhookEvent && user) {
-        await this.webhookEvents.send('group.user_added', {
-          directory,
-          group,
-          user,
-        });
+        // await this.webhookEvents.send('group.user_added', {
+        //   directory,
+        //   group,
+        //   user,
+        // });
       }
     }
   }
@@ -241,11 +232,11 @@ export class DirectoryGroups {
 
       // User may not exist in the directory, so we need to check if the user exists
       if (sendWebhookEvent && user) {
-        await this.webhookEvents.send('group.user_removed', {
-          directory,
-          group,
-          user,
-        });
+        // await this.webhookEvents.send('group.user_removed', {
+        //   directory,
+        //   group,
+        //   user,
+        // });
       }
     }
   }

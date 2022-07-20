@@ -2,37 +2,36 @@ import type {
   DirectoryConfig,
   Directory,
   DirectorySyncResponse,
-  WebhookEvents,
-  User,
   DirectorySyncUserRequest,
+  User,
   Groups,
   Users,
   ApiError,
+  IDirectoryUsers,
+  EventCallback,
+  HTTPMethod,
 } from '../typings';
-
 import { parseUserOperations } from './utils';
+import { sendEvent } from './Events';
 
-export class DirectoryUsers {
+export class DirectoryUsers implements IDirectoryUsers {
   private directories: DirectoryConfig;
   private users: Users;
   private groups: Groups;
-  private webhookEvents: WebhookEvents;
+  private callback: EventCallback | undefined;
 
   constructor({
     directories,
     users,
     groups,
-    webhookEvents,
   }: {
     directories: DirectoryConfig;
     users: Users;
     groups: Groups;
-    webhookEvents: WebhookEvents;
   }) {
     this.directories = directories;
     this.users = users;
     this.groups = groups;
-    this.webhookEvents = webhookEvents;
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
@@ -46,7 +45,7 @@ export class DirectoryUsers {
       raw: body,
     });
 
-    await this.webhookEvents.send('user.created', { directory, user });
+    await sendEvent('user.created', { directory, user }, this.callback);
 
     return {
       status: 201,
@@ -72,7 +71,7 @@ export class DirectoryUsers {
       raw: body,
     });
 
-    await this.webhookEvents.send('user.updated', { directory, user: updatedUser });
+    // await this.webhookEvents.send('user.updated', { directory, user: updatedUser });
 
     return {
       status: 200,
@@ -92,7 +91,7 @@ export class DirectoryUsers {
         raw: { ...user.raw, ...operation.raw },
       });
 
-      await this.webhookEvents.send('user.updated', { directory, user: updatedUser });
+      // await this.webhookEvents.send('user.updated', { directory, user: updatedUser });
 
       return {
         status: 200,
@@ -109,7 +108,7 @@ export class DirectoryUsers {
   public async delete(directory: Directory, user: User): Promise<DirectorySyncResponse> {
     await this.users.delete(user.id);
 
-    await this.webhookEvents.send('user.deleted', { directory, user });
+    // await this.webhookEvents.send('user.deleted', { directory, user });
 
     return {
       status: 200,
@@ -164,9 +163,13 @@ export class DirectoryUsers {
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse> {
-    const { method, body, query } = request;
+  public async handleRequest(
+    request: DirectorySyncUserRequest,
+    callback?: EventCallback
+  ): Promise<DirectorySyncResponse> {
+    const { body, query } = request;
     const { directory_id: directoryId, user_id: userId } = query;
+    const method = request.method.toUpperCase() as HTTPMethod;
 
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);
@@ -175,41 +178,34 @@ export class DirectoryUsers {
       return this.respondWithError(error);
     }
 
+    this.callback = callback;
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
     // Get the user
     const { data: user } = userId ? await this.users.get(userId) : { data: null };
 
     if (user) {
-      // Get a specific user
-      if (method === 'GET') {
-        return await this.get(user);
-      }
-
-      if (method === 'PUT') {
-        return await this.update(directory, user, body);
-      }
-
-      if (method === 'PATCH') {
-        return await this.patch(directory, user, body);
-      }
-
-      if (method === 'DELETE') {
-        return await this.delete(directory, user);
+      switch (method) {
+        case 'GET':
+          return await this.get(user);
+        case 'PATCH':
+          return await this.patch(directory, user, body);
+        case 'PUT':
+          return await this.update(directory, user, body);
+        case 'DELETE':
+          return await this.delete(directory, user);
       }
     }
 
-    if (method === 'POST') {
-      return this.create(directory, body);
-    }
-
-    // Get all the users
-    if (method === 'GET') {
-      return await this.getAll({
-        count: query.count as number,
-        startIndex: query.startIndex as number,
-        filter: query.filter,
-      });
+    switch (method) {
+      case 'POST':
+        return await this.create(directory, body);
+      case 'GET':
+        return await this.getAll({
+          count: query.count as number,
+          startIndex: query.startIndex as number,
+          filter: query.filter,
+        });
     }
 
     return {

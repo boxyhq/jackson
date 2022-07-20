@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { HTTPMethod } from '@lib/jackson';
+import type { HTTPMethod, DirectorySyncEvent } from '@lib/jackson';
 import jackson from '@lib/jackson';
 import { extractAuthToken } from '@lib/auth';
 import { bodyParser } from '@lib/utils';
@@ -29,7 +29,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   };
 
-  const { status, data } = await directorySyncController.usersRequest.handle(request);
+  const { status, data } = await directorySyncController.usersRequest.handle(
+    request,
+    async (event: DirectorySyncEvent) => {
+      console.log({ event });
+    }
+  );
 
   return res.status(status).json(data);
 }

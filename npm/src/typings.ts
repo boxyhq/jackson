@@ -349,17 +349,20 @@ export interface DirectoryConfig {
   validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
 
-export interface DirectoryUsers {
+export interface IDirectoryUsers {
   create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
   get(user: User): Promise<DirectorySyncResponse>;
   update(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
   patch(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
   delete(directory: Directory, user: User, active: boolean): Promise<DirectorySyncResponse>;
   getAll(queryParams: { count: number; startIndex: number; filter?: string }): Promise<DirectorySyncResponse>;
-  handleRequest(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse>;
+  handleRequest(
+    request: DirectorySyncUserRequest,
+    eventCallback?: EventCallback
+  ): Promise<DirectorySyncResponse>;
 }
 
-export interface DirectoryGroups {
+export interface IDirectoryGroups {
   create(directory: Directory, body: DirectorySyncGroupRequest['body']): Promise<DirectorySyncResponse>;
   get(group: Group): Promise<DirectorySyncResponse>;
   updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group>;
@@ -385,6 +388,15 @@ export interface DirectoryGroups {
   update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   patch(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
+}
+
+export interface WebhookEvents extends Base {
+  send(directory: Directory, event: DirectorySyncEvent): Promise<void>;
+  getAll(): Promise<WebhookEventLog[]>;
+  get(id: string): Promise<WebhookEventLog>;
+  clear(): Promise<void>;
+  delete(id: string): Promise<void>;
+  updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
 }
 
 export type DirectorySyncGroupRequest = {
@@ -417,11 +429,15 @@ export type DirectorySyncResponse = {
 };
 
 export interface UsersRequestHandler {
-  handle(request: DirectorySyncUserRequest): Promise<DirectorySyncResponse>;
+  handle(request: DirectorySyncUserRequest, eventCallback?: EventCallback): Promise<DirectorySyncResponse>;
 }
 
 export interface GroupsRequestHandler {
-  handle(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
+  handle(request: DirectorySyncGroupRequest, eventCallback?: EventCallback): Promise<DirectorySyncResponse>;
+}
+
+export interface Events {
+  handle(event: DirectorySyncEvent): Promise<void>;
 }
 
 export type DirectorySync = {
@@ -430,48 +446,33 @@ export type DirectorySync = {
   groupsRequest: GroupsRequestHandler;
   groups: Groups;
   users: Users;
-  events: WebhookEvents;
+  events: Events;
   providers: () => {
     [K in string]: string;
   };
 };
 
-export type WebhookEventLog = {
-  id: string;
-  directory_id: Directory['id'];
-  event: string;
-  webhook_endpoint: string;
-  payload: any;
-  created_at: Date;
-  status_code?: number;
-  delivered?: boolean;
-};
-
-export type WebhookPayload = {
-  directory_id: Directory['id'];
-  event: DirectorySyncEventType;
-  tenant: string;
-  product: string;
-  data: User | Group | { group: Group };
-};
-
-export interface WebhookEvents extends Base {
-  send(
-    action: DirectorySyncEventType,
-    payload: {
-      directory: Directory;
-      group?: Group | null;
-      user?: User | null;
-    }
-  ): Promise<void>;
-  getAll(): Promise<WebhookEventLog[]>;
-  get(id: string): Promise<WebhookEventLog>;
-  clear(): Promise<void>;
-  delete(id: string): Promise<void>;
-  updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
-}
-
 export interface ApiError {
   message: string;
   code: number;
+}
+
+export interface DirectorySyncEvent {
+  directory_id: Directory['id'];
+  event: DirectorySyncEventType;
+  data: any;
+  tenant: string;
+  product: string;
+}
+
+export interface EventCallback {
+  (event: DirectorySyncEvent): Promise<void>;
+}
+
+export interface WebhookEventLog extends DirectorySyncEvent {
+  id: string;
+  webhook_endpoint: string;
+  created_at: Date;
+  status_code?: number;
+  delivered?: boolean;
 }

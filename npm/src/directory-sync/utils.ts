@@ -1,5 +1,14 @@
-import type { DirectorySyncGroupMember, User } from '../typings';
+import type {
+  Directory,
+  DirectorySyncEvent,
+  DirectorySyncEventType,
+  DirectorySyncGroupMember,
+  Group,
+  User,
+} from '../typings';
 import { DirectorySyncProviders } from '../typings';
+import { transformUser, transformGroup, transformUserGroup } from './transform';
+import crypto from 'crypto';
 
 const parseGroupOperations = (
   operations: {
@@ -113,4 +122,67 @@ const getDirectorySyncProviders = (): { [K: string]: string } => {
   }, {});
 };
 
-export { parseGroupOperations, toGroupMembers, getDirectorySyncProviders };
+const transformEventPayload = (
+  event: DirectorySyncEventType,
+  payload: { directory: Directory; group?: Group | null; user?: User | null }
+): DirectorySyncEvent => {
+  const { directory, group, user } = payload;
+  const { tenant, product, id: directory_id } = directory;
+
+  const eventPayload = {
+    event,
+    tenant,
+    product,
+    directory_id,
+  } as DirectorySyncEvent;
+
+  // User events
+  if (['user.created', 'user.updated', 'user.deleted'].includes(event) && user) {
+    eventPayload['data'] = transformUser(user);
+  }
+
+  // Group events
+  if (['group.created', 'group.updated', 'group.deleted'].includes(event) && group) {
+    eventPayload['data'] = transformGroup(group);
+  }
+
+  // Group membership events
+  if (['group.user_added', 'group.user_removed'].includes(event) && user && group) {
+    eventPayload['data'] = transformUserGroup(user, group);
+  }
+
+  return eventPayload;
+};
+
+// Create request headers
+const createHeader = async (secret: string, event: DirectorySyncEvent) => {
+  return {
+    'Content-Type': 'application/json',
+    'BoxyHQ-Signature': await createSignatureString(secret, event),
+  };
+};
+
+// Create a signature string
+const createSignatureString = async (secret: string, event: DirectorySyncEvent) => {
+  if (!secret) {
+    return '';
+  }
+
+  const timestamp = new Date().getTime();
+
+  const signature = crypto
+    .createHmac('sha256', secret)
+    .update(`${timestamp}.${JSON.stringify(event)}`)
+    .digest('hex');
+
+  return `t=${timestamp},s=${signature}`;
+};
+
+export {
+  parseGroupOperations,
+  toGroupMembers,
+  getDirectorySyncProviders,
+  transformEventPayload,
+  createHeader,
+  createSignatureString,
+};
