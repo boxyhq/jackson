@@ -19,7 +19,7 @@ const transformGroup = (group: Group): Group => {
   };
 };
 
-const transformUserGroup = (user: User, group: Group): User | { group: Group } => {
+const transformUserGroup = (user: User, group: Group): User & { group: Group } => {
   return {
     ...transformUser(user),
     group: transformGroup(group),

@@ -6,24 +6,36 @@ import { Users } from './Users';
 import { Groups } from './Groups';
 import { getDirectorySyncProviders } from './utils';
 import { UsersRequestHandler, GroupsRequestHandler } from './request';
-import { Events } from './Events';
+import { handleEventCallback } from './events';
+import { WebhookEventsLogger } from './WebhookEventsLogger';
 
-const directorySync = ({ db, opts }: { db: DatabaseStore; opts: JacksonOption }): DirectorySync => {
+const directorySync = async ({
+  db,
+  opts,
+}: {
+  db: DatabaseStore;
+  opts: JacksonOption;
+}): Promise<DirectorySync> => {
   const directories = new DirectoryConfig({ db, opts });
 
   const users = new Users({ db });
   const groups = new Groups({ db });
 
-  const directoryUsers = new DirectoryUsers({ directories, users, groups });
+  const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
 
+  const webhookEventsLogger = new WebhookEventsLogger({ db });
+
   return {
-    directories,
     users,
     groups,
-    events: new Events({ db, directories }),
+    directories,
+    webhookLogs: webhookEventsLogger,
     usersRequest: new UsersRequestHandler(directoryUsers),
     groupsRequest: new GroupsRequestHandler(directoryGroups),
+    events: {
+      callback: await handleEventCallback(directories, webhookEventsLogger),
+    },
     providers: () => {
       return getDirectorySyncProviders();
     },

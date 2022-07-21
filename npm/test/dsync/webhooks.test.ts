@@ -1,4 +1,4 @@
-import { DirectorySync, Directory } from '../../src/typings';
+import { DirectorySync, Directory, DirectorySyncEvent, EventCallback } from '../../src/typings';
 import tap from 'tap';
 import groups from './data/groups';
 import users from './data/users';
@@ -6,12 +6,14 @@ import { default as usersRequest } from './data/user-requests';
 import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
 import { getDatabaseOption } from '../utils';
-import axios from 'axios';
 import sinon from 'sinon';
-import { createPayload, createSignatureString } from '../../src/directory-sync/WebhookEvents';
+import axios from 'axios';
+import { createSignatureString } from '../../src/directory-sync/utils';
 
 let directorySync: DirectorySync;
 let directory: Directory;
+let eventCallback: EventCallback;
+
 const fakeDirectory = getFakeDirectory();
 
 const webhook: Directory['webhook'] = {
@@ -43,8 +45,10 @@ tap.before(async () => {
     log_webhook_events: true,
   });
 
-  directorySync.events.setTenantAndProduct(directory.tenant, directory.product);
+  directorySync.webhookLogs.setTenantAndProduct(directory.tenant, directory.product);
   directorySync.users.setTenantAndProduct(directory.tenant, directory.product);
+
+  eventCallback = directorySync.events.callback;
 });
 
 tap.teardown(async () => {
@@ -56,7 +60,7 @@ tap.teardown(async () => {
 
 tap.test('Webhook Events / ', async (t) => {
   tap.afterEach(async () => {
-    await directorySync.events.clear();
+    await directorySync.webhookLogs.clear();
   });
 
   t.test("Should be able to get the directory's webhook", async (t) => {
@@ -75,9 +79,9 @@ tap.test('Webhook Events / ', async (t) => {
     });
 
     // Create a user
-    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]));
+    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]), eventCallback);
 
-    const events = await directorySync.events.getAll();
+    const events = await directorySync.webhookLogs.getAll();
 
     t.equal(events.length, 0);
 
@@ -97,9 +101,9 @@ tap.test('Webhook Events / ', async (t) => {
     });
 
     // Create a user
-    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]));
+    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]), eventCallback);
 
-    const events = await directorySync.events.getAll();
+    const events = await directorySync.webhookLogs.getAll();
 
     t.equal(events.length, 0);
 
@@ -111,15 +115,15 @@ tap.test('Webhook Events / ', async (t) => {
     t.end();
   });
 
-  t.test('Should be able to get event by id', async (t) => {
+  t.test('Should be able to get an event by id', async (t) => {
     // Create a user
-    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]));
+    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]), eventCallback);
 
-    const events = await directorySync.events.getAll();
+    const logs = await directorySync.webhookLogs.getAll();
 
-    const event = await directorySync.events.get(events[0].id);
+    const log = await directorySync.webhookLogs.get(logs[0].id);
 
-    t.equal(event.id, events[0].id);
+    t.equal(log.id, logs[0].id);
 
     t.end();
   });
@@ -131,38 +135,41 @@ tap.test('Webhook Events / ', async (t) => {
 
     // Create the user
     const { data: createdUser } = await directorySync.usersRequest.handle(
-      usersRequest.create(directory.id, users[0])
+      usersRequest.create(directory.id, users[0]),
+      eventCallback
     );
 
     // Update the user
     const { data: updatedUser } = await directorySync.usersRequest.handle(
-      usersRequest.updateById(directory.id, createdUser.id, users[0])
+      usersRequest.updateById(directory.id, createdUser.id, users[0]),
+      eventCallback
     );
 
     // Delete the user
     const { data: deletedUser } = await directorySync.usersRequest.handle(
-      usersRequest.deleteById(directory.id, createdUser.id)
+      usersRequest.deleteById(directory.id, createdUser.id),
+      eventCallback
     );
 
     mock.verify();
     mock.restore();
 
-    const events = await directorySync.events.getAll();
+    const logs = await directorySync.webhookLogs.getAll();
 
-    t.ok(events);
-    t.equal(events.length, 3);
+    t.ok(logs);
+    t.equal(logs.length, 3);
 
-    t.match(events[0].payload.event, 'user.deleted');
-    t.match(events[0].payload.directory_id, directory.id);
-    t.hasStrict(events[0].payload.data.raw, deletedUser);
+    t.match(logs[0].event, 'user.deleted');
+    t.match(logs[0].directory_id, directory.id);
+    t.hasStrict(logs[0].data.raw, deletedUser);
 
-    t.match(events[1].payload.event, 'user.updated');
-    t.match(events[1].payload.directory_id, directory.id);
-    t.hasStrict(events[1].payload.data.raw, updatedUser);
+    t.match(logs[1].event, 'user.updated');
+    t.match(logs[1].directory_id, directory.id);
+    t.hasStrict(logs[1].data.raw, updatedUser);
 
-    t.match(events[2].payload.event, 'user.created');
-    t.match(events[2].payload.directory_id, directory.id);
-    t.hasStrict(events[2].payload.data.raw, createdUser);
+    t.match(logs[2].event, 'user.created');
+    t.match(logs[2].directory_id, directory.id);
+    t.hasStrict(logs[2].data.raw, createdUser);
 
     await directorySync.users.clear();
 
@@ -176,38 +183,41 @@ tap.test('Webhook Events / ', async (t) => {
 
     // Create the group
     const { data: createdGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.create(directory.id, groups[0])
+      groupRequest.create(directory.id, groups[0]),
+      eventCallback
     );
 
     // Update the group
     const { data: updatedGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.updateById(directory.id, createdGroup.id, groups[0])
+      groupRequest.updateById(directory.id, createdGroup.id, groups[0]),
+      eventCallback
     );
 
     // Delete the group
     const { data: deletedGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.deleteById(directory.id, createdGroup.id)
+      groupRequest.deleteById(directory.id, createdGroup.id),
+      eventCallback
     );
 
     mock.verify();
     mock.restore();
 
-    const events = await directorySync.events.getAll();
+    const logs = await directorySync.webhookLogs.getAll();
 
-    t.ok(events);
-    t.equal(events.length, 3);
+    t.ok(logs);
+    t.equal(logs.length, 3);
 
-    t.match(events[0].payload.event, 'group.deleted');
-    t.match(events[0].payload.directory_id, directory.id);
-    t.hasStrict(events[0].payload.data.raw, deletedGroup);
+    t.match(logs[0].event, 'group.deleted');
+    t.match(logs[0].directory_id, directory.id);
+    t.hasStrict(logs[0].data.raw, deletedGroup);
 
-    t.match(events[1].payload.event, 'group.updated');
-    t.match(events[1].payload.directory_id, directory.id);
-    t.hasStrict(events[1].payload.data.raw, updatedGroup);
+    t.match(logs[1].event, 'group.updated');
+    t.match(logs[1].directory_id, directory.id);
+    t.hasStrict(logs[1].data.raw, updatedGroup);
 
-    t.match(events[2].payload.event, 'group.created');
-    t.match(events[2].payload.directory_id, directory.id);
-    t.hasStrict(events[2].payload.data.raw, createdGroup);
+    t.match(logs[2].event, 'group.created');
+    t.match(logs[2].directory_id, directory.id);
+    t.hasStrict(logs[2].data.raw, createdGroup);
 
     t.end();
   });
@@ -219,86 +229,48 @@ tap.test('Webhook Events / ', async (t) => {
 
     // Create the user
     const { data: createdUser } = await directorySync.usersRequest.handle(
-      usersRequest.create(directory.id, users[0])
+      usersRequest.create(directory.id, users[0]),
+      eventCallback
     );
 
     // Create the group
     const { data: createdGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.create(directory.id, groups[0])
+      groupRequest.create(directory.id, groups[0]),
+      eventCallback
     );
 
     // Add the user to the group
-    const { data: addedMember } = await directorySync.groupsRequest.handle(
-      groupRequest.addMembers(directory.id, createdGroup.id, [{ value: createdUser.id }])
+    await directorySync.groupsRequest.handle(
+      groupRequest.addMembers(directory.id, createdGroup.id, [{ value: createdUser.id }]),
+      eventCallback
     );
 
     // Remove the user from the group
-    const { data: removedMember } = await directorySync.groupsRequest.handle(
+    await directorySync.groupsRequest.handle(
       groupRequest.removeMembers(
         directory.id,
         createdGroup.id,
         [{ value: createdUser.id }],
         `members[value eq "${createdUser.id}"]`
-      )
+      ),
+      eventCallback
     );
 
     mock.verify();
     mock.restore();
 
-    const events = await directorySync.events.getAll();
+    const logs = await directorySync.webhookLogs.getAll();
 
-    t.ok(events);
-    t.equal(events.length, 4);
+    t.ok(logs);
+    t.equal(logs.length, 4);
 
-    t.match(events[0].payload.event, 'group.user_removed');
-    t.match(events[0].payload.directory_id, directory.id);
-    t.hasStrict(events[0].payload.data.raw, createdUser);
-    t.hasStrict(events[0].payload.data.group.raw, removedMember);
+    t.match(logs[0].event, 'group.user_removed');
+    t.match(logs[0].directory_id, directory.id);
+    t.hasStrict(logs[0].data.raw, createdUser);
 
-    t.match(events[1].payload.event, 'group.user_added');
-    t.match(events[1].payload.directory_id, directory.id);
-    t.hasStrict(events[1].payload.data.raw, createdUser);
-    t.hasStrict(events[1].payload.data.group.raw.displayName, addedMember.displayName);
-
-    await directorySync.users.delete(createdUser.id);
-    await directorySync.groups.delete(createdGroup.id);
-
-    t.end();
-  });
-
-  t.test('createPayload()', async (t) => {
-    // Create an user
-    const { data: createdUser } = await directorySync.usersRequest.handle(
-      usersRequest.create(directory.id, users[0])
-    );
-
-    const { data: user } = await directorySync.users.get(createdUser.id);
-
-    const webhookPayload = createPayload('user.created', {
-      directory,
-      user,
-    });
-
-    t.ok(user);
-    t.match(webhookPayload.event, 'user.created');
-    t.match(webhookPayload.directory_id, directory.id);
-    t.strictSame(webhookPayload.data, user);
-
-    // Create the group
-    const { data: createdGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.create(directory.id, groups[0])
-    );
-
-    const { data: group } = await directorySync.groups.get(createdGroup.id);
-
-    const webhookPayload2 = createPayload('group.created', {
-      directory,
-      group,
-    });
-
-    t.match(webhookPayload2.event, 'group.created');
-    t.match(webhookPayload2.directory_id, directory.id);
-    t.strictSame(webhookPayload2.data, group);
+    t.match(logs[1].event, 'group.user_added');
+    t.match(logs[1].directory_id, directory.id);
+    t.hasStrict(logs[1].data.raw, createdUser);
 
     await directorySync.users.delete(createdUser.id);
     await directorySync.groups.delete(createdGroup.id);
@@ -307,14 +279,22 @@ tap.test('Webhook Events / ', async (t) => {
   });
 
   t.test('createSignatureString()', async (t) => {
-    const payload = {
+    const event: DirectorySyncEvent = {
       event: 'user.created',
       directory_id: directory.id,
       tenant: directory.tenant,
       product: directory.product,
+      data: {
+        raw: [],
+        id: 'user-id',
+        first_name: 'Kiran',
+        last_name: 'Krishnan',
+        email: 'kiran@boxyhq.com',
+        active: true,
+      },
     };
 
-    const signatureString = await createSignatureString(directory.webhook.secret, payload);
+    const signatureString = await createSignatureString(directory.webhook.secret, event);
     const parts = signatureString.split(',');
 
     t.ok(signatureString);
@@ -322,7 +302,7 @@ tap.test('Webhook Events / ', async (t) => {
     t.ok(parts[1].match(/^s=[0-9a-f]/));
 
     // Empty secret should create an empty signature
-    const emptySignatureString = await createSignatureString('', payload);
+    const emptySignatureString = await createSignatureString('', event);
 
     t.match(emptySignatureString, '');
 

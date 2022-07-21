@@ -19,6 +19,6 @@ export class GroupsRequestHandler {
   constructor(private directoryGroups: IDirectoryGroups) {}
 
   async handle(request: DirectorySyncGroupRequest, callback?: EventCallback): Promise<DirectorySyncResponse> {
-    return await this.directoryGroups.handleRequest(request);
+    return await this.directoryGroups.handleRequest(request, callback);
   }
 }

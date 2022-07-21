@@ -9,13 +9,16 @@ import type {
   Groups,
   ApiError,
   IDirectoryGroups,
+  EventCallback,
 } from '../typings';
 import { parseGroupOperations, toGroupMembers } from './utils';
+import { sendEvent } from './events';
 
 export class DirectoryGroups implements IDirectoryGroups {
   private directories: DirectoryConfig;
   private users: Users;
   private groups: Groups;
+  private callback: EventCallback | undefined;
 
   constructor({
     directories,
@@ -39,7 +42,7 @@ export class DirectoryGroups implements IDirectoryGroups {
       raw: body,
     });
 
-    // await this.webhookEvents.send('group.created', { directory, group });
+    await sendEvent('group.created', { directory, group }, this.callback);
 
     return {
       status: 201,
@@ -68,7 +71,7 @@ export class DirectoryGroups implements IDirectoryGroups {
     await this.groups.removeAllUsers(group.id);
     await this.groups.delete(group.id);
 
-    // await this.webhookEvents.send('group.deleted', { directory, group });
+    await sendEvent('group.deleted', { directory, group }, this.callback);
 
     return {
       status: 200,
@@ -122,7 +125,7 @@ export class DirectoryGroups implements IDirectoryGroups {
       throw error;
     }
 
-    // await this.webhookEvents.send('group.updated', { directory, group: updatedGroup });
+    await sendEvent('group.updated', { directory, group: updatedGroup }, this.callback);
 
     return updatedGroup;
   }
@@ -206,11 +209,7 @@ export class DirectoryGroups implements IDirectoryGroups {
       const { data: user } = await this.users.get(member.value);
 
       if (sendWebhookEvent && user) {
-        // await this.webhookEvents.send('group.user_added', {
-        //   directory,
-        //   group,
-        //   user,
-        // });
+        await sendEvent('group.user_added', { directory, group, user }, this.callback);
       }
     }
   }
@@ -232,11 +231,7 @@ export class DirectoryGroups implements IDirectoryGroups {
 
       // User may not exist in the directory, so we need to check if the user exists
       if (sendWebhookEvent && user) {
-        // await this.webhookEvents.send('group.user_removed', {
-        //   directory,
-        //   group,
-        //   user,
-        // });
+        await sendEvent('group.user_removed', { directory, group, user }, this.callback);
       }
     }
   }
@@ -267,7 +262,10 @@ export class DirectoryGroups implements IDirectoryGroups {
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse> {
+  public async handleRequest(
+    request: DirectorySyncGroupRequest,
+    callback?: EventCallback
+  ): Promise<DirectorySyncResponse> {
     const { method, body, query } = request;
     const { directory_id: directoryId, group_id: groupId } = query;
 
@@ -278,6 +276,8 @@ export class DirectoryGroups implements IDirectoryGroups {
       return this.respondWithError(error);
     }
 
+    this.callback = callback;
+
     this.users.setTenantAndProduct(directory.tenant, directory.product);
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
@@ -285,34 +285,25 @@ export class DirectoryGroups implements IDirectoryGroups {
     const { data: group } = groupId ? await this.groups.get(groupId) : { data: null };
 
     if (group) {
-      // Get a specific group
-      if (method === 'GET') {
-        return await this.get(group);
-      }
-
-      if (method === 'PUT') {
-        return await this.update(directory, group, body);
-      }
-
-      if (method === 'PATCH') {
-        return await this.patch(directory, group, body);
-      }
-
-      if (method === 'DELETE') {
-        return await this.delete(directory, group);
+      switch (method) {
+        case 'GET':
+          return await this.get(group);
+        case 'PUT':
+          return await this.update(directory, group, body);
+        case 'PATCH':
+          return await this.patch(directory, group, body);
+        case 'DELETE':
+          return await this.delete(directory, group);
       }
     }
 
-    // Create a group
-    if (method === 'POST') {
-      return await this.create(directory, body);
-    }
-
-    // Get all groups
-    if (method === 'GET' && query) {
-      return await this.getAll({
-        filter: query.filter,
-      });
+    switch (method) {
+      case 'POST':
+        return await this.create(directory, body);
+      case 'GET':
+        return await this.getAll({
+          filter: query.filter,
+        });
     }
 
     return {

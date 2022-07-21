@@ -387,11 +387,14 @@ export interface IDirectoryGroups {
   ): Promise<void>;
   update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   patch(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
-  handleRequest(request: DirectorySyncGroupRequest): Promise<DirectorySyncResponse>;
+  handleRequest(
+    request: DirectorySyncGroupRequest,
+    eventCallback?: EventCallback
+  ): Promise<DirectorySyncResponse>;
 }
 
-export interface WebhookEvents extends Base {
-  send(directory: Directory, event: DirectorySyncEvent): Promise<void>;
+export interface IWebhookEventsLogger extends Base {
+  log(directory: Directory, event: DirectorySyncEvent): Promise<WebhookEventLog>;
   getAll(): Promise<WebhookEventLog[]>;
   get(id: string): Promise<WebhookEventLog>;
   clear(): Promise<void>;
@@ -446,7 +449,8 @@ export type DirectorySync = {
   groupsRequest: GroupsRequestHandler;
   groups: Groups;
   users: Users;
-  events: Events;
+  events: { callback: EventCallback };
+  webhookLogs: IWebhookEventsLogger;
   providers: () => {
     [K in string]: string;
   };
@@ -460,7 +464,7 @@ export interface ApiError {
 export interface DirectorySyncEvent {
   directory_id: Directory['id'];
   event: DirectorySyncEventType;
-  data: any;
+  data: User | Group | (User & { group: Group });
   tenant: string;
   product: string;
 }

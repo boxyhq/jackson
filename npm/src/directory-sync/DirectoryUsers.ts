@@ -4,7 +4,6 @@ import type {
   DirectorySyncResponse,
   DirectorySyncUserRequest,
   User,
-  Groups,
   Users,
   ApiError,
   IDirectoryUsers,
@@ -12,26 +11,16 @@ import type {
   HTTPMethod,
 } from '../typings';
 import { parseUserOperations } from './utils';
-import { sendEvent } from './Events';
+import { sendEvent } from './events';
 
 export class DirectoryUsers implements IDirectoryUsers {
   private directories: DirectoryConfig;
   private users: Users;
-  private groups: Groups;
   private callback: EventCallback | undefined;
 
-  constructor({
-    directories,
-    users,
-    groups,
-  }: {
-    directories: DirectoryConfig;
-    users: Users;
-    groups: Groups;
-  }) {
+  constructor({ directories, users }: { directories: DirectoryConfig; users: Users }) {
     this.directories = directories;
     this.users = users;
-    this.groups = groups;
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
@@ -71,7 +60,7 @@ export class DirectoryUsers implements IDirectoryUsers {
       raw: body,
     });
 
-    // await this.webhookEvents.send('user.updated', { directory, user: updatedUser });
+    await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
 
     return {
       status: 200,
@@ -91,7 +80,7 @@ export class DirectoryUsers implements IDirectoryUsers {
         raw: { ...user.raw, ...operation.raw },
       });
 
-      // await this.webhookEvents.send('user.updated', { directory, user: updatedUser });
+      await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
 
       return {
         status: 200,
@@ -108,7 +97,7 @@ export class DirectoryUsers implements IDirectoryUsers {
   public async delete(directory: Directory, user: User): Promise<DirectorySyncResponse> {
     await this.users.delete(user.id);
 
-    // await this.webhookEvents.send('user.deleted', { directory, user });
+    await sendEvent('user.deleted', { directory, user }, this.callback);
 
     return {
       status: 200,

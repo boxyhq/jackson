@@ -76,7 +76,7 @@ export const controllers = async (
     opts,
   });
 
-  const directorySync = initDirectorySync({ db, opts });
+  const directorySync = await initDirectorySync({ db, opts });
 
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
