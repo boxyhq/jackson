@@ -43,6 +43,7 @@ const validateResponse = async (rawResponse: string, validateOpts) => {
     if (!profile.claims.id && profile.claims.email) {
       profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
     }
+    profile.claims.sub = profile.claims.id;
   }
   return profile;
 };
