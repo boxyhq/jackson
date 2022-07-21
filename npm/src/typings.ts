@@ -98,6 +98,7 @@ export interface OAuthTokenRes {
 
 export interface Profile {
   id: string;
+  sub?: string;
   email: string;
   firstName: string;
   lastName: string;

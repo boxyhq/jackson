@@ -43,7 +43,6 @@ const validateResponse = async (rawResponse: string, validateOpts) => {
     if (!profile.claims.id && profile.claims.email) {
       profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
     }
-    profile.claims.sub = profile.claims.id;
   }
   return profile;
 };
@@ -700,6 +699,7 @@ export class OAuthController implements IOAuthController {
         .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.
         .sign(signingKey);
       tokenVal.id_token = id_token;
+      tokenVal.claims.sub = codeVal.profile.claims.id;
     }
 
     await this.tokenStore.put(token, tokenVal);

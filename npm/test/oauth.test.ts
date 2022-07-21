@@ -464,6 +464,7 @@ tap.test('token()', (t) => {
 
         const profile = await oauthController.userInfo(tokenRes.access_token);
 
+        t.notOk('sub' in profile, 'does not include sub');
         t.equal(profile.requested.client_id, authz_request_normal.client_id);
         t.equal(profile.requested.state, authz_request_normal.state);
         t.equal(profile.requested.tenant, new URLSearchParams(authz_request_normal.client_id).get('tenant'));
@@ -492,9 +493,12 @@ tap.test('token()', (t) => {
         };
 
         const stubLoadJWSPrivateKey = sinon.stub(utils, 'loadJWSPrivateKey').resolves(keyPair.privateKey);
-        const stubValidate = sinon
-          .stub(saml, 'validate')
-          .resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
+        const stubValidate = sinon.stub(saml, 'validate').resolves({
+          audience: '',
+          claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+          issuer: '',
+          sessionIndex: '',
+        });
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -523,6 +527,7 @@ tap.test('token()', (t) => {
 
         const profile = await oauthController.userInfo(tokenRes.access_token);
 
+        t.equal(profile.sub, 'id');
         t.equal(profile.requested.client_id, authz_request_normal_oidc_flow.client_id);
         t.equal(profile.requested.state, authz_request_normal_oidc_flow.state);
         t.equal(
