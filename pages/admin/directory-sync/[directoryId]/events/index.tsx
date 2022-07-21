@@ -134,7 +134,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     };
   }
 
-  const events = await directorySyncController.events.with(directory.tenant, directory.product).getAll();
+  const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll();
 
   return {
     props: {

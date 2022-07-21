@@ -34,7 +34,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     };
   }
 
-  const event = await directorySyncController.events
+  const event = await directorySyncController.webhookLogs
     .with(directory.tenant, directory.product)
     .get(eventId as string);
 

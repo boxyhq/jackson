@@ -12,6 +12,8 @@ import type {
   Group,
   DirectorySyncEvent,
   HTTPMethod,
+  DirectorySyncUserRequest,
+  DirectorySyncGroupRequest,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -70,4 +72,14 @@ export default async function init() {
   };
 }
 
-export type { IdPConfig, DirectoryType, Directory, User, Group, DirectorySyncEvent, HTTPMethod };
+export type {
+  IdPConfig,
+  DirectoryType,
+  Directory,
+  User,
+  Group,
+  DirectorySyncEvent,
+  HTTPMethod,
+  DirectorySyncUserRequest,
+  DirectorySyncGroupRequest,
+};

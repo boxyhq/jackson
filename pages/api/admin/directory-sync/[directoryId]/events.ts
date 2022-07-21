@@ -25,7 +25,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(404).json({ data: null, error });
   }
 
-  await directorySyncController.events.setTenantAndProduct(directory.tenant, directory.product).clear();
+  await directorySyncController.webhookLogs.setTenantAndProduct(directory.tenant, directory.product).clear();
 
   return res.status(201).json({ data: null, error: null });
 };
