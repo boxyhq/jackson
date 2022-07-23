@@ -18,6 +18,10 @@ const OPTIONS = <JacksonOption>{
   db: {
     engine: 'mem',
   },
+  openid: {
+    jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
+    jwsAlg: 'RS256',
+  },
 };
 
 tap.before(async () => {

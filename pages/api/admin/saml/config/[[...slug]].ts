@@ -21,7 +21,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     } else if (req.method === 'DELETE') {
       res.status(204).end(await apiController.deleteConfig(req.body));
     } else {
-      throw new Error('Method not allowed');
+      throw { message: 'Method not allowed', statusCode: 405 };
     }
   } catch (err: any) {
     console.error('config api error:', err);

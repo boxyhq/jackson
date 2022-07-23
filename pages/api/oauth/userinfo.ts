@@ -6,7 +6,7 @@ import { extractAuthToken } from '@lib/utils';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method !== 'GET') {
-      throw new Error('Method not allowed');
+      throw { message: 'Method not allowed', statusCode: 405 };
     }
 
     const { oauthController } = await jackson();

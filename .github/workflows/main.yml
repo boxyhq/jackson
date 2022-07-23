@@ -32,6 +32,9 @@ jobs:
       DEBUG: pw:webserver
       SAML_AUDIENCE: https://saml.boxyhq.com
       JACKSON_API_KEYS: secret
+      OPENID_JWS_ALG: RS256
+      OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
+      OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
     strategy:
       matrix:

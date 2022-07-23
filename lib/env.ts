@@ -33,6 +33,13 @@ const db = {
 
 const clientSecretVerifier = process.env.CLIENT_SECRET_VERIFIER;
 
+const jwsAlg = process.env.OPENID_JWS_ALG || '';
+const jwtSigningKeys = {
+  private: process.env.OPENID_RSA_PRIVATE_KEY || '',
+  public: process.env.OPENID_RSA_PUBLIC_KEY || '',
+};
+const openid = { jwsAlg, jwtSigningKeys };
+
 export default {
   hostUrl,
   hostPort,
@@ -45,4 +52,5 @@ export default {
   idpEnabled,
   db,
   clientSecretVerifier,
+  openid,
 };

@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import env from '@lib/env';
 import micromatch from 'micromatch';
+import * as jose from 'jose';
 
 export const validateApiKey = (token) => {
   return env.apiKeys.includes(token);
