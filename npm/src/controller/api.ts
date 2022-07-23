@@ -165,7 +165,7 @@ export class APIController implements IAPIController {
       metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
-    const idpMetadata = await saml.parseMetadataAsync(metaData!);
+    const idpMetadata = await saml.parseMetadata(metaData!, {});
 
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);
@@ -322,7 +322,7 @@ export class APIController implements IAPIController {
     }
     let newMetadata;
     if (metaData) {
-      newMetadata = await saml.parseMetadataAsync(metaData);
+      newMetadata = await saml.parseMetadata(metaData, {});
 
       // extract provider
       let providerName = extractHostName(newMetadata.entityID);
