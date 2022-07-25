@@ -15,7 +15,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         );
       }
     } else if (req.method === 'POST') {
-      res.json(await apiController.config(req.body));
+      const { connection } = req.query;
+      if (connection !== 'saml' && connection !== 'oidc') {
+        res.status(404).send('Invalid connection');
+        return;
+      }
+      res.json(await apiController.config(req.body, connection));
     } else if (req.method === 'PATCH') {
       res.status(204).end(await apiController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
