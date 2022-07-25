@@ -4,7 +4,7 @@ import * as metrics from '../opentelemetry/metrics';
 
 import saml from '@boxyhq/saml20';
 import x509 from '../saml/x509';
-import { IAPIController, IdPConfig, Storable } from '../typings';
+import { connectionType, IAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames, validateAbsoluteUrl } from './utils';
 
@@ -29,12 +29,39 @@ export class APIController implements IAPIController {
     }
   }
 
-  private _validateIdPConfig(body: IdPConfig): void {
-    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product, description } =
-      body;
+  private _validateIdPConfig(body: IdPConfig, connection: connectionType): void {
+    const {
+      encodedRawMetadata,
+      rawMetadata,
+      defaultRedirectUrl,
+      redirectUrl,
+      tenant,
+      product,
+      description,
+      oidcProvider = {},
+    } = body;
 
-    if (!rawMetadata && !encodedRawMetadata) {
+    if (connection === 'saml' && !rawMetadata && !encodedRawMetadata) {
       throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
+    }
+
+    if (connection === 'oidc') {
+      if (Object.keys(oidcProvider).length === 0) {
+        throw new JacksonError('Please provide OpenID Provider parameters');
+      }
+      const { clientId, clientSecret, discoveryUrl, authorization_endpoint, jwks_uri, token_endpoint } =
+        oidcProvider;
+      if (!clientId) {
+        throw new JacksonError('Please provide the clientId from OpenID Provider', 400);
+      }
+      if (!clientSecret) {
+        throw new JacksonError('Please provide the clientSecret from OpenID Provider', 400);
+      }
+      if ((!authorization_endpoint || !jwks_uri || !token_endpoint) && !discoveryUrl) {
+        throw new JacksonError(
+          'Please provide the discoveryUrl or provide the OpenID Provider parameters: authorization_endpoint,jwks_uri,token_endpoint'
+        );
+      }
     }
 
     if (!defaultRedirectUrl) {
@@ -142,7 +169,7 @@ export class APIController implements IAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async config(body: IdPConfig): Promise<any> {
+  public async config(body: IdPConfig, connection: connectionType): Promise<any> {
     const {
       encodedRawMetadata,
       rawMetadata,
@@ -152,11 +179,12 @@ export class APIController implements IAPIController {
       product,
       name,
       description,
+      oidcProvider = {},
     } = body;
 
     metrics.increment('createConfig');
 
-    this._validateIdPConfig(body);
+    this._validateIdPConfig(body, connection);
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 

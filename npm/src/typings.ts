@@ -9,9 +9,18 @@ export type IdPConfig = {
   description: string;
   rawMetadata?: string;
   encodedRawMetadata?: string;
+  oidcProvider?: {
+    discoveryUrl?: string;
+    clientId?: string;
+    clientSecret?: string;
+    issuer?: string;
+    authorization_endpoint?: string;
+    token_endpoint?: string;
+    jwks_uri?: string;
+  };
 };
 
-type connectionType = 'saml' | 'oidc';
+export type connectionType = 'saml' | 'oidc';
 
 export interface IAPIController {
   config(body: IdPConfig, connection: connectionType): Promise<any>;
