@@ -63,7 +63,7 @@ const configRecords: Array<any> = [];
 const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
   for (const config of configs) {
-    const _record = await apiController.config(config);
+    const _record = await apiController.config(config, 'saml');
     configRecords.push(_record);
   }
 };
