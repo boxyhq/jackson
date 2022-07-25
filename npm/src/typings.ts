@@ -11,8 +11,10 @@ export type IdPConfig = {
   encodedRawMetadata?: string;
 };
 
+type connectionType = 'saml' | 'oidc';
+
 export interface IAPIController {
-  config(body: IdPConfig): Promise<any>;
+  config(body: IdPConfig, connection: connectionType): Promise<any>;
   updateConfig(body: any): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
