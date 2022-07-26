@@ -7,17 +7,13 @@ export type IdPConfig = {
   product: string;
   name: string;
   description: string;
+  // SAML Provider
   rawMetadata?: string;
   encodedRawMetadata?: string;
-  oidcProvider?: {
-    discoveryUrl?: string;
-    clientId?: string;
-    clientSecret?: string;
-    issuer?: string;
-    authorization_endpoint?: string;
-    token_endpoint?: string;
-    jwks_uri?: string;
-  };
+  // OpenID Provider
+  discoveryUrl?: string;
+  clientId?: string;
+  clientSecret?: string;
 };
 
 export type connectionType = 'saml' | 'oidc';
