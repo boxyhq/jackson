@@ -182,7 +182,7 @@ export class ConfigAPIController implements IConfigAPIController {
    *               }
    *           }
    *       400:
-   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy: xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
+   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
    *       401:
    *         description: Unauthorized
    */
