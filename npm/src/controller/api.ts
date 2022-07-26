@@ -38,29 +38,29 @@ export class APIConfigController implements IAPIConfigController {
       tenant,
       product,
       description,
-      oidcProvider = {},
+      discoveryUrl,
+      clientId,
+      clientSecret,
     } = body;
 
-    if (strategy === 'saml' && !rawMetadata && !encodedRawMetadata) {
-      throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
+    if (strategy !== 'saml' && strategy !== 'oidc') {
+      throw new JacksonError(`Strategy: ${strategy} not supported`, 400);
     }
 
-    if (strategy === 'oidc') {
-      if (Object.keys(oidcProvider).length === 0) {
-        throw new JacksonError('Please provide OpenID Provider parameters');
+    if (strategy === 'saml') {
+      if (!rawMetadata && !encodedRawMetadata) {
+        throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
       }
-      const { clientId, clientSecret, discoveryUrl, authorization_endpoint, jwks_uri, token_endpoint } =
-        oidcProvider;
+    }
+    if (strategy === 'oidc') {
       if (!clientId) {
         throw new JacksonError('Please provide the clientId from OpenID Provider', 400);
       }
       if (!clientSecret) {
         throw new JacksonError('Please provide the clientSecret from OpenID Provider', 400);
       }
-      if ((!authorization_endpoint || !jwks_uri || !token_endpoint) && !discoveryUrl) {
-        throw new JacksonError(
-          'Please provide the discoveryUrl or provide the OpenID Provider parameters: authorization_endpoint,jwks_uri,token_endpoint'
-        );
+      if (!discoveryUrl) {
+        throw new JacksonError('Please provide the discoveryUrl for the OpenID Provider', 400);
       }
     }
 
