@@ -235,10 +235,7 @@ export class APIConfigController implements IAPIConfigController {
     if (strategy === 'oidc') {
       record.oidcProvider = { discoveryUrl, clientId, clientSecret }; //  from OpenID Provider
       record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, clientId)); // Use the clientId from the OpenID Provider to generate the clientID hash for the config
-      secondaryIndex = {
-        name: IndexNames.OIDCProviderClientID, // secondary index on Provider clientId
-        value: clientId,
-      };
+      secondaryIndex = null;
     }
 
     if (strategy === 'saml') {
