@@ -4,11 +4,11 @@ import * as metrics from '../opentelemetry/metrics';
 
 import saml from '@boxyhq/saml20';
 import x509 from '../saml/x509';
-import { connectionType, IAPIController, IdPConfig, Storable } from '../typings';
+import { connectionType, IAPIConfigController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames, validateAbsoluteUrl } from './utils';
 
-export class APIController implements IAPIController {
+export class APIConfigController implements IAPIConfigController {
   private configStore: Storable;
 
   constructor({ configStore }) {

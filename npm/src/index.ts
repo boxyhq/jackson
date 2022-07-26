@@ -1,5 +1,5 @@
 import { AdminController } from './controller/admin';
-import { APIController } from './controller/api';
+import { APIConfigController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
@@ -40,7 +40,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 export const controllers = async (
   opts: JacksonOption
 ): Promise<{
-  apiController: APIController;
+  apiConfigController: APIConfigController;
   oauthController: OAuthController;
   adminController: AdminController;
   logoutController: LogoutController;
@@ -57,7 +57,7 @@ export const controllers = async (
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
 
-  const apiController = new APIController({ configStore });
+  const apiConfigController = new APIConfigController({ configStore });
   const adminController = new AdminController({ configStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
@@ -80,7 +80,7 @@ export const controllers = async (
     const configs = await readConfig(opts.preLoadedConfig);
 
     for (const config of configs) {
-      await apiController.config(config, 'saml');
+      await apiConfigController.config(config, 'saml');
 
       console.log(`loaded config for tenant "${config.tenant}" and product "${config.product}"`);
     }
@@ -91,7 +91,7 @@ export const controllers = async (
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
-    apiController,
+    apiConfigController,
     oauthController,
     adminController,
     logoutController,

@@ -14,15 +14,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(404).send('Invalid strategy');
       return;
     }
-    const { apiController } = await jackson();
+    const { apiConfigController } = await jackson();
     if (req.method === 'POST') {
-      res.json(await apiController.config(req.body, strategy));
+      res.json(await apiConfigController.config(req.body, strategy));
     } else if (req.method === 'GET') {
-      res.json(await apiController.getConfig(req.query as any));
+      res.json(await apiConfigController.getConfig(req.query as any));
     } else if (req.method === 'PATCH') {
-      res.status(204).end(await apiController.updateConfig(req.body));
+      res.status(204).end(await apiConfigController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
-      res.status(204).end(await apiController.deleteConfig(req.body));
+      res.status(204).end(await apiConfigController.deleteConfig(req.body));
     } else {
       throw { message: 'Method not allowed', statusCode: 405 };
     }

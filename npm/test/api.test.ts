@@ -7,7 +7,7 @@ import readConfig from '../src/read-config';
 import { IdPConfig, JacksonOption } from '../src/typings';
 import { saml_config } from './fixture';
 
-let apiController;
+let apiConfigController;
 
 const CLIENT_ID = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
@@ -27,7 +27,7 @@ const OPTIONS = <JacksonOption>{
 tap.before(async () => {
   const controller = await controllers(OPTIONS);
 
-  apiController = controller.apiController;
+  apiConfigController = controller.apiConfigController;
 });
 
 tap.teardown(async () => {
@@ -39,7 +39,7 @@ tap.test('controller/api', async (t) => {
   const config = await readConfig(metadataPath);
 
   t.afterEach(async () => {
-    await apiController.deleteConfig({
+    await apiConfigController.deleteConfig({
       tenant: saml_config.tenant,
       product: saml_config.product,
     });
@@ -47,12 +47,12 @@ tap.test('controller/api', async (t) => {
 
   t.test('Create the config', async (t) => {
     t.test('when required fields are missing or invalid', async (t) => {
-      t.test('when `encodedRawMetadata` is empty', async (t) => {
+      t.test('when `encodedRawMetadata` is empty for saml strategy', async (t) => {
         const body: Partial<IdPConfig> = Object.assign({}, saml_config);
         delete body['encodedRawMetadata'];
 
         try {
-          await apiController.config(body);
+          await apiConfigController.config(body, 'saml');
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide rawMetadata or encodedRawMetadata');
@@ -67,7 +67,7 @@ tap.test('controller/api', async (t) => {
         delete body['defaultRedirectUrl'];
 
         try {
-          await apiController.config(body as IdPConfig);
+          await apiConfigController.config(body as IdPConfig);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide a defaultRedirectUrl');
@@ -82,7 +82,7 @@ tap.test('controller/api', async (t) => {
         delete body['redirectUrl'];
 
         try {
-          await apiController.config(body as IdPConfig);
+          await apiConfigController.config(body as IdPConfig);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide redirectUrl');
@@ -98,7 +98,7 @@ tap.test('controller/api', async (t) => {
         t.test('when defaultRedirectUrl is invalid', async (t) => {
           body['defaultRedirectUrl'] = 'http://localhost::';
           try {
-            await apiController.config(body as IdPConfig);
+            await apiConfigController.config(body as IdPConfig);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'defaultRedirectUrl is invalid');
@@ -109,7 +109,7 @@ tap.test('controller/api', async (t) => {
         t.test('when redirectUrl list is huge', async (t) => {
           body['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
-            await apiController.config(body as IdPConfig);
+            await apiConfigController.config(body as IdPConfig);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
@@ -120,7 +120,7 @@ tap.test('controller/api', async (t) => {
         t.test('when redirectUrl list contains invalid', async (t) => {
           body['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
           try {
-            await apiController.config(body as IdPConfig);
+            await apiConfigController.config(body as IdPConfig);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'redirectUrl is invalid');
@@ -134,7 +134,7 @@ tap.test('controller/api', async (t) => {
         delete body['tenant'];
 
         try {
-          await apiController.config(body as IdPConfig);
+          await apiConfigController.config(body as IdPConfig);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide tenant');
@@ -149,7 +149,7 @@ tap.test('controller/api', async (t) => {
         delete body['product'];
 
         try {
-          await apiController.config(body as IdPConfig);
+          await apiConfigController.config(body as IdPConfig);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide product');
@@ -164,7 +164,7 @@ tap.test('controller/api', async (t) => {
         body['encodedRawMetadata'] = Buffer.from('not a valid XML', 'utf8').toString('base64');
 
         try {
-          await apiController.config(body);
+          await apiConfigController.config(body);
           t.fail('Expecting Error.');
         } catch (err: any) {
           t.match(err.message, /Non-whitespace before first tag./);
@@ -179,13 +179,13 @@ tap.test('controller/api', async (t) => {
 
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID);
 
-      const response = await apiController.config(body);
+      const response = await apiConfigController.config(body);
 
       t.ok(kdStub.called);
       t.equal(response.clientID, CLIENT_ID);
       t.equal(response.idpMetadata.provider, PROVIDER);
 
-      const savedConfig = await apiController.getConfig({
+      const savedConfig = await apiConfigController.getConfig({
         clientID: CLIENT_ID,
       });
 
@@ -203,9 +203,9 @@ tap.test('controller/api', async (t) => {
     const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
     t.test('When clientID is missing', async (t) => {
-      const { client_secret: clientSecret } = await apiController.config(body as IdPConfig);
+      const { client_secret: clientSecret } = await apiConfigController.config(body as IdPConfig);
       try {
-        await apiController.updateConfig({ description: 'A new description', clientSecret });
+        await apiConfigController.updateConfig({ description: 'A new description', clientSecret });
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientID');
@@ -215,10 +215,10 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('When clientSecret is missing', async (t) => {
-      const { clientID } = await apiController.config(body as IdPConfig);
+      const { clientID } = await apiConfigController.config(body as IdPConfig);
 
       try {
-        await apiController.updateConfig({ description: 'A new description', clientID });
+        await apiConfigController.updateConfig({ description: 'A new description', clientID });
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientSecret');
@@ -228,17 +228,17 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('Update the name/description', async (t) => {
-      const { clientID, clientSecret } = await apiController.config(body as IdPConfig);
-      const { name, description } = await apiController.getConfig({ clientID });
+      const { clientID, clientSecret } = await apiConfigController.config(body as IdPConfig);
+      const { name, description } = await apiConfigController.getConfig({ clientID });
       t.equal(name, 'testConfig');
       t.equal(description, 'Just a test configuration');
-      await apiController.updateConfig({
+      await apiConfigController.updateConfig({
         clientID,
         clientSecret,
         name: 'A new name',
         description: 'A new description',
       });
-      const savedConfig = await apiController.getConfig({ clientID });
+      const savedConfig = await apiConfigController.getConfig({ clientID });
       t.equal(savedConfig.name, 'A new name');
       t.equal(savedConfig.description, 'A new description');
       t.end();
@@ -251,9 +251,9 @@ tap.test('controller/api', async (t) => {
     t.test('when valid request', async (t) => {
       const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
-      await apiController.config(body as IdPConfig);
+      await apiConfigController.config(body as IdPConfig);
 
-      const savedConfig = await apiController.getConfig(body);
+      const savedConfig = await apiConfigController.getConfig(body);
 
       t.equal(savedConfig.name, 'testConfig');
 
@@ -265,25 +265,25 @@ tap.test('controller/api', async (t) => {
 
       const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
-      await apiController.config(body);
+      await apiConfigController.config(body);
 
       // Empty body
       try {
-        await apiController.getConfig({});
+        await apiConfigController.getConfig({});
         t.fail('Expecting Error.');
       } catch (err: any) {
         t.match(err.message, 'Please provide `clientID` or `tenant` and `product`.');
       }
 
       // Invalid clientID
-      response = await apiController.getConfig({
+      response = await apiConfigController.getConfig({
         clientID: 'an invalid clientID',
       });
 
       t.match(response, {});
 
       // Invalid tenant and product combination
-      response = await apiController.getConfig({
+      response = await apiConfigController.getConfig({
         tenant: 'demo.com',
         product: 'desk',
       });
@@ -300,14 +300,14 @@ tap.test('controller/api', async (t) => {
     t.test('when valid request', async (t) => {
       const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
-      const { clientID, clientSecret } = await apiController.config(body);
+      const { clientID, clientSecret } = await apiConfigController.config(body);
 
-      await apiController.deleteConfig({
+      await apiConfigController.deleteConfig({
         clientID,
         clientSecret,
       });
 
-      const response = await apiController.getConfig({
+      const response = await apiConfigController.getConfig({
         clientID,
       });
 
@@ -319,11 +319,11 @@ tap.test('controller/api', async (t) => {
     t.test('when invalid request', async (t) => {
       const body: Partial<IdPConfig> = Object.assign({}, saml_config);
 
-      const { clientID, clientSecret } = await apiController.config(body);
+      const { clientID, clientSecret } = await apiConfigController.config(body);
 
       // Empty body
       try {
-        await apiController.deleteConfig({});
+        await apiConfigController.deleteConfig({});
         t.fail('Expecting Error.');
       } catch (err: any) {
         t.match(err.message, 'Please provide `clientID` and `clientSecret` or `tenant` and `product`.');
@@ -331,7 +331,7 @@ tap.test('controller/api', async (t) => {
 
       // Invalid clientID or clientSecret
       try {
-        await apiController.deleteConfig({
+        await apiConfigController.deleteConfig({
           clientID,
           clientSecret: 'invalid client secret',
         });

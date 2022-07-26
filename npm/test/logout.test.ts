@@ -4,11 +4,11 @@ import path from 'path';
 import sinon from 'sinon';
 import tap from 'tap';
 import readConfig from '../src/read-config';
-import { IAPIController, ILogoutController, JacksonOption } from '../src/typings';
+import { IAPIConfigController, ILogoutController, JacksonOption } from '../src/typings';
 import { relayStatePrefix } from '../src/controller/utils';
 import { saml_config } from './fixture';
 
-let apiController: IAPIController;
+let apiConfigController: IAPIConfigController;
 let logoutController: ILogoutController;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
@@ -31,14 +31,14 @@ const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
 
   for (const config of configs) {
-    await apiController.config(config, 'saml');
+    await apiConfigController.config(config, 'saml');
   }
 };
 
 tap.before(async () => {
   const controller = await (await import('../src/index')).default(options);
 
-  apiController = controller.apiController;
+  apiConfigController = controller.apiConfigController;
   logoutController = controller.logoutController;
 
   await addMetadata(metadataPath);

@@ -4,7 +4,7 @@ import * as utils from '../src/controller/utils';
 import path from 'path';
 import {
   IOAuthController,
-  IAPIController,
+  IAPIConfigController,
   JacksonOption,
   OAuthReqBody,
   OAuthTokenReq,
@@ -35,7 +35,7 @@ import {
   token_req_unencoded_client_id_gen,
 } from './fixture';
 
-let apiController: IAPIController;
+let apiConfigController: IAPIConfigController;
 let oauthController: IOAuthController;
 let keyPair: jose.GenerateKeyPairResult;
 
@@ -63,7 +63,7 @@ const configRecords: Array<any> = [];
 const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
   for (const config of configs) {
-    const _record = await apiController.config(config, 'saml');
+    const _record = await apiConfigController.config(config, 'saml');
     configRecords.push(_record);
   }
 };
@@ -73,7 +73,7 @@ tap.before(async () => {
 
   const controller = await (await import('../src/index')).default(options);
 
-  apiController = controller.apiController;
+  apiConfigController = controller.apiConfigController;
   oauthController = controller.oauthController;
 
   await addMetadata(metadataPath);
