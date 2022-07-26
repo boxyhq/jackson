@@ -114,6 +114,18 @@ export class APIConfigController implements IAPIConfigController {
    *         description: Raw XML metadata
    *         in: formData
    *         type: string
+   *       - name: discoveryUrl
+   *         description: `well-known` URL where the OpenID Provider configuration is exposed
+   *         in: formData
+   *         type: string
+   *       - name: clientId
+   *         description: clientId of the application set up on the OpenID Provider
+   *         in: formData
+   *         type: string
+   *       - name: clientSecret
+   *         description: clientSecret of the application set up on the OpenID Provider
+   *         in: formData
+   *         type: string
    *       - name: defaultRedirectUrl
    *         description: The redirect URL to use in the IdP login flow
    *         in: formData
@@ -151,6 +163,11 @@ export class APIConfigController implements IAPIConfigController {
    *                 "loginType": "idp",
    *                 "provider": "okta.com"
    *               },
+   *               "oidcProvider": {
+   *                 "discoveryUrl": "https://dev-xxxxx.okta.com/oauth2/yyyyyy/.well-known/openid-configuration",
+   *                 "clientId": "xxxxxxyyyyyyxxxxxx",
+   *                 "clientSecret": "zzzzzzzzzzzzzzzz"
+   *                },
    *               "defaultRedirectUrl": "https://hoppscotch.io/",
    *               "redirectUrl": ["https://hoppscotch.io/"],
    *               "tenant": "hoppscotch.io",
@@ -165,13 +182,13 @@ export class APIConfigController implements IAPIConfigController {
    *               }
    *           }
    *       400:
-   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters
+   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy: ${strategy} not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
    *       401:
    *         description: Unauthorized
    */
   public async config(
     body: IdPConfig,
-    strategy: connectionType = 'saml' /* fallback to 'saml' for backward compatibility in embedded setup*/
+    strategy: connectionType = 'saml' /* fallback to 'saml' for backward compatibility in embed setup*/
   ): Promise<any> {
     const {
       encodedRawMetadata,
@@ -182,79 +199,95 @@ export class APIConfigController implements IAPIConfigController {
       product,
       name,
       description,
-      oidcProvider = {},
+      discoveryUrl,
+      clientId = '',
+      clientSecret,
     } = body;
 
+    let configClientSecret, secondaryIndex;
     metrics.increment('createConfig');
 
     this._validateIdPConfig(body, strategy);
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    if (strategy === 'oidc') {
-      // extract hostname from discoveryUrl or issuer
-    }
-
-    let metaData = rawMetadata;
-    if (encodedRawMetadata) {
-      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
-    }
-
-    const idpMetadata = await saml.parseMetadata(metaData!, {});
-
-    // extract provider
-    let providerName = extractHostName(idpMetadata.entityID);
-    if (!providerName) {
-      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl);
-    }
-
-    idpMetadata.provider = providerName ? providerName : 'Unknown';
-
-    const clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, idpMetadata.entityID));
-
-    let clientSecret;
-
-    const exists = await this.configStore.get(clientID);
-
-    if (exists) {
-      clientSecret = exists.clientSecret;
-    } else {
-      clientSecret = crypto.randomBytes(24).toString('hex');
-    }
-
-    const certs = await x509.generate();
-
-    if (!certs) {
-      throw new Error('Error generating x59 certs');
-    }
-
-    const record = {
-      idpMetadata,
+    const record: Partial<IdPConfig> & {
+      clientID: string; // set by Jackson
+      clientSecret: string; // set by Jackson
+      idpMetadata?: Record<string, any>;
+      certs?: Record<'publicKey' | 'privateKey', string>;
+      oidcProvider?: {
+        discoveryUrl?: string;
+        clientId?: string;
+        clientSecret?: string;
+      };
+    } = {
       defaultRedirectUrl,
       redirectUrl: redirectUrlList,
       tenant,
       product,
       name,
       description,
-      clientID,
-      clientSecret,
-      certs,
+      clientID: '',
+      clientSecret: '',
     };
 
-    await this.configStore.put(
-      clientID,
-      record,
-      {
-        // secondary index on entityID
-        name: IndexNames.EntityID,
-        value: idpMetadata.entityID,
-      },
-      {
-        // secondary index on tenant + product
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
+    if (strategy === 'oidc') {
+      record.oidcProvider = { discoveryUrl, clientId, clientSecret }; //  from OpenID Provider
+      record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, clientId)); // Use the clientId from the OpenID Provider to generate the clientID hash for the config
+      secondaryIndex = {
+        name: IndexNames.OIDCProviderClientID, // secondary index on Provider clientId
+        value: clientId,
+      };
+    }
+
+    if (strategy === 'saml') {
+      let metaData = rawMetadata;
+      if (encodedRawMetadata) {
+        metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
       }
-    );
+
+      const idpMetadata = await saml.parseMetadata(metaData!, {});
+
+      // extract provider
+      let providerName = extractHostName(idpMetadata.entityID);
+      if (!providerName) {
+        providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl);
+      }
+
+      idpMetadata.provider = providerName ? providerName : 'Unknown';
+
+      record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, idpMetadata.entityID));
+      secondaryIndex = {
+        name: IndexNames.EntityID, // secondary index on entityID
+        value: idpMetadata.entityID,
+      };
+
+      const certs = await x509.generate();
+
+      if (!certs) {
+        throw new Error('Error generating x59 certs');
+      }
+
+      record.idpMetadata = idpMetadata;
+      record.certs = certs;
+    }
+
+    const exists = await this.configStore.get(record.clientID);
+
+    if (exists) {
+      configClientSecret = exists.clientSecret;
+    } else {
+      configClientSecret = crypto.randomBytes(24).toString('hex');
+    }
+
+    record.clientSecret = configClientSecret;
+
+    await this.configStore.put(record.clientID, record, secondaryIndex, {
+      // secondary index on tenant + product
+      name: IndexNames.TenantProduct,
+      value: dbutils.keyFromParts(tenant, product),
+    });
 
     return record;
   }
