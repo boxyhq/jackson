@@ -29,7 +29,7 @@ export class APIController implements IAPIController {
     }
   }
 
-  private _validateIdPConfig(body: IdPConfig, connection: connectionType): void {
+  private _validateIdPConfig(body: IdPConfig, strategy: connectionType): void {
     const {
       encodedRawMetadata,
       rawMetadata,
@@ -41,11 +41,11 @@ export class APIController implements IAPIController {
       oidcProvider = {},
     } = body;
 
-    if (connection === 'saml' && !rawMetadata && !encodedRawMetadata) {
+    if (strategy === 'saml' && !rawMetadata && !encodedRawMetadata) {
       throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
     }
 
-    if (connection === 'oidc') {
+    if (strategy === 'oidc') {
       if (Object.keys(oidcProvider).length === 0) {
         throw new JacksonError('Please provide OpenID Provider parameters');
       }
@@ -169,7 +169,7 @@ export class APIController implements IAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async config(body: IdPConfig, connection: connectionType): Promise<any> {
+  public async config(body: IdPConfig, strategy: connectionType): Promise<any> {
     const {
       encodedRawMetadata,
       rawMetadata,
@@ -184,9 +184,13 @@ export class APIController implements IAPIController {
 
     metrics.increment('createConfig');
 
-    this._validateIdPConfig(body, connection);
+    this._validateIdPConfig(body, strategy);
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
+
+    if (strategy === 'oidc') {
+      // extract hostname from discoveryUrl or issuer
+    }
 
     let metaData = rawMetadata;
     if (encodedRawMetadata) {

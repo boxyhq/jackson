@@ -9,14 +9,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(401).json({ message: 'Unauthorized' });
       return;
     }
-    const { connection } = req.query;
-    if (connection !== 'saml' && connection !== 'oidc') {
-      res.status(404).send('Invalid connection');
+    const { strategy } = req.query;
+    if (strategy !== 'saml' && strategy !== 'oidc') {
+      res.status(404).send('Invalid strategy');
       return;
     }
     const { apiController } = await jackson();
     if (req.method === 'POST') {
-      res.json(await apiController.config(req.body, connection));
+      res.json(await apiController.config(req.body, strategy));
     } else if (req.method === 'GET') {
       res.json(await apiController.getConfig(req.query as any));
     } else if (req.method === 'PATCH') {

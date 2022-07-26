@@ -15,12 +15,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         );
       }
     } else if (req.method === 'POST') {
-      const { connection } = req.query;
-      if (connection !== 'saml' && connection !== 'oidc') {
-        res.status(404).send('Invalid connection');
+      const { strategy } = req.query;
+      if (strategy !== 'saml' && strategy !== 'oidc') {
+        res.status(404).send('Invalid strategy');
         return;
       }
-      res.json(await apiController.config(req.body, connection));
+      res.json(await apiController.config(req.body, strategy));
     } else if (req.method === 'PATCH') {
       res.status(204).end(await apiController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
