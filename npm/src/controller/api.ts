@@ -4,11 +4,11 @@ import * as metrics from '../opentelemetry/metrics';
 
 import saml from '@boxyhq/saml20';
 import x509 from '../saml/x509';
-import { connectionType, IAPIConfigController, IdPConfig, Storable } from '../typings';
+import { connectionType, IConfigAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames, validateAbsoluteUrl } from './utils';
 
-export class APIConfigController implements IAPIConfigController {
+export class ConfigAPIController implements IConfigAPIController {
   private configStore: Storable;
 
   constructor({ configStore }) {
@@ -115,7 +115,7 @@ export class APIConfigController implements IAPIConfigController {
    *         in: formData
    *         type: string
    *       - name: discoveryUrl
-   *         description: `well-known` URL where the OpenID Provider configuration is exposed
+   *         description: well-known URL where the OpenID Provider configuration is exposed
    *         in: formData
    *         type: string
    *       - name: clientId
@@ -182,7 +182,7 @@ export class APIConfigController implements IAPIConfigController {
    *               }
    *           }
    *       400:
-   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy: ${strategy} not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
+   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy: xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
    *       401:
    *         description: Unauthorized
    */

@@ -18,7 +18,7 @@ export type IdPConfig = {
 
 export type connectionType = 'saml' | 'oidc';
 
-export interface IAPIConfigController {
+export interface IConfigAPIController {
   config(body: IdPConfig, strategy: connectionType): Promise<any>;
   updateConfig(body: any): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
