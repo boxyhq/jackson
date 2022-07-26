@@ -169,7 +169,10 @@ export class APIConfigController implements IAPIConfigController {
    *       401:
    *         description: Unauthorized
    */
-  public async config(body: IdPConfig, strategy: connectionType): Promise<any> {
+  public async config(
+    body: IdPConfig,
+    strategy: connectionType = 'saml' /* fallback to 'saml' for backward compatibility in embedded setup*/
+  ): Promise<any> {
     const {
       encodedRawMetadata,
       rawMetadata,
