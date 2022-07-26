@@ -80,7 +80,7 @@ export const controllers = async (
     const configs = await readConfig(opts.preLoadedConfig);
 
     for (const config of configs) {
-      await apiController.config(config);
+      await apiController.config(config, 'saml');
 
       console.log(`loaded config for tenant "${config.tenant}" and product "${config.product}"`);
     }
