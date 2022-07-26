@@ -52,7 +52,7 @@ tap.test('controller/api', async (t) => {
         delete body['encodedRawMetadata'];
 
         try {
-          await apiConfigController.config(body, 'saml');
+          await apiConfigController.config(body);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide rawMetadata or encodedRawMetadata');
