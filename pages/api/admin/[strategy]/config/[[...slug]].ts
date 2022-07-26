@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
+import { connectionType } from '@boxyhq/saml-jackson';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -16,11 +17,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     } else if (req.method === 'POST') {
       const { strategy } = req.query;
-      if (strategy !== 'saml' && strategy !== 'oidc') {
-        res.status(404).send('Invalid strategy');
-        return;
-      }
-      res.json(await apiConfigController.config(req.body, strategy));
+      res.json(await apiConfigController.config(req.body, strategy as connectionType));
     } else if (req.method === 'PATCH') {
       res.status(204).end(await apiConfigController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
