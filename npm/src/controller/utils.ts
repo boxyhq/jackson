@@ -6,6 +6,7 @@ import * as jose from 'jose';
 export enum IndexNames {
   EntityID = 'entityID',
   TenantProduct = 'tenantProduct',
+  OIDCProviderClientID = 'OIDCProviderClientID',
 }
 
 export const relayStatePrefix = 'boxyhq_jackson_';
