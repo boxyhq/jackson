@@ -3,6 +3,7 @@ import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
+import { OidcDiscoveryController } from './controller/oidc-discovery';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
@@ -30,6 +31,9 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
   newOpts.db.pageLimit = newOpts.db.pageLimit || 50;
 
+  newOpts.openid = newOpts.openid || {};
+  newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
+
   return newOpts;
 };
 
@@ -41,6 +45,7 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
+  oidcDiscoveryController: OidcDiscoveryController;
 }> => {
   opts = defaultOpts(opts);
 
@@ -69,7 +74,7 @@ export const controllers = async (
     sessionStore,
     opts,
   });
-
+  const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
     const configs = await readConfig(opts.preLoadedConfig);
@@ -91,6 +96,7 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
+    oidcDiscoveryController,
   };
 };
 
