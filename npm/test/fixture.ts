@@ -16,6 +16,13 @@ export const authz_request_normal_with_access_type: Partial<OAuthReqBody> = {
   client_id: 'dummy',
 };
 
+export const authz_request_normal_with_resource: Partial<OAuthReqBody> = {
+  redirect_uri: boxyhq.defaultRedirectUrl,
+  state: 'state-123',
+  resource: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  client_id: 'dummy',
+};
+
 export const authz_request_normal_with_scope: Partial<OAuthReqBody> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',

@@ -67,6 +67,7 @@ export interface OAuthReqBody {
   tenant?: string;
   product?: string;
   access_type?: string;
+  resource?: string;
   scope?: string;
   nonce?: string;
   code_challenge: string;
