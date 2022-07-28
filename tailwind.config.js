@@ -1,23 +1,19 @@
-const colors = require('tailwindcss/colors');
-
-function withOpacityValue(variable) {
-  return ({ opacityValue }) => {
-    if (opacityValue === undefined) {
-      return `rgb(var(${variable}))`;
-    }
-    return `rgb(var(${variable}) / ${opacityValue})`;
-  };
-}
-
 module.exports = {
+  mode: 'jit',
   darkMode: 'class',
-  content: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
-  theme: {
-    colors: {
-      ...colors,
-      primary: withOpacityValue('--color-primary'),
-      secondary: withOpacityValue('--color-secondary'),
-    },
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+    'node_modules/daisyui/dist/**/*.js',
+  ],
+  daisyui: {
+    themes: [
+      {
+        boxyhq: {
+          primary: '#25c2a0',
+        },
+      },
+    ],
   },
-  plugins: [],
+  plugins: [require('daisyui')],
 };

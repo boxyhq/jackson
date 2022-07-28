@@ -37,12 +37,7 @@ const SAMLConfigurations: NextPage = () => {
       <div className='flex items-center justify-between'>
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>SAML Configurations</h2>
         <Link href={'/admin/saml/config/new'}>
-          <a className='btn-primary'>
-            <span className='mr-1 inline-block md:mr-2' aria-hidden>
-              +
-            </span>
-            New
-          </a>
+          <a className='btn btn-primary'>New SAML Config</a>
         </Link>
       </div>
       <div className='mt-6 overflow-auto rounded-lg shadow-md'>
@@ -86,7 +81,7 @@ const SAMLConfigurations: NextPage = () => {
       <div className='mt-4 flex justify-center'>
         <button
           type='button'
-          className='btn-secondary hover:not(:disabled):scale-105 inline-flex min-w-[6rem] items-center justify-center py-1'
+          className='hover:not(:disabled):scale-105 btn-secondary inline-flex min-w-[6rem] items-center justify-center py-1'
           disabled={paginate.page === 0}
           aria-label='Previous'
           onClick={() =>
@@ -102,7 +97,7 @@ const SAMLConfigurations: NextPage = () => {
         &nbsp;&nbsp;&nbsp;&nbsp;
         <button
           type='button'
-          className='btn-secondary hover:not(:disabled):scale-105 inline-flex min-w-[6rem] items-center justify-center py-1'
+          className='hover:not(:disabled):scale-105 btn-secondary inline-flex min-w-[6rem] items-center justify-center py-1'
           disabled={data.length === 0 || data.length < paginate.pageLimit}
           onClick={() =>
             setPaginate((curState) => ({

@@ -51,6 +51,7 @@
     "@opentelemetry/sdk-metrics-base": "0.27.0",
     "@supabase/ui": "0.36.5",
     "cors": "2.8.5",
+    "daisyui": "^2.20.0",
     "micromatch": "4.0.5",
     "next": "12.2.3",
     "next-auth": "4.10.2",
@@ -58,7 +59,8 @@
     "raw-body": "2.5.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "swr": "1.3.0"
+    "swr": "1.3.0",
+    "classnames": "2.3.1"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
