@@ -5,7 +5,7 @@ import { DirectoryGroups } from './DirectoryGroups';
 import { Users } from './Users';
 import { Groups } from './Groups';
 import { getDirectorySyncProviders } from './utils';
-import { UsersRequestHandler, GroupsRequestHandler } from './request';
+import { DirectorySyncRequestHandler } from './request';
 import { handleEventCallback } from './events';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 
@@ -31,8 +31,7 @@ const directorySync = async ({
     groups,
     directories,
     webhookLogs: webhookEventsLogger,
-    usersRequest: new UsersRequestHandler(directoryUsers),
-    groupsRequest: new GroupsRequestHandler(directoryGroups),
+    requests: new DirectorySyncRequestHandler(directoryUsers, directoryGroups),
     events: {
       callback: await handleEventCallback(directories, webhookEventsLogger),
     },

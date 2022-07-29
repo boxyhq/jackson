@@ -2,7 +2,7 @@ import type {
   DirectoryConfig,
   Directory,
   DirectorySyncResponse,
-  DirectorySyncUserRequest,
+  DirectorySyncRequest,
   User,
   Users,
   ApiError,
@@ -153,11 +153,11 @@ export class DirectoryUsers implements IDirectoryUsers {
 
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(
-    request: DirectorySyncUserRequest,
+    request: DirectorySyncRequest,
     callback?: EventCallback
   ): Promise<DirectorySyncResponse> {
-    const { body, query } = request;
-    const { directory_id: directoryId, user_id: userId } = query;
+    const { body, query, resourceId: userId, directoryId, apiSecret } = request;
+
     const method = request.method.toUpperCase() as HTTPMethod;
 
     // Get the directory
@@ -165,6 +165,11 @@ export class DirectoryUsers implements IDirectoryUsers {
 
     if (error || !directory) {
       return this.respondWithError(error);
+    }
+
+    // Validate the request
+    if (directory.scim.secret != apiSecret) {
+      return this.respondWithError({ code: 401, message: 'Unauthorized' });
     }
 
     this.callback = callback;

@@ -163,18 +163,6 @@ tap.test('Directories / ', async (t) => {
     t.end();
   });
 
-  t.test('should be able to validate the SCIM secret', async (t) => {
-    const { secret } = directory.scim;
-
-    t.ok(directory);
-    t.ok(await directorySync.directories.validateAPISecret(directory.id, secret));
-    t.notOk(await directorySync.directories.validateAPISecret(directory.id, 'wrong secret'));
-
-    await directorySync.directories.delete(directory.id);
-
-    t.end();
-  });
-
   t.test('should be able to get all directories', async (t) => {
     const directoriesList = await directorySync.directories.list({});
 

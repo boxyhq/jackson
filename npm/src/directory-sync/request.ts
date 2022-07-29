@@ -1,24 +1,21 @@
 import type {
-  DirectorySyncUserRequest,
   DirectorySyncResponse,
   IDirectoryGroups,
   IDirectoryUsers,
-  DirectorySyncGroupRequest,
   EventCallback,
+  DirectorySyncRequest,
 } from '../typings';
 
-export class UsersRequestHandler {
-  constructor(private directoryUsers: IDirectoryUsers) {}
+export class DirectorySyncRequestHandler {
+  constructor(private directoryUsers: IDirectoryUsers, private directoryGroups: IDirectoryGroups) {}
 
-  async handle(request: DirectorySyncUserRequest, callback?: EventCallback): Promise<DirectorySyncResponse> {
-    return await this.directoryUsers.handleRequest(request, callback);
-  }
-}
+  async handle(request: DirectorySyncRequest, callback?: EventCallback): Promise<DirectorySyncResponse> {
+    if (request.resourceType === 'users') {
+      return await this.directoryUsers.handleRequest(request, callback);
+    } else if (request.resourceType === 'groups') {
+      return await this.directoryGroups.handleRequest(request, callback);
+    }
 
-export class GroupsRequestHandler {
-  constructor(private directoryGroups: IDirectoryGroups) {}
-
-  async handle(request: DirectorySyncGroupRequest, callback?: EventCallback): Promise<DirectorySyncResponse> {
-    return await this.directoryGroups.handleRequest(request, callback);
+    return { status: 404, data: {} };
   }
 }

@@ -1,54 +1,63 @@
-import type { DirectorySyncUserRequest } from '../../../src/typings';
+import type { Directory, DirectorySyncRequest } from '../../../src/typings';
 
 const requests = {
-  create: (directoryId: string, user: any): DirectorySyncUserRequest => {
+  create: (directory: Directory, user: any): DirectorySyncRequest => {
     return {
       method: 'POST',
       body: user,
-      query: {
-        directory_id: directoryId,
-      },
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: undefined,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   // GET /Users?filter=userName eq "userName"
-  filterByUsername: (directoryId: string, userName: string): DirectorySyncUserRequest => {
+  filterByUsername: (directory: Directory, userName: string): DirectorySyncRequest => {
     return {
       method: 'GET',
+      body: undefined,
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: undefined,
+      apiSecret: directory.scim.secret,
       query: {
         filter: `userName eq "${userName}"`,
         count: 1,
         startIndex: 1,
-        directory_id: directoryId,
       },
     };
   },
 
   // GET /Users/{userId}
-  getById: (directoryId: string, userId: string): DirectorySyncUserRequest => {
+  getById: (directory: Directory, userId: string): DirectorySyncRequest => {
     return {
       method: 'GET',
-      query: {
-        directory_id: directoryId,
-        user_id: userId,
-      },
+      body: undefined,
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: userId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   // PUT /Users/{userId}
-  updateById: (directoryId: string, userId: string, user: any): DirectorySyncUserRequest => {
+  updateById: (directory: Directory, userId: string, user: any): DirectorySyncRequest => {
     return {
       method: 'PUT',
       body: user,
-      query: {
-        directory_id: directoryId,
-        user_id: userId,
-      },
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: userId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   // PATCH /Users/{userId}
-  updateOperationById: (directoryId: string, userId: string): DirectorySyncUserRequest => {
+  updateOperationById: (directory: Directory, userId: string): DirectorySyncRequest => {
     return {
       method: 'PATCH',
       body: {
@@ -61,33 +70,40 @@ const requests = {
           },
         ],
       },
-      query: {
-        directory_id: directoryId,
-        user_id: userId,
-      },
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: userId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   // GET /Users/
-  getAll: (directoryId: string): DirectorySyncUserRequest => {
+  getAll: (directory: Directory): DirectorySyncRequest => {
     return {
       method: 'GET',
+      body: undefined,
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: undefined,
+      apiSecret: directory.scim.secret,
       query: {
         count: 1,
         startIndex: 1,
-        directory_id: directoryId,
       },
     };
   },
 
   // DELETE /Users/{userId}
-  deleteById: (directoryId: string, userId: string): DirectorySyncUserRequest => {
+  deleteById: (directory: Directory, userId: string): DirectorySyncRequest => {
     return {
       method: 'DELETE',
-      query: {
-        directory_id: directoryId,
-        user_id: userId,
-      },
+      body: undefined,
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: userId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 };

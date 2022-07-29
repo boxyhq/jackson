@@ -36,7 +36,7 @@ tap.test('Directory users / ', async (t) => {
 
   tap.beforeEach(async () => {
     // Create a user before each test
-    const { data } = await directorySync.usersRequest.handle(requests.create(directory.id, users[0]));
+    const { data } = await directorySync.requests.handle(requests.create(directory, users[0]));
 
     createdUser = data;
   });
@@ -47,8 +47,8 @@ tap.test('Directory users / ', async (t) => {
   });
 
   t.test('Should be able to get the user by userName', async (t) => {
-    const { status, data } = await directorySync.usersRequest.handle(
-      requests.filterByUsername(directory.id, createdUser.userName)
+    const { status, data } = await directorySync.requests.handle(
+      requests.filterByUsername(directory, createdUser.userName)
     );
 
     t.ok(data);
@@ -60,9 +60,7 @@ tap.test('Directory users / ', async (t) => {
   });
 
   t.test('Should be able to get the user by id', async (t) => {
-    const { status, data } = await directorySync.usersRequest.handle(
-      requests.getById(directory.id, createdUser.id)
-    );
+    const { status, data } = await directorySync.requests.handle(requests.getById(directory, createdUser.id));
 
     t.ok(data);
     t.equal(status, 200);
@@ -81,8 +79,8 @@ tap.test('Directory users / ', async (t) => {
       city: 'New York',
     };
 
-    const { status, data: updatedUser } = await directorySync.usersRequest.handle(
-      requests.updateById(directory.id, createdUser.id, toUpdate)
+    const { status, data: updatedUser } = await directorySync.requests.handle(
+      requests.updateById(directory, createdUser.id, toUpdate)
     );
 
     t.ok(updatedUser);
@@ -91,9 +89,7 @@ tap.test('Directory users / ', async (t) => {
     t.match(updatedUser.city, toUpdate.city);
 
     // Make sure the user was updated
-    const { data: user } = await directorySync.usersRequest.handle(
-      requests.getById(directory.id, createdUser.id)
-    );
+    const { data: user } = await directorySync.requests.handle(requests.getById(directory, createdUser.id));
 
     t.ok(user);
     t.hasStrict(user, toUpdate);
@@ -108,8 +104,8 @@ tap.test('Directory users / ', async (t) => {
       active: false,
     };
 
-    const { status, data } = await directorySync.usersRequest.handle(
-      requests.updateOperationById(directory.id, createdUser.id)
+    const { status, data } = await directorySync.requests.handle(
+      requests.updateOperationById(directory, createdUser.id)
     );
 
     t.ok(data);
@@ -120,7 +116,7 @@ tap.test('Directory users / ', async (t) => {
   });
 
   t.test('Should be able to fetch all users', async (t) => {
-    const { status, data } = await directorySync.usersRequest.handle(requests.getAll(directory.id));
+    const { status, data } = await directorySync.requests.handle(requests.getAll(directory));
 
     t.ok(data);
     t.equal(status, 200);
@@ -133,8 +129,8 @@ tap.test('Directory users / ', async (t) => {
   });
 
   t.test('Should be able to delete the user', async (t) => {
-    const { status, data } = await directorySync.usersRequest.handle(
-      requests.deleteById(directory.id, createdUser.id)
+    const { status, data } = await directorySync.requests.handle(
+      requests.deleteById(directory, createdUser.id)
     );
 
     t.equal(status, 200);
@@ -142,8 +138,8 @@ tap.test('Directory users / ', async (t) => {
     t.strictSame(data, createdUser);
 
     // Make sure the user was deleted
-    const { data: user } = await directorySync.usersRequest.handle(
-      requests.filterByUsername(directory.id, createdUser.userName)
+    const { data: user } = await directorySync.requests.handle(
+      requests.filterByUsername(directory, createdUser.userName)
     );
 
     t.hasStrict(user.Resources, []);

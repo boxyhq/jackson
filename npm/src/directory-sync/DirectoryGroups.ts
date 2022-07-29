@@ -4,12 +4,13 @@ import type {
   DirectorySyncResponse,
   Directory,
   DirectorySyncGroupMember,
-  DirectorySyncGroupRequest,
+  DirectorySyncRequest,
   Users,
   Groups,
   ApiError,
   IDirectoryGroups,
   EventCallback,
+  HTTPMethod,
 } from '../typings';
 import { parseGroupOperations, toGroupMembers } from './utils';
 import { sendEvent } from './events';
@@ -263,17 +264,23 @@ export class DirectoryGroups implements IDirectoryGroups {
 
   // Handle the request from the Identity Provider and route it to the appropriate method
   public async handleRequest(
-    request: DirectorySyncGroupRequest,
+    request: DirectorySyncRequest,
     callback?: EventCallback
   ): Promise<DirectorySyncResponse> {
-    const { method, body, query } = request;
-    const { directory_id: directoryId, group_id: groupId } = query;
+    const { body, query, resourceId: groupId, directoryId, apiSecret } = request;
+
+    const method = request.method.toUpperCase() as HTTPMethod;
 
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);
 
     if (error || !directory) {
       return this.respondWithError(error);
+    }
+
+    // Validate the request
+    if (directory.scim.secret != apiSecret) {
+      return this.respondWithError({ code: 401, message: 'Unauthorized' });
     }
 
     this.callback = callback;

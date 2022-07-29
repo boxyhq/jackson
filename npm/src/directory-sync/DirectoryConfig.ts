@@ -180,29 +180,6 @@ export class DirectoryConfig {
     return;
   }
 
-  // Validate the API secret
-  public async validateAPISecret(id: string, bearerToken: string | null): Promise<boolean> {
-    if (!id) {
-      throw new JacksonError('Missing required parameter.', 400);
-    }
-
-    if (!bearerToken) {
-      throw new JacksonError('Missing bearer token.', 400);
-    }
-
-    const { data: directory, error } = await this.get(id);
-
-    if (error || !directory) {
-      return false;
-    }
-
-    if (directory.scim.secret === bearerToken) {
-      return true;
-    }
-
-    return false;
-  }
-
   private transform(directory: Directory): Directory {
     // Add the flag to ensure SCIM compliance when using Azure AD
     if (directory.type === 'azure-scim-v2') {

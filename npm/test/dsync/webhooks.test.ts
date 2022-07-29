@@ -79,7 +79,7 @@ tap.test('Webhook Events / ', async (t) => {
     });
 
     // Create a user
-    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]), eventCallback);
+    await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
     const events = await directorySync.webhookLogs.getAll();
 
@@ -101,7 +101,7 @@ tap.test('Webhook Events / ', async (t) => {
     });
 
     // Create a user
-    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]), eventCallback);
+    await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
     const events = await directorySync.webhookLogs.getAll();
 
@@ -117,7 +117,7 @@ tap.test('Webhook Events / ', async (t) => {
 
   t.test('Should be able to get an event by id', async (t) => {
     // Create a user
-    await directorySync.usersRequest.handle(usersRequest.create(directory.id, users[0]), eventCallback);
+    await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
     const logs = await directorySync.webhookLogs.getAll();
 
@@ -134,20 +134,20 @@ tap.test('Webhook Events / ', async (t) => {
     mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
 
     // Create the user
-    const { data: createdUser } = await directorySync.usersRequest.handle(
-      usersRequest.create(directory.id, users[0]),
+    const { data: createdUser } = await directorySync.requests.handle(
+      usersRequest.create(directory, users[0]),
       eventCallback
     );
 
     // Update the user
-    const { data: updatedUser } = await directorySync.usersRequest.handle(
-      usersRequest.updateById(directory.id, createdUser.id, users[0]),
+    const { data: updatedUser } = await directorySync.requests.handle(
+      usersRequest.updateById(directory, createdUser.id, users[0]),
       eventCallback
     );
 
     // Delete the user
-    const { data: deletedUser } = await directorySync.usersRequest.handle(
-      usersRequest.deleteById(directory.id, createdUser.id),
+    const { data: deletedUser } = await directorySync.requests.handle(
+      usersRequest.deleteById(directory, createdUser.id),
       eventCallback
     );
 
@@ -182,20 +182,20 @@ tap.test('Webhook Events / ', async (t) => {
     mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
 
     // Create the group
-    const { data: createdGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.create(directory.id, groups[0]),
+    const { data: createdGroup } = await directorySync.requests.handle(
+      groupRequest.create(directory, groups[0]),
       eventCallback
     );
 
     // Update the group
-    const { data: updatedGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.updateById(directory.id, createdGroup.id, groups[0]),
+    const { data: updatedGroup } = await directorySync.requests.handle(
+      groupRequest.updateById(directory, createdGroup.id, groups[0]),
       eventCallback
     );
 
     // Delete the group
-    const { data: deletedGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.deleteById(directory.id, createdGroup.id),
+    const { data: deletedGroup } = await directorySync.requests.handle(
+      groupRequest.deleteById(directory, createdGroup.id),
       eventCallback
     );
 
@@ -228,27 +228,27 @@ tap.test('Webhook Events / ', async (t) => {
     mock.expects('post').exactly(4).withArgs(webhook.endpoint).throws();
 
     // Create the user
-    const { data: createdUser } = await directorySync.usersRequest.handle(
-      usersRequest.create(directory.id, users[0]),
+    const { data: createdUser } = await directorySync.requests.handle(
+      usersRequest.create(directory, users[0]),
       eventCallback
     );
 
     // Create the group
-    const { data: createdGroup } = await directorySync.groupsRequest.handle(
-      groupRequest.create(directory.id, groups[0]),
+    const { data: createdGroup } = await directorySync.requests.handle(
+      groupRequest.create(directory, groups[0]),
       eventCallback
     );
 
     // Add the user to the group
-    await directorySync.groupsRequest.handle(
-      groupRequest.addMembers(directory.id, createdGroup.id, [{ value: createdUser.id }]),
+    await directorySync.requests.handle(
+      groupRequest.addMembers(directory, createdGroup.id, [{ value: createdUser.id }]),
       eventCallback
     );
 
     // Remove the user from the group
-    await directorySync.groupsRequest.handle(
+    await directorySync.requests.handle(
       groupRequest.removeMembers(
-        directory.id,
+        directory,
         createdGroup.id,
         [{ value: createdUser.id }],
         `members[value eq "${createdUser.id}"]`

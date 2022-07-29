@@ -12,8 +12,7 @@ import type {
   Group,
   DirectorySyncEvent,
   HTTPMethod,
-  DirectorySyncUserRequest,
-  DirectorySyncGroupRequest,
+  DirectorySyncRequest,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -80,6 +79,5 @@ export type {
   Group,
   DirectorySyncEvent,
   HTTPMethod,
-  DirectorySyncUserRequest,
-  DirectorySyncGroupRequest,
+  DirectorySyncRequest,
 };

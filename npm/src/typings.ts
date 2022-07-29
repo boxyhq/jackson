@@ -346,7 +346,6 @@ export interface DirectoryConfig {
     pageLimit?: number;
   }): Promise<{ data: Directory[] | null; error: ApiError | null }>;
   delete(id: string): Promise<void>;
-  validateAPISecret(id: string, bearerToken: string | null): Promise<boolean>;
 }
 
 export interface IDirectoryUsers {
@@ -356,14 +355,11 @@ export interface IDirectoryUsers {
   patch(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse>;
   delete(directory: Directory, user: User, active: boolean): Promise<DirectorySyncResponse>;
   getAll(queryParams: { count: number; startIndex: number; filter?: string }): Promise<DirectorySyncResponse>;
-  handleRequest(
-    request: DirectorySyncUserRequest,
-    eventCallback?: EventCallback
-  ): Promise<DirectorySyncResponse>;
+  handleRequest(request: DirectorySyncRequest, eventCallback?: EventCallback): Promise<DirectorySyncResponse>;
 }
 
 export interface IDirectoryGroups {
-  create(directory: Directory, body: DirectorySyncGroupRequest['body']): Promise<DirectorySyncResponse>;
+  create(directory: Directory, body: any): Promise<DirectorySyncResponse>;
   get(group: Group): Promise<DirectorySyncResponse>;
   updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group>;
   delete(directory: Directory, group: Group): Promise<DirectorySyncResponse>;
@@ -387,10 +383,7 @@ export interface IDirectoryGroups {
   ): Promise<void>;
   update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
   patch(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse>;
-  handleRequest(
-    request: DirectorySyncGroupRequest,
-    eventCallback?: EventCallback
-  ): Promise<DirectorySyncResponse>;
+  handleRequest(request: DirectorySyncRequest, eventCallback?: EventCallback): Promise<DirectorySyncResponse>;
 }
 
 export interface IWebhookEventsLogger extends Base {
@@ -402,51 +395,36 @@ export interface IWebhookEventsLogger extends Base {
   updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog>;
 }
 
-export type DirectorySyncGroupRequest = {
-  method: HTTPMethod;
-  body?: any;
-  query: {
-    directory_id: Directory['id'];
-    group_id?: string;
-    count?: number;
-    startIndex?: number;
-    filter?: string;
-  };
-};
-
-export type DirectorySyncUserRequest = {
-  method: HTTPMethod;
-  body?: any;
-  query: {
-    directory_id: Directory['id'];
-    user_id?: string;
-    count?: number;
-    startIndex?: number;
-    filter?: string;
-  };
-};
-
 export type DirectorySyncResponse = {
   status: number;
   data?: any;
 };
 
-export interface UsersRequestHandler {
-  handle(request: DirectorySyncUserRequest, eventCallback?: EventCallback): Promise<DirectorySyncResponse>;
-}
-
-export interface GroupsRequestHandler {
-  handle(request: DirectorySyncGroupRequest, eventCallback?: EventCallback): Promise<DirectorySyncResponse>;
+export interface DirectorySyncRequestHandler {
+  handle(request: DirectorySyncRequest, callback?: EventCallback): Promise<DirectorySyncResponse>;
 }
 
 export interface Events {
   handle(event: DirectorySyncEvent): Promise<void>;
 }
 
+export interface DirectorySyncRequest {
+  method: HTTPMethod;
+  body: any | undefined;
+  directoryId: Directory['id'];
+  resourceType: 'users' | 'groups';
+  resourceId: string | undefined;
+  apiSecret: string | null;
+  query: {
+    count?: number;
+    startIndex?: number;
+    filter?: string;
+  };
+}
+
 export type DirectorySync = {
+  requests: DirectorySyncRequestHandler;
   directories: DirectoryConfig;
-  usersRequest: UsersRequestHandler;
-  groupsRequest: GroupsRequestHandler;
   groups: Groups;
   users: Users;
   events: { callback: EventCallback };

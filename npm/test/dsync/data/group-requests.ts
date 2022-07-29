@@ -1,9 +1,9 @@
-import type { DirectorySyncGroupRequest } from '../../../src/typings';
+import type { DirectorySyncRequest, Directory } from '../../../src/typings';
 
 const requests = {
   // Create a group
-  // POST /api/scim/v2.0/{directoryId}/Groups
-  create: (directoryId: string, group: any): DirectorySyncGroupRequest => {
+  // POST /api/scim/v2.0/{directoryId: directory.id}/Groups
+  create: (directory: Directory, group: any): DirectorySyncRequest => {
     return {
       method: 'POST',
       body: {
@@ -11,77 +11,93 @@ const requests = {
         displayName: group.displayName,
         members: [],
       },
-      query: {
-        directory_id: directoryId,
-      },
+      directoryId: directory.id,
+      resourceType: 'groups',
+      resourceId: undefined,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   // Get a group by id
-  // GET /api/scim/v2.0/{directoryId}/Groups/{groupId}
-  getById: (directoryId: string, groupId: string): DirectorySyncGroupRequest => {
+  // GET /api/scim/v2.0/{directoryId: directory.id}/Groups/{groupId}
+  getById: (directory: Directory, groupId: string): DirectorySyncRequest => {
     return {
       method: 'GET',
-      query: {
-        directory_id: directoryId,
-        group_id: groupId,
-      },
+      body: undefined,
+      directoryId: directory.id,
+      resourceType: 'groups',
+      resourceId: groupId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   // Filter by displayName
-  // GET /api/scim/v2.0/{directoryId}/Groups?filter=displayName eq "{displayName}"
-  filterByDisplayName: (directoryId: string, displayName: string): DirectorySyncGroupRequest => {
+  // GET /api/scim/v2.0/{directoryId: directory.id}/Groups?filter=displayName eq "{displayName}"
+  filterByDisplayName: (directory: Directory, displayName: string): DirectorySyncRequest => {
     return {
       method: 'GET',
+      directoryId: directory.id,
+      body: undefined,
+      resourceType: 'groups',
+      resourceId: undefined,
+      apiSecret: directory.scim.secret,
       query: {
-        directory_id: directoryId,
         filter: `displayName eq "${displayName}"`,
       },
     };
   },
 
   // Update a group by id
-  // PUT /api/scim/v2.0/{directoryId}/Groups/{groupId}
-  updateById: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
+  // PUT /api/scim/v2.0/{directoryId: directory.id}/Groups/{groupId}
+  updateById: (directory: Directory, groupId: string, group: any): DirectorySyncRequest => {
     return {
       method: 'PUT',
       body: group,
-      query: {
-        directory_id: directoryId,
-        group_id: groupId,
-      },
+      directoryId: directory.id,
+      resourceType: 'groups',
+      resourceId: groupId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   // Delete a group by id
-  // DELETE /api/scim/v2.0/{directoryId}/Groups/{groupId}
-  deleteById: (directoryId: string, groupId: string): DirectorySyncGroupRequest => {
+  // DELETE /api/scim/v2.0/{directoryId: directory.id}/Groups/{groupId}
+  deleteById: (directory: Directory, groupId: string): DirectorySyncRequest => {
     return {
       method: 'DELETE',
-      query: {
-        directory_id: directoryId,
-        group_id: groupId,
-      },
+      body: undefined,
+      directoryId: directory.id,
+      resourceType: 'groups',
+      resourceId: groupId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   // Get all groups
-  // GET /api/scim/v2.0/{directoryId}/Groups
-  getAll: (directoryId: string): DirectorySyncGroupRequest => {
+  // GET /api/scim/v2.0/{directoryId: directory.id}/Groups
+  getAll: (directory: Directory): DirectorySyncRequest => {
     return {
       method: 'GET',
+      body: undefined,
+      directoryId: directory.id,
+      resourceType: 'groups',
+      resourceId: undefined,
+      apiSecret: directory.scim.secret,
       query: {
         count: 1,
         startIndex: 1,
-        directory_id: directoryId,
       },
     };
   },
 
-  addMembers: (directoryId: string, groupId: string, members: any): DirectorySyncGroupRequest => {
+  addMembers: (directory: Directory, groupId: string, members: any): DirectorySyncRequest => {
     return {
       method: 'PATCH',
+      directoryId: directory.id,
       body: {
         schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
         Operations: [
@@ -92,21 +108,22 @@ const requests = {
           },
         ],
       },
-      query: {
-        directory_id: directoryId,
-        group_id: groupId,
-      },
+      resourceType: 'groups',
+      resourceId: groupId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
   removeMembers: (
-    directoryId: string,
+    directory: Directory,
     groupId: string,
     members: any,
     path: string
-  ): DirectorySyncGroupRequest => {
+  ): DirectorySyncRequest => {
     return {
       method: 'PATCH',
+      directoryId: directory.id,
       body: {
         schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
         Operations: [
@@ -117,16 +134,17 @@ const requests = {
           },
         ],
       },
-      query: {
-        directory_id: directoryId,
-        group_id: groupId,
-      },
+      resourceType: 'groups',
+      resourceId: groupId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 
-  updateName: (directoryId: string, groupId: string, group: any): DirectorySyncGroupRequest => {
+  updateName: (directory: Directory, groupId: string, group: any): DirectorySyncRequest => {
     return {
       method: 'PATCH',
+      directoryId: directory.id,
       body: {
         schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
         Operations: [
@@ -139,10 +157,10 @@ const requests = {
           },
         ],
       },
-      query: {
-        directory_id: directoryId,
-        group_id: groupId,
-      },
+      resourceType: 'groups',
+      resourceId: groupId,
+      apiSecret: directory.scim.secret,
+      query: {},
     };
   },
 };
