@@ -38,9 +38,9 @@ export class ConfigAPIController implements IConfigAPIController {
       tenant,
       product,
       description,
-      discoveryUrl,
-      clientId,
-      clientSecret,
+      oidcDiscoveryUrl,
+      oidcClientId,
+      oidcClientSecret,
     } = body;
 
     if (strategy !== 'saml' && strategy !== 'oidc') {
@@ -53,13 +53,13 @@ export class ConfigAPIController implements IConfigAPIController {
       }
     }
     if (strategy === 'oidc') {
-      if (!clientId) {
+      if (!oidcClientId) {
         throw new JacksonError('Please provide the clientId from OpenID Provider', 400);
       }
-      if (!clientSecret) {
+      if (!oidcClientSecret) {
         throw new JacksonError('Please provide the clientSecret from OpenID Provider', 400);
       }
-      if (!discoveryUrl) {
+      if (!oidcDiscoveryUrl) {
         throw new JacksonError('Please provide the discoveryUrl for the OpenID Provider', 400);
       }
     }
@@ -114,18 +114,6 @@ export class ConfigAPIController implements IConfigAPIController {
    *         description: Raw XML metadata
    *         in: formData
    *         type: string
-   *       - name: discoveryUrl
-   *         description: well-known URL where the OpenID Provider configuration is exposed
-   *         in: formData
-   *         type: string
-   *       - name: clientId
-   *         description: clientId of the application set up on the OpenID Provider
-   *         in: formData
-   *         type: string
-   *       - name: clientSecret
-   *         description: clientSecret of the application set up on the OpenID Provider
-   *         in: formData
-   *         type: string
    *       - name: defaultRedirectUrl
    *         description: The redirect URL to use in the IdP login flow
    *         in: formData
@@ -163,11 +151,6 @@ export class ConfigAPIController implements IConfigAPIController {
    *                 "loginType": "idp",
    *                 "provider": "okta.com"
    *               },
-   *               "oidcProvider": {
-   *                 "discoveryUrl": "https://dev-xxxxx.okta.com/oauth2/yyyyyy/.well-known/openid-configuration",
-   *                 "clientId": "xxxxxxyyyyyyxxxxxx",
-   *                 "clientSecret": "zzzzzzzzzzzzzzzz"
-   *                },
    *               "defaultRedirectUrl": "https://hoppscotch.io/",
    *               "redirectUrl": ["https://hoppscotch.io/"],
    *               "tenant": "hoppscotch.io",
@@ -182,14 +165,11 @@ export class ConfigAPIController implements IConfigAPIController {
    *               }
    *           }
    *       400:
-   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
+   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported
    *       401:
    *         description: Unauthorized
    */
-  public async config(
-    body: IdPConfig,
-    strategy: connectionType = 'saml' /* fallback to 'saml' for backward compatibility in embed setup*/
-  ): Promise<any> {
+  public async createSAMLConfig(body: IdPConfig): Promise<any> {
     const {
       encodedRawMetadata,
       rawMetadata,
@@ -199,15 +179,12 @@ export class ConfigAPIController implements IConfigAPIController {
       product,
       name,
       description,
-      discoveryUrl,
-      clientId = '',
-      clientSecret,
     } = body;
 
-    let configClientSecret, secondaryIndex;
+    let configClientSecret;
     metrics.increment('createConfig');
 
-    this._validateIdPConfig(body, strategy);
+    this._validateIdPConfig(body, 'saml');
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
@@ -216,6 +193,176 @@ export class ConfigAPIController implements IConfigAPIController {
       clientSecret: string; // set by Jackson
       idpMetadata?: Record<string, any>;
       certs?: Record<'publicKey' | 'privateKey', string>;
+    } = {
+      defaultRedirectUrl,
+      redirectUrl: redirectUrlList,
+      tenant,
+      product,
+      name,
+      description,
+      clientID: '',
+      clientSecret: '',
+    };
+
+    let metaData = rawMetadata;
+    if (encodedRawMetadata) {
+      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
+    }
+
+    const idpMetadata = await saml.parseMetadata(metaData!, {});
+
+    // extract provider
+    let providerName = extractHostName(idpMetadata.entityID);
+    if (!providerName) {
+      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl);
+    }
+
+    idpMetadata.provider = providerName ? providerName : 'Unknown';
+
+    record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, idpMetadata.entityID));
+
+    const certs = await x509.generate();
+
+    if (!certs) {
+      throw new Error('Error generating x59 certs');
+    }
+
+    record.idpMetadata = idpMetadata;
+    record.certs = certs;
+
+    const exists = await this.configStore.get(record.clientID);
+
+    if (exists) {
+      configClientSecret = exists.clientSecret;
+    } else {
+      configClientSecret = crypto.randomBytes(24).toString('hex');
+    }
+
+    record.clientSecret = configClientSecret;
+
+    await this.configStore.put(
+      record.clientID,
+      record,
+      {
+        name: IndexNames.EntityID, // secondary index on entityID
+        value: idpMetadata.entityID,
+      },
+      {
+        // secondary index on tenant + product
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      }
+    );
+
+    return record;
+  }
+  // For backwards compatibility
+  public async config(...args: Parameters<ConfigAPIController['createSAMLConfig']>): Promise<any> {
+    return this.createSAMLConfig(...args);
+  }
+
+  /**
+   * @swagger
+   *
+   * /api/v1/oidc/config:
+   *   post:
+   *     summary: Create OIDC configuration
+   *     operationId: create-oidc-config
+   *     tags: [OIDC Config]
+   *     produces:
+   *       - application/json
+   *     consumes:
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - name: name
+   *         description: Name/identifier for the config
+   *         type: string
+   *         in: formData
+   *       - name: description
+   *         description: A short description for the config not more than 100 characters
+   *         type: string
+   *         in: formData
+   *       - name: oidcDiscoveryUrl
+   *         description: well-known URL where the OpenID Provider configuration is exposed
+   *         in: formData
+   *         type: string
+   *       - name: oidcClientId
+   *         description: clientId of the application set up on the OpenID Provider
+   *         in: formData
+   *         type: string
+   *       - name: oidcClientSecret
+   *         description: clientSecret of the application set up on the OpenID Provider
+   *         in: formData
+   *         type: string
+   *       - name: defaultRedirectUrl
+   *         description: The redirect URL to use in the IdP login flow
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: redirectUrl
+   *         description: JSON encoded array containing a list of allowed redirect URLs
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: tenant
+   *         description: Tenant
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: product
+   *         description: Product
+   *         in: formData
+   *         required: true
+   *         type: string
+   *     responses:
+   *       200:
+   *         description: Success
+   *         schema:
+   *           type: object
+   *           example:
+   *             {
+   *               "oidcProvider": {
+   *                 "discoveryUrl": "https://dev-xxxxx.okta.com/oauth2/yyyyyy/.well-known/openid-configuration",
+   *                 "clientId": "xxxxxxyyyyyyxxxxxx",
+   *                 "clientSecret": "zzzzzzzzzzzzzzzz"
+   *                },
+   *               "defaultRedirectUrl": "https://hoppscotch.io/",
+   *               "redirectUrl": ["https://hoppscotch.io/"],
+   *               "tenant": "hoppscotch.io",
+   *               "product": "API Engine",
+   *               "name": "Hoppscotch-SP",
+   *               "description": "SP for hoppscotch.io",
+   *               "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *               "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *           }
+   *       400:
+   *         description: Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
+   *       401:
+   *         description: Unauthorized
+   */
+  public async createOIDCConfig(body: IdPConfig): Promise<any> {
+    const {
+      defaultRedirectUrl,
+      redirectUrl,
+      tenant,
+      product,
+      name,
+      description,
+      oidcDiscoveryUrl,
+      oidcClientId = '',
+      oidcClientSecret,
+    } = body;
+
+    let configClientSecret;
+    metrics.increment('createConfig');
+
+    this._validateIdPConfig(body, 'oidc');
+    const redirectUrlList = extractRedirectUrls(redirectUrl);
+    this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
+
+    const record: Partial<IdPConfig> & {
+      clientID: string; // set by Jackson
+      clientSecret: string; // set by Jackson
       oidcProvider?: {
         discoveryUrl?: string;
         clientId?: string;
@@ -231,44 +378,14 @@ export class ConfigAPIController implements IConfigAPIController {
       clientID: '',
       clientSecret: '',
     };
-
-    if (strategy === 'oidc') {
-      record.oidcProvider = { discoveryUrl, clientId, clientSecret }; //  from OpenID Provider
-      record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, clientId)); // Use the clientId from the OpenID Provider to generate the clientID hash for the config
-      secondaryIndex = null;
-    }
-
-    if (strategy === 'saml') {
-      let metaData = rawMetadata;
-      if (encodedRawMetadata) {
-        metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
-      }
-
-      const idpMetadata = await saml.parseMetadata(metaData!, {});
-
-      // extract provider
-      let providerName = extractHostName(idpMetadata.entityID);
-      if (!providerName) {
-        providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl);
-      }
-
-      idpMetadata.provider = providerName ? providerName : 'Unknown';
-
-      record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, idpMetadata.entityID));
-      secondaryIndex = {
-        name: IndexNames.EntityID, // secondary index on entityID
-        value: idpMetadata.entityID,
-      };
-
-      const certs = await x509.generate();
-
-      if (!certs) {
-        throw new Error('Error generating x59 certs');
-      }
-
-      record.idpMetadata = idpMetadata;
-      record.certs = certs;
-    }
+    //  from OpenID Provider
+    record.oidcProvider = {
+      discoveryUrl: oidcDiscoveryUrl,
+      clientId: oidcClientId,
+      clientSecret: oidcClientSecret,
+    };
+    // Use the clientId from the OpenID Provider to generate the clientID hash for the config
+    record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, oidcClientId));
 
     const exists = await this.configStore.get(record.clientID);
 
@@ -280,7 +397,7 @@ export class ConfigAPIController implements IConfigAPIController {
 
     record.clientSecret = configClientSecret;
 
-    await this.configStore.put(record.clientID, record, secondaryIndex, {
+    await this.configStore.put(record.clientID, record, {
       // secondary index on tenant + product
       name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(tenant, product),
@@ -354,7 +471,9 @@ export class ConfigAPIController implements IConfigAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async updateConfig(body): Promise<void> {
+  public async updateSAMLConfig(
+    body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }
+  ): Promise<void> {
     const {
       encodedRawMetadata, // could be empty
       rawMetadata, // could be empty
@@ -381,6 +500,7 @@ export class ConfigAPIController implements IConfigAPIController {
     if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
     }
+
     let metaData = rawMetadata;
     if (encodedRawMetadata) {
       metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
@@ -434,6 +554,71 @@ export class ConfigAPIController implements IConfigAPIController {
     );
   }
 
+  // For backwards compatibility
+  public async updateConfig(...args: Parameters<ConfigAPIController['updateSAMLConfig']>): Promise<any> {
+    return this.updateSAMLConfig(...args);
+  }
+
+  public async updateOIDCConfig(
+    body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }
+  ): Promise<void> {
+    const {
+      defaultRedirectUrl,
+      redirectUrl,
+      name,
+      description,
+      oidcDiscoveryUrl,
+      oidcClientId,
+      oidcClientSecret,
+      ...clientInfo
+    } = body;
+    if (!clientInfo?.clientID) {
+      throw new JacksonError('Please provide clientID', 400);
+    }
+    if (!clientInfo?.clientSecret) {
+      throw new JacksonError('Please provide clientSecret', 400);
+    }
+    if (description && description.length > 100) {
+      throw new JacksonError('Description should not exceed 100 characters', 400);
+    }
+    const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
+    this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
+
+    const _currentConfig = await this.getConfig(clientInfo);
+
+    if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
+      throw new JacksonError('clientSecret mismatch', 400);
+    }
+
+    let oidcProvider;
+    if (_currentConfig && typeof _currentConfig.oidcProvider === 'object') {
+      oidcProvider = { ..._currentConfig.oidcProvider };
+      if (oidcClientId && typeof oidcClientId === 'string') {
+        oidcProvider.clientId = oidcClientId;
+      }
+      if (oidcClientSecret && typeof oidcClientSecret === 'string') {
+        oidcProvider.clientSecret = oidcClientSecret;
+      }
+      if (oidcDiscoveryUrl && typeof oidcDiscoveryUrl === 'string') {
+        oidcProvider.oidcDiscoveryUrl = oidcDiscoveryUrl;
+      }
+    }
+
+    const record = {
+      ..._currentConfig,
+      name: name ? name : _currentConfig.name,
+      description: description ? description : _currentConfig.description,
+      defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
+      redirectUrl: redirectUrlList ? redirectUrlList : _currentConfig.redirectUrl,
+      oidcProvider: oidcProvider ? oidcProvider : _currentConfig.oidcProvider,
+    };
+
+    await this.configStore.put(clientInfo?.clientID, record, {
+      // secondary index on tenant + product
+      name: IndexNames.TenantProduct,
+      value: dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product),
+    });
+  }
   /**
    * @swagger
    *
@@ -601,6 +786,8 @@ export class ConfigAPIController implements IConfigAPIController {
     throw new JacksonError('Please provide `clientID` and `clientSecret` or `tenant` and `product`.', 400);
   }
 }
+
+ConfigAPIController.prototype.config = ConfigAPIController.prototype.createSAMLConfig;
 
 const extractHostName = (url: string): string | null => {
   try {

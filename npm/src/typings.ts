@@ -11,16 +11,20 @@ export type IdPConfig = {
   rawMetadata?: string;
   encodedRawMetadata?: string;
   // OpenID Provider
-  discoveryUrl?: string;
-  clientId?: string;
-  clientSecret?: string;
+  oidcDiscoveryUrl?: string;
+  oidcClientId?: string;
+  oidcClientSecret?: string;
 };
 
 export type connectionType = 'saml' | 'oidc';
 
 export interface IConfigAPIController {
-  config(body: IdPConfig, strategy: connectionType): Promise<any>;
-  updateConfig(body: any): Promise<any>;
+  config(body: IdPConfig): Promise<any>;
+  createSAMLConfig(body: IdPConfig): Promise<any>;
+  createOIDCConfig(body: IdPConfig): Promise<any>;
+  updateConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
+  updateSAMLConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
+  updateOIDCConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
     clientID?: string;

@@ -16,11 +16,14 @@ const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
       const { default: config }: { default: IdPConfig } = await import(
         /* webpackIgnore: true */ path.join(preLoadedConfig, file)
       );
-      const rawMetadata = await fs.promises.readFile(
-        path.join(preLoadedConfig, path.parse(file).name + '.xml'),
-        'utf8'
-      );
-      config.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+      if (!config.oidcDiscoveryUrl) {
+        const rawMetadata = await fs.promises.readFile(
+          path.join(preLoadedConfig, path.parse(file).name + '.xml'),
+          'utf8'
+        );
+        config.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+      }
+
       configs.push(config);
     }
   }

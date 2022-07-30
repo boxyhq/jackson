@@ -80,7 +80,11 @@ export const controllers = async (
     const configs = await readConfig(opts.preLoadedConfig);
 
     for (const config of configs) {
-      await configAPIController.config(config, 'saml');
+      if (config.oidcDiscoveryUrl) {
+        await configAPIController.createOIDCConfig(config);
+      } else {
+        await configAPIController.createSAMLConfig(config);
+      }
 
       console.log(`loaded config for tenant "${config.tenant}" and product "${config.product}"`);
     }
