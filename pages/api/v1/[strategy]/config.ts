@@ -11,16 +11,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     const { strategy } = req.query;
     if (strategy !== 'saml' && strategy !== 'oidc') {
-      res.status(404).send('Invalid strategy');
-      return;
+      throw { message: 'Strategy not supported', statusCode: 400 };
     }
     const { configAPIController } = await jackson();
     if (req.method === 'POST') {
-      res.json(await configAPIController.config(req.body, strategy));
+      if (strategy === 'saml') {
+        res.json(await configAPIController.createSAMLConfig(req.body));
+      }
+      if (strategy === 'oidc') {
+        res.json(await configAPIController.createOIDCConfig(req.body));
+      }
     } else if (req.method === 'GET') {
       res.json(await configAPIController.getConfig(req.query as any));
     } else if (req.method === 'PATCH') {
-      res.status(204).end(await configAPIController.updateConfig(req.body));
+      if (strategy === 'saml') {
+        res.status(204).end(await configAPIController.updateSAMLConfig(req.body));
+      }
+      if (strategy === 'oidc') {
+        res.status(204).end(await configAPIController.updateOIDCConfig(req.body));
+      }
     } else if (req.method === 'DELETE') {
       res.status(204).end(await configAPIController.deleteConfig(req.body));
     } else {
