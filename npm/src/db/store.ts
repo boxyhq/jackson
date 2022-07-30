@@ -27,12 +27,10 @@ class Store implements Storable {
   }
 
   async put(key: string, val: any, ...indexes: Index[]): Promise<any> {
-    indexes = (indexes || [])
-      .filter((idx) => idx !== null)
-      .map((idx) => {
-        idx.value = dbutils.keyDigest(idx.value);
-        return idx;
-      });
+    indexes = (indexes || []).map((idx) => {
+      idx.value = dbutils.keyDigest(idx.value);
+      return idx;
+    });
 
     return await this.db.put(this.namespace, dbutils.keyDigest(key), val, this.ttl, ...indexes);
   }
