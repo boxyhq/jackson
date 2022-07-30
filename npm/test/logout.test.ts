@@ -31,7 +31,7 @@ const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
 
   for (const config of configs) {
-    await configAPIController.config(config, 'saml');
+    await configAPIController.config(config);
   }
 };
 
