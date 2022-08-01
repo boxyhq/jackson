@@ -490,6 +490,12 @@ export class ConfigAPIController implements IConfigAPIController {
     if (!clientInfo?.clientSecret) {
       throw new JacksonError('Please provide clientSecret', 400);
     }
+    if (!clientInfo?.tenant) {
+      throw new JacksonError('Please provider tenant', 400);
+    }
+    if (!clientInfo?.product) {
+      throw new JacksonError('Please provider product', 400);
+    }
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
@@ -522,7 +528,7 @@ export class ConfigAPIController implements IConfigAPIController {
     if (newMetadata) {
       // check if clientID matches with new metadata payload
       const clientID = dbutils.keyDigest(
-        dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product, newMetadata.entityID)
+        dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, newMetadata.entityID)
       );
 
       if (clientID !== clientInfo?.clientID) {
@@ -609,11 +615,21 @@ export class ConfigAPIController implements IConfigAPIController {
    *         description: JSON encoded array containing a list of allowed redirect URLs
    *         in: formData
    *         type: string
+   *       - name: tenant
+   *         description: Tenant
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: product
+   *         description: Product
+   *         in: formData
+   *         required: true
+   *         type: string
    *     responses:
    *       204:
    *         description: Success
    *       400:
-   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Description should not exceed 100 characters | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
+   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Description should not exceed 100 characters | redirectUrl is invalid | Please provide tenant | Please provide product | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
    *       401:
    *         description: Unauthorized
    */
@@ -636,6 +652,12 @@ export class ConfigAPIController implements IConfigAPIController {
     if (!clientInfo?.clientSecret) {
       throw new JacksonError('Please provide clientSecret', 400);
     }
+    if (!clientInfo?.tenant) {
+      throw new JacksonError('Please provider tenant', 400);
+    }
+    if (!clientInfo?.product) {
+      throw new JacksonError('Please provider product', 400);
+    }
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
@@ -653,7 +675,7 @@ export class ConfigAPIController implements IConfigAPIController {
       oidcProvider = { ..._currentConfig.oidcProvider };
       if (oidcClientId && typeof oidcClientId === 'string') {
         const clientID = dbutils.keyDigest(
-          dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product, oidcClientId)
+          dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, oidcClientId)
         );
         if (clientID !== clientInfo?.clientID) {
           throw new JacksonError('Tenant/Product config mismatch with OIDC Provider metadata', 400);
