@@ -70,7 +70,7 @@
     "@types/react": "18.0.15",
     "@typescript-eslint/eslint-plugin": "5.31.0",
     "@typescript-eslint/parser": "5.30.7",
-    "autoprefixer": "10.4.7",
+    "autoprefixer": "10.4.8",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
     "eslint": "8.21.0",
