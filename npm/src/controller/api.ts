@@ -524,7 +524,7 @@ export class ConfigAPIController implements IConfigAPIController {
     if (newMetadata) {
       // check if clientID matches with new metadata payload
       const clientID = dbutils.keyDigest(
-        dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, newMetadata.entityID)
+        dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product, newMetadata.entityID)
       );
 
       if (clientID !== clientInfo?.clientID) {
