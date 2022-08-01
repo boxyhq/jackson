@@ -491,10 +491,10 @@ export class ConfigAPIController implements IConfigAPIController {
       throw new JacksonError('Please provide clientSecret', 400);
     }
     if (!clientInfo?.tenant) {
-      throw new JacksonError('Please provider tenant', 400);
+      throw new JacksonError('Please provide tenant', 400);
     }
     if (!clientInfo?.product) {
-      throw new JacksonError('Please provider product', 400);
+      throw new JacksonError('Please provide product', 400);
     }
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
@@ -653,10 +653,10 @@ export class ConfigAPIController implements IConfigAPIController {
       throw new JacksonError('Please provide clientSecret', 400);
     }
     if (!clientInfo?.tenant) {
-      throw new JacksonError('Please provider tenant', 400);
+      throw new JacksonError('Please provide tenant', 400);
     }
     if (!clientInfo?.product) {
-      throw new JacksonError('Please provider product', 400);
+      throw new JacksonError('Please provide product', 400);
     }
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
