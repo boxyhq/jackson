@@ -165,7 +165,7 @@ export class ConfigAPIController implements IConfigAPIController {
    *               }
    *           }
    *       400:
-   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported
+   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported
    *       401:
    *         description: Unauthorized
    */
@@ -339,7 +339,7 @@ export class ConfigAPIController implements IConfigAPIController {
    *               "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
    *           }
    *       400:
-   *         description: Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
+   *         description: Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
    *       401:
    *         description: Unauthorized
    */
@@ -449,12 +449,10 @@ export class ConfigAPIController implements IConfigAPIController {
    *       - name: defaultRedirectUrl
    *         description: The redirect URL to use in the IdP login flow
    *         in: formData
-   *         required: true
    *         type: string
    *       - name: redirectUrl
    *         description: JSON encoded array containing a list of allowed redirect URLs
    *         in: formData
-   *         required: true
    *         type: string
    *       - name: tenant
    *         description: Tenant
@@ -470,7 +468,7 @@ export class ConfigAPIController implements IConfigAPIController {
    *       204:
    *         description: Success
    *       400:
-   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters
+   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid
    *       401:
    *         description: Unauthorized
    */
@@ -561,7 +559,64 @@ export class ConfigAPIController implements IConfigAPIController {
   public async updateConfig(...args: Parameters<ConfigAPIController['updateSAMLConfig']>): Promise<any> {
     return this.updateSAMLConfig(...args);
   }
-
+  /**
+   * @swagger
+   *
+   * /api/v1/oidc/config:
+   *   patch:
+   *     summary: Update OIDC configuration
+   *     operationId: update-oidc-config
+   *     tags: [OIDC Config]
+   *     consumes:
+   *       - application/json
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - name: clientID
+   *         description: Client ID for the config
+   *         type: string
+   *         in: formData
+   *         required: true
+   *       - name: clientSecret
+   *         description: Client Secret for the config
+   *         type: string
+   *         in: formData
+   *         required: true
+   *       - name: name
+   *         description: Name/identifier for the config
+   *         type: string
+   *         in: formData
+   *       - name: description
+   *         description: A short description for the config not more than 100 characters
+   *         type: string
+   *         in: formData
+   *       - name: oidcDiscoveryUrl
+   *         description: well-known URL where the OpenID Provider configuration is exposed
+   *         in: formData
+   *         type: string
+   *       - name: oidcClientId
+   *         description: clientId of the application set up on the OpenID Provider
+   *         in: formData
+   *         type: string
+   *       - name: oidcClientSecret
+   *         description: clientSecret of the application set up on the OpenID Provider
+   *         in: formData
+   *         type: string
+   *       - name: defaultRedirectUrl
+   *         description: The redirect URL to use in the IdP login flow
+   *         in: formData
+   *         type: string
+   *       - name: redirectUrl
+   *         description: JSON encoded array containing a list of allowed redirect URLs
+   *         in: formData
+   *         type: string
+   *     responses:
+   *       204:
+   *         description: Success
+   *       400:
+   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Description should not exceed 100 characters | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
+   *       401:
+   *         description: Unauthorized
+   */
   public async updateOIDCConfig(
     body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }
   ): Promise<void> {
