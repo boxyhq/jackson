@@ -237,6 +237,8 @@ tap.test('controller/api', async (t) => {
         clientSecret,
         name: 'A new name',
         description: 'A new description',
+        tenant: body.tenant,
+        product: body.product,
       });
       const savedConfig = await configAPIController.getConfig({ clientID });
       t.equal(savedConfig.name, 'A new name');
