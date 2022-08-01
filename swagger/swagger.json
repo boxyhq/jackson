@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -73,24 +73,6 @@
             "type": "string"
           },
           {
-            "name": "discoveryUrl",
-            "description": "well-known URL where the OpenID Provider configuration is exposed",
-            "in": "formData",
-            "type": "string"
-          },
-          {
-            "name": "clientId",
-            "description": "clientId of the application set up on the OpenID Provider",
-            "in": "formData",
-            "type": "string"
-          },
-          {
-            "name": "clientSecret",
-            "description": "clientSecret of the application set up on the OpenID Provider",
-            "in": "formData",
-            "type": "string"
-          },
-          {
             "name": "defaultRedirectUrl",
             "description": "The redirect URL to use in the IdP login flow",
             "in": "formData",
@@ -135,11 +117,6 @@
                   "loginType": "idp",
                   "provider": "okta.com"
                 },
-                "oidcProvider": {
-                  "discoveryUrl": "https://dev-xxxxx.okta.com/oauth2/yyyyyy/.well-known/openid-configuration",
-                  "clientId": "xxxxxxyyyyyyxxxxxx",
-                  "clientSecret": "zzzzzzzzzzzzzzzz"
-                },
                 "defaultRedirectUrl": "https://hoppscotch.io/",
                 "redirectUrl": [
                   "https://hoppscotch.io/"
@@ -158,7 +135,7 @@
             }
           },
           "400": {
-            "description": "Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider"
+            "description": "Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported"
           },
           "401": {
             "description": "Unauthorized"
@@ -365,6 +342,115 @@
           },
           "400": {
             "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/oidc/config": {
+      "post": {
+        "summary": "Create OIDC configuration",
+        "operationId": "create-oidc-config",
+        "tags": [
+          "OIDC Config"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Name/identifier for the config",
+            "type": "string",
+            "in": "formData"
+          },
+          {
+            "name": "description",
+            "description": "A short description for the config not more than 100 characters",
+            "type": "string",
+            "in": "formData"
+          },
+          {
+            "name": "oidcDiscoveryUrl",
+            "description": "well-known URL where the OpenID Provider configuration is exposed",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "oidcClientId",
+            "description": "clientId of the application set up on the OpenID Provider",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "oidcClientSecret",
+            "description": "clientSecret of the application set up on the OpenID Provider",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "defaultRedirectUrl",
+            "description": "The redirect URL to use in the IdP login flow",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "redirectUrl",
+            "description": "JSON encoded array containing a list of allowed redirect URLs",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "example": {
+                "oidcProvider": {
+                  "discoveryUrl": "https://dev-xxxxx.okta.com/oauth2/yyyyyy/.well-known/openid-configuration",
+                  "clientId": "xxxxxxyyyyyyxxxxxx",
+                  "clientSecret": "zzzzzzzzzzzzzzzz"
+                },
+                "defaultRedirectUrl": "https://hoppscotch.io/",
+                "redirectUrl": [
+                  "https://hoppscotch.io/"
+                ],
+                "tenant": "hoppscotch.io",
+                "product": "API Engine",
+                "name": "Hoppscotch-SP",
+                "description": "SP for hoppscotch.io",
+                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943"
+              }
+            }
+          },
+          "400": {
+            "description": "Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider"
           },
           "401": {
             "description": "Unauthorized"

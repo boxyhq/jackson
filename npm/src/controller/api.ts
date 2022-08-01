@@ -285,14 +285,17 @@ export class ConfigAPIController implements IConfigAPIController {
    *       - name: oidcDiscoveryUrl
    *         description: well-known URL where the OpenID Provider configuration is exposed
    *         in: formData
+   *         required: true
    *         type: string
    *       - name: oidcClientId
    *         description: clientId of the application set up on the OpenID Provider
    *         in: formData
+   *         required: true
    *         type: string
    *       - name: oidcClientSecret
    *         description: clientSecret of the application set up on the OpenID Provider
    *         in: formData
+   *         required: true
    *         type: string
    *       - name: defaultRedirectUrl
    *         description: The redirect URL to use in the IdP login flow
