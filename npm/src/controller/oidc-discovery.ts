@@ -29,7 +29,7 @@ export class OidcDiscoveryController implements IOidcDiscoveryController {
     if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
       throw new JacksonError('JWT signing keys are not loaded', 501);
     }
-    const importedPublicKey = await importJWTPublicKey(jwtSigningKeys.public, jwsAlg);
+    const importedPublicKey = await importJWTPublicKey(jwtSigningKeys.public, jwsAlg!);
     const publicKeyJWK = await exportPublicKeyJWK(importedPublicKey);
     const jwkThumbprint = await generateJwkThumbprint(publicKeyJWK);
     const jwks = {
