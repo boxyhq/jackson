@@ -693,9 +693,9 @@ export class OAuthController implements IOAuthController {
         firstName: codeVal.profile.claims.firstName,
         lastName: codeVal.profile.claims.lastName,
       };
-      const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg);
+      const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
       const id_token = await new jose.SignJWT(claims)
-        .setProtectedHeader({ alg: jwsAlg })
+        .setProtectedHeader({ alg: jwsAlg! })
         .setIssuedAt()
         .setIssuer(this.opts.samlAudience || '')
         .setSubject(codeVal.profile.claims.id)
