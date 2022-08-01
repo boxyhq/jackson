@@ -80,7 +80,7 @@
     "lint-staged": "13.0.3",
     "postcss": "8.4.14",
     "prettier": "2.7.1",
-    "prettier-plugin-tailwindcss": "0.1.12",
+    "prettier-plugin-tailwindcss": "0.1.13",
     "swagger-jsdoc": "6.2.1",
     "tailwindcss": "3.1.7",
     "ts-node": "10.9.1",
