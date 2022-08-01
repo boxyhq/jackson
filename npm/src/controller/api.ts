@@ -597,7 +597,12 @@ export class ConfigAPIController implements IConfigAPIController {
     if (_currentConfig && typeof _currentConfig.oidcProvider === 'object') {
       oidcProvider = { ..._currentConfig.oidcProvider };
       if (oidcClientId && typeof oidcClientId === 'string') {
-        oidcProvider.clientId = oidcClientId;
+        const clientID = dbutils.keyDigest(
+          dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product, oidcClientId)
+        );
+        if (clientID !== clientInfo?.clientID) {
+          throw new JacksonError('Tenant/Product config mismatch with OIDC Provider metadata', 400);
+        }
       }
       if (oidcClientSecret && typeof oidcClientSecret === 'string') {
         oidcProvider.clientSecret = oidcClientSecret;
