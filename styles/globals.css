@@ -28,6 +28,10 @@ a {
   --color-secondary: 48 56 70;
 }
 
+.btn {
+  text-transform: none;
+}
+
 @layer components {
   #__next {
     @apply h-full;

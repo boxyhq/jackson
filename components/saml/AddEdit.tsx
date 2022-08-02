@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
 import { mutate } from 'swr';
 import { ArrowLeftIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/outline';
-import { Modal } from '@supabase/ui';
+import { Modal, Button } from 'react-daisyui';
 
 /**
  * Edit view will have extra fields (showOnlyInEditView: true)
@@ -266,9 +266,9 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                 }
               )}
             <div className='flex'>
-              <button type='submit' className='btn-primary'>
+              <Button color='primary' type='submit'>
                 Save Changes
-              </button>
+              </Button>
               <p
                 role='status'
                 className={`ml-2 inline-flex items-center ${
@@ -296,17 +296,37 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                 <h6 className='mb-1 font-medium'>Delete this connection</h6>
                 <p className='font-light'>All your apps using this connection will stop working.</p>
               </div>
-              <button
+              <Button color='error' onClick={toggleDelConfirm} data-modal-toggle='popup-modal'>
+                Delete
+              </Button>
+              {/* <button
                 type='button'
                 className='inline-block rounded bg-red-700 px-4 py-2 text-sm font-bold leading-6 text-white hover:bg-red-800'
                 onClick={toggleDelConfirm}
                 data-modal-toggle='popup-modal'>
                 Delete
-              </button>
+              </button> */}
             </section>
           )}
         </form>
-        <Modal
+        <Modal open={delModalVisible}>
+          <Modal.Header className='font-bold'>Congratulations random Interner user!</Modal.Header>
+
+          <Modal.Body>
+            You've been selected for a chance to get one year of subscription to use Wikipedia for free!
+          </Modal.Body>
+
+          <Modal.Actions>
+            <Button onClick={toggleDelConfirm}>Cancel</Button>
+            <Button
+              color='error'
+              disabled={userNameEntry !== samlConfig?.product}
+              onClick={deleteConfiguration}>
+              Delete
+            </Button>
+          </Modal.Actions>
+        </Modal>
+        {/* <Modal
           closable
           title='Are you absolutely sure ?'
           description='This action cannot be undone. This will permanently delete the SAML config.'
@@ -344,7 +364,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
             onChange={({ target }) => {
               setUserNameEntry(target.value);
             }}></input>
-        </Modal>
+        </Modal> */}
       </div>
     </>
   );
