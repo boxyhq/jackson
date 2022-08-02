@@ -103,7 +103,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return OAuth Error response if `state` is not set', async (t) => {
     const body = state_not_set;
 
-    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = (await oauthController.authorize(<OAuthReqBody>body)) as {
+      redirect_url: string;
+    };
 
     t.equal(
       redirect_url,
@@ -117,7 +119,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return OAuth Error response if `response_type` is not `code`', async (t) => {
     const body = response_type_not_code;
 
-    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = (await oauthController.authorize(<OAuthReqBody>body)) as {
+      redirect_url: string;
+    };
 
     t.equal(
       redirect_url,
@@ -131,7 +135,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
     const body = saml_binding_absent;
 
-    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = (await oauthController.authorize(<OAuthReqBody>body)) as {
+      redirect_url: string;
+    };
 
     t.equal(
       redirect_url,
@@ -145,7 +151,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return OAuth Error response if request creation fails', async (t) => {
     const body = authz_request_normal;
     const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
-    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = (await oauthController.authorize(<OAuthReqBody>body)) as {
+      redirect_url: string;
+    };
     t.equal(
       redirect_url,
       `${body.redirect_uri}?error=server_error&error_description=Internal+error%3A+Fatal&state=${body.state}`,
@@ -191,7 +199,9 @@ tap.test('authorize()', async (t) => {
     t.test('accepts client_id', async (t) => {
       const body = authz_request_normal;
 
-      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
+        redirect_url: string;
+      };
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -204,7 +214,9 @@ tap.test('authorize()', async (t) => {
     t.test('accepts access_type', async (t) => {
       const body = authz_request_normal_with_access_type;
 
-      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
+        redirect_url: string;
+      };
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -217,7 +229,9 @@ tap.test('authorize()', async (t) => {
     t.test('accepts resource', async (t) => {
       const body = authz_request_normal_with_resource;
 
-      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
+        redirect_url: string;
+      };
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -230,7 +244,9 @@ tap.test('authorize()', async (t) => {
     t.test('accepts scope', async (t) => {
       const body = authz_request_normal_with_scope;
 
-      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
+        redirect_url: string;
+      };
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -247,7 +263,9 @@ tap.test('authorize()', async (t) => {
 tap.test('samlResponse()', async (t) => {
   const authBody = authz_request_normal;
 
-  const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+  const { redirect_url } = (await oauthController.authorize(<OAuthReqBody>authBody)) as {
+    redirect_url: string;
+  };
 
   const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
 
@@ -444,7 +462,9 @@ tap.test('token()', (t) => {
         // have to call authorize, because previous happy path deletes the code.
         const authBody = authz_request_normal;
 
-        const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+        const { redirect_url } = (await oauthController.authorize(<OAuthReqBody>authBody)) as {
+          redirect_url: string;
+        };
 
         const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
 
@@ -496,7 +516,9 @@ tap.test('token()', (t) => {
       t.test('openid flow', async (t) => {
         const authBody = authz_request_normal_oidc_flow;
 
-        const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+        const { redirect_url } = (await oauthController.authorize(<OAuthReqBody>authBody)) as {
+          redirect_url: string;
+        };
 
         const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
 
