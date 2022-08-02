@@ -322,7 +322,7 @@ export interface DirectoryConfig {
     webhook_secret,
     type,
   }: {
-    name: string;
+    name?: string;
     tenant: string;
     product: string;
     webhook_url?: string;

@@ -28,7 +28,7 @@ export class DirectoryConfig {
     webhook_secret,
     type,
   }: {
-    name: string;
+    name?: string;
     tenant: string;
     product: string;
     webhook_url?: string;
@@ -36,8 +36,12 @@ export class DirectoryConfig {
     type: DirectoryType;
   }): Promise<{ data: Directory | null; error: ApiError | null }> {
     try {
-      if (!name || !tenant || !product) {
+      if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
+      }
+
+      if (!name) {
+        name = `scim-${tenant}-${product}`;
       }
 
       const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
