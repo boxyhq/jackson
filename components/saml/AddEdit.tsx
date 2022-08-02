@@ -193,7 +193,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
       </Link>
       <div>
         <h2 className='mt-2 mb-4 text-3xl font-bold text-primary dark:text-white'>
-          {isEditView ? 'Edit Configuration' : 'New Configuration'}
+          {isEditView ? 'Edit Connection' : 'New Connection'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
           <div className='min-w-[28rem] rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
@@ -293,8 +293,8 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
           {samlConfig?.clientID && samlConfig.clientSecret && (
             <section className='mt-10 flex items-center rounded bg-red-100 p-6 text-red-900'>
               <div className='flex-1'>
-                <h6 className='mb-1 font-medium'>Delete this configuration</h6>
-                <p className='font-light'>All your apps using this configuration will stop working.</p>
+                <h6 className='mb-1 font-medium'>Delete this connection</h6>
+                <p className='font-light'>All your apps using this connection will stop working.</p>
               </div>
               <button
                 type='button'

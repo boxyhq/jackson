@@ -35,7 +35,7 @@ const SAMLConfigurations: NextPage = () => {
   return (
     <div>
       <div className='flex items-center justify-between'>
-        <h2 className='font-bold text-primary dark:text-white md:text-2xl'>SAML Configurations</h2>
+        <h2 className='font-bold text-primary dark:text-white md:text-2xl'>SAML Connections</h2>
         <Link href={'/admin/saml/config/new'}>
           <a className='btn-primary'>
             <span className='mr-1 inline-block md:mr-2' aria-hidden>

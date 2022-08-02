@@ -13,7 +13,7 @@ import { useSession, signOut } from 'next-auth/react';
 const navigation = [
   {
     path: '/admin/saml/config',
-    text: <span className='ml-4'>SAML Configurations</span>,
+    text: <span className='ml-4'>SAML Connections</span>,
     icon: <ShieldCheckIcon className='h-5 w-5' aria-hidden />,
   },
 ];
