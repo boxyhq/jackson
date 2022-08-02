@@ -367,6 +367,7 @@ export class ConfigAPIController implements IConfigAPIController {
       clientID: string; // set by Jackson
       clientSecret: string; // set by Jackson
       oidcProvider?: {
+        provider?: string;
         discoveryUrl?: string;
         clientId?: string;
         clientSecret?: string;
@@ -387,6 +388,11 @@ export class ConfigAPIController implements IConfigAPIController {
       clientId: oidcClientId,
       clientSecret: oidcClientSecret,
     };
+
+    // extract provider
+    const providerName = extractHostName(oidcDiscoveryUrl);
+    record.oidcProvider.provider = providerName ? providerName : 'Unknown';
+
     // Use the clientId from the OpenID Provider to generate the clientID hash for the config
     record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, oidcClientId));
 
@@ -686,6 +692,8 @@ export class ConfigAPIController implements IConfigAPIController {
       }
       if (oidcDiscoveryUrl && typeof oidcDiscoveryUrl === 'string') {
         oidcProvider.oidcDiscoveryUrl = oidcDiscoveryUrl;
+        const providerName = extractHostName(oidcDiscoveryUrl);
+        oidcProvider.provider = providerName ? providerName : 'Unknown';
       }
     }
 
