@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
+import { type Client, errors, generators, Issuer } from 'openid-client';
 import * as jose from 'jose';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
@@ -84,21 +85,21 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
-  private resolveMultipleConfigMatches(
-    samlConfigs,
+  private resolveMultipleConnectionMatches(
+    connections,
     idp_hint,
     originalParams,
     isIdpFlow = false
-  ): { resolvedSamlConfig?: unknown; redirect_url?: string; app_select_form?: string } {
-    if (samlConfigs.length > 1) {
+  ): { resolvedConnection?: unknown; redirect_url?: string; app_select_form?: string } {
+    if (connections.length > 1) {
       if (idp_hint) {
-        return { resolvedSamlConfig: samlConfigs.find(({ clientID }) => clientID === idp_hint) };
+        return { resolvedConnection: connections.find(({ clientID }) => clientID === idp_hint) };
       } else if (this.opts.idpDiscoveryPath) {
         if (!isIdpFlow) {
           // redirect to IdP selection page
-          const idpList = samlConfigs.map(({ idpMetadata: { provider }, clientID }) =>
+          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID }) =>
             JSON.stringify({
-              provider,
+              provider: idpMetadata?.provider ?? oidcProvider?.provider,
               clientID,
             })
           );
@@ -109,7 +110,7 @@ export class OAuthController implements IOAuthController {
             }),
           };
         } else {
-          const appList = samlConfigs.map(({ product, name, description, clientID }) => ({
+          const appList = connections.map(({ product, name, description, clientID }) => ({
             product,
             name,
             description,
@@ -133,7 +134,9 @@ export class OAuthController implements IOAuthController {
     return {};
   }
 
-  public async authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }> {
+  public async authorize(
+    body: OAuthReqBody
+  ): Promise<{ redirect_url?: string; authorize_form?: string } | undefined> {
     const {
       response_type = 'code',
       client_id,
@@ -161,41 +164,45 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Please specify a redirect URL.', 400);
     }
 
-    let samlConfig;
+    let connection;
     const requestedScopes = getScopeValues(scope);
     const requestedOIDCFlow = requestedScopes.includes('openid');
 
     if (tenant && product) {
-      const samlConfigs = await this.configStore.getByIndex({
+      const connections = await this.configStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!samlConfigs || samlConfigs.length === 0) {
-        throw new JacksonError('SAML configuration not found.', 403);
+      if (!connections || connections.length === 0) {
+        throw new JacksonError('IdP connection not found.', 403);
       }
 
-      samlConfig = samlConfigs[0];
+      connection = connections[0];
 
       // Support multiple matches
-      const { resolvedSamlConfig, redirect_url } = this.resolveMultipleConfigMatches(samlConfigs, idp_hint, {
-        response_type,
-        client_id,
-        redirect_uri,
-        state,
-        tenant,
-        product,
-        code_challenge,
-        code_challenge_method,
-        provider,
-      });
+      const { resolvedConnection, redirect_url } = this.resolveMultipleConnectionMatches(
+        connections,
+        idp_hint,
+        {
+          response_type,
+          client_id,
+          redirect_uri,
+          state,
+          tenant,
+          product,
+          code_challenge,
+          code_challenge_method,
+          provider,
+        }
+      );
 
       if (redirect_url) {
         return { redirect_url };
       }
 
-      if (resolvedSamlConfig) {
-        samlConfig = resolvedSamlConfig;
+      if (resolvedConnection) {
+        connection = resolvedConnection;
       }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
@@ -217,19 +224,19 @@ export class OAuthController implements IOAuthController {
         requestedTenant = sp.tenant;
         requestedProduct = sp.product;
 
-        const samlConfigs = await this.configStore.getByIndex({
+        const connections = await this.configStore.getByIndex({
           name: IndexNames.TenantProduct,
           value: dbutils.keyFromParts(sp.tenant, sp.product),
         });
 
-        if (!samlConfigs || samlConfigs.length === 0) {
+        if (!connections || connections.length === 0) {
           throw new JacksonError('SAML configuration not found.', 403);
         }
 
-        samlConfig = samlConfigs[0];
+        connection = connections[0];
         // Support multiple matches
-        const { resolvedSamlConfig, redirect_url } = this.resolveMultipleConfigMatches(
-          samlConfigs,
+        const { resolvedConnection, redirect_url } = this.resolveMultipleConnectionMatches(
+          connections,
           idp_hint,
           {
             response_type,
@@ -248,25 +255,25 @@ export class OAuthController implements IOAuthController {
           return { redirect_url };
         }
 
-        if (resolvedSamlConfig) {
-          samlConfig = resolvedSamlConfig;
+        if (resolvedConnection) {
+          connection = resolvedConnection;
         }
       } else {
-        samlConfig = await this.configStore.get(client_id);
-        if (samlConfig) {
-          requestedTenant = samlConfig.tenant;
-          requestedProduct = samlConfig.product;
+        connection = await this.configStore.get(client_id);
+        if (connection) {
+          requestedTenant = connection.tenant;
+          requestedProduct = connection.product;
         }
       }
     } else {
       throw new JacksonError('You need to specify client_id or tenant & product', 403);
     }
 
-    if (!samlConfig) {
-      throw new JacksonError('SAML configuration not found.', 403);
+    if (!connection) {
+      throw new JacksonError('IdP connection not found.', 403);
     }
 
-    if (!allowed.redirect(redirect_uri, samlConfig.redirectUrl)) {
+    if (!allowed.redirect(redirect_uri, connection.redirectUrl)) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
@@ -305,40 +312,112 @@ export class OAuthController implements IOAuthController {
       };
     }
 
+    // Connection retrieved: Handover to IdP starts here
     let ssoUrl;
     let post = false;
+    const connectionIsSAML = connection.idpMetadata && typeof connection.idpMetadata === 'object';
+    const connectionIsOIDC = connection.oidcProvider && typeof connection.oidcProvideer === 'object';
 
-    const { sso } = samlConfig.idpMetadata;
-
-    if ('redirectUrl' in sso) {
-      // HTTP Redirect binding
-      ssoUrl = sso.redirectUrl;
-    } else if ('postUrl' in sso) {
-      // HTTP-POST binding
-      ssoUrl = sso.postUrl;
-      post = true;
-    } else {
+    if (!connectionIsOIDC && !connectionIsSAML) {
       return {
         redirect_url: OAuthErrorResponse({
           error: 'invalid_request',
-          error_description: 'SAML binding could not be retrieved',
+          error_description: 'Connection appears to be misconfigured',
           redirect_uri,
           state,
         }),
       };
     }
+    if (!requestedOIDCFlow && connectionIsOIDC) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'invalid_request',
+          error_description: 'OIDC Identity Provider detected but scope: openid not supplied',
+          redirect_uri,
+          state,
+        }),
+      };
+    }
+    // Init sessionId
+    const sessionId = crypto.randomBytes(16).toString('hex');
+    const relayState = relayStatePrefix + sessionId;
+    // SAML connection: SAML request will be constructed here
+    let samlReq;
+    if (connectionIsSAML) {
+      const { sso } = connection.idpMetadata;
 
+      if ('redirectUrl' in sso) {
+        // HTTP Redirect binding
+        ssoUrl = sso.redirectUrl;
+      } else if ('postUrl' in sso) {
+        // HTTP-POST binding
+        ssoUrl = sso.postUrl;
+        post = true;
+      } else {
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'invalid_request',
+            error_description: 'SAML binding could not be retrieved',
+            redirect_uri,
+            state,
+          }),
+        };
+      }
+
+      try {
+        samlReq = saml.request({
+          ssoUrl,
+          entityID: this.opts.samlAudience!,
+          callbackUrl: this.opts.externalUrl + this.opts.samlPath,
+          signingKey: connection.certs.privateKey,
+          publicKey: connection.certs.publicKey,
+        });
+      } catch (err: unknown) {
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'server_error',
+            error_description: getErrorMessage(err),
+            redirect_uri,
+            state,
+          }),
+        };
+      }
+    }
+    // OIDC Connection: Issuer discovery, client init and extraction of authorization endpoint happens here
+    let oidcClient: Client | undefined;
+    if (connectionIsOIDC) {
+      const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
+      try {
+        const oidcIssuer = await Issuer.discover(discoveryUrl);
+        oidcClient = new oidcIssuer.Client({
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
+          response_types: ['code'],
+        });
+        const code_verifier = generators.codeVerifier();
+        const code_challenge = generators.codeChallenge(code_verifier);
+        ssoUrl = oidcClient.authorizationUrl({
+          scope,
+          code_challenge,
+          code_challenge_method: 'S256',
+          state: relayState,
+        });
+      } catch (err: unknown) {
+        if (err) {
+          return {
+            redirect_url: OAuthErrorResponse({
+              error: 'server_error',
+              error_description: (err as errors.OPError)?.error || getErrorMessage(err),
+              redirect_uri,
+              state,
+            }),
+          };
+        }
+      }
+    }
+    // Session persistence happens here
     try {
-      const samlReq = saml.request({
-        ssoUrl,
-        entityID: this.opts.samlAudience!,
-        callbackUrl: this.opts.externalUrl + this.opts.samlPath,
-        signingKey: samlConfig.certs.privateKey,
-        publicKey: samlConfig.certs.publicKey,
-      });
-
-      const sessionId = crypto.randomBytes(16).toString('hex');
-
       const requested = { client_id, state } as Record<string, string | boolean | string[]>;
       if (requestedTenant) {
         requested.tenant = requestedTenant;
@@ -359,44 +438,55 @@ export class OAuthController implements IOAuthController {
         requested.scope = requestedScopes;
       }
 
-      await this.sessionStore.put(sessionId, {
-        id: samlReq.id,
+      const sessionObj = {
         redirect_uri,
         response_type,
         state,
         code_challenge,
         code_challenge_method,
         requested,
-      });
-
-      const relayState = relayStatePrefix + sessionId;
-
-      let redirectUrl;
-      let authorizeForm;
-
-      if (!post) {
-        // HTTP Redirect binding
-        redirectUrl = redirect.success(ssoUrl, {
-          RelayState: relayState,
-          SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
-        });
-      } else {
-        // HTTP POST binding
-        authorizeForm = saml.createPostForm(ssoUrl, [
-          {
-            name: 'RelayState',
-            value: relayState,
-          },
-          {
-            name: 'SAMLRequest',
-            value: Buffer.from(samlReq.request).toString('base64'),
-          },
-        ]);
-      }
-      return {
-        redirect_url: redirectUrl,
-        authorize_form: authorizeForm,
       };
+      await this.sessionStore.put(
+        sessionId,
+        connectionIsSAML
+          ? {
+              ...sessionObj,
+              id: samlReq?.id,
+            }
+          : { ...sessionObj, oidcClientMetadata: oidcClient?.metadata }
+      );
+      // Redirect to IdP
+      if (connectionIsSAML) {
+        let redirectUrl;
+        let authorizeForm;
+
+        if (!post) {
+          // HTTP Redirect binding
+          redirectUrl = redirect.success(ssoUrl, {
+            RelayState: relayState,
+            SAMLRequest: Buffer.from(await deflateRawAsync(samlReq.request)).toString('base64'),
+          });
+        } else {
+          // HTTP POST binding
+          authorizeForm = saml.createPostForm(ssoUrl, [
+            {
+              name: 'RelayState',
+              value: relayState,
+            },
+            {
+              name: 'SAMLRequest',
+              value: Buffer.from(samlReq.request).toString('base64'),
+            },
+          ]);
+        }
+        return {
+          redirect_url: redirectUrl,
+          authorize_form: authorizeForm,
+        };
+      }
+      if (connectionIsOIDC) {
+        return { redirect_url: ssoUrl };
+      }
     } catch (err: unknown) {
       return {
         redirect_url: OAuthErrorResponse({
@@ -448,7 +538,7 @@ export class OAuthController implements IOAuthController {
 
     if (isIdPFlow) {
       RelayState = '';
-      const { resolvedSamlConfig, app_select_form } = this.resolveMultipleConfigMatches(
+      const { resolvedConnection, app_select_form } = this.resolveMultipleConnectionMatches(
         samlConfigs,
         idp_hint,
         { SAMLResponse },
@@ -457,8 +547,8 @@ export class OAuthController implements IOAuthController {
       if (app_select_form) {
         return { app_select_form };
       }
-      if (resolvedSamlConfig) {
-        samlConfig = resolvedSamlConfig;
+      if (resolvedConnection) {
+        samlConfig = resolvedConnection;
       }
     }
 

@@ -35,7 +35,7 @@ export interface IConfigAPIController {
 }
 
 export interface IOAuthController {
-  authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }>;
+  authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string } | undefined>;
   samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
@@ -166,6 +166,7 @@ export interface DatabaseOption {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
+  oidcPath?: string; // TODO: Add validation
   samlAudience?: string;
   preLoadedConfig?: string;
   idpEnabled?: boolean;
