@@ -26,14 +26,14 @@ export class DirectoryConfig {
     product,
     webhook_url,
     webhook_secret,
-    type,
+    type = 'generic-scim-v2',
   }: {
     name?: string;
     tenant: string;
     product: string;
     webhook_url?: string;
     webhook_secret?: string;
-    type: DirectoryType;
+    type?: DirectoryType;
   }): Promise<{ data: Directory | null; error: ApiError | null }> {
     try {
       if (!tenant || !product) {

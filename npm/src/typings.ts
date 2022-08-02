@@ -287,6 +287,7 @@ export enum DirectorySyncProviders {
   'onelogin-scim-v2' = 'OneLogin SCIM v2.0',
   'okta-scim-v2' = 'Okta SCIM v2.0',
   'jumpcloud-scim-v2' = 'JumpCloud v2.0',
+  'generic-scim-v2' = 'SCIM Generic v2.0',
 }
 
 export type DirectoryType = keyof typeof DirectorySyncProviders;
@@ -327,7 +328,7 @@ export interface DirectoryConfig {
     product: string;
     webhook_url?: string;
     webhook_secret?: string;
-    type: DirectoryType;
+    type?: DirectoryType;
   }): Promise<{ data: Directory | null; error: ApiError | null }>;
   update(
     id: string,
