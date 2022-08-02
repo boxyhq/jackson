@@ -1,7 +1,5 @@
 import Chance from 'chance';
 import * as Retraced from 'retraced';
-import { getToken } from '../retraced/projects';
-import axios from 'axios';
 const chance = new Chance();
 
 const actions = [
@@ -16,7 +14,6 @@ const actions = [
 const ips = ['192.168.1.1', '200.168.1.10', '12.18.12.13', '92.68.51.21'];
 
 export default async function handler(req, res) {
-  const token = await getToken();
   const actor_id = chance.guid();
   const actor_name = chance.name();
 
