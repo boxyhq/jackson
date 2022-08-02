@@ -11,7 +11,7 @@ const Viewer = ({ project, token, environment, selectedGroup }) => {
     fetcher,
     { revalidateOnFocus: false }
   );
-  if(!logRes.data) {
+  if (!logRes.data) {
     return null;
   }
   if (Object.keys(logRes.data).length === 0) {
@@ -23,7 +23,9 @@ const Viewer = ({ project, token, environment, selectedGroup }) => {
   }
   return (
     <div>
-      { logRes.data.token && logRes.data.host && <RetracedEventsBrowser host={logRes.data.host} auditLogToken={logRes.data.token} /> }
+      {logRes.data.token && logRes.data.host && (
+        <RetracedEventsBrowser host={logRes.data.host} auditLogToken={logRes.data.token} customClass={"text-primary dark:text-white"} />
+      )}
     </div>
   );
 };
