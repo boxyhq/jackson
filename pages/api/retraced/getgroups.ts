@@ -4,8 +4,8 @@ import { getToken } from '../retraced/projects';
 const getGroups = async (
   id: string,
   token: string,
-  projectId = 'aceb333136834868b4a9d7a523260137',
-  environmentId = 'e1426c14c29345c68d303d8b784d2a04'
+  projectId: string,
+  environmentId: string
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
@@ -37,6 +37,6 @@ const getGroups = async (
 
 export default async function handler(req, res) {
   const token = await getToken();
-  const groups = await getGroups(token.id, token.token);
+  const groups = await getGroups(token.id, token.token, req.query.project, req.query.environment);
   res.status(200).json(groups.groups);
 }
