@@ -351,9 +351,9 @@ export class ConfigAPIController implements IConfigAPIController {
       product,
       name,
       description,
-      oidcDiscoveryUrl,
+      oidcDiscoveryUrl = '',
       oidcClientId = '',
-      oidcClientSecret,
+      oidcClientSecret = '',
     } = body;
 
     let configClientSecret;
