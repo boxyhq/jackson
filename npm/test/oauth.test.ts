@@ -172,7 +172,7 @@ tap.test('authorize()', async (t) => {
       t.fail('Expecting JacksonError.');
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
-      t.equal(message, 'SAML configuration not found.', 'got expected error message');
+      t.equal(message, 'IdP connection not found.', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
 
