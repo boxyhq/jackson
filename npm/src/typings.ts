@@ -7,13 +7,24 @@ export type IdPConfig = {
   product: string;
   name: string;
   description: string;
+  // SAML Provider
   rawMetadata?: string;
   encodedRawMetadata?: string;
+  // OpenID Provider
+  oidcDiscoveryUrl?: string;
+  oidcClientId?: string;
+  oidcClientSecret?: string;
 };
 
-export interface IAPIController {
+export type connectionType = 'saml' | 'oidc';
+
+export interface IConfigAPIController {
   config(body: IdPConfig): Promise<any>;
-  updateConfig(body: any): Promise<any>;
+  createSAMLConfig(body: IdPConfig): Promise<any>;
+  createOIDCConfig(body: IdPConfig): Promise<any>;
+  updateConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
+  updateSAMLConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
+  updateOIDCConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
     clientID?: string;
@@ -32,6 +43,8 @@ export interface IOAuthController {
 
 export interface IAdminController {
   getAllConfig(pageOffset?: number, pageLimit?: number);
+  getAllSAMLConfig(pageOffset?: number, pageLimit?: number);
+  getAllOIDCConfig(pageOffset?: number, pageLimit?: number);
 }
 export interface IHealthCheckController {
   status(): Promise<{
@@ -153,6 +166,7 @@ export interface DatabaseOption {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
+  oidcPath?: string; // TODO: Add validation
   samlAudience?: string;
   preLoadedConfig?: string;
   idpEnabled?: boolean;

@@ -1,6 +1,6 @@
 import jackson, {
   IAdminController,
-  IAPIController,
+  IConfigAPIController,
   IdPConfig,
   ILogoutController,
   IOAuthController,
@@ -10,7 +10,7 @@ import jackson, {
 import env from '@lib/env';
 import '@lib/metrics';
 
-let apiController: IAPIController;
+let configAPIController: IConfigAPIController;
 let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
@@ -21,7 +21,7 @@ const g = global as any;
 
 export default async function init() {
   if (
-    !g.apiController ||
+    !g.configAPIController ||
     !g.oauthController ||
     !g.adminController ||
     !g.healthCheckController ||
@@ -29,14 +29,14 @@ export default async function init() {
     !g.oidcDiscoveryController
   ) {
     const ret = await jackson(env);
-    apiController = ret.apiController;
+    configAPIController = ret.configAPIController;
     oauthController = ret.oauthController;
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
 
-    g.apiController = apiController;
+    g.configAPIController = configAPIController;
     g.oauthController = oauthController;
     g.adminController = adminController;
     g.logoutController = logoutController;
@@ -44,7 +44,7 @@ export default async function init() {
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.isJacksonReady = true;
   } else {
-    apiController = g.apiController;
+    configAPIController = g.configAPIController;
     oauthController = g.oauthController;
     adminController = g.adminController;
     logoutController = g.logoutController;
@@ -53,7 +53,7 @@ export default async function init() {
   }
 
   return {
-    apiController,
+    configAPIController,
     oauthController,
     adminController,
     logoutController,

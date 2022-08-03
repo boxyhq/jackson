@@ -14,4 +14,14 @@ export class AdminController implements IAdminController {
     }
     return configList;
   }
+
+  public async getAllSAMLConfig(pageOffset?: number, pageLimit?: number): Promise<Partial<any>[]> {
+    const configs = await this.getAllConfig(pageOffset, pageLimit);
+    return configs.filter((config) => config.idpMetadata && typeof config.idpMetadata === 'object');
+  }
+
+  public async getAllOIDCConfig(pageOffset?: number, pageLimit?: number): Promise<Partial<any>[]> {
+    const configs = await this.getAllConfig(pageOffset, pageLimit);
+    return configs.filter((config) => config.oidcProvider && typeof config.oidcProvider === 'object');
+  }
 }

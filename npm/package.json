@@ -46,6 +46,7 @@
     "jose": "4.8.3",
     "mongodb": "4.8.1",
     "mysql2": "2.3.3",
+    "openid-client": "5.1.8",
     "pg": "8.7.3",
     "redis": "4.0.6",
     "reflect-metadata": "0.1.13",
