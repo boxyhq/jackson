@@ -81,7 +81,7 @@ const SAMLConfigurations: NextPage = () => {
       <div className='mt-4 flex justify-center'>
         <button
           type='button'
-          className='hover:not(:disabled):scale-105 btn-secondary inline-flex min-w-[6rem] items-center justify-center py-1'
+          className='btn btn-outline'
           disabled={paginate.page === 0}
           aria-label='Previous'
           onClick={() =>
@@ -97,7 +97,7 @@ const SAMLConfigurations: NextPage = () => {
         &nbsp;&nbsp;&nbsp;&nbsp;
         <button
           type='button'
-          className='hover:not(:disabled):scale-105 btn-secondary inline-flex min-w-[6rem] items-center justify-center py-1'
+          className='btn btn-outline'
           disabled={samlConfigs.length === 0 || samlConfigs.length < paginate.pageLimit}
           onClick={() =>
             setPaginate((curState) => ({

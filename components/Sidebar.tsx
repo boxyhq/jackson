@@ -1,4 +1,4 @@
-import { SupportIcon, LogoutIcon, ShieldCheckIcon, UsersIcon } from '@heroicons/react/solid';
+import { SupportIcon, LogoutIcon, ShieldCheckIcon } from '@heroicons/react/solid';
 import { NavItem } from './NavItem';
 
 const menus = [
@@ -6,11 +6,6 @@ const menus = [
     href: '/admin/saml/config',
     text: 'SAML SSO',
     icon: <ShieldCheckIcon className='mr-2 h-5 w-5' />,
-  },
-  {
-    href: 'admin/directory-sync',
-    text: 'Directory Sync',
-    icon: <UsersIcon className='mr-2 h-5 w-5' />,
   },
   {
     href: '#',
