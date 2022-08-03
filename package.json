@@ -44,7 +44,6 @@
   },
   "dependencies": {
     "@boxyhq/saml-jackson": "file:./npm",
-    "@headlessui/react": "^1.6.6",
     "@heroicons/react": "1.0.6",
     "@opentelemetry/api": "1.0.4",
     "@opentelemetry/api-metrics": "0.27.0",
@@ -52,7 +51,7 @@
     "@opentelemetry/sdk-metrics-base": "0.27.0",
     "classnames": "2.3.1",
     "cors": "2.8.5",
-    "daisyui": "^2.20.0",
+    "daisyui": "2.20.0",
     "micromatch": "4.0.5",
     "next": "12.2.3",
     "next-auth": "4.10.3",
