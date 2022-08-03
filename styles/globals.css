@@ -42,3 +42,7 @@ a {
     @apply mt-2 flex items-center px-4 py-2 font-medium text-secondary/90 hover:font-bold dark:text-gray-400 dark:hover:text-gray-300 md:text-sm md:leading-6;
   }
 }
+
+.SearchEvents {
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}

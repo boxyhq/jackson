@@ -1,4 +1,31 @@
 import axios from 'axios';
+import { NextApiRequest, NextApiResponse } from 'next';
+
+const createProject = async (id: string, token: string, name: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify({
+      name,
+    });
+
+    const config = {
+      method: 'post',
+      url: `${process.env.RETRACED_HOST}/admin/v1/project`,
+      headers: {
+        Authorization: `id=${id} token=${token}`,
+        'Content-Type': 'application/json',
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        resolve(response.data);
+      })
+      .catch(function (error) {
+        reject(error);
+      });
+  });
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getProjects = async (id: string, token: string): Promise<any> => {
@@ -40,10 +67,16 @@ const sanitizeResponse = (projects: any): Array<any> => {
   return output;
 };
 
-export default async function handler(req, res) {
-  const token = await getToken();
-  const projects = await getProjects(token.id, token.token);
-  res.status(200).json(sanitizeResponse(projects.projects));
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    const token = await getToken();
+    const output = await createProject(token.id, token.token, req.body.name);
+    res.status(200).json(output);
+  } else {
+    const token = await getToken();
+    const projects = await getProjects(token.id, token.token);
+    res.status(200).json(sanitizeResponse(projects.projects));
+  }
 }
 
 export async function getToken(): Promise<any> {

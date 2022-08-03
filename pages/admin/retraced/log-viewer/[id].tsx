@@ -37,35 +37,45 @@ const RetracedLogViewer: NextPage = () => {
   }
 
   return (
-    <div>
-      <div className='flex items-center justify-between'>
-        <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Audit Logs - {parts[0]}</h2>
-      </div>
-      <br />
-      {groupRes.data.length > 0 && (
-        <div>
-          <label className='font-bold text-primary dark:text-white'>Select Group</label>
-          <select
-            className='rounded border'
-            onChange={(e) => {
-              setSelectedGroup(e.target.value);
-            }}
-            value={selectedGroup}>
-            <option key='' id=''></option>
-            {groupRes.data.map((d) => (
-              <option key={d.group_id} id={d.group_id}>
-                {d.group_id}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+    <>
       <div>
+        <div className='flex flex-row items-center justify-between'>
+          <div className='flex basis-1/2'>
+            <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Audit Logs - {parts[0]}</h2>
+          </div>
+          <div className='basis-1/7'>
+            {groupRes.data.length > 0 && (
+              <div className='flex flex-row'>
+                <div className=''>
+                  <label htmlFor='tenant' className='text-primary'>
+                    Select Tenant
+                  </label>
+                  <select
+                    id='tenant'
+                    className='block w-full rounded rounded-lg border border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
+                    onChange={(e) => {
+                      setSelectedGroup(e.target.value);
+                    }}
+                    value={selectedGroup}>
+                    <option key='' id=''></option>
+                    {groupRes.data.map((d) => (
+                      <option key={d.group_id} id={d.group_id}>
+                        {d.group_id}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className='items-center justify-between'>
         {selectedGroup && (
           <Viewer project={project} token={token} environment={environment} selectedGroup={selectedGroup} />
         )}
       </div>
-    </div>
+    </>
   );
 };
 

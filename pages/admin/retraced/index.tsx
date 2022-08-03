@@ -36,7 +36,7 @@ const RetracedProjects: NextPage = () => {
     <div>
       <div className='flex items-center justify-between'>
         <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Audit Logs</h2>
-        <Link href={'/admin/saml/config/new'}>
+        <Link href={'/admin/retraced/new'}>
           <a className='btn-primary'>
             <span className='mr-1 inline-block md:mr-2' aria-hidden>
               +
@@ -52,12 +52,12 @@ const RetracedProjects: NextPage = () => {
               <th
                 scope='col'
                 className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400'>
-                Tenant
+                Product
               </th>
               <th
                 scope='col'
                 className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400'>
-                Product
+                Environment
               </th>
               <th></th>
             </tr>
