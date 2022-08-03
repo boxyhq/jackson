@@ -3,7 +3,8 @@ import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
 import { mutate } from 'swr';
 import { ArrowLeftIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/outline';
-import { Modal } from '@supabase/ui';
+
+import ConfirmationModal from '@components/ConfirmationModal';
 
 /**
  * Edit view will have extra fields (showOnlyInEditView: true)
@@ -153,7 +154,6 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
   // LOGIC: DELETE
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
-  const [userNameEntry, setUserNameEntry] = useState('');
   const deleteConfiguration = async () => {
     await fetch('/api/admin/saml/config', {
       method: 'DELETE',
@@ -184,16 +184,15 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
 
   return (
     <>
-      {/* Or use router.back()  */}
       <Link href='/admin/saml/config'>
-        <a className='link-primary'>
+        <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span className='ml-2'>Back</span>
+          <span>Back</span>
         </a>
       </Link>
       <div>
-        <h2 className='mt-2 mb-4 text-3xl font-bold text-primary dark:text-white'>
-          {isEditView ? 'Edit Connection' : 'New Connection'}
+        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
+          {isEditView ? 'Edit Connection' : 'Create Connection'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
           <div className='min-w-[28rem] rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
@@ -266,7 +265,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                 }
               )}
             <div className='flex'>
-              <button type='submit' className='btn-primary'>
+              <button type='submit' className='btn btn-primary'>
                 Save Changes
               </button>
               <p
@@ -298,7 +297,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
               </div>
               <button
                 type='button'
-                className='inline-block rounded bg-red-700 px-4 py-2 text-sm font-bold leading-6 text-white hover:bg-red-800'
+                className='btn btn-error'
                 onClick={toggleDelConfirm}
                 data-modal-toggle='popup-modal'>
                 Delete
@@ -306,45 +305,12 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
             </section>
           )}
         </form>
-        <Modal
-          closable
-          title='Are you absolutely sure ?'
+        <ConfirmationModal
+          title='Delete the SAML Connection'
           description='This action cannot be undone. This will permanently delete the SAML config.'
           visible={delModalVisible}
-          onCancel={toggleDelConfirm}
-          customFooter={
-            <div className='ml-auto inline-flex'>
-              <button
-                type='button'
-                onClick={toggleDelConfirm}
-                className='inline-block rounded border-2 bg-gray-200 px-4 py-2 text-sm font-bold leading-6 text-secondary/90 hover:bg-gray-300'>
-                Cancel
-              </button>
-              <button
-                type='button'
-                disabled={userNameEntry !== samlConfig?.product}
-                onClick={deleteConfiguration}
-                className='ml-1.5 inline-block rounded bg-red-700 py-2 px-4 text-sm font-bold leading-6 text-white hover:bg-red-800 disabled:bg-slate-400'>
-                Delete
-              </button>
-            </div>
-          }>
-          <p className='text-slate-600'>
-            Please type in the name of the product &apos;
-            {samlConfig?.product && <strong>{samlConfig.product}</strong>}&apos; to confirm.
-          </p>
-          <label htmlFor='nameOfProd' className='font-medium text-slate-900'>
-            Name *
-          </label>
-          <input
-            id='nameOfProd'
-            required
-            className='dark:white d block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
-            value={userNameEntry}
-            onChange={({ target }) => {
-              setUserNameEntry(target.value);
-            }}></input>
-        </Modal>
+          onConfirm={deleteConfiguration}
+          onCancel={toggleDelConfirm}></ConfirmationModal>
       </div>
     </>
   );
