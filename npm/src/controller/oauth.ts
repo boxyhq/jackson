@@ -142,6 +142,7 @@ export class OAuthController implements IOAuthController {
       tenant,
       product,
       access_type,
+      resource,
       scope,
       nonce,
       code_challenge,
@@ -202,6 +203,9 @@ export class OAuthController implements IOAuthController {
 
       if (!sp && access_type) {
         sp = getEncodedTenantProduct(access_type);
+      }
+      if (!sp && resource) {
+        sp = getEncodedTenantProduct(resource);
       }
       if (!sp && requestedScopes) {
         const encodedParams = requestedScopes.find((scope) => scope.includes('=') && scope.includes('&')); // for now assume only one encoded param i.e. for tenant/product
@@ -689,9 +693,9 @@ export class OAuthController implements IOAuthController {
         firstName: codeVal.profile.claims.firstName,
         lastName: codeVal.profile.claims.lastName,
       };
-      const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg);
+      const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
       const id_token = await new jose.SignJWT(claims)
-        .setProtectedHeader({ alg: jwsAlg })
+        .setProtectedHeader({ alg: jwsAlg! })
         .setIssuedAt()
         .setIssuer(this.opts.samlAudience || '')
         .setSubject(codeVal.profile.claims.id)

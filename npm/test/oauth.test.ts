@@ -20,6 +20,7 @@ import {
   authz_request_normal,
   authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
+  authz_request_normal_with_resource,
   authz_request_normal_with_scope,
   bodyWithDummyCredentials,
   bodyWithInvalidClientSecret,
@@ -202,6 +203,19 @@ tap.test('authorize()', async (t) => {
 
     t.test('accepts access_type', async (t) => {
       const body = authz_request_normal_with_access_type;
+
+      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+      t.end();
+    });
+
+    t.test('accepts resource', async (t) => {
+      const body = authz_request_normal_with_resource;
 
       const response = await oauthController.authorize(<OAuthReqBody>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);

@@ -35,12 +35,10 @@ const SAMLConfigurations: NextPage = () => {
           <a className='btn btn-primary'>+ New Connection</a>
         </Link>
       </div>
-
       {samlConfigs.length === 0 ? (
         <EmptyState title='No SAML connections found.' />
       ) : (
         <>
-          {' '}
           <div className='rounder border'>
             <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
