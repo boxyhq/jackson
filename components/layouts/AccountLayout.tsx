@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 
-import { Navbar } from '@components/Navbar';
 import { Sidebar } from '@components/Sidebar';
+import { Navbar } from '@components/Navbar';
 
 export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
-  useSession({ required: true });
+  const { data: session } = useSession({ required: true });
+
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -14,16 +16,34 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         <title>SAML Jackson - BoxyHQ</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Navbar />
-      <div className='flex overflow-hidden pt-16'>
-        <Sidebar />
-        <div className='relative h-full w-full overflow-y-auto  lg:ml-64'>
-          <main>
-            <div className='flex w-full justify-center'>
-              <div className='h-full w-full px-6 py-6'>{children}</div>
-            </div>
-          </main>
+      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+      <div className='flex flex-1 flex-col md:pl-64'>
+        <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
+          <button
+            onClick={() => {
+              setIsOpen(!isOpen);
+            }}
+            type='button'
+            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden'>
+            <span className='sr-only'>Open sidebar</span>
+            <svg
+              className='h-6 w-6'
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={2}
+              stroke='currentColor'
+              aria-hidden='true'>
+              <path strokeLinecap='round' strokeLinejoin='round' d='M4 6h16M4 12h16M4 18h7' />
+            </svg>
+          </button>
+          <Navbar session={session} />
         </div>
+        <main>
+          <div className='py-6'>
+            <div className='mx-auto max-w-7xl px-4 sm:px-6 md:px-8'>{children}</div>
+          </div>
+        </main>
       </div>
     </>
   );
