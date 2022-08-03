@@ -6,9 +6,13 @@ import { Sidebar } from '@components/Sidebar';
 import { Navbar } from '@components/Navbar';
 
 export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
-  const { data: session } = useSession({ required: true });
+  const { data: session, status } = useSession({ required: true });
 
   const [isOpen, setIsOpen] = useState(false);
+
+  if (status === 'loading') {
+    return null;
+  }
 
   return (
     <>
@@ -24,7 +28,7 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
               setIsOpen(!isOpen);
             }}
             type='button'
-            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden'>
+            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset md:hidden'>
             <span className='sr-only'>Open sidebar</span>
             <svg
               className='h-6 w-6'
