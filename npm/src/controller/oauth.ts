@@ -134,9 +134,7 @@ export class OAuthController implements IOAuthController {
     return {};
   }
 
-  public async authorize(
-    body: OAuthReqBody
-  ): Promise<{ redirect_url?: string; authorize_form?: string } | undefined> {
+  public async authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
       response_type = 'code',
       client_id,
@@ -318,21 +316,11 @@ export class OAuthController implements IOAuthController {
     const connectionIsSAML = connection.idpMetadata && typeof connection.idpMetadata === 'object';
     const connectionIsOIDC = connection.oidcProvider && typeof connection.oidcProvideer === 'object';
 
-    if (!connectionIsOIDC && !connectionIsSAML) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'invalid_request',
-          error_description: 'Connection appears to be misconfigured',
-          redirect_uri,
-          state,
-        }),
-      };
-    }
     if (!requestedOIDCFlow && connectionIsOIDC) {
       return {
         redirect_url: OAuthErrorResponse({
           error: 'invalid_request',
-          error_description: 'OIDC Identity Provider detected but scope: openid not supplied',
+          error_description: 'OIDC Identity Provider detected, but request missing openid scope',
           redirect_uri,
           state,
         }),
@@ -483,9 +471,17 @@ export class OAuthController implements IOAuthController {
           redirect_url: redirectUrl,
           authorize_form: authorizeForm,
         };
-      }
-      if (connectionIsOIDC) {
+      } else if (connectionIsOIDC) {
         return { redirect_url: ssoUrl };
+      } else {
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'invalid_request',
+            error_description: 'Connection appears to be misconfigured',
+            redirect_uri,
+            state,
+          }),
+        };
       }
     } catch (err: unknown) {
       return {

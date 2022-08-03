@@ -35,7 +35,7 @@ export interface IConfigAPIController {
 }
 
 export interface IOAuthController {
-  authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string } | undefined>;
+  authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }>;
   samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
