@@ -67,6 +67,7 @@ export interface OAuthReqBody {
   tenant?: string;
   product?: string;
   access_type?: string;
+  resource?: string;
   scope?: string;
   nonce?: string;
   code_challenge: string;
@@ -159,7 +160,7 @@ export interface JacksonOption {
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
   openid: {
-    jwsAlg: string;
+    jwsAlg?: string;
     jwtSigningKeys?: {
       private: string;
       public: string;
