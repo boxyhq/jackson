@@ -38,7 +38,7 @@
     "statements": 70
   },
   "dependencies": {
-    "@boxyhq/saml20": "1.0.5",
+    "@boxyhq/saml20": "1.0.6",
     "@opentelemetry/api-metrics": "0.27.0",
     "@opentelemetry/api": "1.0.4",
     "@peculiar/webcrypto": "1.4.0",
