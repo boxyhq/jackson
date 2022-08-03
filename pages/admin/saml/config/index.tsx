@@ -36,7 +36,7 @@ const SAMLConfigurations: NextPage = () => {
         </Link>
       </div>
       {samlConfigs.length === 0 ? (
-        <EmptyState title='No SAML connections found.' />
+        <EmptyState title='No SAML connections found.' href='/admin/saml/config/new' />
       ) : (
         <>
           <div className='rounder border'>

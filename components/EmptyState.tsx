@@ -8,7 +8,7 @@ const EmptyState = ({ title, href }: { title: string; href?: string }) => {
       <h4 className='text-center'>{title}</h4>
       {href && (
         <Link href={href}>
-          <a className='btn-primary'>+ Create New</a>
+          <a className='btn btn-primary'>+ Create New</a>
         </Link>
       )}
     </div>
