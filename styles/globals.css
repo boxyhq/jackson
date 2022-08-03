@@ -29,10 +29,18 @@ a {
   }
 
   .btn {
-    @apply min-h-8 h-10 rounded-none;
+    @apply min-h-8 h-10 rounded-none normal-case;
   }
 
   .btn-primary {
     @apply text-white;
+  }
+
+  .btn-error {
+    @apply text-white;
+  }
+
+  .modal-box {
+    @apply rounded;
   }
 }

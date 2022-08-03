@@ -33,7 +33,9 @@ export const Navbar = () => {
                 />
               </svg>
             </button>
-            <a href='/admin' className='flex items-center space-x-2 text-xl font-bold lg:ml-2.5'>
+            <a
+              href='/admin'
+              className='flex items-center space-x-2 text-xl font-bold text-gray-900 lg:ml-2.5'>
               <Image
                 src='https://boxyhq.com/img/logo.png'
                 className='h-6'
