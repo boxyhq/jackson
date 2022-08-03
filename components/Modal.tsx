@@ -5,7 +5,6 @@ const Modal = (props: {
   title: string;
   description: string;
   children?: React.ReactNode;
-  // customFooter?: React.ReactNode;
 }) => {
   const { visible, title, description, children } = props;
 
@@ -27,10 +26,3 @@ const Modal = (props: {
 };
 
 export default Modal;
-
-{
-  /* <div className='modal-action'>
-<button className='btn btn-outline'>Cancel</button>
-<button className='btn btn-error'>Delete</button>
-</div> */
-}
