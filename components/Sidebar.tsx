@@ -89,7 +89,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
             </Link>
           </div>
           <div className='mt-5 flex flex-1 flex-col'>
-            <nav className='flex-1 space-y-1 px-2 pb-4'>
+            <nav className='flex-1 space-y-1 px-2 pb-4' id='menu'>
               {menus.map((menu) => (
                 <a
                   key={menu.text}
