@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
-import { type Client, errors, generators, Issuer } from 'openid-client';
+import { errors, generators, Issuer } from 'openid-client';
 import * as jose from 'jose';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
@@ -372,19 +372,19 @@ export class OAuthController implements IOAuthController {
       }
     }
     // OIDC Connection: Issuer discovery, client init and extraction of authorization endpoint happens here
-    let oidcClient: Client | undefined;
+    let oidcCodeVerifier: string | undefined;
     if (connectionIsOIDC) {
       const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
       try {
         const oidcIssuer = await Issuer.discover(discoveryUrl);
-        oidcClient = new oidcIssuer.Client({
+        const oidcClient = new oidcIssuer.Client({
           client_id: clientId,
           client_secret: clientSecret,
           redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
           response_types: ['code'],
         });
-        const code_verifier = generators.codeVerifier();
-        const code_challenge = generators.codeChallenge(code_verifier);
+        oidcCodeVerifier = generators.codeVerifier();
+        const code_challenge = generators.codeChallenge(oidcCodeVerifier);
         ssoUrl = oidcClient.authorizationUrl({
           scope,
           code_challenge,
@@ -441,7 +441,7 @@ export class OAuthController implements IOAuthController {
               ...sessionObj,
               id: samlReq?.id,
             }
-          : { ...sessionObj, oidcClientMetadata: oidcClient?.metadata }
+          : { ...sessionObj, id: connection.clientID, oidcCodeVerifier }
       );
       // Redirect to IdP
       if (connectionIsSAML) {
