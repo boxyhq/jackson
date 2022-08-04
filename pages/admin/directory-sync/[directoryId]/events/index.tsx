@@ -1,5 +1,4 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
-import type { Directory } from '@lib/jackson';
 import React from 'react';
 import { EyeIcon } from '@heroicons/react/outline';
 import Link from 'next/link';

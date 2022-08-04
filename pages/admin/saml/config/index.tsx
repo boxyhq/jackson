@@ -60,7 +60,7 @@ const SAMLConfigurations: NextPage = () => {
                 {samlConfigs.map((samlConfig) => (
                   <tr
                     key={samlConfig.clientID}
-                    className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
+                    className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
                     <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
                       {samlConfig.tenant}
                     </td>
