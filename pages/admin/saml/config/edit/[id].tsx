@@ -1,12 +1,15 @@
-import { NextPage } from 'next';
+import type { NextPage } from 'next';
 import useSWR from 'swr';
+import { useRouter } from 'next/router';
+
 import { fetcher } from '@lib/ui/utils';
 import AddEdit from '@components/saml/AddEdit';
-import { useRouter } from 'next/router';
 
 const EditSAMLConfiguration: NextPage = () => {
   const router = useRouter();
+
   const { id } = router.query;
+
   const { data: samlConfig, error } = useSWR(`/api/admin/saml/config/${id}`, fetcher, {
     revalidateOnFocus: false,
   });
@@ -22,6 +25,7 @@ const EditSAMLConfiguration: NextPage = () => {
   if (!samlConfig) {
     return null;
   }
+
   return <AddEdit samlConfig={samlConfig} />;
 };
 
