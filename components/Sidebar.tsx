@@ -78,7 +78,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
           <div className='w-14 flex-shrink-0' aria-hidden='true'></div>
         </div>
       </div>
-      <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
+      <div className='md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
         <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
           <div className='flex flex-shrink-0 items-center px-4'>
             <Link href='/'>
@@ -96,7 +96,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                   href={menu.href}
                   className='group flex items-center rounded-md bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'>
                   <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                  {menu.text}
+                  <div>{menu.text}</div>
                 </a>
               ))}
             </nav>

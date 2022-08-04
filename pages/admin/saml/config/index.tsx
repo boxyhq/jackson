@@ -32,7 +32,9 @@ const SAMLConfigurations: NextPage = () => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>SAML Connections</h2>
         <Link href={'/admin/saml/config/new'}>
-          <a className='btn btn-primary'>+ New Connection</a>
+          <a className='btn btn-primary' data-test-id='create-saml-connection'>
+            + New Connection
+          </a>
         </Link>
       </div>
       {samlConfigs.length === 0 ? (
