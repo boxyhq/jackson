@@ -650,6 +650,62 @@ export class OAuthController implements IOAuthController {
     return { redirect_url: redirectUrl };
   }
 
+  public async oidcAuthzResponse(body: {
+    code?: string;
+    state?: string;
+  }): Promise<{ redirect_url?: string }> {
+    const { code, state } = body;
+    let RelayState = state || '';
+    RelayState = RelayState.replace(relayStatePrefix, '');
+    const session = await this.sessionStore.get(RelayState);
+    if (!session) {
+      throw new JacksonError('Unable to validate state from the origin request.', 403);
+    }
+
+    const oidcConnection = await this.configStore.get(session.id);
+
+    if (session.redirect_uri && !allowed.redirect(session.redirect_uri, oidcConnection.redirectUrl)) {
+      throw new JacksonError('Redirect URL is not allowed.', 403);
+    }
+    const redirect_uri = (session && session.redirect_uri) || oidcConnection.defaultRedirectUrl;
+
+    // Reconstruct the oidcClient
+    const { discoveryUrl, clientId, clientSecret } = oidcConnection.oidcProvider;
+    try {
+      const oidcIssuer = await Issuer.discover(discoveryUrl);
+      const oidcClient = new oidcIssuer.Client({
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
+        response_types: ['code'],
+      });
+      const tokenSet = await oidcClient.callback(
+        this.opts.externalUrl + this.opts.oidcPath,
+        {
+          code,
+        },
+        { code_verifier: session.oidcCodeVerifier }
+      );
+      const claims = tokenSet.claims();
+      if (tokenSet.access_token) {
+        const userinfo = await oidcClient.userinfo(tokenSet.access_token);
+      }
+    } catch (err: unknown) {
+      if (err) {
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'server_error',
+            error_description: (err as errors.OPError)?.error || getErrorMessage(err),
+            redirect_uri,
+            state: session.state,
+          }),
+        };
+      }
+    }
+
+    return { redirect_url: '' };
+  }
+
   /**
    * @swagger
    *
