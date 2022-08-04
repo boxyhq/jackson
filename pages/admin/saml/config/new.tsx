@@ -1,4 +1,5 @@
-import { NextPage } from 'next';
+import type { NextPage } from 'next';
+
 import AddEdit from '@components/saml/AddEdit';
 
 const NewSAMLConfiguration: NextPage = () => {
