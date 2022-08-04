@@ -5,8 +5,8 @@ export type IdPConfig = {
   redirectUrl: string[] | string;
   tenant: string;
   product: string;
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
   rawMetadata?: string;
   encodedRawMetadata?: string;
 };
