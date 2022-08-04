@@ -2,9 +2,6 @@
 
 module.exports = {
   reactStrictMode: true,
-  images: {
-    domains: ['boxyhq.com'],
-  },
   webpack: (config, { webpack, isServer }) => {
     if (isServer) {
       // Module not found
