@@ -49,7 +49,7 @@ const Index = ({
                   return (
                     <tr
                       key={directory.id}
-                      className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
+                      className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                         {directory.name}
                       </td>

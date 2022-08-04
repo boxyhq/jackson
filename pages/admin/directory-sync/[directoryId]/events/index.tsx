@@ -65,7 +65,7 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
                     return (
                       <tr
                         key={event.id}
-                        className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
+                        className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
                         <td className='px-6 py-3 font-semibold'>{event.event}</td>
                         <td className='px-6 py-3'>{event.created_at.toString()}</td>
                         <td className='px-6 py-3'>

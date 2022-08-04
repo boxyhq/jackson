@@ -2,26 +2,29 @@ import { ShieldCheckIcon, UsersIcon } from '@heroicons/react/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
+import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 
-const menus = [
-  {
-    href: '/admin/saml/config',
-    text: 'SAML Connections',
-    icon: ShieldCheckIcon,
-    current: true,
-  },
-  {
-    href: '/admin/directory-sync',
-    text: 'Directory Sync',
-    icon: UsersIcon,
-    current: false,
-  },
-];
-
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
   const { isOpen, setIsOpen } = props;
+
+  const { asPath } = useRouter();
+
+  const menus = [
+    {
+      href: '/admin/saml/config',
+      text: 'SAML Connections',
+      icon: ShieldCheckIcon,
+      active: asPath.includes('/admin/saml'),
+    },
+    {
+      href: '/admin/directory-sync',
+      text: 'Directory Sync',
+      icon: UsersIcon,
+      active: asPath.includes('/admin/directory-sync'),
+    },
+  ];
 
   return (
     <>
@@ -100,7 +103,10 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                 <a
                   key={menu.text}
                   href={menu.href}
-                  className='group flex items-center rounded-md bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'>
+                  className={classNames(
+                    'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
+                    menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
+                  )}>
                   <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                   <div>{menu.text}</div>
                 </a>

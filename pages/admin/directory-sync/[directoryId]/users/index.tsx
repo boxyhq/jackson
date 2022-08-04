@@ -51,7 +51,7 @@ const UsersList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                     return (
                       <tr
                         key={user.id}
-                        className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
+                        className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
                         <td className='px-6 py-3'>{user.first_name}</td>
                         <td className='px-6 py-3'>{user.last_name}</td>
                         <td className='px-6 py-3'>{user.email}</td>
