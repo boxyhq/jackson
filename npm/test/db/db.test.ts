@@ -6,7 +6,7 @@ const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
 const configStores: Storable[] = [];
 const ttlStores: Storable[] = [];
-const ttl = 3;
+const ttl = 2;
 
 const record1 = {
   id: '1',
@@ -37,7 +37,7 @@ const postgresDbConfig = <DatabaseOption>{
   url: 'postgresql://postgres:postgres@localhost:5432/postgres',
   type: 'postgres',
   ttl: 1,
-  cleanupLimit: 1,
+  cleanupLimit: 10,
 };
 
 const mongoDbConfig = <DatabaseOption>{
@@ -50,7 +50,17 @@ const mysqlDbConfig = <DatabaseOption>{
   url: 'mysql://root:mysql@localhost:3307/mysql',
   type: 'mysql',
   ttl: 1,
-  cleanupLimit: 1,
+  cleanupLimit: 10,
+};
+
+const planetscaleDbConfig = <DatabaseOption>{
+  engine: 'planetscale',
+  url: process.env.PLANETSCALE_URL,
+  ttl: 1,
+  cleanupLimit: 10,
+  ssl: {
+    rejectUnauthorized: true,
+  },
 };
 
 const mariadbDbConfig = <DatabaseOption>{
@@ -58,10 +68,17 @@ const mariadbDbConfig = <DatabaseOption>{
   url: 'mariadb://root@localhost:3306/mysql',
   type: 'mariadb',
   ttl: 1,
-  cleanupLimit: 1,
+  cleanupLimit: 10,
 };
 
 const dbs = [
+  {
+    ...planetscaleDbConfig,
+  },
+  {
+    ...planetscaleDbConfig,
+    encryptionKey,
+  },
   {
     ...memDbConfig,
   },
@@ -111,8 +128,9 @@ tap.before(async () => {
     const opts = dbs[idx];
     const db = await DB.new(opts);
 
-    configStores.push(db.store('saml:config'));
-    ttlStores.push(db.store('oauth:session', ttl));
+    const randomSession = Date.now();
+    configStores.push(db.store('saml:config:' + randomSession));
+    ttlStores.push(db.store('oauth:session:' + randomSession, ttl));
   }
 });
 

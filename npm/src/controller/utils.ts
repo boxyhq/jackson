@@ -2,6 +2,7 @@ import type { OAuthErrorHandlerParams } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 import crypto from 'crypto';
+import * as jose from 'jose';
 
 export enum IndexNames {
   EntityID = 'entityID',
@@ -32,13 +33,20 @@ export const validateAbsoluteUrl = (url, message) => {
   }
 };
 
-export const OAuthErrorResponse = ({ error, error_description, redirect_uri }: OAuthErrorHandlerParams) => {
-  return redirect.success(redirect_uri, { error, error_description });
+export const OAuthErrorResponse = ({
+  error,
+  error_description,
+  redirect_uri,
+  state,
+}: OAuthErrorHandlerParams) => {
+  return redirect.success(redirect_uri, { error, error_description, state });
 };
 
 // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
 export function getErrorMessage(error: unknown) {
-  if (error instanceof Error) return error.message;
+  if (error instanceof Error) {
+    return error.message;
+  }
   return String(error);
 }
 
@@ -49,4 +57,33 @@ export const createRandomSecret = async (length: number) => {
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=/g, '');
+};
+
+export async function loadJWSPrivateKey(key: string, alg: string): Promise<jose.KeyLike> {
+  const pkcs8 = Buffer.from(key, 'base64').toString('ascii');
+  const privateKey = await jose.importPKCS8(pkcs8, alg);
+  return privateKey;
+}
+
+export function isJWSKeyPairLoaded(jwsKeyPair: { private: string; public: string }) {
+  if (!jwsKeyPair.private || !jwsKeyPair.public) {
+    return false;
+  }
+  return true;
+}
+
+export const importJWTPublicKey = async (key: string, jwsAlg: string): Promise<jose.KeyLike> => {
+  const spki = Buffer.from(key, 'base64').toString('ascii');
+  const publicKey = await jose.importSPKI(spki, jwsAlg);
+  return publicKey;
+};
+
+export const exportPublicKeyJWK = async (key: jose.KeyLike): Promise<jose.JWK> => {
+  const publicJWK = await jose.exportJWK(key);
+  return publicJWK;
+};
+
+export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
+  const thumbprint = await jose.calculateJwkThumbprint(jwk);
+  return thumbprint;
 };

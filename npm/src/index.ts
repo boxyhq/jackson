@@ -10,6 +10,7 @@ import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
 import initDirectorySync from './directory-sync';
+import { OidcDiscoveryController } from './controller/oidc-discovery';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -34,6 +35,9 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
   newOpts.db.pageLimit = newOpts.db.pageLimit || 50;
 
+  newOpts.openid = newOpts.openid || {};
+  newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
+
   return newOpts;
 };
 
@@ -46,6 +50,7 @@ export const controllers = async (
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
   directorySync: DirectorySync;
+  oidcDiscoveryController: OidcDiscoveryController;
 }> => {
   opts = defaultOpts(opts);
 
@@ -78,6 +83,7 @@ export const controllers = async (
 
   const directorySync = await initDirectorySync({ db, opts });
 
+  const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
     const configs = await readConfig(opts.preLoadedConfig);
@@ -100,6 +106,7 @@ export const controllers = async (
     logoutController,
     healthCheckController,
     directorySync,
+    oidcDiscoveryController,
   };
 };
 

@@ -6,6 +6,14 @@ import redis from './redis';
 import sql from './sql/sql';
 import store from './store';
 
+import { JacksonStore } from './sql/entity/JacksonStore';
+import { JacksonIndex } from './sql/entity/JacksonIndex';
+import { JacksonTTL } from './sql/entity/JacksonTTL';
+
+import { JacksonStore as JacksonStorePlanetscale } from './planetscale/entity/JacksonStore';
+import { JacksonIndex as JacksonIndexPlanetscale } from './planetscale/entity/JacksonIndex';
+import { JacksonTTL as JacksonTTLPlanetscale } from './planetscale/entity/JacksonTTL';
+
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
     return JSON.parse(encrypter.decrypt(res.value, res.iv, res.tag, encryptionKey));
@@ -78,7 +86,23 @@ export default {
       case 'redis':
         return new DB(await redis.new(options), encryptionKey);
       case 'sql':
-        return new DB(await sql.new(options), encryptionKey);
+        return new DB(
+          await sql.new(options, {
+            JacksonStore,
+            JacksonIndex,
+            JacksonTTL,
+          }),
+          encryptionKey
+        );
+      case 'planetscale':
+        return new DB(
+          await sql.new(options, {
+            JacksonStore: JacksonStorePlanetscale,
+            JacksonIndex: JacksonIndexPlanetscale,
+            JacksonTTL: JacksonTTLPlanetscale,
+          }),
+          encryptionKey
+        );
       case 'mongo':
         return new DB(await mongo.new(options), encryptionKey);
       case 'mem':

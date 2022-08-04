@@ -1,3 +1,5 @@
+import { type JWK } from 'jose';
+
 export type IdPConfig = {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
@@ -44,6 +46,25 @@ export interface ILogoutController {
   handleResponse(body: SAMLResponsePayload): Promise<any>;
 }
 
+export interface IOidcDiscoveryController {
+  openidConfig(): {
+    issuer: string;
+    authorization_endpoint: string;
+    token_endpoint: string;
+    userinfo_endpoint: string;
+    jwks_uri: string;
+    response_types_supported: Array<string>;
+    subject_types_supported: Array<string>;
+    id_token_signing_alg_values_supported: Array<string>;
+    grant_types_supported: Array<string>;
+    code_challenge_methods_supported: Array<string>;
+  };
+
+  jwks(): Promise<{
+    keys: JWK[];
+  }>;
+}
+
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
@@ -52,7 +73,9 @@ export interface OAuthReqBody {
   tenant?: string;
   product?: string;
   access_type?: string;
+  resource?: string;
   scope?: string;
+  nonce?: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
   provider: 'saml';
@@ -75,12 +98,14 @@ export interface OAuthTokenReq {
 
 export interface OAuthTokenRes {
   access_token: string;
+  id_token?: string;
   token_type: 'bearer';
   expires_in: number;
 }
 
 export interface Profile {
   id: string;
+  sub?: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -120,7 +145,7 @@ export interface Encrypted {
 
 export type EncryptionKey = any;
 
-export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem';
+export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale';
 
 export type DatabaseType = 'postgres' | 'mysql' | 'mariadb';
 
@@ -132,6 +157,7 @@ export interface DatabaseOption {
   cleanupLimit?: number;
   encryptionKey?: string;
   pageLimit?: number;
+  ssl?: any;
 }
 
 export interface JacksonOption {
@@ -144,6 +170,13 @@ export interface JacksonOption {
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
   scimPath?: string;
+  openid: {
+    jwsAlg?: string;
+    jwtSigningKeys?: {
+      private: string;
+      public: string;
+    };
+  };
 }
 
 export interface SLORequestParams {
@@ -189,6 +222,7 @@ export interface OAuthErrorHandlerParams {
     | 'temporarily_unavailable';
   error_description: string;
   redirect_uri: string;
+  state?: string;
 }
 
 export type DirectorySyncEventType =
