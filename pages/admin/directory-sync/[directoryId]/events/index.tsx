@@ -1,14 +1,16 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import type { Directory } from '@lib/jackson';
 import React from 'react';
-import jackson from '@lib/jackson';
-import { Badge, Alert, Button } from '@supabase/ui';
 import { EyeIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+
+import jackson from '@lib/jackson';
 import EmptyState from '@components/EmptyState';
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import { useRouter } from 'next/router';
 import { inferSSRProps } from '@lib/inferSSRProps';
+import Badge from '@components/Badge';
+import classNames from 'classnames';
 
 const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, events }) => {
   const [loading, setLoading] = React.useState(false);
@@ -26,99 +28,70 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
     router.reload();
   };
 
-  if (events.length === 0) {
-    return (
-      <>
-        <Header title={directory.name} />
-        <DirectoryTab directory={directory} activeTab='events' />
-        <div className='w-3/4'>
-          <WebhookEventLoggingAlert directory={directory} />
-          <EmptyState title='No webhook events found' />
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
-      <Header title={directory.name} />
-      <DirectoryTab directory={directory} activeTab='events' />
-      <div className='w-3/4'>
-        <WebhookEventLoggingAlert directory={directory} />
-        <div className='mb-3 flex justify-end'>
-          <Button danger onClick={clearEvents} loading={loading}>
-            Clear Events
-          </Button>
-        </div>
-        <div className='rounded border'>
-          <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
-            <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-              <tr>
-                <th scope='col' className='px-6 py-3'>
-                  Event Type
-                </th>
-                <th scope='col' className='px-6 py-3'>
-                  Sent At
-                </th>
-                <th scope='col' className='px-6 py-3'>
-                  Status Code
-                </th>
-                <th scope='col' className='px-6 py-3'></th>
-              </tr>
-            </thead>
-            <tbody>
-              {events.map((event) => {
-                return (
-                  <tr
-                    key={event.id}
-                    className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
-                    <td className='px-6 py-3 font-semibold'>{event.event}</td>
-                    <td className='px-6 py-3'>{event.created_at.toString()}</td>
-                    <td className='px-6 py-3'>
-                      {event.status_code === 200 ? (
-                        <Badge color='green'>200</Badge>
-                      ) : (
-                        <Badge color='red'>{`${event.status_code}`}</Badge>
-                      )}
-                    </td>
-                    <td className='px-6 py-3'>
-                      <Link href={`/admin/directory-sync/${directory.id}/events/${event.id}`}>
-                        <a>
-                          <EyeIcon className='h-5 w-5' />
-                        </a>
-                      </Link>
-                    </td>
+      <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
+      <div className='w-full md:w-3/4'>
+        <DirectoryTab directory={directory} activeTab='events' />
+        {events.length === 0 ? (
+          <EmptyState title='No webhook events found' />
+        ) : (
+          <>
+            <div className='my-3 flex justify-end'>
+              <button
+                onClick={clearEvents}
+                className={classNames('btn btn-error btn-sm', loading ? 'loading' : '')}>
+                Clear Events
+              </button>
+            </div>
+            <div className='rounded border'>
+              <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
+                <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
+                  <tr>
+                    <th scope='col' className='px-6 py-3'>
+                      Event Type
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      Sent At
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      Status Code
+                    </th>
+                    <th scope='col' className='px-6 py-3'></th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody>
+                  {events.map((event) => {
+                    return (
+                      <tr
+                        key={event.id}
+                        className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
+                        <td className='px-6 py-3 font-semibold'>{event.event}</td>
+                        <td className='px-6 py-3'>{event.created_at.toString()}</td>
+                        <td className='px-6 py-3'>
+                          {event.status_code === 200 ? (
+                            <Badge vairant='success'>200</Badge>
+                          ) : (
+                            <Badge vairant='error'>{`${event.status_code}`}</Badge>
+                          )}
+                        </td>
+                        <td className='px-6 py-3'>
+                          <Link href={`/admin/directory-sync/${directory.id}/events/${event.id}`}>
+                            <a>
+                              <EyeIcon className='h-5 w-5' />
+                            </a>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
     </>
-  );
-};
-
-const Header = ({ title }: { title: string }) => {
-  return (
-    <div className='mb-4 flex items-center justify-between'>
-      <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{title}</h2>
-    </div>
-  );
-};
-
-const WebhookEventLoggingAlert = ({ directory }: { directory: Directory }) => {
-  if (directory.log_webhook_events) {
-    return null;
-  }
-
-  return (
-    <Alert title='Alert' variant='warning' className='mb-4'>
-      Webhook events are not being logged for this directory.{' '}
-      <Link href={`/admin/directory-sync/${directory.id}/edit`}>
-        <a className='underline'>Enable logging</a>
-      </Link>
-    </Alert>
   );
 };
 

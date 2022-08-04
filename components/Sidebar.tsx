@@ -1,4 +1,4 @@
-import { ShieldCheckIcon } from '@heroicons/react/solid';
+import { ShieldCheckIcon, UsersIcon } from '@heroicons/react/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -10,6 +10,12 @@ const menus = [
     href: '/admin/saml/config',
     text: 'SAML Connections',
     icon: ShieldCheckIcon,
+    current: true,
+  },
+  {
+    href: '/admin/directory-sync',
+    text: 'Directory Sync',
+    icon: UsersIcon,
     current: false,
   },
 ];

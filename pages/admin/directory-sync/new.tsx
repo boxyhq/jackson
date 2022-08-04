@@ -1,9 +1,12 @@
 import type { NextPage, GetServerSideProps } from 'next';
-import { Input, Button, Select } from '@supabase/ui';
 import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
+import { ArrowLeftIcon } from '@heroicons/react/outline';
+
 import jackson from '@lib/jackson';
+import classNames from 'classnames';
 
 const New: NextPage<{ providers: any }> = ({ providers }) => {
   const router = useRouter();
@@ -56,29 +59,94 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
 
   return (
     <div>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2 className='font-bold text-primary dark:text-white md:text-2xl'>New Configuration</h2>
-      </div>
-      <div className='w-3/4 rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+      <Link href='/admin/directory-sync'>
+        <a className='btn btn-outline items-center space-x-2'>
+          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
+          <span>Back</span>
+        </a>
+      </Link>
+      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>New Directory</h2>
+      <div className='w-full border border-gray-200 bg-white p-6 first-letter:rounded md:w-3/4'>
         <form onSubmit={onSubmit}>
-          <Input label='Directory name' id='name' className='mb-3' required onChange={onChange} />
-          <Select label='Directory provider' id='type' onChange={onChange} className='mb-3' required>
-            <Select.Option value=''>Select Directory Sync Provider</Select.Option>
-            {Object.keys(providers).map((key) => {
-              return (
-                <Select.Option key={key} value={key}>
-                  {providers[key]}
-                </Select.Option>
-              );
-            })}
-          </Select>
-          <Input label='Tenant' id='tenant' className='mb-3' required onChange={onChange} />
-          <Input label='Product' id='product' className='mb-3' required onChange={onChange} />
-          <Input label='Webhook URL' id='webhook_url' className='mb-3' onChange={onChange} />
-          <Input label='Webhook secret' id='webhook_secret' className='mb-3' onChange={onChange} />
-          <Button size='small' loading={loading}>
-            Save Changes
-          </Button>
+          <div className='flex flex-col space-y-2'>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Directory name</span>
+              </label>
+              <input
+                type='text'
+                id='name'
+                className='input input-bordered w-full'
+                required
+                onChange={onChange}
+              />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Directory provider</span>
+              </label>
+              <select className='select select-bordered w-full' id='type' onChange={onChange} required>
+                {Object.keys(providers).map((key) => {
+                  return (
+                    <option key={key} value={key}>
+                      {providers[key]}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Tenant</span>
+              </label>
+              <input
+                type='text'
+                id='tenant'
+                className='input input-bordered w-full'
+                required
+                onChange={onChange}
+              />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Product</span>
+              </label>
+              <input
+                type='text'
+                id='product'
+                className='input input-bordered w-full'
+                required
+                onChange={onChange}
+              />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Webhook URL</span>
+              </label>
+              <input
+                type='text'
+                id='webhook_url'
+                className='input input-bordered w-full'
+                onChange={onChange}
+              />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Webhook secret</span>
+              </label>
+              <input
+                type='text'
+                id='webhook_secret'
+                className='input input-bordered w-full'
+                onChange={onChange}
+              />
+            </div>
+            <div>
+              <button className={classNames('btn btn-primary', loading ? 'loading' : '')}>
+                Create Directory
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </div>

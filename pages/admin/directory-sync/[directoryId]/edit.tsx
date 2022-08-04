@@ -1,10 +1,13 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
-import { Input, Button, Checkbox } from '@supabase/ui';
 import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
+import { ArrowLeftIcon } from '@heroicons/react/outline';
+
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
+import classNames from 'classnames';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -59,46 +62,74 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
   return (
     <div>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Update Configuration</h2>
-      </div>
-      <div className='flex overflow-hidden'>
-        <div className='w-3/4 rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-          <form onSubmit={onSubmit}>
-            <Input
-              label='Directory name'
-              id='name'
-              value={directory.name}
-              className='mb-3'
-              required
-              onChange={onChange}
-            />
-            <Input
-              label='Webhook URL'
-              id='webhook_url'
-              value={directory.webhook_url}
-              className='mb-3'
-              onChange={onChange}
-            />
-            <Input
-              label='Webhook secret'
-              id='webhook_secret'
-              className='mb-3'
-              value={directory.webhook_secret}
-              onChange={onChange}
-            />
-            <Checkbox
-              label='Enable Webhook events logging'
-              id='log_webhook_events'
-              onChange={onChange}
-              checked={directory.log_webhook_events}
-              className='mb-6 mt-6'
-            />
-            <Button size='small' loading={loading}>
-              Save Changes
-            </Button>
-          </form>
-        </div>
+      <Link href='/admin/directory-sync'>
+        <a className='btn btn-outline items-center space-x-2'>
+          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
+          <span>Back</span>
+        </a>
+      </Link>
+      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>Update Directory</h2>
+      <div className='w-full border border-gray-200 bg-white p-6 first-letter:rounded md:w-3/4'>
+        <form onSubmit={onSubmit}>
+          <div className='flex flex-col space-y-2'>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Directory name</span>
+              </label>
+              <input
+                type='text'
+                id='name'
+                className='input input-bordered w-full'
+                required
+                onChange={onChange}
+                value={directory.name}
+              />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Webhook URL</span>
+              </label>
+              <input
+                type='text'
+                id='webhook_url'
+                className='input input-bordered w-full'
+                onChange={onChange}
+                value={directory.webhook_url}
+              />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>Webhook secret</span>
+              </label>
+              <input
+                type='text'
+                id='webhook_secret'
+                className='input input-bordered w-full'
+                onChange={onChange}
+                value={directory.webhook_secret}
+              />
+            </div>
+            <div className='form-control w-full py-2 md:w-1/2'>
+              <div className='flex items-center'>
+                <input
+                  id='log_webhook_events'
+                  type='checkbox'
+                  checked={directory.log_webhook_events}
+                  onChange={onChange}
+                  className='h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600'
+                />
+                <label className='ml-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
+                  Enable Webhook events logging
+                </label>
+              </div>
+            </div>
+            <div>
+              <button className={classNames('btn btn-primary', loading ? 'loading' : '')}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   );
