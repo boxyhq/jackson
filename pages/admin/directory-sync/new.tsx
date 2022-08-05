@@ -4,9 +4,9 @@ import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowLeftIcon } from '@heroicons/react/outline';
+import classNames from 'classnames';
 
 import jackson from '@lib/jackson';
-import classNames from 'classnames';
 
 const New: NextPage<{ providers: any }> = ({ providers }) => {
   const router = useRouter();
@@ -66,10 +66,10 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
         </a>
       </Link>
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>New Directory</h2>
-      <div className='w-full border border-gray-200 bg-white p-6 first-letter:rounded md:w-3/4'>
+      <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
-          <div className='flex flex-col space-y-2'>
-            <div className='form-control w-full md:w-1/2'>
+          <div className='flex flex-col space-y-3'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Directory name</span>
               </label>
@@ -81,7 +81,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
                 onChange={onChange}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Directory provider</span>
               </label>
@@ -95,7 +95,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
                 })}
               </select>
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Tenant</span>
               </label>
@@ -107,7 +107,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
                 onChange={onChange}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Product</span>
               </label>
@@ -119,7 +119,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
                 onChange={onChange}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Webhook URL</span>
               </label>
@@ -130,7 +130,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
                 onChange={onChange}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Webhook secret</span>
               </label>

@@ -69,10 +69,10 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
         </a>
       </Link>
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>Update Directory</h2>
-      <div className='w-full border border-gray-200 bg-white p-6 first-letter:rounded md:w-3/4'>
+      <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
-          <div className='flex flex-col space-y-2'>
-            <div className='form-control w-full md:w-1/2'>
+          <div className='flex flex-col space-y-3'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Directory name</span>
               </label>
@@ -85,7 +85,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                 value={directory.name}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Webhook URL</span>
               </label>
@@ -97,7 +97,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                 value={directory.webhook_url}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>Webhook secret</span>
               </label>
@@ -109,7 +109,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                 value={directory.webhook_secret}
               />
             </div>
-            <div className='form-control w-full py-2 md:w-1/2'>
+            <div className='form-control w-full py-2'>
               <div className='flex items-center'>
                 <input
                   id='log_webhook_events'

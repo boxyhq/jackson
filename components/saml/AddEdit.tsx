@@ -195,7 +195,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
           {isEditView ? 'Edit Connection' : 'Create Connection'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
-          <div className='min-w-[28rem] rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
+          <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
             {fieldCatalog
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
               .map(
@@ -242,7 +242,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           readOnly={readOnly}
                           maxLength={maxLength}
                           onChange={handleChange}
-                          className={`block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 ${
+                          className={`textarea textarea-bordered h-24 w-full ${
                             isArray ? 'whitespace-pre' : ''
                           }`}
                           rows={rows}
@@ -257,7 +257,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           readOnly={readOnly}
                           maxLength={maxLength}
                           onChange={handleChange}
-                          className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
+                          className='input input-bordered w-full'
                         />
                       )}
                     </div>
