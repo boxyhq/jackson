@@ -386,7 +386,7 @@ export class OAuthController implements IOAuthController {
         oidcCodeVerifier = generators.codeVerifier();
         const code_challenge = generators.codeChallenge(oidcCodeVerifier);
         ssoUrl = oidcClient.authorizationUrl({
-          scope,
+          scope: [...requestedScopes, 'openid', 'email', 'profile'].join(' '),
           code_challenge,
           code_challenge_method: 'S256',
           state: relayState,
