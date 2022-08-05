@@ -34,7 +34,7 @@ import {
 
 const deflateRawAsync = promisify(deflateRaw);
 
-const validateResponse = async (rawResponse: string, validateOpts) => {
+const validateSAMLResponse = async (rawResponse: string, validateOpts) => {
   const profile = await saml.validate(rawResponse, validateOpts);
   if (profile && profile.claims) {
     // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
@@ -590,7 +590,7 @@ export class OAuthController implements IOAuthController {
     let profile;
     const redirect_uri = (session && session.redirect_uri) || samlConfig.defaultRedirectUrl;
     try {
-      profile = await validateResponse(rawResponse, validateOpts);
+      profile = await validateSAMLResponse(rawResponse, validateOpts);
     } catch (err: unknown) {
       // return error to redirect_uri
       return {
