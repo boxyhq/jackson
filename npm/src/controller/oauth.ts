@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
-import { errors, generators, Issuer } from 'openid-client';
+import { Client, errors, generators, Issuer, TokenSet } from 'openid-client';
 import * as jose from 'jose';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
@@ -650,11 +650,22 @@ export class OAuthController implements IOAuthController {
     return { redirect_url: redirectUrl };
   }
 
+  private async extractOIDCUserProfile(tokenSet: TokenSet, oidcClient: Client) {
+    const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
+    const idTokenClaims = tokenSet.claims();
+    const userinfo = await oidcClient.userinfo(tokenSet);
+    profile.claims.id = idTokenClaims.sub;
+    profile.claims.email = idTokenClaims.email ?? userinfo.email;
+    profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
+    profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
+    profile.claims.raw = userinfo;
+  }
+
   public async oidcAuthzResponse(body: {
     code?: string;
     state?: string;
   }): Promise<{ redirect_url?: string }> {
-    const { code, state } = body;
+    const { code: opCode, state } = body;
     let RelayState = state || '';
     RelayState = RelayState.replace(relayStatePrefix, '');
     const session = await this.sessionStore.get(RelayState);
@@ -671,6 +682,7 @@ export class OAuthController implements IOAuthController {
 
     // Reconstruct the oidcClient
     const { discoveryUrl, clientId, clientSecret } = oidcConnection.oidcProvider;
+    let profile;
     try {
       const oidcIssuer = await Issuer.discover(discoveryUrl);
       const oidcClient = new oidcIssuer.Client({
@@ -682,14 +694,11 @@ export class OAuthController implements IOAuthController {
       const tokenSet = await oidcClient.callback(
         this.opts.externalUrl + this.opts.oidcPath,
         {
-          code,
+          opCode,
         },
         { code_verifier: session.oidcCodeVerifier }
       );
-      const claims = tokenSet.claims();
-      if (tokenSet.access_token) {
-        const userinfo = await oidcClient.userinfo(tokenSet.access_token);
-      }
+      profile = await this.extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
       if (err) {
         return {
@@ -702,8 +711,51 @@ export class OAuthController implements IOAuthController {
         };
       }
     }
+    // store details against a code
+    const code = crypto.randomBytes(20).toString('hex');
 
-    return { redirect_url: '' };
+    const codeVal: Record<string, unknown> = {
+      profile,
+      clientID: oidcConnection.clientID,
+      clientSecret: oidcConnection.clientSecret,
+      requested: session?.requested,
+    };
+
+    if (session) {
+      codeVal.session = session;
+    }
+
+    try {
+      await this.codeStore.put(code, codeVal);
+    } catch (err: unknown) {
+      // return error to redirect_uri
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description: getErrorMessage(err),
+          redirect_uri,
+          state: session?.requested?.state,
+        }),
+      };
+    }
+    const params: Record<string, string> = {
+      code,
+    };
+
+    if (session && session.state) {
+      params.state = session.state;
+    }
+
+    const redirectUrl = redirect.success(redirect_uri, params);
+
+    // delete the session
+    try {
+      await this.sessionStore.delete(RelayState);
+    } catch (_err) {
+      // ignore error
+    }
+
+    return { redirect_url: redirectUrl };
   }
 
   /**
