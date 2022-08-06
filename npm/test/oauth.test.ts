@@ -25,6 +25,8 @@ import {
   bodyWithDummyCredentials,
   bodyWithInvalidClientSecret,
   bodyWithInvalidCode,
+  bodyWithInvalidRedirectUri,
+  bodyWithMissingRedirectUri,
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
   redirect_uri_not_allowed,
@@ -375,6 +377,26 @@ tap.test('token()', (t) => {
       const { message, statusCode } = err as JacksonError;
       t.equal(message, 'Invalid code', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithInvalidRedirectUri);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid request: redirect_uri mismatch', 'got expected error message');
+      t.equal(statusCode, 400, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithMissingRedirectUri);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid request: redirect_uri missing', 'got expected error message');
+      t.equal(statusCode, 400, 'got expected status code');
     }
 
     try {

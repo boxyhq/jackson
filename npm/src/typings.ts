@@ -88,6 +88,7 @@ export interface OAuthTokenReq {
   code_verifier: string;
   code: string;
   grant_type: 'authorization_code';
+  redirect_uri?: string;
 }
 
 export interface OAuthTokenRes {
