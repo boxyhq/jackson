@@ -339,7 +339,7 @@ export class OAuthController implements IOAuthController {
 
       const sessionId = crypto.randomBytes(16).toString('hex');
 
-      const requested = { client_id, state } as Record<string, string | boolean | string[]>;
+      const requested = { client_id, state, redirect_uri } as Record<string, string | boolean | string[]>;
       if (requestedTenant) {
         requested.tenant = requestedTenant;
       }
