@@ -620,7 +620,14 @@ export class OAuthController implements IOAuthController {
    *             expires_in: 300
    */
   public async token(body: OAuthTokenReq): Promise<OAuthTokenRes> {
-    const { client_id, client_secret, code_verifier, code, grant_type = 'authorization_code' } = body;
+    const {
+      client_id,
+      client_secret,
+      code_verifier,
+      code,
+      grant_type = 'authorization_code',
+      redirect_uri,
+    } = body;
 
     metrics.increment('oauthToken');
 
@@ -635,6 +642,15 @@ export class OAuthController implements IOAuthController {
     const codeVal = await this.codeStore.get(code);
     if (!codeVal || !codeVal.profile) {
       throw new JacksonError('Invalid code', 403);
+    }
+
+    if (codeVal.requested.redirect_uri) {
+      if (redirect_uri !== codeVal.requested.redirect_uri) {
+        throw new JacksonError(
+          `Invalid request: ${!redirect_uri ? 'redirect_uri missing' : 'redirect_uri mismatch'}`,
+          400
+        );
+      }
     }
 
     if (code_verifier) {
