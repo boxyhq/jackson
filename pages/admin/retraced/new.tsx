@@ -1,8 +1,8 @@
 import { NextPage } from 'next';
-import AddEdit from '@components/retraced/AddEdit';
+import AddProject from '@components/retraced/AddProject';
 
 const NewProduct: NextPage = () => {
-  return <AddEdit />;
+  return <AddProject />;
 };
 
 export default NewProduct;

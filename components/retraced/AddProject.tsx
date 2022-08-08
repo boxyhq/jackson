@@ -8,34 +8,11 @@ import {
   CheckIcon
 } from '@heroicons/react/outline';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import {
+    APIKey, NewProject
+} from '../../interfaces/project';
 
-type APIKey = {
-  created: Date;
-  disabled: boolean;
-  environment_id: string;
-  name: string;
-  project_id: string;
-  token: string;
-};
-
-type Environment = {
-  id: string;
-  name: string;
-};
-
-type Project = {
-  created: number;
-  environments: Environment[];
-  id: string;
-  name: string;
-  tokens: APIKey[];
-};
-
-type NewProject = {
-  project: Project;
-};
-
-const AddEdit = () => {
+const AddProject = () => {
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
     status: 'UNKNOWN',
   });
@@ -174,4 +151,4 @@ const AddEdit = () => {
   );
 };
 
-export default AddEdit;
+export default AddProject;

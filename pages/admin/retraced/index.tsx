@@ -2,16 +2,12 @@ import { NextPage } from 'next';
 import useSWR from 'swr';
 import { fetcher } from '@lib/ui/utils';
 import Link from 'next/link';
-import { ArrowSmLeftIcon, ArrowSmRightIcon, PencilAltIcon } from '@heroicons/react/outline';
+import { ArrowSmLeftIcon, ArrowSmRightIcon, ViewListIcon, InformationCircleIcon } from '@heroicons/react/outline';
 import { useState } from 'react';
 
 const RetracedProjects: NextPage = () => {
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data, error } = useSWR(
-    ['/api/retraced/projects'],
-    fetcher,
-    { revalidateOnFocus: false }
-  );
+  const { data, error } = useSWR(['/api/retraced/projects'], fetcher, { revalidateOnFocus: false });
   if (error) {
     return (
       <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
@@ -60,11 +56,14 @@ const RetracedProjects: NextPage = () => {
                 Environment
               </th>
               <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {data.map((tenant) => (
-              <tr key={tenant.projectId + tenant.environmentName} className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
+              <tr
+                key={tenant.projectId + tenant.environmentName}
+                className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
                 <td className='whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white'>
                   {tenant.name}
                 </td>
@@ -72,9 +71,18 @@ const RetracedProjects: NextPage = () => {
                   {tenant.environmentName}
                 </td>
                 <td>
-                  <Link href={`/admin/retraced/log-viewer/${tenant.name}-${tenant.token}-${tenant.projectId}-${tenant.environmentId}`}>
+                  <Link
+                    href={`/admin/retraced/log-viewer/${tenant.name}-${tenant.token}-${tenant.projectId}-${tenant.environmentId}`}>
                     <a className='link-primary'>
-                      <PencilAltIcon className='h-5 w-5 text-secondary' />
+                      <ViewListIcon className='h-5 w-5 text-secondary' />
+                    </a>
+                  </Link>
+                </td>
+                <td>
+                  <Link
+                    href={`/admin/retraced/info/${tenant.projectId}`}>
+                    <a className='link-primary'>
+                      <InformationCircleIcon className='h-5 w-5 text-secondary' />
                     </a>
                   </Link>
                 </td>

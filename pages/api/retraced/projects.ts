@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { Token } from '../../../interfaces/token';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NewProject } from 'interfaces/project';
 
-const createProject = async (id: string, token: string, name: string): Promise<any> => {
+const createProject = async (id: string, token: string, name: string): Promise<NewProject> => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
       name,
@@ -68,18 +70,17 @@ const sanitizeResponse = (projects: any): Array<any> => {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const token = await getToken();
   if (req.method === 'POST') {
-    const token = await getToken();
     const output = await createProject(token.id, token.token, req.body.name);
     res.status(200).json(output);
   } else {
-    const token = await getToken();
     const projects = await getProjects(token.id, token.token);
     res.status(200).json(sanitizeResponse(projects.projects));
   }
 }
 
-export async function getToken(): Promise<any> {
+export async function getToken(): Promise<Token> {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
       claims: {
