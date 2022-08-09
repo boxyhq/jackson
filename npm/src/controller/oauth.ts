@@ -318,16 +318,6 @@ export class OAuthController implements IOAuthController {
     const connectionIsSAML = connection.idpMetadata && typeof connection.idpMetadata === 'object';
     const connectionIsOIDC = connection.oidcProvider && typeof connection.oidcProvider === 'object';
 
-    // if (!requestedOIDCFlow && connectionIsOIDC) {
-    //   return {
-    //     redirect_url: OAuthErrorResponse({
-    //       error: 'invalid_request',
-    //       error_description: 'OIDC Identity Provider detected, but request missing openid scope',
-    //       redirect_uri,
-    //       state,
-    //     }),
-    //   };
-    // }
     // Init sessionId
     const sessionId = crypto.randomBytes(16).toString('hex');
     const relayState = relayStatePrefix + sessionId;
