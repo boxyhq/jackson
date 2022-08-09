@@ -316,7 +316,7 @@ export class OAuthController implements IOAuthController {
     let ssoUrl;
     let post = false;
     const connectionIsSAML = connection.idpMetadata && typeof connection.idpMetadata === 'object';
-    const connectionIsOIDC = connection.oidcProvider && typeof connection.oidcProvideer === 'object';
+    const connectionIsOIDC = connection.oidcProvider && typeof connection.oidcProvider === 'object';
 
     // if (!requestedOIDCFlow && connectionIsOIDC) {
     //   return {
