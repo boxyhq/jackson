@@ -651,6 +651,7 @@ export class OAuthController implements IOAuthController {
     profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
     profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
     profile.claims.raw = userinfo;
+    return profile;
   }
 
   public async oidcAuthzResponse(body: {
@@ -700,7 +701,7 @@ export class OAuthController implements IOAuthController {
       const tokenSet = await oidcClient.callback(
         this.opts.externalUrl + this.opts.oidcPath,
         {
-          opCode,
+          code: opCode,
         },
         { code_verifier: session.oidcCodeVerifier }
       );
