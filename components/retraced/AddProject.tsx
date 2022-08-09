@@ -20,7 +20,7 @@ const AddProject = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [apiKeys, setAPIKeys] = useState<APIKey[]>([]);
   const [productname, setProductName] = useState('');
-  const [showToken, setShowToken] = useState<any>({});
+  const [showToken, setShowToken] = useState<object>({});
   const toggleVisibility = (id) => {
     setShowToken({
         ...showToken,
@@ -135,8 +135,8 @@ const AddProject = () => {
                   </td>
                   <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400'>
                       <span className='h-5 w-5 text-secondary inline m-2 align-middle'>{showToken[token.environment_id] ? token.token : '*'.repeat(token.token.length * 2)}</span>
-                      {showToken[token.environment_id] ? <EyeOffIcon className='h-5 w-5 text-secondary inline m-2 align-middle' onClick={ e => toggleVisibility(token.environment_id)} />
-                       : <EyeIcon className='h-5 w-5 text-secondary inline m-2 align-middle' onClick={ e => toggleVisibility(token.environment_id)} /> }
+                      {showToken[token.environment_id] ? <EyeOffIcon className='h-5 w-5 text-secondary inline m-2 align-middle' onClick={ () => toggleVisibility(token.environment_id)} />
+                       : <EyeIcon className='h-5 w-5 text-secondary inline m-2 align-middle' onClick={ () => toggleVisibility(token.environment_id)} /> }
                     </td>
                   <td>
                     <a className='link-primary cursor-pointer'>

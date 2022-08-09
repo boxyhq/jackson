@@ -72,6 +72,7 @@
     "@types/micromatch": "4.0.2",
     "@types/node": "18.0.3",
     "@types/react": "18.0.15",
+    "@types/react-copy-to-clipboard": "^5.0.4",
     "@typescript-eslint/eslint-plugin": "5.30.5",
     "@typescript-eslint/parser": "5.30.6",
     "autoprefixer": "10.4.7",
