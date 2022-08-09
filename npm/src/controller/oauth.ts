@@ -9,9 +9,10 @@ import * as metrics from '../opentelemetry/metrics';
 import saml from '@boxyhq/saml20';
 import claims from '../saml/claims';
 
-import {
+import type {
   IOAuthController,
   JacksonOption,
+  OAuthErrorHandlerParams,
   OAuthReqBody,
   OAuthTokenReq,
   OAuthTokenRes,
@@ -664,8 +665,11 @@ export class OAuthController implements IOAuthController {
   public async oidcAuthzResponse(body: {
     code?: string;
     state?: string;
+    error?: OAuthErrorHandlerParams['error'];
+    error_description?: string;
   }): Promise<{ redirect_url?: string }> {
-    const { code: opCode, state } = body;
+    const { code: opCode, state, error, error_description } = body;
+
     let RelayState = state || '';
     RelayState = RelayState.replace(relayStatePrefix, '');
     const session = await this.sessionStore.get(RelayState);
@@ -679,6 +683,17 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
     const redirect_uri = (session && session.redirect_uri) || oidcConnection.defaultRedirectUrl;
+
+    if (error) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error,
+          error_description: error_description ?? 'Authorization failure at OIDC Provider',
+          redirect_uri,
+          state,
+        }),
+      };
+    }
 
     // Reconstruct the oidcClient
     const { discoveryUrl, clientId, clientSecret } = oidcConnection.oidcProvider;
