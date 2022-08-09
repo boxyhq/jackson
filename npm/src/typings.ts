@@ -97,8 +97,10 @@ export interface SAMLResponsePayload {
 }
 
 export interface AuthzResponsePayload {
-  code: string;
-  state: string;
+  code?: string;
+  state?: string;
+  error?: OAuthErrorHandlerParams['error'];
+  error_description?: string;
 }
 
 export interface OAuthTokenReq {
