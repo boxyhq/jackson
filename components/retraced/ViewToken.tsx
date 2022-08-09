@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
-import { ArrowLeftIcon, ClipboardCopyIcon, CheckIcon } from '@heroicons/react/outline';
+import { ArrowLeftIcon, ClipboardCopyIcon, CheckIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { NewProject } from '../../interfaces/project';
 
@@ -8,11 +8,18 @@ const ViewToken = (props: NewProject) => {
   console.log(props.project.tokens);
   const showAPIKeys = props.project.tokens.length > 0;
   const [copied, setCopied] = useState<boolean>(false);
+  const [showToken, setShowToken] = useState<any>({});
   const apiKeys = props.project.tokens;
   const showCopied = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+  const toggleVisibility = (id) => {
+    setShowToken({
+        ...showToken,
+        [id]: showToken[id] ? !showToken[id] : true
+    });
+  }
 
   return (
     <>
@@ -51,7 +58,9 @@ const ViewToken = (props: NewProject) => {
                       {token.name}
                     </td>
                     <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400'>
-                      {token.token}
+                      <span className='h-5 w-5 text-secondary inline m-2 align-middle'>{showToken[token.environment_id] ? token.token : '*'.repeat(token.token.length * 2)}</span>
+                      {showToken[token.environment_id] ? <EyeOffIcon className='h-5 w-5 text-secondary inline m-2 align-middle' onClick={ e => toggleVisibility(token.environment_id)} />
+                       : <EyeIcon className='h-5 w-5 text-secondary inline m-2 align-middle' onClick={ e => toggleVisibility(token.environment_id)} /> }
                     </td>
                     <td>
                       <a className='link-primary cursor-pointer'>
