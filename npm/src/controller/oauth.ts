@@ -16,6 +16,7 @@ import type {
   OAuthReqBody,
   OAuthTokenReq,
   OAuthTokenRes,
+  OIDCErrorCodes,
   Profile,
   SAMLResponsePayload,
   Storable,
@@ -665,7 +666,7 @@ export class OAuthController implements IOAuthController {
   public async oidcAuthzResponse(body: {
     code?: string;
     state?: string;
-    error?: OAuthErrorHandlerParams['error'];
+    error?: OAuthErrorHandlerParams['error'] | OIDCErrorCodes;
     error_description?: string;
   }): Promise<{ redirect_url?: string }> {
     const { code: opCode, state, error, error_description } = body;

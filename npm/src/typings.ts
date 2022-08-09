@@ -99,7 +99,7 @@ export interface SAMLResponsePayload {
 export interface AuthzResponsePayload {
   code?: string;
   state?: string;
-  error?: OAuthErrorHandlerParams['error'];
+  error?: OAuthErrorHandlerParams['error'] | OIDCErrorCodes;
   error_description?: string;
 }
 
@@ -235,8 +235,20 @@ export interface OAuthErrorHandlerParams {
     | 'unsupported_response_type'
     | 'invalid_scope'
     | 'server_error'
-    | 'temporarily_unavailable';
+    | 'temporarily_unavailable'
+    | OIDCErrorCodes;
   error_description: string;
   redirect_uri: string;
   state?: string;
 }
+
+export type OIDCErrorCodes =
+  | 'interaction_required'
+  | 'login_required'
+  | 'account_selection_required'
+  | 'consent_required'
+  | 'invalid_request_uri'
+  | 'invalid_request_object'
+  | 'request_not_supported'
+  | 'request_uri_not_supported'
+  | 'registration_not_supported';
