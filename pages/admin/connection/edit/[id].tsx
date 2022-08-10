@@ -3,7 +3,7 @@ import useSWR from 'swr';
 import { useRouter } from 'next/router';
 
 import { fetcher } from '@lib/ui/utils';
-import AddEdit from '@components/saml/AddEdit';
+import AddEdit from '@components/connection/AddEdit';
 
 const EditConnection: NextPage = () => {
   const router = useRouter();

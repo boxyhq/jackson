@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import AddEdit from '@components/saml/AddEdit';
+import AddEdit from '@components/connection/AddEdit';
 
 const NewConnection: NextPage = () => {
   return <AddEdit />;
