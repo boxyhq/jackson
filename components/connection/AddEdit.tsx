@@ -234,6 +234,12 @@ const AddEdit = ({ connection }: AddEditProps) => {
       attributes.connection && connection !== null ? attributes.connection === connection : true;
   }
 
+  // STATE: New connection type
+  const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
+  const handleNewConnectionTypeChange = (event) => {
+    setNewConnectionType(event.target.value);
+  };
+
   return (
     <>
       <Link href='/admin/connection'>
@@ -246,11 +252,56 @@ const AddEdit = ({ connection }: AddEditProps) => {
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {isEditView ? 'Edit Connection' : 'Create Connection'}
         </h2>
+        {!isEditView && (
+          <div className='mb-4 flex'>
+            <div className='mr-2'>Type:</div>
+            <div className='flex flex-nowrap items-stretch justify-start'>
+              <div>
+                <input
+                  type='radio'
+                  name='connection'
+                  value='saml'
+                  className='peer sr-only'
+                  checked={newConnectionType === 'saml'}
+                  onChange={handleNewConnectionTypeChange}
+                  id='saml-conn'></input>
+                <label
+                  htmlFor='saml-conn'
+                  className='mr-2 rounded-l-md py-3 px-8 font-semibold peer-checked:bg-blue-500 peer-checked:text-white'>
+                  SAML
+                </label>
+              </div>
+              <div>
+                <input
+                  type='radio'
+                  name='connection'
+                  value='oidc'
+                  className='peer sr-only'
+                  checked={newConnectionType === 'oidc'}
+                  onChange={handleNewConnectionTypeChange}
+                  id='oidc-conn'></input>
+                <label
+                  htmlFor='oidc-conn'
+                  className='rounded-r-md px-8 py-3 font-semibold peer-checked:bg-blue-500 peer-checked:text-white'>
+                  OIDC
+                </label>
+              </div>
+            </div>
+          </div>
+        )}
         <form onSubmit={saveConnection}>
           <div className='min-w-[28rem] rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
             {fieldCatalog
               .filter(
-                fieldCatalogFilterByConnection(connectionIsSAML ? 'saml' : connectionIsOIDC ? 'oidc' : null)
+                fieldCatalogFilterByConnection(
+                  isEditView
+                    ? connectionIsSAML
+                      ? 'saml'
+                      : connectionIsOIDC
+                      ? 'oidc'
+                      : null
+                    : newConnectionType
+                )
               )
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
               .map(
