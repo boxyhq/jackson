@@ -691,7 +691,7 @@ export class ConfigAPIController implements IConfigAPIController {
         oidcProvider.clientSecret = oidcClientSecret;
       }
       if (oidcDiscoveryUrl && typeof oidcDiscoveryUrl === 'string') {
-        oidcProvider.oidcDiscoveryUrl = oidcDiscoveryUrl;
+        oidcProvider.discoveryUrl = oidcDiscoveryUrl;
         const providerName = extractHostName(oidcDiscoveryUrl);
         oidcProvider.provider = providerName ? providerName : 'Unknown';
       }
