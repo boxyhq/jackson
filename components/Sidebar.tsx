@@ -7,14 +7,8 @@ import Logo from '../public/logo.png';
 
 const menus = [
   {
-    href: '/admin/saml/connection',
-    text: 'SAML Connections',
-    icon: ShieldCheckIcon,
-    current: false,
-  },
-  {
-    href: '/admin/oidc/connection',
-    text: 'OIDC Connections',
+    href: '/admin/connection',
+    text: 'Connections',
     icon: ShieldCheckIcon,
     current: false,
   },

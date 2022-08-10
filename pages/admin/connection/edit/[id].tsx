@@ -5,18 +5,14 @@ import { useRouter } from 'next/router';
 import { fetcher } from '@lib/ui/utils';
 import AddEdit from '@components/saml/AddEdit';
 
-const EditSAMLConfiguration: NextPage = () => {
+const EditConnection: NextPage = () => {
   const router = useRouter();
 
-  const { id, strategy } = router.query;
+  const { id } = router.query;
 
-  const { data: samlConfig, error } = useSWR(
-    id && strategy ? `/api/admin/${strategy}/connection/${id}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    }
-  );
+  const { data: connection, error } = useSWR(id ? `/api/admin/connection/${id}` : null, fetcher, {
+    revalidateOnFocus: false,
+  });
 
   if (error) {
     return (
@@ -26,11 +22,11 @@ const EditSAMLConfiguration: NextPage = () => {
     );
   }
 
-  if (!samlConfig) {
+  if (!connection) {
     return null;
   }
 
-  return <AddEdit samlConfig={samlConfig} />;
+  return <AddEdit connection={connection} />;
 };
 
-export default EditSAMLConfiguration;
+export default EditConnection;

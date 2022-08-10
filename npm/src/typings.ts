@@ -44,8 +44,6 @@ export interface IOAuthController {
 
 export interface IAdminController {
   getAllConfig(pageOffset?: number, pageLimit?: number);
-  getAllSAMLConfig(pageOffset?: number, pageLimit?: number);
-  getAllOIDCConfig(pageOffset?: number, pageLimit?: number);
 }
 export interface IHealthCheckController {
   status(): Promise<{

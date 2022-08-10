@@ -14,16 +14,9 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       if (slug?.[0]) {
         res.json(await configAPIController.getConfig({ clientID: slug[0] }));
       } else {
-        if (strategy === 'saml') {
-          res.json(
-            await adminController.getAllSAMLConfig(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
-          );
-        }
-        if (strategy === 'oidc') {
-          res.json(
-            await adminController.getAllOIDCConfig(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
-          );
-        }
+        res.json(
+          await adminController.getAllConfig(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
+        );
       }
     } else if (req.method === 'POST') {
       if (strategy === 'saml') {

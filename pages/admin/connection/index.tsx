@@ -3,31 +3,23 @@ import useSWR from 'swr';
 import Link from 'next/link';
 import { ArrowSmLeftIcon, ArrowSmRightIcon, PencilAltIcon } from '@heroicons/react/outline';
 import { useState } from 'react';
-
 import { fetcher } from '@lib/ui/utils';
 import EmptyState from '@components/EmptyState';
-import { useRouter } from 'next/router';
 
 type Connection = {
   name: string;
   tenant: string;
   product: string;
   clientID: string;
+  idpMetadata?: any;
+  oidcProvider?: any;
 };
 
 const Connections: NextPage = () => {
-  const router = useRouter();
-  const { strategy } = router.query;
-  const strategyTitle = strategy === 'saml' ? 'SAML' : 'OIDC';
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
 
   const { data: connections } = useSWR<Connection[]>(
-    strategy
-      ? [
-          `/api/admin/${strategy}/connection`,
-          `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`,
-        ]
-      : null,
+    [`/api/admin/connection`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }
   );
@@ -39,18 +31,15 @@ const Connections: NextPage = () => {
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{strategyTitle} Connections</h2>
-        <Link href={`/admin/${strategy}/connection/new`}>
-          <a className='btn btn-primary' data-test-id='create-saml-connection'>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Connections</h2>
+        <Link href={`/admin/connection/new`}>
+          <a className='btn btn-primary' data-test-id='create-connection'>
             + New Connection
           </a>
         </Link>
       </div>
       {connections.length === 0 ? (
-        <EmptyState
-          title={`No ${strategyTitle} connections found.`}
-          href={`/admin/${strategy}/connection/new`}
-        />
+        <EmptyState title={`No connections found.`} href={`/admin/connection/new`} />
       ) : (
         <>
           <div className='rounder border'>
@@ -64,30 +53,42 @@ const Connections: NextPage = () => {
                     Product
                   </th>
                   <th scope='col' className='px-6 py-3'>
+                    IdP Type
+                  </th>
+                  <th scope='col' className='px-6 py-3'>
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {connections.map((connection) => (
-                  <tr
-                    key={connection.clientID}
-                    className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
-                    <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                      {connection.tenant}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                      {connection.product}
-                    </td>
-                    <td className='px-6 py-3'>
-                      <Link href={`/admin/${strategy}/connection/edit/${connection.clientID}`}>
-                        <a className='link-primary'>
-                          <PencilAltIcon className='h-5 w-5 text-secondary' />
-                        </a>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                {connections.map((connection) => {
+                  const connectionIsSAML =
+                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
+                  const connectionIsOIDC =
+                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
+                  return (
+                    <tr
+                      key={connection.clientID}
+                      className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
+                      <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
+                        {connection.tenant}
+                      </td>
+                      <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                        {connection.product}
+                      </td>
+                      <td className='px-6 py-3'>
+                        {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
+                      </td>
+                      <td className='px-6 py-3'>
+                        <Link href={`/admin/connection/edit/${connection.clientID}`}>
+                          <a className='link-primary'>
+                            <PencilAltIcon className='h-5 w-5 text-secondary' />
+                          </a>
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

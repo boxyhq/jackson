@@ -112,17 +112,17 @@ function getInitialState(samlConfig, isEditView) {
 }
 
 type AddEditProps = {
-  samlConfig?: Record<string, any>;
+  connection?: Record<string, any>;
 };
 
-const AddEdit = ({ samlConfig }: AddEditProps) => {
+const AddEdit = ({ connection }: AddEditProps) => {
   const router = useRouter();
-  const isEditView = !!samlConfig;
+  const isEditView = !!connection;
   // FORM LOGIC: SUBMIT
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
     status: 'UNKNOWN',
   });
-  const saveSAMLConfiguration = async (event) => {
+  const saveConnection = async (event) => {
     event.preventDefault();
     const { rawMetadata, redirectUrl, ...rest } = formObj;
     const encodedRawMetadata = btoa(rawMetadata || '');
@@ -160,7 +160,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ clientID: samlConfig?.clientID, clientSecret: samlConfig?.clientSecret }),
+      body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
     });
     toggleDelConfirm();
     await mutate('/api/admin/saml/config');
@@ -169,13 +169,13 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
 
   // STATE: FORM
   const [formObj, setFormObj] = useState<Record<string, string>>(() =>
-    getInitialState(samlConfig, isEditView)
+    getInitialState(connection, isEditView)
   );
   // Resync form state on save
   useEffect(() => {
-    const _state = getInitialState(samlConfig, isEditView);
+    const _state = getInitialState(connection, isEditView);
     setFormObj(_state);
-  }, [samlConfig, isEditView]);
+  }, [connection, isEditView]);
 
   function handleChange(event: FormEvent) {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
@@ -184,7 +184,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
 
   return (
     <>
-      <Link href='/admin/saml/connection'>
+      <Link href='/admin/connection'>
         <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span>Back</span>
@@ -194,7 +194,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {isEditView ? 'Edit Connection' : 'Create Connection'}
         </h2>
-        <form onSubmit={saveSAMLConfiguration}>
+        <form onSubmit={saveConnection}>
           <div className='min-w-[28rem] rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
             {fieldCatalog
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
@@ -289,7 +289,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
               </p>
             </div>
           </div>
-          {samlConfig?.clientID && samlConfig.clientSecret && (
+          {connection?.clientID && connection.clientSecret && (
             <section className='mt-10 flex items-center rounded bg-red-100 p-6 text-red-900'>
               <div className='flex-1'>
                 <h6 className='mb-1 font-medium'>Delete this connection</h6>
