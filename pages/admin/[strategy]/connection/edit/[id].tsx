@@ -8,11 +8,15 @@ import AddEdit from '@components/saml/AddEdit';
 const EditSAMLConfiguration: NextPage = () => {
   const router = useRouter();
 
-  const { id } = router.query;
+  const { id, strategy } = router.query;
 
-  const { data: samlConfig, error } = useSWR(`/api/admin/saml/config/${id}`, fetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data: samlConfig, error } = useSWR(
+    id && strategy ? `/api/admin/${strategy}/connection/${id}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
   if (error) {
     return (

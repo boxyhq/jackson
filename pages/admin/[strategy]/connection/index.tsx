@@ -80,7 +80,7 @@ const Connections: NextPage = () => {
                       {connection.product}
                     </td>
                     <td className='px-6 py-3'>
-                      <Link href={`/admin/saml/connection/edit/${connection.clientID}`}>
+                      <Link href={`/admin/${strategy}/connection/edit/${connection.clientID}`}>
                         <a className='link-primary'>
                           <PencilAltIcon className='h-5 w-5 text-secondary' />
                         </a>
