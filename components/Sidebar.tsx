@@ -7,8 +7,8 @@ import Logo from '../public/logo.png';
 
 const menus = [
   {
-    href: '/admin/saml/config',
-    text: 'SAML Connections',
+    href: '/admin/saml/connection',
+    text: 'Connections',
     icon: ShieldCheckIcon,
     current: false,
   },

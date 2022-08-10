@@ -6,39 +6,51 @@ import { useState } from 'react';
 
 import { fetcher } from '@lib/ui/utils';
 import EmptyState from '@components/EmptyState';
+import { useRouter } from 'next/router';
 
-type SAMLConfig = {
+type Connection = {
   name: string;
   tenant: string;
   product: string;
   clientID: string;
 };
 
-const SAMLConfigurations: NextPage = () => {
+const Connections: NextPage = () => {
+  const router = useRouter();
+  const { strategy } = router.query;
+  const strategyTitle = strategy === 'saml' ? 'SAML' : 'OIDC';
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
 
-  const { data: samlConfigs } = useSWR<SAMLConfig[]>(
-    ['/api/admin/saml/config', `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
+  const { data: connections } = useSWR<Connection[]>(
+    strategy
+      ? [
+          `/api/admin/${strategy}/connection`,
+          `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`,
+        ]
+      : null,
     fetcher,
     { revalidateOnFocus: false }
   );
 
-  if (!samlConfigs) {
+  if (!connections) {
     return null;
   }
 
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>SAML Connections</h2>
-        <Link href={'/admin/saml/config/new'}>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{strategyTitle} Connections</h2>
+        <Link href={`/admin/${strategy}/connection/new`}>
           <a className='btn btn-primary' data-test-id='create-saml-connection'>
             + New Connection
           </a>
         </Link>
       </div>
-      {samlConfigs.length === 0 ? (
-        <EmptyState title='No SAML connections found.' href='/admin/saml/config/new' />
+      {connections.length === 0 ? (
+        <EmptyState
+          title={`No ${strategyTitle} connections found.`}
+          href={`/admin/${strategy}/connection/new`}
+        />
       ) : (
         <>
           <div className='rounder border'>
@@ -57,18 +69,18 @@ const SAMLConfigurations: NextPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {samlConfigs.map((samlConfig) => (
+                {connections.map((connection) => (
                   <tr
-                    key={samlConfig.clientID}
+                    key={connection.clientID}
                     className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
                     <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                      {samlConfig.tenant}
+                      {connection.tenant}
                     </td>
                     <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                      {samlConfig.product}
+                      {connection.product}
                     </td>
                     <td className='px-6 py-3'>
-                      <Link href={`/admin/saml/config/edit/${samlConfig.clientID}`}>
+                      <Link href={`/admin/saml/connection/edit/${connection.clientID}`}>
                         <a className='link-primary'>
                           <PencilAltIcon className='h-5 w-5 text-secondary' />
                         </a>
@@ -99,7 +111,7 @@ const SAMLConfigurations: NextPage = () => {
             <button
               type='button'
               className='btn btn-outline'
-              disabled={samlConfigs.length === 0 || samlConfigs.length < paginate.pageLimit}
+              disabled={connections.length === 0 || connections.length < paginate.pageLimit}
               onClick={() =>
                 setPaginate((curState) => ({
                   ...curState,
@@ -117,4 +129,4 @@ const SAMLConfigurations: NextPage = () => {
   );
 };
 
-export default SAMLConfigurations;
+export default Connections;

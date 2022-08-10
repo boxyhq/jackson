@@ -184,7 +184,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
 
   return (
     <>
-      <Link href='/admin/saml/config'>
+      <Link href='/admin/saml/connection'>
         <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span>Back</span>
