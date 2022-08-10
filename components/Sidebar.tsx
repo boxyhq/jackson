@@ -8,7 +8,13 @@ import Logo from '../public/logo.png';
 const menus = [
   {
     href: '/admin/saml/connection',
-    text: 'Connections',
+    text: 'SAML Connections',
+    icon: ShieldCheckIcon,
+    current: false,
+  },
+  {
+    href: '/admin/oidc/connection',
+    text: 'OIDC Connections',
     icon: ShieldCheckIcon,
     current: false,
   },
@@ -91,13 +97,12 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
           <div className='mt-5 flex flex-1 flex-col'>
             <nav className='flex-1 space-y-1 px-2 pb-4' id='menu'>
               {menus.map((menu) => (
-                <a
-                  key={menu.text}
-                  href={menu.href}
-                  className='group flex items-center rounded-md bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'>
-                  <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                  <div>{menu.text}</div>
-                </a>
+                <Link key={menu.text} href={menu.href}>
+                  <a className='group flex items-center rounded-md bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'>
+                    <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
+                    <div>{menu.text}</div>
+                  </a>
+                </Link>
               ))}
             </nav>
           </div>
