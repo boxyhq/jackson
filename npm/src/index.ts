@@ -4,6 +4,7 @@ import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
+import { SPSAMLConfig } from './controller/sp-config';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
@@ -46,6 +47,7 @@ export const controllers = async (
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
   oidcDiscoveryController: OidcDiscoveryController;
+  spConfig: SPSAMLConfig;
 }> => {
   opts = defaultOpts(opts);
 
@@ -74,7 +76,11 @@ export const controllers = async (
     sessionStore,
     opts,
   });
+
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
+
+  const spConfig = new SPSAMLConfig(opts);
+
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
     const configs = await readConfig(opts.preLoadedConfig);
@@ -91,6 +97,7 @@ export const controllers = async (
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
+    spConfig,
     apiController,
     oauthController,
     adminController,
