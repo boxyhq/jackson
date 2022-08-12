@@ -678,8 +678,8 @@ export class OAuthController implements IOAuthController {
       ...codeVal.profile,
       requested: codeVal.requested,
     };
-    const requestedOIDCFlow = !!codeVal.requested.oidc;
-    const requestHasNonce = !!codeVal.requested.nonce;
+    const requestedOIDCFlow = !!codeVal.requested?.oidc;
+    const requestHasNonce = !!codeVal.requested?.nonce;
     if (requestedOIDCFlow) {
       const { jwtSigningKeys, jwsAlg } = this.opts.openid;
       if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
