@@ -644,7 +644,7 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Invalid code', 403);
     }
 
-    if (codeVal.requested.redirect_uri) {
+    if (codeVal.requested?.redirect_uri) {
       if (redirect_uri !== codeVal.requested.redirect_uri) {
         throw new JacksonError(
           `Invalid request: ${!redirect_uri ? 'redirect_uri missing' : 'redirect_uri mismatch'}`,
