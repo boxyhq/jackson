@@ -84,6 +84,21 @@ export const bodyWithInvalidCode: Partial<OAuthTokenReq> = {
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: CLIENT_SECRET_VERIFIER,
   code: 'invalid-code',
+  redirect_uri: boxyhq.defaultRedirectUrl,
+};
+// invalid redirect_uri
+export const bodyWithInvalidRedirectUri: Partial<OAuthTokenReq> = {
+  grant_type: 'authorization_code',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  client_secret: CLIENT_SECRET_VERIFIER,
+  code: CODE,
+  redirect_uri: 'http://example.com',
+};
+export const bodyWithMissingRedirectUri: Partial<OAuthTokenReq> = {
+  grant_type: 'authorization_code',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  client_secret: CLIENT_SECRET_VERIFIER,
+  code: CODE,
 };
 //encoded clientId and wrong secret
 export const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
@@ -91,6 +106,7 @@ export const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: 'dummy',
   code: CODE,
+  redirect_uri: boxyhq.defaultRedirectUrl,
 };
 //unencoded clientId with wrong secret
 export const bodyWithUnencodedClientId_InvalidClientSecret_gen = (configRecords) => {
@@ -102,6 +118,7 @@ export const bodyWithUnencodedClientId_InvalidClientSecret_gen = (configRecords)
     client_id: configRecord.clientID,
     client_secret: 'dummy',
     code: CODE,
+    redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
 
@@ -110,6 +127,7 @@ export const bodyWithDummyCredentials: Partial<OAuthTokenReq> = {
   client_id: `dummy`,
   client_secret: 'dummy',
   code: CODE,
+  redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
 export const token_req_encoded_client_id: Partial<OAuthTokenReq> = {
@@ -117,6 +135,7 @@ export const token_req_encoded_client_id: Partial<OAuthTokenReq> = {
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: CLIENT_SECRET_VERIFIER,
   code: CODE,
+  redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
 export const token_req_unencoded_client_id_gen = (configRecords) => {
@@ -128,6 +147,7 @@ export const token_req_unencoded_client_id_gen = (configRecords) => {
     client_id: configRecord.clientID,
     client_secret: configRecord.clientSecret,
     code: '1234567890',
+    redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
 // END: Fixtures for token
