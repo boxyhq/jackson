@@ -150,6 +150,11 @@ export const token_req_unencoded_client_id_gen = (configRecords) => {
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
+
+export const token_req_idp_initiated_saml_login = {
+  grant_type: 'authorization_code',
+  code: '1234567890',
+};
 // END: Fixtures for token
 
 // BEGIN: Fixtures for api.test.ts
