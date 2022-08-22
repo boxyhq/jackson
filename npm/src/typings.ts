@@ -5,8 +5,8 @@ export type IdPConfig = {
   redirectUrl: string[] | string;
   tenant: string;
   product: string;
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
   // SAML Provider
   rawMetadata?: string;
   encodedRawMetadata?: string;
@@ -107,6 +107,7 @@ export interface OAuthTokenReq {
   code_verifier: string;
   code: string;
   grant_type: 'authorization_code';
+  redirect_uri?: string;
 }
 
 export interface OAuthTokenRes {

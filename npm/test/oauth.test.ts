@@ -25,6 +25,8 @@ import {
   bodyWithDummyCredentials,
   bodyWithInvalidClientSecret,
   bodyWithInvalidCode,
+  bodyWithInvalidRedirectUri,
+  bodyWithMissingRedirectUri,
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
   redirect_uri_not_allowed,
@@ -33,11 +35,14 @@ import {
   saml_binding_absent,
   state_not_set,
   token_req_encoded_client_id,
+  token_req_idp_initiated_saml_login,
   token_req_unencoded_client_id_gen,
 } from './fixture';
 
 let configAPIController: IConfigAPIController;
 let oauthController: IOAuthController;
+let idpEnabledConfigAPIController: IConfigAPIController;
+let idpEnabledOAuthController: IOAuthController;
 let keyPair: jose.GenerateKeyPairResult;
 
 const code = '1234567890';
@@ -65,6 +70,7 @@ const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
   for (const config of configs) {
     const _record = await configAPIController.config(config);
+    await idpEnabledConfigAPIController.config(config);
     configRecords.push(_record);
   }
 };
@@ -73,10 +79,14 @@ tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
 
   const controller = await (await import('../src/index')).default(options);
+  const idpFlowEnabledController = await (
+    await import('../src/index')
+  ).default({ ...options, idpEnabled: true });
 
   configAPIController = controller.configAPIController;
   oauthController = controller.oauthController;
-
+  idpEnabledConfigAPIController = idpFlowEnabledController.configAPIController;
+  idpEnabledOAuthController = idpFlowEnabledController.oauthController;
   await addMetadata(metadataPath);
 });
 
@@ -396,6 +406,26 @@ tap.test('token()', (t) => {
     }
 
     try {
+      await oauthController.token(<OAuthTokenReq>bodyWithInvalidRedirectUri);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid request: redirect_uri mismatch', 'got expected error message');
+      t.equal(statusCode, 400, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithMissingRedirectUri);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid request: redirect_uri missing', 'got expected error message');
+      t.equal(statusCode, 400, 'got expected status code');
+    }
+
+    try {
       await oauthController.token(<OAuthTokenReq>bodyWithInvalidClientSecret);
 
       t.fail('Expecting JacksonError.');
@@ -584,5 +614,40 @@ tap.test('token()', (t) => {
     }
   );
 
+  t.end();
+});
+
+tap.test('IdP initiated flow should return token and profile', async (t) => {
+  const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+  const responseBody = {
+    SAMLResponse: rawResponse,
+  };
+  const stubValidate = sinon.stub(saml, 'validate').resolves({
+    audience: '',
+    claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+    issuer: '',
+    sessionIndex: '',
+  });
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+
+  await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
+
+  const body = token_req_idp_initiated_saml_login;
+
+  const tokenRes = await idpEnabledOAuthController.token(<OAuthTokenReq>body);
+  t.ok('access_token' in tokenRes, 'includes access_token');
+  t.ok('token_type' in tokenRes, 'includes token_type');
+  t.ok('expires_in' in tokenRes, 'includes expires_in');
+  t.match(tokenRes.access_token, token);
+  t.match(tokenRes.token_type, 'bearer');
+  t.match(tokenRes.expires_in, 300);
+  const profile = await oauthController.userInfo(tokenRes.access_token);
+
+  t.equal(profile.sub, 'id');
+  stubRandomBytes.restore();
+  stubValidate.restore();
   t.end();
 });
