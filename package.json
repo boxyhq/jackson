@@ -55,7 +55,7 @@
     "micromatch": "4.0.5",
     "next": "12.2.5",
     "next-auth": "4.10.3",
-    "nodemailer": "6.7.7",
+    "nodemailer": "6.7.8",
     "raw-body": "2.5.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
