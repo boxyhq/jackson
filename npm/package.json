@@ -61,7 +61,7 @@
     "@typescript-eslint/eslint-plugin": "5.33.1",
     "@typescript-eslint/parser": "5.33.1",
     "cross-env": "7.0.3",
-    "eslint": "8.21.0",
+    "eslint": "8.22.0",
     "eslint-config-prettier": "8.5.0",
     "prettier": "2.7.1",
     "sinon": "14.0.0",
