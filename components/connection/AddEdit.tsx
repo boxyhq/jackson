@@ -147,10 +147,20 @@ type AddEditProps = {
 
 const AddEdit = ({ connection }: AddEditProps) => {
   const router = useRouter();
+  // STATE: New connection type
+  const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
+  const handleNewConnectionTypeChange = (event) => {
+    setNewConnectionType(event.target.value);
+  };
+
   const { id: connectionClientId } = router.query;
   const isEditView = !!connection && !!connectionClientId;
-  const connectionIsSAML = connection?.idpMetadata && typeof connection.idpMetadata === 'object';
-  const connectionIsOIDC = connection?.oidcProvider && typeof connection.oidcProvider === 'object';
+  const connectionIsSAML = isEditView
+    ? connection?.idpMetadata && typeof connection.idpMetadata === 'object'
+    : newConnectionType === 'saml';
+  const connectionIsOIDC = isEditView
+    ? connection?.oidcProvider && typeof connection.oidcProvider === 'object'
+    : newConnectionType === 'oidc';
   // FORM LOGIC: SUBMIT
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
     status: 'UNKNOWN',
@@ -233,12 +243,6 @@ const AddEdit = ({ connection }: AddEditProps) => {
     return ({ attributes }) =>
       attributes.connection && connection !== null ? attributes.connection === connection : true;
   }
-
-  // STATE: New connection type
-  const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
-  const handleNewConnectionTypeChange = (event) => {
-    setNewConnectionType(event.target.value);
-  };
 
   return (
     <>
