@@ -59,7 +59,7 @@
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",
     "@typescript-eslint/eslint-plugin": "5.33.1",
-    "@typescript-eslint/parser": "5.31.0",
+    "@typescript-eslint/parser": "5.33.1",
     "cross-env": "7.0.3",
     "eslint": "8.21.0",
     "eslint-config-prettier": "8.5.0",
