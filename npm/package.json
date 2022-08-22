@@ -44,7 +44,7 @@
     "@peculiar/webcrypto": "1.4.0",
     "@peculiar/x509": "1.8.1",
     "jose": "4.9.0",
-    "mongodb": "4.8.1",
+    "mongodb": "4.9.0",
     "mysql2": "2.3.3",
     "pg": "8.7.3",
     "redis": "4.0.6",
