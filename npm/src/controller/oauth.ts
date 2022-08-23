@@ -230,7 +230,7 @@ export class OAuthController implements IOAuthController {
         });
 
         if (!connections || connections.length === 0) {
-          throw new JacksonError('SAML configuration not found.', 403);
+          throw new JacksonError('IdP connection not found.', 403);
         }
 
         connection = connections[0];
