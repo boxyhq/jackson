@@ -190,6 +190,10 @@ export class OAuthController implements IOAuthController {
           state,
           tenant,
           product,
+          access_type,
+          resource,
+          scope,
+          nonce,
           code_challenge,
           code_challenge_method,
         }
@@ -243,6 +247,10 @@ export class OAuthController implements IOAuthController {
             state,
             tenant,
             product,
+            access_type,
+            resource,
+            scope,
+            nonce,
             code_challenge,
             code_challenge_method,
           }
