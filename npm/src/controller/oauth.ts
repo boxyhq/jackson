@@ -364,7 +364,7 @@ export class OAuthController implements IOAuthController {
         };
       }
     }
-    // OIDC Connection: Issuer discovery, client init and extraction of authorization endpoint happens here
+    // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
     if (connectionIsOIDC) {
       const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
