@@ -112,6 +112,7 @@ export class OAuthController implements IOAuthController {
             }),
           };
         } else {
+          // Relevant to IdP initiated SAML flow
           const appList = connections.map(({ product, name, description, clientID }) => ({
             product,
             name,
