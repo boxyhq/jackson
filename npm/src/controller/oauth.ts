@@ -683,7 +683,7 @@ export class OAuthController implements IOAuthController {
           error,
           error_description: error_description ?? 'Authorization failure at OIDC Provider',
           redirect_uri,
-          state,
+          state: session.state,
         }),
       };
     }
@@ -742,7 +742,7 @@ export class OAuthController implements IOAuthController {
           error: 'server_error',
           error_description: getErrorMessage(err),
           redirect_uri,
-          state: session?.requested?.state,
+          state: session.state,
         }),
       };
     }
