@@ -29,19 +29,18 @@ export default function IdPSelection({ SAMLResponse, appList }) {
         <ul className='max-h-96 overflow-auto'>
           {idpList.map((idp) => {
             const { clientID, provider, connectionIsSAML, connectionIsOIDC } = JSON.parse(idp);
+            const connectionType = connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : '';
             return (
               <li className='relative my-3 border-b-[1px] bg-white last:border-b-0' key={clientID}>
                 <a
                   href={`/api/oauth/authorize?${paramsToRelay.toString()}&idp_hint=${clientID}`}
                   className='relative flex w-full cursor-pointer items-center overflow-hidden  py-3 px-8 text-center text-[#3C454C] outline-none transition-colors hover:bg-primary/10 focus:bg-primary/30'
-                  aria-label={`${
-                    connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''
-                  } Provider ${provider}`}>
+                  aria-label={`${connectionType} Provider ${provider}`}>
                   <span aria-hidden className='m-auto'>
                     {provider}
                   </span>
-                  <span aria-hidden className='badge badge-primary'>
-                    {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
+                  <span aria-hidden className='badge badge-primary badge-md'>
+                    {connectionType}
                   </span>
                 </a>
               </li>
