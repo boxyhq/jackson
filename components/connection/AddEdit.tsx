@@ -258,8 +258,8 @@ const AddEdit = ({ connection }: AddEditProps) => {
         </h2>
         {!isEditView && (
           <div className='mb-4 flex'>
-            <div className='mr-2'>Type:</div>
-            <div className='flex flex-nowrap items-stretch justify-start'>
+            <div className='mr-2 py-3'>Select Type:</div>
+            <div className='flex flex-nowrap items-stretch justify-start gap-1 rounded-md border-2 border-dashed py-3'>
               <div>
                 <input
                   type='radio'
@@ -269,9 +269,10 @@ const AddEdit = ({ connection }: AddEditProps) => {
                   checked={newConnectionType === 'saml'}
                   onChange={handleNewConnectionTypeChange}
                   id='saml-conn'></input>
+                {/* var(--radio-border-width) solid var(--color-gray) */}
                 <label
                   htmlFor='saml-conn'
-                  className='mr-2 rounded-l-md py-3 px-8 font-semibold peer-checked:bg-blue-500 peer-checked:text-white'>
+                  className='cursor-pointer rounded-md border-2 border-solid py-3 px-8 font-semibold hover:shadow-md peer-checked:border-secondary-focus peer-checked:bg-secondary peer-checked:text-white'>
                   SAML
                 </label>
               </div>
@@ -286,7 +287,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
                   id='oidc-conn'></input>
                 <label
                   htmlFor='oidc-conn'
-                  className='rounded-r-md px-8 py-3 font-semibold peer-checked:bg-blue-500 peer-checked:text-white'>
+                  className='cursor-pointer rounded-md border-2 border-solid px-8 py-3 font-semibold hover:shadow-md peer-checked:bg-secondary peer-checked:text-white'>
                   OIDC
                 </label>
               </div>
