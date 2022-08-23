@@ -20,7 +20,6 @@ services:
     depends_on:
       - db
     environment:
-      EXTERNAL_URL: ${UFFIZZI_URL}
       SAML_AUDIENCE: https://saml.boxyhq.com
       JACKSON_API_KEYS: "secret"
       IDP_ENABLED: true

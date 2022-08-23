@@ -34,6 +34,9 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/uffizzi/saml_config ./uffizzi/saml_config
 
+COPY ./uffizzi/docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
+
 USER nextjs
 
 EXPOSE 5225
@@ -43,4 +46,4 @@ EXPOSE 5225
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
 
-CMD ["npm", "start"]
+CMD ["./docker-entrypoint.sh"]

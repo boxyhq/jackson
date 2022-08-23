@@ -37,7 +37,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images:  ghcr.io/waveywaves/saml-jackson-${{ env.REL_VERSION_STRICT }} #ghcr.io/${{ github.repository_owner }}/jackson-${{ env.REL_VERSION_STRICT }}
+          images: ghcr.io/${{ github.repository_owner }}/jackson-dev/jackson-${{ env.REL_VERSION_STRICT }}
       - name: Build and Push Image to GHCR
         uses: docker/build-push-action@v2.9.0
         with:
@@ -76,16 +76,16 @@ jobs:
   deploy-uffizzi-preview:
     name: Use Remote Workflow to Preview on Uffizzi
     needs: render-compose-file
-    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@add_credentials
+    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@v2.1.0
     if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
     with:
       compose-file-cache-key: ${{ needs.render-compose-file.outputs.compose-file-cache-key }}
       compose-file-cache-path: docker-compose.rendered.yml
-      username: vibhav.bobade+boxyhq1@uffizzi.com
+      username: deepak@boxyhq.com
       server: https://app.uffizzi.com
       project: saml-jackson-hje1
     secrets:
-      password: boxyhqforuffizzi
+      password: ${{ secrets.UFFIZZI_PASSWORD }}
     permissions:
       contents: read
       pull-requests: write
