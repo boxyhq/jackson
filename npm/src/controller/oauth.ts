@@ -151,8 +151,6 @@ export class OAuthController implements IOAuthController {
       nonce,
       code_challenge,
       code_challenge_method = '',
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      provider = 'saml',
       idp_hint,
     } = body;
 
@@ -194,7 +192,6 @@ export class OAuthController implements IOAuthController {
           product,
           code_challenge,
           code_challenge_method,
-          provider,
         }
       );
 
@@ -248,7 +245,6 @@ export class OAuthController implements IOAuthController {
             product,
             code_challenge,
             code_challenge_method,
-            provider,
           }
         );
 

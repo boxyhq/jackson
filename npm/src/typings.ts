@@ -84,7 +84,6 @@ export interface OAuthReqBody {
   nonce?: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
-  provider: 'saml';
   idp_hint?: string;
 }
 
