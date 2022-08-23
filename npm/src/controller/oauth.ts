@@ -103,6 +103,8 @@ export class OAuthController implements IOAuthController {
             JSON.stringify({
               provider: idpMetadata?.provider ?? oidcProvider?.provider,
               clientID,
+              connectionIsSAML: idpMetadata && typeof idpMetadata === 'object',
+              connectionIsOIDC: oidcProvider && typeof oidcProvider === 'object',
             })
           );
           return {
