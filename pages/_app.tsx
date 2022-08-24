@@ -1,7 +1,9 @@
-import Layout from '@components/Layout';
-import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
+import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
+
+import { AccountLayout } from '@components/layouts';
+
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -13,9 +15,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
   return (
     <SessionProvider session={session}>
-      <Layout>
+      <AccountLayout>
         <Component {...pageProps} />
-      </Layout>
+      </AccountLayout>
     </SessionProvider>
   );
 }

@@ -1,10 +1,12 @@
+import { type JWK } from 'jose';
+
 export type IdPConfig = {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
   tenant: string;
   product: string;
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
   rawMetadata?: string;
   encodedRawMetadata?: string;
 };
@@ -37,6 +39,26 @@ export interface IHealthCheckController {
   }>;
   init(): Promise<void>;
 }
+
+export interface IOidcDiscoveryController {
+  openidConfig(): {
+    issuer: string;
+    authorization_endpoint: string;
+    token_endpoint: string;
+    userinfo_endpoint: string;
+    jwks_uri: string;
+    response_types_supported: Array<string>;
+    subject_types_supported: Array<string>;
+    id_token_signing_alg_values_supported: Array<string>;
+    grant_types_supported: Array<string>;
+    code_challenge_methods_supported: Array<string>;
+  };
+
+  jwks(): Promise<{
+    keys: JWK[];
+  }>;
+}
+
 export interface OAuthReqBody {
   response_type: 'code';
   client_id: string;
@@ -45,7 +67,9 @@ export interface OAuthReqBody {
   tenant?: string;
   product?: string;
   access_type?: string;
+  resource?: string;
   scope?: string;
+  nonce?: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
   provider: 'saml';
@@ -64,16 +88,19 @@ export interface OAuthTokenReq {
   code_verifier: string;
   code: string;
   grant_type: 'authorization_code';
+  redirect_uri?: string;
 }
 
 export interface OAuthTokenRes {
   access_token: string;
+  id_token?: string;
   token_type: 'bearer';
   expires_in: number;
 }
 
 export interface Profile {
   id: string;
+  sub?: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -133,6 +160,13 @@ export interface JacksonOption {
   db: DatabaseOption;
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
+  openid: {
+    jwsAlg?: string;
+    jwtSigningKeys?: {
+      private: string;
+      public: string;
+    };
+  };
 }
 
 export interface SLORequestParams {

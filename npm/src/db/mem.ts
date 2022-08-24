@@ -92,7 +92,6 @@ class Mem implements DatabaseDriver {
 
     this.store[k] = val;
 
-    // console.log(this.store)
     if (ttl) {
       this.ttlStore[k] = {
         namespace,

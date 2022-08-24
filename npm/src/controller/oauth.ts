@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
+import * as jose from 'jose';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
 
@@ -21,7 +22,14 @@ import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
-import { relayStatePrefix, IndexNames, OAuthErrorResponse, getErrorMessage } from './utils';
+import {
+  relayStatePrefix,
+  IndexNames,
+  OAuthErrorResponse,
+  getErrorMessage,
+  loadJWSPrivateKey,
+  isJWSKeyPairLoaded,
+} from './utils';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -55,6 +63,10 @@ function getEncodedTenantProduct(param: string): { tenant: string | null; produc
   } catch (err) {
     return null;
   }
+}
+
+function getScopeValues(scope?: string): string[] {
+  return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
 }
 
 export class OAuthController implements IOAuthController {
@@ -130,7 +142,9 @@ export class OAuthController implements IOAuthController {
       tenant,
       product,
       access_type,
+      resource,
       scope,
+      nonce,
       code_challenge,
       code_challenge_method = '',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -148,6 +162,8 @@ export class OAuthController implements IOAuthController {
     }
 
     let samlConfig;
+    const requestedScopes = getScopeValues(scope);
+    const requestedOIDCFlow = requestedScopes.includes('openid');
 
     if (tenant && product) {
       const samlConfigs = await this.configStore.getByIndex({
@@ -169,6 +185,10 @@ export class OAuthController implements IOAuthController {
         state,
         tenant,
         product,
+        access_type,
+        resource,
+        scope,
+        nonce,
         code_challenge,
         code_challenge_method,
         provider,
@@ -188,8 +208,14 @@ export class OAuthController implements IOAuthController {
       if (!sp && access_type) {
         sp = getEncodedTenantProduct(access_type);
       }
-      if (!sp && scope) {
-        sp = getEncodedTenantProduct(scope);
+      if (!sp && resource) {
+        sp = getEncodedTenantProduct(resource);
+      }
+      if (!sp && requestedScopes) {
+        const encodedParams = requestedScopes.find((scope) => scope.includes('=') && scope.includes('&')); // for now assume only one encoded param i.e. for tenant/product
+        if (encodedParams) {
+          sp = getEncodedTenantProduct(encodedParams);
+        }
       }
       if (sp && sp.tenant && sp.product) {
         requestedTenant = sp.tenant;
@@ -216,6 +242,10 @@ export class OAuthController implements IOAuthController {
             state,
             tenant,
             product,
+            access_type,
+            resource,
+            scope,
+            nonce,
             code_challenge,
             code_challenge_method,
             provider,
@@ -246,6 +276,20 @@ export class OAuthController implements IOAuthController {
 
     if (!allowed.redirect(redirect_uri, samlConfig.redirectUrl)) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
+    }
+
+    if (
+      requestedOIDCFlow &&
+      (!this.opts.openid.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
+    ) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description:
+            'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded',
+          redirect_uri,
+        }),
+      };
     }
 
     if (!state) {
@@ -303,7 +347,7 @@ export class OAuthController implements IOAuthController {
 
       const sessionId = crypto.randomBytes(16).toString('hex');
 
-      const requested = { client_id, state } as Record<string, string>;
+      const requested = { client_id, state, redirect_uri } as Record<string, string | boolean | string[]>;
       if (requestedTenant) {
         requested.tenant = requestedTenant;
       }
@@ -312,6 +356,15 @@ export class OAuthController implements IOAuthController {
       }
       if (idp_hint) {
         requested.idp_hint = idp_hint;
+      }
+      if (requestedOIDCFlow) {
+        requested.oidc = true;
+        if (nonce) {
+          requested.nonce = nonce;
+        }
+      }
+      if (requestedScopes) {
+        requested.scope = requestedScopes;
       }
 
       await this.sessionStore.put(sessionId, {
@@ -575,7 +628,14 @@ export class OAuthController implements IOAuthController {
    *             expires_in: 300
    */
   public async token(body: OAuthTokenReq): Promise<OAuthTokenRes> {
-    const { client_id, client_secret, code_verifier, code, grant_type = 'authorization_code' } = body;
+    const {
+      client_id,
+      client_secret,
+      code_verifier,
+      code,
+      grant_type = 'authorization_code',
+      redirect_uri,
+    } = body;
 
     metrics.increment('oauthToken');
 
@@ -590,6 +650,15 @@ export class OAuthController implements IOAuthController {
     const codeVal = await this.codeStore.get(code);
     if (!codeVal || !codeVal.profile) {
       throw new JacksonError('Invalid code', 403);
+    }
+
+    if (codeVal.requested?.redirect_uri) {
+      if (redirect_uri !== codeVal.requested.redirect_uri) {
+        throw new JacksonError(
+          `Invalid request: ${!redirect_uri ? 'redirect_uri missing' : 'redirect_uri mismatch'}`,
+          400
+        );
+      }
     }
 
     if (code_verifier) {
@@ -633,6 +702,33 @@ export class OAuthController implements IOAuthController {
       ...codeVal.profile,
       requested: codeVal.requested,
     };
+    const requestedOIDCFlow = !!codeVal.requested?.oidc;
+    const requestHasNonce = !!codeVal.requested?.nonce;
+    if (requestedOIDCFlow) {
+      const { jwtSigningKeys, jwsAlg } = this.opts.openid;
+      if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
+        throw new JacksonError('JWT signing keys are not loaded', 500);
+      }
+      let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
+      claims = {
+        ...claims,
+        id: codeVal.profile.claims.id,
+        email: codeVal.profile.claims.email,
+        firstName: codeVal.profile.claims.firstName,
+        lastName: codeVal.profile.claims.lastName,
+      };
+      const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
+      const id_token = await new jose.SignJWT(claims)
+        .setProtectedHeader({ alg: jwsAlg! })
+        .setIssuedAt()
+        .setIssuer(this.opts.samlAudience || '')
+        .setSubject(codeVal.profile.claims.id)
+        .setAudience(tokenVal.requested.client_id)
+        .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.
+        .sign(signingKey);
+      tokenVal.id_token = id_token;
+      tokenVal.claims.sub = codeVal.profile.claims.id;
+    }
 
     await this.tokenStore.put(token, tokenVal);
 
@@ -643,11 +739,17 @@ export class OAuthController implements IOAuthController {
       // ignore error
     }
 
-    return {
+    const tokenResponse: OAuthTokenRes = {
       access_token: token,
       token_type: 'bearer',
       expires_in: this.opts.db.ttl!,
     };
+
+    if (requestedOIDCFlow) {
+      tokenResponse.id_token = tokenVal.id_token;
+    }
+
+    return tokenResponse;
   }
 
   /**

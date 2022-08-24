@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(204).end();
       }
     } else {
-      throw new Error('Method not allowed');
+      throw { message: 'Method not allowed', statusCode: 405 };
     }
   } catch (err: any) {
     console.error('config api error:', err);

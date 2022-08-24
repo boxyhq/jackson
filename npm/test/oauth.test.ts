@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { promises as fs } from 'fs';
+import * as utils from '../src/controller/utils';
 import path from 'path';
 import {
   IOAuthController,
@@ -14,13 +15,18 @@ import tap from 'tap';
 import { JacksonError } from '../src/controller/error';
 import readConfig from '../src/read-config';
 import saml from '@boxyhq/saml20';
+import * as jose from 'jose';
 import {
   authz_request_normal,
+  authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
+  authz_request_normal_with_resource,
   authz_request_normal_with_scope,
   bodyWithDummyCredentials,
   bodyWithInvalidClientSecret,
   bodyWithInvalidCode,
+  bodyWithInvalidRedirectUri,
+  bodyWithMissingRedirectUri,
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
   redirect_uri_not_allowed,
@@ -29,11 +35,15 @@ import {
   saml_binding_absent,
   state_not_set,
   token_req_encoded_client_id,
+  token_req_idp_initiated_saml_login,
   token_req_unencoded_client_id_gen,
 } from './fixture';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
+let idpEnabledApiController: IAPIController;
+let idpEnabledOAuthController: IOAuthController;
+let keyPair: jose.GenerateKeyPairResult;
 
 const code = '1234567890';
 const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
@@ -48,6 +58,10 @@ const options = <JacksonOption>{
     engine: 'mem',
   },
   clientSecretVerifier: 'TOP-SECRET',
+  openid: {
+    jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
+    jwsAlg: 'RS256',
+  },
 };
 
 const configRecords: Array<any> = [];
@@ -56,16 +70,23 @@ const addMetadata = async (metadataPath) => {
   const configs = await readConfig(metadataPath);
   for (const config of configs) {
     const _record = await apiController.config(config);
+    await idpEnabledApiController.config(config);
     configRecords.push(_record);
   }
 };
 
 tap.before(async () => {
+  keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
+
   const controller = await (await import('../src/index')).default(options);
+  const idpFlowEnabledController = await (
+    await import('../src/index')
+  ).default({ ...options, idpEnabled: true });
 
   apiController = controller.apiController;
   oauthController = controller.oauthController;
-
+  idpEnabledApiController = idpFlowEnabledController.apiController;
+  idpEnabledOAuthController = idpFlowEnabledController.oauthController;
   await addMetadata(metadataPath);
 });
 
@@ -192,6 +213,19 @@ tap.test('authorize()', async (t) => {
 
     t.test('accepts access_type', async (t) => {
       const body = authz_request_normal_with_access_type;
+
+      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+      t.end();
+    });
+
+    t.test('accepts resource', async (t) => {
+      const body = authz_request_normal_with_resource;
 
       const response = await oauthController.authorize(<OAuthReqBody>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
@@ -354,6 +388,26 @@ tap.test('token()', (t) => {
     }
 
     try {
+      await oauthController.token(<OAuthTokenReq>bodyWithInvalidRedirectUri);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid request: redirect_uri mismatch', 'got expected error message');
+      t.equal(statusCode, 400, 'got expected status code');
+    }
+
+    try {
+      await oauthController.token(<OAuthTokenReq>bodyWithMissingRedirectUri);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid request: redirect_uri missing', 'got expected error message');
+      t.equal(statusCode, 400, 'got expected status code');
+    }
+
+    try {
       await oauthController.token(<OAuthTokenReq>bodyWithInvalidClientSecret);
 
       t.fail('Expecting JacksonError.');
@@ -388,76 +442,190 @@ tap.test('token()', (t) => {
     t.end();
   });
 
-  t.test('Should return the `access_token`/`userprofile` for a valid request', async (t) => {
-    t.test('encoded client_id', async (t) => {
-      const body = token_req_encoded_client_id;
-      const stubRandomBytes = sinon
-        .stub(crypto, 'randomBytes')
-        .onFirstCall()
+  t.test(
+    'Should return the tokens [id_token (if openid requested), access_token] and userprofile for a valid request',
+    async (t) => {
+      t.test('encoded client_id', async (t) => {
+        const body = token_req_encoded_client_id;
+        const stubRandomBytes = sinon
+          .stub(crypto, 'randomBytes')
+          .onFirstCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(token);
+
+        const response = await oauthController.token(<OAuthTokenReq>body);
+
+        t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
+        t.ok('access_token' in response, 'includes access_token');
+        t.ok('token_type' in response, 'includes token_type');
+        t.ok('expires_in' in response, 'includes expires_in');
+        t.notOk('id_token' in response, 'does not include id_token');
+        t.match(response.access_token, token);
+        t.match(response.token_type, 'bearer');
+        t.match(response.expires_in, 300);
+
+        stubRandomBytes.restore();
+
+        t.end();
+      });
+
+      t.test('unencoded client_id', async (t) => {
+        // have to call authorize, because previous happy path deletes the code.
+        const authBody = authz_request_normal;
+
+        const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+
+        const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
+
+        const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+        const responseBody = {
+          SAMLResponse: rawResponse,
+          RelayState: relayState,
+        };
+
+        const stubValidate = sinon
+          .stub(saml, 'validate')
+          .resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
+
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        .returns(token);
+        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
 
-      const response = await oauthController.token(<OAuthTokenReq>body);
+        await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
-      t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
-      t.ok('access_token' in response, 'includes access_token');
-      t.ok('token_type' in response, 'includes token_type');
-      t.ok('expires_in' in response, 'includes expires_in');
-      t.match(response.access_token, token);
-      t.match(response.token_type, 'bearer');
-      t.match(response.expires_in, 300);
+        const body = token_req_unencoded_client_id_gen(configRecords);
 
-      stubRandomBytes.restore();
+        const tokenRes = await oauthController.token(<OAuthTokenReq>body);
 
-      t.end();
-    });
+        t.ok('access_token' in tokenRes, 'includes access_token');
+        t.ok('token_type' in tokenRes, 'includes token_type');
+        t.ok('expires_in' in tokenRes, 'includes expires_in');
+        t.notOk('id_token' in tokenRes, 'does not include id_token');
+        t.match(tokenRes.access_token, token);
+        t.match(tokenRes.token_type, 'bearer');
+        t.match(tokenRes.expires_in, 300);
 
-    t.test('unencoded client_id', async (t) => {
-      // have to call authorize, because previous happy path deletes the code.
-      const authBody = authz_request_normal;
+        const profile = await oauthController.userInfo(tokenRes.access_token);
 
-      const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+        t.notOk('sub' in profile, 'does not include sub');
+        t.equal(profile.requested.client_id, authz_request_normal.client_id);
+        t.equal(profile.requested.state, authz_request_normal.state);
+        t.equal(profile.requested.tenant, new URLSearchParams(authz_request_normal.client_id).get('tenant'));
+        t.equal(
+          profile.requested.product,
+          new URLSearchParams(authz_request_normal.client_id).get('product')
+        );
 
-      const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
+        stubRandomBytes.restore();
+        stubValidate.restore();
 
-      const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
-      const responseBody = {
-        SAMLResponse: rawResponse,
-        RelayState: relayState,
-      };
+        t.end();
+      });
 
-      sinon.stub(saml, 'validate').resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
+      t.test('openid flow', async (t) => {
+        const authBody = authz_request_normal_oidc_flow;
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+        const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
 
-      await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
+        const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
 
-      const body = token_req_unencoded_client_id_gen(configRecords);
+        const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+        const responseBody = {
+          SAMLResponse: rawResponse,
+          RelayState: relayState,
+        };
 
-      const tokenRes = await oauthController.token(<OAuthTokenReq>body);
+        const stubLoadJWSPrivateKey = sinon.stub(utils, 'loadJWSPrivateKey').resolves(keyPair.privateKey);
+        const stubValidate = sinon.stub(saml, 'validate').resolves({
+          audience: '',
+          claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+          issuer: '',
+          sessionIndex: '',
+        });
 
-      t.ok('access_token' in tokenRes, 'includes access_token');
-      t.ok('token_type' in tokenRes, 'includes token_type');
-      t.ok('expires_in' in tokenRes, 'includes expires_in');
-      t.match(tokenRes.access_token, token);
-      t.match(tokenRes.token_type, 'bearer');
-      t.match(tokenRes.expires_in, 300);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
 
-      const profile = await oauthController.userInfo(tokenRes.access_token);
+        await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
-      t.equal(profile.requested.client_id, authz_request_normal.client_id);
-      t.equal(profile.requested.state, authz_request_normal.state);
-      t.equal(profile.requested.tenant, new URLSearchParams(authz_request_normal.client_id).get('tenant'));
-      t.equal(profile.requested.product, new URLSearchParams(authz_request_normal.client_id).get('product'));
+        const body = token_req_encoded_client_id;
 
-      stubRandomBytes.restore();
+        const tokenRes = await oauthController.token(<OAuthTokenReq>body);
 
-      t.end();
-    });
+        t.ok('access_token' in tokenRes, 'includes access_token');
+        t.ok('token_type' in tokenRes, 'includes token_type');
+        t.ok('expires_in' in tokenRes, 'includes expires_in');
+        t.ok('id_token' in tokenRes, 'includes id_token');
+        if (tokenRes.id_token) {
+          const claims = jose.decodeJwt(tokenRes.id_token);
+          const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
+          t.match(protectedHeader.alg, options.openid.jwsAlg);
+          t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
+          t.match(claims.iss, options.samlAudience);
+        }
+        t.match(tokenRes.access_token, token);
+        t.match(tokenRes.token_type, 'bearer');
+        t.match(tokenRes.expires_in, 300);
+
+        const profile = await oauthController.userInfo(tokenRes.access_token);
+
+        t.equal(profile.sub, 'id');
+        t.equal(profile.requested.client_id, authz_request_normal_oidc_flow.client_id);
+        t.equal(profile.requested.state, authz_request_normal_oidc_flow.state);
+        t.equal(
+          profile.requested.tenant,
+          new URLSearchParams(authz_request_normal_oidc_flow.client_id).get('tenant')
+        );
+        t.equal(
+          profile.requested.product,
+          new URLSearchParams(authz_request_normal_oidc_flow.client_id).get('product')
+        );
+
+        stubRandomBytes.restore();
+        stubValidate.restore();
+        stubLoadJWSPrivateKey.restore();
+
+        t.end();
+      });
+    }
+  );
+
+  t.end();
+});
+
+tap.test('IdP initiated flow should return token and profile', async (t) => {
+  const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+  const responseBody = {
+    SAMLResponse: rawResponse,
+  };
+  const stubValidate = sinon.stub(saml, 'validate').resolves({
+    audience: '',
+    claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+    issuer: '',
+    sessionIndex: '',
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+
+  await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
+
+  const body = token_req_idp_initiated_saml_login;
+
+  const tokenRes = await idpEnabledOAuthController.token(<OAuthTokenReq>body);
+  t.ok('access_token' in tokenRes, 'includes access_token');
+  t.ok('token_type' in tokenRes, 'includes token_type');
+  t.ok('expires_in' in tokenRes, 'includes expires_in');
+  t.match(tokenRes.access_token, token);
+  t.match(tokenRes.token_type, 'bearer');
+  t.match(tokenRes.expires_in, 300);
+  const profile = await oauthController.userInfo(tokenRes.access_token);
+
+  t.equal(profile.sub, 'id');
+  stubRandomBytes.restore();
+  stubValidate.restore();
   t.end();
 });
