@@ -1,4 +1,4 @@
-import { ShieldCheckIcon } from '@heroicons/react/solid';
+import { ShieldCheckIcon, DocumentDuplicateIcon } from '@heroicons/react/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -22,7 +22,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
     {
       href: '/admin/retraced',
       text: 'Audit Logs',
-      icon: ShieldCheckIcon,
+      icon: DocumentDuplicateIcon,
       current: currentPath.includes('retraced'),
     },
   ];

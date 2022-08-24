@@ -1,8 +1,8 @@
-import { NextPage } from 'next';
+import type { NextPage } from 'next';
 import AddProject from '@components/retraced/AddProject';
 
-const NewProduct: NextPage = () => {
+const NewProject: NextPage = () => {
   return <AddProject />;
 };
 
-export default NewProduct;
+export default NewProject;
