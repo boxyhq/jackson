@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken } from '../retraced/projects';
+import { getToken } from './projects';
 
 const getGroups = async (
   id: string,
