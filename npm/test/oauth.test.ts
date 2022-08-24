@@ -13,7 +13,6 @@ import {
 import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../src/controller/error';
-import readConfig from '../src/read-config';
 import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
@@ -22,6 +21,7 @@ import {
   authz_request_normal_with_access_type,
   authz_request_normal_with_resource,
   authz_request_normal_with_scope,
+  authz_request_oidc_provider,
   bodyWithDummyCredentials,
   bodyWithInvalidClientSecret,
   bodyWithInvalidCode,
@@ -38,6 +38,8 @@ import {
   token_req_idp_initiated_saml_login,
   token_req_unencoded_client_id_gen,
 } from './fixture';
+import { addIdPConnections } from './setup';
+import { generators } from 'openid-client';
 
 let configAPIController: IConfigAPIController;
 let oauthController: IOAuthController;
@@ -54,6 +56,7 @@ const options = <JacksonOption>{
   externalUrl: 'https://my-cool-app.com',
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
+  oidcPath: '/sso/oauth/oidc',
   db: {
     engine: 'mem',
   },
@@ -64,16 +67,7 @@ const options = <JacksonOption>{
   },
 };
 
-const configRecords: Array<any> = [];
-
-const addMetadata = async (metadataPath) => {
-  const configs = await readConfig(metadataPath);
-  for (const config of configs) {
-    const _record = await configAPIController.config(config);
-    await idpEnabledConfigAPIController.config(config);
-    configRecords.push(_record);
-  }
-};
+let configRecords: Array<any> = [];
 
 tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
@@ -87,7 +81,7 @@ tap.before(async () => {
   oauthController = controller.oauthController;
   idpEnabledConfigAPIController = idpFlowEnabledController.configAPIController;
   idpEnabledOAuthController = idpFlowEnabledController.oauthController;
-  await addMetadata(metadataPath);
+  configRecords = await addIdPConnections(metadataPath, configAPIController, idpEnabledConfigAPIController);
 });
 
 tap.teardown(async () => {
@@ -263,6 +257,25 @@ tap.test('authorize()', async (t) => {
       t.ok(params.has('RelayState'), 'RelayState present in the query string');
       t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
 
+      t.end();
+    });
+
+    t.test('[OIDCProvider] Should return the IdP SSO URL', async (t) => {
+      const body = authz_request_oidc_provider;
+      const codeVerifier = generators.codeVerifier();
+      const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
+      const codeChallenge = generators.codeChallenge(codeVerifier);
+
+      const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
+        redirect_url: string;
+      };
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('state'), 'state present');
+      t.match(params.get('scope'), 'openid email profile', 'openid scopes present');
+      t.match(params.get('code_challenge'), codeChallenge, 'codeChallenge present');
+      stubCodeVerifier.restore();
       t.end();
     });
   });

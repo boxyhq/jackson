@@ -7,6 +7,7 @@ import readConfig from '../src/read-config';
 import { IConfigAPIController, ILogoutController, JacksonOption } from '../src/typings';
 import { relayStatePrefix } from '../src/controller/utils';
 import { saml_config } from './fixture';
+import { addIdPConnections } from './setup';
 
 let configAPIController: IConfigAPIController;
 let logoutController: ILogoutController;
@@ -41,7 +42,7 @@ tap.before(async () => {
   configAPIController = controller.configAPIController;
   logoutController = controller.logoutController;
 
-  await addMetadata(metadataPath);
+  await addIdPConnections(metadataPath, configAPIController);
 });
 
 tap.teardown(async () => {

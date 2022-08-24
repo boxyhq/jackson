@@ -1,6 +1,7 @@
 import { OAuthReqBody, OAuthTokenReq } from '../src';
 import boxyhq from './data/metadata/boxyhq';
 import boxyhqNobinding from './data/metadata/boxyhq-nobinding';
+import exampleOidc from './data/metadata/example.oidc';
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBody> = {
@@ -74,6 +75,12 @@ export const saml_binding_absent: Partial<OAuthReqBody> = {
   client_id: `tenant=${boxyhqNobinding.tenant}&product=${boxyhqNobinding.product}`,
 };
 
+export const authz_request_oidc_provider = {
+  redirect_uri: exampleOidc.defaultRedirectUrl,
+  state: 'state-123',
+  client_id: `tenant=${exampleOidc.tenant}&product=${exampleOidc.product}`,
+  scope: 'openid',
+};
 // END: Fixtures for authorize
 
 // BEGIN: Fixtures for token
