@@ -35,8 +35,9 @@ tap.teardown(async () => {
 });
 
 tap.test('controller/api', async (t) => {
+  // reading config here would set the metadata on the config for the tests that follow
   const metadataPath = path.join(__dirname, '/data/metadata');
-  const config = await readConfig(metadataPath);
+  await readConfig(metadataPath);
 
   t.afterEach(async () => {
     await configAPIController.deleteConfig({
