@@ -85,9 +85,10 @@ export const authz_request_oidc_provider = {
 
 // BEGIN: Fixtures for oidcAuthzResponse
 const OIDC_PROVIDER_CODE = '99991afdfd';
-export const oidc_res_state_missing = {
+export const oidc_response = {
   code: OIDC_PROVIDER_CODE,
 };
+
 // END: Fixtures for oidcAuthzResponse
 
 // BEGIN: Fixtures for token
