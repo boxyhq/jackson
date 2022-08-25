@@ -1,11 +1,8 @@
 export type AdminToken = {
   id: string;
   token: string;
-  user: {
-    email: string;
-    id: string;
-    timezone: string;
-  };
+  userId: string;
+  disabled: boolean;
 };
 
 export type APIKey = {

@@ -49,11 +49,11 @@ export async function getToken(): Promise<AdminToken> {
     },
   };
 
-  const { data: token } = await axios.post<AdminToken>(
+  const { data } = await axios.post<{ adminToken: AdminToken }>(
     `${process.env.RETRACED_HOST}/admin/v1/user/_login`,
     body,
     config
   );
 
-  return token;
+  return data.adminToken;
 }

@@ -1,172 +1,96 @@
-import type { APIKey, NewProject } from 'types';
 import Link from 'next/link';
 import { useState } from 'react';
-import {
-  ArrowLeftIcon,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  ClipboardCopyIcon,
-  CheckIcon,
-  EyeIcon,
-  EyeOffIcon,
-} from '@heroicons/react/outline';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import classNames from 'classnames';
+import { ArrowLeftIcon } from '@heroicons/react/outline';
+import { useRouter } from 'next/router';
+
+import toast from 'react-hot-toast';
+import { ApiResponse, Project } from 'types';
 
 const AddProject = () => {
-  const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
-    status: 'UNKNOWN',
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+  const [project, setProject] = useState({
+    name: '',
   });
-  const [showAPIKeys, setShowAPIKeys] = useState<boolean>(false);
-  const [copied, setCopied] = useState<boolean>(false);
-  const [apiKeys, setAPIKeys] = useState<APIKey[]>([]);
-  const [productname, setProductName] = useState('');
-  const [showToken, setShowToken] = useState<object>({});
-  const toggleVisibility = (id) => {
-    setShowToken({
-      ...showToken,
-      [id]: showToken[id] ? !showToken[id] : true,
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const target = event.target as HTMLInputElement;
+
+    setProject({
+      ...project,
+      [target.id]: target.value,
     });
   };
-  const showCopied = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  const createNewProduct = async (event) => {
+
+  const createProject = async (event: React.FormEvent) => {
     event.preventDefault();
-    const res = await fetch('/api/retraced/projects', {
+
+    setLoading(true);
+
+    const response = await fetch('/api/retraced/projects', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name: productname }),
+      body: JSON.stringify(project),
     });
-    if (res.ok) {
-      const newProject: NewProject = await res.json();
-      console.log(newProject.project.tokens);
-      setAPIKeys(newProject.project.tokens);
-      setShowAPIKeys(true);
-      setSaveStatus({ status: 'SUCCESS' });
-      setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
-    } else {
-      // save failed
-      setSaveStatus({ status: 'ERROR' });
-      setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
+
+    setLoading(false);
+
+    if (!response.ok) {
+      toast.error('ERROR');
+      return;
+    }
+
+    const { data, error } = (await response.json()) as ApiResponse<{ project: Project }>;
+
+    if (error) {
+      toast.error('ERROR');
+      return;
+    }
+
+    if (data && data.project) {
+      toast.success('Project created successfully.');
+      router.replace(`/admin/retraced/projects/${data.project.id}`);
     }
   };
 
-  function handleChange(event) {
-    setProductName(event.target.value);
-  }
-
   return (
     <>
-      <Link href='/admin/retraced'>
-        <a className='link-primary'>
+      <Link href='/admin/retraced/projects'>
+        <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span className='ml-2'>Back</span>
+          <span>Back</span>
         </a>
       </Link>
       <div>
-        <h2 className='mt-2 mb-4 text-3xl font-bold text-primary dark:text-white'>New Product</h2>
-        <form onSubmit={createNewProduct}>
-          <div className='m-1 min-w-[28rem] rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
-            <input
-              id='name'
-              type='text'
-              placeholder='Enter Product name here'
-              value={productname}
-              required={true}
-              readOnly={false}
-              maxLength={100}
-              onChange={handleChange}
-              className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
-            />
-            <div className='m-1 flex'>
-              <button type='submit' className='btn-primary'>
-                Save Changes
-              </button>
-              <p
-                role='status'
-                className={`ml-2 inline-flex items-center ${
-                  status === 'SUCCESS' || status === 'ERROR' ? 'opacity-100' : 'opacity-0'
-                } transition-opacity motion-reduce:transition-none`}>
-                {status === 'SUCCESS' && (
-                  <span className='inline-flex items-center text-primary'>
-                    <CheckCircleIcon aria-hidden className='mr-1 h-5 w-5'></CheckCircleIcon>
-                    Saved
-                  </span>
-                )}
-                {status === 'ERROR' && (
-                  <span className='inline-flex items-center text-red-900'>
-                    <ExclamationCircleIcon aria-hidden className='mr-1 h-5 w-5'></ExclamationCircleIcon>
-                    ERROR
-                  </span>
-                )}
-              </p>
+        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>Create Project</h2>
+        <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
+          <form onSubmit={createProject}>
+            <div className='flex flex-col space-y-3'>
+              <div className='form-control w-full'>
+                <label className='label'>
+                  <span className='label-text'>Project name</span>
+                </label>
+                <input
+                  type='text'
+                  id='name'
+                  className='input input-bordered w-full'
+                  required
+                  onChange={onChange}
+                />
+              </div>
+              <div>
+                <button className={classNames('btn btn-primary', loading ? 'loading' : '')}>
+                  Create Project
+                </button>
+              </div>
             </div>
-          </div>
-        </form>
-      </div>
-      {showAPIKeys && (
-        <div className='mt-6 overflow-auto rounded-lg shadow-md'>
-          <table className='min-w-full'>
-            <thead className='bg-gray-50 shadow-md dark:bg-gray-700 sm:rounded-lg'>
-              <tr>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400'>
-                  Product
-                </th>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400'>
-                  Environment
-                </th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {apiKeys.map((token) => (
-                <tr
-                  key={token.environment_id}
-                  className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
-                  <td className='whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white'>
-                    {token.name}
-                  </td>
-                  <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400'>
-                    <span className='m-2 inline h-5 w-5 align-middle text-secondary'>
-                      {showToken[token.environment_id] ? token.token : '*'.repeat(token.token.length * 2)}
-                    </span>
-                    {showToken[token.environment_id] ? (
-                      <EyeOffIcon
-                        className='m-2 inline h-5 w-5 align-middle text-secondary'
-                        onClick={() => toggleVisibility(token.environment_id)}
-                      />
-                    ) : (
-                      <EyeIcon
-                        className='m-2 inline h-5 w-5 align-middle text-secondary'
-                        onClick={() => toggleVisibility(token.environment_id)}
-                      />
-                    )}
-                  </td>
-                  <td>
-                    <a className='link-primary cursor-pointer'>
-                      <CopyToClipboard text={token.token} onCopy={showCopied}>
-                        <span>
-                          <ClipboardCopyIcon className='h-5 w-5 text-secondary' />
-                        </span>
-                      </CopyToClipboard>
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className='inline-flex place-content-center items-center'>
-            {copied && <CheckIcon className='h-5 w-5 text-secondary'>Copied</CheckIcon>}
-          </div>
+          </form>
         </div>
-      )}
+      </div>
     </>
   );
 };

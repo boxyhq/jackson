@@ -20,7 +20,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
       current: currentPath.includes('saml'),
     },
     {
-      href: '/admin/retraced',
+      href: '/admin/retraced/projects',
       text: 'Audit Logs',
       icon: DocumentDuplicateIcon,
       current: currentPath.includes('retraced'),
