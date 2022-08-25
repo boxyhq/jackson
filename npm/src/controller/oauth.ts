@@ -673,7 +673,7 @@ export class OAuthController implements IOAuthController {
 
     let RelayState = state || '';
     if (!RelayState) {
-      throw new JacksonError('State missing from original request.', 403);
+      throw new JacksonError('State from original request is missing.', 403);
     }
     RelayState = RelayState.replace(relayStatePrefix, '');
     const session = await this.sessionStore.get(RelayState);
