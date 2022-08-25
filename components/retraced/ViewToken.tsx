@@ -2,14 +2,14 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowLeftIcon, ClipboardCopyIcon, CheckIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { NewProject } from '../../interfaces/project';
+import EventPostSnippet from './EventPostSnippet';
 
-const ViewToken = (props: NewProject) => {
-  console.log(props.project.tokens);
-  const showAPIKeys = props.project.tokens.length > 0;
+const ViewToken = ({project, url}) => {
+  console.log(project.tokens);
+  const showAPIKeys = project.tokens.length > 0;
   const [copied, setCopied] = useState<boolean>(false);
   const [showToken, setShowToken] = useState<object>({});
-  const apiKeys = props.project.tokens;
+  const apiKeys = project.tokens;
   const showCopied = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -30,8 +30,10 @@ const ViewToken = (props: NewProject) => {
         </a>
       </Link>
       {showAPIKeys && (
+        <>
+        {url && <EventPostSnippet url={url} />}
         <div>
-          <h2 className='mt-2 mb-4 text-3xl font-bold text-primary dark:text-white'>{props.project.name}</h2>
+          <h2 className='mt-2 mb-4 text-3xl font-bold text-primary dark:text-white'>{project.name}</h2>
           <div className='mt-6 overflow-auto rounded-lg shadow-md'>
             <table className='min-w-full'>
               <thead className='bg-gray-50 shadow-md dark:bg-gray-700 sm:rounded-lg'>
@@ -80,7 +82,7 @@ const ViewToken = (props: NewProject) => {
             </div>
           </div>
         </div>
-      )}
+      </>)}
     </>
   );
 };

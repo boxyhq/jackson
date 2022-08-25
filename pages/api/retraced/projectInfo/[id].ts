@@ -14,7 +14,10 @@ const getProject = async (token: any, id: string): Promise<any> => {
 
     axios(config)
       .then(function (response) {
-        resolve(response.data);
+        resolve({
+          ...response.data,
+          url: `${process.env.RETRACED_HOST}/admin/v1/project/${id}/event`,
+        });
       })
       .catch(function (error) {
         reject(error);

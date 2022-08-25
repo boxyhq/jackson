@@ -21,7 +21,10 @@ const createProject = async (id: string, token: string, name: string): Promise<N
 
     axios(config)
       .then(function (response) {
-        resolve(response.data);
+        resolve({
+          ...response.data,
+          url: `${process.env.RETRACED_HOST}/admin/v1/project/${response.data.project.id}/event`,
+        });
       })
       .catch(function (error) {
         reject(error);

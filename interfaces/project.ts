@@ -22,4 +22,5 @@ export type Project = {
 
 export type NewProject = {
   project: Project;
+  url?: string;
 };

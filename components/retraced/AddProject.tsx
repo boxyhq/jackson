@@ -11,11 +11,13 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
     APIKey, NewProject
 } from '../../interfaces/project';
+import EventPostSnippet from './EventPostSnippet';
 
 const AddProject = () => {
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
     status: 'UNKNOWN',
   });
+  const [url, setUrl] = useState('');
   const [showAPIKeys, setShowAPIKeys] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [apiKeys, setAPIKeys] = useState<APIKey[]>([]);
@@ -42,7 +44,7 @@ const AddProject = () => {
     });
     if (res.ok) {
       const newProject: NewProject = await res.json();
-      console.log(newProject.project.tokens);
+      setUrl(newProject.url || '');
       setAPIKeys(newProject.project.tokens);
       setShowAPIKeys(true);
       setSaveStatus({ status: 'SUCCESS' });
@@ -108,6 +110,8 @@ const AddProject = () => {
         </form>
       </div>
       {showAPIKeys && (
+        <div>
+        <EventPostSnippet url={url} />
         <div className='mt-6 overflow-auto rounded-lg shadow-md'>
           <table className='min-w-full'>
             <thead className='bg-gray-50 shadow-md dark:bg-gray-700 sm:rounded-lg'>
@@ -155,9 +159,8 @@ const AddProject = () => {
           {copied && <CheckIcon className='h-5 w-5 text-secondary'>Copied</CheckIcon>}
           </div>
         </div>
-      )}
-    </>
-  );
+        </div>    )}
+  </>);
 };
 
 export default AddProject;

@@ -23,7 +23,7 @@ const InfoProject: NextPage = () => {
     );
   }
 
-  return <ViewToken project={projectInfo.data.project} />;
+  return <ViewToken project={projectInfo.data.project} url={projectInfo.data.url} />;
 };
 
 export default InfoProject;
