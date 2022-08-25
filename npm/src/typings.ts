@@ -22,9 +22,9 @@ export interface IConfigAPIController {
   config(body: IdPConfig): Promise<any>;
   createSAMLConfig(body: IdPConfig): Promise<any>;
   createOIDCConfig(body: IdPConfig): Promise<any>;
-  updateConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
-  updateSAMLConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
-  updateOIDCConfig(body: IdPConfig & { clientID: 'string'; clientSecret: 'string' }): Promise<any>;
+  updateConfig(body: IdPConfig & { clientID: string; clientSecret: string }): Promise<any>;
+  updateSAMLConfig(body: IdPConfig & { clientID: string; clientSecret: string }): Promise<any>;
+  updateOIDCConfig(body: IdPConfig & { clientID: string; clientSecret: string }): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
     clientID?: string;

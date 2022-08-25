@@ -178,3 +178,4 @@ export const token_req_idp_initiated_saml_login = {
 
 // BEGIN: Fixtures for api.test.ts
 export const saml_config = boxyhq;
+export const oidc_config = exampleOidc;
