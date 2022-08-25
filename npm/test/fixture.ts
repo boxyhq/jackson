@@ -83,6 +83,13 @@ export const authz_request_oidc_provider = {
 };
 // END: Fixtures for authorize
 
+// BEGIN: Fixtures for oidcAuthzResponse
+const OIDC_PROVIDER_CODE = '99991afdfd';
+export const oidc_res_state_missing = {
+  code: OIDC_PROVIDER_CODE,
+};
+// END: Fixtures for oidcAuthzResponse
+
 // BEGIN: Fixtures for token
 const CODE = '1234567890';
 const CLIENT_SECRET_VERIFIER = 'TOP-SECRET';

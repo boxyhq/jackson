@@ -29,6 +29,7 @@ import {
   bodyWithMissingRedirectUri,
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
+  oidc_res_state_missing,
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
@@ -276,10 +277,24 @@ tap.test('authorize()', async (t) => {
       t.match(params.get('scope'), 'openid email profile', 'openid scopes present');
       t.match(params.get('code_challenge'), codeChallenge, 'codeChallenge present');
       stubCodeVerifier.restore();
+      t.context.state = params.get('state');
       t.end();
     });
   });
 
+  t.end();
+});
+
+tap.test('oidcAuthzResponse()', async (t) => {
+  t.test('[OIDCProvider] Should throw an error if `state` is missing', async (t) => {
+    try {
+      await oauthController.oidcAuthzResponse(oidc_res_state_missing);
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'State missing from original request.', 'got expected error message');
+      t.equal(statusCode, 403, 'got expected status code');
+    }
+  });
   t.end();
 });
 
