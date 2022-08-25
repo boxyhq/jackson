@@ -269,13 +269,13 @@ tap.test('authorize()', async (t) => {
 tap.test('[OIDCProvider]', async (t) => {
   const context: Record<string, any> = {};
   t.test('[authorize] Should return the IdP SSO URL', async (t) => {
-    const body = authz_request_oidc_provider;
     const codeVerifier = generators.codeVerifier();
     const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
+    // will be matched in happy path test
     context.codeVerifier = codeVerifier;
     const codeChallenge = generators.codeChallenge(codeVerifier);
 
-    const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
+    const response = (await oauthController.authorize(<OAuthReqBody>authz_request_oidc_provider)) as {
       redirect_url: string;
     };
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
@@ -341,11 +341,17 @@ tap.test('[OIDCProvider]', async (t) => {
           family_name: 'samuel',
         }),
       };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const fakeCb = sinon.fake(async (..._args) => TOKEN_SET);
       function FakeOidcClient(this: any) {
         this.callback = fakeCb;
-        this.userinfo = async () => ({});
+        this.userinfo = async () => ({
+          sub: 'USER_IDENTIFIER',
+          email: 'jackson@example.com',
+          given_name: 'jackson',
+          family_name: 'samuel',
+          picture: 'https://jackson.cloud.png',
+          email_verified: true,
+        });
       }
 
       sinon.stub(Issuer, 'discover').callsFake(
@@ -358,10 +364,12 @@ tap.test('[OIDCProvider]', async (t) => {
         ...oidc_response,
         state: context.state,
       });
-      fakeCb.calledWithMatch(
-        options.externalUrl + options.oidcPath,
-        { code: oidc_response.code },
-        { code_verifier: context.code_verifier }
+      t.ok(
+        fakeCb.calledWithMatch(
+          options.externalUrl + options.oidcPath,
+          { code: oidc_response.code },
+          { code_verifier: context.codeVerifier }
+        )
       );
 
       const response_params = new URLSearchParams(new URL(redirect_url!).search);
