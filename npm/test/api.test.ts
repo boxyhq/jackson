@@ -101,42 +101,85 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `defaultRedirectUrl` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
-        delete body['defaultRedirectUrl'];
+        t.test('[SAMLProvider]', async (t) => {
+          const body: Partial<IdPConfig> = Object.assign({}, saml_config);
+          delete body['defaultRedirectUrl'];
 
-        try {
-          await configAPIController.config(body as IdPConfig);
-          t.fail('Expecting JacksonError.');
-        } catch (err: any) {
-          t.equal(err.message, 'Please provide a defaultRedirectUrl');
-          t.equal(err.statusCode, 400);
-        }
+          try {
+            await configAPIController.config(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Please provide a defaultRedirectUrl');
+            t.equal(err.statusCode, 400);
+          }
 
-        t.end();
+          t.end();
+        });
+
+        t.test('[OIDCProvider]', async (t) => {
+          const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
+          delete body['defaultRedirectUrl'];
+
+          try {
+            await configAPIController.createOIDCConfig(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Please provide a defaultRedirectUrl');
+            t.equal(err.statusCode, 400);
+          }
+
+          t.end();
+        });
       });
 
       t.test('when `redirectUrl` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
-        delete body['redirectUrl'];
+        t.test('[SAMLProvider]', async (t) => {
+          const body: Partial<IdPConfig> = Object.assign({}, saml_config);
+          delete body['redirectUrl'];
 
-        try {
-          await configAPIController.config(body as IdPConfig);
-          t.fail('Expecting JacksonError.');
-        } catch (err: any) {
-          t.equal(err.message, 'Please provide redirectUrl');
-          t.equal(err.statusCode, 400);
-        }
+          try {
+            await configAPIController.config(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Please provide redirectUrl');
+            t.equal(err.statusCode, 400);
+          }
 
-        t.end();
+          t.end();
+        });
+
+        t.test('[SAMLProvider]', async (t) => {
+          const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
+          delete body['redirectUrl'];
+
+          try {
+            await configAPIController.createOIDCConfig(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Please provide redirectUrl');
+            t.equal(err.statusCode, 400);
+          }
+
+          t.end();
+        });
       });
 
       t.test('when defaultRedirectUrl or redirectUrl is invalid', async (t) => {
-        const body: IdPConfig = Object.assign({}, saml_config);
+        const body_saml_provider: IdPConfig = Object.assign({}, saml_config);
+        const body_oidc_provider: IdPConfig = Object.assign({}, oidc_config);
 
         t.test('when defaultRedirectUrl is invalid', async (t) => {
-          body['defaultRedirectUrl'] = 'http://localhost::';
+          body_saml_provider['defaultRedirectUrl'] = 'http://localhost::';
           try {
-            await configAPIController.config(body as IdPConfig);
+            await configAPIController.config(body_saml_provider as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'defaultRedirectUrl is invalid');
+            t.equal(err.statusCode, 400);
+          }
+          body_oidc_provider['defaultRedirectUrl'] = 'http://localhost::';
+          try {
+            await configAPIController.createOIDCConfig(body_oidc_provider as IdPConfig);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'defaultRedirectUrl is invalid');
@@ -145,9 +188,17 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('when redirectUrl list is huge', async (t) => {
-          body['redirectUrl'] = Array(101).fill('http://localhost:8080');
+          body_saml_provider['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
-            await configAPIController.config(body as IdPConfig);
+            await configAPIController.config(body_saml_provider as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
+            t.equal(err.statusCode, 400);
+          }
+          body_oidc_provider['redirectUrl'] = Array(101).fill('http://localhost:8080');
+          try {
+            await configAPIController.createOIDCConfig(body_oidc_provider as IdPConfig);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
@@ -156,9 +207,17 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('when redirectUrl list contains invalid', async (t) => {
-          body['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
+          body_saml_provider['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
+          body_oidc_provider['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
           try {
-            await configAPIController.config(body as IdPConfig);
+            await configAPIController.config(body_saml_provider as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'redirectUrl is invalid');
+            t.equal(err.statusCode, 400);
+          }
+          try {
+            await configAPIController.createOIDCConfig(body_oidc_provider as IdPConfig);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'redirectUrl is invalid');
@@ -167,34 +226,68 @@ tap.test('controller/api', async (t) => {
         });
       });
 
-      t.test('when `tenant` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
-        delete body['tenant'];
+      t.test('[SAMLProvider] tenant/product empty', async (t) => {
+        t.test('when `tenant` is empty', async (t) => {
+          const body: Partial<IdPConfig> = Object.assign({}, saml_config);
+          delete body['tenant'];
 
-        try {
-          await configAPIController.config(body as IdPConfig);
-          t.fail('Expecting JacksonError.');
-        } catch (err: any) {
-          t.equal(err.message, 'Please provide tenant');
-          t.equal(err.statusCode, 400);
-        }
+          try {
+            await configAPIController.config(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Please provide tenant');
+            t.equal(err.statusCode, 400);
+          }
 
-        t.end();
+          t.end();
+        });
+
+        t.test('when `product` is empty', async (t) => {
+          const body: Partial<IdPConfig> = Object.assign({}, saml_config);
+          delete body['product'];
+
+          try {
+            await configAPIController.config(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Please provide product');
+            t.equal(err.statusCode, 400);
+          }
+
+          t.end();
+        });
       });
 
-      t.test('when `product` is empty', async (t) => {
-        const body: Partial<IdPConfig> = Object.assign({}, saml_config);
-        delete body['product'];
+      t.test('[OIDCProvider] tenant/product empty', async (t) => {
+        t.test('when `tenant` is empty', async (t) => {
+          const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
+          delete body['tenant'];
 
-        try {
-          await configAPIController.config(body as IdPConfig);
-          t.fail('Expecting JacksonError.');
-        } catch (err: any) {
-          t.equal(err.message, 'Please provide product');
-          t.equal(err.statusCode, 400);
-        }
+          try {
+            await configAPIController.createOIDCConfig(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Please provide tenant');
+            t.equal(err.statusCode, 400);
+          }
 
-        t.end();
+          t.end();
+        });
+
+        t.test('when `product` is empty', async (t) => {
+          const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
+          delete body['product'];
+
+          try {
+            await configAPIController.createOIDCConfig(body as IdPConfig);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'Please provide product');
+            t.equal(err.statusCode, 400);
+          }
+
+          t.end();
+        });
       });
 
       t.test('when `encodedRawMetadata` is not a valid XML', async (t) => {
