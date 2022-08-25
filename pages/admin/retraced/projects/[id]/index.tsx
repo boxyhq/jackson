@@ -11,7 +11,7 @@ const ProjectInfo: NextPage = () => {
 
   const { id } = router.query;
 
-  const { data, error } = useSWR<ApiResponse<{ project: Project }>>(
+  const { data, error } = useSWR<ApiResponse<{ project: Project; url: string }>>(
     [`/api/retraced/projects/${id}`],
     fetcher,
     {
@@ -32,13 +32,14 @@ const ProjectInfo: NextPage = () => {
   }
 
   const project = data?.data?.project;
+  const baseUrl = data?.data?.url;
 
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{project?.name}</h2>
       </div>
-      {project && <ProjectDetails project={project} />}
+      {project && baseUrl && <ProjectDetails project={project} baseUrl={baseUrl} />}
     </div>
   );
 };

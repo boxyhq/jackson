@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import axios from 'axios';
+
 import type { Project } from 'types';
 import { getToken } from '@lib/retraced';
-import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -35,22 +36,16 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   };
 
-  const { data: project } = await axios.post<Project>(
-    `${process.env.RETRACED_HOST}/admin/v1/project`,
-    body,
-    config
-  );
+  const { data } = await axios.post<Project>(`${process.env.RETRACED_HOST}/admin/v1/project`, body, config);
 
   return res.status(201).json({
-    data: project,
+    data,
     error: null,
   });
 };
 
 const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken();
-
-  console.log({ token });
 
   const config = {
     headers: {

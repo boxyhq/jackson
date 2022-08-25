@@ -28,13 +28,16 @@ const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   };
 
-  const { data: project } = await axios.get<Project>(
+  const { data } = await axios.get<{ project: Project }>(
     `${process.env.RETRACED_HOST}/admin/v1/project/${id}`,
     config
   );
 
   return res.status(201).json({
-    data: project,
+    data: {
+      ...data,
+      url: `${process.env.RETRACED_HOST}/publisher/v1/project/${data.project.id}`,
+    },
     error: null,
   });
 };

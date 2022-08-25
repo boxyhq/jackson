@@ -3,9 +3,10 @@ import { ClipboardCopyIcon } from '@heroicons/react/outline';
 import toast from 'react-hot-toast';
 
 import type { Project } from 'types';
+import CodeSnippet from '@components/retraced/CodeSnippet';
 
-const ProjectDetails = (props: { project: Project }) => {
-  const { project } = props;
+const ProjectDetails = (props: { project: Project; baseUrl: string }) => {
+  const { project, baseUrl } = props;
   const { environments, tokens } = project;
 
   return (
@@ -23,6 +24,13 @@ const ProjectDetails = (props: { project: Project }) => {
           </div>
           <div className='form-control w-full'>
             <label className='label pl-0 font-semibold'>
+              <span className='label-text'>Publisher API Base URL</span>
+              <ClipboardButton text={baseUrl} />
+            </label>
+            <input type='text' className='input input-bordered w-full' defaultValue={baseUrl} />
+          </div>
+          <div className='form-control w-full'>
+            <label className='label pl-0 font-semibold'>
               <span className='label-text'>{environments[0].name} Token</span>
               <ClipboardButton text={tokens[0].token} />
             </label>
@@ -36,6 +44,9 @@ const ProjectDetails = (props: { project: Project }) => {
             <input type='text' className='input input-bordered w-full' defaultValue={tokens[1].token} />
           </div>
         </div>
+      </div>
+      <div className='mt-5 border p-3'>
+        <CodeSnippet token={project.tokens[0].token} baseUrl={baseUrl} />
       </div>
     </>
   );
