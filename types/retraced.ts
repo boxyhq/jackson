@@ -26,3 +26,8 @@ export type Project = {
   environments: Environment[];
   tokens: APIKey[];
 };
+
+export type NewProject = {
+  project: Project;
+  url?: string;
+};
