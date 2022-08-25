@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
 import type { ApiResponse, Project } from 'types';
-import EventPostSnippet from './EventPostSnippet';
 
 const AddProject = () => {
   const router = useRouter();

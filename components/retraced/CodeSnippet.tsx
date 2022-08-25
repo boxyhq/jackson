@@ -10,6 +10,10 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
           {`curl -X POST -H "Content-Type: application/json" -H "Authorization: token=${token}" -d '{
   "action": "some.record.created",
   "teamId": "boxyhq",
+  "group": {
+    "id": "boxyhq",
+    "name": "BoxyHQ"
+  },
   "crud": "c",
   "source_ip": "127.0.0.1",
   "actor": {

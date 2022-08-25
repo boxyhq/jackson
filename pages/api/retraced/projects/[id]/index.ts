@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Project } from 'types';
 import axios from 'axios';
+
+import type { Project } from 'types';
 import { getToken } from '@lib/retraced';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -20,6 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken();
+
   const { id } = req.query;
 
   const config = {

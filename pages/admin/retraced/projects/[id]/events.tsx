@@ -1,24 +1,28 @@
-import { NextPage } from 'next';
+import type { NextPage } from 'next';
 import useSWR from 'swr';
-import { fetcher } from '@lib/ui/utils';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
+import RetracedEventsBrowser from 'retraced-logs-viewer';
+
+import { fetcher } from '@lib/ui/utils';
+
 const Viewer = dynamic(() => import('components/retraced/viewer'), {
   ssr: false,
 });
-import { useState } from 'react';
 
-const RetracedLogViewer: NextPage = () => {
+const Events: NextPage = () => {
   const router = useRouter();
-  // const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const id = router.query.id || '--';
-  const parts = id.toString().split('-');
-  const token = parts[1];
-  const project = parts[2];
-  const environment = parts[3];
+
+  const { id: projectId } = router.query;
+
+  const token = 'd3822aab24d040ae82ef8194f8a017c1';
+  const environment = 'e7f82b1eb14441fb82469a4a0104f9e5';
+
   const [selectedGroup, setSelectedGroup] = useState('dev');
+
   const groupRes = useSWR(
-    ['/api/retraced/getgroups', `?project=${project}&environment=${environment}`],
+    [`/api/retraced/projects/${projectId}/groups`, `?environmentId=${environment}`],
     fetcher,
     { revalidateOnFocus: false }
   );
@@ -38,10 +42,22 @@ const RetracedLogViewer: NextPage = () => {
 
   return (
     <>
+      <RetracedEventsBrowser
+        host='http://localhost:3000/auditlog'
+        auditLogToken={token}
+        mount={true}
+        customClass={'text-primary dark:text-white'}
+      />
+      {/* <Viewer project={projectId} token={token} environment={environment} selectedGroup={selectedGroup} /> */}
+    </>
+  );
+
+  return (
+    <>
       <div>
         <div className='flex flex-row items-center justify-between'>
           <div className='flex basis-1/2'>
-            <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Audit Logs - {parts[0]}</h2>
+            <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Audit Logs</h2>
           </div>
           <div className='basis-1/7'>
             {groupRes.data.length > 0 && (
@@ -72,11 +88,11 @@ const RetracedLogViewer: NextPage = () => {
       </div>
       <div className='items-center justify-between'>
         {selectedGroup && (
-          <Viewer project={project} token={token} environment={environment} selectedGroup={selectedGroup} />
+          <Viewer project={projectId} token={token} environment={environment} selectedGroup={selectedGroup} />
         )}
       </div>
     </>
   );
 };
 
-export default RetracedLogViewer;
+export default Events;

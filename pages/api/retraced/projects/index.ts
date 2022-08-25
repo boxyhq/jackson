@@ -36,7 +36,11 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   };
 
-  const { data } = await axios.post<Project>(`${process.env.RETRACED_HOST}/admin/v1/project`, body, config);
+  const { data } = await axios.post<{ project: Project }>(
+    `${process.env.RETRACED_HOST}/admin/v1/project`,
+    body,
+    config
+  );
 
   return res.status(201).json({
     data,

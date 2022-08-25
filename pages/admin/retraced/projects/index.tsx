@@ -75,7 +75,7 @@ const ProjectList: NextPage = () => {
                             <InformationCircleIcon className='h-5 w-5 text-secondary' />
                           </a>
                         </Link>
-                        <Link href={`/admin/retraced/projects/${project.id}/logs`}>
+                        <Link href={`/admin/retraced/projects/${project.id}/events`}>
                           <a className='link-primary'>
                             <DocumentSearchIcon className='h-5 w-5 text-secondary' />
                           </a>
