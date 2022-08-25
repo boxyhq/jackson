@@ -1,4 +1,4 @@
-import { OAuthReqBody, OAuthTokenReq } from '../src';
+import { AuthzResponsePayload, OAuthReqBody, OAuthTokenReq } from '../src';
 import boxyhq from './data/metadata/boxyhq';
 import boxyhqNobinding from './data/metadata/boxyhq-nobinding';
 import exampleOidc from './data/metadata/example.oidc';
@@ -87,6 +87,10 @@ export const authz_request_oidc_provider = {
 const OIDC_PROVIDER_CODE = '99991afdfd';
 export const oidc_response = {
   code: OIDC_PROVIDER_CODE,
+};
+export const oidc_response_with_error: AuthzResponsePayload = {
+  error: 'access_denied',
+  error_description: 'The user denied the request',
 };
 
 // END: Fixtures for oidcAuthzResponse

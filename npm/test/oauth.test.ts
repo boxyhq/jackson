@@ -30,6 +30,7 @@ import {
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
   oidc_response,
+  oidc_response_with_error,
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
@@ -260,50 +261,72 @@ tap.test('authorize()', async (t) => {
 
       t.end();
     });
-
-    t.test('[OIDCProvider] Should return the IdP SSO URL', async (t) => {
-      const body = authz_request_oidc_provider;
-      const codeVerifier = generators.codeVerifier();
-      const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
-      const codeChallenge = generators.codeChallenge(codeVerifier);
-
-      const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
-        redirect_url: string;
-      };
-      const params = new URLSearchParams(new URL(response.redirect_url!).search);
-
-      t.ok('redirect_url' in response, 'got the Idp authorize URL');
-      t.ok(params.has('state'), 'state present');
-      t.match(params.get('scope'), 'openid email profile', 'openid scopes present');
-      t.match(params.get('code_challenge'), codeChallenge, 'codeChallenge present');
-      stubCodeVerifier.restore();
-      t.context.state = params.get('state');
-      t.end();
-    });
   });
 
   t.end();
 });
 
-tap.test('oidcAuthzResponse()', async (t) => {
-  t.test('[OIDCProvider] Should throw an error if `state` is missing', async (t) => {
+tap.test('[OIDCProvider]', async (t) => {
+  const context: Record<string, any> = {};
+  t.test('[authorize] Should return the IdP SSO URL', async (t) => {
+    const body = authz_request_oidc_provider;
+    const codeVerifier = generators.codeVerifier();
+    const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
+    const codeChallenge = generators.codeChallenge(codeVerifier);
+
+    const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
+      redirect_url: string;
+    };
+    const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+    t.ok('redirect_url' in response, 'got the Idp authorize URL');
+    t.ok(params.has('state'), 'state present');
+    t.match(params.get('scope'), 'openid email profile', 'openid scopes present');
+    t.match(params.get('code_challenge'), codeChallenge, 'codeChallenge present');
+    stubCodeVerifier.restore();
+    context.state = params.get('state');
+  });
+
+  t.test('[oidcAuthzResponse] Should throw an error if `state` is missing', async (t) => {
     try {
       await oauthController.oidcAuthzResponse(oidc_response);
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
-      t.equal(message, 'State missing from original request.', 'got expected error message');
+      t.equal(message, 'State from original request is missing.', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
   });
-  t.test('[OIDCProvider] Should throw an error if `state` is invalid', async (t) => {
+
+  t.test('[oidcAuthzResponse] Should throw an error if `state` is invalid', async (t) => {
     try {
-      await oauthController.oidcAuthzResponse({ ...oidc_response, state: t.context.state + 'invalid_chars' });
+      await oauthController.oidcAuthzResponse({ ...oidc_response, state: context.state + 'invalid_chars' });
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
       t.equal(message, 'Unable to validate state from the original request.', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
   });
+
+  t.test('[oidcAuthzResponse] Should forward any provider errors to redirect_uri', async (t) => {
+    const { redirect_url } = await oauthController.oidcAuthzResponse({
+      ...oidc_response_with_error,
+      state: context.state,
+    });
+    const response_params = new URLSearchParams(new URL(redirect_url!).search);
+
+    t.match(response_params.get('error'), oidc_response_with_error.error, 'oidc error got forwarded');
+    t.match(
+      response_params.get('error_description'),
+      oidc_response_with_error.error_description,
+      'oidc error_description got forwarded'
+    );
+    t.match(
+      response_params.get('state'),
+      authz_request_oidc_provider.state,
+      'state present in error response'
+    );
+  });
+
   t.end();
 });
 
