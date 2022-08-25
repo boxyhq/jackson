@@ -672,10 +672,13 @@ export class OAuthController implements IOAuthController {
     const { code: opCode, state, error, error_description } = body;
 
     let RelayState = state || '';
+    if (!RelayState) {
+      throw new JacksonError('State missing from original request.', 403);
+    }
     RelayState = RelayState.replace(relayStatePrefix, '');
     const session = await this.sessionStore.get(RelayState);
     if (!session) {
-      throw new JacksonError('Unable to validate state from the origin request.', 403);
+      throw new JacksonError('Unable to validate state from the original request.', 403);
     }
 
     const oidcConnection = await this.configStore.get(session.id);
