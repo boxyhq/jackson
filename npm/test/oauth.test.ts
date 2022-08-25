@@ -41,7 +41,7 @@ import {
   token_req_unencoded_client_id_gen,
 } from './fixture';
 import { addIdPConnections } from './setup';
-import { generators } from 'openid-client';
+import { BaseClient, generators, Issuer } from 'openid-client';
 
 let configAPIController: IConfigAPIController;
 let oauthController: IOAuthController;
@@ -272,6 +272,7 @@ tap.test('[OIDCProvider]', async (t) => {
     const body = authz_request_oidc_provider;
     const codeVerifier = generators.codeVerifier();
     const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
+    context.codeVerifier = codeVerifier;
     const codeChallenge = generators.codeChallenge(codeVerifier);
 
     const response = (await oauthController.authorize(<OAuthReqBody>body)) as {
@@ -326,6 +327,50 @@ tap.test('[OIDCProvider]', async (t) => {
       'state present in error response'
     );
   });
+
+  t.test(
+    '[oidcAuthzResponse] Should return the client redirect url with code and original state attached',
+    async (t) => {
+      const TOKEN_SET = {
+        access_token: 'ACCESS_TOKEN',
+        id_token: 'ID_TOKEN',
+        claims: () => ({
+          sub: 'USER_IDENTIFIER',
+          email: 'jackson@example.com',
+          given_name: 'jackson',
+          family_name: 'samuel',
+        }),
+      };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const fakeCb = sinon.fake(async (..._args) => TOKEN_SET);
+      function FakeOidcClient(this: any) {
+        this.callback = fakeCb;
+        this.userinfo = async () => ({});
+      }
+
+      sinon.stub(Issuer, 'discover').callsFake(
+        () =>
+          ({
+            Client: FakeOidcClient,
+          } as any)
+      );
+      const { redirect_url } = await oauthController.oidcAuthzResponse({
+        ...oidc_response,
+        state: context.state,
+      });
+      fakeCb.calledWithMatch(
+        options.externalUrl + options.oidcPath,
+        { code: oidc_response.code },
+        { code_verifier: context.code_verifier }
+      );
+
+      const response_params = new URLSearchParams(new URL(redirect_url!).search);
+
+      t.ok(response_params.has('code'), 'redirect_url has code');
+      t.match(response_params.get('state'), authz_request_oidc_provider.state);
+      sinon.restore();
+    }
+  );
 
   t.end();
 });
