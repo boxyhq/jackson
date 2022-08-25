@@ -70,12 +70,12 @@ const ProjectList: NextPage = () => {
                     </td>
                     <td className='px-6 py-3'>
                       <div className='flex gap-2'>
-                        <Link href={`/admin/saml/config/edit/${project.id}`}>
+                        <Link href={`/admin/retraced/projects/${project.id}`}>
                           <a className='link-primary'>
                             <InformationCircleIcon className='h-5 w-5 text-secondary' />
                           </a>
                         </Link>
-                        <Link href={`/admin/saml/config/edit/${project.id}`}>
+                        <Link href={`/admin/retraced/projects/${project.id}/logs`}>
                           <a className='link-primary'>
                             <DocumentSearchIcon className='h-5 w-5 text-secondary' />
                           </a>

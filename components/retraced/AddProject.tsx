@@ -3,9 +3,9 @@ import { useState } from 'react';
 import classNames from 'classnames';
 import { ArrowLeftIcon } from '@heroicons/react/outline';
 import { useRouter } from 'next/router';
-
 import toast from 'react-hot-toast';
-import { ApiResponse, Project } from 'types';
+
+import type { ApiResponse, Project } from 'types';
 
 const AddProject = () => {
   const router = useRouter();
