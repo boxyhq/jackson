@@ -1,3 +1,4 @@
+import type { APIKey, NewProject } from 'types';
 import Link from 'next/link';
 import { useState } from 'react';
 import {
@@ -5,12 +6,11 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
   ClipboardCopyIcon,
-  CheckIcon, EyeIcon, EyeOffIcon
+  CheckIcon,
+  EyeIcon,
+  EyeOffIcon,
 } from '@heroicons/react/outline';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import {
-    APIKey, NewProject
-} from '../../interfaces/project';
 
 const AddProject = () => {
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
@@ -23,14 +23,14 @@ const AddProject = () => {
   const [showToken, setShowToken] = useState<object>({});
   const toggleVisibility = (id) => {
     setShowToken({
-        ...showToken,
-        [id]: showToken[id] ? !showToken[id] : true
+      ...showToken,
+      [id]: showToken[id] ? !showToken[id] : true,
     });
-  }
+  };
   const showCopied = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }
+  };
   const createNewProduct = async (event) => {
     event.preventDefault();
     const res = await fetch('/api/retraced/projects', {
@@ -134,10 +134,21 @@ const AddProject = () => {
                     {token.name}
                   </td>
                   <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400'>
-                      <span className='h-5 w-5 text-secondary inline m-2 align-middle'>{showToken[token.environment_id] ? token.token : '*'.repeat(token.token.length * 2)}</span>
-                      {showToken[token.environment_id] ? <EyeOffIcon className='h-5 w-5 text-secondary inline m-2 align-middle' onClick={ () => toggleVisibility(token.environment_id)} />
-                       : <EyeIcon className='h-5 w-5 text-secondary inline m-2 align-middle' onClick={ () => toggleVisibility(token.environment_id)} /> }
-                    </td>
+                    <span className='m-2 inline h-5 w-5 align-middle text-secondary'>
+                      {showToken[token.environment_id] ? token.token : '*'.repeat(token.token.length * 2)}
+                    </span>
+                    {showToken[token.environment_id] ? (
+                      <EyeOffIcon
+                        className='m-2 inline h-5 w-5 align-middle text-secondary'
+                        onClick={() => toggleVisibility(token.environment_id)}
+                      />
+                    ) : (
+                      <EyeIcon
+                        className='m-2 inline h-5 w-5 align-middle text-secondary'
+                        onClick={() => toggleVisibility(token.environment_id)}
+                      />
+                    )}
+                  </td>
                   <td>
                     <a className='link-primary cursor-pointer'>
                       <CopyToClipboard text={token.token} onCopy={showCopied}>
@@ -151,8 +162,8 @@ const AddProject = () => {
               ))}
             </tbody>
           </table>
-          <div className="inline-flex items-center place-content-center">
-          {copied && <CheckIcon className='h-5 w-5 text-secondary'>Copied</CheckIcon>}
+          <div className='inline-flex place-content-center items-center'>
+            {copied && <CheckIcon className='h-5 w-5 text-secondary'>Copied</CheckIcon>}
           </div>
         </div>
       )}

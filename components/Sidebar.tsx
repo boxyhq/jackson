@@ -1,27 +1,31 @@
-import { ShieldCheckIcon } from '@heroicons/react/solid';
+import { ShieldCheckIcon, DocumentDuplicateIcon } from '@heroicons/react/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
+import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 
-const menus = [
-  {
-    href: '/admin/saml/config',
-    text: 'SAML Connections',
-    icon: ShieldCheckIcon,
-    current: false,
-  },
-  {
-    href: '/admin/retraced',
-    text: 'Audit Logs',
-    icon: ShieldCheckIcon,
-    current: false,
-  },
-];
-
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
+  const router = useRouter();
+
   const { isOpen, setIsOpen } = props;
+  const currentPath = router.asPath;
+
+  const menus = [
+    {
+      href: '/admin/saml/config',
+      text: 'SAML Connections',
+      icon: ShieldCheckIcon,
+      current: currentPath.includes('saml'),
+    },
+    {
+      href: '/admin/retraced',
+      text: 'Audit Logs',
+      icon: DocumentDuplicateIcon,
+      current: currentPath.includes('retraced'),
+    },
+  ];
 
   return (
     <>
@@ -63,7 +67,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                     height={36}
                     className='h-8 w-auto'
                   />
-                  <span className='ml-4 text-xl font-bold text-gray-900'>SAML Jackson</span>
+                  <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ</span>
                 </a>
               </Link>
             </div>
@@ -73,7 +77,10 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                   <a
                     key={menu.text}
                     href={menu.href}
-                    className='group flex items-center rounded-md bg-gray-100 py-2 px-2 text-base font-medium text-gray-900'>
+                    className={classNames(
+                      'group flex items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
+                      menu.current ? 'bg-gray-200' : ''
+                    )}>
                     <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                     {menu.text}
                   </a>
@@ -90,7 +97,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
             <Link href='/'>
               <a className='flex items-center'>
                 <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} className='h-8 w-auto' />
-                <span className='ml-4 text-xl font-bold text-gray-900'>SAML Jackson</span>
+                <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ</span>
               </a>
             </Link>
           </div>
@@ -100,7 +107,10 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                 <a
                   key={menu.text}
                   href={menu.href}
-                  className='group flex items-center rounded-md bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'>
+                  className={classNames(
+                    'group flex items-center rounded-md px-2 py-2 text-sm font-medium text-gray-900',
+                    menu.current ? 'bg-gray-200' : ''
+                  )}>
                   <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                   <div>{menu.text}</div>
                 </a>

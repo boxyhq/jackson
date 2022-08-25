@@ -12,13 +12,6 @@ module.exports = {
         })
       );
     }
-    config.optimization.minimizer = [];
-    config.module.rules.push({
-      test: /\.js$/,
-      use: ['source-map-loader'],
-      enforce: 'pre',
-    });
-    config.devtool = 'eval-source-map';
     return config;
   },
   rewrites: async () => {
