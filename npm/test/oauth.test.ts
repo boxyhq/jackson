@@ -41,7 +41,7 @@ import {
   token_req_unencoded_client_id_gen,
 } from './fixture';
 import { addIdPConnections } from './setup';
-import { BaseClient, generators, Issuer } from 'openid-client';
+import { generators, Issuer } from 'openid-client';
 
 let configAPIController: IConfigAPIController;
 let oauthController: IOAuthController;
