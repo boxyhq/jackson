@@ -1,7 +1,6 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import Link from 'next/link';
 
 import type { ApiResponse, Project } from 'types';
 import ProjectDetails from '@components/retraced/ProjectDetails';

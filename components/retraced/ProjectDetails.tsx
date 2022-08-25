@@ -48,9 +48,7 @@ const ClipboardButton = ({ text }: { text: string }) => {
 
   return (
     <CopyToClipboard text={text} onCopy={showCopied}>
-      <button title='Copy to clipboard'>
-        <ClipboardCopyIcon className='h-5 w-5 text-secondary' />
-      </button>
+      <ClipboardCopyIcon className='h-5 w-5 cursor-pointer text-secondary' />
     </CopyToClipboard>
   );
 };
