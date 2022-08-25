@@ -9,7 +9,8 @@ import { oidc_config, saml_config } from './fixture';
 
 let configAPIController: IConfigAPIController;
 
-const CLIENT_ID = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
+const CLIENT_ID_SAML = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
+const CLIENT_ID_OIDC = '85edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
 const OPTIONS = <JacksonOption>{
   externalUrl: 'https://my-cool-app.com',
@@ -63,7 +64,7 @@ tap.test('controller/api', async (t) => {
         t.end();
       });
 
-      t.test('[OIDCProvider] oidc provider/application params missing ', async (t) => {
+      t.test('[OIDCProvider/createOIDCConfig] oidc provider/application params missing ', async (t) => {
         t.test('missing discoveryUrl', async (t) => {
           const body: IdPConfig = Object.assign({}, oidc_config);
           delete body['oidcDiscoveryUrl'];
@@ -211,22 +212,46 @@ tap.test('controller/api', async (t) => {
       });
     });
 
-    t.test('when the request is good', async (t) => {
+    t.test('[SAMLProvider/config] when the request is good', async (t) => {
       const body = Object.assign({}, saml_config);
 
-      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID);
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
 
       const response = await configAPIController.config(body);
 
       t.ok(kdStub.called);
-      t.equal(response.clientID, CLIENT_ID);
+      t.equal(response.clientID, CLIENT_ID_SAML);
       t.equal(response.idpMetadata.provider, PROVIDER);
 
       const savedConfig = await configAPIController.getConfig({
-        clientID: CLIENT_ID,
+        clientID: CLIENT_ID_SAML,
       });
 
       t.equal(savedConfig.name, 'testConfig');
+
+      kdStub.restore();
+
+      t.end();
+    });
+
+    t.test('[OIDCProvider/config] when the request is good', async (t) => {
+      const body = Object.assign({}, oidc_config);
+
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_OIDC);
+
+      const response = await configAPIController.createOIDCConfig(body);
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID_OIDC);
+      t.equal(response.oidcProvider.provider, PROVIDER);
+
+      const savedConfig = await configAPIController.getConfig({
+        clientID: CLIENT_ID_OIDC,
+      });
+
+      t.equal(savedConfig.name, oidc_config.name);
+      t.equal(savedConfig.oidcProvider.clientId, oidc_config.oidcClientId);
+      t.equal(savedConfig.oidcProvider.clientSecret, oidc_config.oidcClientSecret);
 
       kdStub.restore();
 
