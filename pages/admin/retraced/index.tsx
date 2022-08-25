@@ -2,7 +2,12 @@ import { NextPage } from 'next';
 import useSWR from 'swr';
 import { fetcher } from '@lib/ui/utils';
 import Link from 'next/link';
-import { ArrowSmLeftIcon, ArrowSmRightIcon, ViewListIcon, InformationCircleIcon } from '@heroicons/react/outline';
+import {
+  ArrowSmLeftIcon,
+  ArrowSmRightIcon,
+  ViewListIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/outline';
 import { useState } from 'react';
 
 const RetracedProjects: NextPage = () => {
@@ -79,8 +84,7 @@ const RetracedProjects: NextPage = () => {
                   </Link>
                 </td>
                 <td>
-                  <Link
-                    href={`/admin/retraced/info/${tenant.projectId}`}>
+                  <Link href={`/admin/retraced/info/${tenant.projectId}`}>
                     <a className='link-primary'>
                       <InformationCircleIcon className='h-5 w-5 text-secondary' />
                     </a>
@@ -94,7 +98,7 @@ const RetracedProjects: NextPage = () => {
       <div className='mt-4 flex justify-center'>
         <button
           type='button'
-          className='btn-secondary hover:not(:disabled):scale-105 inline-flex min-w-[6rem] items-center justify-center py-1'
+          className='hover:not(:disabled):scale-105 btn-secondary inline-flex min-w-[6rem] items-center justify-center py-1'
           disabled={paginate.page === 0}
           aria-label='Previous'
           onClick={() =>
@@ -110,7 +114,7 @@ const RetracedProjects: NextPage = () => {
         &nbsp;&nbsp;&nbsp;&nbsp;
         <button
           type='button'
-          className='btn-secondary hover:not(:disabled):scale-105 inline-flex min-w-[6rem] items-center justify-center py-1'
+          className='hover:not(:disabled):scale-105 btn-secondary inline-flex min-w-[6rem] items-center justify-center py-1'
           disabled={data.length === 0 || data.length < paginate.pageLimit}
           onClick={() =>
             setPaginate((curState) => ({
