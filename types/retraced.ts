@@ -28,7 +28,7 @@ export type Project = {
   url?: string;
 };
 
-export type NewProject = {
-  project: Project;
-  url?: string;
+export type Group = {
+  group_id: string;
+  name: string;
 };

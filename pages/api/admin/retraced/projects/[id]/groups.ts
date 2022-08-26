@@ -1,15 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
-import type { Project } from 'types';
 import { getToken } from '@lib/retraced';
+import env from '@lib/env';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
   switch (method) {
     case 'GET':
-      return getProject(req, res);
+      return getGroups(req, res);
     default:
       res.setHeader('Allow', ['GET']);
       res.status(405).json({
@@ -19,25 +19,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
+const getGroups = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken();
 
-  const { id } = req.query;
+  const { id: projectId, environmentId } = req.query;
 
-  const { data } = await axios.get<{ project: Project }>(
-    `${process.env.RETRACED_HOST}/admin/v1/project/${id}`,
+  const { data } = await axios.get(
+    `${env.retraced.host}/admin/v1/project/${projectId}/groups?environment_id=${environmentId}`,
     {
       headers: {
         Authorization: `id=${token.id} token=${token.token}`,
       },
+      data: {
+        query: {
+          length: 10,
+          offset: 0,
+        },
+      },
     }
   );
 
-  return res.status(201).json({
-    data: {
-      ...data,
-      url: `${process.env.RETRACED_HOST}/publisher/v1/project/${data.project.id}`,
-    },
+  return res.status(200).json({
+    data,
     error: null,
   });
 };

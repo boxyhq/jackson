@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import type { Project } from 'types';
 import { getToken } from '@lib/retraced';
+import env from '@lib/env';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -27,7 +28,7 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
   const { name } = req.body;
 
   const { data } = await axios.post<{ project: Project }>(
-    `${process.env.RETRACED_HOST}/admin/v1/project`,
+    `${env.retraced.host}/admin/v1/project`,
     {
       name,
     },
@@ -47,14 +48,11 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
 const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken();
 
-  const { data } = await axios.get<{ projects: Project[] }>(
-    `${process.env.RETRACED_HOST}/admin/v1/projects`,
-    {
-      headers: {
-        Authorization: `id=${token.id} token=${token.token}`,
-      },
-    }
-  );
+  const { data } = await axios.get<{ projects: Project[] }>(`${env.retraced.host}/admin/v1/projects`, {
+    headers: {
+      Authorization: `id=${token.id} token=${token.token}`,
+    },
+  });
 
   return res.status(200).json({
     data,

@@ -1,30 +1,22 @@
 import type { NextPage } from 'next';
-import useSWR from 'swr';
 import Link from 'next/link';
 import { InformationCircleIcon, DocumentSearchIcon } from '@heroicons/react/outline';
 
-import type { ApiResponse, Project } from 'types';
-import { fetcher } from '@lib/ui/utils';
 import EmptyState from '@components/EmptyState';
+import { useProjects } from '@lib/retraced';
+import Loading from '@components/Loading';
+import ErrorMessage from '@components/Error';
 
 const ProjectList: NextPage = () => {
-  const { data, error } = useSWR<ApiResponse<{ projects: Project[] }>>(['/api/retraced/projects'], fetcher, {
-    revalidateOnFocus: false,
-  });
+  const { projects, isError, isLoading } = useProjects();
 
-  if (!data && !error) {
-    return <>Loading...</>;
+  if (isLoading) {
+    return <Loading />;
   }
 
-  if (error) {
-    return (
-      <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
-        {error.info ? JSON.stringify(error.info) : error.status}
-      </div>
-    );
+  if (isError) {
+    return <ErrorMessage />;
   }
-
-  const projects = data?.data?.projects;
 
   return (
     <div>

@@ -1,45 +1,32 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import useSWR from 'swr';
 
-import type { ApiResponse, Project } from 'types';
 import ProjectDetails from '@components/retraced/ProjectDetails';
-import { fetcher } from '@lib/ui/utils';
+import { useProject } from '@lib/retraced';
+import Loading from '@components/Loading';
+import ErrorMessage from '@components/Error';
 
 const ProjectInfo: NextPage = () => {
   const router = useRouter();
 
-  const { id } = router.query;
+  const { id: projectId } = router.query;
 
-  const { data, error } = useSWR<ApiResponse<{ project: Project; url: string }>>(
-    [`/api/retraced/projects/${id}`],
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    }
-  );
+  const { project, isError, isLoading } = useProject(projectId as string);
 
-  if (!data && !error) {
-    return <>Loading...</>;
+  if (isLoading) {
+    return <Loading />;
   }
 
-  if (error) {
-    return (
-      <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
-        {error.info ? JSON.stringify(error.info) : error.status}
-      </div>
-    );
+  if (isError) {
+    return <ErrorMessage />;
   }
-
-  const project = data?.data?.project;
-  const baseUrl = data?.data?.url;
 
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{project?.name}</h2>
       </div>
-      {project && baseUrl && <ProjectDetails project={project} baseUrl={baseUrl} />}
+      {project && <ProjectDetails project={project} />}
     </div>
   );
 };

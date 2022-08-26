@@ -13,7 +13,7 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
         </div>
 
         <div>
-          <p className='text-sm font-bold'>CUR Command</p>
+          <p className='text-sm font-bold'>CURL Request</p>
           <SyntaxHighlighter language='bash' style={materialOceanic}>
             {`curl -X POST -H "Content-Type: application/json" -H "Authorization: token=${token}" -d '{
   "action": "some.record.created",

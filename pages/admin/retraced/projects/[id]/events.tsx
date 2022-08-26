@@ -1,97 +1,95 @@
 import type { NextPage } from 'next';
-import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
-import RetracedEventsBrowser from 'retraced-logs-viewer';
+import { useEffect, useState } from 'react';
 
-import { fetcher } from '@lib/ui/utils';
+import { useProject, useGroups } from '@lib/retraced';
+import Loading from '@components/Loading';
+import ErrorMessage from '@components/Error';
 
-const Viewer = dynamic(() => import('components/retraced/viewer'), {
+const LogsViewer = dynamic(() => import('@components/retraced/LogsViewer'), {
   ssr: false,
 });
 
 const Events: NextPage = () => {
   const router = useRouter();
 
-  const { id: projectId } = router.query;
+  const [environment, setEnvironment] = useState('');
+  const [group, setGroup] = useState('');
 
-  const token = 'd3822aab24d040ae82ef8194f8a017c1';
-  const environment = 'e7f82b1eb14441fb82469a4a0104f9e5';
+  const projectId = router.query.id as string;
 
-  const [selectedGroup, setSelectedGroup] = useState('dev');
+  const { project, isLoading, isError } = useProject(projectId);
+  const { groups } = useGroups(projectId, environment);
 
-  const groupRes = useSWR(
-    [`/api/retraced/projects/${projectId}/groups`, `?environmentId=${environment}`],
-    fetcher,
-    { revalidateOnFocus: false }
-  );
+  // Set the environment
+  useEffect(() => {
+    if (project) {
+      setEnvironment(project.environments[0].id);
+    }
+  }, [project]);
 
-  if (groupRes.error) {
-    return (
-      <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
-        {/* {error.info ? JSON.stringify(error.info) : error.status} */}
-        Something went wrong!
+  // Set the group
+  useEffect(() => {
+    if (groups && groups.length > 0) {
+      setGroup(groups[0].group_id);
+    }
+  }, [groups]);
+
+  const displayLogsViewer = project && environment && group;
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError) {
+    return <ErrorMessage />;
+  }
+
+  return (
+    <div>
+      <div className='mb-5 flex items-center justify-between'>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{project?.name}</h2>
       </div>
-    );
-  }
-
-  if (!groupRes.data) {
-    return null;
-  }
-
-  return (
-    <>
-      <RetracedEventsBrowser
-        host='http://localhost:3000/auditlog'
-        auditLogToken={token}
-        mount={true}
-        customClass={'text-primary dark:text-white'}
-      />
-      {/* <Viewer project={projectId} token={token} environment={environment} selectedGroup={selectedGroup} /> */}
-    </>
-  );
-
-  return (
-    <>
-      <div>
-        <div className='flex flex-row items-center justify-between'>
-          <div className='flex basis-1/2'>
-            <h2 className='font-bold text-primary dark:text-white md:text-2xl'>Audit Logs</h2>
-          </div>
-          <div className='basis-1/7'>
-            {groupRes.data.length > 0 && (
-              <div className='flex flex-row'>
-                <div className=''>
-                  <label htmlFor='tenant' className='text-primary'>
-                    Select Tenant
-                  </label>
-                  <select
-                    id='tenant'
-                    className='block w-full rounded rounded-lg border border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
-                    onChange={(e) => {
-                      setSelectedGroup(e.target.value);
-                    }}
-                    value={selectedGroup}>
-                    <option key='' id=''></option>
-                    {groupRes.data.map((d) => (
-                      <option key={d.group_id} id={d.group_id}>
-                        {d.group_id}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
-          </div>
+      <div className='flex space-x-2'>
+        <div className='form-control max-w-xs'>
+          <label className='label pl-0'>
+            <span className='label-text'>Environments</span>
+          </label>
+          <select
+            className='select select-bordered'
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              setEnvironment(e.target.value);
+            }}>
+            {project?.environments.map((environment) => (
+              <option key={environment.id} value={environment.id}>
+                {environment.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='form-control w-full max-w-xs'>
+          <label className='label pl-0'>
+            <span className='label-text'>Tenants</span>
+          </label>
+          <select
+            className='select select-bordered'
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              setGroup(e.target.value);
+            }}>
+            {groups &&
+              groups.map((group) => (
+                <option key={group.group_id} value={group.group_id}>
+                  {group.name ? group.name : group.group_id}
+                </option>
+              ))}
+          </select>
         </div>
       </div>
-      <div className='items-center justify-between'>
-        {selectedGroup && (
-          <Viewer project={projectId} token={token} environment={environment} selectedGroup={selectedGroup} />
-        )}
+      <div className='flex'>
+        {displayLogsViewer && <LogsViewer project={project} environmentId={environment} groupId={group} />}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -40,7 +40,12 @@ const jwtSigningKeys = {
 };
 const openid = { jwsAlg, jwtSigningKeys };
 
-export default {
+// Retraced
+const retraced = {
+  host: process.env.NEXT_PUBLIC_RETRACED_HOST || 'http://localhost:3000/auditlog',
+};
+
+const config = {
   hostUrl,
   hostPort,
   externalUrl,
@@ -53,4 +58,7 @@ export default {
   db,
   clientSecretVerifier,
   openid,
+  retraced,
 };
+
+export default config;

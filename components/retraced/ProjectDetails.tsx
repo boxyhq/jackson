@@ -2,12 +2,15 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ClipboardCopyIcon } from '@heroicons/react/outline';
 import toast from 'react-hot-toast';
 
+import env from '@lib/env';
 import type { Project } from 'types';
 import CodeSnippet from '@components/retraced/CodeSnippet';
 
-const ProjectDetails = (props: { project: Project; baseUrl: string }) => {
-  const { project, baseUrl } = props;
+const ProjectDetails = (props: { project: Project }) => {
+  const { project } = props;
   const { environments, tokens } = project;
+
+  const baseUrl = `${env.retraced.host}/publisher/v1/project/${project.id}`;
 
   return (
     <>

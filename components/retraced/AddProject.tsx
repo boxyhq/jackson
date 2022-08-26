@@ -29,7 +29,7 @@ const AddProject = () => {
 
     setLoading(true);
 
-    const response = await fetch('/api/retraced/projects', {
+    const response = await fetch('/api/admin/retraced/projects', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
