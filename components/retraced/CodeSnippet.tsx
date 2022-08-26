@@ -4,10 +4,18 @@ import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => {
   return (
     <>
-      <p className='text-sm font-bold'>Send your first event to Retraced.</p>
       <div className='text-sm'>
-        <SyntaxHighlighter language='bash' style={materialOceanic}>
-          {`curl -X POST -H "Content-Type: application/json" -H "Authorization: token=${token}" -d '{
+        <div className='mb-5'>
+          <p className='text-sm font-bold'>Send your event to the following URL</p>
+          <SyntaxHighlighter language='bash' style={materialOceanic}>
+            {`${baseUrl}/event`}
+          </SyntaxHighlighter>
+        </div>
+
+        <div>
+          <p className='text-sm font-bold'>CUR Command</p>
+          <SyntaxHighlighter language='bash' style={materialOceanic}>
+            {`curl -X POST -H "Content-Type: application/json" -H "Authorization: token=${token}" -d '{
   "action": "some.record.created",
   "teamId": "boxyhq",
   "group": {
@@ -26,7 +34,8 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
     "type": "Tasks"
   }
 }' ${baseUrl}/event`}
-        </SyntaxHighlighter>
+          </SyntaxHighlighter>
+        </div>
       </div>
     </>
   );
