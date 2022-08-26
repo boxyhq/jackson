@@ -148,7 +148,7 @@ tap.test('controller/api', async (t) => {
           t.end();
         });
 
-        t.test('[SAMLProvider]', async (t) => {
+        t.test('[OIDCProvider]', async (t) => {
           const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
           delete body['redirectUrl'];
 
@@ -327,7 +327,7 @@ tap.test('controller/api', async (t) => {
       t.end();
     });
 
-    t.test('[OIDCProvider/config] when the request is good', async (t) => {
+    t.test('[OIDCProvider/createOIDCConfig] when the request is good', async (t) => {
       const body = Object.assign({}, oidc_config);
 
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_OIDC);
@@ -355,30 +355,55 @@ tap.test('controller/api', async (t) => {
   });
 
   t.test('Update the config', async (t) => {
-    const body: IdPConfig = Object.assign({}, saml_config);
-
+    const body_saml_provider: IdPConfig = Object.assign({}, saml_config);
+    const body_oidc_provider: IdPConfig = Object.assign({}, oidc_config);
     t.test('When clientID is missing', async (t) => {
-      const { client_secret: clientSecret } = await configAPIController.config(body as IdPConfig);
-      try {
-        await configAPIController.updateConfig({
-          description: 'A new description',
-          clientID: '',
-          clientSecret,
-          defaultRedirectUrl: saml_config.defaultRedirectUrl,
-          redirectUrl: saml_config.redirectUrl,
-          tenant: saml_config.tenant,
-          product: saml_config.product,
-        });
-        t.fail('Expecting JacksonError.');
-      } catch (err: any) {
-        t.equal(err.message, 'Please provide clientID');
-        t.equal(err.statusCode, 400);
-        t.end();
-      }
+      t.test('[SAMLProvider]', async (t) => {
+        const { client_secret: clientSecret } = await configAPIController.config(
+          body_saml_provider as IdPConfig
+        );
+        try {
+          await configAPIController.updateConfig({
+            description: 'A new description',
+            clientID: '',
+            clientSecret,
+            defaultRedirectUrl: saml_config.defaultRedirectUrl,
+            redirectUrl: saml_config.redirectUrl,
+            tenant: saml_config.tenant,
+            product: saml_config.product,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, 'Please provide clientID');
+          t.equal(err.statusCode, 400);
+          t.end();
+        }
+      });
+      t.test('[OIDCProvider]', async (t) => {
+        const { client_secret: clientSecret } = await configAPIController.createOIDCConfig(
+          body_oidc_provider as IdPConfig
+        );
+        try {
+          await configAPIController.updateOIDCConfig({
+            description: 'A new description',
+            clientID: '',
+            clientSecret,
+            defaultRedirectUrl: saml_config.defaultRedirectUrl,
+            redirectUrl: saml_config.redirectUrl,
+            tenant: saml_config.tenant,
+            product: saml_config.product,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, 'Please provide clientID');
+          t.equal(err.statusCode, 400);
+          t.end();
+        }
+      });
     });
 
     t.test('When clientSecret is missing', async (t) => {
-      const { clientID } = await configAPIController.config(body as IdPConfig);
+      const { clientID } = await configAPIController.config(body_saml_provider as IdPConfig);
 
       try {
         await configAPIController.updateConfig({
@@ -399,7 +424,7 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('Update the name/description', async (t) => {
-      const { clientID, clientSecret } = await configAPIController.config(body as IdPConfig);
+      const { clientID, clientSecret } = await configAPIController.config(body_saml_provider as IdPConfig);
       const { name, description } = await configAPIController.getConfig({ clientID });
       t.equal(name, 'testConfig');
       t.equal(description, 'Just a test configuration');
@@ -411,8 +436,8 @@ tap.test('controller/api', async (t) => {
         defaultRedirectUrl: saml_config.defaultRedirectUrl,
         name: 'A new name',
         description: 'A new description',
-        tenant: body.tenant,
-        product: body.product,
+        tenant: body_saml_provider.tenant,
+        product: body_saml_provider.product,
       });
       const savedConfig = await configAPIController.getConfig({ clientID });
       t.equal(savedConfig.name, 'A new name');
