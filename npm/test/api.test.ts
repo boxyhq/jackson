@@ -45,6 +45,10 @@ tap.test('controller/api', async (t) => {
       tenant: saml_config.tenant,
       product: saml_config.product,
     });
+    await configAPIController.deleteConfig({
+      tenant: oidc_config.tenant,
+      product: oidc_config.product,
+    });
   });
 
   t.test('Create the config', async (t) => {
@@ -388,10 +392,10 @@ tap.test('controller/api', async (t) => {
             description: 'A new description',
             clientID: '',
             clientSecret,
-            defaultRedirectUrl: saml_config.defaultRedirectUrl,
-            redirectUrl: saml_config.redirectUrl,
-            tenant: saml_config.tenant,
-            product: saml_config.product,
+            defaultRedirectUrl: oidc_config.defaultRedirectUrl,
+            redirectUrl: oidc_config.redirectUrl,
+            tenant: oidc_config.tenant,
+            product: oidc_config.product,
           });
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
@@ -403,46 +407,92 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('When clientSecret is missing', async (t) => {
-      const { clientID } = await configAPIController.config(body_saml_provider as IdPConfig);
-
-      try {
-        await configAPIController.updateConfig({
-          description: 'A new description',
-          clientID,
-          defaultRedirectUrl: saml_config.defaultRedirectUrl,
-          redirectUrl: saml_config.redirectUrl,
-          tenant: saml_config.tenant,
-          product: saml_config.product,
-          clientSecret: '',
-        });
-        t.fail('Expecting JacksonError.');
-      } catch (err: any) {
-        t.equal(err.message, 'Please provide clientSecret');
-        t.equal(err.statusCode, 400);
-        t.end();
-      }
+      t.test('[SAMLProvider]', async (t) => {
+        const { clientID } = await configAPIController.config(body_saml_provider as IdPConfig);
+        try {
+          await configAPIController.updateConfig({
+            description: 'A new description',
+            clientID,
+            clientSecret: '',
+            defaultRedirectUrl: saml_config.defaultRedirectUrl,
+            redirectUrl: saml_config.redirectUrl,
+            tenant: saml_config.tenant,
+            product: saml_config.product,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, 'Please provide clientSecret');
+          t.equal(err.statusCode, 400);
+          t.end();
+        }
+      });
+      t.test('[OIDCProvider]', async (t) => {
+        const { clientID } = await configAPIController.createOIDCConfig(body_oidc_provider as IdPConfig);
+        try {
+          await configAPIController.updateOIDCConfig({
+            description: 'A new description',
+            clientID,
+            clientSecret: '',
+            defaultRedirectUrl: oidc_config.defaultRedirectUrl,
+            redirectUrl: oidc_config.redirectUrl,
+            tenant: oidc_config.tenant,
+            product: oidc_config.product,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, 'Please provide clientSecret');
+          t.equal(err.statusCode, 400);
+          t.end();
+        }
+      });
     });
 
     t.test('Update the name/description', async (t) => {
-      const { clientID, clientSecret } = await configAPIController.config(body_saml_provider as IdPConfig);
-      const { name, description } = await configAPIController.getConfig({ clientID });
-      t.equal(name, 'testConfig');
-      t.equal(description, 'Just a test configuration');
+      t.test('[SAMLProvider]', async (t) => {
+        const { clientID, clientSecret } = await configAPIController.config(body_saml_provider as IdPConfig);
+        const { name, description } = await configAPIController.getConfig({ clientID });
+        t.equal(name, 'testConfig');
+        t.equal(description, 'Just a test configuration');
 
-      await configAPIController.updateConfig({
-        clientID,
-        clientSecret,
-        redirectUrl: saml_config.redirectUrl,
-        defaultRedirectUrl: saml_config.defaultRedirectUrl,
-        name: 'A new name',
-        description: 'A new description',
-        tenant: body_saml_provider.tenant,
-        product: body_saml_provider.product,
+        await configAPIController.updateConfig({
+          clientID,
+          clientSecret,
+          redirectUrl: saml_config.redirectUrl,
+          defaultRedirectUrl: saml_config.defaultRedirectUrl,
+          name: 'A new name',
+          description: 'A new description',
+          tenant: body_saml_provider.tenant,
+          product: body_saml_provider.product,
+        });
+        const savedConfig = await configAPIController.getConfig({ clientID });
+        t.equal(savedConfig.name, 'A new name');
+        t.equal(savedConfig.description, 'A new description');
+        t.end();
       });
-      const savedConfig = await configAPIController.getConfig({ clientID });
-      t.equal(savedConfig.name, 'A new name');
-      t.equal(savedConfig.description, 'A new description');
-      t.end();
+
+      t.test('[OIDCProvider]', async (t) => {
+        const { clientID, clientSecret } = await configAPIController.createOIDCConfig(
+          body_oidc_provider as IdPConfig
+        );
+        const { name, description } = await configAPIController.getConfig({ clientID });
+        t.equal(name, 'OIDC Metadata for oidc.example.com');
+        t.equal(description, 'OIDC Metadata for oidc.example.com');
+
+        await configAPIController.updateOIDCConfig({
+          clientID,
+          clientSecret,
+          redirectUrl: oidc_config.redirectUrl,
+          defaultRedirectUrl: oidc_config.defaultRedirectUrl,
+          name: 'A new name',
+          description: 'A new description',
+          tenant: oidc_config.tenant,
+          product: oidc_config.product,
+        });
+        const savedConfig = await configAPIController.getConfig({ clientID });
+        t.equal(savedConfig.name, 'A new name');
+        t.equal(savedConfig.description, 'A new description');
+        t.end();
+      });
     });
 
     t.end();
