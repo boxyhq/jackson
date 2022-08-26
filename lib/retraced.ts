@@ -1,5 +1,6 @@
-import type { AdminToken, Project } from 'types';
 import axios from 'axios';
+
+import type { AdminToken, Project } from 'types';
 
 export const sanitizeResponse = (
   projects: Project[]
@@ -34,26 +35,22 @@ export const sanitizeResponse = (
   return output;
 };
 
-export async function getToken(): Promise<AdminToken> {
-  const body = {
-    claims: {
-      upstreamToken: 'ADMIN_ROOT_TOKEN',
-      email: process.env.NEXTAUTH_ACL,
-    },
-  };
-
-  const config = {
-    headers: {
-      Authorization: `token=${process.env.ADMIN_ROOT_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-  };
-
+export const getToken = async (): Promise<AdminToken> => {
   const { data } = await axios.post<{ adminToken: AdminToken }>(
     `${process.env.RETRACED_HOST}/admin/v1/user/_login`,
-    body,
-    config
+    {
+      claims: {
+        upstreamToken: 'ADMIN_ROOT_TOKEN',
+        email: process.env.NEXTAUTH_ACL,
+      },
+    },
+    {
+      headers: {
+        Authorization: `token=${process.env.ADMIN_ROOT_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+    }
   );
 
   return data.adminToken;
-}
+};

@@ -24,15 +24,13 @@ const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query;
 
-  const config = {
-    headers: {
-      Authorization: `id=${token.id} token=${token.token}`,
-    },
-  };
-
   const { data } = await axios.get<{ project: Project }>(
     `${process.env.RETRACED_HOST}/admin/v1/project/${id}`,
-    config
+    {
+      headers: {
+        Authorization: `id=${token.id} token=${token.token}`,
+      },
+    }
   );
 
   return res.status(201).json({

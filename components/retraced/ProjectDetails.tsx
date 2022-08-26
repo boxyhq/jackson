@@ -46,7 +46,7 @@ const ProjectDetails = (props: { project: Project; baseUrl: string }) => {
         </div>
       </div>
       <div className='mt-5 border p-3'>
-        <CodeSnippet token={project.tokens[0].token} baseUrl={baseUrl} />
+        <CodeSnippet token={project.tokens[1].token} baseUrl={baseUrl} />
       </div>
     </>
   );

@@ -26,20 +26,16 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { name } = req.body;
 
-  const body = {
-    name,
-  };
-
-  const config = {
-    headers: {
-      Authorization: `id=${token.id} token=${token.token}`,
-    },
-  };
-
   const { data } = await axios.post<{ project: Project }>(
     `${process.env.RETRACED_HOST}/admin/v1/project`,
-    body,
-    config
+    {
+      name,
+    },
+    {
+      headers: {
+        Authorization: `id=${token.id} token=${token.token}`,
+      },
+    }
   );
 
   return res.status(201).json({
@@ -51,15 +47,13 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
 const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken();
 
-  const config = {
-    headers: {
-      Authorization: `id=${token.id} token=${token.token}`,
-    },
-  };
-
   const { data } = await axios.get<{ projects: Project[] }>(
     `${process.env.RETRACED_HOST}/admin/v1/projects`,
-    config
+    {
+      headers: {
+        Authorization: `id=${token.id} token=${token.token}`,
+      },
+    }
   );
 
   return res.status(200).json({
