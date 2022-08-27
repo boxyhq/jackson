@@ -1,10 +1,11 @@
-import { ShieldCheckIcon, DocumentDuplicateIcon } from '@heroicons/react/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
+import JacksonIcon from '../public/jackson.svg';
+import RetracedIcon from '../public/retraced.svg';
 
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
   const router = useRouter();
@@ -16,13 +17,13 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
     {
       href: '/admin/saml/config',
       text: 'SAML Connections',
-      icon: ShieldCheckIcon,
+      icon: JacksonIcon,
       current: currentPath.includes('saml'),
     },
     {
       href: '/admin/retraced/projects',
       text: 'Audit Logs',
-      icon: DocumentDuplicateIcon,
+      icon: RetracedIcon,
       current: currentPath.includes('retraced'),
     },
   ];
@@ -81,8 +82,8 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                       'group flex items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
                       menu.current ? 'bg-gray-200' : ''
                     )}>
-                    <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                    {menu.text}
+                    <Image src={menu.icon} alt='BoxyHQ' layout='fixed' width={30} height={30} />
+                    <div className='ml-2'>{menu.text}</div>
                   </a>
                 ))}
               </nav>
@@ -111,8 +112,8 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                     'group flex items-center rounded-md px-2 py-2 text-sm font-medium text-gray-900',
                     menu.current ? 'bg-gray-200' : ''
                   )}>
-                  <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                  <div>{menu.text}</div>
+                  <Image src={menu.icon} alt={menu.text} layout='fixed' width={30} height={30} />
+                  <div className='ml-2'>{menu.text}</div>
                 </a>
               ))}
             </nav>
