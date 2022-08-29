@@ -18,6 +18,7 @@ const options = <JacksonOption>{
   externalUrl: 'https://my-cool-app.com',
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
+  oidcPath: '/sso/oauth/oidc',
   db: {
     engine: 'mem',
   },

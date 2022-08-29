@@ -172,7 +172,7 @@ export interface DatabaseOption {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
-  oidcPath?: string; // TODO: Add validation
+  oidcPath: string;
   samlAudience?: string;
   preLoadedConfig?: string;
   idpEnabled?: boolean;

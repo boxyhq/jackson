@@ -23,6 +23,10 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
     throw new Error('samlPath is required');
   }
 
+  if (!newOpts.oidcPath) {
+    throw new Error('oidcPath is required');
+  }
+
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.idpEnabled = newOpts.idpEnabled === true;
