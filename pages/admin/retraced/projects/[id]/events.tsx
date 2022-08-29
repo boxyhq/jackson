@@ -60,6 +60,7 @@ const Events: NextPage = () => {
             className='select select-bordered'
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setEnvironment(e.target.value);
+              setGroup('');
             }}>
             {project?.environments.map((environment) => (
               <option key={environment.id} value={environment.id}>
