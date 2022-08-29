@@ -1,4 +1,4 @@
-import { ShieldCheckIcon } from '@heroicons/react/solid';
+import { ShieldCheckIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';

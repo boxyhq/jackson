@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { ArrowSmLeftIcon, ArrowSmRightIcon, PencilAltIcon } from '@heroicons/react/outline';
+import { ArrowLeftIcon, ArrowRightIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import { fetcher } from '@lib/ui/utils';
 import EmptyState from '@components/EmptyState';
@@ -82,7 +82,7 @@ const Connections: NextPage = () => {
                       <td className='px-6 py-3'>
                         <Link href={`/admin/connection/edit/${connection.clientID}`}>
                           <a className='link-primary'>
-                            <PencilAltIcon className='h-5 w-5 text-secondary' />
+                            <PencilIcon className='h-5 w-5 text-secondary' />
                           </a>
                         </Link>
                       </td>
@@ -105,7 +105,7 @@ const Connections: NextPage = () => {
                   page: curState.page - 1,
                 }))
               }>
-              <ArrowSmLeftIcon className='mr-1 h-5 w-5' aria-hidden />
+              <ArrowLeftIcon className='mr-1 h-5 w-5' aria-hidden />
               Prev
             </button>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -120,7 +120,7 @@ const Connections: NextPage = () => {
                   page: curState.page + 1,
                 }))
               }>
-              <ArrowSmRightIcon className='mr-1 h-5 w-5' aria-hidden />
+              <ArrowRightIcon className='mr-1 h-5 w-5' aria-hidden />
               Next
             </button>
           </div>
