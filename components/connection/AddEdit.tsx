@@ -64,14 +64,14 @@ const fieldCatalog = [
   },
   {
     key: 'oidcClientId',
-    label: 'Client ID from OIDC App',
+    label: 'Client ID [OIDC Provider]',
     type: 'text',
     placeholder: '',
     attributes: { editable: false, connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientId },
   },
   {
     key: 'oidcClientSecret',
-    label: 'Client Secret from OIDC App',
+    label: 'Client Secret [OIDC Provider]',
     type: 'text',
     placeholder: '',
     attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret },
