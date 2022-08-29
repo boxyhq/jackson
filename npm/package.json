@@ -42,7 +42,7 @@
     "@opentelemetry/api-metrics": "0.27.0",
     "@opentelemetry/api": "1.0.4",
     "@peculiar/webcrypto": "1.4.0",
-    "@peculiar/x509": "1.8.1",
+    "@peculiar/x509": "1.8.2",
     "jose": "4.9.0",
     "mongodb": "4.9.0",
     "mysql2": "2.3.3",
@@ -50,7 +50,7 @@
     "redis": "4.0.6",
     "reflect-metadata": "0.1.13",
     "ripemd160": "2.0.2",
-    "typeorm": "0.3.7",
+    "typeorm": "0.3.9",
     "xml2js": "0.4.23",
     "xmlbuilder": "15.1.1"
   },
