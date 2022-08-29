@@ -65,7 +65,7 @@
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
     "@babel/plugin-proposal-decorators": "7.18.10",
-    "@playwright/test": "1.25.0",
+    "@playwright/test": "1.25.1",
     "@types/cors": "2.8.12",
     "@types/micromatch": "4.0.2",
     "@types/node": "18.7.9",
@@ -75,7 +75,7 @@
     "autoprefixer": "10.4.8",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
-    "eslint": "8.22.0",
+    "eslint": "8.23.0",
     "eslint-config-next": "12.2.5",
     "eslint-config-prettier": "8.5.0",
     "husky": "8.0.1",
