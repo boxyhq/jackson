@@ -1,11 +1,8 @@
 name: Build Images and Create Uffizzi Environment.
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    types: [opened,reopened,synchronize]
+    types: [opened, reopened, synchronize]
 
 jobs:
   build-saml-jackson:
@@ -50,7 +47,7 @@ jobs:
   render-compose-file:
     name: Render Docker Compose File
     runs-on: ubuntu-latest
-    needs: 
+    needs:
       - build-saml-jackson
     outputs:
       compose-file-cache-key: ${{ steps.hash.outputs.hash }}

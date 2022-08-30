@@ -1,9 +1,6 @@
 name: Build Images and Handle Uffizzi Previews.
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types: [closed]
 
@@ -22,4 +19,4 @@ jobs:
       password: ${{ secrets.UFFIZZI_PASSWORD }}
     permissions:
       contents: read
-      pull-requests: write 
+      pull-requests: write
