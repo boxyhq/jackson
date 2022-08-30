@@ -45,6 +45,7 @@ export const controllers = async (
   opts: JacksonOption
 ): Promise<{
   configAPIController: ConfigAPIController;
+  apiController: ConfigAPIController;
   oauthController: OAuthController;
   adminController: AdminController;
   logoutController: LogoutController;
@@ -99,6 +100,7 @@ export const controllers = async (
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
+    apiController: configAPIController,
     configAPIController,
     oauthController,
     adminController,
