@@ -44,8 +44,8 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 export const controllers = async (
   opts: JacksonOption
 ): Promise<{
-  configAPIController: ConfigAPIController;
   apiController: ConfigAPIController;
+  configAPIController: ConfigAPIController;
   oauthController: OAuthController;
   adminController: AdminController;
   logoutController: LogoutController;
