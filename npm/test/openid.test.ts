@@ -42,6 +42,7 @@ tap.test('[OIDCProvider]', async (t) => {
     t.match(params.get('code_challenge'), codeChallenge, 'codeChallenge present');
     stubCodeVerifier.restore();
     context.state = params.get('state');
+    t.end();
   });
 
   t.test('[oidcAuthzResponse] Should throw an error if `state` is missing', async (t) => {
@@ -52,6 +53,7 @@ tap.test('[OIDCProvider]', async (t) => {
       t.equal(message, 'State from original request is missing.', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
+    t.end();
   });
 
   t.test('[oidcAuthzResponse] Should throw an error if `state` is invalid', async (t) => {
@@ -62,6 +64,7 @@ tap.test('[OIDCProvider]', async (t) => {
       t.equal(message, 'Unable to validate state from the original request.', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
+    t.end();
   });
 
   t.test('[oidcAuthzResponse] Should forward any provider errors to redirect_uri', async (t) => {
@@ -82,6 +85,7 @@ tap.test('[OIDCProvider]', async (t) => {
       authz_request_oidc_provider.state,
       'state present in error response'
     );
+    t.end();
   });
 
   t.test(
@@ -133,6 +137,7 @@ tap.test('[OIDCProvider]', async (t) => {
       t.ok(response_params.has('code'), 'redirect_url has code');
       t.match(response_params.get('state'), authz_request_oidc_provider.state);
       sinon.restore();
+      t.end();
     }
   );
 
