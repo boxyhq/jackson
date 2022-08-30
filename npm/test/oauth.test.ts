@@ -5,7 +5,6 @@ import path from 'path';
 import {
   IOAuthController,
   IConfigAPIController,
-  JacksonOption,
   OAuthReqBody,
   OAuthTokenReq,
   SAMLResponsePayload,
@@ -21,7 +20,6 @@ import {
   authz_request_normal_with_access_type,
   authz_request_normal_with_resource,
   authz_request_normal_with_scope,
-  authz_request_oidc_provider,
   bodyWithDummyCredentials,
   bodyWithInvalidClientSecret,
   bodyWithInvalidCode,
@@ -29,8 +27,6 @@ import {
   bodyWithMissingRedirectUri,
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
-  oidc_response,
-  oidc_response_with_error,
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
@@ -40,8 +36,7 @@ import {
   token_req_idp_initiated_saml_login,
   token_req_unencoded_client_id_gen,
 } from './fixture';
-import { addIdPConnections } from './setup';
-import { generators, Issuer } from 'openid-client';
+import { addIdPConnections, options } from './setup';
 
 let configAPIController: IConfigAPIController;
 let oauthController: IOAuthController;
@@ -53,21 +48,6 @@ const code = '1234567890';
 const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 
 const metadataPath = path.join(__dirname, '/data/metadata');
-
-const options = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  oidcPath: '/sso/oauth/oidc',
-  db: {
-    engine: 'mem',
-  },
-  clientSecretVerifier: 'TOP-SECRET',
-  openid: {
-    jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
-    jwsAlg: 'RS256',
-  },
-};
 
 let configRecords: Array<any> = [];
 
@@ -262,123 +242,6 @@ tap.test('authorize()', async (t) => {
       t.end();
     });
   });
-
-  t.end();
-});
-
-tap.test('[OIDCProvider]', async (t) => {
-  const context: Record<string, any> = {};
-  t.test('[authorize] Should return the IdP SSO URL', async (t) => {
-    const codeVerifier = generators.codeVerifier();
-    const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
-    // will be matched in happy path test
-    context.codeVerifier = codeVerifier;
-    const codeChallenge = generators.codeChallenge(codeVerifier);
-
-    const response = (await oauthController.authorize(<OAuthReqBody>authz_request_oidc_provider)) as {
-      redirect_url: string;
-    };
-    const params = new URLSearchParams(new URL(response.redirect_url!).search);
-
-    t.ok('redirect_url' in response, 'got the Idp authorize URL');
-    t.ok(params.has('state'), 'state present');
-    t.match(params.get('scope'), 'openid email profile', 'openid scopes present');
-    t.match(params.get('code_challenge'), codeChallenge, 'codeChallenge present');
-    stubCodeVerifier.restore();
-    context.state = params.get('state');
-  });
-
-  t.test('[oidcAuthzResponse] Should throw an error if `state` is missing', async (t) => {
-    try {
-      await oauthController.oidcAuthzResponse(oidc_response);
-    } catch (err) {
-      const { message, statusCode } = err as JacksonError;
-      t.equal(message, 'State from original request is missing.', 'got expected error message');
-      t.equal(statusCode, 403, 'got expected status code');
-    }
-  });
-
-  t.test('[oidcAuthzResponse] Should throw an error if `state` is invalid', async (t) => {
-    try {
-      await oauthController.oidcAuthzResponse({ ...oidc_response, state: context.state + 'invalid_chars' });
-    } catch (err) {
-      const { message, statusCode } = err as JacksonError;
-      t.equal(message, 'Unable to validate state from the original request.', 'got expected error message');
-      t.equal(statusCode, 403, 'got expected status code');
-    }
-  });
-
-  t.test('[oidcAuthzResponse] Should forward any provider errors to redirect_uri', async (t) => {
-    const { redirect_url } = await oauthController.oidcAuthzResponse({
-      ...oidc_response_with_error,
-      state: context.state,
-    });
-    const response_params = new URLSearchParams(new URL(redirect_url!).search);
-
-    t.match(response_params.get('error'), oidc_response_with_error.error, 'oidc error got forwarded');
-    t.match(
-      response_params.get('error_description'),
-      oidc_response_with_error.error_description,
-      'oidc error_description got forwarded'
-    );
-    t.match(
-      response_params.get('state'),
-      authz_request_oidc_provider.state,
-      'state present in error response'
-    );
-  });
-
-  t.test(
-    '[oidcAuthzResponse] Should return the client redirect url with code and original state attached',
-    async (t) => {
-      const TOKEN_SET = {
-        access_token: 'ACCESS_TOKEN',
-        id_token: 'ID_TOKEN',
-        claims: () => ({
-          sub: 'USER_IDENTIFIER',
-          email: 'jackson@example.com',
-          given_name: 'jackson',
-          family_name: 'samuel',
-        }),
-      };
-      const fakeCb = sinon.fake(async (..._args) => TOKEN_SET);
-      function FakeOidcClient(this: any) {
-        this.callback = fakeCb;
-        this.userinfo = async () => ({
-          sub: 'USER_IDENTIFIER',
-          email: 'jackson@example.com',
-          given_name: 'jackson',
-          family_name: 'samuel',
-          picture: 'https://jackson.cloud.png',
-          email_verified: true,
-        });
-      }
-
-      sinon.stub(Issuer, 'discover').callsFake(
-        () =>
-          ({
-            Client: FakeOidcClient,
-          } as any)
-      );
-      const { redirect_url } = await oauthController.oidcAuthzResponse({
-        ...oidc_response,
-        state: context.state,
-      });
-      t.ok(
-        fakeCb.calledWithMatch(
-          options.externalUrl + options.oidcPath,
-          { code: oidc_response.code },
-          { code_verifier: context.codeVerifier }
-        )
-      );
-
-      const response_params = new URLSearchParams(new URL(redirect_url!).search);
-
-      t.ok(response_params.has('code'), 'redirect_url has code');
-      t.match(response_params.get('state'), authz_request_oidc_provider.state);
-      sinon.restore();
-    }
-  );
 
   t.end();
 });
