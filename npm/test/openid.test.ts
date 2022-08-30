@@ -22,6 +22,10 @@ tap.before(async () => {
   configRecords = await addIdPConnections(metadataPath, configAPIController);
 });
 
+tap.teardown(async () => {
+  process.exit(0);
+});
+
 tap.test('[OIDCProvider]', async (t) => {
   const context: Record<string, any> = {};
   t.test('[authorize] Should return the IdP SSO URL', async (t) => {
