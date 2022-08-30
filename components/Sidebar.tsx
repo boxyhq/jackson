@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import { ShieldCheckIcon } from '@heroicons/react/20/solid';
->>>>>>> main
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
