@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import classNames from 'classnames';
-import { ArrowLeftIcon } from '@heroicons/react/outline';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 

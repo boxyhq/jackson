@@ -1,5 +1,5 @@
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { ClipboardCopyIcon } from '@heroicons/react/outline';
+import { ClipboardIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
 import env from '@lib/env';
@@ -62,7 +62,7 @@ const ClipboardButton = ({ text }: { text: string }) => {
 
   return (
     <CopyToClipboard text={text} onCopy={showCopied}>
-      <ClipboardCopyIcon className='h-5 w-5 cursor-pointer text-secondary' />
+      <ClipboardIcon className='h-5 w-5 cursor-pointer text-secondary' />
     </CopyToClipboard>
   );
 };

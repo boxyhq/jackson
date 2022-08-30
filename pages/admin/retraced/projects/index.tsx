@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import { InformationCircleIcon, DocumentSearchIcon } from '@heroicons/react/outline';
+import { InformationCircleIcon, DocumentMagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 import EmptyState from '@components/EmptyState';
 import { useProjects } from '@lib/retraced';
@@ -69,7 +69,7 @@ const ProjectList: NextPage = () => {
                         </Link>
                         <Link href={`/admin/retraced/projects/${project.id}/events`}>
                           <a className='link-primary'>
-                            <DocumentSearchIcon className='h-5 w-5 text-secondary' />
+                            <DocumentMagnifyingGlassIcon className='h-5 w-5 text-secondary' />
                           </a>
                         </Link>
                       </div>
