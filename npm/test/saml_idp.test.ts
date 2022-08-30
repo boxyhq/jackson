@@ -18,6 +18,7 @@ import {
   authz_request_normal,
   authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
+  authz_request_normal_with_code_challenge,
   authz_request_normal_with_resource,
   authz_request_normal_with_scope,
   bodyWithDummyCredentials,
@@ -32,9 +33,11 @@ import {
   response_type_not_code,
   saml_binding_absent,
   state_not_set,
+  token_req_cv_mismatch,
   token_req_encoded_client_id,
   token_req_idp_initiated_saml_login,
   token_req_unencoded_client_id_gen,
+  token_req_with_cv,
 } from './fixture';
 import { addIdPConnections, options } from './setup';
 
@@ -587,6 +590,71 @@ tap.test('token()', (t) => {
 
         t.end();
       });
+
+      t.test('PKCE check', async (t) => {
+        const authBody = authz_request_normal_with_code_challenge;
+
+        const { redirect_url } = (await oauthController.authorize(<OAuthReqBody>authBody)) as {
+          redirect_url: string;
+        };
+
+        const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
+
+        const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+        const responseBody = {
+          SAMLResponse: rawResponse,
+          RelayState: relayState,
+        };
+
+        // const stubLoadJWSPrivateKey = sinon.stub(utils, 'loadJWSPrivateKey').resolves(keyPair.privateKey);
+        const stubValidate = sinon.stub(saml, 'validate').resolves({
+          audience: '',
+          claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+          issuer: '',
+          sessionIndex: '',
+        });
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+
+        await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
+
+        try {
+          await oauthController.token(<OAuthTokenReq>token_req_cv_mismatch);
+          t.fail('Expecting JacksonError.');
+        } catch (err) {
+          const { message, statusCode } = err as JacksonError;
+          t.equal(message, 'Invalid code_verifier', 'got expected error message');
+          t.equal(statusCode, 401, 'got expected status code');
+        }
+
+        const tokenRes = await oauthController.token(<OAuthTokenReq>token_req_with_cv);
+
+        t.ok('access_token' in tokenRes, 'includes access_token');
+        t.ok('token_type' in tokenRes, 'includes token_type');
+        t.ok('expires_in' in tokenRes, 'includes expires_in');
+        t.match(tokenRes.access_token, token);
+        t.match(tokenRes.token_type, 'bearer');
+        t.match(tokenRes.expires_in, 300);
+
+        const profile = await oauthController.userInfo(tokenRes.access_token);
+        t.equal(profile.requested.client_id, authz_request_normal_with_code_challenge.client_id);
+        t.equal(profile.requested.state, authz_request_normal_with_code_challenge.state);
+        t.equal(
+          profile.requested.tenant,
+          new URLSearchParams(authz_request_normal_with_code_challenge.client_id).get('tenant')
+        );
+        t.equal(
+          profile.requested.product,
+          new URLSearchParams(authz_request_normal_with_code_challenge.client_id).get('product')
+        );
+
+        stubRandomBytes.restore();
+        stubValidate.restore();
+
+        t.end();
+      });
     }
   );
 
@@ -622,7 +690,7 @@ tap.test('IdP initiated flow should return token and profile', async (t) => {
   t.match(tokenRes.expires_in, 300);
   const profile = await oauthController.userInfo(tokenRes.access_token);
 
-  t.equal(profile.sub, 'id');
+  t.equal(profile.id, 'id');
   stubRandomBytes.restore();
   stubValidate.restore();
   t.end();

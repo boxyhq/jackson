@@ -1,3 +1,4 @@
+import { generators } from 'openid-client';
 import { AuthzResponsePayload, OAuthReqBody, OAuthTokenReq } from '../src';
 import boxyhq from './data/metadata/boxyhq';
 import boxyhqNobinding from './data/metadata/boxyhq-nobinding';
@@ -8,6 +9,15 @@ export const authz_request_normal: Partial<OAuthReqBody> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+};
+
+export const code_verifier = generators.codeVerifier();
+export const authz_request_normal_with_code_challenge: Partial<OAuthReqBody> = {
+  redirect_uri: boxyhq.defaultRedirectUrl,
+  state: 'state-123',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  code_challenge: generators.codeChallenge(code_verifier),
+  code_challenge_method: 'S256',
 };
 
 export const authz_request_normal_with_access_type: Partial<OAuthReqBody> = {
@@ -165,14 +175,28 @@ export const token_req_unencoded_client_id_gen = (configRecords) => {
     grant_type: 'authorization_code',
     client_id: configRecord.clientID,
     client_secret: configRecord.clientSecret,
-    code: '1234567890',
+    code: CODE,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
 
 export const token_req_idp_initiated_saml_login = {
   grant_type: 'authorization_code',
-  code: '1234567890',
+  code: CODE,
+};
+
+export const token_req_cv_mismatch = {
+  grant_type: 'authorization_code',
+  code: CODE,
+  code_verifier: code_verifier + 'invalid_chars',
+  redirect_uri: boxyhq.defaultRedirectUrl,
+};
+
+export const token_req_with_cv = {
+  grant_type: 'authorization_code',
+  code: CODE,
+  code_verifier,
+  redirect_uri: boxyhq.defaultRedirectUrl,
 };
 // END: Fixtures for token
 
