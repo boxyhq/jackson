@@ -5,7 +5,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import jackson from '@lib/jackson';
 import React from 'react';
 
-const SPConfig: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ content }) => {
+const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = ({ content }) => {
   return (
     <>
       <div className='my-10 mx-5 flex h-screen justify-center'>
@@ -17,7 +17,7 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ co
   );
 };
 
-export const getStaticProps = async () => {
+export const getServerSideProps = async () => {
   const { spConfig } = await jackson();
 
   return {
