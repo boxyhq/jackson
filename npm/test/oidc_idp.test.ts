@@ -1,13 +1,13 @@
 import sinon from 'sinon';
 import tap from 'tap';
 import { generators, Issuer } from 'openid-client';
-import { IConfigAPIController, IOAuthController, OAuthReqBody } from '../src/typings';
+import { IConnectionAPIController, IOAuthController, OAuthReqBody } from '../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../src/controller/error';
 import { addIdPConnections, options } from './setup';
 import path from 'path';
 
-let configAPIController: IConfigAPIController;
+let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
@@ -17,9 +17,9 @@ let configRecords: Array<any> = [];
 tap.before(async () => {
   const controller = await (await import('../src/index')).default(options);
 
-  configAPIController = controller.configAPIController;
+  connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
-  configRecords = await addIdPConnections(metadataPath, configAPIController);
+  configRecords = await addIdPConnections(metadataPath, connectionAPIController);
 });
 
 tap.teardown(async () => {

@@ -1,6 +1,6 @@
 import jackson, {
   IAdminController,
-  IConfigAPIController,
+  IConnectionAPIController,
   IdPConfig,
   ILogoutController,
   IOAuthController,
@@ -10,7 +10,7 @@ import jackson, {
 import env from '@lib/env';
 import '@lib/metrics';
 
-let configAPIController: IConfigAPIController;
+let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
@@ -21,7 +21,7 @@ const g = global as any;
 
 export default async function init() {
   if (
-    !g.configAPIController ||
+    !g.connectionAPIController ||
     !g.oauthController ||
     !g.adminController ||
     !g.healthCheckController ||
@@ -29,14 +29,14 @@ export default async function init() {
     !g.oidcDiscoveryController
   ) {
     const ret = await jackson(env);
-    configAPIController = ret.configAPIController;
+    connectionAPIController = ret.connectionAPIController;
     oauthController = ret.oauthController;
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
 
-    g.configAPIController = configAPIController;
+    g.connectionAPIController = connectionAPIController;
     g.oauthController = oauthController;
     g.adminController = adminController;
     g.logoutController = logoutController;
@@ -44,7 +44,7 @@ export default async function init() {
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.isJacksonReady = true;
   } else {
-    configAPIController = g.configAPIController;
+    connectionAPIController = g.connectionAPIController;
     oauthController = g.oauthController;
     adminController = g.adminController;
     logoutController = g.logoutController;
@@ -53,7 +53,7 @@ export default async function init() {
   }
 
   return {
-    configAPIController,
+    connectionAPIController,
     oauthController,
     adminController,
     logoutController,

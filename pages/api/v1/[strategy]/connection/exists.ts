@@ -10,9 +10,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    const { configAPIController } = await jackson();
+    const { connectionAPIController } = await jackson();
     if (req.method === 'GET') {
-      const rsp = await configAPIController.getConfig(req.query as any);
+      const rsp = await connectionAPIController.getConfig(req.query as any);
       if (Object.keys(rsp).length === 0) {
         res.status(404).send({});
       } else {

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { IConfigAPIController, IdPConfig, Storable } from '../../typings';
+import { IConnectionAPIController, IdPConfig, Storable } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
   extractHostName,
@@ -102,7 +102,7 @@ const saml = {
   update: async (
     body: IdPConfig & { clientID: string; clientSecret: string },
     configStore: Storable,
-    configGetter: IConfigAPIController['getConfig']
+    configGetter: IConnectionAPIController['getConfig']
   ) => {
     const {
       encodedRawMetadata, // could be empty

@@ -18,7 +18,7 @@ export type IdPConfig = {
 
 export type connectionType = 'saml' | 'oidc';
 
-export interface IConfigAPIController {
+export interface IConnectionAPIController {
   config(body: IdPConfig): Promise<any>;
   createSAMLConfig(body: IdPConfig): Promise<any>;
   createOIDCConfig(body: IdPConfig): Promise<any>;

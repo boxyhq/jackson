@@ -4,7 +4,7 @@ import * as utils from '../src/controller/utils';
 import path from 'path';
 import {
   IOAuthController,
-  IConfigAPIController,
+  IConnectionAPIController,
   OAuthReqBody,
   OAuthTokenReq,
   SAMLResponsePayload,
@@ -41,9 +41,9 @@ import {
 } from './fixture';
 import { addIdPConnections, options } from './setup';
 
-let configAPIController: IConfigAPIController;
+let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
-let idpEnabledConfigAPIController: IConfigAPIController;
+let idpEnabledConnectionAPIController: IConnectionAPIController; //idp initiated saml flow enabled
 let idpEnabledOAuthController: IOAuthController;
 let keyPair: jose.GenerateKeyPairResult;
 
@@ -62,11 +62,15 @@ tap.before(async () => {
     await import('../src/index')
   ).default({ ...options, idpEnabled: true });
 
-  configAPIController = controller.configAPIController;
+  connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
-  idpEnabledConfigAPIController = idpFlowEnabledController.configAPIController;
+  idpEnabledConnectionAPIController = idpFlowEnabledController.connectionAPIController;
   idpEnabledOAuthController = idpFlowEnabledController.oauthController;
-  configRecords = await addIdPConnections(metadataPath, configAPIController, idpEnabledConfigAPIController);
+  configRecords = await addIdPConnections(
+    metadataPath,
+    connectionAPIController,
+    idpEnabledConnectionAPIController
+  );
 });
 
 tap.teardown(async () => {

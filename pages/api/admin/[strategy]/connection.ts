@@ -4,7 +4,7 @@ import { checkSession } from '@lib/middleware';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { configAPIController } = await jackson();
+    const { connectionAPIController } = await jackson();
     const { strategy } = req.query;
     if (strategy !== 'saml' && strategy !== 'oidc') {
       throw { message: 'Strategy not supported', statusCode: 400 };
@@ -12,17 +12,17 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === 'POST') {
       if (strategy === 'saml') {
-        res.json(await configAPIController.createSAMLConfig(req.body));
+        res.json(await connectionAPIController.createSAMLConfig(req.body));
       }
       if (strategy === 'oidc') {
-        res.json(await configAPIController.createOIDCConfig(req.body));
+        res.json(await connectionAPIController.createOIDCConfig(req.body));
       }
     } else if (req.method === 'PATCH') {
       if (strategy === 'saml') {
-        res.status(204).end(await configAPIController.updateSAMLConfig(req.body));
+        res.status(204).end(await connectionAPIController.updateSAMLConfig(req.body));
       }
       if (strategy === 'oidc') {
-        res.status(204).end(await configAPIController.updateOIDCConfig(req.body));
+        res.status(204).end(await connectionAPIController.updateOIDCConfig(req.body));
       }
     } else {
       throw { message: 'Method not allowed', statusCode: 405 };

@@ -3,15 +3,19 @@ import readConfig from '../src/read-config';
 
 const configRecords: Array<any> = [];
 
-const addIdPConnections = async (metadataPath, configAPIController, idpEnabledConfigAPIController?) => {
+const addIdPConnections = async (
+  metadataPath,
+  connectionAPIController,
+  idpEnabledConnectionAPIController?
+) => {
   const configs = await readConfig(metadataPath);
   for (const config of configs) {
     const _record = await (config.oidcDiscoveryUrl
-      ? configAPIController.createOIDCConfig(config)
-      : configAPIController.createSAMLConfig(config));
+      ? connectionAPIController.createOIDCConfig(config)
+      : connectionAPIController.createSAMLConfig(config));
     !config.oidcDiscoveryUrl &&
-      idpEnabledConfigAPIController &&
-      (await idpEnabledConfigAPIController.createSAMLConfig(config));
+      idpEnabledConnectionAPIController &&
+      (await idpEnabledConnectionAPIController.createSAMLConfig(config));
     configRecords.push(_record);
   }
   return configRecords;

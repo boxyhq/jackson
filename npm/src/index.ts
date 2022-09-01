@@ -1,5 +1,5 @@
 import { AdminController } from './controller/admin';
-import { ConfigAPIController } from './controller/api';
+import { ConnectionAPIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
@@ -44,8 +44,8 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 export const controllers = async (
   opts: JacksonOption
 ): Promise<{
-  apiController: ConfigAPIController;
-  configAPIController: ConfigAPIController;
+  apiController: ConnectionAPIController;
+  connectionAPIController: ConnectionAPIController;
   oauthController: OAuthController;
   adminController: AdminController;
   logoutController: LogoutController;
@@ -62,7 +62,7 @@ export const controllers = async (
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
 
-  const configAPIController = new ConfigAPIController({ configStore });
+  const connectionAPIController = new ConnectionAPIController({ configStore });
   const adminController = new AdminController({ configStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
@@ -86,9 +86,9 @@ export const controllers = async (
 
     for (const config of configs) {
       if (config.oidcDiscoveryUrl) {
-        await configAPIController.createOIDCConfig(config);
+        await connectionAPIController.createOIDCConfig(config);
       } else {
-        await configAPIController.createSAMLConfig(config);
+        await connectionAPIController.createSAMLConfig(config);
       }
 
       console.log(`loaded config for tenant "${config.tenant}" and product "${config.product}"`);
@@ -100,8 +100,8 @@ export const controllers = async (
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
-    apiController: configAPIController,
-    configAPIController,
+    apiController: connectionAPIController,
+    connectionAPIController,
     oauthController,
     adminController,
     logoutController,

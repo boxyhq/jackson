@@ -1,12 +1,12 @@
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
-import { IConfigAPIController, IdPConfig, Storable } from '../typings';
+import { IConnectionAPIController, IdPConfig, Storable } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
-export class ConfigAPIController implements IConfigAPIController {
+export class ConnectionAPIController implements IConnectionAPIController {
   private configStore: Storable;
 
   constructor({ configStore }) {
@@ -104,7 +104,7 @@ export class ConfigAPIController implements IConfigAPIController {
     return record;
   }
   // For backwards compatibility
-  public async config(...args: Parameters<ConfigAPIController['createSAMLConfig']>): Promise<any> {
+  public async config(...args: Parameters<ConnectionAPIController['createSAMLConfig']>): Promise<any> {
     return this.createSAMLConfig(...args);
   }
 
@@ -264,7 +264,7 @@ export class ConfigAPIController implements IConfigAPIController {
   }
 
   // For backwards compatibility
-  public async updateConfig(...args: Parameters<ConfigAPIController['updateSAMLConfig']>): Promise<any> {
+  public async updateConfig(...args: Parameters<ConnectionAPIController['updateSAMLConfig']>): Promise<any> {
     await this.updateSAMLConfig(...args);
   }
   /**
@@ -506,4 +506,4 @@ export class ConfigAPIController implements IConfigAPIController {
   }
 }
 
-ConfigAPIController.prototype.config = ConfigAPIController.prototype.createSAMLConfig;
+ConnectionAPIController.prototype.config = ConnectionAPIController.prototype.createSAMLConfig;
