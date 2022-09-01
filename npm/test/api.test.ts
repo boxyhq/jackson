@@ -69,12 +69,12 @@ tap.test('controller/api', async (t) => {
         t.end();
       });
 
-      t.test('[OIDCProvider/createOIDCConfig] oidc provider/application params missing ', async (t) => {
+      t.test('[OIDCProvider/createOIDCConnection] oidc provider/application params missing ', async (t) => {
         t.test('missing discoveryUrl', async (t) => {
           const body: IdPConnection = Object.assign({}, oidc_config);
           delete body['oidcDiscoveryUrl'];
           try {
-            await connectionAPIController.createOIDCConfig(body);
+            await connectionAPIController.createOIDCConnection(body);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide the discoveryUrl for the OpenID Provider');
@@ -85,7 +85,7 @@ tap.test('controller/api', async (t) => {
           const body: IdPConnection = Object.assign({}, oidc_config);
           delete body['oidcClientId'];
           try {
-            await connectionAPIController.createOIDCConfig(body);
+            await connectionAPIController.createOIDCConnection(body);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide the clientId from OpenID Provider');
@@ -96,7 +96,7 @@ tap.test('controller/api', async (t) => {
           const body: IdPConnection = Object.assign({}, oidc_config);
           delete body['oidcClientSecret'];
           try {
-            await connectionAPIController.createOIDCConfig(body);
+            await connectionAPIController.createOIDCConnection(body);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide the clientSecret from OpenID Provider');
@@ -126,7 +126,7 @@ tap.test('controller/api', async (t) => {
           delete body['defaultRedirectUrl'];
 
           try {
-            await connectionAPIController.createOIDCConfig(body as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide a defaultRedirectUrl');
@@ -158,7 +158,7 @@ tap.test('controller/api', async (t) => {
           delete body['redirectUrl'];
 
           try {
-            await connectionAPIController.createOIDCConfig(body as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide redirectUrl');
@@ -184,7 +184,7 @@ tap.test('controller/api', async (t) => {
           }
           body_oidc_provider['defaultRedirectUrl'] = 'http://localhost::';
           try {
-            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body_oidc_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'defaultRedirectUrl is invalid');
@@ -203,7 +203,7 @@ tap.test('controller/api', async (t) => {
           }
           body_oidc_provider['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
-            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body_oidc_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
@@ -222,7 +222,7 @@ tap.test('controller/api', async (t) => {
             t.equal(err.statusCode, 400);
           }
           try {
-            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body_oidc_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'redirectUrl is invalid');
@@ -269,7 +269,7 @@ tap.test('controller/api', async (t) => {
           delete body['tenant'];
 
           try {
-            await connectionAPIController.createOIDCConfig(body as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide tenant');
@@ -284,7 +284,7 @@ tap.test('controller/api', async (t) => {
           delete body['product'];
 
           try {
-            await connectionAPIController.createOIDCConfig(body as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide product');
@@ -332,12 +332,12 @@ tap.test('controller/api', async (t) => {
       t.end();
     });
 
-    t.test('[OIDCProvider/createOIDCConfig] when the request is good', async (t) => {
+    t.test('[OIDCProvider/createOIDCConnection] when the request is good', async (t) => {
       const body = Object.assign({}, oidc_config);
 
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_OIDC);
 
-      const response = await connectionAPIController.createOIDCConfig(body);
+      const response = await connectionAPIController.createOIDCConnection(body);
 
       t.ok(kdStub.called);
       t.equal(response.clientID, CLIENT_ID_OIDC);
@@ -385,7 +385,7 @@ tap.test('controller/api', async (t) => {
         }
       });
       t.test('[OIDCProvider]', async (t) => {
-        const { client_secret: clientSecret } = await connectionAPIController.createOIDCConfig(
+        const { client_secret: clientSecret } = await connectionAPIController.createOIDCConnection(
           body_oidc_provider as IdPConnection
         );
         try {
@@ -428,7 +428,7 @@ tap.test('controller/api', async (t) => {
         }
       });
       t.test('[OIDCProvider]', async (t) => {
-        const { clientID } = await connectionAPIController.createOIDCConfig(
+        const { clientID } = await connectionAPIController.createOIDCConnection(
           body_oidc_provider as IdPConnection
         );
         try {
@@ -476,7 +476,7 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('[OIDCProvider]', async (t) => {
-        const { clientID, clientSecret } = await connectionAPIController.createOIDCConfig(
+        const { clientID, clientSecret } = await connectionAPIController.createOIDCConnection(
           body_oidc_provider as IdPConnection
         );
         const { name, description } = await connectionAPIController.getConfig({ clientID });

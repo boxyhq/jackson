@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.json(await connectionAPIController.createSAMLConnection(req.body));
       }
       if (strategy === 'oidc') {
-        res.json(await connectionAPIController.createOIDCConfig(req.body));
+        res.json(await connectionAPIController.createOIDCConnection(req.body));
       }
     } else if (req.method === 'GET') {
       res.json(await connectionAPIController.getConfig(req.query as any));

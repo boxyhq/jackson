@@ -15,7 +15,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.json(await connectionAPIController.createSAMLConnection(req.body));
       }
       if (strategy === 'oidc') {
-        res.json(await connectionAPIController.createOIDCConfig(req.body));
+        res.json(await connectionAPIController.createOIDCConnection(req.body));
       }
     } else if (req.method === 'PATCH') {
       if (strategy === 'saml') {

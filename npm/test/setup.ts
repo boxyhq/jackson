@@ -11,7 +11,7 @@ const addIdPConnections = async (
   const configs = await readConfig(metadataPath);
   for (const config of configs) {
     const _record = await (config.oidcDiscoveryUrl
-      ? connectionAPIController.createOIDCConfig(config)
+      ? connectionAPIController.createOIDCConnection(config)
       : connectionAPIController.createSAMLConnection(config));
     !config.oidcDiscoveryUrl &&
       idpEnabledConnectionAPIController &&

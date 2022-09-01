@@ -190,7 +190,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async createOIDCConfig(body: IdPConnection): Promise<any> {
+  public async createOIDCConnection(body: IdPConnection): Promise<any> {
     metrics.increment('createConfig');
     const record = await oidcConnection.create(body, this.configStore);
     return record;

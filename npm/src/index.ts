@@ -86,7 +86,7 @@ export const controllers = async (
 
     for (const config of configs) {
       if (config.oidcDiscoveryUrl) {
-        await connectionAPIController.createOIDCConfig(config);
+        await connectionAPIController.createOIDCConnection(config);
       } else {
         await connectionAPIController.createSAMLConnection(config);
       }
