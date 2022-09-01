@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.1.1",
+    "version": "1.1.5",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -34,6 +34,9 @@
   ],
   "swagger": "2.0",
   "paths": {
+    "/api/v1/saml/connection": {
+      "$ref": "#/paths/~1api~1v1~1saml~1config"
+    },
     "/api/v1/saml/config": {
       "post": {
         "summary": "Create SAML configuration",
@@ -521,6 +524,20 @@
             "description": "JSON encoded array containing a list of allowed redirect URLs",
             "in": "formData",
             "type": "string"
+          },
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "formData",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -528,7 +545,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Description should not exceed 100 characters | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata"
+            "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Description should not exceed 100 characters | redirectUrl is invalid | Please provide tenant | Please provide product | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata"
           },
           "401": {
             "description": "Unauthorized"

@@ -15,7 +15,8 @@ export class ConfigAPIController implements IConfigAPIController {
 
   /**
    * @swagger
-   *
+   * /api/v1/saml/connection:
+   *   $ref: '#/paths/~1api~1v1~1saml~1config'
    * /api/v1/saml/config:
    *   post:
    *     summary: Create SAML configuration
