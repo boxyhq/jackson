@@ -241,22 +241,13 @@
         ],
         "parameters": [
           {
-            "in": "query",
-            "name": "tenant",
-            "type": "string",
-            "description": "Tenant"
+            "$ref": "#/parameters/tenantParam"
           },
           {
-            "in": "query",
-            "name": "product",
-            "type": "string",
-            "description": "Product"
+            "$ref": "#/parameters/productParam"
           },
           {
-            "in": "query",
-            "name": "clientID",
-            "type": "string",
-            "description": "Client ID"
+            "$ref": "#/parameters/clientIDParam"
           }
         ],
         "responses": {
@@ -311,30 +302,16 @@
         ],
         "parameters": [
           {
-            "name": "clientID",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Client ID"
+            "$ref": "#/parameters/clientID"
           },
           {
-            "name": "clientSecret",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Client Secret"
+            "$ref": "#/parameters/clientSecret"
           },
           {
-            "name": "tenant",
-            "in": "formData",
-            "type": "string",
-            "description": "Tenant"
+            "$ref": "#/parameters/tenant"
           },
           {
-            "name": "product",
-            "in": "formData",
-            "type": "string",
-            "description": "Product"
+            "$ref": "#/parameters/product"
           }
         ],
         "responses": {
@@ -350,12 +327,12 @@
         }
       }
     },
-    "/api/v1/oidc/config": {
+    "/api/v1/oidc/connection": {
       "post": {
         "summary": "Create OIDC configuration",
         "operationId": "create-oidc-config",
         "tags": [
-          "OIDC Config"
+          "OIDC Connection"
         ],
         "produces": [
           "application/json"
@@ -462,7 +439,7 @@
         "summary": "Update OIDC configuration",
         "operationId": "update-oidc-config",
         "tags": [
-          "OIDC Config"
+          "OIDC Connection"
         ],
         "consumes": [
           "application/json",
@@ -551,6 +528,45 @@
             "description": "Unauthorized"
           }
         }
+      },
+      "get": {
+        "summary": "Get OIDC Connection",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenantParam"
+          },
+          {
+            "$ref": "#/parameters/productParam"
+          },
+          {
+            "$ref": "#/parameters/clientIDParam"
+          }
+        ],
+        "operationId": "get-oidc-connection",
+        "tags": [
+          "OIDC Connection"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/clientID"
+          },
+          {
+            "$ref": "#/parameters/clientSecret"
+          },
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          }
+        ],
+        "summary": "Delete OIDC Connection",
+        "operationId": "delete-oidc-connection",
+        "tags": [
+          "OIDC Connection"
+        ]
       }
     },
     "/oauth/token": {
@@ -667,6 +683,49 @@
   },
   "definitions": {},
   "responses": {},
-  "parameters": {},
+  "parameters": {
+    "tenantParam": {
+      "in": "query",
+      "name": "tenant",
+      "type": "string",
+      "description": "Tenant"
+    },
+    "productParam": {
+      "in": "query",
+      "name": "product",
+      "type": "string",
+      "description": "Product"
+    },
+    "clientIDParam": {
+      "in": "query",
+      "name": "clientID",
+      "type": "string",
+      "description": "Client ID"
+    },
+    "clientID": {
+      "name": "clientID",
+      "in": "formData",
+      "type": "string",
+      "description": "Client ID"
+    },
+    "clientSecret": {
+      "name": "clientSecret",
+      "in": "formData",
+      "type": "string",
+      "description": "Client Secret"
+    },
+    "tenant": {
+      "name": "tenant",
+      "in": "formData",
+      "type": "string",
+      "description": "Tenant"
+    },
+    "product": {
+      "name": "product",
+      "in": "formData",
+      "type": "string",
+      "description": "Product"
+    }
+  },
   "tags": []
 }

@@ -110,12 +110,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
   /**
    * @swagger
-   *
-   * /api/v1/oidc/config:
+   * /api/v1/oidc/connection:
    *   post:
    *     summary: Create OIDC configuration
    *     operationId: create-oidc-config
-   *     tags: [OIDC Config]
+   *     tags: [OIDC Connection]
    *     produces:
    *       - application/json
    *     consumes:
@@ -271,12 +270,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
   /**
    * @swagger
-   *
-   * /api/v1/oidc/config:
+   * /api/v1/oidc/connection:
    *   patch:
    *     summary: Update OIDC configuration
    *     operationId: update-oidc-config
-   *     tags: [OIDC Config]
+   *     tags: [OIDC Connection]
    *     consumes:
    *       - application/json
    *       - application/x-www-form-urlencoded
@@ -344,7 +342,31 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
   /**
    * @swagger
-   *
+   * parameters:
+   *  tenantParam:
+   *     in: query
+   *     name: tenant
+   *     type: string
+   *     description: Tenant
+   *  productParam:
+   *     in: query
+   *     name: product
+   *     type: string
+   *     description: Product
+   *  clientIDParam:
+   *     in: query
+   *     name: clientID
+   *     type: string
+   *     description: Client ID
+   * /api/v1/oidc/connection:
+   *   get:
+   *     summary: Get OIDC Connection
+   *     parameters:
+   *       - $ref: '#/parameters/tenantParam'
+   *       - $ref: '#/parameters/productParam'
+   *       - $ref: '#/parameters/clientIDParam'
+   *     operationId: get-oidc-connection
+   *     tags: [OIDC Connection]
    * /api/v1/saml/config:
    *   get:
    *     summary: Get SAML configuration
@@ -352,18 +374,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     tags:
    *       - SAML Config
    *     parameters:
-   *       - in: query
-   *         name: tenant
-   *         type: string
-   *         description: Tenant
-   *       - in: query
-   *         name: product
-   *         type: string
-   *         description: Product
-   *       - in: query
-   *         name: clientID
-   *         type: string
-   *         description: Client ID
+   *       - $ref: '#/parameters/tenantParam'
+   *       - $ref: '#/parameters/productParam'
+   *       - $ref: '#/parameters/clientIDParam'
    *     responses:
    *       '200':
    *         description: Success
@@ -428,6 +441,37 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
   /**
    * @swagger
+   * parameters:
+   *   clientID:
+   *     name: clientID
+   *     in: formData
+   *     type: string
+   *     description: Client ID
+   *   clientSecret:
+   *     name: clientSecret
+   *     in: formData
+   *     type: string
+   *     description: Client Secret
+   *   tenant:
+   *     name: tenant
+   *     in: formData
+   *     type: string
+   *     description: Tenant
+   *   product:
+   *     name: product
+   *     in: formData
+   *     type: string
+   *     description: Product
+   * /api/v1/oidc/connection:
+   *   delete:
+   *     parameters:
+   *      - $ref: '#/parameters/clientID'
+   *      - $ref: '#/parameters/clientSecret'
+   *      - $ref: '#/parameters/tenant'
+   *      - $ref: '#/parameters/product'
+   *     summary: Delete OIDC Connection
+   *     operationId: delete-oidc-connection
+   *     tags: [OIDC Connection]
    * /api/v1/saml/config:
    *   delete:
    *     summary: Delete SAML configuration
@@ -437,24 +481,10 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     consumes:
    *       - application/x-www-form-urlencoded
    *     parameters:
-   *       - name: clientID
-   *         in: formData
-   *         type: string
-   *         required: true
-   *         description: Client ID
-   *       - name: clientSecret
-   *         in: formData
-   *         type: string
-   *         required: true
-   *         description: Client Secret
-   *       - name: tenant
-   *         in: formData
-   *         type: string
-   *         description: Tenant
-   *       - name: product
-   *         in: formData
-   *         type: string
-   *         description: Product
+   *      - $ref: '#/parameters/clientID'
+   *      - $ref: '#/parameters/clientSecret'
+   *      - $ref: '#/parameters/tenant'
+   *      - $ref: '#/parameters/product'
    *     responses:
    *       '200':
    *         description: Success
