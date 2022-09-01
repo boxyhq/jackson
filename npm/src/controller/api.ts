@@ -1,6 +1,6 @@
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
-import { IConnectionAPIController, IdPConfig, Storable } from '../typings';
+import { IConnectionAPIController, IdPConnection, Storable } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import oidcConnection from './connection/oidc';
@@ -98,7 +98,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async createSAMLConfig(body: IdPConfig): Promise<any> {
+  public async createSAMLConfig(body: IdPConnection): Promise<any> {
     metrics.increment('createConfig');
     const record = await samlConnection.create(body, this.configStore);
     return record;
@@ -190,7 +190,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async createOIDCConfig(body: IdPConfig): Promise<any> {
+  public async createOIDCConfig(body: IdPConnection): Promise<any> {
     metrics.increment('createConfig');
     const record = await oidcConnection.create(body, this.configStore);
     return record;
@@ -259,7 +259,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async updateSAMLConfig(body: IdPConfig & { clientID: string; clientSecret: string }): Promise<void> {
+  public async updateSAMLConfig(
+    body: IdPConnection & { clientID: string; clientSecret: string }
+  ): Promise<void> {
     await samlConnection.update(body, this.configStore, this.getConfig.bind(this));
   }
 
@@ -335,7 +337,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async updateOIDCConfig(body: IdPConfig & { clientID: string; clientSecret: string }): Promise<void> {
+  public async updateOIDCConfig(
+    body: IdPConnection & { clientID: string; clientSecret: string }
+  ): Promise<void> {
     await oidcConnection.update(body, this.configStore, this.getConfig.bind(this));
   }
   /**

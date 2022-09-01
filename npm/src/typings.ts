@@ -1,6 +1,6 @@
 import { type JWK } from 'jose';
 
-export type IdPConfig = {
+export type IdPConnection = {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
   tenant: string;
@@ -19,12 +19,12 @@ export type IdPConfig = {
 export type connectionType = 'saml' | 'oidc';
 
 export interface IConnectionAPIController {
-  config(body: IdPConfig): Promise<any>;
-  createSAMLConfig(body: IdPConfig): Promise<any>;
-  createOIDCConfig(body: IdPConfig): Promise<any>;
-  updateConfig(body: IdPConfig & { clientID: string; clientSecret: string }): Promise<any>;
-  updateSAMLConfig(body: IdPConfig & { clientID: string; clientSecret: string }): Promise<any>;
-  updateOIDCConfig(body: IdPConfig & { clientID: string; clientSecret: string }): Promise<any>;
+  config(body: IdPConnection): Promise<any>;
+  createSAMLConfig(body: IdPConnection): Promise<any>;
+  createOIDCConfig(body: IdPConnection): Promise<any>;
+  updateConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  updateSAMLConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  updateOIDCConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
     clientID?: string;

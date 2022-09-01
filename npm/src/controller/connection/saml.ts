@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { IConnectionAPIController, IdPConfig, Storable } from '../../typings';
+import { IConnectionAPIController, IdPConnection, Storable } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
   extractHostName,
@@ -13,7 +13,7 @@ import x509 from '../../saml/x509';
 import { JacksonError } from '../error';
 
 const saml = {
-  create: async (body: IdPConfig, configStore: Storable) => {
+  create: async (body: IdPConnection, configStore: Storable) => {
     const {
       encodedRawMetadata,
       rawMetadata,
@@ -31,7 +31,7 @@ const saml = {
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<IdPConfig> & {
+    const record: Partial<IdPConnection> & {
       clientID: string; // set by Jackson
       clientSecret: string; // set by Jackson
       idpMetadata?: Record<string, any>;
@@ -100,7 +100,7 @@ const saml = {
     return record;
   },
   update: async (
-    body: IdPConfig & { clientID: string; clientSecret: string },
+    body: IdPConnection & { clientID: string; clientSecret: string },
     configStore: Storable,
     configGetter: IConnectionAPIController['getConfig']
   ) => {

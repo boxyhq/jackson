@@ -1,19 +1,19 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { IdPConfig } from './typings';
+import { IdPConnection } from './typings';
 
-const readConfig = async (preLoadedConfig: string): Promise<IdPConfig[]> => {
+const readConfig = async (preLoadedConfig: string): Promise<IdPConnection[]> => {
   if (preLoadedConfig.startsWith('./')) {
     preLoadedConfig = path.resolve(process.cwd(), preLoadedConfig);
   }
 
   const files = await fs.promises.readdir(preLoadedConfig);
-  const configs: IdPConfig[] = [];
+  const configs: IdPConnection[] = [];
 
   for (const idx in files) {
     const file = files[idx];
     if (file.endsWith('.js')) {
-      const { default: config }: { default: IdPConfig } = await import(
+      const { default: config }: { default: IdPConnection } = await import(
         /* webpackIgnore: true */ path.join(preLoadedConfig, file)
       );
       if (!config.oidcDiscoveryUrl) {

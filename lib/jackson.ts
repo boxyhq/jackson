@@ -1,7 +1,7 @@
 import jackson, {
   IAdminController,
   IConnectionAPIController,
-  IdPConfig,
+  IdPConnection,
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
@@ -62,4 +62,4 @@ export default async function init() {
   };
 }
 
-export type { IdPConfig };
+export type { IdPConnection };

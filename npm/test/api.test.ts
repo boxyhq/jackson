@@ -4,7 +4,7 @@ import tap from 'tap';
 import * as dbutils from '../src/db/utils';
 import controllers from '../src/index';
 import readConfig from '../src/read-config';
-import { IConnectionAPIController, IdPConfig, JacksonOption } from '../src/typings';
+import { IConnectionAPIController, IdPConnection, JacksonOption } from '../src/typings';
 import { oidc_config, saml_config } from './fixture';
 
 let connectionAPIController: IConnectionAPIController;
@@ -55,7 +55,7 @@ tap.test('controller/api', async (t) => {
   t.test('Create the config', async (t) => {
     t.test('when required fields are missing or invalid', async (t) => {
       t.test('when `encodedRawMetadata` is empty for saml strategy', async (t) => {
-        const body: IdPConfig = Object.assign({}, saml_config);
+        const body: IdPConnection = Object.assign({}, saml_config);
         delete body['encodedRawMetadata'];
 
         try {
@@ -71,7 +71,7 @@ tap.test('controller/api', async (t) => {
 
       t.test('[OIDCProvider/createOIDCConfig] oidc provider/application params missing ', async (t) => {
         t.test('missing discoveryUrl', async (t) => {
-          const body: IdPConfig = Object.assign({}, oidc_config);
+          const body: IdPConnection = Object.assign({}, oidc_config);
           delete body['oidcDiscoveryUrl'];
           try {
             await connectionAPIController.createOIDCConfig(body);
@@ -82,7 +82,7 @@ tap.test('controller/api', async (t) => {
           }
         });
         t.test('missing clientId', async (t) => {
-          const body: IdPConfig = Object.assign({}, oidc_config);
+          const body: IdPConnection = Object.assign({}, oidc_config);
           delete body['oidcClientId'];
           try {
             await connectionAPIController.createOIDCConfig(body);
@@ -93,7 +93,7 @@ tap.test('controller/api', async (t) => {
           }
         });
         t.test('missing clientSecret', async (t) => {
-          const body: IdPConfig = Object.assign({}, oidc_config);
+          const body: IdPConnection = Object.assign({}, oidc_config);
           delete body['oidcClientSecret'];
           try {
             await connectionAPIController.createOIDCConfig(body);
@@ -107,11 +107,11 @@ tap.test('controller/api', async (t) => {
 
       t.test('when `defaultRedirectUrl` is empty', async (t) => {
         t.test('[SAMLProvider]', async (t) => {
-          const body: Partial<IdPConfig> = Object.assign({}, saml_config);
+          const body: Partial<IdPConnection> = Object.assign({}, saml_config);
           delete body['defaultRedirectUrl'];
 
           try {
-            await connectionAPIController.config(body as IdPConfig);
+            await connectionAPIController.config(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide a defaultRedirectUrl');
@@ -122,11 +122,11 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('[OIDCProvider]', async (t) => {
-          const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
+          const body: Partial<IdPConnection> = Object.assign({}, oidc_config);
           delete body['defaultRedirectUrl'];
 
           try {
-            await connectionAPIController.createOIDCConfig(body as IdPConfig);
+            await connectionAPIController.createOIDCConfig(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide a defaultRedirectUrl');
@@ -139,11 +139,11 @@ tap.test('controller/api', async (t) => {
 
       t.test('when `redirectUrl` is empty', async (t) => {
         t.test('[SAMLProvider]', async (t) => {
-          const body: Partial<IdPConfig> = Object.assign({}, saml_config);
+          const body: Partial<IdPConnection> = Object.assign({}, saml_config);
           delete body['redirectUrl'];
 
           try {
-            await connectionAPIController.config(body as IdPConfig);
+            await connectionAPIController.config(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide redirectUrl');
@@ -154,11 +154,11 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('[OIDCProvider]', async (t) => {
-          const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
+          const body: Partial<IdPConnection> = Object.assign({}, oidc_config);
           delete body['redirectUrl'];
 
           try {
-            await connectionAPIController.createOIDCConfig(body as IdPConfig);
+            await connectionAPIController.createOIDCConfig(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide redirectUrl');
@@ -170,13 +170,13 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when defaultRedirectUrl or redirectUrl is invalid', async (t) => {
-        const body_saml_provider: IdPConfig = Object.assign({}, saml_config);
-        const body_oidc_provider: IdPConfig = Object.assign({}, oidc_config);
+        const body_saml_provider: IdPConnection = Object.assign({}, saml_config);
+        const body_oidc_provider: IdPConnection = Object.assign({}, oidc_config);
 
         t.test('when defaultRedirectUrl is invalid', async (t) => {
           body_saml_provider['defaultRedirectUrl'] = 'http://localhost::';
           try {
-            await connectionAPIController.config(body_saml_provider as IdPConfig);
+            await connectionAPIController.config(body_saml_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'defaultRedirectUrl is invalid');
@@ -184,7 +184,7 @@ tap.test('controller/api', async (t) => {
           }
           body_oidc_provider['defaultRedirectUrl'] = 'http://localhost::';
           try {
-            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConfig);
+            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'defaultRedirectUrl is invalid');
@@ -195,7 +195,7 @@ tap.test('controller/api', async (t) => {
         t.test('when redirectUrl list is huge', async (t) => {
           body_saml_provider['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
-            await connectionAPIController.config(body_saml_provider as IdPConfig);
+            await connectionAPIController.config(body_saml_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
@@ -203,7 +203,7 @@ tap.test('controller/api', async (t) => {
           }
           body_oidc_provider['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
-            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConfig);
+            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
@@ -215,14 +215,14 @@ tap.test('controller/api', async (t) => {
           body_saml_provider['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
           body_oidc_provider['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
           try {
-            await connectionAPIController.config(body_saml_provider as IdPConfig);
+            await connectionAPIController.config(body_saml_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'redirectUrl is invalid');
             t.equal(err.statusCode, 400);
           }
           try {
-            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConfig);
+            await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'redirectUrl is invalid');
@@ -233,11 +233,11 @@ tap.test('controller/api', async (t) => {
 
       t.test('[SAMLProvider] tenant/product empty', async (t) => {
         t.test('when `tenant` is empty', async (t) => {
-          const body: Partial<IdPConfig> = Object.assign({}, saml_config);
+          const body: Partial<IdPConnection> = Object.assign({}, saml_config);
           delete body['tenant'];
 
           try {
-            await connectionAPIController.config(body as IdPConfig);
+            await connectionAPIController.config(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide tenant');
@@ -248,11 +248,11 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('when `product` is empty', async (t) => {
-          const body: Partial<IdPConfig> = Object.assign({}, saml_config);
+          const body: Partial<IdPConnection> = Object.assign({}, saml_config);
           delete body['product'];
 
           try {
-            await connectionAPIController.config(body as IdPConfig);
+            await connectionAPIController.config(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide product');
@@ -265,11 +265,11 @@ tap.test('controller/api', async (t) => {
 
       t.test('[OIDCProvider] tenant/product empty', async (t) => {
         t.test('when `tenant` is empty', async (t) => {
-          const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
+          const body: Partial<IdPConnection> = Object.assign({}, oidc_config);
           delete body['tenant'];
 
           try {
-            await connectionAPIController.createOIDCConfig(body as IdPConfig);
+            await connectionAPIController.createOIDCConfig(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide tenant');
@@ -280,11 +280,11 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('when `product` is empty', async (t) => {
-          const body: Partial<IdPConfig> = Object.assign({}, oidc_config);
+          const body: Partial<IdPConnection> = Object.assign({}, oidc_config);
           delete body['product'];
 
           try {
-            await connectionAPIController.createOIDCConfig(body as IdPConfig);
+            await connectionAPIController.createOIDCConfig(body as IdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide product');
@@ -360,12 +360,12 @@ tap.test('controller/api', async (t) => {
   });
 
   t.test('Update the config', async (t) => {
-    const body_saml_provider: IdPConfig = Object.assign({}, saml_config);
-    const body_oidc_provider: IdPConfig = Object.assign({}, oidc_config);
+    const body_saml_provider: IdPConnection = Object.assign({}, saml_config);
+    const body_oidc_provider: IdPConnection = Object.assign({}, oidc_config);
     t.test('When clientID is missing', async (t) => {
       t.test('[SAMLProvider]', async (t) => {
         const { client_secret: clientSecret } = await connectionAPIController.config(
-          body_saml_provider as IdPConfig
+          body_saml_provider as IdPConnection
         );
         try {
           await connectionAPIController.updateConfig({
@@ -386,7 +386,7 @@ tap.test('controller/api', async (t) => {
       });
       t.test('[OIDCProvider]', async (t) => {
         const { client_secret: clientSecret } = await connectionAPIController.createOIDCConfig(
-          body_oidc_provider as IdPConfig
+          body_oidc_provider as IdPConnection
         );
         try {
           await connectionAPIController.updateOIDCConfig({
@@ -409,7 +409,7 @@ tap.test('controller/api', async (t) => {
 
     t.test('When clientSecret is missing', async (t) => {
       t.test('[SAMLProvider]', async (t) => {
-        const { clientID } = await connectionAPIController.config(body_saml_provider as IdPConfig);
+        const { clientID } = await connectionAPIController.config(body_saml_provider as IdPConnection);
         try {
           await connectionAPIController.updateConfig({
             description: 'A new description',
@@ -428,7 +428,9 @@ tap.test('controller/api', async (t) => {
         }
       });
       t.test('[OIDCProvider]', async (t) => {
-        const { clientID } = await connectionAPIController.createOIDCConfig(body_oidc_provider as IdPConfig);
+        const { clientID } = await connectionAPIController.createOIDCConfig(
+          body_oidc_provider as IdPConnection
+        );
         try {
           await connectionAPIController.updateOIDCConfig({
             description: 'A new description',
@@ -451,7 +453,7 @@ tap.test('controller/api', async (t) => {
     t.test('Update the name/description', async (t) => {
       t.test('[SAMLProvider]', async (t) => {
         const { clientID, clientSecret } = await connectionAPIController.config(
-          body_saml_provider as IdPConfig
+          body_saml_provider as IdPConnection
         );
         const { name, description } = await connectionAPIController.getConfig({ clientID });
         t.equal(name, 'testConfig');
@@ -475,7 +477,7 @@ tap.test('controller/api', async (t) => {
 
       t.test('[OIDCProvider]', async (t) => {
         const { clientID, clientSecret } = await connectionAPIController.createOIDCConfig(
-          body_oidc_provider as IdPConfig
+          body_oidc_provider as IdPConnection
         );
         const { name, description } = await connectionAPIController.getConfig({ clientID });
         t.equal(name, 'OIDC Metadata for oidc.example.com');
@@ -503,9 +505,9 @@ tap.test('controller/api', async (t) => {
 
   t.test('Get the config', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: IdPConfig = Object.assign({}, saml_config);
+      const body: IdPConnection = Object.assign({}, saml_config);
 
-      await connectionAPIController.config(body as IdPConfig);
+      await connectionAPIController.config(body as IdPConnection);
 
       const savedConfig = await connectionAPIController.getConfig(body);
 
@@ -517,7 +519,7 @@ tap.test('controller/api', async (t) => {
     t.test('when invalid request', async (t) => {
       let response;
 
-      const body: IdPConfig = Object.assign({}, saml_config);
+      const body: IdPConnection = Object.assign({}, saml_config);
 
       await connectionAPIController.config(body);
 
@@ -552,7 +554,7 @@ tap.test('controller/api', async (t) => {
 
   t.test('Delete the config', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: IdPConfig = Object.assign({}, saml_config);
+      const body: IdPConnection = Object.assign({}, saml_config);
 
       const { clientID, clientSecret } = await connectionAPIController.config(body);
 
@@ -571,7 +573,7 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when invalid request', async (t) => {
-      const body: IdPConfig = Object.assign({}, saml_config);
+      const body: IdPConnection = Object.assign({}, saml_config);
 
       const { clientID } = await connectionAPIController.config(body);
 
