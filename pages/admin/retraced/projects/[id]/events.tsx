@@ -36,8 +36,6 @@ const Events: NextPage = () => {
     }
   }, [groups]);
 
-  const displayLogsViewer = project && environment && group;
-
   if (isLoading) {
     return <Loading />;
   }
@@ -45,6 +43,8 @@ const Events: NextPage = () => {
   if (isError) {
     return <ErrorMessage />;
   }
+
+  const displayLogsViewer = project && environment && group;
 
   return (
     <div>
