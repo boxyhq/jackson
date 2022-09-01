@@ -88,7 +88,7 @@ export const controllers = async (
       if (config.oidcDiscoveryUrl) {
         await connectionAPIController.createOIDCConfig(config);
       } else {
-        await connectionAPIController.createSAMLConfig(config);
+        await connectionAPIController.createSAMLConnection(config);
       }
 
       console.log(`loaded config for tenant "${config.tenant}" and product "${config.product}"`);

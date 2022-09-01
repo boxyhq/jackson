@@ -20,7 +20,7 @@ export type connectionType = 'saml' | 'oidc';
 
 export interface IConnectionAPIController {
   config(body: IdPConnection): Promise<any>;
-  createSAMLConfig(body: IdPConnection): Promise<any>;
+  createSAMLConnection(body: IdPConnection): Promise<any>;
   createOIDCConfig(body: IdPConnection): Promise<any>;
   updateConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
   updateSAMLConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;

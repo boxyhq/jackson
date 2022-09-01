@@ -98,14 +98,14 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async createSAMLConfig(body: IdPConnection): Promise<any> {
+  public async createSAMLConnection(body: IdPConnection): Promise<any> {
     metrics.increment('createConfig');
     const record = await samlConnection.create(body, this.configStore);
     return record;
   }
   // For backwards compatibility
-  public async config(...args: Parameters<ConnectionAPIController['createSAMLConfig']>): Promise<any> {
-    return this.createSAMLConfig(...args);
+  public async config(...args: Parameters<ConnectionAPIController['createSAMLConnection']>): Promise<any> {
+    return this.createSAMLConnection(...args);
   }
 
   /**
@@ -509,5 +509,3 @@ export class ConnectionAPIController implements IConnectionAPIController {
     throw new JacksonError('Please provide `clientID` and `clientSecret` or `tenant` and `product`.', 400);
   }
 }
-
-ConnectionAPIController.prototype.config = ConnectionAPIController.prototype.createSAMLConfig;

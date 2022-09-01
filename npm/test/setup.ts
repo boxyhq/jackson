@@ -12,10 +12,10 @@ const addIdPConnections = async (
   for (const config of configs) {
     const _record = await (config.oidcDiscoveryUrl
       ? connectionAPIController.createOIDCConfig(config)
-      : connectionAPIController.createSAMLConfig(config));
+      : connectionAPIController.createSAMLConnection(config));
     !config.oidcDiscoveryUrl &&
       idpEnabledConnectionAPIController &&
-      (await idpEnabledConnectionAPIController.createSAMLConfig(config));
+      (await idpEnabledConnectionAPIController.createSAMLConnection(config));
     configRecords.push(_record);
   }
   return configRecords;

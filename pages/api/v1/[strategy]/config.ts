@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { connectionAPIController } = await jackson();
     if (req.method === 'POST') {
       if (strategy === 'saml') {
-        res.json(await connectionAPIController.createSAMLConfig(req.body));
+        res.json(await connectionAPIController.createSAMLConnection(req.body));
       }
       if (strategy === 'oidc') {
         res.json(await connectionAPIController.createOIDCConfig(req.body));
