@@ -65,7 +65,7 @@ export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
   return thumbprint;
 };
 
-export const validateIdPConfig = (body: IdPConnection, strategy: connectionType): void => {
+export const validateIdPConnection = (body: IdPConnection, strategy: connectionType): void => {
   const {
     encodedRawMetadata,
     rawMetadata,

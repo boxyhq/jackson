@@ -5,7 +5,7 @@ import {
   extractHostName,
   extractRedirectUrls,
   IndexNames,
-  validateIdPConfig,
+  validateIdPConnection,
   validateRedirectUrl,
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
@@ -27,7 +27,7 @@ const saml = {
 
     let configClientSecret;
 
-    validateIdPConfig(body, 'saml');
+    validateIdPConnection(body, 'saml');
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 

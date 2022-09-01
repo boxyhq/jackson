@@ -5,7 +5,7 @@ import {
   extractHostName,
   extractRedirectUrls,
   IndexNames,
-  validateIdPConfig,
+  validateIdPConnection,
   validateRedirectUrl,
 } from '../utils';
 import { JacksonError } from '../error';
@@ -26,7 +26,7 @@ const oidc = {
 
     let configClientSecret;
 
-    validateIdPConfig(body, 'oidc');
+    validateIdPConnection(body, 'oidc');
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
