@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import * as Retraced from 'retraced';
+import requestIp from 'request-ip';
 
 import env from '@lib/env';
 
@@ -26,6 +27,24 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
     apiKey: token as string,
     projectId: projectId as string,
     endpoint: env.retraced.host,
+  });
+  const reqIp = requestIp.getClientIp(req);
+  const ip = reqIp == '::1' ? '127.0.0.1' : reqIp;
+
+  retraced.reportEvent({
+    crud: 'r',
+    action: 'audit.log.view',
+    description: 'Admin UI accessed the audit logs.',
+    created: new Date(),
+    actor: {
+      id: 'Admin-UI',
+      name: 'Admin-UI',
+    },
+    group: {
+      id: groupId as string,
+      name: groupId as string,
+    },
+    sourceIp: ip,
   });
 
   const viewerToken = await retraced.getViewerToken(groupId as string, '', true);
