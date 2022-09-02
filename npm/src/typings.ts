@@ -50,7 +50,7 @@ export interface IOAuthController {
 }
 
 export interface IAdminController {
-  getAllConfig(pageOffset?: number, pageLimit?: number);
+  getAllConnection(pageOffset?: number, pageLimit?: number);
 }
 export interface IHealthCheckController {
   status(): Promise<{

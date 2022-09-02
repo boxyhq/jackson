@@ -12,7 +12,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.json(await connectionAPIController.getConfig({ clientID: slug[0] }));
       } else {
         res.json(
-          await adminController.getAllConfig(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
+          await adminController.getAllConnection(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
         );
       }
     } else if (req.method === 'DELETE') {
