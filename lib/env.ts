@@ -10,8 +10,7 @@ const idpDiscoveryPath = '/idp/select';
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
 
 const samlAudience = process.env.SAML_AUDIENCE;
-const preLoadedConfig = process.env.PRE_LOADED_CONFIG;
-
+const preLoadedConnection = process.env.PRE_LOADED_CONNECTION || process.env.PRE_LOADED_CONFIG;
 const idpEnabled = process.env.IDP_ENABLED === 'true';
 
 let ssl;
@@ -49,7 +48,7 @@ export default {
   oidcPath,
   idpDiscoveryPath,
   samlAudience,
-  preLoadedConfig,
+  preLoadedConnection,
   apiKeys,
   idpEnabled,
   db,

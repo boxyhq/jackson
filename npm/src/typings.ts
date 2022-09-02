@@ -182,6 +182,7 @@ export interface JacksonOption {
   oidcPath: string;
   samlAudience?: string;
   preLoadedConfig?: string;
+  preLoadedConnection?: string;
   idpEnabled?: boolean;
   db: DatabaseOption;
   clientSecretVerifier?: string;
