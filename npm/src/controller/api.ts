@@ -427,7 +427,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      '401':
    *        $ref: '#/responses/401'
    */
-  public async getConfig(body: { clientID: string; tenant: string; product: string }): Promise<any> {
+  public async getConnection(body: { clientID: string; tenant: string; product: string }): Promise<any> {
     const { clientID, tenant, product } = body;
 
     metrics.increment('getConfig');
@@ -452,6 +452,10 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
+  }
+
+  public async getConfig(...args: Parameters<ConnectionAPIController['getConnection']>): Promise<any> {
+    return await this.getConnection(...args);
   }
 
   /**
@@ -514,7 +518,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       '401':
    *         description: Unauthorized
    */
-  public async deleteConfig(body: {
+  public async deleteConnection(body: {
     clientID: string;
     clientSecret: string;
     tenant: string;
@@ -558,5 +562,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     throw new JacksonError('Please provide `clientID` and `clientSecret` or `tenant` and `product`.', 400);
+  }
+  public async deleteConfig(...args: Parameters<ConnectionAPIController['deleteConnection']>): Promise<void> {
+    await this.deleteConnection(...args);
   }
 }

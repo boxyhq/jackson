@@ -25,7 +25,14 @@ export interface IConnectionAPIController {
   updateConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
   updateSAMLConnection(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
   updateOIDCConnection(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  getConnection(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
+  deleteConnection(body: {
+    clientID?: string;
+    clientSecret?: string;
+    tenant?: string;
+    product?: string;
+  }): Promise<void>;
   deleteConfig(body: {
     clientID?: string;
     clientSecret?: string;
