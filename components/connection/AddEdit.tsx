@@ -211,7 +211,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
   // LOGIC: DELETE
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
-  const deleteConfiguration = async () => {
+  const deleteConnection = async () => {
     await fetch('/api/admin/connection', {
       method: 'DELETE',
       headers: {
@@ -420,7 +420,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
           title='Delete the Connection'
           description='This action cannot be undone. This will permanently delete the Connection.'
           visible={delModalVisible}
-          onConfirm={deleteConfiguration}
+          onConfirm={deleteConnection}
           onCancel={toggleDelConfirm}></ConfirmationModal>
       </div>
     </>
