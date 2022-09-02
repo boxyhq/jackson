@@ -39,10 +39,10 @@
     },
     "/api/v1/saml/config": {
       "post": {
-        "summary": "Create SAML configuration",
-        "operationId": "create-saml-config",
+        "summary": "Create SAML connection",
+        "operationId": "create-saml-connection",
         "tags": [
-          "SAML Config"
+          "SAML Connection"
         ],
         "produces": [
           "application/json"
@@ -146,10 +146,10 @@
         }
       },
       "patch": {
-        "summary": "Update SAML configuration",
-        "operationId": "update-saml-config",
+        "summary": "Update SAML Connection",
+        "operationId": "update-saml-connection",
         "tags": [
-          "SAML Config"
+          "SAML Connection"
         ],
         "consumes": [
           "application/json",
@@ -234,10 +234,10 @@
         }
       },
       "get": {
-        "summary": "Get SAML configuration",
-        "operationId": "get-saml-config",
+        "summary": "Get SAML Connection",
+        "operationId": "get-saml-connection",
         "tags": [
-          "SAML Config"
+          "SAML Connection"
         ],
         "parameters": [
           {
@@ -252,50 +252,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "type": "object",
-              "example": {
-                "idpMetadata": {
-                  "sso": {
-                    "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-                    "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-                  },
-                  "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-                  "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-                  "loginType": "idp",
-                  "provider": "okta.com"
-                },
-                "defaultRedirectUrl": "https://hoppscotch.io/",
-                "redirectUrl": [
-                  "https://hoppscotch.io/"
-                ],
-                "tenant": "hoppscotch.io",
-                "product": "API Engine",
-                "name": "Hoppscotch-SP",
-                "description": "SP for hoppscotch.io",
-                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-                "certs": {
-                  "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-                  "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-                }
-              }
-            }
+            "$ref": "#/responses/200"
           },
           "400": {
-            "description": "Please provide `clientID` or `tenant` and `product`."
+            "$ref": "#/responses/400"
           },
           "401": {
-            "description": "Unauthorized"
+            "$ref": "#/responses/401"
           }
         }
       },
       "delete": {
-        "summary": "Delete SAML configuration",
-        "operationId": "delete-saml-config",
+        "summary": "Delete SAML Connection",
+        "operationId": "delete-saml-connection",
         "tags": [
-          "SAML Config"
+          "SAML Connection"
         ],
         "consumes": [
           "application/x-www-form-urlencoded"
@@ -329,8 +300,8 @@
     },
     "/api/v1/oidc/connection": {
       "post": {
-        "summary": "Create OIDC configuration",
-        "operationId": "create-oidc-config",
+        "summary": "Create OIDC Connection",
+        "operationId": "create-oidc-connection",
         "tags": [
           "OIDC Connection"
         ],
@@ -436,8 +407,8 @@
         }
       },
       "patch": {
-        "summary": "Update OIDC configuration",
-        "operationId": "update-oidc-config",
+        "summary": "Update OIDC Connection",
+        "operationId": "update-oidc-connection",
         "tags": [
           "OIDC Connection"
         ],
@@ -545,7 +516,18 @@
         "operationId": "get-oidc-connection",
         "tags": [
           "OIDC Connection"
-        ]
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "401": {
+            "$ref": "#/responses/401"
+          }
+        }
       },
       "delete": {
         "parameters": [
@@ -566,7 +548,18 @@
         "operationId": "delete-oidc-connection",
         "tags": [
           "OIDC Connection"
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/oauth/token": {
@@ -682,7 +675,46 @@
     }
   },
   "definitions": {},
-  "responses": {},
+  "responses": {
+    "200": {
+      "description": "Success",
+      "schema": {
+        "type": "object",
+        "example": {
+          "idpMetadata": {
+            "sso": {
+              "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+              "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
+            },
+            "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+            "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+            "loginType": "idp",
+            "provider": "okta.com"
+          },
+          "defaultRedirectUrl": "https://hoppscotch.io/",
+          "redirectUrl": [
+            "https://hoppscotch.io/"
+          ],
+          "tenant": "hoppscotch.io",
+          "product": "API Engine",
+          "name": "Hoppscotch-SP",
+          "description": "SP for hoppscotch.io",
+          "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+          "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+          "certs": {
+            "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+            "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+          }
+        }
+      }
+    },
+    "400": {
+      "description": "Please provide `clientID` or `tenant` and `product`."
+    },
+    "401": {
+      "description": "Unauthorized"
+    }
+  },
   "parameters": {
     "tenantParam": {
       "in": "query",

@@ -19,20 +19,20 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   $ref: '#/paths/~1api~1v1~1saml~1config'
    * /api/v1/saml/config:
    *   post:
-   *     summary: Create SAML configuration
-   *     operationId: create-saml-config
-   *     tags: [SAML Config]
+   *     summary: Create SAML connection
+   *     operationId: create-saml-connection
+   *     tags: [SAML Connection]
    *     produces:
    *       - application/json
    *     consumes:
    *       - application/x-www-form-urlencoded
    *     parameters:
    *       - name: name
-   *         description: Name/identifier for the config
+   *         description: Name/identifier for the connection
    *         type: string
    *         in: formData
    *       - name: description
-   *         description: A short description for the config not more than 100 characters
+   *         description: A short description for the connection not more than 100 characters
    *         type: string
    *         in: formData
    *       - name: encodedRawMetadata
@@ -112,8 +112,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
    * @swagger
    * /api/v1/oidc/connection:
    *   post:
-   *     summary: Create OIDC configuration
-   *     operationId: create-oidc-config
+   *     summary: Create OIDC Connection
+   *     operationId: create-oidc-connection
    *     tags: [OIDC Connection]
    *     produces:
    *       - application/json
@@ -121,11 +121,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - application/x-www-form-urlencoded
    *     parameters:
    *       - name: name
-   *         description: Name/identifier for the config
+   *         description: Name/identifier for the connection
    *         type: string
    *         in: formData
    *       - name: description
-   *         description: A short description for the config not more than 100 characters
+   *         description: A short description for the connection not more than 100 characters
    *         type: string
    *         in: formData
    *       - name: oidcDiscoveryUrl
@@ -199,29 +199,29 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *
    * /api/v1/saml/config:
    *   patch:
-   *     summary: Update SAML configuration
-   *     operationId: update-saml-config
-   *     tags: [SAML Config]
+   *     summary: Update SAML Connection
+   *     operationId: update-saml-connection
+   *     tags: [SAML Connection]
    *     consumes:
    *       - application/json
    *       - application/x-www-form-urlencoded
    *     parameters:
    *       - name: clientID
-   *         description: Client ID for the config
+   *         description: Client ID for the connection
    *         type: string
    *         in: formData
    *         required: true
    *       - name: clientSecret
-   *         description: Client Secret for the config
+   *         description: Client Secret for the connection
    *         type: string
    *         in: formData
    *         required: true
    *       - name: name
-   *         description: Name/identifier for the config
+   *         description: Name/identifier for the connection
    *         type: string
    *         in: formData
    *       - name: description
-   *         description: A short description for the config not more than 100 characters
+   *         description: A short description for the connection not more than 100 characters
    *         type: string
    *         in: formData
    *       - name: encodedRawMetadata
@@ -274,29 +274,29 @@ export class ConnectionAPIController implements IConnectionAPIController {
    * @swagger
    * /api/v1/oidc/connection:
    *   patch:
-   *     summary: Update OIDC configuration
-   *     operationId: update-oidc-config
+   *     summary: Update OIDC Connection
+   *     operationId: update-oidc-connection
    *     tags: [OIDC Connection]
    *     consumes:
    *       - application/json
    *       - application/x-www-form-urlencoded
    *     parameters:
    *       - name: clientID
-   *         description: Client ID for the config
+   *         description: Client ID for the connection
    *         type: string
    *         in: formData
    *         required: true
    *       - name: clientSecret
-   *         description: Client Secret for the config
+   *         description: Client Secret for the connection
    *         type: string
    *         in: formData
    *         required: true
    *       - name: name
-   *         description: Name/identifier for the config
+   *         description: Name/identifier for the connection
    *         type: string
    *         in: formData
    *       - name: description
-   *         description: A short description for the config not more than 100 characters
+   *         description: A short description for the connection not more than 100 characters
    *         type: string
    *         in: formData
    *       - name: oidcDiscoveryUrl
@@ -360,6 +360,40 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: clientID
    *     type: string
    *     description: Client ID
+   * responses:
+   *   '200':
+   *     description: Success
+   *     schema:
+   *       type: object
+   *       example:
+   *         {
+   *           "idpMetadata": {
+   *             "sso": {
+   *               "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+   *               "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
+   *             },
+   *             "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+   *             "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+   *             "loginType": "idp",
+   *             "provider": "okta.com"
+   *           },
+   *           "defaultRedirectUrl": "https://hoppscotch.io/",
+   *           "redirectUrl": ["https://hoppscotch.io/"],
+   *           "tenant": "hoppscotch.io",
+   *           "product": "API Engine",
+   *           "name": "Hoppscotch-SP",
+   *           "description": "SP for hoppscotch.io",
+   *           "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *           "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *           "certs": {
+   *             "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+   *             "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+   *           }
+   *       }
+   *   '400':
+   *     description: Please provide `clientID` or `tenant` and `product`.
+   *   '401':
+   *     description: Unauthorized
    * /api/v1/oidc/connection:
    *   get:
    *     summary: Get OIDC Connection
@@ -369,50 +403,29 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/clientIDParam'
    *     operationId: get-oidc-connection
    *     tags: [OIDC Connection]
+   *     responses:
+   *      '200':
+   *        $ref: '#/responses/200'
+   *      '400':
+   *        $ref: '#/responses/400'
+   *      '401':
+   *        $ref: '#/responses/401'
    * /api/v1/saml/config:
    *   get:
-   *     summary: Get SAML configuration
-   *     operationId: get-saml-config
-   *     tags:
-   *       - SAML Config
+   *     summary: Get SAML Connection
+   *     operationId: get-saml-connection
+   *     tags: [SAML Connection]
    *     parameters:
    *       - $ref: '#/parameters/tenantParam'
    *       - $ref: '#/parameters/productParam'
    *       - $ref: '#/parameters/clientIDParam'
    *     responses:
-   *       '200':
-   *         description: Success
-   *         schema:
-   *           type: object
-   *           example:
-   *             {
-   *               "idpMetadata": {
-   *                 "sso": {
-   *                   "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-   *                   "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-   *                 },
-   *                 "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-   *                 "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-   *                 "loginType": "idp",
-   *                 "provider": "okta.com"
-   *               },
-   *               "defaultRedirectUrl": "https://hoppscotch.io/",
-   *               "redirectUrl": ["https://hoppscotch.io/"],
-   *               "tenant": "hoppscotch.io",
-   *               "product": "API Engine",
-   *               "name": "Hoppscotch-SP",
-   *               "description": "SP for hoppscotch.io",
-   *               "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *               "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *               "certs": {
-   *                 "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *                 "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *               }
-   *           }
-   *       '400':
-   *         description: Please provide `clientID` or `tenant` and `product`.
-   *       '401':
-   *         description: Unauthorized
+   *      '200':
+   *        $ref: '#/responses/200'
+   *      '400':
+   *        $ref: '#/responses/400'
+   *      '401':
+   *        $ref: '#/responses/401'
    */
   public async getConfig(body: { clientID: string; tenant: string; product: string }): Promise<any> {
     const { clientID, tenant, product } = body;
@@ -474,12 +487,18 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     summary: Delete OIDC Connection
    *     operationId: delete-oidc-connection
    *     tags: [OIDC Connection]
+   *     responses:
+   *       '200':
+   *         description: Success
+   *       '400':
+   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'
+   *       '401':
+   *         description: Unauthorized
    * /api/v1/saml/config:
    *   delete:
-   *     summary: Delete SAML configuration
-   *     operationId: delete-saml-config
-   *     tags:
-   *       - SAML Config
+   *     summary: Delete SAML Connection
+   *     operationId: delete-saml-connection
+   *     tags: [SAML Connection]
    *     consumes:
    *       - application/x-www-form-urlencoded
    *     parameters:
