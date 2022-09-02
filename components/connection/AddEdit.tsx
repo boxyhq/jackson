@@ -104,13 +104,13 @@ const fieldCatalog = [
     key: 'clientID',
     label: 'Client ID',
     type: 'text',
-    attributes: { showOnlyInEditView: true },
+    attributes: { showOnlyInEditView: true, editable: false },
   },
   {
     key: 'clientSecret',
     label: 'Client Secret',
     type: 'password',
-    attributes: { showOnlyInEditView: true },
+    attributes: { showOnlyInEditView: true, editable: false },
   },
 ];
 
