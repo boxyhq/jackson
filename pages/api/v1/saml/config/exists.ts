@@ -1,4 +1,5 @@
 // Maintain /config path for backward compatibility
+
 import jackson from '@lib/jackson';
 import { extractAuthToken, validateApiKey } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';

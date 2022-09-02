@@ -1,4 +1,5 @@
 // Maintain /config path for backward compatibility
+
 import jackson from '@lib/jackson';
 import { extractAuthToken, validateApiKey } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -10,27 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(401).json({ message: 'Unauthorized' });
       return;
     }
-    const { strategy } = req.query;
-    if (strategy !== 'saml' && strategy !== 'oidc') {
-      throw { message: 'Strategy not supported', statusCode: 400 };
-    }
+
     const { connectionAPIController } = await jackson();
     if (req.method === 'POST') {
-      if (strategy === 'saml') {
-        res.json(await connectionAPIController.createSAMLConnection(req.body));
-      }
-      if (strategy === 'oidc') {
-        res.json(await connectionAPIController.createOIDCConnection(req.body));
-      }
+      res.json(await connectionAPIController.config(req.body));
     } else if (req.method === 'GET') {
       res.json(await connectionAPIController.getConfig(req.query as any));
     } else if (req.method === 'PATCH') {
-      if (strategy === 'saml') {
-        res.status(204).end(await connectionAPIController.updateSAMLConnection(req.body));
-      }
-      if (strategy === 'oidc') {
-        res.status(204).end(await connectionAPIController.updateOIDCConnection(req.body));
-      }
+      res.status(204).end(await connectionAPIController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
       res.status(204).end(await connectionAPIController.deleteConfig(req.body));
     } else {

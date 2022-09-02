@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { connectionAPIController } = await jackson();
     if (req.method === 'GET') {
-      const rsp = await connectionAPIController.getConfig(req.query as any);
+      const rsp = await connectionAPIController.getConnection(req.query as any);
       if (Object.keys(rsp).length === 0) {
         res.status(404).send({});
       } else {
