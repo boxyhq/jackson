@@ -7,7 +7,7 @@ import { OidcDiscoveryController } from './controller/oidc-discovery';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
-import readConfig from './read-config';
+import loadConnection from './loadConnection';
 import { JacksonOption } from './typings';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
@@ -28,7 +28,10 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   }
 
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
-  newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
+  // path to folder containing static IdP connections that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
+  newOpts.preLoadedConnection = newOpts.preLoadedConnection || '';
+  newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // for backwards compatibility
+
   newOpts.idpEnabled = newOpts.idpEnabled === true;
   defaultDb(newOpts);
 
@@ -80,18 +83,19 @@ export const controllers = async (
     opts,
   });
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
-  // write pre-loaded config if present
-  if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
-    const configs = await readConfig(opts.preLoadedConfig);
+  // write pre-loaded connections if present
+  const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
+  if (preLoadedConnection && preLoadedConnection.length > 0) {
+    const connections = await loadConnection(preLoadedConnection);
 
-    for (const config of configs) {
-      if (config.oidcDiscoveryUrl) {
-        await connectionAPIController.createOIDCConnection(config);
+    for (const connection of connections) {
+      if (connection.oidcDiscoveryUrl) {
+        await connectionAPIController.createOIDCConnection(connection);
       } else {
-        await connectionAPIController.createSAMLConnection(config);
+        await connectionAPIController.createSAMLConnection(connection);
       }
 
-      console.log(`loaded config for tenant "${config.tenant}" and product "${config.product}"`);
+      console.log(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
   }
 

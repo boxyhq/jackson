@@ -1,24 +1,24 @@
 import { JacksonOption } from '../src';
-import readConfig from '../src/read-config';
+import loadConnection from '../src/loadConnection';
 
-const configRecords: Array<any> = [];
+const connectionRecords: Array<any> = [];
 
 const addIdPConnections = async (
   metadataPath,
   connectionAPIController,
   idpEnabledConnectionAPIController?
 ) => {
-  const configs = await readConfig(metadataPath);
-  for (const config of configs) {
-    const _record = await (config.oidcDiscoveryUrl
-      ? connectionAPIController.createOIDCConnection(config)
-      : connectionAPIController.createSAMLConnection(config));
-    !config.oidcDiscoveryUrl &&
+  const connections = await loadConnection(metadataPath);
+  for (const connection of connections) {
+    const _record = await (connection.oidcDiscoveryUrl
+      ? connectionAPIController.createOIDCConnection(connection)
+      : connectionAPIController.createSAMLConnection(connection));
+    !connection.oidcDiscoveryUrl &&
       idpEnabledConnectionAPIController &&
-      (await idpEnabledConnectionAPIController.createSAMLConnection(config));
-    configRecords.push(_record);
+      (await idpEnabledConnectionAPIController.createSAMLConnection(connection));
+    connectionRecords.push(_record);
   }
-  return configRecords;
+  return connectionRecords;
 };
 
 const options = <JacksonOption>{

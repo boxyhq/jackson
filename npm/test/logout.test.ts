@@ -3,7 +3,6 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import sinon from 'sinon';
 import tap from 'tap';
-import readConfig from '../src/read-config';
 import { IConnectionAPIController, ILogoutController, JacksonOption } from '../src/typings';
 import { relayStatePrefix } from '../src/controller/utils';
 import { saml_config } from './fixture';

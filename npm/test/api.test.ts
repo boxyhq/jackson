@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../src/db/utils';
 import controllers from '../src/index';
-import readConfig from '../src/read-config';
+import loadConnection from '../src/loadConnection';
 import { IConnectionAPIController, IdPConnection, JacksonOption } from '../src/typings';
 import { oidc_config, saml_config } from './fixture';
 
@@ -39,7 +39,7 @@ tap.teardown(async () => {
 tap.test('controller/api', async (t) => {
   // reading config here would set the metadata on the config for the tests that follow
   const metadataPath = path.join(__dirname, '/data/metadata');
-  await readConfig(metadataPath);
+  await loadConnection(metadataPath);
 
   t.afterEach(async () => {
     await connectionAPIController.deleteConfig({
