@@ -258,15 +258,17 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async updateSAMLConfig(
+  public async updateSAMLConnection(
     body: IdPConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
     await samlConnection.update(body, this.configStore, this.getConfig.bind(this));
   }
 
   // For backwards compatibility
-  public async updateConfig(...args: Parameters<ConnectionAPIController['updateSAMLConfig']>): Promise<any> {
-    await this.updateSAMLConfig(...args);
+  public async updateConfig(
+    ...args: Parameters<ConnectionAPIController['updateSAMLConnection']>
+  ): Promise<any> {
+    await this.updateSAMLConnection(...args);
   }
   /**
    * @swagger
@@ -335,7 +337,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async updateOIDCConfig(
+  public async updateOIDCConnection(
     body: IdPConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
     await oidcConnection.update(body, this.configStore, this.getConfig.bind(this));

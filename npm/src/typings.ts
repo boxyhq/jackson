@@ -23,8 +23,8 @@ export interface IConnectionAPIController {
   createSAMLConnection(body: IdPConnection): Promise<any>;
   createOIDCConnection(body: IdPConnection): Promise<any>;
   updateConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
-  updateSAMLConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
-  updateOIDCConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  updateSAMLConnection(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  updateOIDCConnection(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
   getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
   deleteConfig(body: {
     clientID?: string;

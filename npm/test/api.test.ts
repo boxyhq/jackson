@@ -389,7 +389,7 @@ tap.test('controller/api', async (t) => {
           body_oidc_provider as IdPConnection
         );
         try {
-          await connectionAPIController.updateOIDCConfig({
+          await connectionAPIController.updateOIDCConnection({
             description: 'A new description',
             clientID: '',
             clientSecret,
@@ -432,7 +432,7 @@ tap.test('controller/api', async (t) => {
           body_oidc_provider as IdPConnection
         );
         try {
-          await connectionAPIController.updateOIDCConfig({
+          await connectionAPIController.updateOIDCConnection({
             description: 'A new description',
             clientID,
             clientSecret: '',
@@ -483,7 +483,7 @@ tap.test('controller/api', async (t) => {
         t.equal(name, 'OIDC Metadata for oidc.example.com');
         t.equal(description, 'OIDC Metadata for oidc.example.com');
 
-        await connectionAPIController.updateOIDCConfig({
+        await connectionAPIController.updateOIDCConnection({
           clientID,
           clientSecret,
           redirectUrl: oidc_config.redirectUrl,

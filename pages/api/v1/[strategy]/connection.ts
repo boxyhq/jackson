@@ -25,10 +25,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.json(await connectionAPIController.getConfig(req.query as any));
     } else if (req.method === 'PATCH') {
       if (strategy === 'saml') {
-        res.status(204).end(await connectionAPIController.updateSAMLConfig(req.body));
+        res.status(204).end(await connectionAPIController.updateSAMLConnection(req.body));
       }
       if (strategy === 'oidc') {
-        res.status(204).end(await connectionAPIController.updateOIDCConfig(req.body));
+        res.status(204).end(await connectionAPIController.updateOIDCConnection(req.body));
       }
     } else if (req.method === 'DELETE') {
       res.status(204).end(await connectionAPIController.deleteConfig(req.body));

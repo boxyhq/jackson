@@ -19,10 +19,10 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     } else if (req.method === 'PATCH') {
       if (strategy === 'saml') {
-        res.status(204).end(await connectionAPIController.updateSAMLConfig(req.body));
+        res.status(204).end(await connectionAPIController.updateSAMLConnection(req.body));
       }
       if (strategy === 'oidc') {
-        res.status(204).end(await connectionAPIController.updateOIDCConfig(req.body));
+        res.status(204).end(await connectionAPIController.updateOIDCConnection(req.body));
       }
     } else {
       throw { message: 'Method not allowed', statusCode: 405 };
