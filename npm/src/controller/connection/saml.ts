@@ -13,7 +13,7 @@ import x509 from '../../saml/x509';
 import { JacksonError } from '../error';
 
 const saml = {
-  create: async (body: IdPConnection, configStore: Storable) => {
+  create: async (body: IdPConnection, connectionStore: Storable) => {
     const {
       encodedRawMetadata,
       rawMetadata,
@@ -73,7 +73,7 @@ const saml = {
     record.idpMetadata = idpMetadata;
     record.certs = certs;
 
-    const exists = await configStore.get(record.clientID);
+    const exists = await connectionStore.get(record.clientID);
 
     if (exists) {
       configClientSecret = exists.clientSecret;
@@ -83,7 +83,7 @@ const saml = {
 
     record.clientSecret = configClientSecret;
 
-    await configStore.put(
+    await connectionStore.put(
       record.clientID,
       record,
       {
@@ -101,7 +101,7 @@ const saml = {
   },
   update: async (
     body: IdPConnection & { clientID: string; clientSecret: string },
-    configStore: Storable,
+    connectionStore: Storable,
     configGetter: IConnectionAPIController['getConfig']
   ) => {
     const {
@@ -174,7 +174,7 @@ const saml = {
       redirectUrl: redirectUrlList ? redirectUrlList : _currentConfig.redirectUrl,
     };
 
-    await configStore.put(
+    await connectionStore.put(
       clientInfo?.clientID,
       record,
       {

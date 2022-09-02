@@ -17,13 +17,13 @@ const relayStatePrefix = 'boxyhq_jackson_';
 const logoutXPath = "/*[local-name(.)='LogoutRequest']";
 
 export class LogoutController {
-  private configStore: Storable;
+  private connectionStore: Storable;
   private sessionStore: Storable;
   private opts: JacksonOption;
 
-  constructor({ configStore, sessionStore, opts }) {
+  constructor({ connectionStore, sessionStore, opts }) {
     this.opts = opts;
-    this.configStore = configStore;
+    this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
   }
 
@@ -32,7 +32,7 @@ export class LogoutController {
     let samlConfig: SAMLConfig | null = null;
 
     if (tenant && product) {
-      const samlConfigs = await this.configStore.getByIndex({
+      const samlConfigs = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
@@ -117,7 +117,7 @@ export class LogoutController {
       throw new JacksonError(`SLO failed with mismatched request ID.`, 400);
     }
 
-    const samlConfigs = await this.configStore.getByIndex({
+    const samlConfigs = await this.connectionStore.getByIndex({
       name: IndexNames.EntityID,
       value: parsedResponse.issuer,
     });

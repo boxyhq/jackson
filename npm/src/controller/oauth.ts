@@ -73,14 +73,14 @@ function getScopeValues(scope?: string): string[] {
 }
 
 export class OAuthController implements IOAuthController {
-  private configStore: Storable;
+  private connectionStore: Storable;
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
   private opts: JacksonOption;
 
-  constructor({ configStore, sessionStore, codeStore, tokenStore, opts }) {
-    this.configStore = configStore;
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, opts }) {
+    this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
@@ -170,7 +170,7 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = requestedScopes.includes('openid');
 
     if (tenant && product) {
-      const connections = await this.configStore.getByIndex({
+      const connections = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
@@ -228,7 +228,7 @@ export class OAuthController implements IOAuthController {
         requestedTenant = sp.tenant;
         requestedProduct = sp.product;
 
-        const connections = await this.configStore.getByIndex({
+        const connections = await this.connectionStore.getByIndex({
           name: IndexNames.TenantProduct,
           value: dbutils.keyFromParts(sp.tenant, sp.product),
         });
@@ -266,7 +266,7 @@ export class OAuthController implements IOAuthController {
           connection = resolvedConnection;
         }
       } else {
-        connection = await this.configStore.get(client_id);
+        connection = await this.connectionStore.get(client_id);
         if (connection) {
           requestedTenant = connection.tenant;
           requestedProduct = connection.product;
@@ -522,7 +522,7 @@ export class OAuthController implements IOAuthController {
     if (!issuer) {
       throw new JacksonError('Issuer not found.', 403);
     }
-    const samlConfigs = await this.configStore.getByIndex({
+    const samlConfigs = await this.connectionStore.getByIndex({
       name: IndexNames.EntityID,
       value: issuer,
     });
@@ -681,7 +681,7 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Unable to validate state from the original request.', 403);
     }
 
-    const oidcConnection = await this.configStore.get(session.id);
+    const oidcConnection = await this.connectionStore.get(session.id);
 
     if (session.redirect_uri && !allowed.redirect(session.redirect_uri, oidcConnection.redirectUrl)) {
       throw new JacksonError('Redirect URL is not allowed.', 403);

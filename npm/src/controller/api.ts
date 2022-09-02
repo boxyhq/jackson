@@ -7,10 +7,10 @@ import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
 export class ConnectionAPIController implements IConnectionAPIController {
-  private configStore: Storable;
+  private connectionStore: Storable;
 
-  constructor({ configStore }) {
-    this.configStore = configStore;
+  constructor({ connectionStore }) {
+    this.connectionStore = connectionStore;
   }
 
   /**
@@ -100,7 +100,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    */
   public async createSAMLConnection(body: IdPConnection): Promise<any> {
     metrics.increment('createConfig');
-    const record = await samlConnection.create(body, this.configStore);
+    const record = await samlConnection.create(body, this.connectionStore);
     return record;
   }
   // For backwards compatibility
@@ -191,7 +191,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    */
   public async createOIDCConnection(body: IdPConnection): Promise<any> {
     metrics.increment('createConfig');
-    const record = await oidcConnection.create(body, this.configStore);
+    const record = await oidcConnection.create(body, this.connectionStore);
     return record;
   }
   /**
@@ -261,7 +261,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async updateSAMLConnection(
     body: IdPConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
-    await samlConnection.update(body, this.configStore, this.getConfig.bind(this));
+    await samlConnection.update(body, this.connectionStore, this.getConfig.bind(this));
   }
 
   // For backwards compatibility
@@ -340,7 +340,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async updateOIDCConnection(
     body: IdPConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
-    await oidcConnection.update(body, this.configStore, this.getConfig.bind(this));
+    await oidcConnection.update(body, this.connectionStore, this.getConfig.bind(this));
   }
   /**
    * @swagger
@@ -420,13 +420,13 @@ export class ConnectionAPIController implements IConnectionAPIController {
     metrics.increment('getConfig');
 
     if (clientID) {
-      const samlConfig = await this.configStore.get(clientID);
+      const samlConfig = await this.connectionStore.get(clientID);
 
       return samlConfig || {};
     }
 
     if (tenant && product) {
-      const samlConfigs = await this.configStore.getByIndex({
+      const samlConfigs = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
@@ -506,14 +506,14 @@ export class ConnectionAPIController implements IConnectionAPIController {
     metrics.increment('deleteConfig');
 
     if (clientID && clientSecret) {
-      const samlConfig = await this.configStore.get(clientID);
+      const samlConfig = await this.connectionStore.get(clientID);
 
       if (!samlConfig) {
         return;
       }
 
       if (samlConfig.clientSecret === clientSecret) {
-        await this.configStore.delete(clientID);
+        await this.connectionStore.delete(clientID);
       } else {
         throw new JacksonError('clientSecret mismatch', 400);
       }
@@ -522,7 +522,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     if (tenant && product) {
-      const samlConfigs = await this.configStore.getByIndex({
+      const samlConfigs = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
@@ -532,7 +532,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       }
 
       for (const conf of samlConfigs) {
-        await this.configStore.delete(conf.clientID);
+        await this.connectionStore.delete(conf.clientID);
       }
 
       return;

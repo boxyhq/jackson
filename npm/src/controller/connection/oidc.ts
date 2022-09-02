@@ -11,7 +11,7 @@ import {
 import { JacksonError } from '../error';
 
 const oidc = {
-  create: async (body: IdPConnection, configStore: Storable) => {
+  create: async (body: IdPConnection, connectionStore: Storable) => {
     const {
       defaultRedirectUrl,
       redirectUrl,
@@ -63,7 +63,7 @@ const oidc = {
     // Use the clientId from the OpenID Provider to generate the clientID hash for the config
     record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, oidcClientId));
 
-    const exists = await configStore.get(record.clientID);
+    const exists = await connectionStore.get(record.clientID);
 
     if (exists) {
       configClientSecret = exists.clientSecret;
@@ -73,7 +73,7 @@ const oidc = {
 
     record.clientSecret = configClientSecret;
 
-    await configStore.put(record.clientID, record, {
+    await connectionStore.put(record.clientID, record, {
       // secondary index on tenant + product
       name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(tenant, product),
@@ -83,7 +83,7 @@ const oidc = {
   },
   update: async (
     body: IdPConnection & { clientID: string; clientSecret: string },
-    configStore: Storable,
+    connectionStore: Storable,
     configGetter: IConnectionAPIController['getConfig']
   ) => {
     const {
@@ -150,7 +150,7 @@ const oidc = {
       oidcProvider: oidcProvider ? oidcProvider : _currentConfig.oidcProvider,
     };
 
-    await configStore.put(clientInfo?.clientID, record, {
+    await connectionStore.put(clientInfo?.clientID, record, {
       // secondary index on tenant + product
       name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product),

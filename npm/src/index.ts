@@ -56,18 +56,18 @@ export const controllers = async (
 
   const db = await DB.new(opts.db);
 
-  const configStore = db.store('saml:config');
+  const connectionStore = db.store('saml:config');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
 
-  const connectionAPIController = new ConnectionAPIController({ configStore });
-  const adminController = new AdminController({ configStore });
+  const connectionAPIController = new ConnectionAPIController({ connectionStore });
+  const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const oauthController = new OAuthController({
-    configStore,
+    connectionStore,
     sessionStore,
     codeStore,
     tokenStore,
@@ -75,7 +75,7 @@ export const controllers = async (
   });
 
   const logoutController = new LogoutController({
-    configStore,
+    connectionStore,
     sessionStore,
     opts,
   });

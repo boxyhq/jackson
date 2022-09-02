@@ -1,14 +1,14 @@
 import { IAdminController, Storable } from '../typings';
 
 export class AdminController implements IAdminController {
-  configStore: Storable;
+  connectionStore: Storable;
 
-  constructor({ configStore }) {
-    this.configStore = configStore;
+  constructor({ connectionStore }) {
+    this.connectionStore = connectionStore;
   }
 
   public async getAllConfig(pageOffset?: number, pageLimit?: number): Promise<Partial<any>[]> {
-    const configList = (await this.configStore.getAll(pageOffset, pageLimit)) as Partial<any>[];
+    const configList = (await this.connectionStore.getAll(pageOffset, pageLimit)) as Partial<any>[];
     if (!configList || !configList.length) {
       return [];
     }
