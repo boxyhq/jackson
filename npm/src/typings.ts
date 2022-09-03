@@ -218,7 +218,7 @@ interface Metadata {
   provider: string;
 }
 
-export interface SAMLConfig {
+export interface SAMLConnection {
   idpMetadata: Metadata;
   certs: {
     privateKey: string;

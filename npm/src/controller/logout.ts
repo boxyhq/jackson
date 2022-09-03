@@ -6,7 +6,7 @@ import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
 
 import saml from '@boxyhq/saml20';
-import { JacksonOption, SAMLConfig, SAMLResponsePayload, SLORequestParams, Storable } from '../typings';
+import { JacksonOption, SAMLConnection, SAMLResponsePayload, SLORequestParams, Storable } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 import { IndexNames } from './utils';
@@ -29,29 +29,29 @@ export class LogoutController {
 
   // Create SLO Request
   public async createRequest({ nameId, tenant, product, redirectUrl }: SLORequestParams) {
-    let samlConfig: SAMLConfig | null = null;
+    let samlConnection: SAMLConnection | null = null;
 
     if (tenant && product) {
-      const samlConfigs = await this.connectionStore.getByIndex({
+      const samlConnections = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!samlConfigs || samlConfigs.length === 0) {
+      if (!samlConnections || samlConnections.length === 0) {
         throw new JacksonError('SAML configuration not found.', 403);
       }
 
-      samlConfig = samlConfigs[0];
+      samlConnection = samlConnections[0];
     }
 
-    if (!samlConfig) {
+    if (!samlConnection) {
       throw new JacksonError('SAML configuration not found.', 403);
     }
 
     const {
       idpMetadata: { slo, provider },
       certs: { privateKey, publicKey },
-    } = samlConfig;
+    } = samlConnection;
 
     if ('redirectUrl' in slo === false && 'postUrl' in slo === false) {
       throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);
@@ -117,16 +117,16 @@ export class LogoutController {
       throw new JacksonError(`SLO failed with mismatched request ID.`, 400);
     }
 
-    const samlConfigs = await this.connectionStore.getByIndex({
+    const samlConnections = await this.connectionStore.getByIndex({
       name: IndexNames.EntityID,
       value: parsedResponse.issuer,
     });
 
-    if (!samlConfigs || samlConfigs.length === 0) {
+    if (!samlConnections || samlConnections.length === 0) {
       throw new JacksonError('SAML configuration not found.', 403);
     }
 
-    const { idpMetadata, defaultRedirectUrl }: SAMLConfig = samlConfigs[0];
+    const { idpMetadata, defaultRedirectUrl }: SAMLConnection = samlConnections[0];
 
     if (!(await saml.validateSignature(rawResponse, null, idpMetadata.thumbprint))) {
       throw new JacksonError('Invalid signature.', 403);
