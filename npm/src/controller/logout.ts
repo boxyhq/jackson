@@ -38,14 +38,14 @@ export class LogoutController {
       });
 
       if (!samlConnections || samlConnections.length === 0) {
-        throw new JacksonError('SAML configuration not found.', 403);
+        throw new JacksonError('SAML connection not found.', 403);
       }
 
       samlConnection = samlConnections[0];
     }
 
     if (!samlConnection) {
-      throw new JacksonError('SAML configuration not found.', 403);
+      throw new JacksonError('SAML connection not found.', 403);
     }
 
     const {
@@ -123,7 +123,7 @@ export class LogoutController {
     });
 
     if (!samlConnections || samlConnections.length === 0) {
-      throw new JacksonError('SAML configuration not found.', 403);
+      throw new JacksonError('SAML connection not found.', 403);
     }
 
     const { idpMetadata, defaultRedirectUrl }: SAMLConnection = samlConnections[0];

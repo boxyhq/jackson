@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw { message: 'Method not allowed', statusCode: 405 };
     }
   } catch (err: any) {
-    console.error('config api error:', err);
+    console.error('connection api error:', err);
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);

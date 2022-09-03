@@ -12,14 +12,12 @@ let oauthController: IOAuthController;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-let configRecords: Array<any> = [];
-
 tap.before(async () => {
   const controller = await (await import('../src/index')).default(options);
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
-  configRecords = await addIdPConnections(metadataPath, connectionAPIController);
+  await addIdPConnections(metadataPath, connectionAPIController);
 });
 
 tap.teardown(async () => {

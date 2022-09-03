@@ -52,7 +52,7 @@ const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-let configRecords: Array<any> = [];
+let connections: Array<any> = [];
 
 tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
@@ -66,7 +66,7 @@ tap.before(async () => {
   oauthController = controller.oauthController;
   idpEnabledConnectionAPIController = idpFlowEnabledController.connectionAPIController;
   idpEnabledOAuthController = idpFlowEnabledController.oauthController;
-  configRecords = await addIdPConnections(
+  connections = await addIdPConnections(
     metadataPath,
     connectionAPIController,
     idpEnabledConnectionAPIController
@@ -420,7 +420,7 @@ tap.test('token()', (t) => {
 
     try {
       const bodyWithUnencodedClientId_InvalidClientSecret =
-        bodyWithUnencodedClientId_InvalidClientSecret_gen(configRecords);
+        bodyWithUnencodedClientId_InvalidClientSecret_gen(connections);
       await oauthController.token(<OAuthTokenReq>bodyWithUnencodedClientId_InvalidClientSecret);
 
       t.fail('Expecting JacksonError.');
@@ -497,7 +497,7 @@ tap.test('token()', (t) => {
 
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
-        const body = token_req_unencoded_client_id_gen(configRecords);
+        const body = token_req_unencoded_client_id_gen(connections);
 
         const tokenRes = await oauthController.token(<OAuthTokenReq>body);
 

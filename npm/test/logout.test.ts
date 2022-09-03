@@ -56,7 +56,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
           tenant: 'invalid-tenant',
         });
       } catch (err: any) {
-        t.equal(err.message, 'SAML configuration not found.');
+        t.equal(err.message, 'SAML connection not found.');
         t.equal(err.statusCode, 403);
       }
 
@@ -66,7 +66,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
           product: 'invalid-product',
         });
       } catch (err: any) {
-        t.equal(err.message, 'SAML configuration not found.');
+        t.equal(err.message, 'SAML connection not found.');
         t.equal(err.statusCode, 403);
       }
 
@@ -77,7 +77,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
           product: '',
         });
       } catch (err: any) {
-        t.equal(err.message, 'SAML configuration not found.');
+        t.equal(err.message, 'SAML connection not found.');
         t.equal(err.statusCode, 403);
       }
 

@@ -9,19 +9,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET') {
       const { slug, pageOffset, pageLimit } = req.query;
       if (slug?.[0]) {
-        res.json(await connectionAPIController.getConfig({ clientID: slug[0] }));
+        res.json(await connectionAPIController.getConnection({ clientID: slug[0] }));
       } else {
         res.json(
           await adminController.getAllConnection(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
         );
       }
     } else if (req.method === 'DELETE') {
-      res.status(204).end(await connectionAPIController.deleteConfig(req.body));
+      res.status(204).end(await connectionAPIController.deleteConnection(req.body));
     } else {
       throw { message: 'Method not allowed', statusCode: 405 };
     }
   } catch (err: any) {
-    console.error('config api error:', err);
+    console.error('connection api error:', err);
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);
