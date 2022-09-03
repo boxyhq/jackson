@@ -99,7 +99,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         description: Unauthorized
    */
   public async createSAMLConnection(body: IdPConnection): Promise<any> {
-    metrics.increment('createConfig');
+    metrics.increment('createConnection');
     const record = await samlConnection.create(body, this.connectionStore);
     return record;
   }
@@ -190,7 +190,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         description: Unauthorized
    */
   public async createOIDCConnection(body: IdPConnection): Promise<any> {
-    metrics.increment('createConfig');
+    metrics.increment('createConnection');
     const record = await oidcConnection.create(body, this.connectionStore);
     return record;
   }
@@ -430,7 +430,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async getConnection(body: { clientID: string; tenant: string; product: string }): Promise<any> {
     const { clientID, tenant, product } = body;
 
-    metrics.increment('getConfig');
+    metrics.increment('getConnection');
 
     if (clientID) {
       const samlConfig = await this.connectionStore.get(clientID);
@@ -526,7 +526,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }): Promise<void> {
     const { clientID, clientSecret, tenant, product } = body;
 
-    metrics.increment('deleteConfig');
+    metrics.increment('deleteConnection');
 
     if (clientID && clientSecret) {
       const samlConfig = await this.connectionStore.get(clientID);

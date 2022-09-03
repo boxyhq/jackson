@@ -1,19 +1,19 @@
 import { metrics } from '@opentelemetry/api-metrics';
 
 const counters = {
-  createConfig: {
-    name: 'jackson.config.create',
-    description: 'Number of SAML config create requests',
+  createConnection: {
+    name: 'jackson.connection.create',
+    description: 'Number of SAML connection create requests',
   },
 
-  getConfig: {
-    name: 'jackson.config.get',
-    description: 'Number of SAML config get requests',
+  getConnection: {
+    name: 'jackson.connection.get',
+    description: 'Number of SAML connection get requests',
   },
 
-  deleteConfig: {
-    name: 'jackson.config.delete',
-    description: 'Number of SAML config delete requests',
+  deleteConnection: {
+    name: 'jackson.connection.delete',
+    description: 'Number of SAML connection delete requests',
   },
 
   oauthAuthorize: {
