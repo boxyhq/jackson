@@ -25,7 +25,7 @@ const saml = {
       description,
     } = body;
 
-    let configClientSecret;
+    let connectionClientSecret;
 
     validateIdPConnection(body, 'saml');
     const redirectUrlList = extractRedirectUrls(redirectUrl);
@@ -76,12 +76,12 @@ const saml = {
     const exists = await connectionStore.get(record.clientID);
 
     if (exists) {
-      configClientSecret = exists.clientSecret;
+      connectionClientSecret = exists.clientSecret;
     } else {
-      configClientSecret = crypto.randomBytes(24).toString('hex');
+      connectionClientSecret = crypto.randomBytes(24).toString('hex');
     }
 
-    record.clientSecret = configClientSecret;
+    record.clientSecret = connectionClientSecret;
 
     await connectionStore.put(
       record.clientID,
@@ -102,7 +102,7 @@ const saml = {
   update: async (
     body: IdPConnection & { clientID: string; clientSecret: string },
     connectionStore: Storable,
-    configGetter: IConnectionAPIController['getConfig']
+    connectionGetter: IConnectionAPIController['getConnection']
   ) => {
     const {
       encodedRawMetadata, // could be empty
@@ -131,9 +131,9 @@ const saml = {
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const _currentConfig = await configGetter(clientInfo);
+    const _savedConnection = await connectionGetter(clientInfo);
 
-    if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
+    if (_savedConnection.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
     }
 
@@ -166,12 +166,12 @@ const saml = {
     }
 
     const record = {
-      ..._currentConfig,
-      name: name ? name : _currentConfig.name,
-      description: description ? description : _currentConfig.description,
-      idpMetadata: newMetadata ? newMetadata : _currentConfig.idpMetadata,
-      defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
-      redirectUrl: redirectUrlList ? redirectUrlList : _currentConfig.redirectUrl,
+      ..._savedConnection,
+      name: name ? name : _savedConnection.name,
+      description: description ? description : _savedConnection.description,
+      idpMetadata: newMetadata ? newMetadata : _savedConnection.idpMetadata,
+      defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
+      redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
     };
 
     await connectionStore.put(
@@ -180,12 +180,12 @@ const saml = {
       {
         // secondary index on entityID
         name: IndexNames.EntityID,
-        value: _currentConfig.idpMetadata.entityID,
+        value: _savedConnection.idpMetadata.entityID,
       },
       {
         // secondary index on tenant + product
         name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product),
+        value: dbutils.keyFromParts(_savedConnection.tenant, _savedConnection.product),
       }
     );
   },

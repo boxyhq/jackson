@@ -209,7 +209,7 @@ export class OAuthController implements IOAuthController {
         connection = resolvedConnection;
       }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
-      // if tenant and product are encoded in the client_id then we parse it and check for the relevant config(s)
+      // if tenant and product are encoded in the client_id then we parse it and check for the relevant connection(s)
       let sp = getEncodedTenantProduct(client_id);
 
       if (!sp && access_type) {
@@ -522,21 +522,21 @@ export class OAuthController implements IOAuthController {
     if (!issuer) {
       throw new JacksonError('Issuer not found.', 403);
     }
-    const samlConfigs = await this.connectionStore.getByIndex({
+    const samlConnections = await this.connectionStore.getByIndex({
       name: IndexNames.EntityID,
       value: issuer,
     });
 
-    if (!samlConfigs || samlConfigs.length === 0) {
-      throw new JacksonError('SAML configuration not found.', 403);
+    if (!samlConnections || samlConnections.length === 0) {
+      throw new JacksonError('SAML connection not found.', 403);
     }
 
-    let samlConfig = samlConfigs[0];
+    let samlConnection = samlConnections[0];
 
     if (isIdPFlow) {
       RelayState = '';
       const { resolvedConnection, app_select_form } = this.resolveMultipleConnectionMatches(
-        samlConfigs,
+        samlConnections,
         idp_hint,
         { SAMLResponse },
         true
@@ -545,7 +545,7 @@ export class OAuthController implements IOAuthController {
         return { app_select_form };
       }
       if (resolvedConnection) {
-        samlConfig = resolvedConnection;
+        samlConnection = resolvedConnection;
       }
     }
 
@@ -559,10 +559,10 @@ export class OAuthController implements IOAuthController {
     }
     if (!isIdPFlow) {
       // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
-      samlConfig =
-        samlConfigs.length === 1
-          ? samlConfigs[0]
-          : samlConfigs.filter((c) => {
+      samlConnection =
+        samlConnections.length === 1
+          ? samlConnections[0]
+          : samlConnections.filter((c) => {
               return (
                 c.clientID === session?.requested?.client_id ||
                 (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
@@ -570,17 +570,21 @@ export class OAuthController implements IOAuthController {
             })[0];
     }
 
-    if (!samlConfig) {
-      throw new JacksonError('SAML configuration not found.', 403);
+    if (!samlConnection) {
+      throw new JacksonError('SAML connection not found.', 403);
     }
 
     const validateOpts: Record<string, string> = {
-      thumbprint: samlConfig.idpMetadata.thumbprint,
+      thumbprint: samlConnection.idpMetadata.thumbprint,
       audience: this.opts.samlAudience!,
-      privateKey: samlConfig.certs.privateKey,
+      privateKey: samlConnection.certs.privateKey,
     };
 
-    if (session && session.redirect_uri && !allowed.redirect(session.redirect_uri, samlConfig.redirectUrl)) {
+    if (
+      session &&
+      session.redirect_uri &&
+      !allowed.redirect(session.redirect_uri, samlConnection.redirectUrl)
+    ) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
@@ -589,7 +593,7 @@ export class OAuthController implements IOAuthController {
     }
 
     let profile;
-    const redirect_uri = (session && session.redirect_uri) || samlConfig.defaultRedirectUrl;
+    const redirect_uri = (session && session.redirect_uri) || samlConnection.defaultRedirectUrl;
     try {
       profile = await validateSAMLResponse(rawResponse, validateOpts);
     } catch (err: unknown) {
@@ -608,8 +612,8 @@ export class OAuthController implements IOAuthController {
 
     const codeVal: Record<string, unknown> = {
       profile,
-      clientID: samlConfig.clientID,
-      clientSecret: samlConfig.clientSecret,
+      clientID: samlConnection.clientID,
+      clientSecret: samlConnection.clientSecret,
       requested: session?.requested,
     };
 

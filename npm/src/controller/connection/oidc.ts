@@ -24,7 +24,7 @@ const oidc = {
       oidcClientSecret = '',
     } = body;
 
-    let configClientSecret;
+    let connectionClientSecret;
 
     validateIdPConnection(body, 'oidc');
     const redirectUrlList = extractRedirectUrls(redirectUrl);
@@ -60,18 +60,18 @@ const oidc = {
     const providerName = extractHostName(oidcDiscoveryUrl);
     record.oidcProvider.provider = providerName ? providerName : 'Unknown';
 
-    // Use the clientId from the OpenID Provider to generate the clientID hash for the config
+    // Use the clientId from the OpenID Provider to generate the clientID hash for the connection
     record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, oidcClientId));
 
     const exists = await connectionStore.get(record.clientID);
 
     if (exists) {
-      configClientSecret = exists.clientSecret;
+      connectionClientSecret = exists.clientSecret;
     } else {
-      configClientSecret = crypto.randomBytes(24).toString('hex');
+      connectionClientSecret = crypto.randomBytes(24).toString('hex');
     }
 
-    record.clientSecret = configClientSecret;
+    record.clientSecret = connectionClientSecret;
 
     await connectionStore.put(record.clientID, record, {
       // secondary index on tenant + product
@@ -84,7 +84,7 @@ const oidc = {
   update: async (
     body: IdPConnection & { clientID: string; clientSecret: string },
     connectionStore: Storable,
-    configGetter: IConnectionAPIController['getConfig']
+    connectionGetter: IConnectionAPIController['getConnection']
   ) => {
     const {
       defaultRedirectUrl,
@@ -114,15 +114,15 @@ const oidc = {
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const _currentConfig = await configGetter(clientInfo);
+    const _savedConnection = await connectionGetter(clientInfo);
 
-    if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
+    if (_savedConnection.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
     }
 
     let oidcProvider;
-    if (_currentConfig && typeof _currentConfig.oidcProvider === 'object') {
-      oidcProvider = { ..._currentConfig.oidcProvider };
+    if (_savedConnection && typeof _savedConnection.oidcProvider === 'object') {
+      oidcProvider = { ..._savedConnection.oidcProvider };
       if (oidcClientId && typeof oidcClientId === 'string') {
         const clientID = dbutils.keyDigest(
           dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, oidcClientId)
@@ -142,18 +142,18 @@ const oidc = {
     }
 
     const record = {
-      ..._currentConfig,
-      name: name ? name : _currentConfig.name,
-      description: description ? description : _currentConfig.description,
-      defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
-      redirectUrl: redirectUrlList ? redirectUrlList : _currentConfig.redirectUrl,
-      oidcProvider: oidcProvider ? oidcProvider : _currentConfig.oidcProvider,
+      ..._savedConnection,
+      name: name ? name : _savedConnection.name,
+      description: description ? description : _savedConnection.description,
+      defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
+      redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
+      oidcProvider: oidcProvider ? oidcProvider : _savedConnection.oidcProvider,
     };
 
     await connectionStore.put(clientInfo?.clientID, record, {
       // secondary index on tenant + product
       name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product),
+      value: dbutils.keyFromParts(_savedConnection.tenant, _savedConnection.product),
     });
   },
 };
