@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import tap from 'tap';
 import { IConnectionAPIController, ILogoutController, JacksonOption } from '../src/typings';
 import { relayStatePrefix } from '../src/controller/utils';
-import { saml_config } from './fixture';
+import { saml_connection } from './fixture';
 import { addIdPConnections } from './setup';
 
 let connectionAPIController: IConnectionAPIController;
@@ -43,9 +43,9 @@ tap.teardown(async () => {
 tap.test('LogoutController -> createRequest', async (t) => {
   const body = {
     nameId: 'google-oauth2|146623609101108149256',
-    tenant: saml_config.tenant,
-    product: saml_config.product,
-    redirectUrl: saml_config.defaultRedirectUrl,
+    tenant: saml_connection.tenant,
+    product: saml_connection.product,
+    redirectUrl: saml_connection.defaultRedirectUrl,
   };
 
   t.test('createRequest', async (t) => {
@@ -193,7 +193,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
       });
 
       t.ok('redirectUrl' in result);
-      t.match(result.redirectUrl, saml_config.defaultRedirectUrl);
+      t.match(result.redirectUrl, saml_connection.defaultRedirectUrl);
 
       t.end();
     });

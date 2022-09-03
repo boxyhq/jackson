@@ -138,13 +138,13 @@ export const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 //unencoded clientId with wrong secret
-export const bodyWithUnencodedClientId_InvalidClientSecret_gen = (configRecords) => {
-  const configRecord = configRecords.find(
+export const bodyWithUnencodedClientId_InvalidClientSecret_gen = (connectionRecords) => {
+  const connectionRecord = connectionRecords.find(
     (record) => `tenant=${record.tenant}&product=${record.product}` === authz_request_normal.client_id
   );
   return {
     grant_type: 'authorization_code',
-    client_id: configRecord.clientID,
+    client_id: connectionRecord.clientID,
     client_secret: 'dummy',
     code: CODE,
     redirect_uri: boxyhq.defaultRedirectUrl,
@@ -167,14 +167,14 @@ export const token_req_encoded_client_id: Partial<OAuthTokenReq> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
-export const token_req_unencoded_client_id_gen = (configRecords) => {
-  const configRecord = configRecords.find(
+export const token_req_unencoded_client_id_gen = (connectionRecords) => {
+  const connectionRecord = connectionRecords.find(
     (record) => `tenant=${record.tenant}&product=${record.product}` === authz_request_normal.client_id
   );
   return {
     grant_type: 'authorization_code',
-    client_id: configRecord.clientID,
-    client_secret: configRecord.clientSecret,
+    client_id: connectionRecord.clientID,
+    client_secret: connectionRecord.clientSecret,
     code: CODE,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
@@ -200,6 +200,6 @@ export const token_req_with_cv = {
 };
 // END: Fixtures for token
 
-// BEGIN: Fixtures for api.test.ts
-export const saml_config = boxyhq;
-export const oidc_config = exampleOidc;
+// BEGIN: Fixtures for *_api.test.ts
+export const saml_connection = boxyhq;
+export const oidc_connection = exampleOidc;
