@@ -8,10 +8,10 @@ export class AdminController implements IAdminController {
   }
 
   public async getAllConnection(pageOffset?: number, pageLimit?: number): Promise<Partial<any>[]> {
-    const configList = (await this.connectionStore.getAll(pageOffset, pageLimit)) as Partial<any>[];
-    if (!configList || !configList.length) {
+    const connectionList = (await this.connectionStore.getAll(pageOffset, pageLimit)) as Partial<any>[];
+    if (!connectionList || !connectionList.length) {
       return [];
     }
-    return configList;
+    return connectionList;
   }
 }
