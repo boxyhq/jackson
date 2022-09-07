@@ -42,7 +42,7 @@
     "@opentelemetry/api": "1.0.4",
     "@opentelemetry/api-metrics": "0.27.0",
     "@peculiar/webcrypto": "1.4.0",
-    "@peculiar/x509": "1.8.2",
+    "@peculiar/x509": "1.8.3",
     "jose": "4.9.0",
     "marked": "4.0.19",
     "mongodb": "4.9.0",
