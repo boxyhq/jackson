@@ -219,3 +219,16 @@ export interface OAuthErrorHandlerParams {
   redirect_uri: string;
   state?: string;
 }
+
+export interface ISPSAMLConfig {
+  get(): {
+    acsUrl: string;
+    entityId: string;
+    response: string;
+    assertionSignature: string;
+    signatureAlgorithm: string;
+    assertionEncryption: string;
+  };
+  toMarkdown(): string;
+  toHTML(): string;
+}
