@@ -1,3 +1,5 @@
+import { ApiError } from '../typings';
+
 export class JacksonError extends Error {
   public name: string;
   public statusCode: number;
@@ -11,3 +13,9 @@ export class JacksonError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+
+export const apiError = (err: any) => {
+  const { message, statusCode = 500 } = err;
+
+  return { data: null, error: { message, code: statusCode } as ApiError };
+};

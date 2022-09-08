@@ -3,10 +3,11 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import sinon from 'sinon';
 import tap from 'tap';
-import readConfig from '../src/read-config';
-import { IAPIController, ILogoutController, JacksonOption } from '../src/typings';
-import { relayStatePrefix } from '../src/controller/utils';
+import readConfig from '../../src/read-config';
+import { IAPIController, ILogoutController, JacksonOption } from '../../src/typings';
+import { relayStatePrefix } from '../../src/controller/utils';
 import { saml_config } from './fixture';
+import { getDatabaseOption } from '../utils';
 
 let apiController: IAPIController;
 let logoutController: ILogoutController;
@@ -36,7 +37,7 @@ const addMetadata = async (metadataPath) => {
 };
 
 tap.before(async () => {
-  const controller = await (await import('../src/index')).default(options);
+  const controller = await (await import('../../src/index')).default(getDatabaseOption());
 
   apiController = controller.apiController;
   logoutController = controller.logoutController;

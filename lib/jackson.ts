@@ -1,13 +1,23 @@
-import jackson, {
+import type {
   IAdminController,
   IAPIController,
   IdPConfig,
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
+  DirectorySync,
+  DirectoryType,
+  Directory,
+  User,
+  Group,
+  DirectorySyncEvent,
+  HTTPMethod,
+  DirectorySyncRequest,
   IOidcDiscoveryController,
   ISPSAMLConfig,
 } from '@boxyhq/saml-jackson';
+
+import jackson from '@boxyhq/saml-jackson';
 import env from '@lib/env';
 import '@lib/metrics';
 
@@ -16,6 +26,7 @@ let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
+let directorySyncController: DirectorySync;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 
@@ -28,6 +39,7 @@ export default async function init() {
     !g.adminController ||
     !g.healthCheckController ||
     !g.logoutController ||
+    !g.directorySync ||
     !g.oidcDiscoveryController ||
     !g.spConfig
   ) {
@@ -37,6 +49,7 @@ export default async function init() {
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
+    directorySyncController = ret.directorySync;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
 
@@ -45,6 +58,7 @@ export default async function init() {
     g.adminController = adminController;
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
+    g.directorySync = directorySyncController;
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
     g.isJacksonReady = true;
@@ -54,6 +68,7 @@ export default async function init() {
     adminController = g.adminController;
     logoutController = g.logoutController;
     healthCheckController = g.healthCheckController;
+    directorySyncController = g.directorySync;
     oidcDiscoveryController = g.oidcDiscoveryController;
     spConfig = g.spConfig;
   }
@@ -65,8 +80,18 @@ export default async function init() {
     adminController,
     logoutController,
     healthCheckController,
+    directorySyncController,
     oidcDiscoveryController,
   };
 }
 
-export type { IdPConfig };
+export type {
+  IdPConfig,
+  DirectoryType,
+  Directory,
+  User,
+  Group,
+  DirectorySyncEvent,
+  HTTPMethod,
+  DirectorySyncRequest,
+};

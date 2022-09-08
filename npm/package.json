@@ -42,6 +42,7 @@
     "@opentelemetry/api": "1.0.4",
     "@opentelemetry/api-metrics": "0.27.0",
     "@peculiar/webcrypto": "1.4.0",
+    "axios": "^0.27.2",
     "@peculiar/x509": "1.8.3",
     "jose": "4.9.2",
     "marked": "4.1.0",
@@ -56,6 +57,7 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "7.2.0",
     "@types/node": "18.7.16",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",

@@ -1,4 +1,4 @@
-import { OAuthReqBody, OAuthTokenReq } from '../src';
+import { OAuthReqBody, OAuthTokenReq } from '../../src';
 import boxyhq from './data/metadata/boxyhq';
 import boxyhqNobinding from './data/metadata/boxyhq-nobinding';
 

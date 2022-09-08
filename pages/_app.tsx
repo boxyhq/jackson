@@ -1,6 +1,7 @@
 import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { Toaster } from 'react-hot-toast';
 
 import { AccountLayout } from '@components/layouts';
 
@@ -17,6 +18,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     <SessionProvider session={session}>
       <AccountLayout>
         <Component {...pageProps} />
+        <Toaster />
       </AccountLayout>
     </SessionProvider>
   );

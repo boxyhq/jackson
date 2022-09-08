@@ -1,15 +1,17 @@
+import type { DirectorySync, JacksonOption } from './typings';
+
+import DB from './db/db';
+import defaultDb from './db/defaultDb';
+import readConfig from './read-config';
+
 import { AdminController } from './controller/admin';
 import { APIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
+import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
-
-import DB from './db/db';
-import defaultDb from './db/defaultDb';
-import readConfig from './read-config';
-import { JacksonOption } from './typings';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -23,6 +25,8 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   if (!newOpts.samlPath) {
     throw new Error('samlPath is required');
   }
+
+  newOpts.scimPath = newOpts.scimPath || '/api/scim/v2.0';
 
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
@@ -46,6 +50,7 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
+  directorySync: DirectorySync;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
 }> => {
@@ -63,6 +68,7 @@ export const controllers = async (
   const adminController = new AdminController({ configStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
+
   const oauthController = new OAuthController({
     configStore,
     sessionStore,
@@ -76,6 +82,8 @@ export const controllers = async (
     sessionStore,
     opts,
   });
+
+  const directorySync = await initDirectorySync({ db, opts });
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
 
@@ -103,6 +111,7 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
+    directorySync,
     oidcDiscoveryController,
   };
 };
