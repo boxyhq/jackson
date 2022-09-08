@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { InformationCircleIcon } from '@heroicons/react/outline';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 const EmptyState = ({ title, href, className }: { title: string; href?: string; className?: string }) => {
   return (

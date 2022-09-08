@@ -11,6 +11,7 @@ import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
 import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
+import { SPSAMLConfig } from './controller/sp-config';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -51,6 +52,7 @@ export const controllers = async (
   healthCheckController: HealthCheckController;
   directorySync: DirectorySync;
   oidcDiscoveryController: OidcDiscoveryController;
+  spConfig: SPSAMLConfig;
 }> => {
   opts = defaultOpts(opts);
 
@@ -84,6 +86,9 @@ export const controllers = async (
   const directorySync = await initDirectorySync({ db, opts });
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
+
+  const spConfig = new SPSAMLConfig(opts);
+
   // write pre-loaded config if present
   if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
     const configs = await readConfig(opts.preLoadedConfig);
@@ -100,6 +105,7 @@ export const controllers = async (
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
+    spConfig,
     apiController,
     oauthController,
     adminController,

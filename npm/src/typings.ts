@@ -5,8 +5,8 @@ export type IdPConfig = {
   redirectUrl: string[] | string;
   tenant: string;
   product: string;
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
   rawMetadata?: string;
   encodedRawMetadata?: string;
 };
@@ -94,6 +94,7 @@ export interface OAuthTokenReq {
   code_verifier: string;
   code: string;
   grant_type: 'authorization_code';
+  redirect_uri?: string;
 }
 
 export interface OAuthTokenRes {
@@ -223,6 +224,19 @@ export interface OAuthErrorHandlerParams {
   error_description: string;
   redirect_uri: string;
   state?: string;
+}
+
+export interface ISPSAMLConfig {
+  get(): {
+    acsUrl: string;
+    entityId: string;
+    response: string;
+    assertionSignature: string;
+    signatureAlgorithm: string;
+    assertionEncryption: string;
+  };
+  toMarkdown(): string;
+  toHTML(): string;
 }
 
 export type DirectorySyncEventType =

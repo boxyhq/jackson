@@ -14,6 +14,7 @@ import type {
   HTTPMethod,
   DirectorySyncRequest,
   IOidcDiscoveryController,
+  ISPSAMLConfig,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -27,6 +28,7 @@ let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
 let directorySyncController: DirectorySync;
 let oidcDiscoveryController: IOidcDiscoveryController;
+let spConfig: ISPSAMLConfig;
 
 const g = global as any;
 
@@ -38,7 +40,8 @@ export default async function init() {
     !g.healthCheckController ||
     !g.logoutController ||
     !g.directorySync ||
-    !g.oidcDiscoveryController
+    !g.oidcDiscoveryController ||
+    !g.spConfig
   ) {
     const ret = await jackson(env);
     apiController = ret.apiController;
@@ -48,6 +51,7 @@ export default async function init() {
     healthCheckController = ret.healthCheckController;
     directorySyncController = ret.directorySync;
     oidcDiscoveryController = ret.oidcDiscoveryController;
+    spConfig = ret.spConfig;
 
     g.apiController = apiController;
     g.oauthController = oauthController;
@@ -56,6 +60,7 @@ export default async function init() {
     g.healthCheckController = healthCheckController;
     g.directorySync = directorySyncController;
     g.oidcDiscoveryController = oidcDiscoveryController;
+    g.spConfig = spConfig;
     g.isJacksonReady = true;
   } else {
     apiController = g.apiController;
@@ -65,9 +70,11 @@ export default async function init() {
     healthCheckController = g.healthCheckController;
     directorySyncController = g.directorySync;
     oidcDiscoveryController = g.oidcDiscoveryController;
+    spConfig = g.spConfig;
   }
 
   return {
+    spConfig,
     apiController,
     oauthController,
     adminController,
