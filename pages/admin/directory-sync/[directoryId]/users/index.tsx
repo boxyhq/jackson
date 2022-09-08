@@ -1,6 +1,6 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
-import { EyeIcon } from '@heroicons/react/outline';
+import { EyeIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 import { inferSSRProps } from '@lib/inferSSRProps';

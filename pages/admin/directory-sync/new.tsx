@@ -3,7 +3,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { ArrowLeftIcon } from '@heroicons/react/outline';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 
 import jackson from '@lib/jackson';

@@ -1,6 +1,6 @@
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { PencilAltIcon, DatabaseIcon } from '@heroicons/react/outline';
+import { PencilIcon, CircleStackIcon } from '@heroicons/react/24/outline';
 
 import jackson from '@lib/jackson';
 import EmptyState from '@components/EmptyState';
@@ -61,12 +61,12 @@ const Index = ({
                         <div className='flex flex-row'>
                           <Link href={`/admin/directory-sync/${directory.id}`}>
                             <a className='link-primary'>
-                              <DatabaseIcon className='h-5 w-5 text-secondary' />
+                              <CircleStackIcon className='h-5 w-5 text-secondary' />
                             </a>
                           </Link>
                           <Link href={`/admin/directory-sync/${directory.id}/edit`}>
                             <a className='link-primary'>
-                              <PencilAltIcon className='h-5 w-5 text-secondary' />
+                              <PencilIcon className='h-5 w-5 text-secondary' />
                             </a>
                           </Link>
                         </div>
