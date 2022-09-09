@@ -1,6 +1,6 @@
-import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable } from '../src/typings';
+import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable } from '../../src/typings';
 import tap from 'tap';
-import DB from '../src/db/db';
+import DB from '../../src/db/db';
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
