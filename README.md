@@ -27,6 +27,14 @@ You can also try our hosted demo showcasing the SAML IdP login flow [here](https
 
 For full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
 
+## Directory Sync
+
+SAML Jackson also includes support for Directory Sync based on the SCIM 2.0 protocol.
+
+Directory sync helps organizations automate the provisioning and de-provisioning of their users. As a result, it streamlines the user lifecycle management process by saving valuable organizational hours, creating a single truth source of the user identity data, and facilitating them to keep the data secure.
+
+For full documentation, visit [boxyhq.com/docs/directory-sync/overview](https://boxyhq.com/docs/directory-sync/overview)
+
 ## Source code visualizer
 
 [CodeSee codebase visualizer](https://app.codesee.io/maps/public/53e91640-23b5-11ec-a724-79d7dd589517)
