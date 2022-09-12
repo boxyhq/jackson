@@ -34,7 +34,7 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
     <>
       {viewerToken && (
         <RetracedEventsBrowser
-          host={`${env.retraced.host}/viewer/v1`}
+          host={`${env.retraced.uiHost}/viewer/v1`}
           auditLogToken={viewerToken}
           header='Audit Logs'
           customClass={'text-primary dark:text-white'}

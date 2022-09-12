@@ -26,7 +26,7 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   const retraced = new Retraced.Client({
     apiKey: token as string,
     projectId: projectId as string,
-    endpoint: env.retraced.host,
+    endpoint: env.retraced.apiHost,
   });
   const reqIp = requestIp.getClientIp(req);
   const ip = reqIp == '::1' ? '127.0.0.1' : reqIp;

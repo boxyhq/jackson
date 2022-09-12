@@ -10,7 +10,7 @@ const ProjectDetails = (props: { project: Project }) => {
   const { project } = props;
   const { environments, tokens } = project;
 
-  const baseUrl = `${env.retraced.host}/publisher/v1/project/${project.id}`;
+  const baseUrl = `${env.retraced.uiHost}/publisher/v1/project/${project.id}`;
 
   return (
     <>

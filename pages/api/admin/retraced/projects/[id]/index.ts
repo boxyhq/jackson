@@ -25,7 +25,7 @@ const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query;
 
-  const { data } = await axios.get<{ project: Project }>(`${env.retraced.host}/admin/v1/project/${id}`, {
+  const { data } = await axios.get<{ project: Project }>(`${env.retraced.apiHost}/admin/v1/project/${id}`, {
     headers: {
       Authorization: `id=${token.id} token=${token.token}`,
     },

@@ -25,7 +25,7 @@ const getGroups = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id: projectId, environmentId } = req.query;
 
   const { data } = await axios.get(
-    `${env.retraced.host}/admin/v1/project/${projectId}/groups?environment_id=${environmentId}`,
+    `${env.retraced.apiHost}/admin/v1/project/${projectId}/groups?environment_id=${environmentId}`,
     {
       headers: {
         Authorization: `id=${token.id} token=${token.token}`,

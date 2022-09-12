@@ -42,7 +42,8 @@ const openid = { jwsAlg, jwtSigningKeys };
 
 // Retraced
 const retraced = {
-  host: process.env.NEXT_PUBLIC_RETRACED_HOST || 'http://localhost:3000/auditlog',
+  apiHost: process.env.RETRACED_HOST || 'http://localhost:3000/auditlog',
+  uiHost: process.env.NEXT_PUBLIC_RETRACED_HOST || 'http://localhost:3000/auditlog',
 };
 
 const config = {

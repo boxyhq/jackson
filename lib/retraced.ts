@@ -7,7 +7,7 @@ import env from './env';
 
 export const getToken = async (): Promise<AdminToken> => {
   const { data } = await axios.post<{ adminToken: AdminToken }>(
-    `${env.retraced.host}/admin/v1/user/_login`,
+    `${env.retraced.apiHost}/admin/v1/user/_login`,
     {
       claims: {
         upstreamToken: 'ADMIN_ROOT_TOKEN',

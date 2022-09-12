@@ -15,7 +15,7 @@ WORKDIR /app
 COPY . .
 COPY --from=deps /app/npm ./npm
 COPY --from=deps /app/node_modules ./node_modules
-RUN npm run build && npm install --legacy-peer-deps --production --ignore-scripts --prefer-offline
+RUN npm install --legacy-peer-deps --production --ignore-scripts --prefer-offline && npm link retraced-logs-viewer --legacy-peer-deps && npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
