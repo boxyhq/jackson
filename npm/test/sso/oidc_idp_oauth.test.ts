@@ -1,10 +1,10 @@
 import sinon from 'sinon';
 import tap from 'tap';
 import { generators, Issuer } from 'openid-client';
-import { IConnectionAPIController, IOAuthController, OAuthReqBody } from '../src/typings';
+import { IConnectionAPIController, IOAuthController, OAuthReqBody } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
-import { JacksonError } from '../src/controller/error';
-import { addIdPConnections, options } from './setup';
+import { JacksonError } from '../../src/controller/error';
+import { addIdPConnections, databaseOptions } from '../utils';
 import path from 'path';
 
 let connectionAPIController: IConnectionAPIController;
@@ -13,7 +13,7 @@ let oauthController: IOAuthController;
 const metadataPath = path.join(__dirname, '/data/metadata');
 
 tap.before(async () => {
-  const controller = await (await import('../src/index')).default(options);
+  const controller = await (await import('../../src/index')).default(databaseOptions);
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
@@ -128,7 +128,7 @@ tap.test('[OIDCProvider]', async (t) => {
       });
       t.ok(
         fakeCb.calledWithMatch(
-          options.externalUrl + options.oidcPath,
+          databaseOptions.externalUrl + databaseOptions.oidcPath,
           { code: oidc_response.code },
           { code_verifier: context.codeVerifier }
         )

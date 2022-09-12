@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { promises as fs } from 'fs';
-import * as utils from '../src/controller/utils';
+import * as utils from '../../src/controller/utils';
 import path from 'path';
 import {
   IOAuthController,
@@ -8,10 +8,10 @@ import {
   OAuthReqBody,
   OAuthTokenReq,
   SAMLResponsePayload,
-} from '../src/typings';
+} from '../../src/typings';
 import sinon from 'sinon';
 import tap from 'tap';
-import { JacksonError } from '../src/controller/error';
+import { JacksonError } from '../../src/controller/error';
 import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
@@ -39,7 +39,7 @@ import {
   token_req_unencoded_client_id_gen,
   token_req_with_cv,
 } from './fixture';
-import { addIdPConnections, options } from './setup';
+import { addIdPConnections, databaseOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
@@ -57,10 +57,10 @@ let connections: Array<any> = [];
 tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
 
-  const controller = await (await import('../src/index')).default(options);
+  const controller = await (await import('../../src/index')).default(databaseOptions);
   const idpFlowEnabledController = await (
-    await import('../src/index')
-  ).default({ ...options, idpEnabled: true });
+    await import('../../src/index')
+  ).default({ ...databaseOptions, idpEnabled: true });
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
@@ -566,9 +566,9 @@ tap.test('token()', (t) => {
         if (tokenRes.id_token) {
           const claims = jose.decodeJwt(tokenRes.id_token);
           const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
-          t.match(protectedHeader.alg, options.openid.jwsAlg);
+          t.match(protectedHeader.alg, databaseOptions.openid.jwsAlg);
           t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
-          t.match(claims.iss, options.samlAudience);
+          t.match(claims.iss, databaseOptions.samlAudience);
         }
         t.match(tokenRes.access_token, token);
         t.match(tokenRes.token_type, 'bearer');

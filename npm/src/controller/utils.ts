@@ -1,6 +1,7 @@
 import type { connectionType, IdPConnection, OAuthErrorHandlerParams } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
+import crypto from 'crypto';
 import * as jose from 'jose';
 
 export enum IndexNames {
@@ -8,6 +9,20 @@ export enum IndexNames {
   TenantProduct = 'tenantProduct',
   OIDCProviderClientID = 'OIDCProviderClientID',
 }
+
+// The namespace prefix for the database store
+export const storeNamespacePrefix = {
+  dsync: {
+    config: 'dsync:config',
+    logs: 'dsync:logs',
+    users: 'dsync:users',
+    groups: 'dsync:groups',
+    members: 'dsync:members',
+  },
+  saml: {
+    config: 'saml:config',
+  },
+};
 
 export const relayStatePrefix = 'boxyhq_jackson_';
 
@@ -35,6 +50,15 @@ export function getErrorMessage(error: unknown) {
   }
   return String(error);
 }
+
+export const createRandomSecret = async (length: number) => {
+  return crypto
+    .randomBytes(length)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+};
 
 export async function loadJWSPrivateKey(key: string, alg: string): Promise<jose.KeyLike> {
   const pkcs8 = Buffer.from(key, 'base64').toString('ascii');

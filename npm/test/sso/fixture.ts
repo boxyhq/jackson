@@ -1,5 +1,5 @@
 import { generators } from 'openid-client';
-import { AuthzResponsePayload, OAuthReqBody, OAuthTokenReq } from '../src';
+import { AuthzResponsePayload, OAuthReqBody, OAuthTokenReq } from '../../src';
 import boxyhq from './data/metadata/boxyhq';
 import boxyhqNobinding from './data/metadata/boxyhq-nobinding';
 import exampleOidc from './data/metadata/example.oidc';

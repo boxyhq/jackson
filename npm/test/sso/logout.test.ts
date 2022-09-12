@@ -3,32 +3,18 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import sinon from 'sinon';
 import tap from 'tap';
-import { IConnectionAPIController, ILogoutController, JacksonOption } from '../src/typings';
-import { relayStatePrefix } from '../src/controller/utils';
+import { IConnectionAPIController, ILogoutController } from '../../src/typings';
+import { relayStatePrefix } from '../../src/controller/utils';
 import { saml_connection } from './fixture';
-import { addIdPConnections } from './setup';
+import { addIdPConnections, databaseOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 let logoutController: ILogoutController;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-const options = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  oidcPath: '/sso/oauth/oidc',
-  db: {
-    engine: 'mem',
-  },
-  openid: {
-    jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
-    jwsAlg: 'RS256',
-  },
-};
-
 tap.before(async () => {
-  const controller = await (await import('../src/index')).default(options);
+  const controller = await (await import('../../src/index')).default(databaseOptions);
 
   connectionAPIController = controller.connectionAPIController;
   logoutController = controller.logoutController;

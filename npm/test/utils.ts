@@ -1,5 +1,5 @@
-import { JacksonOption } from '../src';
 import loadConnection from '../src/loadConnection';
+import type { JacksonOption } from '../src/typings';
 
 const connectionRecords: Array<any> = [];
 
@@ -21,7 +21,7 @@ const addIdPConnections = async (
   return connectionRecords;
 };
 
-const options = <JacksonOption>{
+const databaseOptions = <JacksonOption>{
   externalUrl: 'https://my-cool-app.com',
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
@@ -36,4 +36,4 @@ const options = <JacksonOption>{
   },
 };
 
-export { addIdPConnections, options };
+export { addIdPConnections, databaseOptions };

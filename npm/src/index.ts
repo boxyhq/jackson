@@ -1,14 +1,17 @@
+import type { DirectorySync, JacksonOption } from './typings';
+
+import DB from './db/db';
+import defaultDb from './db/defaultDb';
+import loadConnection from './loadConnection';
+
 import { AdminController } from './controller/admin';
 import { ConnectionAPIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
 import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
+import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
-
-import DB from './db/db';
-import defaultDb from './db/defaultDb';
-import loadConnection from './loadConnection';
-import { JacksonOption } from './typings';
+import { SPSAMLConfig } from './controller/sp-config';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -22,6 +25,8 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   if (!newOpts.samlPath) {
     throw new Error('samlPath is required');
   }
+
+  newOpts.scimPath = newOpts.scimPath || '/api/scim/v2.0';
 
   if (!newOpts.oidcPath) {
     throw new Error('oidcPath is required');
@@ -53,7 +58,9 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
+  directorySync: DirectorySync;
   oidcDiscoveryController: OidcDiscoveryController;
+  spConfig: SPSAMLConfig;
 }> => {
   opts = defaultOpts(opts);
 
@@ -69,6 +76,7 @@ export const controllers = async (
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
+
   const oauthController = new OAuthController({
     connectionStore,
     sessionStore,
@@ -82,7 +90,13 @@ export const controllers = async (
     sessionStore,
     opts,
   });
+
+  const directorySync = await initDirectorySync({ db, opts });
+
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
+
+  const spConfig = new SPSAMLConfig(opts);
+
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
   if (preLoadedConnection && preLoadedConnection.length > 0) {
@@ -104,12 +118,14 @@ export const controllers = async (
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
+    spConfig,
     apiController: connectionAPIController,
     connectionAPIController,
     oauthController,
     adminController,
     logoutController,
     healthCheckController,
+    directorySync,
     oidcDiscoveryController,
   };
 };

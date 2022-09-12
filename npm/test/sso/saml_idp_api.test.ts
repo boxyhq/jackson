@@ -1,32 +1,20 @@
 import * as path from 'path';
 import sinon from 'sinon';
 import tap from 'tap';
-import * as dbutils from '../src/db/utils';
-import controllers from '../src/index';
-import loadConnection from '../src/loadConnection';
-import { IConnectionAPIController, IdPConnection, JacksonOption } from '../src/typings';
+import * as dbutils from '../../src/db/utils';
+import controllers from '../../src/index';
+import loadConnection from '../../src/loadConnection';
+import { IConnectionAPIController, IdPConnection } from '../../src/typings';
 import { saml_connection } from './fixture';
+import { databaseOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 
 const CLIENT_ID_SAML = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
-const OPTIONS = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  oidcPath: '/sso/oauth/oidc',
-  db: {
-    engine: 'mem',
-  },
-  openid: {
-    jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
-    jwsAlg: 'RS256',
-  },
-};
 
 tap.before(async () => {
-  const controller = await controllers(OPTIONS);
+  const controller = await controllers(databaseOptions);
 
   connectionAPIController = controller.connectionAPIController;
 });

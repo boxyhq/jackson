@@ -1,21 +1,30 @@
-import { ShieldCheckIcon } from '@heroicons/react/20/solid';
+import { ShieldCheckIcon, UsersIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
+import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 
-const menus = [
-  {
-    href: '/admin/connection',
-    text: 'Connections',
-    icon: ShieldCheckIcon,
-    current: false,
-  },
-];
-
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
   const { isOpen, setIsOpen } = props;
+
+  const { asPath } = useRouter();
+
+  const menus = [
+    {
+      href: '/admin/connection',
+      text: 'Connections',
+      icon: ShieldCheckIcon,
+      active: asPath.includes('/admin/saml'),
+    },
+    {
+      href: '/admin/directory-sync',
+      text: 'Directory Sync',
+      icon: UsersIcon,
+      active: asPath.includes('/admin/directory-sync'),
+    },
+  ];
 
   return (
     <>
@@ -92,7 +101,11 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
             <nav className='flex-1 space-y-1 px-2 pb-4' id='menu'>
               {menus.map((menu) => (
                 <Link key={menu.text} href={menu.href}>
-                  <a className='group flex items-center rounded-md bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'>
+                  <a
+                    className={classNames(
+                      'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
+                      menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
+                    )}>
                     <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                     <div>{menu.text}</div>
                   </a>
