@@ -1,14 +1,8 @@
 import jackson from '@lib/jackson';
-import { extractAuthToken, validateApiKey } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const apiKey = extractAuthToken(req);
-    if (!validateApiKey(apiKey)) {
-      res.status(401).json({ message: 'Unauthorized' });
-      return;
-    }
     const { strategy } = req.query;
     if (strategy !== 'saml' && strategy !== 'oidc') {
       throw { message: 'Strategy not supported', statusCode: 400 };
