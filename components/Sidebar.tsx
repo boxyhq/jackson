@@ -66,7 +66,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                     height={36}
                     className='h-8 w-auto'
                   />
-                  <span className='ml-4 text-xl font-bold text-gray-900'>SAML Jackson</span>
+                  <span className='ml-4 text-xl font-bold text-gray-900'>Admin UI - BoxyHQ</span>
                 </a>
               </Link>
             </div>
@@ -93,7 +93,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
             <Link href='/'>
               <a className='flex items-center'>
                 <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} className='h-8 w-auto' />
-                <span className='ml-4 text-xl font-bold text-gray-900'>SAML Jackson</span>
+                <span className='ml-4 text-lg font-bold text-gray-900'>Admin UI - BoxyHQ</span>
               </a>
             </Link>
           </div>
