@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.1.5",
+    "version": "1.2.1",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -53,13 +53,13 @@
         "parameters": [
           {
             "name": "name",
-            "description": "Name/identifier for the config",
+            "description": "Name/identifier for the connection",
             "type": "string",
             "in": "formData"
           },
           {
             "name": "description",
-            "description": "A short description for the config not more than 100 characters",
+            "description": "A short description for the connection not more than 100 characters",
             "type": "string",
             "in": "formData"
           },
@@ -158,27 +158,27 @@
         "parameters": [
           {
             "name": "clientID",
-            "description": "Client ID for the config",
+            "description": "Client ID for the connection",
             "type": "string",
             "in": "formData",
             "required": true
           },
           {
             "name": "clientSecret",
-            "description": "Client Secret for the config",
+            "description": "Client Secret for the connection",
             "type": "string",
             "in": "formData",
             "required": true
           },
           {
             "name": "name",
-            "description": "Name/identifier for the config",
+            "description": "Name/identifier for the connection",
             "type": "string",
             "in": "formData"
           },
           {
             "name": "description",
-            "description": "A short description for the config not more than 100 characters",
+            "description": "A short description for the connection not more than 100 characters",
             "type": "string",
             "in": "formData"
           },
@@ -314,13 +314,13 @@
         "parameters": [
           {
             "name": "name",
-            "description": "Name/identifier for the config",
+            "description": "Name/identifier for the connection",
             "type": "string",
             "in": "formData"
           },
           {
             "name": "description",
-            "description": "A short description for the config not more than 100 characters",
+            "description": "A short description for the connection not more than 100 characters",
             "type": "string",
             "in": "formData"
           },
@@ -419,27 +419,27 @@
         "parameters": [
           {
             "name": "clientID",
-            "description": "Client ID for the config",
+            "description": "Client ID for the connection",
             "type": "string",
             "in": "formData",
             "required": true
           },
           {
             "name": "clientSecret",
-            "description": "Client Secret for the config",
+            "description": "Client Secret for the connection",
             "type": "string",
             "in": "formData",
             "required": true
           },
           {
             "name": "name",
-            "description": "Name/identifier for the config",
+            "description": "Name/identifier for the connection",
             "type": "string",
             "in": "formData"
           },
           {
             "name": "description",
-            "description": "A short description for the config not more than 100 characters",
+            "description": "A short description for the connection not more than 100 characters",
             "type": "string",
             "in": "formData"
           },

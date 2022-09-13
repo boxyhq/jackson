@@ -802,12 +802,12 @@ export class OAuthController implements IOAuthController {
    *       - name: client_id
    *         in: formData
    *         type: string
-   *         description: Use the client_id returned by the SAML config API
+   *         description: Use the client_id returned by the SAML connection API
    *         required: true
    *       - name: client_secret
    *         in: formData
    *         type: string
-   *         description: Use the client_secret returned by the SAML config API
+   *         description: Use the client_secret returned by the SAML connection API
    *         required: true
    *       - name: redirect_uri
    *         in: formData
