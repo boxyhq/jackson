@@ -23,6 +23,7 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
     "name": "BoxyHQ"
   },
   "crud": "c",
+  "created": "${new Date().toISOString().slice(0, 19)}",
   "source_ip": "127.0.0.1",
   "actor": {
     "id": "jackson@boxyhq.com",
