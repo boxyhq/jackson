@@ -27,6 +27,7 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
     apiKey: token as string,
     projectId: projectId as string,
     endpoint: env.retraced.apiHost,
+    viewLogAction: 'audit.log.view',
   });
   const reqIp = requestIp.getClientIp(req);
   const ip = reqIp == '::1' ? '127.0.0.1' : reqIp;
@@ -47,7 +48,7 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
     sourceIp: ip,
   });
 
-  const viewerToken = await retraced.getViewerToken(groupId as string, '', true);
+  const viewerToken = await retraced.getViewerToken(groupId as string, 'Admin-UI', true);
 
   return res.status(200).json({
     data: {

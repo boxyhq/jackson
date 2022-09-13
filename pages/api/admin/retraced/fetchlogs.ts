@@ -1,5 +1,6 @@
 import Chance from 'chance';
 import * as Retraced from 'retraced';
+import env from '@lib/env';
 const chance = new Chance();
 
 const actions = [
@@ -22,11 +23,13 @@ export default async function handler(req, res) {
 
   //   use random ips
   const randomIPs = ips[chance.integer({ min: 0, max: ips.length - 1 })];
+  const { token, project } = req.query;
 
   const retraced = new Retraced.Client({
-    apiKey: req.query.token || 'dev',
-    projectId: req.query.project || 'dev',
-    endpoint: process.env.RETRACED_HOST,
+    apiKey: (token as string) || 'dev',
+    projectId: (project as string) || 'dev',
+    endpoint: env.retraced.apiHost,
+    viewLogAction: 'audit.log.view',
   });
 
   const team_id = req.query.group_id || 'dev';
