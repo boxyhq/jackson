@@ -290,7 +290,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'"
+            "description": "connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
           },
           "401": {
             "description": "Unauthorized"
@@ -554,7 +554,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'"
+            "description": "connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
           },
           "401": {
             "description": "Unauthorized"
@@ -585,14 +585,14 @@
             "name": "client_id",
             "in": "formData",
             "type": "string",
-            "description": "Use the client_id returned by the SAML config API",
+            "description": "Use the client_id returned by the SAML connection API",
             "required": true
           },
           {
             "name": "client_secret",
             "in": "formData",
             "type": "string",
-            "description": "Use the client_secret returned by the SAML config API",
+            "description": "Use the client_secret returned by the SAML connection API",
             "required": true
           },
           {
@@ -709,7 +709,7 @@
       }
     },
     "400": {
-      "description": "Please provide `clientID` or `tenant` and `product`."
+      "description": "Please provide `clientID` or `tenant` and `product`. | connection type mismatch"
     },
     "401": {
       "description": "Unauthorized"
