@@ -433,22 +433,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
     metrics.increment('getConnection');
 
     if (clientID) {
-      const samlConfig = await this.connectionStore.get(clientID);
+      const connection = await this.connectionStore.get(clientID);
 
-      return samlConfig || {};
+      return connection || {};
     }
 
     if (tenant && product) {
-      const samlConfigs = await this.connectionStore.getByIndex({
+      const connections = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!samlConfigs || !samlConfigs.length) {
+      if (!connections || !connections.length) {
         return {};
       }
 
-      return { ...samlConfigs[0] };
+      return { ...connections[0] };
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
@@ -529,13 +529,13 @@ export class ConnectionAPIController implements IConnectionAPIController {
     metrics.increment('deleteConnection');
 
     if (clientID && clientSecret) {
-      const samlConfig = await this.connectionStore.get(clientID);
+      const connection = await this.connectionStore.get(clientID);
 
-      if (!samlConfig) {
+      if (!connection) {
         return;
       }
 
-      if (samlConfig.clientSecret === clientSecret) {
+      if (connection.clientSecret === clientSecret) {
         await this.connectionStore.delete(clientID);
       } else {
         throw new JacksonError('clientSecret mismatch', 400);
@@ -545,16 +545,16 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     if (tenant && product) {
-      const samlConfigs = await this.connectionStore.getByIndex({
+      const connections = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!samlConfigs || !samlConfigs.length) {
+      if (!connections || !connections.length) {
         return;
       }
 
-      for (const conf of samlConfigs) {
+      for (const conf of connections) {
         await this.connectionStore.delete(conf.clientID);
       }
 
