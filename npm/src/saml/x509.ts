@@ -25,7 +25,7 @@ const generate = async () => {
     serialNumber: '01',
     name: 'CN=BoxyHQ Jackson',
     notBefore: new Date(),
-    notAfter: new Date('3021/01/01'), // TODO: set shorter expiry and rotate certificates
+    notAfter: new Date(new Date().setFullYear(new Date().getFullYear() + 27)),
     signingAlgorithm: alg,
     keys: keys,
     extensions,
