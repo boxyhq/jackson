@@ -58,7 +58,7 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "7.2.0",
+    "@faker-js/faker": "7.5.0",
     "@types/node": "18.7.16",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",
