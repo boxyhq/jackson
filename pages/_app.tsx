@@ -7,7 +7,9 @@ import { AccountLayout } from '@components/layouts';
 
 import '../styles/globals.css';
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps<{
+  session: Session;
+}>) {
   const { pathname } = useRouter();
 
   if (pathname !== '/' && !pathname.startsWith('/admin')) {
