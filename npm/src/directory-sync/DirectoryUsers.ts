@@ -178,6 +178,11 @@ export class DirectoryUsers implements IDirectoryUsers {
     // Get the user
     const { data: user } = userId ? await this.users.get(userId) : { data: null };
 
+    // Hide password if exists in the body
+    if (body && 'password' in body) {
+      body['password'] = '';
+    }
+
     if (user) {
       switch (method) {
         case 'GET':
