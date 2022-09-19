@@ -44,7 +44,7 @@
     "@peculiar/webcrypto": "1.4.0",
     "axios": "^0.27.2",
     "@peculiar/x509": "1.8.3",
-    "jose": "4.9.2",
+    "jose": "4.9.3",
     "marked": "4.1.0",
     "mongodb": "4.9.1",
     "mysql2": "2.3.3",
