@@ -61,7 +61,7 @@
     "@types/node": "18.7.18",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",
-    "@typescript-eslint/eslint-plugin": "5.36.2",
+    "@typescript-eslint/eslint-plugin": "5.37.0",
     "@typescript-eslint/parser": "5.37.0",
     "cross-env": "7.0.3",
     "eslint": "8.23.1",
