@@ -57,14 +57,14 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "7.2.0",
+    "@faker-js/faker": "7.5.0",
     "@types/node": "18.7.16",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",
     "@typescript-eslint/eslint-plugin": "5.36.2",
     "@typescript-eslint/parser": "5.36.2",
     "cross-env": "7.0.3",
-    "eslint": "8.23.0",
+    "eslint": "8.23.1",
     "eslint-config-prettier": "8.5.0",
     "prettier": "2.7.1",
     "sinon": "14.0.0",
