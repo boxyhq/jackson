@@ -447,17 +447,17 @@ export class ConnectionAPIController implements IConnectionAPIController {
   /**
    * @swagger
    * parameters:
-   *  tenantParam:
+   *  tenantParamGet:
    *     in: query
    *     name: tenant
    *     type: string
    *     description: Tenant
-   *  productParam:
+   *  productParamGet:
    *     in: query
    *     name: product
    *     type: string
    *     description: Product
-   *  clientIDParam:
+   *  clientIDParamGet:
    *     in: query
    *     name: clientID
    *     type: string
@@ -500,11 +500,28 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   get:
    *     summary: Get OIDC Connection
    *     parameters:
-   *       - $ref: '#/parameters/tenantParam'
-   *       - $ref: '#/parameters/productParam'
-   *       - $ref: '#/parameters/clientIDParam'
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/clientIDParamGet'
    *     operationId: get-oidc-connection
    *     tags: [OIDC Connection]
+   *     responses:
+   *      '200':
+   *        $ref: '#/responses/200'
+   *      '400':
+   *        $ref: '#/responses/400'
+   *      '401':
+   *        $ref: '#/responses/401'
+   * /api/v1/saml/config:
+   *   get:
+   *     summary: Get SAML Config
+   *     operationId: get-saml-config
+   *     tags: [SAML Config - Deprecated]
+   *     deprecated: true
+   *     parameters:
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/clientIDParamGet'
    *     responses:
    *      '200':
    *        $ref: '#/responses/200'
@@ -518,9 +535,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     operationId: get-saml-connection
    *     tags: [SAML Connection]
    *     parameters:
-   *       - $ref: '#/parameters/tenantParam'
-   *       - $ref: '#/parameters/productParam'
-   *       - $ref: '#/parameters/clientIDParam'
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/clientIDParamGet'
    *     responses:
    *      '200':
    *        $ref: '#/responses/200'
@@ -599,22 +616,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
   /**
    * @swagger
    * parameters:
-   *   clientID:
+   *   clientIDDel:
    *     name: clientID
    *     in: formData
    *     type: string
    *     description: Client ID
-   *   clientSecret:
+   *   clientSecretDel:
    *     name: clientSecret
    *     in: formData
    *     type: string
    *     description: Client Secret
-   *   tenant:
+   *   tenantDel:
    *     name: tenant
    *     in: formData
    *     type: string
    *     description: Tenant
-   *   product:
+   *   productDel:
    *     name: product
    *     in: formData
    *     type: string
@@ -622,13 +639,37 @@ export class ConnectionAPIController implements IConnectionAPIController {
    * /api/v1/oidc/connection:
    *   delete:
    *     parameters:
-   *      - $ref: '#/parameters/clientID'
-   *      - $ref: '#/parameters/clientSecret'
-   *      - $ref: '#/parameters/tenant'
-   *      - $ref: '#/parameters/product'
+   *      - $ref: '#/parameters/clientIDDel'
+   *      - $ref: '#/parameters/clientSecretDel'
+   *      - $ref: '#/parameters/tenantDel'
+   *      - $ref: '#/parameters/productDel'
    *     summary: Delete OIDC Connection
    *     operationId: delete-oidc-connection
    *     tags: [OIDC Connection]
+   *     consumes:
+   *       - application/x-www-form-urlencoded
+   *       - application/json
+   *     responses:
+   *       '200':
+   *         description: Success
+   *       '400':
+   *         description: connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
+   *       '401':
+   *         description: Unauthorized
+   * /api/v1/saml/config:
+   *   delete:
+   *     summary: Delete SAML Config
+   *     operationId: delete-saml-config
+   *     tags: [SAML Config - Deprecated]
+   *     deprecated: true
+   *     consumes:
+   *       - application/x-www-form-urlencoded
+   *       - application/json
+   *     parameters:
+   *      - $ref: '#/parameters/clientIDDel'
+   *      - $ref: '#/parameters/clientSecretDel'
+   *      - $ref: '#/parameters/tenantDel'
+   *      - $ref: '#/parameters/productDel'
    *     responses:
    *       '200':
    *         description: Success
@@ -643,11 +684,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     tags: [SAML Connection]
    *     consumes:
    *       - application/x-www-form-urlencoded
+   *       - application/json
    *     parameters:
-   *      - $ref: '#/parameters/clientID'
-   *      - $ref: '#/parameters/clientSecret'
-   *      - $ref: '#/parameters/tenant'
-   *      - $ref: '#/parameters/product'
+   *      - $ref: '#/parameters/clientIDDel'
+   *      - $ref: '#/parameters/clientSecretDel'
+   *      - $ref: '#/parameters/tenantDel'
+   *      - $ref: '#/parameters/productDel'
    *     responses:
    *       '200':
    *         description: Success
