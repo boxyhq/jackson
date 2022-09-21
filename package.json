@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@boxyhq/saml-jackson": "file:./npm",
-    "@heroicons/react": "2.0.10",
+    "@heroicons/react": "2.0.11",
     "@opentelemetry/api": "1.0.4",
     "@opentelemetry/api-metrics": "0.27.0",
     "@opentelemetry/exporter-metrics-otlp-http": "0.27.0",
@@ -76,7 +76,7 @@
     "@types/node": "18.7.18",
     "@types/react": "18.0.20",
     "@typescript-eslint/eslint-plugin": "5.37.0",
-    "@typescript-eslint/parser": "5.36.2",
+    "@typescript-eslint/parser": "5.37.0",
     "autoprefixer": "10.4.11",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
