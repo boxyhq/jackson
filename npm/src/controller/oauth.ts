@@ -341,7 +341,6 @@ export class OAuthController implements IOAuthController {
       const { validTo } = new crypto.X509Certificate(samlConfig.certs.publicKey);
       const isValidExpiry = validTo != 'Bad time value' && new Date(validTo) > new Date();
       if (!isValidExpiry) {
-        console.log('Invalid expiry date!');
         const certs = await x509.generate();
         samlConfig.certs = certs;
         if (certs) {
