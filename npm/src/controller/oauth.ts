@@ -30,6 +30,7 @@ import {
   loadJWSPrivateKey,
   isJWSKeyPairLoaded,
 } from './utils';
+import x509 from '../saml/x509';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -338,6 +339,30 @@ export class OAuthController implements IOAuthController {
     }
 
     try {
+      const { validTo } = new crypto.X509Certificate(samlConfig.certs.publicKey);
+      const isValidExpiry = validTo != 'Bad time value' && new Date(validTo) > new Date();
+      if (!isValidExpiry) {
+        const certs = await x509.generate();
+        samlConfig.certs = certs;
+        if (certs) {
+          await this.configStore.put(
+            samlConfig.clientID,
+            samlConfig,
+            {
+              // secondary index on entityID
+              name: IndexNames.EntityID,
+              value: samlConfig.idpMetadata.entityID,
+            },
+            {
+              // secondary index on tenant + product
+              name: IndexNames.TenantProduct,
+              value: dbutils.keyFromParts(samlConfig.tenant, samlConfig.product),
+            }
+          );
+        } else {
+          throw new Error('Error generating x59 certs');
+        }
+      }
       const samlReq = saml.request({
         ssoUrl,
         entityID: this.opts.samlAudience!,
