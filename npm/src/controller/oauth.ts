@@ -150,6 +150,7 @@ export class OAuthController implements IOAuthController {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       provider = 'saml',
       idp_hint,
+      overrideForceAuthn = false,
     } = body;
 
     let requestedTenant = tenant;
@@ -343,7 +344,7 @@ export class OAuthController implements IOAuthController {
         callbackUrl: this.opts.externalUrl + this.opts.samlPath,
         signingKey: samlConfig.certs.privateKey,
         publicKey: samlConfig.certs.publicKey,
-        forceAuthn: !!samlConfig.forceAuthn,
+        forceAuthn: overrideForceAuthn ? false : !!samlConfig.forceAuthn,
       });
 
       const sessionId = crypto.randomBytes(16).toString('hex');
