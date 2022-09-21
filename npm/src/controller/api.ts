@@ -15,86 +15,137 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
   /**
    * @swagger
-   * /api/v1/saml/connection:
-   *   $ref: '#/paths/~1api~1v1~1saml~1config'
+   * definitions:
+   *    Connection:
+   *      type: object
+   *      example:
+   *          {
+   *            "idpMetadata": {
+   *              "sso": {
+   *                "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml",
+   *                "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml"
+   *              },
+   *              "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+   *              "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+   *              "loginType": "idp",
+   *              "provider": "okta.com"
+   *            },
+   *            "defaultRedirectUrl": "https://hoppscotch.io/",
+   *            "redirectUrl": ["https://hoppscotch.io/"],
+   *            "tenant": "hoppscotch.io",
+   *            "product": "API Engine",
+   *            "name": "Hoppscotch-SP",
+   *            "description": "SP for hoppscotch.io",
+   *            "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *            "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *            "certs": {
+   *              "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+   *              "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+   *            }
+   *          }
+   *    validationErrorsPost:
+   *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported
+   *
+   * parameters:
+   *   nameParamPost:
+   *     name: name
+   *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   descriptionParamPost:
+   *     name: description
+   *     description: A short description for the connection not more than 100 characters
+   *     type: string
+   *     in: formData
+   *   encodedRawMetadataParamPost:
+   *     name: encodedRawMetadata
+   *     description: Base64 encoding of the XML metadata
+   *     in: formData
+   *     type: string
+   *   rawMetadataParamPost:
+   *     name: rawMetadata
+   *     description: Raw XML metadata
+   *     in: formData
+   *     type: string
+   *   defaultRedirectUrlParamPost:
+   *     name: defaultRedirectUrl
+   *     description: The redirect URL to use in the IdP login flow
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   redirectUrlParamPost:
+   *     name: redirectUrl
+   *     description: JSON encoded array containing a list of allowed redirect URLs
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   tenantParamPost:
+   *     name: tenant
+   *     description: Tenant
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   productParamPost:
+   *     name: product
+   *     description: Product
+   *     in: formData
+   *     required: true
+   *     type: string
    * /api/v1/saml/config:
+   *   post:
+   *    summary: Create SAML config
+   *    operationId: create-saml-config
+   *    deprecated: true
+   *    tags: [SAML Config - Deprecated]
+   *    produces:
+   *      - application/json
+   *    consumes:
+   *      - application/x-www-form-urlencoded
+   *      - application/json
+   *    parameters:
+   *      - $ref: '#/parameters/nameParamPost'
+   *      - $ref: '#/parameters/descriptionParamPost'
+   *      - $ref: '#/parameters/encodedRawMetadataParamPost'
+   *      - $ref: '#/parameters/rawMetadataParamPost'
+   *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
+   *      - $ref: '#/parameters/redirectUrlParamPost'
+   *      - $ref: '#/parameters/tenantParamPost'
+   *      - $ref: '#/parameters/productParamPost'
+   *    responses:
+   *      200:
+   *        description: Success
+   *        schema:
+   *          $ref:  '#/definitions/Connection'
+   *      400:
+   *          $ref: '#/definitions/validationErrorsPost'
+   *      401:
+   *        description: Unauthorized
+   * /api/v1/saml/connection:
    *   post:
    *     summary: Create SAML connection
    *     operationId: create-saml-connection
    *     tags: [SAML Connection]
    *     produces:
-   *       - application/json
+   *      - application/json
    *     consumes:
-   *       - application/x-www-form-urlencoded
+   *      - application/x-www-form-urlencoded
+   *      - application/json
    *     parameters:
-   *       - name: name
-   *         description: Name/identifier for the connection
-   *         type: string
-   *         in: formData
-   *       - name: description
-   *         description: A short description for the connection not more than 100 characters
-   *         type: string
-   *         in: formData
-   *       - name: encodedRawMetadata
-   *         description: Base64 encoding of the XML metadata
-   *         in: formData
-   *         type: string
-   *       - name: rawMetadata
-   *         description: Raw XML metadata
-   *         in: formData
-   *         type: string
-   *       - name: defaultRedirectUrl
-   *         description: The redirect URL to use in the IdP login flow
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: redirectUrl
-   *         description: JSON encoded array containing a list of allowed redirect URLs
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: true
-   *         type: string
+   *      - $ref: '#/parameters/nameParamPost'
+   *      - $ref: '#/parameters/descriptionParamPost'
+   *      - $ref: '#/parameters/encodedRawMetadataParamPost'
+   *      - $ref: '#/parameters/rawMetadataParamPost'
+   *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
+   *      - $ref: '#/parameters/redirectUrlParamPost'
+   *      - $ref: '#/parameters/tenantParamPost'
+   *      - $ref: '#/parameters/productParamPost'
    *     responses:
    *       200:
    *         description: Success
    *         schema:
-   *           type: object
-   *           example:
-   *             {
-   *               "idpMetadata": {
-   *                 "sso": {
-   *                   "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-   *                   "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-   *                 },
-   *                 "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-   *                 "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-   *                 "loginType": "idp",
-   *                 "provider": "okta.com"
-   *               },
-   *               "defaultRedirectUrl": "https://hoppscotch.io/",
-   *               "redirectUrl": ["https://hoppscotch.io/"],
-   *               "tenant": "hoppscotch.io",
-   *               "product": "API Engine",
-   *               "name": "Hoppscotch-SP",
-   *               "description": "SP for hoppscotch.io",
-   *               "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *               "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *               "certs": {
-   *                 "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *                 "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *               }
-   *           }
+   *           $ref: '#/definitions/Connection'
    *       400:
-   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported
+   *           $ref: '#/definitions/validationErrorsPost'
    *       401:
    *         description: Unauthorized
    */
@@ -119,6 +170,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - application/json
    *     consumes:
    *       - application/x-www-form-urlencoded
+   *       - application/json
    *     parameters:
    *       - name: name
    *         description: Name/identifier for the connection
@@ -196,8 +248,92 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
   /**
    * @swagger
-   *
+   * definitions:
+   *   validationErrorsPatch:
+   *     description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid
+   * parameters:
+   *   clientIDParamPatch:
+   *     name: clientID
+   *     description: Client ID for the connection
+   *     type: string
+   *     in: formData
+   *     required: true
+   *   clientSecretParamPatch:
+   *     name: clientSecret
+   *     description: Client Secret for the connection
+   *     type: string
+   *     in: formData
+   *     required: true
+   *   nameParamPatch:
+   *     name: name
+   *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   descriptionParamPatch:
+   *     name: description
+   *     description: A short description for the connection not more than 100 characters
+   *     type: string
+   *     in: formData
+   *   encodedRawMetadataParamPatch:
+   *     name: encodedRawMetadata
+   *     description: Base64 encoding of the XML metadata
+   *     in: formData
+   *     type: string
+   *   rawMetadataParamPatch:
+   *     name: rawMetadata
+   *     description: Raw XML metadata
+   *     in: formData
+   *     type: string
+   *   defaultRedirectUrlParamPatch:
+   *     name: defaultRedirectUrl
+   *     description: The redirect URL to use in the IdP login flow
+   *     in: formData
+   *     type: string
+   *   redirectUrlParamPatch:
+   *     name: redirectUrl
+   *     description: JSON encoded array containing a list of allowed redirect URLs
+   *     in: formData
+   *     type: string
+   *   tenantParamPatch:
+   *     name: tenant
+   *     description: Tenant
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   productParamPatch:
+   *     name: product
+   *     description: Product
+   *     in: formData
+   *     required: true
+   *     type: string
    * /api/v1/saml/config:
+   *   patch:
+   *     summary: Update SAML Config
+   *     operationId: update-saml-config
+   *     tags: [SAML Config - Deprecated]
+   *     deprecated: true
+   *     consumes:
+   *       - application/json
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - $ref: '#/parameters/clientIDParamPatch'
+   *       - $ref: '#/parameters/clientSecretParamPatch'
+   *       - $ref: '#/parameters/nameParamPatch'
+   *       - $ref: '#/parameters/descriptionParamPatch'
+   *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
+   *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
+   *       - $ref: '#/parameters/redirectUrlParamPatch'
+   *       - $ref: '#/parameters/tenantParamPatch'
+   *       - $ref: '#/parameters/productParamPatch'
+   *     responses:
+   *       204:
+   *         description: Success
+   *       400:
+   *         $ref: '#/definitions/validationErrorsPatch'
+   *       401:
+   *         description: Unauthorized
+   * /api/v1/saml/connection:
    *   patch:
    *     summary: Update SAML Connection
    *     operationId: update-saml-connection
@@ -206,55 +342,21 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - application/json
    *       - application/x-www-form-urlencoded
    *     parameters:
-   *       - name: clientID
-   *         description: Client ID for the connection
-   *         type: string
-   *         in: formData
-   *         required: true
-   *       - name: clientSecret
-   *         description: Client Secret for the connection
-   *         type: string
-   *         in: formData
-   *         required: true
-   *       - name: name
-   *         description: Name/identifier for the connection
-   *         type: string
-   *         in: formData
-   *       - name: description
-   *         description: A short description for the connection not more than 100 characters
-   *         type: string
-   *         in: formData
-   *       - name: encodedRawMetadata
-   *         description: Base64 encoding of the XML metadata
-   *         in: formData
-   *         type: string
-   *       - name: rawMetadata
-   *         description: Raw XML metadata
-   *         in: formData
-   *         type: string
-   *       - name: defaultRedirectUrl
-   *         description: The redirect URL to use in the IdP login flow
-   *         in: formData
-   *         type: string
-   *       - name: redirectUrl
-   *         description: JSON encoded array containing a list of allowed redirect URLs
-   *         in: formData
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: true
-   *         type: string
+   *       - $ref: '#/parameters/clientIDParamPatch'
+   *       - $ref: '#/parameters/clientSecretParamPatch'
+   *       - $ref: '#/parameters/nameParamPatch'
+   *       - $ref: '#/parameters/descriptionParamPatch'
+   *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
+   *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
+   *       - $ref: '#/parameters/redirectUrlParamPatch'
+   *       - $ref: '#/parameters/tenantParamPatch'
+   *       - $ref: '#/parameters/productParamPatch'
    *     responses:
    *       204:
    *         description: Success
    *       400:
-   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid
+   *         $ref: '#/definitions/validationErrorsPatch'
    *       401:
    *         description: Unauthorized
    */
@@ -410,7 +512,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        $ref: '#/responses/400'
    *      '401':
    *        $ref: '#/responses/401'
-   * /api/v1/saml/config:
+   * /api/v1/saml/connection:
    *   get:
    *     summary: Get SAML Connection
    *     operationId: get-saml-connection
@@ -534,7 +636,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         description: connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
    *       '401':
    *         description: Unauthorized
-   * /api/v1/saml/config:
+   * /api/v1/saml/connection:
    *   delete:
    *     summary: Delete SAML Connection
    *     operationId: delete-saml-connection
