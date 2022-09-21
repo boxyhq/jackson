@@ -89,6 +89,13 @@ const fieldCatalog = [
     type: 'password',
     attributes: { showOnlyInEditView: true },
   },
+  {
+    key: 'forceAuthn',
+    label: 'Enable ForceAuthn',
+    type: 'checkbox',
+
+    attributes: { showOnlyInEditView: false, requiredInEditView: false, required: false },
+  },
 ];
 
 function getFieldList(isEditView) {
@@ -177,9 +184,11 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
     setFormObj(_state);
   }, [samlConfig, isEditView]);
 
-  function handleChange(event: FormEvent) {
-    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
-    setFormObj((cur) => ({ ...cur, [target.id]: target.value }));
+  function getHandleChange(opts: any = {}) {
+    return (event: FormEvent) => {
+      const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+      setFormObj((cur) => ({ ...cur, [target.id]: target[opts.key || 'value'] }));
+    }
   }
 
   return (
@@ -241,11 +250,22 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           required={_required}
                           readOnly={readOnly}
                           maxLength={maxLength}
-                          onChange={handleChange}
+                          onChange={getHandleChange()}
                           className={`textarea textarea-bordered h-24 w-full ${
                             isArray ? 'whitespace-pre' : ''
                           }`}
                           rows={rows}
+                        />
+                      ) : type === 'checkbox' ? (
+                        <input
+                          id={key}
+                          type={type}
+                          checked={!!value}
+                          required={_required}
+                          readOnly={readOnly}
+                          maxLength={maxLength}
+                          onChange={getHandleChange({key: "checked"})}
+                          className='input'
                         />
                       ) : (
                         <input
@@ -256,7 +276,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           required={_required}
                           readOnly={readOnly}
                           maxLength={maxLength}
-                          onChange={handleChange}
+                          onChange={getHandleChange()}
                           className='input input-bordered w-full'
                         />
                       )}

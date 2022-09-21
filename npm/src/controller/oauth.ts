@@ -343,6 +343,7 @@ export class OAuthController implements IOAuthController {
         callbackUrl: this.opts.externalUrl + this.opts.samlPath,
         signingKey: samlConfig.certs.privateKey,
         publicKey: samlConfig.certs.publicKey,
+        forceAuthn: !!samlConfig.forceAuthn,
       });
 
       const sessionId = crypto.randomBytes(16).toString('hex');

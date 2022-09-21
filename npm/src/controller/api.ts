@@ -153,7 +153,7 @@ export class APIController implements IAPIController {
       name,
       description,
     } = body;
-
+    const forceAuthn = body.forceAuthn == 'true';
     metrics.increment('createConfig');
 
     this._validateIdPConfig(body);
@@ -204,6 +204,7 @@ export class APIController implements IAPIController {
       clientID,
       clientSecret,
       certs,
+      forceAuthn,
     };
 
     await this.configStore.put(
@@ -297,6 +298,7 @@ export class APIController implements IAPIController {
       redirectUrl,
       name,
       description,
+      forceAuthn = false,
       ...clientInfo
     } = body;
     if (!clientInfo?.clientID) {
@@ -351,6 +353,7 @@ export class APIController implements IAPIController {
       idpMetadata: newMetadata ? newMetadata : _currentConfig.idpMetadata,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _currentConfig.redirectUrl,
+      forceAuthn,
     };
 
     await this.configStore.put(
