@@ -359,7 +359,7 @@ export class OAuthController implements IOAuthController {
             }
           );
         } else {
-          throw new Error('Error generating x59 certs');
+          throw new Error('Error generating x509 certs');
         }
       }
       const samlReq = saml.request({
