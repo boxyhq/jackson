@@ -18,6 +18,7 @@ import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
   authz_request_normal,
+  authz_request_override_force_authn,
   authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
   authz_request_normal_with_resource,
@@ -201,6 +202,19 @@ tap.test('authorize()', async (t) => {
   t.test('Should return the Idp SSO URL', async (t) => {
     t.test('accepts client_id', async (t) => {
       const body = authz_request_normal;
+
+      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+      t.end();
+    });
+
+    t.test('accepts overrideForceAuthn', async (t) => {
+      const body = authz_request_override_force_authn;
 
       const response = await oauthController.authorize(<OAuthReqBody>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
