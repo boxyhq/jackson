@@ -15,7 +15,9 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         );
       }
     } else if (req.method === 'POST') {
-      req.body.forceAuthn = req.body.forceAuthn ? req.body.forceAuthn == 'true' : false;
+      req.body.forceAuthn = req.body.forceAuthn
+        ? req.body.forceAuthn == 'true' || req.body.forceAuthn == true
+        : false;
       res.json(await apiController.config(req.body));
     } else if (req.method === 'PATCH') {
       res.status(204).end(await apiController.updateConfig(req.body));

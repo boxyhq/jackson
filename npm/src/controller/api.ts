@@ -153,7 +153,7 @@ export class APIController implements IAPIController {
       name,
       description,
     } = body;
-    const forceAuthn = body.forceAuthn == 'true';
+    const forceAuthn = body.forceAuthn == 'true' || body.forceAuthn == true;
     metrics.increment('createConfig');
 
     this._validateIdPConfig(body);

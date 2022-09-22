@@ -191,6 +191,29 @@ tap.test('controller/api', async (t) => {
       });
 
       t.equal(savedConfig.name, 'testConfig');
+      t.equal(savedConfig.forceAuthn, false);
+
+      kdStub.restore();
+
+      t.end();
+    });
+
+    t.test('when the request is good with forceAuthn', async (t) => {
+      const body = Object.assign({}, saml_config);
+      body.forceAuthn = true;
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID);
+
+      const response = await apiController.config(body);
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID);
+      t.equal(response.idpMetadata.provider, PROVIDER);
+
+      const savedConfig = await apiController.getConfig({
+        clientID: CLIENT_ID,
+      });
+
+      t.equal(savedConfig.forceAuthn, true);
 
       kdStub.restore();
 
@@ -242,6 +265,43 @@ tap.test('controller/api', async (t) => {
       const savedConfig = await apiController.getConfig({ clientID });
       t.equal(savedConfig.name, 'A new name');
       t.equal(savedConfig.description, 'A new description');
+      t.end();
+    });
+
+    t.test('Enable the forceAuthn', async (t) => {
+      const { clientID, clientSecret } = await apiController.config(body as IdPConfig);
+      const { name, description } = await apiController.getConfig({ clientID });
+      t.equal(name, 'testConfig');
+      t.equal(description, 'Just a test configuration');
+      await apiController.updateConfig({
+        clientID,
+        clientSecret,
+        name: 'A new name',
+        description: 'A new description',
+        forceAuthn: true,
+      });
+      const savedConfig = await apiController.getConfig({ clientID });
+      t.equal(savedConfig.forceAuthn, true);
+      t.end();
+    });
+
+    t.test('Disable the forceAuthn', async (t) => {
+      const { clientID, clientSecret } = await apiController.config({
+        ...body,
+        forceAuthn: true,
+      } as IdPConfig);
+      const { name, description } = await apiController.getConfig({ clientID });
+      t.equal(name, 'testConfig');
+      t.equal(description, 'Just a test configuration');
+      await apiController.updateConfig({
+        clientID,
+        clientSecret,
+        name: 'A new name',
+        description: 'A new description',
+        forceAuthn: false,
+      });
+      const savedConfig = await apiController.getConfig({ clientID });
+      t.equal(savedConfig.forceAuthn, false);
       t.end();
     });
 
