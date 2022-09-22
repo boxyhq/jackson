@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 
 export const getFakeDirectory = () => {
   return {
-    name: faker.company.companyName(),
+    name: faker.company.name(),
     tenant: faker.internet.domainName(),
     product: faker.commerce.productName(),
     type: 'okta-scim-v2' as DirectoryType,
