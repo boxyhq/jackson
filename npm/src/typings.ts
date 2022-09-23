@@ -81,7 +81,7 @@ export interface OAuthReqBody {
   code_challenge_method: 'plain' | 'S256' | '';
   provider: 'saml';
   idp_hint?: string;
-  overrideForceAuthn?: boolean;
+  prompt?: string;
 }
 
 export interface SAMLResponsePayload {

@@ -9,11 +9,18 @@ export const authz_request_normal: Partial<OAuthReqBody> = {
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
 };
 
-export const authz_request_override_force_authn: Partial<OAuthReqBody> = {
+export const authz_request_with_prompt_login: Partial<OAuthReqBody> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
-  overrideForceAuthn: true,
+  prompt: 'login',
+};
+
+export const authz_request_with_prompt_more_than_one: Partial<OAuthReqBody> = {
+  redirect_uri: boxyhq.defaultRedirectUrl,
+  state: 'state-123',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  prompt: 'select_account login consent',
 };
 
 export const authz_request_normal_with_access_type: Partial<OAuthReqBody> = {
