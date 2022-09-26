@@ -201,12 +201,11 @@ jobs:
       #     fail-build: true
       #     severity-cutoff: high
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
 
-      - name: Install Cosign with brew
-        run: brew install cosign
+      - name: Check install!
+        run: cosign version
 
       - name: place the cosign private key in a file
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
