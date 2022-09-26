@@ -46,7 +46,7 @@
     "@peculiar/x509": "1.8.3",
     "jose": "4.9.3",
     "marked": "4.1.0",
-    "mongodb": "4.9.1",
+    "mongodb": "4.10.0",
     "mysql2": "2.3.3",
     "pg": "8.8.0",
     "redis": "4.3.1",
@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "7.5.0",
-    "@types/node": "18.7.18",
+    "@types/node": "18.7.23",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",
     "@typescript-eslint/eslint-plugin": "5.37.0",
