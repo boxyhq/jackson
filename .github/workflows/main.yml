@@ -201,26 +201,18 @@ jobs:
       #     fail-build: true
       #     severity-cutoff: high
 
-      - name: Set up Homebrew & install cosign
+      - name: Set up Homebrew
         id: set-up-homebrew
-        run: |
-          sudo apt-get install build-essential
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.bash_profile
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew install cosign
+        uses: Homebrew/actions/setup-homebrew@master
 
-      # - name: Install Cosign with brew
-      #   run: brew install cosign
+      - name: Install Cosign with brew
+        run: brew install cosign
 
       - name: place the cosign private key in a file
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
         shell: bash
         env:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
-
-      - name: Check cosign installation
-        run: cosign
 
       - name: Sign the image
         if: github.ref == 'refs/heads/release'
