@@ -219,6 +219,9 @@ jobs:
         env:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
 
+      - name: Check cosign installation
+        run: cosign
+
       - name: Sign the image
         if: github.ref == 'refs/heads/release'
         run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }} || true
