@@ -1,11 +1,10 @@
+import { ShieldCheckIcon, UsersIcon, QueueListIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
-import JacksonIcon from '../public/jackson.svg';
-import RetracedIcon from '../public/retraced.svg';
 
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
   const router = useRouter();
@@ -17,14 +16,20 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
     {
       href: '/admin/saml/config',
       text: 'SAML Connections',
-      icon: JacksonIcon,
-      current: currentPath.includes('saml'),
+      icon: ShieldCheckIcon,
+      active: currentPath.includes('/admin/saml'),
     },
     {
       href: '/admin/retraced/projects',
       text: 'Audit Logs',
-      icon: RetracedIcon,
+      icon: QueueListIcon,
       current: currentPath.includes('retraced'),
+    },
+    {
+      href: '/admin/directory-sync',
+      text: 'Directory Sync',
+      icon: UsersIcon,
+      active: currentPath.includes('/admin/directory-sync'),
     },
   ];
 
@@ -109,11 +114,11 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                   key={menu.text}
                   href={menu.href}
                   className={classNames(
-                    'group flex items-center rounded-md px-2 py-2 text-sm font-medium text-gray-900',
-                    menu.current ? 'bg-gray-200' : ''
+                    'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
+                    menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
                   )}>
-                  <Image src={menu.icon} alt={menu.text} layout='fixed' width={30} height={30} />
-                  <div className='ml-2'>{menu.text}</div>
+                  <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
+                  <div>{menu.text}</div>
                 </a>
               ))}
             </nav>

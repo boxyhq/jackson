@@ -24,7 +24,7 @@ const generate = async () => {
     serialNumber: '01',
     name: 'CN=BoxyHQ Jackson',
     notBefore: new Date(),
-    notAfter: new Date(new Date().setFullYear(new Date().getFullYear() + 27)),
+    notAfter: new Date('2049-12-31T23:59:59Z'),
     signingAlgorithm: alg,
     keys: keys,
     extensions,

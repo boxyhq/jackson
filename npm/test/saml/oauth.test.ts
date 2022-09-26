@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { promises as fs } from 'fs';
-import * as utils from '../src/controller/utils';
+import * as utils from '../../src/controller/utils';
 import path from 'path';
 import {
   IOAuthController,
@@ -9,11 +9,11 @@ import {
   OAuthReqBody,
   OAuthTokenReq,
   SAMLResponsePayload,
-} from '../src/typings';
+} from '../../src/typings';
 import sinon from 'sinon';
 import tap from 'tap';
-import { JacksonError } from '../src/controller/error';
-import readConfig from '../src/read-config';
+import { JacksonError } from '../../src/controller/error';
+import readConfig from '../../src/read-config';
 import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
@@ -38,6 +38,7 @@ import {
   token_req_idp_initiated_saml_login,
   token_req_unencoded_client_id_gen,
 } from './fixture';
+import { getDatabaseOption } from '../utils';
 
 let apiController: IAPIController;
 let oauthController: IOAuthController;
@@ -78,9 +79,9 @@ const addMetadata = async (metadataPath) => {
 tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
 
-  const controller = await (await import('../src/index')).default(options);
+  const controller = await (await import('../../src/index')).default(options);
   const idpFlowEnabledController = await (
-    await import('../src/index')
+    await import('../../src/index')
   ).default({ ...options, idpEnabled: true });
 
   apiController = controller.apiController;

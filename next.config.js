@@ -21,6 +21,10 @@ module.exports = {
         destination: '/api/well-known/openid-configuration',
       },
       {
+        source: '/.well-known/saml-configuration',
+        destination: '/well-known/saml-configuration',
+      },
+      {
         source: '/oauth/jwks',
         destination: '/api/oauth/jwks',
       },

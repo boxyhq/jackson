@@ -1,0 +1,1 @@
+EXTERNAL_URL=$UFFIZZI_URL npm start
