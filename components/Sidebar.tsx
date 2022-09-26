@@ -87,7 +87,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                       'group flex items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
                       menu.current ? 'bg-gray-200' : ''
                     )}>
-                    <Image src={menu.icon} alt='BoxyHQ' layout='fixed' width={30} height={30} />
+                    <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                     <div className='ml-2'>{menu.text}</div>
                   </a>
                 ))}
