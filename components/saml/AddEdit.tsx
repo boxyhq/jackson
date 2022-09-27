@@ -74,7 +74,23 @@ const fieldCatalog = [
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
-      formatForDisplay: (value) => JSON.stringify(value, null, 2),
+      formatForDisplay: (value) => {
+        const obj = JSON.parse(JSON.stringify(value));
+        delete obj.validTo;
+        return JSON.stringify(obj, null, 2)
+      },
+    },
+  },
+  {
+    key: 'idpMetadata',
+    label: 'IDP Certificate Validity',
+    type: 'pre',
+    attributes: {
+      rows: 10,
+      editable: false,
+      showOnlyInEditView: true,
+      showWarning: (value) => new Date(value.validTo) < new Date(),
+      formatForDisplay: (value) => new Date(value.validTo).toString(),
     },
   },
   {
@@ -212,6 +228,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                     requiredInEditView = true, // by default all fields are required unless explicitly set to false
                     labelInEditView,
                     maxLength,
+                    showWarning,
                     required = true, // by default all fields are required unless explicitly set to false
                   },
                 }) => {
@@ -230,7 +247,13 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                         {_label}
                       </label>
                       {type === 'pre' ? (
-                        <pre className='block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'>
+                        <pre
+                          className={`block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 
+                        text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 
+                        dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 
+                        dark:focus:ring-blue-500 ${
+                          showWarning ? (showWarning(value) ? 'border-2 border-rose-500' : '') : ''
+                        }`}>
                           {value}
                         </pre>
                       ) : type === 'textarea' ? (
