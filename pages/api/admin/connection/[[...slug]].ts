@@ -9,14 +9,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET') {
       const { slug, pageOffset, pageLimit } = req.query;
       if (slug?.[0]) {
-        res.json(await connectionAPIController.getConnection({ clientID: slug[0] }));
+        const connection = (await connectionAPIController.getConnections({ clientID: slug[0] }))[0];
+        res.json(connection);
       } else {
         res.json(
           await adminController.getAllConnection(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
         );
       }
     } else if (req.method === 'DELETE') {
-      res.status(204).end(await connectionAPIController.deleteConnection(req.body));
+      res.status(204).end(await connectionAPIController.deleteConnections(req.body));
     } else {
       throw { message: 'Method not allowed', statusCode: 405 };
     }

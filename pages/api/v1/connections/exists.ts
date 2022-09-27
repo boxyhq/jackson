@@ -1,12 +1,12 @@
-import jackson from '@lib/jackson';
+import jackson, { type GetConnectionsQuery } from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { connectionAPIController } = await jackson();
     if (req.method === 'GET') {
-      const rsp = await connectionAPIController.getConnection(req.query as any);
-      if (Object.keys(rsp).length === 0) {
+      const rsp = await connectionAPIController.getConnections(req.query as GetConnectionsQuery);
+      if (rsp.length === 0) {
         res.status(404).send({});
       } else {
         res.status(204).end();

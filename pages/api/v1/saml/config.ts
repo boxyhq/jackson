@@ -1,6 +1,6 @@
 // Maintain /config path for backward compatibility
 
-import jackson from '@lib/jackson';
+import jackson, { type GetConfigQuery } from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'POST') {
       res.json(await connectionAPIController.config(req.body));
     } else if (req.method === 'GET') {
-      res.json(await connectionAPIController.getConfig(req.query as any));
+      res.json(await connectionAPIController.getConfig(req.query as GetConfigQuery));
     } else if (req.method === 'PATCH') {
       res.status(204).end(await connectionAPIController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
