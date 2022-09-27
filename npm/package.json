@@ -38,7 +38,7 @@
     "statements": 70
   },
   "dependencies": {
-    "@boxyhq/saml20": "1.0.6",
+    "@boxyhq/saml20": "1.0.7",
     "@opentelemetry/api": "1.0.4",
     "@opentelemetry/api-metrics": "0.27.0",
     "@peculiar/webcrypto": "1.4.0",
@@ -46,7 +46,7 @@
     "@peculiar/x509": "1.8.3",
     "jose": "4.9.3",
     "marked": "4.1.0",
-    "mongodb": "4.9.1",
+    "mongodb": "4.10.0",
     "mysql2": "2.3.3",
     "pg": "8.8.0",
     "redis": "4.3.1",
@@ -58,13 +58,13 @@
   },
   "devDependencies": {
     "@faker-js/faker": "7.5.0",
-    "@types/node": "18.7.18",
+    "@types/node": "18.7.23",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",
     "@typescript-eslint/eslint-plugin": "5.37.0",
     "@typescript-eslint/parser": "5.37.0",
     "cross-env": "7.0.3",
-    "eslint": "8.23.1",
+    "eslint": "8.24.0",
     "eslint-config-prettier": "8.5.0",
     "prettier": "2.7.1",
     "sinon": "14.0.0",
