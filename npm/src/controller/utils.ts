@@ -1,4 +1,4 @@
-import type { connectionType, IdPConnection, OAuthErrorHandlerParams } from '../typings';
+import type { ConnectionType, IdPConnection, OAuthErrorHandlerParams } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 import crypto from 'crypto';
@@ -89,7 +89,7 @@ export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
   return thumbprint;
 };
 
-export const validateIdPConnection = (body: IdPConnection, strategy: connectionType): void => {
+export const validateIdPConnection = (body: IdPConnection, strategy: ConnectionType): void => {
   const {
     encodedRawMetadata,
     rawMetadata,

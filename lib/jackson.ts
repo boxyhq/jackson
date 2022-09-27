@@ -15,6 +15,8 @@ import type {
   DirectorySyncRequest,
   IOidcDiscoveryController,
   ISPSAMLConfig,
+  GetConnectionsQuery,
+  GetConfigQuery,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -94,4 +96,6 @@ export type {
   DirectorySyncEvent,
   HTTPMethod,
   DirectorySyncRequest,
+  GetConnectionsQuery,
+  GetConfigQuery,
 };

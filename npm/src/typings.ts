@@ -16,7 +16,21 @@ export type IdPConnection = {
   oidcClientSecret?: string;
 };
 
-export type connectionType = 'saml' | 'oidc';
+export type ConnectionType = 'saml' | 'oidc';
+
+type ClientIDQuery = {
+  clientID: string;
+};
+type TenantQuery = {
+  tenant: string;
+  product: string;
+  strategy?: ConnectionType;
+};
+export type GetConnectionsQuery = ClientIDQuery | TenantQuery;
+export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
+
+export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
+export type DelConfigQuery = (ClientIDQuery & { clientSecret: string }) | Omit<TenantQuery, 'strategy'>;
 
 export interface IConnectionAPIController {
   config(body: IdPConnection): Promise<any>;
@@ -25,26 +39,10 @@ export interface IConnectionAPIController {
   updateConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
   updateSAMLConnection(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
   updateOIDCConnection(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
-  getConnection(body: {
-    clientID?: string;
-    tenant?: string;
-    product?: string;
-    strategy?: 'saml' | 'oidc';
-  }): Promise<any>;
-  getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
-  deleteConnection(body: {
-    clientID?: string;
-    clientSecret?: string;
-    tenant?: string;
-    product?: string;
-    strategy?: 'saml' | 'oidc';
-  }): Promise<void>;
-  deleteConfig(body: {
-    clientID?: string;
-    clientSecret?: string;
-    tenant?: string;
-    product?: string;
-  }): Promise<void>;
+  getConnections(body: GetConnectionsQuery): Promise<Array<any>>;
+  getConfig(body: GetConfigQuery): Promise<any>;
+  deleteConnections(body: DelConnectionsQuery): Promise<void>;
+  deleteConfig(body: DelConfigQuery): Promise<void>;
 }
 
 export interface IOAuthController {
