@@ -834,6 +834,10 @@ export class OAuthController implements IOAuthController {
    *         type: string
    *         description: Use the client_secret returned by the SAML connection API
    *         required: true
+   *       - name: code_verifier
+   *         in: formData
+   *         type: string
+   *         description: code_verifier against the code_challenge in the authz request (relevant to PKCE flow)
    *       - name: redirect_uri
    *         in: formData
    *         type: string
@@ -1009,11 +1013,21 @@ export class OAuthController implements IOAuthController {
    *               type: string
    *             lastName:
    *               type: string
+   *             raw:
+   *               type: object
+   *             requested:
+   *               type: object
    *           example:
    *             id: 32b5af58fdf
    *             email: jackson@coolstartup.com
    *             firstName: SAML
    *             lastName: Jackson
+   *             raw: {
+   *
+   *             }
+   *             requested: {
+   *
+   *             }
    */
   public async userInfo(token: string): Promise<Profile> {
     const rsp = await this.tokenStore.get(token);

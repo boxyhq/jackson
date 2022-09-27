@@ -469,53 +469,53 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: clientID
    *     type: string
    *     description: Client ID
+   * definitions:
+   *   Connection:
+   *      type: object
+   *      properties:
+   *        clientID:
+   *          type: string
+   *          description: Connection clientID
+   *        clientSecret:
+   *          type: string
+   *          description: Connection clientSecret
+   *        name:
+   *          type: string
+   *          description: Connection name
+   *        description:
+   *          type: string
+   *          description: Connection description
+   *        redirectUrl:
+   *          type: string
+   *          description: A list of allowed redirect URLs
+   *        defaultRedirectUrl:
+   *          type: string
+   *          description: The redirect URL to use in the IdP login flow
+   *        tenant:
+   *          type: string
+   *          description: Connection tenant
+   *        product:
+   *          type: string
+   *          description: Connection product
+   *        idpMetadata:
+   *          type: object
+   *          description: SAML IdP metadata
+   *        certs:
+   *          type: object
+   *          description: Certs generated for SAML connection
+   *        oidcProvider:
+   *          type: object
+   *          description: OIDC IdP metadata
    * responses:
-   *   '200':
+   *   '200Get':
    *     description: Success
    *     schema:
    *       type: array
-   *       example:
-   *         [{
-   *           "idpMetadata": {
-   *             "sso": {
-   *               "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-   *               "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-   *             },
-   *             "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-   *             "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-   *             "loginType": "idp",
-   *             "provider": "okta.com"
-   *           },
-   *           "defaultRedirectUrl": "https://hoppscotch.io/",
-   *           "redirectUrl": ["https://hoppscotch.io/"],
-   *           "tenant": "hoppscotch.io",
-   *           "product": "API Engine",
-   *           "name": "Hoppscotch-SP",
-   *           "description": "SP for hoppscotch.io",
-   *           "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *           "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *           "certs": {
-   *             "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *             "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *           }
-   *       },{
-   *           "oidcProvider": {
-   *               "discoveryUrl": "https://dev-xxxxx.okta.com/oauth2/yyyyyy/.well-known/openid-configuration",
-   *               "clientId": "xxxxxxyyyyyyxxxxxx",
-   *               "clientSecret": "zzzzzzzzzzzzzzzz"
-   *           },
-   *           "defaultRedirectUrl": "https://hoppscotch.io/",
-   *           "redirectUrl": ["https://hoppscotch.io/"],
-   *           "tenant": "hoppscotch.io",
-   *           "product": "API Exporter",
-   *           "name": "Hoppscotch-API-Exporter",
-   *           "description": "SP for hoppscotch.io",
-   *           "clientID": "Xxxxxxxxxxx",
-   *           "clientSecret": "yyyyyyyyyy",
-   *       }]
-   *   '400':
+   *       items:
+   *         $ref: '#/definitions/Connection'
+   *   '400Get':
    *     description: Please provide `clientID` or `tenant` and `product`.
-   *   '401':
+   *   '401Get':
    *     description: Unauthorized
    * /api/v1/connections:
    *   get:
@@ -525,16 +525,14 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/clientIDParamGet'
    *     operationId: get-connections
-   *     tags:
-   *       - OIDC Connection
-   *       - SAML Connection
+   *     tags: [Connections]
    *     responses:
    *      '200':
-   *        $ref: '#/responses/200'
+   *        $ref: '#/responses/200Get'
    *      '400':
-   *        $ref: '#/responses/400'
+   *        $ref: '#/responses/400Get'
    *      '401':
-   *        $ref: '#/responses/401'
+   *        $ref: '#/responses/401Get'
    */
   public async getConnections(body: GetConnectionsQuery): Promise<Array<any>> {
     const clientID = 'clientID' in body ? body.clientID : undefined;
@@ -603,6 +601,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/clientIDParamGet'
    *     responses:
    *      '200':
+   *         description: Success
    *         schema:
    *           type: object
    *           example:
@@ -687,16 +686,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: formData
    *     type: string
    *     description: Product
-   * /api/v1/oidc/connection:
+   *   strategyDel:
+   *     name: strategy
+   *     in: formData
+   *     type: string
+   *     description: Strategy
+   * /api/v1/connections:
    *   delete:
    *     parameters:
    *      - $ref: '#/parameters/clientIDDel'
    *      - $ref: '#/parameters/clientSecretDel'
    *      - $ref: '#/parameters/tenantDel'
    *      - $ref: '#/parameters/productDel'
-   *     summary: Delete OIDC Connection
+   *      - $ref: '#/parameters/strategyDel'
+   *     summary: Delete IdP Connections
    *     operationId: delete-oidc-connection
-   *     tags: [OIDC Connection]
+   *     tags: [Connections]
    *     consumes:
    *       - application/x-www-form-urlencoded
    *       - application/json
@@ -726,26 +731,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         description: Success
    *       '400':
    *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
-   *       '401':
-   *         description: Unauthorized
-   * /api/v1/saml/connection:
-   *   delete:
-   *     summary: Delete SAML Connection
-   *     operationId: delete-saml-connection
-   *     tags: [SAML Connection]
-   *     consumes:
-   *       - application/x-www-form-urlencoded
-   *       - application/json
-   *     parameters:
-   *      - $ref: '#/parameters/clientIDDel'
-   *      - $ref: '#/parameters/clientSecretDel'
-   *      - $ref: '#/parameters/tenantDel'
-   *      - $ref: '#/parameters/productDel'
-   *     responses:
-   *       '200':
-   *         description: Success
-   *       '400':
-   *         description:  clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
    *       '401':
    *         description: Unauthorized
    */

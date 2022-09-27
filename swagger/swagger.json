@@ -165,7 +165,36 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/200"
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "example": {
+                "idpMetadata": {
+                  "sso": {
+                    "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+                    "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
+                  },
+                  "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+                  "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+                  "loginType": "idp",
+                  "provider": "okta.com"
+                },
+                "defaultRedirectUrl": "https://hoppscotch.io/",
+                "redirectUrl": [
+                  "https://hoppscotch.io/"
+                ],
+                "tenant": "hoppscotch.io",
+                "product": "API Engine",
+                "name": "Hoppscotch-SP",
+                "description": "SP for hoppscotch.io",
+                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+                "certs": {
+                  "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+                  "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+                }
+              }
+            }
           },
           "400": {
             "$ref": "#/responses/400"
@@ -205,7 +234,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
+            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
           },
           "401": {
             "description": "Unauthorized"
@@ -316,71 +345,6 @@
           },
           "400": {
             "$ref": "#/definitions/validationErrorsPatch"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
-      "get": {
-        "summary": "Get SAML Connection",
-        "operationId": "get-saml-connection",
-        "tags": [
-          "SAML Connection"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/tenantParamGet"
-          },
-          {
-            "$ref": "#/parameters/productParamGet"
-          },
-          {
-            "$ref": "#/parameters/clientIDParamGet"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/200"
-          },
-          "400": {
-            "$ref": "#/responses/400"
-          },
-          "401": {
-            "$ref": "#/responses/401"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete SAML Connection",
-        "operationId": "delete-saml-connection",
-        "tags": [
-          "SAML Connection"
-        ],
-        "consumes": [
-          "application/x-www-form-urlencoded",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/clientIDDel"
-          },
-          {
-            "$ref": "#/parameters/clientSecretDel"
-          },
-          {
-            "$ref": "#/parameters/tenantDel"
-          },
-          {
-            "$ref": "#/parameters/productDel"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
           },
           "401": {
             "description": "Unauthorized"
@@ -590,9 +554,11 @@
             "description": "Unauthorized"
           }
         }
-      },
+      }
+    },
+    "/api/v1/connections": {
       "get": {
-        "summary": "Get OIDC Connection",
+        "summary": "Get IdP Connections",
         "parameters": [
           {
             "$ref": "#/parameters/tenantParamGet"
@@ -604,19 +570,19 @@
             "$ref": "#/parameters/clientIDParamGet"
           }
         ],
-        "operationId": "get-oidc-connection",
+        "operationId": "get-connections",
         "tags": [
-          "OIDC Connection"
+          "Connections"
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/200"
+            "$ref": "#/responses/200Get"
           },
           "400": {
-            "$ref": "#/responses/400"
+            "$ref": "#/responses/400Get"
           },
           "401": {
-            "$ref": "#/responses/401"
+            "$ref": "#/responses/401Get"
           }
         }
       },
@@ -633,12 +599,15 @@
           },
           {
             "$ref": "#/parameters/productDel"
+          },
+          {
+            "$ref": "#/parameters/strategyDel"
           }
         ],
-        "summary": "Delete OIDC Connection",
+        "summary": "Delete IdP Connections",
         "operationId": "delete-oidc-connection",
         "tags": [
-          "OIDC Connection"
+          "Connections"
         ],
         "consumes": [
           "application/x-www-form-urlencoded",
@@ -649,7 +618,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
+            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
           },
           "401": {
             "description": "Unauthorized"
@@ -689,6 +658,12 @@
             "type": "string",
             "description": "Use the client_secret returned by the SAML connection API",
             "required": true
+          },
+          {
+            "name": "code_verifier",
+            "in": "formData",
+            "type": "string",
+            "description": "code_verifier against the code_challenge in the authz request (relevant to PKCE flow)"
           },
           {
             "name": "redirect_uri",
@@ -755,13 +730,21 @@
                 },
                 "lastName": {
                   "type": "string"
+                },
+                "raw": {
+                  "type": "object"
+                },
+                "requested": {
+                  "type": "object"
                 }
               },
               "example": {
                 "id": "32b5af58fdf",
                 "email": "jackson@coolstartup.com",
                 "firstName": "SAML",
-                "lastName": "Jackson"
+                "lastName": "Jackson",
+                "raw": {},
+                "requested": {}
               }
             }
           }
@@ -797,6 +780,52 @@
           "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
           "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
         }
+      },
+      "properties": {
+        "clientID": {
+          "type": "string",
+          "description": "Connection clientID"
+        },
+        "clientSecret": {
+          "type": "string",
+          "description": "Connection clientSecret"
+        },
+        "name": {
+          "type": "string",
+          "description": "Connection name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Connection description"
+        },
+        "redirectUrl": {
+          "type": "string",
+          "description": "A list of allowed redirect URLs"
+        },
+        "defaultRedirectUrl": {
+          "type": "string",
+          "description": "The redirect URL to use in the IdP login flow"
+        },
+        "tenant": {
+          "type": "string",
+          "description": "Connection tenant"
+        },
+        "product": {
+          "type": "string",
+          "description": "Connection product"
+        },
+        "idpMetadata": {
+          "type": "object",
+          "description": "SAML IdP metadata"
+        },
+        "certs": {
+          "type": "object",
+          "description": "Certs generated for SAML connection"
+        },
+        "oidcProvider": {
+          "type": "object",
+          "description": "OIDC IdP metadata"
+        }
       }
     },
     "validationErrorsPost": {
@@ -807,42 +836,19 @@
     }
   },
   "responses": {
-    "200": {
+    "200Get": {
       "description": "Success",
       "schema": {
-        "type": "object",
-        "example": {
-          "idpMetadata": {
-            "sso": {
-              "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-              "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-            },
-            "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-            "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-            "loginType": "idp",
-            "provider": "okta.com"
-          },
-          "defaultRedirectUrl": "https://hoppscotch.io/",
-          "redirectUrl": [
-            "https://hoppscotch.io/"
-          ],
-          "tenant": "hoppscotch.io",
-          "product": "API Engine",
-          "name": "Hoppscotch-SP",
-          "description": "SP for hoppscotch.io",
-          "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-          "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-          "certs": {
-            "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-            "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-          }
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Connection"
         }
       }
     },
-    "400": {
-      "description": "Please provide `clientID` or `tenant` and `product`. | connection type mismatch"
+    "400Get": {
+      "description": "Please provide `clientID` or `tenant` and `product`."
     },
-    "401": {
+    "401Get": {
       "description": "Unauthorized"
     }
   },
@@ -1004,6 +1010,12 @@
       "in": "formData",
       "type": "string",
       "description": "Product"
+    },
+    "strategyDel": {
+      "name": "strategy",
+      "in": "formData",
+      "type": "string",
+      "description": "Strategy"
     }
   },
   "tags": []
