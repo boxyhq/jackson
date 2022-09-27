@@ -68,6 +68,18 @@ export const invalid_client_id: Partial<OAuthReqBody> = {
   client_id: 'xxxxxxxxx',
 };
 
+export const invalid_tenant_product = (product?, tenant?): Partial<OAuthTokenReq> => {
+  product = product || boxyhq.product;
+  tenant = tenant || boxyhq.tenant;
+  return {
+    grant_type: 'authorization_code',
+    client_id: `tenant=${tenant}&product=${product}`,
+    client_secret: 'dummy',
+    code: CODE,
+    redirect_uri: boxyhq.defaultRedirectUrl,
+  };
+};
+
 export const saml_binding_absent: Partial<OAuthReqBody> = {
   redirect_uri: boxyhqNobinding.defaultRedirectUrl,
   state: 'state-123',

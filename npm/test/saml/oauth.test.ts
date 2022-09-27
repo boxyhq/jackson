@@ -29,6 +29,7 @@ import {
   bodyWithMissingRedirectUri,
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
+  invalid_tenant_product,
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
@@ -354,6 +355,54 @@ tap.test('token()', (t) => {
       const { message, statusCode } = err as JacksonError;
       t.equal(message, 'Unsupported grant_type', 'got expected error message');
       t.equal(statusCode, 400, 'got expected status code');
+    }
+
+    t.end();
+  });
+
+  t.test('Should throw an error if `tenant` is invalid', async (t) => {
+    const body = invalid_tenant_product(undefined, 'invalidTenant');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    t.end();
+  });
+
+  t.test('Should throw an error if `product` is invalid', async (t) => {
+    const body = invalid_tenant_product('invalidProduct');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    t.end();
+  });
+
+  t.test('Should throw an error if `tenant` and `product` is invalid', async (t) => {
+    const body = invalid_tenant_product('invalidProduct', 'invalidTenant');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
     }
 
     t.end();
