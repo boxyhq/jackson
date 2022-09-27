@@ -151,6 +151,7 @@ export class OAuthController implements IOAuthController {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       provider = 'saml',
       idp_hint,
+      prompt,
     } = body;
 
     let requestedTenant = tenant;
@@ -362,12 +363,17 @@ export class OAuthController implements IOAuthController {
           throw new Error('Error generating x509 certs');
         }
       }
+      // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
+      // If login is one of the value in prompt we want to enable forceAuthn
+      // Else use the saml config forceAuthn value
+      const promptOptions = prompt ? prompt.split(' ').filter((p) => p === 'login') : [];
       const samlReq = saml.request({
         ssoUrl,
         entityID: this.opts.samlAudience!,
         callbackUrl: this.opts.externalUrl + this.opts.samlPath,
         signingKey: samlConfig.certs.privateKey,
         publicKey: samlConfig.certs.publicKey,
+        forceAuthn: promptOptions.length > 0 ? true : !!samlConfig.forceAuthn,
       });
 
       const sessionId = crypto.randomBytes(16).toString('hex');

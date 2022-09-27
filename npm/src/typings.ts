@@ -9,6 +9,7 @@ export type IdPConfig = {
   description?: string;
   rawMetadata?: string;
   encodedRawMetadata?: string;
+  forceAuthn: boolean | string;
 };
 
 export interface IAPIController {
@@ -80,6 +81,7 @@ export interface OAuthReqBody {
   code_challenge_method: 'plain' | 'S256' | '';
   provider: 'saml';
   idp_hint?: string;
+  prompt?: string;
 }
 
 export interface SAMLResponsePayload {
