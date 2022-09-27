@@ -1,6 +1,13 @@
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
-import { IConnectionAPIController, IdPConnection, Storable } from '../typings';
+import {
+  GetConfigQuery,
+  GetConnectionsQuery,
+  DelConnectionsQuery,
+  IConnectionAPIController,
+  IdPConnection,
+  Storable,
+} from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import oidcConnection from './connection/oidc';
@@ -363,7 +370,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async updateSAMLConnection(
     body: IdPConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
-    await samlConnection.update(body, this.connectionStore, this.getConnection.bind(this));
+    await samlConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
 
   // For backwards compatibility
@@ -442,7 +449,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async updateOIDCConnection(
     body: IdPConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
-    await oidcConnection.update(body, this.connectionStore, this.getConnection.bind(this));
+    await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
   /**
    * @swagger
@@ -466,9 +473,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   '200':
    *     description: Success
    *     schema:
-   *       type: object
+   *       type: array
    *       example:
-   *         {
+   *         [{
    *           "idpMetadata": {
    *             "sso": {
    *               "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
@@ -491,20 +498,36 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *             "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
    *             "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
    *           }
-   *       }
+   *       },{
+   *           "oidcProvider": {
+   *               "discoveryUrl": "https://dev-xxxxx.okta.com/oauth2/yyyyyy/.well-known/openid-configuration",
+   *               "clientId": "xxxxxxyyyyyyxxxxxx",
+   *               "clientSecret": "zzzzzzzzzzzzzzzz"
+   *           },
+   *           "defaultRedirectUrl": "https://hoppscotch.io/",
+   *           "redirectUrl": ["https://hoppscotch.io/"],
+   *           "tenant": "hoppscotch.io",
+   *           "product": "API Exporter",
+   *           "name": "Hoppscotch-API-Exporter",
+   *           "description": "SP for hoppscotch.io",
+   *           "clientID": "Xxxxxxxxxxx",
+   *           "clientSecret": "yyyyyyyyyy",
+   *       }]
    *   '400':
-   *     description: Please provide `clientID` or `tenant` and `product`. | connection type mismatch
+   *     description: Please provide `clientID` or `tenant` and `product`.
    *   '401':
    *     description: Unauthorized
-   * /api/v1/oidc/connection:
+   * /api/v1/connections:
    *   get:
-   *     summary: Get OIDC Connection
+   *     summary: Get IdP Connections
    *     parameters:
    *       - $ref: '#/parameters/tenantParamGet'
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/clientIDParamGet'
-   *     operationId: get-oidc-connection
-   *     tags: [OIDC Connection]
+   *     operationId: get-connections
+   *     tags:
+   *       - OIDC Connection
+   *       - SAML Connection
    *     responses:
    *      '200':
    *        $ref: '#/responses/200'
@@ -512,6 +535,62 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        $ref: '#/responses/400'
    *      '401':
    *        $ref: '#/responses/401'
+   */
+  public async getConnections(body: GetConnectionsQuery): Promise<Array<any>> {
+    const clientID = 'clientID' in body ? body.clientID : undefined;
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
+    const strategy = 'strategy' in body ? body.strategy : undefined;
+
+    metrics.increment('getConnections');
+
+    if (clientID) {
+      const connection = await this.connectionStore.get(clientID);
+
+      if (!connection || typeof connection !== 'object') {
+        return [];
+      }
+
+      return [connection];
+    }
+
+    if (tenant && product) {
+      const connections = await this.connectionStore.getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
+
+      if (!connections || !connections.length) {
+        return [];
+      }
+      // filter if strategy is passed
+      const filteredConnections = strategy
+        ? connections.filter((connection) => {
+            if (strategy === 'saml') {
+              if (connection.idpMetadata) {
+                return true;
+              }
+            }
+            if (strategy === 'oidc') {
+              if (connection.oidcProvider) {
+                return true;
+              }
+            }
+            return false;
+          })
+        : connections;
+
+      if (!filteredConnections.length) {
+        return [];
+      }
+      return filteredConnections;
+    }
+
+    throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
+  }
+
+  /**
+   * @swagger
    * /api/v1/saml/config:
    *   get:
    *     summary: Get SAML Config
@@ -524,93 +603,65 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/clientIDParamGet'
    *     responses:
    *      '200':
-   *        $ref: '#/responses/200'
-   *      '400':
-   *        $ref: '#/responses/400'
-   *      '401':
-   *        $ref: '#/responses/401'
-   * /api/v1/saml/connection:
-   *   get:
-   *     summary: Get SAML Connection
-   *     operationId: get-saml-connection
-   *     tags: [SAML Connection]
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/clientIDParamGet'
-   *     responses:
-   *      '200':
-   *        $ref: '#/responses/200'
+   *         schema:
+   *           type: object
+   *           example:
+   *             {
+   *                "idpMetadata": {
+   *                  "sso": {
+   *                    "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+   *                    "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
+   *                  },
+   *                  "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+   *                  "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+   *                  "loginType": "idp",
+   *                  "provider": "okta.com"
+   *                },
+   *                "defaultRedirectUrl": "https://hoppscotch.io/",
+   *                "redirectUrl": ["https://hoppscotch.io/"],
+   *                "tenant": "hoppscotch.io",
+   *                "product": "API Engine",
+   *                "name": "Hoppscotch-SP",
+   *                "description": "SP for hoppscotch.io",
+   *                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *                "certs": {
+   *                  "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+   *                  "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+   *                }
+   *            }
    *      '400':
    *        $ref: '#/responses/400'
    *      '401':
    *        $ref: '#/responses/401'
    */
-  public async getConnection(body: {
-    clientID?: string;
-    tenant?: string;
-    product?: string;
-    strategy?: 'saml' | 'oidc';
-  }): Promise<any> {
-    const { clientID, tenant, product, strategy } = body;
+  public async getConfig(body: GetConfigQuery): Promise<any> {
+    const clientID = 'clientID' in body ? body.clientID : undefined;
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
 
-    metrics.increment('getConnection');
+    metrics.increment('getConnections');
 
     if (clientID) {
-      const connection = await this.connectionStore.get(clientID);
+      const samlConfig = await this.connectionStore.get(clientID);
 
-      if (!connection || typeof connection !== 'object') {
-        return {};
-      }
-
-      if (strategy === 'saml' && connection.oidcProvider && !connection.idpMetadata) {
-        throw new JacksonError('connection type mismatch', 400);
-      }
-
-      if (strategy === 'oidc' && connection.idpMetadata && !connection.oidcProvider) {
-        throw new JacksonError('connection type mismatch', 400);
-      }
-      return connection;
+      return samlConfig || {};
     }
 
     if (tenant && product) {
-      const connections = await this.connectionStore.getByIndex({
+      const samlConfigs = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!connections || !connections.length) {
+      if (!samlConfigs || !samlConfigs.length) {
         return {};
       }
-      // filter if strategy is passed
-      const filteredConnections = connections.filter((connection) => {
-        if (!strategy) {
-          return true;
-        }
-        if (strategy === 'saml') {
-          if (connection.idpMetadata) {
-            return true;
-          }
-        }
-        if (strategy === 'oidc') {
-          if (connection.oidcProvider) {
-            return true;
-          }
-        }
-        return false;
-      });
 
-      if (!filteredConnections.length) {
-        return {};
-      }
-      return { ...filteredConnections[0] };
+      return { ...samlConfigs[0] };
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
-  }
-
-  public async getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any> {
-    return await this.getConnection({ ...body, strategy: 'saml' });
   }
 
   /**
@@ -653,7 +704,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       '200':
    *         description: Success
    *       '400':
-   *         description: connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
+   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
    *       '401':
    *         description: Unauthorized
    * /api/v1/saml/config:
@@ -674,7 +725,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       '200':
    *         description: Success
    *       '400':
-   *         description: connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
+   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
    *       '401':
    *         description: Unauthorized
    * /api/v1/saml/connection:
@@ -694,20 +745,18 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       '200':
    *         description: Success
    *       '400':
-   *         description: connection type mismatch | clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
+   *         description:  clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
    *       '401':
    *         description: Unauthorized
    */
-  public async deleteConnection(body: {
-    clientID?: string;
-    clientSecret?: string;
-    tenant?: string;
-    product?: string;
-    strategy?: 'saml' | 'oidc';
-  }): Promise<void> {
-    const { clientID, clientSecret, tenant, product, strategy } = body;
+  public async deleteConnections(body: DelConnectionsQuery): Promise<void> {
+    const clientID = 'clientID' in body ? body.clientID : undefined;
+    const clientSecret = 'clientSecret' in body ? body.clientSecret : undefined;
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
+    const strategy = 'strategy' in body ? body.strategy : undefined;
 
-    metrics.increment('deleteConnection');
+    metrics.increment('deleteConnections');
 
     if (clientID && clientSecret) {
       const connection = await this.connectionStore.get(clientID);
@@ -716,13 +765,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return;
       }
 
-      if (strategy === 'saml' && connection.oidcProvider && !connection.idpMetadata) {
-        throw new JacksonError('connection type mismatch', 400);
-      }
-
-      if (strategy === 'oidc' && connection.idpMetadata && !connection.oidcProvider) {
-        throw new JacksonError('connection type mismatch', 400);
-      }
       if (connection.clientSecret === clientSecret) {
         await this.connectionStore.delete(clientID);
       } else {
@@ -742,22 +784,21 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return;
       }
       // filter if strategy is passed
-      const filteredConnections = connections.filter((connection) => {
-        if (!strategy) {
-          return true;
-        }
-        if (strategy === 'saml') {
-          if (connection.idpMetadata) {
-            return true;
-          }
-        }
-        if (strategy === 'oidc') {
-          if (connection.oidcProvider) {
-            return true;
-          }
-        }
-        return false;
-      });
+      const filteredConnections = strategy
+        ? connections.filter((connection) => {
+            if (strategy === 'saml') {
+              if (connection.idpMetadata) {
+                return true;
+              }
+            }
+            if (strategy === 'oidc') {
+              if (connection.oidcProvider) {
+                return true;
+              }
+            }
+            return false;
+          })
+        : connections;
 
       for (const conf of filteredConnections) {
         await this.connectionStore.delete(conf.clientID);
@@ -768,12 +809,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
     throw new JacksonError('Please provide `clientID` and `clientSecret` or `tenant` and `product`.', 400);
   }
-  public async deleteConfig(body: {
-    clientID?: string;
-    clientSecret?: string;
-    tenant?: string;
-    product?: string;
-  }): Promise<void> {
-    await this.deleteConnection({ ...body, strategy: 'saml' });
+  public async deleteConfig(body: DelConnectionsQuery): Promise<void> {
+    await this.deleteConnections({ ...body, strategy: 'saml' });
   }
 }

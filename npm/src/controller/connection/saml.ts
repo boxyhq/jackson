@@ -102,7 +102,7 @@ const saml = {
   update: async (
     body: IdPConnection & { clientID: string; clientSecret: string },
     connectionStore: Storable,
-    connectionGetter: IConnectionAPIController['getConnection']
+    connectionsGetter: IConnectionAPIController['getConnections']
   ) => {
     const {
       encodedRawMetadata, // could be empty
@@ -131,7 +131,7 @@ const saml = {
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const _savedConnection = await connectionGetter(clientInfo);
+    const _savedConnection = (await connectionsGetter(clientInfo))[0];
 
     if (_savedConnection.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);

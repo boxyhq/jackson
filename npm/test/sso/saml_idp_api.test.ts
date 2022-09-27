@@ -29,7 +29,7 @@ tap.test('controller/api', async (t) => {
   await loadConnection(metadataPath);
 
   t.afterEach(async () => {
-    await connectionAPIController.deleteConnection({
+    await connectionAPIController.deleteConnections({
       tenant: saml_connection.tenant,
       product: saml_connection.product,
     });
@@ -166,9 +166,11 @@ tap.test('controller/api', async (t) => {
       t.equal(response.clientID, CLIENT_ID_SAML);
       t.equal(response.idpMetadata.provider, PROVIDER);
 
-      const savedConnection = await connectionAPIController.getConnection({
-        clientID: CLIENT_ID_SAML,
-      });
+      const savedConnection = (
+        await connectionAPIController.getConnections({
+          clientID: CLIENT_ID_SAML,
+        })
+      )[0];
 
       t.equal(savedConnection.name, 'testConfig');
 
@@ -226,7 +228,7 @@ tap.test('controller/api', async (t) => {
       const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
         body_saml_provider as IdPConnection
       );
-      const { name, description } = await connectionAPIController.getConnection({ clientID });
+      const { name, description } = (await connectionAPIController.getConnections({ clientID }))[0];
       t.equal(name, 'testConfig');
       t.equal(description, 'Just a test configuration');
 
@@ -240,7 +242,7 @@ tap.test('controller/api', async (t) => {
         tenant: body_saml_provider.tenant,
         product: body_saml_provider.product,
       });
-      const savedConnection = await connectionAPIController.getConnection({ clientID });
+      const savedConnection = (await connectionAPIController.getConnections({ clientID }))[0];
       t.equal(savedConnection.name, 'A new name');
       t.equal(savedConnection.description, 'A new description');
     });
@@ -252,7 +254,7 @@ tap.test('controller/api', async (t) => {
 
       await connectionAPIController.createSAMLConnection(body as IdPConnection);
 
-      const savedConnection = await connectionAPIController.getConnection(body);
+      const savedConnection = (await connectionAPIController.getConnections(body))[0];
 
       t.equal(savedConnection.name, 'testConfig');
     });
@@ -266,33 +268,26 @@ tap.test('controller/api', async (t) => {
 
       // Empty body
       try {
-        await connectionAPIController.getConnection({});
+        await connectionAPIController.getConnections({ clientID: '' });
         t.fail('Expecting Error.');
       } catch (err: any) {
         t.match(err.message, 'Please provide `clientID` or `tenant` and `product`.');
       }
 
-      // Invalid strategy
-      try {
-        await connectionAPIController.getConnection({ strategy: 'oidc', clientID });
-        t.fail('Expecting Error.');
-      } catch (err: any) {
-        t.match(err.message, 'connection type mismatch');
-      }
       // Invalid clientID
-      response = await connectionAPIController.getConnection({
+      response = await connectionAPIController.getConnections({
         clientID: 'an invalid clientID',
       });
 
-      t.match(response, {});
+      t.match(response, []);
 
       // Invalid tenant and product combination
-      response = await connectionAPIController.getConnection({
+      response = await connectionAPIController.getConnections({
         tenant: 'demo.com',
         product: 'desk',
       });
 
-      t.match(response, {});
+      t.match(response.length, 0);
     });
   });
 
@@ -302,42 +297,34 @@ tap.test('controller/api', async (t) => {
 
       const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(body);
 
-      await connectionAPIController.deleteConnection({
+      await connectionAPIController.deleteConnections({
         clientID,
         clientSecret,
       });
 
-      const response = await connectionAPIController.getConnection({
+      const response = await connectionAPIController.getConnections({
         clientID,
       });
 
-      t.match(response, {});
+      t.match(response, []);
     });
 
     t.test('when invalid request', async (t) => {
       const body: IdPConnection = Object.assign({}, saml_connection);
 
-      const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(body);
+      const { clientID } = await connectionAPIController.createSAMLConnection(body);
 
       // Empty body
       try {
-        await connectionAPIController.deleteConnection({});
+        await connectionAPIController.deleteConnections({ clientID: '', clientSecret: '' });
         t.fail('Expecting Error.');
       } catch (err: any) {
         t.match(err.message, 'Please provide `clientID` and `clientSecret` or `tenant` and `product`.');
       }
 
-      // Invalid strategy
-      try {
-        await connectionAPIController.deleteConnection({ strategy: 'oidc', clientID, clientSecret });
-        t.fail('Expecting Error.');
-      } catch (err: any) {
-        t.match(err.message, 'connection type mismatch');
-      }
-
       // Invalid clientID or clientSecret
       try {
-        await connectionAPIController.deleteConnection({
+        await connectionAPIController.deleteConnections({
           clientID,
           clientSecret: 'invalid client secret',
         });

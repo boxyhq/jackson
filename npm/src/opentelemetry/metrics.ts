@@ -6,14 +6,14 @@ const counters = {
     description: 'Number of IdP connection create requests',
   },
 
-  getConnection: {
-    name: 'jackson.connection.get',
-    description: 'Number of IdP connection get requests',
+  getConnections: {
+    name: 'jackson.connections.get',
+    description: 'Number of IdP connections get requests',
   },
 
-  deleteConnection: {
-    name: 'jackson.connection.delete',
-    description: 'Number of IdP connection delete requests',
+  deleteConnections: {
+    name: 'jackson.connections.delete',
+    description: 'Number of IdP connections delete requests',
   },
 
   oauthAuthorize: {
