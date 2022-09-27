@@ -712,6 +712,9 @@ export class OAuthController implements IOAuthController {
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
         } else {
+          if (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product) {
+            throw new JacksonError('Invalid tenant or product', 401);
+          }
           // encoded client_id, verify client_secret
           if (client_secret !== this.opts.clientSecretVerifier) {
             throw new JacksonError('Invalid client_secret', 401);
