@@ -706,6 +706,8 @@ export class OAuthController implements IOAuthController {
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
         } else {
+          //TODO: Match the sp.tenant & Product with session?.requested?.tenant & session?.requested?.product
+          // Add test => calling the code with client_id
           // encoded client_id, verify client_secret
           if (client_secret !== this.opts.clientSecretVerifier) {
             throw new JacksonError('Invalid client_secret', 401);
