@@ -2,6 +2,7 @@
 
 module.exports = {
   reactStrictMode: true,
+  output: 'standalone',
   webpack: (config, { webpack, isServer }) => {
     if (isServer) {
       // Module not found
