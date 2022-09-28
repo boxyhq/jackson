@@ -83,7 +83,7 @@ const fieldCatalog = [
   },
   {
     key: 'idpMetadata',
-    label: 'IDP Certificate Validity',
+    label: 'IdP Certificate Validity',
     type: 'pre',
     attributes: {
       rows: 10,
@@ -211,7 +211,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
           {isEditView ? 'Edit Connection' : 'Create Connection'}
         </h2>
         <form onSubmit={saveSAMLConfiguration}>
-          <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
+          <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
             {fieldCatalog
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
               .map(
