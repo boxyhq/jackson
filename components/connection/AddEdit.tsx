@@ -11,6 +11,7 @@ import ConfirmationModal from '@components/ConfirmationModal';
  * to render parsed metadata and other attributes.
  * All fields are editable unless they have `editable` set to false.
  * All fields are required unless they have `required` or `requiredInEditView` set to false.
+ * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
  */
 const fieldCatalog = [
   {
@@ -90,14 +91,32 @@ const fieldCatalog = [
   },
   {
     key: 'idpMetadata',
-    label: 'IDP Metadata',
+    label: 'IdP Metadata',
     type: 'pre',
     attributes: {
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
-      formatForDisplay: (value) => JSON.stringify(value, null, 2),
       connection: 'saml',
+      formatForDisplay: (value) => {
+        const obj = JSON.parse(JSON.stringify(value));
+        delete obj.validTo;
+        return JSON.stringify(obj, null, 2);
+      },
+    },
+  },
+  {
+    key: 'idpCertExpiry',
+    label: 'IdP Certificate Validity',
+    type: 'pre',
+    attributes: {
+      rows: 10,
+      editable: false,
+      showOnlyInEditView: true,
+      connection: 'saml',
+      accessor: (o) => o?.idpMetadata?.validTo,
+      showWarning: (value) => new Date(value) < new Date(),
+      formatForDisplay: (value) => new Date(value).toString(),
     },
   },
   {
@@ -296,7 +315,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
           </div>
         )}
         <form onSubmit={saveConnection}>
-          <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
+          <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
             {fieldCatalog
               .filter(
                 fieldCatalogFilterByConnection(
@@ -324,6 +343,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
                     requiredInEditView = true, // by default all fields are required unless explicitly set to false
                     labelInEditView,
                     maxLength,
+                    showWarning,
                     required = true, // by default all fields are required unless explicitly set to false
                   },
                 }) => {
@@ -342,7 +362,13 @@ const AddEdit = ({ connection }: AddEditProps) => {
                         {_label}
                       </label>
                       {type === 'pre' ? (
-                        <pre className='block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'>
+                        <pre
+                          className={`block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 
+                        text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 
+                        dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 
+                        dark:focus:ring-blue-500 ${
+                          showWarning ? (showWarning(value) ? 'border-2 border-rose-500' : '') : ''
+                        }`}>
                           {value}
                         </pre>
                       ) : type === 'textarea' ? (
