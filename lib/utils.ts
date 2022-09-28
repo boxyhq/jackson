@@ -38,3 +38,9 @@ const IsJsonString = (body: any): boolean => {
 export const bodyParser = (req: NextApiRequest): any => {
   return IsJsonString(req.body) ? JSON.parse(req.body) : req.body;
 };
+
+export const strategyChecker = (req: NextApiRequest): { isSAML: boolean; isOIDC: boolean } => {
+  const isSAML = 'rawMetadata' in req.body || 'encodedRawMetadata' in req.body;
+  const isOIDC = 'oidcDiscoveryUrl' in req.body;
+  return { isSAML, isOIDC };
+};
