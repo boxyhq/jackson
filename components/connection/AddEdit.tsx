@@ -116,8 +116,7 @@ const fieldCatalog = [
     key: 'forceAuthn',
     label: 'Enable ForceAuthn',
     type: 'checkbox',
-
-    attributes: { showOnlyInEditView: false, requiredInEditView: false, required: false },
+    attributes: { requiredInEditView: false, required: false, connection: 'saml' },
   },
 ];
 
