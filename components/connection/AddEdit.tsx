@@ -173,44 +173,37 @@ const AddEdit = ({ connection }: AddEditProps) => {
   });
   const saveConnection = async (event) => {
     event.preventDefault();
-    const { rawMetadata, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, redirectUrl, ...rest } = formObj;
+    const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, ...rest } = formObj;
     const encodedRawMetadata = btoa(rawMetadata || '');
     const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
-    const url = connectionIsSAML
-      ? '/api/admin/saml/connection'
-      : connectionIsOIDC
-      ? '/api/admin/oidc/connection'
-      : null;
 
-    if (url) {
-      const res = await fetch(url, {
-        method: isEditView ? 'PATCH' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...rest,
-          encodedRawMetadata,
-          oidcDiscoveryUrl,
-          oidcClientId,
-          oidcClientSecret,
-          redirectUrl: JSON.stringify(redirectUrlList),
-        }),
-      });
-      if (res.ok) {
-        if (!isEditView) {
-          router.replace('/admin/connection');
-        } else {
-          setSaveStatus({ status: 'SUCCESS' });
-          // revalidate on save
-          mutate(`/api/admin/connection/${connectionClientId}`);
-          setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
-        }
+    const res = await fetch('/api/admin/connections', {
+      method: isEditView ? 'PATCH' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...rest,
+        encodedRawMetadata: connectionIsSAML ? encodedRawMetadata : undefined,
+        oidcDiscoveryUrl: connectionIsOIDC ? oidcDiscoveryUrl : undefined,
+        oidcClientId: connectionIsOIDC ? oidcClientId : undefined,
+        oidcClientSecret: connectionIsOIDC ? oidcClientSecret : undefined,
+        redirectUrl: JSON.stringify(redirectUrlList),
+      }),
+    });
+    if (res.ok) {
+      if (!isEditView) {
+        router.replace('/admin/connection');
       } else {
-        // save failed
-        setSaveStatus({ status: 'ERROR' });
+        setSaveStatus({ status: 'SUCCESS' });
+        // revalidate on save
+        mutate(`/api/admin/connections/${connectionClientId}`);
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
       }
+    } else {
+      // save failed
+      setSaveStatus({ status: 'ERROR' });
+      setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
     }
   };
 
@@ -218,7 +211,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
-    await fetch('/api/admin/connection', {
+    await fetch('/api/admin/connections', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -226,7 +219,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
       body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
     });
     toggleDelConfirm();
-    await mutate('/api/admin/connection');
+    await mutate('/api/admin/connections');
     router.replace('/admin/connection');
   };
 
@@ -244,7 +237,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
     return (event: FormEvent) => {
       const target = event.target as HTMLInputElement | HTMLTextAreaElement;
       setFormObj((cur) => ({ ...cur, [target.id]: target[opts.key || 'value'] }));
-    }
+    };
   }
 
   function fieldCatalogFilterByConnection(connection) {
@@ -374,7 +367,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
                           required={_required}
                           readOnly={readOnly}
                           maxLength={maxLength}
-                          onChange={getHandleChange({key: "checked"})}
+                          onChange={getHandleChange({ key: 'checked' })}
                           className='input'
                         />
                       ) : (
