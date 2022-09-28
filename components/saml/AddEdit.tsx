@@ -68,7 +68,7 @@ const fieldCatalog = [
   },
   {
     key: 'idpMetadata',
-    label: 'IDP Metadata',
+    label: 'IdP Metadata',
     type: 'pre',
     attributes: {
       rows: 10,
