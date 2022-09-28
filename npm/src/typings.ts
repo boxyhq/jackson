@@ -14,6 +14,7 @@ export type IdPConnection = {
   oidcDiscoveryUrl?: string;
   oidcClientId?: string;
   oidcClientSecret?: string;
+  forceAuthn?: boolean | string;
 };
 
 export type ConnectionType = 'saml' | 'oidc';
@@ -102,6 +103,7 @@ export interface OAuthReqBody {
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
   idp_hint?: string;
+  prompt?: string;
 }
 
 export interface SAMLResponsePayload {

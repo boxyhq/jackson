@@ -24,6 +24,7 @@ const saml = {
       name,
       description,
     } = body;
+    const forceAuthn = body.forceAuthn == 'true' || body.forceAuthn == true;
 
     let connectionClientSecret;
 
@@ -45,6 +46,7 @@ const saml = {
       description,
       clientID: '',
       clientSecret: '',
+      forceAuthn,
     };
 
     let metaData = rawMetadata;
@@ -111,6 +113,7 @@ const saml = {
       redirectUrl,
       name,
       description,
+      forceAuthn = false,
       ...clientInfo
     } = body;
     if (!clientInfo?.clientID) {
@@ -172,6 +175,7 @@ const saml = {
       idpMetadata: newMetadata ? newMetadata : _savedConnection.idpMetadata,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
+      forceAuthn,
     };
 
     await connectionStore.put(

@@ -173,6 +173,29 @@ tap.test('controller/api', async (t) => {
       )[0];
 
       t.equal(savedConnection.name, 'testConfig');
+      t.equal(savedConnection.forceAuthn, false);
+
+      kdStub.restore();
+    });
+
+    t.test('when the request is good with forceAuthn', async (t) => {
+      const body = Object.assign({}, saml_connection);
+      body.forceAuthn = true;
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
+
+      const response = await connectionAPIController.createSAMLConnection(body);
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID_SAML);
+      t.equal(response.idpMetadata.provider, PROVIDER);
+
+      const savedConnection = (
+        await connectionAPIController.getConnections({
+          clientID: CLIENT_ID_SAML,
+        })
+      )[0];
+
+      t.equal(savedConnection.forceAuthn, true);
 
       kdStub.restore();
     });

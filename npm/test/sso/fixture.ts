@@ -19,6 +19,19 @@ export const authz_request_normal_with_code_challenge: Partial<OAuthReqBody> = {
   code_challenge: generators.codeChallenge(code_verifier),
   code_challenge_method: 'S256',
 };
+export const authz_request_with_prompt_login: Partial<OAuthReqBody> = {
+  redirect_uri: boxyhq.defaultRedirectUrl,
+  state: 'state-123',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  prompt: 'login',
+};
+
+export const authz_request_with_prompt_more_than_one: Partial<OAuthReqBody> = {
+  redirect_uri: boxyhq.defaultRedirectUrl,
+  state: 'state-123',
+  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
+  prompt: 'select_account login consent',
+};
 
 export const authz_request_normal_with_access_type: Partial<OAuthReqBody> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
@@ -77,6 +90,18 @@ export const invalid_client_id: Partial<OAuthReqBody> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
   client_id: 'xxxxxxxxx',
+};
+
+export const invalid_tenant_product = (product?, tenant?): Partial<OAuthTokenReq> => {
+  product = product || boxyhq.product;
+  tenant = tenant || boxyhq.tenant;
+  return {
+    grant_type: 'authorization_code',
+    client_id: `tenant=${tenant}&product=${product}`,
+    client_secret: 'dummy',
+    code: CODE,
+    redirect_uri: boxyhq.defaultRedirectUrl,
+  };
 };
 
 export const saml_binding_absent: Partial<OAuthReqBody> = {

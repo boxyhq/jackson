@@ -112,6 +112,13 @@ const fieldCatalog = [
     type: 'password',
     attributes: { showOnlyInEditView: true, editable: false },
   },
+  {
+    key: 'forceAuthn',
+    label: 'Enable ForceAuthn',
+    type: 'checkbox',
+
+    attributes: { showOnlyInEditView: false, requiredInEditView: false, required: false },
+  },
 ];
 
 function getFieldList(isEditView) {
@@ -234,9 +241,11 @@ const AddEdit = ({ connection }: AddEditProps) => {
     setFormObj(_state);
   }, [connection, isEditView]);
 
-  function handleChange(event: FormEvent) {
-    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
-    setFormObj((cur) => ({ ...cur, [target.id]: target.value }));
+  function getHandleChange(opts: any = {}) {
+    return (event: FormEvent) => {
+      const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+      setFormObj((cur) => ({ ...cur, [target.id]: target[opts.key || 'value'] }));
+    }
   }
 
   function fieldCatalogFilterByConnection(connection) {
@@ -352,11 +361,22 @@ const AddEdit = ({ connection }: AddEditProps) => {
                           required={_required}
                           readOnly={readOnly}
                           maxLength={maxLength}
-                          onChange={handleChange}
+                          onChange={getHandleChange()}
                           className={`textarea textarea-bordered h-24 w-full ${
                             isArray ? 'whitespace-pre' : ''
                           }`}
                           rows={rows}
+                        />
+                      ) : type === 'checkbox' ? (
+                        <input
+                          id={key}
+                          type={type}
+                          checked={!!value}
+                          required={_required}
+                          readOnly={readOnly}
+                          maxLength={maxLength}
+                          onChange={getHandleChange({key: "checked"})}
+                          className='input'
                         />
                       ) : (
                         <input
@@ -367,7 +387,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
                           required={_required}
                           readOnly={readOnly}
                           maxLength={maxLength}
-                          onChange={handleChange}
+                          onChange={getHandleChange()}
                           className='input input-bordered w-full'
                         />
                       )}

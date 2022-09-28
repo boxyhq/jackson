@@ -155,6 +155,7 @@ export class OAuthController implements IOAuthController {
       code_challenge,
       code_challenge_method = '',
       idp_hint,
+      prompt,
     } = body;
 
     let requestedTenant = tenant;
@@ -377,12 +378,17 @@ export class OAuthController implements IOAuthController {
             throw new Error('Error generating x509 certs');
           }
         }
+        // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
+        // If login is one of the value in prompt we want to enable forceAuthn
+        // Else use the saml connection forceAuthn value
+        const promptOptions = prompt ? prompt.split(' ').filter((p) => p === 'login') : [];
         samlReq = saml.request({
           ssoUrl,
           entityID: this.opts.samlAudience!,
           callbackUrl: this.opts.externalUrl + this.opts.samlPath,
           signingKey: connection.certs.privateKey,
           publicKey: connection.certs.publicKey,
+          forceAuthn: promptOptions.length > 0 ? true : !!connection.forceAuthn,
         });
       } catch (err: unknown) {
         return {
@@ -919,6 +925,9 @@ export class OAuthController implements IOAuthController {
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
         } else {
+          if (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product) {
+            throw new JacksonError('Invalid tenant or product', 401);
+          }
           // encoded client_id, verify client_secret
           if (client_secret !== this.opts.clientSecretVerifier) {
             throw new JacksonError('Invalid client_secret', 401);

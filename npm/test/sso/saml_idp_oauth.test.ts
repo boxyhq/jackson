@@ -16,6 +16,8 @@ import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
   authz_request_normal,
+  authz_request_with_prompt_login,
+  authz_request_with_prompt_more_than_one,
   authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
   authz_request_normal_with_code_challenge,
@@ -28,6 +30,7 @@ import {
   bodyWithMissingRedirectUri,
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
+  invalid_tenant_product,
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
@@ -204,6 +207,32 @@ tap.test('authorize()', async (t) => {
       t.end();
     });
 
+    t.test('accepts single value in prompt', async (t) => {
+      const body = authz_request_with_prompt_login;
+
+      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+      t.end();
+    });
+
+    t.test('accepts multiple values in prompt', async (t) => {
+      const body = authz_request_with_prompt_more_than_one;
+
+      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+      t.end();
+    });
+
     t.test('accepts access_type', async (t) => {
       const body = authz_request_normal_with_access_type;
 
@@ -354,6 +383,54 @@ tap.test('token()', (t) => {
       const { message, statusCode } = err as JacksonError;
       t.equal(message, 'Unsupported grant_type', 'got expected error message');
       t.equal(statusCode, 400, 'got expected status code');
+    }
+
+    t.end();
+  });
+
+  t.test('Should throw an error if `tenant` is invalid', async (t) => {
+    const body = invalid_tenant_product(undefined, 'invalidTenant');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    t.end();
+  });
+
+  t.test('Should throw an error if `product` is invalid', async (t) => {
+    const body = invalid_tenant_product('invalidProduct');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    t.end();
+  });
+
+  t.test('Should throw an error if `tenant` and `product` is invalid', async (t) => {
+    const body = invalid_tenant_product('invalidProduct', 'invalidTenant');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
     }
 
     t.end();
