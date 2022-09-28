@@ -4,7 +4,11 @@ import tap from 'tap';
 import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
 import loadConnection from '../../src/loadConnection';
-import { IConnectionAPIController, IdPConnection } from '../../src/typings';
+import {
+  IConnectionAPIController,
+  SAMLIdPConnection,
+  SAMLIdPConnectionWithEncodedMetadata,
+} from '../../src/typings';
 import { saml_connection } from './fixture';
 import { databaseOptions } from '../utils';
 
@@ -38,11 +42,11 @@ tap.test('controller/api', async (t) => {
   t.test('Create the connection', async (t) => {
     t.test('when required fields are missing or invalid', async (t) => {
       t.test('when `encodedRawMetadata` is empty for saml strategy', async (t) => {
-        const body: IdPConnection = Object.assign({}, saml_connection);
+        const body = Object.assign({}, saml_connection);
         delete body['encodedRawMetadata'];
 
         try {
-          await connectionAPIController.createSAMLConnection(body);
+          await connectionAPIController.createSAMLConnection(body as SAMLIdPConnectionWithEncodedMetadata);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide rawMetadata or encodedRawMetadata');
@@ -51,11 +55,11 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `defaultRedirectUrl` is empty', async (t) => {
-        const body: Partial<IdPConnection> = Object.assign({}, saml_connection);
+        const body: Partial<SAMLIdPConnection> = Object.assign({}, saml_connection);
         delete body['defaultRedirectUrl'];
 
         try {
-          await connectionAPIController.createSAMLConnection(body as IdPConnection);
+          await connectionAPIController.createSAMLConnection(body as SAMLIdPConnectionWithEncodedMetadata);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide a defaultRedirectUrl');
@@ -64,11 +68,11 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `redirectUrl` is empty', async (t) => {
-        const body: Partial<IdPConnection> = Object.assign({}, saml_connection);
+        const body: Partial<SAMLIdPConnection> = Object.assign({}, saml_connection);
         delete body['redirectUrl'];
 
         try {
-          await connectionAPIController.createSAMLConnection(body as IdPConnection);
+          await connectionAPIController.createSAMLConnection(body as SAMLIdPConnectionWithEncodedMetadata);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide redirectUrl');
@@ -77,12 +81,14 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when defaultRedirectUrl or redirectUrl is invalid', async (t) => {
-        const body_saml_provider: IdPConnection = Object.assign({}, saml_connection);
+        const body_saml_provider: SAMLIdPConnection = Object.assign({}, saml_connection);
 
         t.test('when defaultRedirectUrl is invalid', async (t) => {
           body_saml_provider['defaultRedirectUrl'] = 'http://localhost::';
           try {
-            await connectionAPIController.createSAMLConnection(body_saml_provider as IdPConnection);
+            await connectionAPIController.createSAMLConnection(
+              body_saml_provider as SAMLIdPConnectionWithEncodedMetadata
+            );
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'defaultRedirectUrl is invalid');
@@ -93,7 +99,9 @@ tap.test('controller/api', async (t) => {
         t.test('when redirectUrl list is huge', async (t) => {
           body_saml_provider['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
-            await connectionAPIController.createSAMLConnection(body_saml_provider as IdPConnection);
+            await connectionAPIController.createSAMLConnection(
+              body_saml_provider as SAMLIdPConnectionWithEncodedMetadata
+            );
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
@@ -105,7 +113,9 @@ tap.test('controller/api', async (t) => {
           body_saml_provider['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
 
           try {
-            await connectionAPIController.createSAMLConnection(body_saml_provider as IdPConnection);
+            await connectionAPIController.createSAMLConnection(
+              body_saml_provider as SAMLIdPConnectionWithEncodedMetadata
+            );
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'redirectUrl is invalid');
@@ -116,11 +126,11 @@ tap.test('controller/api', async (t) => {
 
       t.test('tenant/product empty', async (t) => {
         t.test('when `tenant` is empty', async (t) => {
-          const body: Partial<IdPConnection> = Object.assign({}, saml_connection);
+          const body: Partial<SAMLIdPConnectionWithEncodedMetadata> = Object.assign({}, saml_connection);
           delete body['tenant'];
 
           try {
-            await connectionAPIController.createSAMLConnection(body as IdPConnection);
+            await connectionAPIController.createSAMLConnection(body as SAMLIdPConnectionWithEncodedMetadata);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide tenant');
@@ -129,11 +139,11 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('when `product` is empty', async (t) => {
-          const body: Partial<IdPConnection> = Object.assign({}, saml_connection);
+          const body: Partial<SAMLIdPConnectionWithEncodedMetadata> = Object.assign({}, saml_connection);
           delete body['product'];
 
           try {
-            await connectionAPIController.createSAMLConnection(body as IdPConnection);
+            await connectionAPIController.createSAMLConnection(body as SAMLIdPConnectionWithEncodedMetadata);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide product');
@@ -147,7 +157,7 @@ tap.test('controller/api', async (t) => {
         body['encodedRawMetadata'] = Buffer.from('not a valid XML', 'utf8').toString('base64');
 
         try {
-          await connectionAPIController.createSAMLConnection(body);
+          await connectionAPIController.createSAMLConnection(body as SAMLIdPConnectionWithEncodedMetadata);
           t.fail('Expecting Error.');
         } catch (err: any) {
           t.match(err.message, /Non-whitespace before first tag./);
@@ -160,7 +170,9 @@ tap.test('controller/api', async (t) => {
 
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
 
-      const response = await connectionAPIController.createSAMLConnection(body);
+      const response = await connectionAPIController.createSAMLConnection(
+        body as SAMLIdPConnectionWithEncodedMetadata
+      );
 
       t.ok(kdStub.called);
       t.equal(response.clientID, CLIENT_ID_SAML);
@@ -183,7 +195,9 @@ tap.test('controller/api', async (t) => {
       body.forceAuthn = true;
       const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
 
-      const response = await connectionAPIController.createSAMLConnection(body);
+      const response = await connectionAPIController.createSAMLConnection(
+        body as SAMLIdPConnectionWithEncodedMetadata
+      );
 
       t.ok(kdStub.called);
       t.equal(response.clientID, CLIENT_ID_SAML);
@@ -202,12 +216,14 @@ tap.test('controller/api', async (t) => {
   });
 
   t.test('Update the connection', async (t) => {
-    const body_saml_provider: IdPConnection = Object.assign({}, saml_connection);
+    const body_saml_provider = Object.assign({}, saml_connection);
     t.test('When clientID is missing', async (t) => {
       const { clientSecret } = await connectionAPIController.createSAMLConnection(
-        body_saml_provider as IdPConnection
+        body_saml_provider as SAMLIdPConnectionWithEncodedMetadata
       );
       try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await connectionAPIController.updateSAMLConnection({
           description: 'A new description',
           clientID: '',
@@ -227,9 +243,11 @@ tap.test('controller/api', async (t) => {
 
     t.test('When clientSecret is missing', async (t) => {
       const { clientID } = await connectionAPIController.createSAMLConnection(
-        body_saml_provider as IdPConnection
+        body_saml_provider as SAMLIdPConnectionWithEncodedMetadata
       );
       try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await connectionAPIController.updateSAMLConnection({
           description: 'A new description',
           clientID,
@@ -249,12 +267,13 @@ tap.test('controller/api', async (t) => {
 
     t.test('Update the name/description', async (t) => {
       const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
-        body_saml_provider as IdPConnection
+        body_saml_provider as SAMLIdPConnectionWithEncodedMetadata
       );
       const { name, description } = (await connectionAPIController.getConnections({ clientID }))[0];
       t.equal(name, 'testConfig');
       t.equal(description, 'Just a test configuration');
-
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await connectionAPIController.updateSAMLConnection({
         clientID,
         clientSecret,
@@ -273,9 +292,9 @@ tap.test('controller/api', async (t) => {
 
   t.test('Get the connection', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: IdPConnection = Object.assign({}, saml_connection);
+      const body = Object.assign({}, saml_connection);
 
-      await connectionAPIController.createSAMLConnection(body as IdPConnection);
+      await connectionAPIController.createSAMLConnection(body as SAMLIdPConnectionWithEncodedMetadata);
 
       const savedConnection = (await connectionAPIController.getConnections(body))[0];
 
@@ -285,9 +304,9 @@ tap.test('controller/api', async (t) => {
     t.test('when invalid request', async (t) => {
       let response;
 
-      const body: IdPConnection = Object.assign({}, saml_connection);
+      const body = Object.assign({}, saml_connection);
 
-      const { clientID } = await connectionAPIController.createSAMLConnection(body);
+      await connectionAPIController.createSAMLConnection(body as SAMLIdPConnectionWithEncodedMetadata);
 
       // Empty body
       try {
@@ -316,9 +335,11 @@ tap.test('controller/api', async (t) => {
 
   t.test('Delete the connection', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: IdPConnection = Object.assign({}, saml_connection);
+      const body = Object.assign({}, saml_connection);
 
-      const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(body);
+      const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
+        body as SAMLIdPConnectionWithEncodedMetadata
+      );
 
       await connectionAPIController.deleteConnections({
         clientID,
@@ -333,9 +354,11 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when invalid request', async (t) => {
-      const body: IdPConnection = Object.assign({}, saml_connection);
+      const body = Object.assign({}, saml_connection);
 
-      const { clientID } = await connectionAPIController.createSAMLConnection(body);
+      const { clientID } = await connectionAPIController.createSAMLConnection(
+        body as SAMLIdPConnectionWithEncodedMetadata
+      );
 
       // Empty body
       try {

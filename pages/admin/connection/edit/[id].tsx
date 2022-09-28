@@ -10,7 +10,7 @@ const EditConnection: NextPage = () => {
 
   const { id } = router.query;
 
-  const { data: connection, error } = useSWR(id ? `/api/admin/connection/${id}` : null, fetcher, {
+  const { data: connection, error } = useSWR(id ? `/api/admin/connections/${id}` : null, fetcher, {
     revalidateOnFocus: false,
   });
 

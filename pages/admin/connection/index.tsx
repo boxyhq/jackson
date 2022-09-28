@@ -19,7 +19,7 @@ const Connections: NextPage = () => {
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
 
   const { data: connections } = useSWR<Connection[]>(
-    [`/api/admin/connection`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
+    [`/api/admin/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }
   );

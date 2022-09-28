@@ -1,4 +1,10 @@
-import type { ConnectionType, IdPConnection, OAuthErrorHandlerParams } from '../typings';
+import type {
+  ConnectionType,
+  OAuthErrorHandlerParams,
+  OIDCIdPConnection,
+  SAMLIdPConnectionWithEncodedMetadata,
+  SAMLIdPConnectionWithRawMetadata,
+} from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 import crypto from 'crypto';
@@ -89,19 +95,16 @@ export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
   return thumbprint;
 };
 
-export const validateIdPConnection = (body: IdPConnection, strategy: ConnectionType): void => {
-  const {
-    encodedRawMetadata,
-    rawMetadata,
-    defaultRedirectUrl,
-    redirectUrl,
-    tenant,
-    product,
-    description,
-    oidcDiscoveryUrl,
-    oidcClientId,
-    oidcClientSecret,
-  } = body;
+export const validateIdPConnection = (
+  body: SAMLIdPConnectionWithRawMetadata | SAMLIdPConnectionWithEncodedMetadata | OIDCIdPConnection,
+  strategy: ConnectionType
+): void => {
+  const { defaultRedirectUrl, redirectUrl, tenant, product, description } = body;
+  const encodedRawMetadata = 'encodedRawMetadata' in body ? body.encodedRawMetadata : undefined;
+  const rawMetadata = 'rawMetadata' in body ? body.rawMetadata : undefined;
+  const oidcDiscoveryUrl = 'oidcDiscoveryUrl' in body ? body.oidcDiscoveryUrl : undefined;
+  const oidcClientId = 'oidcClientId' in body ? body.oidcClientId : undefined;
+  const oidcClientSecret = 'oidcClientSecret' in body ? body.oidcClientSecret : undefined;
 
   if (strategy !== 'saml' && strategy !== 'oidc') {
     throw new JacksonError(`Strategy: ${strategy} not supported`, 400);

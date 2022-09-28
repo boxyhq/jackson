@@ -5,8 +5,10 @@ import {
   GetConnectionsQuery,
   DelConnectionsQuery,
   IConnectionAPIController,
-  IdPConnection,
   Storable,
+  SAMLIdPConnectionWithEncodedMetadata,
+  SAMLIdPConnectionWithRawMetadata,
+  OIDCIdPConnection,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
@@ -51,7 +53,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *            }
    *          }
    *    validationErrorsPost:
-   *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported
+   *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
    *
    * parameters:
    *   nameParamPost:
@@ -98,6 +100,21 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: formData
    *     required: true
    *     type: string
+   *   oidcDiscoveryUrlPost:
+   *     name: oidcDiscoveryUrl
+   *     description: well-known URL where the OpenID Provider configuration is exposed
+   *     in: formData
+   *     type: string
+   *   oidcClientIdPost:
+   *     name: oidcClientId
+   *     description: clientId of the application set up on the OpenID Provider
+   *     in: formData
+   *     type: string
+   *   oidcClientSecretPost:
+   *     name: oidcClientSecret
+   *     description: clientSecret of the application set up on the OpenID Provider
+   *     in: formData
+   *     type: string
    * /api/v1/saml/config:
    *   post:
    *    summary: Create SAML config
@@ -127,11 +144,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *          $ref: '#/definitions/validationErrorsPost'
    *      401:
    *        description: Unauthorized
-   * /api/v1/saml/connection:
+   * /api/v1/connections:
    *   post:
-   *     summary: Create SAML connection
-   *     operationId: create-saml-connection
-   *     tags: [SAML Connection]
+   *     summary: Create SSO connection
+   *     operationId: create-sso-connection
+   *     tags: [Connections]
    *     produces:
    *      - application/json
    *     consumes:
@@ -146,6 +163,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/redirectUrlParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
+   *      - $ref: '#/parameters/oidcDiscoveryUrlPost'
+   *      - $ref: '#/parameters/oidcClientIdPost'
+   *      - $ref: '#/parameters/oidcClientSecretPost'
    *     responses:
    *       200:
    *         description: Success
@@ -156,7 +176,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       401:
    *         description: Unauthorized
    */
-  public async createSAMLConnection(body: IdPConnection): Promise<any> {
+  public async createSAMLConnection(
+    body: SAMLIdPConnectionWithEncodedMetadata | SAMLIdPConnectionWithRawMetadata
+  ): Promise<any> {
     metrics.increment('createConnection');
     const record = await samlConnection.create(body, this.connectionStore);
     return record;
@@ -166,89 +188,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     return this.createSAMLConnection(...args);
   }
 
-  /**
-   * @swagger
-   * /api/v1/oidc/connection:
-   *   post:
-   *     summary: Create OIDC Connection
-   *     operationId: create-oidc-connection
-   *     tags: [OIDC Connection]
-   *     produces:
-   *       - application/json
-   *     consumes:
-   *       - application/x-www-form-urlencoded
-   *       - application/json
-   *     parameters:
-   *       - name: name
-   *         description: Name/identifier for the connection
-   *         type: string
-   *         in: formData
-   *       - name: description
-   *         description: A short description for the connection not more than 100 characters
-   *         type: string
-   *         in: formData
-   *       - name: oidcDiscoveryUrl
-   *         description: well-known URL where the OpenID Provider configuration is exposed
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: oidcClientId
-   *         description: clientId of the application set up on the OpenID Provider
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: oidcClientSecret
-   *         description: clientSecret of the application set up on the OpenID Provider
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: defaultRedirectUrl
-   *         description: The redirect URL to use in the IdP login flow
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: redirectUrl
-   *         description: JSON encoded array containing a list of allowed redirect URLs
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: true
-   *         type: string
-   *     responses:
-   *       200:
-   *         description: Success
-   *         schema:
-   *           type: object
-   *           example:
-   *             {
-   *               "oidcProvider": {
-   *                 "discoveryUrl": "https://dev-xxxxx.okta.com/oauth2/yyyyyy/.well-known/openid-configuration",
-   *                 "clientId": "xxxxxxyyyyyyxxxxxx",
-   *                 "clientSecret": "zzzzzzzzzzzzzzzz"
-   *                },
-   *               "defaultRedirectUrl": "https://hoppscotch.io/",
-   *               "redirectUrl": ["https://hoppscotch.io/"],
-   *               "tenant": "hoppscotch.io",
-   *               "product": "API Engine",
-   *               "name": "Hoppscotch-SP",
-   *               "description": "SP for hoppscotch.io",
-   *               "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *               "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *           }
-   *       400:
-   *         description: Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
-   *       401:
-   *         description: Unauthorized
-   */
-  public async createOIDCConnection(body: IdPConnection): Promise<any> {
+  public async createOIDCConnection(body: OIDCIdPConnection): Promise<any> {
     metrics.increment('createConnection');
     const record = await oidcConnection.create(body, this.connectionStore);
     return record;
@@ -257,7 +197,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    * @swagger
    * definitions:
    *   validationErrorsPatch:
-   *     description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid
+   *     description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
    * parameters:
    *   clientIDParamPatch:
    *     name: clientID
@@ -289,6 +229,21 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   rawMetadataParamPatch:
    *     name: rawMetadata
    *     description: Raw XML metadata
+   *     in: formData
+   *     type: string
+   *   oidcDiscoveryUrlPatch:
+   *     name: oidcDiscoveryUrl
+   *     description: well-known URL where the OpenID Provider configuration is exposed
+   *     in: formData
+   *     type: string
+   *   oidcClientIdPatch:
+   *     name: oidcClientId
+   *     description: clientId of the application set up on the OpenID Provider
+   *     in: formData
+   *     type: string
+   *   oidcClientSecretPatch:
+   *     name: oidcClientSecret
+   *     description: clientSecret of the application set up on the OpenID Provider
    *     in: formData
    *     type: string
    *   defaultRedirectUrlParamPatch:
@@ -340,11 +295,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         $ref: '#/definitions/validationErrorsPatch'
    *       401:
    *         description: Unauthorized
-   * /api/v1/saml/connection:
+   * /api/v1/connections:
    *   patch:
-   *     summary: Update SAML Connection
-   *     operationId: update-saml-connection
-   *     tags: [SAML Connection]
+   *     summary: Update SSO Connection
+   *     operationId: update-sso-connection
+   *     tags: [Connections]
    *     consumes:
    *       - application/json
    *       - application/x-www-form-urlencoded
@@ -355,6 +310,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/descriptionParamPatch'
    *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
    *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/oidcDiscoveryUrlPatch'
+   *       - $ref: '#/parameters/oidcClientIdPatch'
+   *       - $ref: '#/parameters/oidcClientSecretPatch'
    *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
    *       - $ref: '#/parameters/redirectUrlParamPatch'
    *       - $ref: '#/parameters/tenantParamPatch'
@@ -368,7 +326,10 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         description: Unauthorized
    */
   public async updateSAMLConnection(
-    body: IdPConnection & { clientID: string; clientSecret: string }
+    body: (SAMLIdPConnectionWithEncodedMetadata | SAMLIdPConnectionWithRawMetadata) & {
+      clientID: string;
+      clientSecret: string;
+    }
   ): Promise<void> {
     await samlConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
@@ -379,75 +340,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
   ): Promise<any> {
     await this.updateSAMLConnection(...args);
   }
-  /**
-   * @swagger
-   * /api/v1/oidc/connection:
-   *   patch:
-   *     summary: Update OIDC Connection
-   *     operationId: update-oidc-connection
-   *     tags: [OIDC Connection]
-   *     consumes:
-   *       - application/json
-   *       - application/x-www-form-urlencoded
-   *     parameters:
-   *       - name: clientID
-   *         description: Client ID for the connection
-   *         type: string
-   *         in: formData
-   *         required: true
-   *       - name: clientSecret
-   *         description: Client Secret for the connection
-   *         type: string
-   *         in: formData
-   *         required: true
-   *       - name: name
-   *         description: Name/identifier for the connection
-   *         type: string
-   *         in: formData
-   *       - name: description
-   *         description: A short description for the connection not more than 100 characters
-   *         type: string
-   *         in: formData
-   *       - name: oidcDiscoveryUrl
-   *         description: well-known URL where the OpenID Provider configuration is exposed
-   *         in: formData
-   *         type: string
-   *       - name: oidcClientId
-   *         description: clientId of the application set up on the OpenID Provider
-   *         in: formData
-   *         type: string
-   *       - name: oidcClientSecret
-   *         description: clientSecret of the application set up on the OpenID Provider
-   *         in: formData
-   *         type: string
-   *       - name: defaultRedirectUrl
-   *         description: The redirect URL to use in the IdP login flow
-   *         in: formData
-   *         type: string
-   *       - name: redirectUrl
-   *         description: JSON encoded array containing a list of allowed redirect URLs
-   *         in: formData
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: true
-   *         type: string
-   *     responses:
-   *       204:
-   *         description: Success
-   *       400:
-   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Description should not exceed 100 characters | redirectUrl is invalid | Please provide tenant | Please provide product | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
-   *       401:
-   *         description: Unauthorized
-   */
   public async updateOIDCConnection(
-    body: IdPConnection & { clientID: string; clientSecret: string }
+    body: OIDCIdPConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
     await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
@@ -519,7 +413,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Unauthorized
    * /api/v1/connections:
    *   get:
-   *     summary: Get IdP Connections
+   *     summary: Get SSO Connections
    *     parameters:
    *       - $ref: '#/parameters/tenantParamGet'
    *       - $ref: '#/parameters/productParamGet'
@@ -630,9 +524,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                }
    *            }
    *      '400':
-   *        $ref: '#/responses/400'
+   *        $ref: '#/responses/400Get'
    *      '401':
-   *        $ref: '#/responses/401'
+   *        $ref: '#/responses/401Get'
    */
   public async getConfig(body: GetConfigQuery): Promise<any> {
     const clientID = 'clientID' in body ? body.clientID : undefined;
@@ -699,8 +593,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/tenantDel'
    *      - $ref: '#/parameters/productDel'
    *      - $ref: '#/parameters/strategyDel'
-   *     summary: Delete IdP Connections
-   *     operationId: delete-oidc-connection
+   *     summary: Delete SSO Connections
+   *     operationId: delete-sso-connection
    *     tags: [Connections]
    *     consumes:
    *       - application/x-www-form-urlencoded

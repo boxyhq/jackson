@@ -1,5 +1,11 @@
 import crypto from 'crypto';
-import { IConnectionAPIController, IdPConnection, Storable } from '../../typings';
+import {
+  IConnectionAPIController,
+  SAMLIdPConnection,
+  SAMLIdPConnectionWithEncodedMetadata,
+  SAMLIdPConnectionWithRawMetadata,
+  Storable,
+} from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
   extractHostName,
@@ -13,7 +19,10 @@ import x509 from '../../saml/x509';
 import { JacksonError } from '../error';
 
 const saml = {
-  create: async (body: IdPConnection, connectionStore: Storable) => {
+  create: async (
+    body: SAMLIdPConnectionWithRawMetadata | SAMLIdPConnectionWithEncodedMetadata,
+    connectionStore: Storable
+  ) => {
     const {
       encodedRawMetadata,
       rawMetadata,
@@ -32,7 +41,7 @@ const saml = {
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<IdPConnection> & {
+    const record: Partial<SAMLIdPConnection> & {
       clientID: string; // set by Jackson
       clientSecret: string; // set by Jackson
       idpMetadata?: Record<string, any>;
@@ -102,7 +111,10 @@ const saml = {
     return record;
   },
   update: async (
-    body: IdPConnection & { clientID: string; clientSecret: string },
+    body: (SAMLIdPConnectionWithRawMetadata | SAMLIdPConnectionWithEncodedMetadata) & {
+      clientID: string;
+      clientSecret: string;
+    },
     connectionStore: Storable,
     connectionsGetter: IConnectionAPIController['getConnections']
   ) => {

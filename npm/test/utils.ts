@@ -10,10 +10,10 @@ const addIdPConnections = async (
 ) => {
   const connections = await loadConnection(metadataPath);
   for (const connection of connections) {
-    const _record = await (connection.oidcDiscoveryUrl
+    const _record = await ('oidcDiscoveryUrl' in connection
       ? connectionAPIController.createOIDCConnection(connection)
       : connectionAPIController.createSAMLConnection(connection));
-    !connection.oidcDiscoveryUrl &&
+    !('oidcDiscoveryUrl' in connection) &&
       idpEnabledConnectionAPIController &&
       (await idpEnabledConnectionAPIController.createSAMLConnection(connection));
     connectionRecords.push(_record);

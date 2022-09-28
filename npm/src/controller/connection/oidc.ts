@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { IConnectionAPIController, IdPConnection, Storable } from '../../typings';
+import { IConnectionAPIController, OIDCIdPConnection, Storable } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
   extractHostName,
@@ -11,7 +11,7 @@ import {
 import { JacksonError } from '../error';
 
 const oidc = {
-  create: async (body: IdPConnection, connectionStore: Storable) => {
+  create: async (body: OIDCIdPConnection, connectionStore: Storable) => {
     const {
       defaultRedirectUrl,
       redirectUrl,
@@ -30,7 +30,7 @@ const oidc = {
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<IdPConnection> & {
+    const record: Partial<OIDCIdPConnection> & {
       clientID: string; // set by Jackson
       clientSecret: string; // set by Jackson
       oidcProvider?: {
@@ -82,7 +82,7 @@ const oidc = {
     return record;
   },
   update: async (
-    body: IdPConnection & { clientID: string; clientSecret: string },
+    body: OIDCIdPConnection & { clientID: string; clientSecret: string },
     connectionStore: Storable,
     connectionsGetter: IConnectionAPIController['getConnections']
   ) => {

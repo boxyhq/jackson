@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
-import { IConnectionAPIController, IdPConnection } from '../../src/typings';
+import { IConnectionAPIController, OIDCIdPConnection } from '../../src/typings';
 import { oidc_connection } from './fixture';
 import { databaseOptions } from '../utils';
 
@@ -32,7 +32,9 @@ tap.test('controller/api', async (t) => {
   t.test('Create the connection', async (t) => {
     t.test('when required fields are missing or invalid', async (t) => {
       t.test('missing discoveryUrl', async (t) => {
-        const body: IdPConnection = Object.assign({}, oidc_connection);
+        const body: OIDCIdPConnection = Object.assign({}, oidc_connection);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         delete body['oidcDiscoveryUrl'];
         try {
           await connectionAPIController.createOIDCConnection(body);
@@ -43,7 +45,9 @@ tap.test('controller/api', async (t) => {
         }
       });
       t.test('missing clientId', async (t) => {
-        const body: IdPConnection = Object.assign({}, oidc_connection);
+        const body: OIDCIdPConnection = Object.assign({}, oidc_connection);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         delete body['oidcClientId'];
         try {
           await connectionAPIController.createOIDCConnection(body);
@@ -54,7 +58,9 @@ tap.test('controller/api', async (t) => {
         }
       });
       t.test('missing clientSecret', async (t) => {
-        const body: IdPConnection = Object.assign({}, oidc_connection);
+        const body: OIDCIdPConnection = Object.assign({}, oidc_connection);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         delete body['oidcClientSecret'];
         try {
           await connectionAPIController.createOIDCConnection(body);
@@ -66,11 +72,11 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `defaultRedirectUrl` is empty', async (t) => {
-        const body: Partial<IdPConnection> = Object.assign({}, oidc_connection);
+        const body: Partial<OIDCIdPConnection> = Object.assign({}, oidc_connection);
         delete body['defaultRedirectUrl'];
 
         try {
-          await connectionAPIController.createOIDCConnection(body as IdPConnection);
+          await connectionAPIController.createOIDCConnection(body as OIDCIdPConnection);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide a defaultRedirectUrl');
@@ -79,11 +85,11 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `redirectUrl` is empty', async (t) => {
-        const body: Partial<IdPConnection> = Object.assign({}, oidc_connection);
+        const body: Partial<OIDCIdPConnection> = Object.assign({}, oidc_connection);
         delete body['redirectUrl'];
 
         try {
-          await connectionAPIController.createOIDCConnection(body as IdPConnection);
+          await connectionAPIController.createOIDCConnection(body as OIDCIdPConnection);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide redirectUrl');
@@ -92,12 +98,12 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when defaultRedirectUrl or redirectUrl is invalid', async (t) => {
-        const body_oidc_provider: IdPConnection = Object.assign({}, oidc_connection);
+        const body_oidc_provider: OIDCIdPConnection = Object.assign({}, oidc_connection);
 
         t.test('when defaultRedirectUrl is invalid', async (t) => {
           body_oidc_provider['defaultRedirectUrl'] = 'http://localhost::';
           try {
-            await connectionAPIController.createOIDCConnection(body_oidc_provider as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body_oidc_provider as OIDCIdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'defaultRedirectUrl is invalid');
@@ -108,7 +114,7 @@ tap.test('controller/api', async (t) => {
         t.test('when redirectUrl list is huge', async (t) => {
           body_oidc_provider['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
-            await connectionAPIController.createOIDCConnection(body_oidc_provider as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body_oidc_provider as OIDCIdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
@@ -120,7 +126,7 @@ tap.test('controller/api', async (t) => {
           body_oidc_provider['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
 
           try {
-            await connectionAPIController.createOIDCConnection(body_oidc_provider as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body_oidc_provider as OIDCIdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'redirectUrl is invalid');
@@ -131,11 +137,11 @@ tap.test('controller/api', async (t) => {
 
       t.test('tenant/product empty', async (t) => {
         t.test('when `tenant` is empty', async (t) => {
-          const body: Partial<IdPConnection> = Object.assign({}, oidc_connection);
+          const body: Partial<OIDCIdPConnection> = Object.assign({}, oidc_connection);
           delete body['tenant'];
 
           try {
-            await connectionAPIController.createOIDCConnection(body as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body as OIDCIdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide tenant');
@@ -144,11 +150,11 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('when `product` is empty', async (t) => {
-          const body: Partial<IdPConnection> = Object.assign({}, oidc_connection);
+          const body: Partial<OIDCIdPConnection> = Object.assign({}, oidc_connection);
           delete body['product'];
 
           try {
-            await connectionAPIController.createOIDCConnection(body as IdPConnection);
+            await connectionAPIController.createOIDCConnection(body as OIDCIdPConnection);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide product');
@@ -184,12 +190,14 @@ tap.test('controller/api', async (t) => {
   });
 
   t.test('Update the connection', async (t) => {
-    const body_oidc_provider: IdPConnection = Object.assign({}, oidc_connection);
+    const body_oidc_provider: OIDCIdPConnection = Object.assign({}, oidc_connection);
     t.test('When clientID is missing', async (t) => {
       const { clientSecret } = await connectionAPIController.createOIDCConnection(
-        body_oidc_provider as IdPConnection
+        body_oidc_provider as OIDCIdPConnection
       );
       try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await connectionAPIController.updateOIDCConnection({
           description: 'A new description',
           clientID: '',
@@ -209,9 +217,11 @@ tap.test('controller/api', async (t) => {
 
     t.test('When clientSecret is missing', async (t) => {
       const { clientID } = await connectionAPIController.createOIDCConnection(
-        body_oidc_provider as IdPConnection
+        body_oidc_provider as OIDCIdPConnection
       );
       try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await connectionAPIController.updateOIDCConnection({
           description: 'A new description',
           clientID,
@@ -231,12 +241,13 @@ tap.test('controller/api', async (t) => {
 
     t.test('Update the name/description', async (t) => {
       const { clientID, clientSecret } = await connectionAPIController.createOIDCConnection(
-        body_oidc_provider as IdPConnection
+        body_oidc_provider as OIDCIdPConnection
       );
       const { name, description } = (await connectionAPIController.getConnections({ clientID }))[0];
       t.equal(name, 'OIDC Metadata for oidc.example.com');
       t.equal(description, 'OIDC Metadata for oidc.example.com');
-
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await connectionAPIController.updateOIDCConnection({
         clientID,
         clientSecret,
@@ -255,9 +266,9 @@ tap.test('controller/api', async (t) => {
 
   t.test('Get the connection', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: IdPConnection = Object.assign({}, oidc_connection);
+      const body: OIDCIdPConnection = Object.assign({}, oidc_connection);
 
-      await connectionAPIController.createOIDCConnection(body as IdPConnection);
+      await connectionAPIController.createOIDCConnection(body as OIDCIdPConnection);
 
       const savedConnection = (await connectionAPIController.getConnections(body))[0];
 
@@ -267,9 +278,9 @@ tap.test('controller/api', async (t) => {
     t.test('when invalid request', async (t) => {
       let response;
 
-      const body: IdPConnection = Object.assign({}, oidc_connection);
+      const body: OIDCIdPConnection = Object.assign({}, oidc_connection);
 
-      const { clientID } = await connectionAPIController.createOIDCConnection(body);
+      await connectionAPIController.createOIDCConnection(body);
 
       // Empty body
       try {
@@ -298,7 +309,7 @@ tap.test('controller/api', async (t) => {
 
   t.test('Delete the connection', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: IdPConnection = Object.assign({}, oidc_connection);
+      const body: OIDCIdPConnection = Object.assign({}, oidc_connection);
 
       const { clientID, clientSecret } = await connectionAPIController.createOIDCConnection(body);
 
@@ -315,9 +326,9 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when invalid request', async (t) => {
-      const body: IdPConnection = Object.assign({}, oidc_connection);
+      const body: OIDCIdPConnection = Object.assign({}, oidc_connection);
 
-      const { clientID, clientSecret } = await connectionAPIController.createOIDCConnection(body);
+      const { clientID } = await connectionAPIController.createOIDCConnection(body);
 
       // Empty body
       try {
