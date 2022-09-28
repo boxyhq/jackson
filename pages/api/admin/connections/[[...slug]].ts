@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
+import { strategyChecker } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -15,6 +16,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.json(
           await adminController.getAllConnection(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
         );
+      }
+    } else if (req.method === 'POST') {
+      const { isSAML, isOIDC } = strategyChecker(req);
+      if (isSAML) {
+        res.json(await connectionAPIController.createSAMLConnection(req.body));
+      }
+      if (isOIDC) {
+        res.json(await connectionAPIController.createOIDCConnection(req.body));
+      }
+    } else if (req.method === 'PATCH') {
+      const { isSAML, isOIDC } = strategyChecker(req);
+      if (isSAML) {
+        res.status(204).end(await connectionAPIController.updateSAMLConnection(req.body));
+      }
+      if (isOIDC) {
+        res.status(204).end(await connectionAPIController.updateOIDCConnection(req.body));
       }
     } else if (req.method === 'DELETE') {
       res.status(204).end(await connectionAPIController.deleteConnections(req.body));
