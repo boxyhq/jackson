@@ -1,21 +1,33 @@
 import { type JWK } from 'jose';
 
-export type IdPConnection = {
+interface IdPConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
   tenant: string;
   product: string;
   name?: string;
   description?: string;
-  // SAML Provider
-  rawMetadata?: string;
-  encodedRawMetadata?: string;
-  // OpenID Provider
-  oidcDiscoveryUrl?: string;
-  oidcClientId?: string;
-  oidcClientSecret?: string;
+}
+
+export interface SAMLIdPConnection extends IdPConnection {
   forceAuthn?: boolean | string;
-};
+}
+
+export interface SAMLIdPConnectionWithRawMetadata extends SAMLIdPConnection {
+  rawMetadata: string;
+  encodedRawMetadata?: never;
+}
+
+export interface SAMLIdPConnectionWithEncodedMetadata extends SAMLIdPConnection {
+  rawMetadata?: never;
+  encodedRawMetadata: string;
+}
+
+export interface OIDCIdPConnection extends IdPConnection {
+  oidcDiscoveryUrl: string;
+  oidcClientId: string;
+  oidcClientSecret: string;
+}
 
 export type ConnectionType = 'saml' | 'oidc';
 
@@ -34,12 +46,19 @@ export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
 export type DelConfigQuery = (ClientIDQuery & { clientSecret: string }) | Omit<TenantQuery, 'strategy'>;
 
 export interface IConnectionAPIController {
-  config(body: IdPConnection): Promise<any>;
-  createSAMLConnection(body: IdPConnection): Promise<any>;
-  createOIDCConnection(body: IdPConnection): Promise<any>;
-  updateConfig(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
-  updateSAMLConnection(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
-  updateOIDCConnection(body: IdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  config(body: SAMLIdPConnection): Promise<any>;
+  createSAMLConnection(
+    body: SAMLIdPConnectionWithRawMetadata | SAMLIdPConnectionWithEncodedMetadata
+  ): Promise<any>;
+  createOIDCConnection(body: OIDCIdPConnection): Promise<any>;
+  updateConfig(body: SAMLIdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  updateSAMLConnection(
+    body: (SAMLIdPConnectionWithRawMetadata | SAMLIdPConnectionWithEncodedMetadata) & {
+      clientID: string;
+      clientSecret: string;
+    }
+  ): Promise<any>;
+  updateOIDCConnection(body: OIDCIdPConnection & { clientID: string; clientSecret: string }): Promise<any>;
   getConnections(body: GetConnectionsQuery): Promise<Array<any>>;
   getConfig(body: GetConfigQuery): Promise<any>;
   deleteConnections(body: DelConnectionsQuery): Promise<void>;
