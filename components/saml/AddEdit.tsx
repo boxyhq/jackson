@@ -77,7 +77,7 @@ const fieldCatalog = [
       formatForDisplay: (value) => {
         const obj = JSON.parse(JSON.stringify(value));
         delete obj.validTo;
-        return JSON.stringify(obj, null, 2)
+        return JSON.stringify(obj, null, 2);
       },
     },
   },
@@ -86,6 +86,7 @@ const fieldCatalog = [
     label: 'IdP Certificate Validity',
     type: 'pre',
     attributes: {
+      isHidden: (value): boolean => !value.validTo || new Date(value.validTo).toString() == 'Invalid Date',
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
@@ -107,7 +108,7 @@ const fieldCatalog = [
   },
   {
     key: 'forceAuthn',
-    label: 'Enable ForceAuthn',
+    label: 'Force Authentication',
     type: 'checkbox',
 
     attributes: { showOnlyInEditView: false, requiredInEditView: false, required: false },
@@ -204,7 +205,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
     return (event: FormEvent) => {
       const target = event.target as HTMLInputElement | HTMLTextAreaElement;
       setFormObj((cur) => ({ ...cur, [target.id]: target[opts.key || 'value'] }));
-    }
+    };
   }
 
   return (
@@ -230,6 +231,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                   label,
                   type,
                   attributes: {
+                    isHidden,
                     isArray,
                     rows,
                     formatForDisplay,
@@ -250,19 +252,25 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                       : formObj[key];
                   return (
                     <div className='mb-6 ' key={key}>
-                      <label
-                        htmlFor={key}
-                        className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
-                        {_label}
-                      </label>
+                      {type !== 'checkbox' && (
+                        <label
+                          htmlFor={key}
+                          className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300 ${
+                            isHidden ? (isHidden(formObj[key]) == true ? 'hidden' : '') : ''
+                          }`}>
+                          {_label}
+                        </label>
+                      )}
                       {type === 'pre' ? (
                         <pre
                           className={`block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 
                         text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 
                         dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 
                         dark:focus:ring-blue-500 ${
-                          showWarning ? (showWarning(value) ? 'border-2 border-rose-500' : '') : ''
-                        }`}>
+                          isHidden ? (isHidden(formObj[key]) == true ? 'hidden' : '') : ''
+                        } ${
+                            showWarning ? (showWarning(formObj[key]) ? 'border-2 border-rose-500' : '') : ''
+                          }`}>
                           {value}
                         </pre>
                       ) : type === 'textarea' ? (
@@ -280,16 +288,23 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           rows={rows}
                         />
                       ) : type === 'checkbox' ? (
-                        <input
-                          id={key}
-                          type={type}
-                          checked={!!value}
-                          required={_required}
-                          readOnly={readOnly}
-                          maxLength={maxLength}
-                          onChange={getHandleChange({key: "checked"})}
-                          className='input'
-                        />
+                        <>
+                          <label
+                            htmlFor={key}
+                            className='inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300'>
+                            {_label}
+                          </label>
+                          <input
+                            id={key}
+                            type={type}
+                            checked={!!value}
+                            required={_required}
+                            readOnly={readOnly}
+                            maxLength={maxLength}
+                            onChange={getHandleChange({ key: 'checked' })}
+                            className='checkbox checkbox-primary ml-5 align-middle'
+                          />
+                        </>
                       ) : (
                         <input
                           id={key}
