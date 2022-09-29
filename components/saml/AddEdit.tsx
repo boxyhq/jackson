@@ -302,7 +302,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                             readOnly={readOnly}
                             maxLength={maxLength}
                             onChange={getHandleChange({ key: 'checked' })}
-                            className='ml-5 input inline-block align-middle'
+                            className='checkbox checkbox-primary ml-5 align-middle'
                           />
                         </>
                       ) : (
