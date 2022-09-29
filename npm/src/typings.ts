@@ -66,7 +66,7 @@ export interface IConnectionAPIController {
 }
 
 export interface IOAuthController {
-  authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }>;
+  authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }>;
   samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
   oidcAuthzResponse(body: AuthzResponsePayload): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
@@ -109,21 +109,40 @@ export interface IOidcDiscoveryController {
 }
 
 export interface OAuthReqBody {
-  response_type: 'code';
-  client_id: string;
-  redirect_uri: string;
   state: string;
-  tenant?: string;
-  product?: string;
-  access_type?: string;
-  resource?: string;
-  scope?: string;
-  nonce?: string;
+  response_type: 'code';
+  redirect_uri: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
+  scope?: string;
+  nonce?: string;
   idp_hint?: string;
   prompt?: string;
 }
+
+export interface OAuthReqBodyWithClientId extends OAuthReqBody {
+  client_id: string;
+}
+export interface OAuthReqBodyWithTenantProduct extends OAuthReqBody {
+  client_id: 'dummy';
+  tenant: string;
+  product: string;
+}
+export interface OAuthReqBodyWithAccessType extends OAuthReqBody {
+  client_id: 'dummy';
+  access_type: string;
+}
+
+export interface OAuthReqBodyWithResource extends OAuthReqBody {
+  client_id: 'dummy';
+  resource: string;
+}
+
+export type OAuthReq =
+  | OAuthReqBodyWithClientId
+  | OAuthReqBodyWithTenantProduct
+  | OAuthReqBodyWithAccessType
+  | OAuthReqBodyWithResource;
 
 export interface SAMLResponsePayload {
   SAMLResponse: string;

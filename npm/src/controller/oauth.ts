@@ -13,7 +13,7 @@ import type {
   IOAuthController,
   JacksonOption,
   OAuthErrorHandlerParams,
-  OAuthReqBody,
+  OAuthReq,
   OAuthTokenReq,
   OAuthTokenRes,
   OIDCErrorCodes,
@@ -140,16 +140,12 @@ export class OAuthController implements IOAuthController {
     return {};
   }
 
-  public async authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }> {
+  public async authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
       response_type = 'code',
       client_id,
       redirect_uri,
       state,
-      tenant,
-      product,
-      access_type,
-      resource,
       scope,
       nonce,
       code_challenge,
@@ -157,6 +153,11 @@ export class OAuthController implements IOAuthController {
       idp_hint,
       prompt,
     } = body;
+
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
+    const access_type = 'access_type' in body ? body.access_type : undefined;
+    const resource = 'resource' in body ? body.resource : undefined;
 
     let requestedTenant = tenant;
     let requestedProduct = product;

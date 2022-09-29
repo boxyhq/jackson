@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import tap from 'tap';
 import { generators, Issuer } from 'openid-client';
-import { IConnectionAPIController, IOAuthController, OAuthReqBody } from '../../src/typings';
+import { IConnectionAPIController, IOAuthController, OAuthReq } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../../src/controller/error';
 import { addIdPConnections, databaseOptions } from '../utils';
@@ -33,7 +33,7 @@ tap.test('[OIDCProvider]', async (t) => {
     context.codeVerifier = codeVerifier;
     const codeChallenge = generators.codeChallenge(codeVerifier);
 
-    const response = (await oauthController.authorize(<OAuthReqBody>authz_request_oidc_provider)) as {
+    const response = (await oauthController.authorize(<OAuthReq>authz_request_oidc_provider)) as {
       redirect_url: string;
     };
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
