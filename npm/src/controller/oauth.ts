@@ -10,13 +10,12 @@ import saml from '@boxyhq/saml20';
 import claims from '../saml/claims';
 
 import type {
+  OIDCAuthzResponsePayload,
   IOAuthController,
   JacksonOption,
-  OAuthErrorHandlerParams,
   OAuthReq,
   OAuthTokenReq,
   OAuthTokenRes,
-  OIDCErrorCodes,
   Profile,
   SAMLResponsePayload,
   Storable,
@@ -699,18 +698,14 @@ export class OAuthController implements IOAuthController {
     return profile;
   }
 
-  public async oidcAuthzResponse(body: {
-    code?: string;
-    state?: string;
-    error?: OAuthErrorHandlerParams['error'] | OIDCErrorCodes;
-    error_description?: string;
-  }): Promise<{ redirect_url?: string }> {
+  public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
     const { code: opCode, state, error, error_description } = body;
 
     let RelayState = state || '';
     if (!RelayState) {
       throw new JacksonError('State from original request is missing.', 403);
     }
+
     RelayState = RelayState.replace(relayStatePrefix, '');
     const session = await this.sessionStore.get(RelayState);
     if (!session) {
@@ -729,6 +724,17 @@ export class OAuthController implements IOAuthController {
         redirect_url: OAuthErrorResponse({
           error,
           error_description: error_description ?? 'Authorization failure at OIDC Provider',
+          redirect_uri,
+          state: session.state,
+        }),
+      };
+    }
+
+    if (!opCode) {
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: 'server_error',
+          error_description: 'Authorization code could not be retrieved from OIDC Provider',
           redirect_uri,
           state: session.state,
         }),
@@ -873,14 +879,10 @@ export class OAuthController implements IOAuthController {
    *             expires_in: 300
    */
   public async token(body: OAuthTokenReq): Promise<OAuthTokenRes> {
-    const {
-      client_id,
-      client_secret,
-      code_verifier,
-      code,
-      grant_type = 'authorization_code',
-      redirect_uri,
-    } = body;
+    const { code, grant_type = 'authorization_code', redirect_uri } = body;
+    const client_id = 'client_id' in body ? body.client_id : undefined;
+    const client_secret = 'client_secret' in body ? body.client_secret : undefined;
+    const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
     metrics.increment('oauthToken');
 

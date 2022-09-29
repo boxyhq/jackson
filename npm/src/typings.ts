@@ -68,7 +68,7 @@ export interface IConnectionAPIController {
 export interface IOAuthController {
   authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }>;
   samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
-  oidcAuthzResponse(body: AuthzResponsePayload): Promise<{ redirect_url?: string }>;
+  oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
@@ -150,21 +150,40 @@ export interface SAMLResponsePayload {
   idp_hint?: string;
 }
 
-export interface AuthzResponsePayload {
-  code?: string;
-  state?: string;
-  error?: OAuthErrorHandlerParams['error'] | OIDCErrorCodes;
+interface OIDCAuthzResponseSuccess {
+  code: string;
+  state: string;
+  error?: never;
+  error_description?: never;
+}
+
+interface OIDCAuthzResponseError {
+  code?: never;
+  state: string;
+  error: OAuthErrorHandlerParams['error'] | OIDCErrorCodes;
   error_description?: string;
 }
 
-export interface OAuthTokenReq {
-  client_id: string;
-  client_secret: string;
-  code_verifier: string;
+export type OIDCAuthzResponsePayload = OIDCAuthzResponseSuccess | OIDCAuthzResponseError;
+
+interface OAuthTokenReqBody {
   code: string;
   grant_type: 'authorization_code';
-  redirect_uri?: string;
+  redirect_uri: string;
 }
+export interface OAuthTokenReqWithCodeVerifier extends OAuthTokenReqBody {
+  code_verifier: string;
+  client_id?: never;
+  client_secret?: never;
+}
+
+export interface OAuthTokenReqWithCredentials extends OAuthTokenReqBody {
+  code_verifier?: never;
+  client_id: string;
+  client_secret: string;
+}
+
+export type OAuthTokenReq = OAuthTokenReqWithCodeVerifier | OAuthTokenReqWithCredentials;
 
 export interface OAuthTokenRes {
   access_token: string;

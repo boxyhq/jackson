@@ -37,7 +37,6 @@ tap.test('[OIDCProvider]', async (t) => {
       redirect_url: string;
     };
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
-
     t.ok('redirect_url' in response, 'got the Idp authorize URL');
     t.ok(params.has('state'), 'state present');
     t.match(params.get('scope'), 'openid email profile', 'openid scopes present');
@@ -49,10 +48,42 @@ tap.test('[OIDCProvider]', async (t) => {
 
   t.test('[oidcAuthzResponse] Should throw an error if `state` is missing', async (t) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       await oauthController.oidcAuthzResponse(oidc_response);
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
       t.equal(message, 'State from original request is missing.', 'got expected error message');
+      t.equal(statusCode, 403, 'got expected status code');
+    }
+    t.end();
+  });
+
+  t.test('[oidcAuthzResponse] Should throw an error if `code` is missing', async (t) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      const { redirect_url } = await oauthController.oidcAuthzResponse({ state: context.state });
+      const response_params = new URLSearchParams(new URL(redirect_url!).search);
+
+      t.match(
+        response_params.get('error'),
+        'server_error',
+        'got server_error when unable to retrieve code from provider'
+      );
+      t.match(
+        response_params.get('error_description'),
+        'Authorization code could not be retrieved from OIDC Provider',
+        'matched error_description when unable to retrieve code from provider'
+      );
+      t.match(
+        response_params.get('state'),
+        authz_request_oidc_provider.state,
+        'state present in error response'
+      );
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Code is missing in AuthzResponse from IdP', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
     t.end();

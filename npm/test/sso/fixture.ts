@@ -1,6 +1,6 @@
 import { generators } from 'openid-client';
 import {
-  AuthzResponsePayload,
+  OIDCAuthzResponsePayload,
   OAuthReqBody,
   OAuthReqBodyWithAccessType,
   OAuthReqBodyWithClientId,
@@ -130,7 +130,9 @@ const OIDC_PROVIDER_CODE = '99991afdfd';
 export const oidc_response = {
   code: OIDC_PROVIDER_CODE,
 };
-export const oidc_response_with_error: AuthzResponsePayload = {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export const oidc_response_with_error: OIDCAuthzResponsePayload = {
   error: 'access_denied',
   error_description: 'The user denied the request',
 };
