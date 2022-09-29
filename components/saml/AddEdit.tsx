@@ -250,11 +250,13 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                       : formObj[key];
                   return (
                     <div className='mb-6 ' key={key}>
-                      <label
-                        htmlFor={key}
-                        className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
-                        {_label}
-                      </label>
+                      {type !== 'checkbox' && (
+                        <label
+                          htmlFor={key}
+                          className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
+                          {_label}
+                        </label>
+                      )}
                       {type === 'pre' ? (
                         <pre
                           className={`block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 
@@ -280,16 +282,23 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           rows={rows}
                         />
                       ) : type === 'checkbox' ? (
-                        <input
-                          id={key}
-                          type={type}
-                          checked={!!value}
-                          required={_required}
-                          readOnly={readOnly}
-                          maxLength={maxLength}
-                          onChange={getHandleChange({key: "checked"})}
-                          className='input'
-                        />
+                        <>
+                          <label
+                            htmlFor={key}
+                            className='inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300'>
+                            {_label}
+                          </label>
+                          <input
+                            id={key}
+                            type={type}
+                            checked={!!value}
+                            required={_required}
+                            readOnly={readOnly}
+                            maxLength={maxLength}
+                            onChange={getHandleChange({ key: 'checked' })}
+                            className='ml-5 input inline-block align-middle'
+                          />
+                        </>
                       ) : (
                         <input
                           id={key}
