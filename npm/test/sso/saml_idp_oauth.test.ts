@@ -42,7 +42,7 @@ import {
   token_req_unencoded_client_id_gen,
   token_req_with_cv,
 } from './fixture';
-import { addIdPConnections, databaseOptions } from '../utils';
+import { addSSOConnections, databaseOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
@@ -69,7 +69,7 @@ tap.before(async () => {
   oauthController = controller.oauthController;
   idpEnabledConnectionAPIController = idpFlowEnabledController.connectionAPIController;
   idpEnabledOAuthController = idpFlowEnabledController.oauthController;
-  connections = await addIdPConnections(
+  connections = await addSSOConnections(
     metadataPath,
     connectionAPIController,
     idpEnabledConnectionAPIController

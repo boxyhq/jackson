@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 import {
   IConnectionAPIController,
-  SAMLIdPConnection,
-  SAMLIdPConnectionWithEncodedMetadata,
-  SAMLIdPConnectionWithRawMetadata,
+  SAMLSSOConnection,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
   Storable,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
@@ -11,7 +11,7 @@ import {
   extractHostName,
   extractRedirectUrls,
   IndexNames,
-  validateIdPConnection,
+  validateSSOConnection,
   validateRedirectUrl,
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
@@ -20,7 +20,7 @@ import { JacksonError } from '../error';
 
 const saml = {
   create: async (
-    body: SAMLIdPConnectionWithRawMetadata | SAMLIdPConnectionWithEncodedMetadata,
+    body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata,
     connectionStore: Storable
   ) => {
     const {
@@ -37,11 +37,11 @@ const saml = {
 
     let connectionClientSecret;
 
-    validateIdPConnection(body, 'saml');
+    validateSSOConnection(body, 'saml');
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<SAMLIdPConnection> & {
+    const record: Partial<SAMLSSOConnection> & {
       clientID: string; // set by Jackson
       clientSecret: string; // set by Jackson
       idpMetadata?: Record<string, any>;
@@ -111,7 +111,7 @@ const saml = {
     return record;
   },
   update: async (
-    body: (SAMLIdPConnectionWithRawMetadata | SAMLIdPConnectionWithEncodedMetadata) & {
+    body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
       clientID: string;
       clientSecret: string;
     },

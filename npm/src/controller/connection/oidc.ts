@@ -1,17 +1,17 @@
 import crypto from 'crypto';
-import { IConnectionAPIController, OIDCIdPConnection, Storable } from '../../typings';
+import { IConnectionAPIController, OIDCSSOConnection, Storable } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
   extractHostName,
   extractRedirectUrls,
   IndexNames,
-  validateIdPConnection,
+  validateSSOConnection,
   validateRedirectUrl,
 } from '../utils';
 import { JacksonError } from '../error';
 
 const oidc = {
-  create: async (body: OIDCIdPConnection, connectionStore: Storable) => {
+  create: async (body: OIDCSSOConnection, connectionStore: Storable) => {
     const {
       defaultRedirectUrl,
       redirectUrl,
@@ -26,11 +26,11 @@ const oidc = {
 
     let connectionClientSecret;
 
-    validateIdPConnection(body, 'oidc');
+    validateSSOConnection(body, 'oidc');
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<OIDCIdPConnection> & {
+    const record: Partial<OIDCSSOConnection> & {
       clientID: string; // set by Jackson
       clientSecret: string; // set by Jackson
       oidcProvider?: {
@@ -82,7 +82,7 @@ const oidc = {
     return record;
   },
   update: async (
-    body: OIDCIdPConnection & { clientID: string; clientSecret: string },
+    body: OIDCSSOConnection & { clientID: string; clientSecret: string },
     connectionStore: Storable,
     connectionsGetter: IConnectionAPIController['getConnections']
   ) => {

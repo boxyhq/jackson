@@ -6,9 +6,9 @@ import {
   DelConnectionsQuery,
   IConnectionAPIController,
   Storable,
-  SAMLIdPConnectionWithEncodedMetadata,
-  SAMLIdPConnectionWithRawMetadata,
-  OIDCIdPConnection,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnection,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
@@ -177,7 +177,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         description: Unauthorized
    */
   public async createSAMLConnection(
-    body: SAMLIdPConnectionWithEncodedMetadata | SAMLIdPConnectionWithRawMetadata
+    body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
   ): Promise<any> {
     metrics.increment('createConnection');
     const record = await samlConnection.create(body, this.connectionStore);
@@ -188,7 +188,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     return this.createSAMLConnection(...args);
   }
 
-  public async createOIDCConnection(body: OIDCIdPConnection): Promise<any> {
+  public async createOIDCConnection(body: OIDCSSOConnection): Promise<any> {
     metrics.increment('createConnection');
     const record = await oidcConnection.create(body, this.connectionStore);
     return record;
@@ -326,7 +326,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         description: Unauthorized
    */
   public async updateSAMLConnection(
-    body: (SAMLIdPConnectionWithEncodedMetadata | SAMLIdPConnectionWithRawMetadata) & {
+    body: (SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata) & {
       clientID: string;
       clientSecret: string;
     }
@@ -341,7 +341,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     await this.updateSAMLConnection(...args);
   }
   public async updateOIDCConnection(
-    body: OIDCIdPConnection & { clientID: string; clientSecret: string }
+    body: OIDCSSOConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
     await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }

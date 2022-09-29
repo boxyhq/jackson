@@ -1,9 +1,9 @@
 import type {
   ConnectionType,
   OAuthErrorHandlerParams,
-  OIDCIdPConnection,
-  SAMLIdPConnectionWithEncodedMetadata,
-  SAMLIdPConnectionWithRawMetadata,
+  OIDCSSOConnection,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -95,8 +95,8 @@ export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
   return thumbprint;
 };
 
-export const validateIdPConnection = (
-  body: SAMLIdPConnectionWithRawMetadata | SAMLIdPConnectionWithEncodedMetadata | OIDCIdPConnection,
+export const validateSSOConnection = (
+  body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata | OIDCSSOConnection,
   strategy: ConnectionType
 ): void => {
   const { defaultRedirectUrl, redirectUrl, tenant, product, description } = body;

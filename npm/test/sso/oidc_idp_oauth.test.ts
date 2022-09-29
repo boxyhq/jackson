@@ -4,7 +4,7 @@ import { generators, Issuer } from 'openid-client';
 import { IConnectionAPIController, IOAuthController, OAuthReq } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../../src/controller/error';
-import { addIdPConnections, databaseOptions } from '../utils';
+import { addSSOConnections, databaseOptions } from '../utils';
 import path from 'path';
 
 let connectionAPIController: IConnectionAPIController;
@@ -17,7 +17,7 @@ tap.before(async () => {
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
-  await addIdPConnections(metadataPath, connectionAPIController);
+  await addSSOConnections(metadataPath, connectionAPIController);
 });
 
 tap.teardown(async () => {

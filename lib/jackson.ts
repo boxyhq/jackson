@@ -1,9 +1,9 @@
 import type {
   IAdminController,
   IConnectionAPIController,
-  SAMLIdPConnectionWithEncodedMetadata,
-  SAMLIdPConnectionWithRawMetadata,
-  OIDCIdPConnection,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnection,
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
@@ -90,9 +90,9 @@ export default async function init() {
 }
 
 export type {
-  SAMLIdPConnectionWithEncodedMetadata,
-  SAMLIdPConnectionWithRawMetadata,
-  OIDCIdPConnection,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnection,
   DirectoryType,
   Directory,
   User,

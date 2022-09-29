@@ -6,7 +6,7 @@ import tap from 'tap';
 import { IConnectionAPIController, ILogoutController } from '../../src/typings';
 import { relayStatePrefix } from '../../src/controller/utils';
 import { saml_connection } from './fixture';
-import { addIdPConnections, databaseOptions } from '../utils';
+import { addSSOConnections, databaseOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 let logoutController: ILogoutController;
@@ -19,7 +19,7 @@ tap.before(async () => {
   connectionAPIController = controller.connectionAPIController;
   logoutController = controller.logoutController;
 
-  await addIdPConnections(metadataPath, connectionAPIController);
+  await addSSOConnections(metadataPath, connectionAPIController);
 });
 
 tap.teardown(async () => {

@@ -3,7 +3,7 @@ import type { JacksonOption } from '../src/typings';
 
 const connectionRecords: Array<any> = [];
 
-const addIdPConnections = async (
+const addSSOConnections = async (
   metadataPath,
   connectionAPIController,
   idpEnabledConnectionAPIController?
@@ -36,4 +36,4 @@ const databaseOptions = <JacksonOption>{
   },
 };
 
-export { addIdPConnections, databaseOptions };
+export { addSSOConnections, databaseOptions };
