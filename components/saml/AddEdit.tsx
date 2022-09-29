@@ -86,6 +86,7 @@ const fieldCatalog = [
     label: 'IdP Certificate Validity',
     type: 'pre',
     attributes: {
+      isHidden: (value): boolean => (!value.validTo || new Date(value.validTo).toString() == 'Invalid Date'),
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
@@ -230,6 +231,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                   label,
                   type,
                   attributes: {
+                    isHidden,
                     isArray,
                     rows,
                     formatForDisplay,
@@ -253,7 +255,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                       {type !== 'checkbox' && (
                         <label
                           htmlFor={key}
-                          className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
+                          className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300 ${isHidden ? isHidden(formObj[key]) == true ? 'hidden' : '' : ''}`}>
                           {_label}
                         </label>
                       )}
@@ -262,8 +264,8 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
                           className={`block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 
                         text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 
                         dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 
-                        dark:focus:ring-blue-500 ${
-                          showWarning ? (showWarning(value) ? 'border-2 border-rose-500' : '') : ''
+                        dark:focus:ring-blue-500 ${isHidden ? isHidden(formObj[key]) == true ? 'hidden' : '' : ''} ${
+                          showWarning ? (showWarning(formObj[key]) ? 'border-2 border-rose-500' : '') : ''
                         }`}>
                           {value}
                         </pre>
