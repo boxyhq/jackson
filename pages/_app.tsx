@@ -3,7 +3,7 @@ import type { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Toaster } from 'react-hot-toast';
-
+import { appWithTranslation } from 'next-i18next';
 import { AccountLayout } from '@components/layouts';
 
 import '../styles/globals.css';
@@ -30,4 +30,4 @@ function MyApp({
   );
 }
 
-export default MyApp;
+export default appWithTranslation<never>(MyApp);
