@@ -1,7 +1,9 @@
 import type {
   IAdminController,
-  IAPIController,
-  IdPConfig,
+  IConnectionAPIController,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnection,
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
@@ -15,13 +17,15 @@ import type {
   DirectorySyncRequest,
   IOidcDiscoveryController,
   ISPSAMLConfig,
+  GetConnectionsQuery,
+  GetConfigQuery,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
 import env from '@lib/env';
 import '@lib/metrics';
 
-let apiController: IAPIController;
+let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
@@ -34,7 +38,7 @@ const g = global as any;
 
 export default async function init() {
   if (
-    !g.apiController ||
+    !g.connectionAPIController ||
     !g.oauthController ||
     !g.adminController ||
     !g.healthCheckController ||
@@ -44,7 +48,7 @@ export default async function init() {
     !g.spConfig
   ) {
     const ret = await jackson(env);
-    apiController = ret.apiController;
+    connectionAPIController = ret.connectionAPIController;
     oauthController = ret.oauthController;
     adminController = ret.adminController;
     logoutController = ret.logoutController;
@@ -53,7 +57,7 @@ export default async function init() {
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
 
-    g.apiController = apiController;
+    g.connectionAPIController = connectionAPIController;
     g.oauthController = oauthController;
     g.adminController = adminController;
     g.logoutController = logoutController;
@@ -63,7 +67,7 @@ export default async function init() {
     g.spConfig = spConfig;
     g.isJacksonReady = true;
   } else {
-    apiController = g.apiController;
+    connectionAPIController = g.connectionAPIController;
     oauthController = g.oauthController;
     adminController = g.adminController;
     logoutController = g.logoutController;
@@ -75,7 +79,7 @@ export default async function init() {
 
   return {
     spConfig,
-    apiController,
+    connectionAPIController,
     oauthController,
     adminController,
     logoutController,
@@ -86,7 +90,9 @@ export default async function init() {
 }
 
 export type {
-  IdPConfig,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnection,
   DirectoryType,
   Directory,
   User,
@@ -94,4 +100,6 @@ export type {
   DirectorySyncEvent,
   HTTPMethod,
   DirectorySyncRequest,
+  GetConnectionsQuery,
+  GetConfigQuery,
 };

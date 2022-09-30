@@ -3,42 +3,43 @@ import useSWR from 'swr';
 import Link from 'next/link';
 import { ArrowLeftIcon, ArrowRightIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
-
 import { fetcher } from '@lib/ui/utils';
 import EmptyState from '@components/EmptyState';
 
-type SAMLConfig = {
+type Connection = {
   name: string;
   tenant: string;
   product: string;
   clientID: string;
+  idpMetadata?: any;
+  oidcProvider?: any;
 };
 
-const SAMLConfigurations: NextPage = () => {
+const Connections: NextPage = () => {
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
 
-  const { data: samlConfigs } = useSWR<SAMLConfig[]>(
-    ['/api/admin/saml/config', `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
+  const { data: connections } = useSWR<Connection[]>(
+    [`/api/admin/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }
   );
 
-  if (!samlConfigs) {
+  if (!connections) {
     return null;
   }
 
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>SAML Connections</h2>
-        <Link href={'/admin/saml/config/new'}>
-          <a className='btn btn-primary' data-test-id='create-saml-connection'>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Connections</h2>
+        <Link href={`/admin/connection/new`}>
+          <a className='btn btn-primary' data-test-id='create-connection'>
             + New Connection
           </a>
         </Link>
       </div>
-      {samlConfigs.length === 0 ? (
-        <EmptyState title='No SAML connections found.' href='/admin/saml/config/new' />
+      {connections.length === 0 ? (
+        <EmptyState title={`No connections found.`} href={`/admin/connection/new`} />
       ) : (
         <>
           <div className='rounder border'>
@@ -52,30 +53,42 @@ const SAMLConfigurations: NextPage = () => {
                     Product
                   </th>
                   <th scope='col' className='px-6 py-3'>
+                    IdP Type
+                  </th>
+                  <th scope='col' className='px-6 py-3'>
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {samlConfigs.map((samlConfig) => (
-                  <tr
-                    key={samlConfig.clientID}
-                    className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
-                    <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                      {samlConfig.tenant}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                      {samlConfig.product}
-                    </td>
-                    <td className='px-6 py-3'>
-                      <Link href={`/admin/saml/config/edit/${samlConfig.clientID}`}>
-                        <a className='link-primary'>
-                          <PencilIcon className='h-5 w-5 text-secondary' />
-                        </a>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                {connections.map((connection) => {
+                  const connectionIsSAML =
+                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
+                  const connectionIsOIDC =
+                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
+                  return (
+                    <tr
+                      key={connection.clientID}
+                      className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
+                      <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
+                        {connection.tenant}
+                      </td>
+                      <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                        {connection.product}
+                      </td>
+                      <td className='px-6 py-3'>
+                        {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
+                      </td>
+                      <td className='px-6 py-3'>
+                        <Link href={`/admin/connection/edit/${connection.clientID}`}>
+                          <a className='link-primary'>
+                            <PencilIcon className='h-5 w-5 text-secondary' />
+                          </a>
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -99,7 +112,7 @@ const SAMLConfigurations: NextPage = () => {
             <button
               type='button'
               className='btn btn-outline'
-              disabled={samlConfigs.length === 0 || samlConfigs.length < paginate.pageLimit}
+              disabled={connections.length === 0 || connections.length < paginate.pageLimit}
               onClick={() =>
                 setPaginate((curState) => ({
                   ...curState,
@@ -117,4 +130,4 @@ const SAMLConfigurations: NextPage = () => {
   );
 };
 
-export default SAMLConfigurations;
+export default Connections;

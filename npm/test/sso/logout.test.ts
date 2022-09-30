@@ -3,46 +3,23 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import sinon from 'sinon';
 import tap from 'tap';
-import readConfig from '../../src/read-config';
-import { IAPIController, ILogoutController, JacksonOption } from '../../src/typings';
+import { IConnectionAPIController, ILogoutController } from '../../src/typings';
 import { relayStatePrefix } from '../../src/controller/utils';
-import { saml_config } from './fixture';
-import { getDatabaseOption } from '../utils';
+import { saml_connection } from './fixture';
+import { addSSOConnections, databaseOptions } from '../utils';
 
-let apiController: IAPIController;
+let connectionAPIController: IConnectionAPIController;
 let logoutController: ILogoutController;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-const options = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  db: {
-    engine: 'mem',
-  },
-  openid: {
-    jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
-    jwsAlg: 'RS256',
-  },
-};
-
-// TODO: Move this to a helper file
-const addMetadata = async (metadataPath) => {
-  const configs = await readConfig(metadataPath);
-
-  for (const config of configs) {
-    await apiController.config(config);
-  }
-};
-
 tap.before(async () => {
-  const controller = await (await import('../../src/index')).default(getDatabaseOption());
+  const controller = await (await import('../../src/index')).default(databaseOptions);
 
-  apiController = controller.apiController;
+  connectionAPIController = controller.connectionAPIController;
   logoutController = controller.logoutController;
 
-  await addMetadata(metadataPath);
+  await addSSOConnections(metadataPath, connectionAPIController);
 });
 
 tap.teardown(async () => {
@@ -52,9 +29,9 @@ tap.teardown(async () => {
 tap.test('LogoutController -> createRequest', async (t) => {
   const body = {
     nameId: 'google-oauth2|146623609101108149256',
-    tenant: saml_config.tenant,
-    product: saml_config.product,
-    redirectUrl: saml_config.defaultRedirectUrl,
+    tenant: saml_connection.tenant,
+    product: saml_connection.product,
+    redirectUrl: saml_connection.defaultRedirectUrl,
   };
 
   t.test('createRequest', async (t) => {
@@ -65,7 +42,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
           tenant: 'invalid-tenant',
         });
       } catch (err: any) {
-        t.equal(err.message, 'SAML configuration not found.');
+        t.equal(err.message, 'SAML connection not found.');
         t.equal(err.statusCode, 403);
       }
 
@@ -75,7 +52,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
           product: 'invalid-product',
         });
       } catch (err: any) {
-        t.equal(err.message, 'SAML configuration not found.');
+        t.equal(err.message, 'SAML connection not found.');
         t.equal(err.statusCode, 403);
       }
 
@@ -86,7 +63,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
           product: '',
         });
       } catch (err: any) {
-        t.equal(err.message, 'SAML configuration not found.');
+        t.equal(err.message, 'SAML connection not found.');
         t.equal(err.statusCode, 403);
       }
 
@@ -202,7 +179,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
       });
 
       t.ok('redirectUrl' in result);
-      t.match(result.redirectUrl, saml_config.defaultRedirectUrl);
+      t.match(result.redirectUrl, saml_connection.defaultRedirectUrl);
 
       t.end();
     });
