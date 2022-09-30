@@ -21,17 +21,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const { isSAML, isOIDC } = strategyChecker(req);
       if (isSAML) {
         res.json(await connectionAPIController.createSAMLConnection(req.body));
-      }
-      if (isOIDC) {
+      } else if (isOIDC) {
         res.json(await connectionAPIController.createOIDCConnection(req.body));
+      } else {
+        throw { message: 'Missing SSO connection params', statusCode: 400 };
       }
     } else if (req.method === 'PATCH') {
       const { isSAML, isOIDC } = strategyChecker(req);
       if (isSAML) {
         res.status(204).end(await connectionAPIController.updateSAMLConnection(req.body));
-      }
-      if (isOIDC) {
+      } else if (isOIDC) {
         res.status(204).end(await connectionAPIController.updateOIDCConnection(req.body));
+      } else {
+        throw { message: 'Missing SSO connection params', statusCode: 400 };
       }
     } else if (req.method === 'DELETE') {
       res.status(204).end(await connectionAPIController.deleteConnections(req.body));
