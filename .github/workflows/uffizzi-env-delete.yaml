@@ -20,3 +20,15 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+  purge-image:
+    name: Delete Uffizzi image
+    uses: bots-house/ghcr-delete-image-action@v1.0.0
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
+    with:
+      # NOTE: at now only orgs is supported
+      owner: ${{ github.repository_owner }}
+      name: jackson-dev
+      # NOTE: using Personal Access Token
+      token: ${{ secrets.GITHUB_TOKEN }}
+      # tag: jackson-${{ env.REL_VERSION_STRICT }}
+      tag: pr-${{github.event.pull_request.number}}
