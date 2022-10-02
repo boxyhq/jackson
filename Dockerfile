@@ -7,6 +7,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY npm npm
+COPY bootstrap.sh bootstrap.sh
 RUN npm install --legacy-peer-deps
 
 # Rebuild the source code only when needed
@@ -15,7 +16,9 @@ WORKDIR /app
 COPY . .
 COPY --from=deps /app/npm ./npm
 COPY --from=deps /app/node_modules ./node_modules
-RUN npm run build && npm install --legacy-peer-deps --production --ignore-scripts --prefer-offline
+COPY --from=deps /app/bootstrap.sh ./bootstrap.sh
+RUN npm run build
+# RUN npm install --legacy-peer-deps --production --ignore-scripts --prefer-offline
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -29,9 +32,13 @@ RUN adduser -S nextjs -u 1001
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/bootstrap.sh ./bootstrap.sh
 COPY --from=builder /app/npm ./npm
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+RUN chmod +x bootstrap.sh
+# ts-node is devDependancy but we need it for typeorm migrations
+RUN npm install -g ts-node
 
 USER nextjs
 
@@ -41,5 +48,4 @@ EXPOSE 5225
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
-
-CMD ["npm", "start"]
+ENTRYPOINT ["/bin/sh", "bootstrap.sh"]
