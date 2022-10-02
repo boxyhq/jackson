@@ -1,7 +1,17 @@
 const map = {
-  'test/saml/api.test.ts': ['src/controller/api.ts'],
-  'test/saml/oauth.test.ts': ['src/controller/oauth.ts', 'src/controller/oauth/*', 'src/controller/utils.ts'],
-  'test/saml/logout.test.ts': ['src/controller/logout.ts', 'src/controller/utils.ts'],
+  'test/sso/saml_idp_api.test.ts': ['src/controller/api.ts', 'src/controller/connection/saml.ts'],
+  'test/sso/oidc_idp_api.test.ts': ['src/controller/api.ts', 'src/controller/connection/oidc.ts'],
+  'test/sso/saml_idp_oauth.test.ts': [
+    'src/controller/oauth.ts',
+    'src/controller/oauth/*',
+    'src/controller/utils.ts',
+  ],
+  'test/sso/oidc_idp_oauth.test.ts': [
+    'src/controller/oauth.ts',
+    'src/controller/oauth/*',
+    'src/controller/utils.ts',
+  ],
+  'test/sso/logout.test.ts': ['src/controller/logout.ts', 'src/controller/utils.ts'],
   'test/db/db.test.ts': ['src/db/*'],
 
   'test/dsync/directories.test.ts': ['src/directory-sync/DirectoryConfig.ts'],

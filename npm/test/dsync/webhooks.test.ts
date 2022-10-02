@@ -5,7 +5,7 @@ import users from './data/users';
 import { default as usersRequest } from './data/user-requests';
 import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
-import { getDatabaseOption } from '../utils';
+import { databaseOptions } from '../utils';
 import sinon from 'sinon';
 import axios from 'axios';
 import { createSignatureString } from '../../src/directory-sync/utils';
@@ -22,7 +22,7 @@ const webhook: Directory['webhook'] = {
 };
 
 tap.before(async () => {
-  const jackson = await (await import('../../src/index')).default(getDatabaseOption());
+  const jackson = await (await import('../../src/index')).default(databaseOptions);
 
   directorySync = jackson.directorySync;
 

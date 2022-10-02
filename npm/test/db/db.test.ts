@@ -4,7 +4,7 @@ import DB from '../../src/db/db';
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
-const configStores: Storable[] = [];
+const connectionStores: Storable[] = [];
 const ttlStores: Storable[] = [];
 const ttl = 2;
 
@@ -134,7 +134,7 @@ tap.before(async () => {
     const db = await DB.new(opts);
 
     const randomSession = Date.now();
-    configStores.push(db.store('saml:config:' + randomSession));
+    connectionStores.push(db.store('saml:config:' + randomSession));
     ttlStores.push(db.store('oauth:session:' + randomSession, ttl));
   }
 });
@@ -144,8 +144,8 @@ tap.teardown(async () => {
 });
 
 tap.test('dbs', ({ end }) => {
-  for (const idx in configStores) {
-    const configStore = configStores[idx];
+  for (const idx in connectionStores) {
+    const connectionStore = connectionStores[idx];
     const ttlStore = ttlStores[idx];
     let dbEngine = dbs[idx].engine!;
 
@@ -154,7 +154,7 @@ tap.test('dbs', ({ end }) => {
     }
 
     tap.test('put(): ' + dbEngine, async (t) => {
-      await configStore.put(
+      await connectionStore.put(
         record1.id,
         record1,
         {
@@ -169,7 +169,7 @@ tap.test('dbs', ({ end }) => {
         }
       );
 
-      await configStore.put(
+      await connectionStore.put(
         record2.id,
         record2,
         {
@@ -188,8 +188,8 @@ tap.test('dbs', ({ end }) => {
     });
 
     tap.test('get(): ' + dbEngine, async (t) => {
-      const ret1 = await configStore.get(record1.id);
-      const ret2 = await configStore.get(record2.id);
+      const ret1 = await connectionStore.get(record1.id);
+      const ret2 = await connectionStore.get(record2.id);
 
       t.same(ret1, record1, 'unable to get record1');
       t.same(ret2, record2, 'unable to get record2');
@@ -200,7 +200,7 @@ tap.test('dbs', ({ end }) => {
     tap.test('getAll(): ' + dbEngine, async (t) => {
       // getAll(pageOffset?: number, pageLimit?: number): Promise<unknown[]>;
 
-      const allRecords: any = await configStore.getAll();
+      const allRecords: any = await connectionStore.getAll();
       const allRecordOutput = {};
       let allRecordInput = {};
       for (const keyValue in records) {
@@ -213,14 +213,14 @@ tap.test('dbs', ({ end }) => {
       }
       t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
       allRecordInput = {};
-      let allRecordsWithPaggination: any = await configStore.getAll(0, 2);
+      let allRecordsWithPaggination: any = await connectionStore.getAll(0, 2);
       for (const keyValue in allRecordsWithPaggination) {
         const keyVal = records[keyValue.toString()];
         allRecordInput[allRecordsWithPaggination[keyVal]];
       }
 
       t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
-      allRecordsWithPaggination = await configStore.getAll(0, 0);
+      allRecordsWithPaggination = await connectionStore.getAll(0, 0);
       for (const keyValue in allRecordsWithPaggination) {
         const keyVal = records[keyValue.toString()];
         allRecordInput[allRecordsWithPaggination[keyVal]];
@@ -231,12 +231,12 @@ tap.test('dbs', ({ end }) => {
     });
 
     tap.test('getByIndex(): ' + dbEngine, async (t) => {
-      const ret1 = await configStore.getByIndex({
+      const ret1 = await connectionStore.getByIndex({
         name: 'name',
         value: record1.name,
       });
 
-      const ret2 = await configStore.getByIndex({
+      const ret2 = await connectionStore.getByIndex({
         name: 'city',
         value: record1.city,
       });
@@ -252,25 +252,25 @@ tap.test('dbs', ({ end }) => {
     });
 
     tap.test('delete(): ' + dbEngine, async (t) => {
-      await configStore.delete(record1.id);
+      await connectionStore.delete(record1.id);
 
-      const ret0 = await configStore.getByIndex({
+      const ret0 = await connectionStore.getByIndex({
         name: 'city',
         value: record1.city,
       });
 
       t.same(ret0, [record2], 'unable to get index "city" after delete');
 
-      await configStore.delete(record2.id);
+      await connectionStore.delete(record2.id);
 
-      const ret1 = await configStore.get(record1.id);
-      const ret2 = await configStore.get(record2.id);
+      const ret1 = await connectionStore.get(record1.id);
+      const ret2 = await connectionStore.get(record2.id);
 
-      const ret3 = await configStore.getByIndex({
+      const ret3 = await connectionStore.getByIndex({
         name: 'name',
         value: record1.name,
       });
-      const ret4 = await configStore.getByIndex({
+      const ret4 = await connectionStore.getByIndex({
         name: 'city',
         value: record1.city,
       });
