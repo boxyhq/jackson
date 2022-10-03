@@ -73,7 +73,7 @@
     "@playwright/test": "1.26.0",
     "@types/cors": "2.8.12",
     "@types/micromatch": "4.0.2",
-    "@types/node": "18.7.23",
+    "@types/node": "18.8.0",
     "@types/react": "18.0.21",
     "@typescript-eslint/eslint-plugin": "5.38.1",
     "@typescript-eslint/parser": "5.38.1",
