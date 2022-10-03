@@ -1,37 +1,80 @@
 import { type JWK } from 'jose';
 
-export type IdPConfig = {
+interface SSOConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
   tenant: string;
   product: string;
   name?: string;
   description?: string;
-  rawMetadata?: string;
-  encodedRawMetadata?: string;
-};
+}
 
-export interface IAPIController {
-  config(body: IdPConfig): Promise<any>;
-  updateConfig(body: any): Promise<any>;
-  getConfig(body: { clientID?: string; tenant?: string; product?: string }): Promise<any>;
-  deleteConfig(body: {
-    clientID?: string;
-    clientSecret?: string;
-    tenant?: string;
-    product?: string;
-  }): Promise<void>;
+export interface SAMLSSOConnection extends SSOConnection {
+  forceAuthn?: boolean | string;
+}
+
+export interface SAMLSSOConnectionWithRawMetadata extends SAMLSSOConnection {
+  rawMetadata: string;
+  encodedRawMetadata?: never;
+}
+
+export interface SAMLSSOConnectionWithEncodedMetadata extends SAMLSSOConnection {
+  rawMetadata?: never;
+  encodedRawMetadata: string;
+}
+
+export interface OIDCSSOConnection extends SSOConnection {
+  oidcDiscoveryUrl: string;
+  oidcClientId: string;
+  oidcClientSecret: string;
+}
+
+export type ConnectionType = 'saml' | 'oidc';
+
+type ClientIDQuery = {
+  clientID: string;
+};
+type TenantQuery = {
+  tenant: string;
+  product: string;
+  strategy?: ConnectionType;
+};
+export type GetConnectionsQuery = ClientIDQuery | TenantQuery;
+export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
+
+export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
+export type DelConfigQuery = (ClientIDQuery & { clientSecret: string }) | Omit<TenantQuery, 'strategy'>;
+
+export interface IConnectionAPIController {
+  config(body: SAMLSSOConnection): Promise<any>;
+  createSAMLConnection(
+    body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata
+  ): Promise<any>;
+  createOIDCConnection(body: OIDCSSOConnection): Promise<any>;
+  updateConfig(body: SAMLSSOConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  updateSAMLConnection(
+    body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
+      clientID: string;
+      clientSecret: string;
+    }
+  ): Promise<any>;
+  updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  getConnections(body: GetConnectionsQuery): Promise<Array<any>>;
+  getConfig(body: GetConfigQuery): Promise<any>;
+  deleteConnections(body: DelConnectionsQuery): Promise<void>;
+  deleteConfig(body: DelConfigQuery): Promise<void>;
 }
 
 export interface IOAuthController {
-  authorize(body: OAuthReqBody): Promise<{ redirect_url?: string; authorize_form?: string }>;
+  authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }>;
   samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
+  oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
 
 export interface IAdminController {
-  getAllConfig(pageOffset?: number, pageLimit?: number);
+  getAllConnection(pageOffset?: number, pageLimit?: number);
 }
 
 export interface IHealthCheckController {
@@ -66,21 +109,40 @@ export interface IOidcDiscoveryController {
 }
 
 export interface OAuthReqBody {
-  response_type: 'code';
-  client_id: string;
-  redirect_uri: string;
   state: string;
-  tenant?: string;
-  product?: string;
-  access_type?: string;
-  resource?: string;
-  scope?: string;
-  nonce?: string;
+  response_type: 'code';
+  redirect_uri: string;
   code_challenge: string;
   code_challenge_method: 'plain' | 'S256' | '';
-  provider: 'saml';
+  scope?: string;
+  nonce?: string;
   idp_hint?: string;
+  prompt?: string;
 }
+
+export interface OAuthReqBodyWithClientId extends OAuthReqBody {
+  client_id: string;
+}
+export interface OAuthReqBodyWithTenantProduct extends OAuthReqBody {
+  client_id: 'dummy';
+  tenant: string;
+  product: string;
+}
+export interface OAuthReqBodyWithAccessType extends OAuthReqBody {
+  client_id: 'dummy';
+  access_type: string;
+}
+
+export interface OAuthReqBodyWithResource extends OAuthReqBody {
+  client_id: 'dummy';
+  resource: string;
+}
+
+export type OAuthReq =
+  | OAuthReqBodyWithClientId
+  | OAuthReqBodyWithTenantProduct
+  | OAuthReqBodyWithAccessType
+  | OAuthReqBodyWithResource;
 
 export interface SAMLResponsePayload {
   SAMLResponse: string;
@@ -88,14 +150,40 @@ export interface SAMLResponsePayload {
   idp_hint?: string;
 }
 
-export interface OAuthTokenReq {
-  client_id: string;
-  client_secret: string;
-  code_verifier: string;
+interface OIDCAuthzResponseSuccess {
+  code: string;
+  state: string;
+  error?: never;
+  error_description?: never;
+}
+
+interface OIDCAuthzResponseError {
+  code?: never;
+  state: string;
+  error: OAuthErrorHandlerParams['error'] | OIDCErrorCodes;
+  error_description?: string;
+}
+
+export type OIDCAuthzResponsePayload = OIDCAuthzResponseSuccess | OIDCAuthzResponseError;
+
+interface OAuthTokenReqBody {
   code: string;
   grant_type: 'authorization_code';
-  redirect_uri?: string;
+  redirect_uri: string;
 }
+export interface OAuthTokenReqWithCodeVerifier extends OAuthTokenReqBody {
+  code_verifier: string;
+  client_id?: never;
+  client_secret?: never;
+}
+
+export interface OAuthTokenReqWithCredentials extends OAuthTokenReqBody {
+  code_verifier?: never;
+  client_id: string;
+  client_secret: string;
+}
+
+export type OAuthTokenReq = OAuthTokenReqWithCodeVerifier | OAuthTokenReqWithCredentials;
 
 export interface OAuthTokenRes {
   access_token: string;
@@ -164,8 +252,10 @@ export interface DatabaseOption {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
+  oidcPath: string;
   samlAudience?: string;
   preLoadedConfig?: string;
+  preLoadedConnection?: string;
   idpEnabled?: boolean;
   db: DatabaseOption;
   clientSecretVerifier?: string;
@@ -202,7 +292,7 @@ interface Metadata {
   provider: string;
 }
 
-export interface SAMLConfig {
+export interface SAMLConnection {
   idpMetadata: Metadata;
   certs: {
     privateKey: string;
@@ -220,11 +310,23 @@ export interface OAuthErrorHandlerParams {
     | 'unsupported_response_type'
     | 'invalid_scope'
     | 'server_error'
-    | 'temporarily_unavailable';
+    | 'temporarily_unavailable'
+    | OIDCErrorCodes;
   error_description: string;
   redirect_uri: string;
   state?: string;
 }
+
+export type OIDCErrorCodes =
+  | 'interaction_required'
+  | 'login_required'
+  | 'account_selection_required'
+  | 'consent_required'
+  | 'invalid_request_uri'
+  | 'invalid_request_object'
+  | 'request_not_supported'
+  | 'request_uri_not_supported'
+  | 'registration_not_supported';
 
 export interface ISPSAMLConfig {
   get(): {

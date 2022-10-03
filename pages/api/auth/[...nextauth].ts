@@ -27,6 +27,17 @@ export default NextAuth({
   jwt: {
     maxAge: 60 * 60 * 24 * 30,
   },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.saml-jackson`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true,
+      },
+    },
+  },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user }): Promise<boolean> {

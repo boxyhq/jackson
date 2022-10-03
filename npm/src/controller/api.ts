@@ -1,444 +1,548 @@
-import crypto from 'crypto';
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
-
-import saml from '@boxyhq/saml20';
-import x509 from '../saml/x509';
-import { IAPIController, IdPConfig, Storable } from '../typings';
+import {
+  GetConfigQuery,
+  GetConnectionsQuery,
+  DelConnectionsQuery,
+  IConnectionAPIController,
+  Storable,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnection,
+} from '../typings';
 import { JacksonError } from './error';
-import { IndexNames, validateAbsoluteUrl } from './utils';
+import { IndexNames } from './utils';
+import oidcConnection from './connection/oidc';
+import samlConnection from './connection/saml';
 
-export class APIController implements IAPIController {
-  private configStore: Storable;
+export class ConnectionAPIController implements IConnectionAPIController {
+  private connectionStore: Storable;
 
-  constructor({ configStore }) {
-    this.configStore = configStore;
-  }
-
-  private _validateRedirectUrl({ redirectUrlList, defaultRedirectUrl }) {
-    if (redirectUrlList) {
-      if (redirectUrlList.length > 100) {
-        throw new JacksonError('Exceeded maximum number of allowed redirect urls', 400);
-      }
-      for (const url of redirectUrlList) {
-        validateAbsoluteUrl(url, 'redirectUrl is invalid');
-      }
-    }
-    if (defaultRedirectUrl) {
-      validateAbsoluteUrl(defaultRedirectUrl, 'defaultRedirectUrl is invalid');
-    }
-  }
-
-  private _validateIdPConfig(body: IdPConfig): void {
-    const { encodedRawMetadata, rawMetadata, defaultRedirectUrl, redirectUrl, tenant, product, description } =
-      body;
-
-    if (!rawMetadata && !encodedRawMetadata) {
-      throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
-    }
-
-    if (!defaultRedirectUrl) {
-      throw new JacksonError('Please provide a defaultRedirectUrl', 400);
-    }
-
-    if (!redirectUrl) {
-      throw new JacksonError('Please provide redirectUrl', 400);
-    }
-
-    if (!tenant) {
-      throw new JacksonError('Please provide tenant', 400);
-    }
-
-    if (!product) {
-      throw new JacksonError('Please provide product', 400);
-    }
-
-    if (description && description.length > 100) {
-      throw new JacksonError('Description should not exceed 100 characters', 400);
-    }
+  constructor({ connectionStore }) {
+    this.connectionStore = connectionStore;
   }
 
   /**
    * @swagger
+   * definitions:
+   *    Connection:
+   *      type: object
+   *      example:
+   *          {
+   *            "idpMetadata": {
+   *              "sso": {
+   *                "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml",
+   *                "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml"
+   *              },
+   *              "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+   *              "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+   *              "loginType": "idp",
+   *              "provider": "okta.com"
+   *            },
+   *            "defaultRedirectUrl": "https://hoppscotch.io/",
+   *            "redirectUrl": ["https://hoppscotch.io/"],
+   *            "tenant": "hoppscotch.io",
+   *            "product": "API Engine",
+   *            "name": "Hoppscotch-SP",
+   *            "description": "SP for hoppscotch.io",
+   *            "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *            "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *            "certs": {
+   *              "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+   *              "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+   *            }
+   *          }
+   *    validationErrorsPost:
+   *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
    *
+   * parameters:
+   *   nameParamPost:
+   *     name: name
+   *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   descriptionParamPost:
+   *     name: description
+   *     description: A short description for the connection not more than 100 characters
+   *     type: string
+   *     in: formData
+   *   encodedRawMetadataParamPost:
+   *     name: encodedRawMetadata
+   *     description: Base64 encoding of the XML metadata
+   *     in: formData
+   *     type: string
+   *   rawMetadataParamPost:
+   *     name: rawMetadata
+   *     description: Raw XML metadata
+   *     in: formData
+   *     type: string
+   *   defaultRedirectUrlParamPost:
+   *     name: defaultRedirectUrl
+   *     description: The redirect URL to use in the IdP login flow
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   redirectUrlParamPost:
+   *     name: redirectUrl
+   *     description: JSON encoded array containing a list of allowed redirect URLs
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   tenantParamPost:
+   *     name: tenant
+   *     description: Tenant
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   productParamPost:
+   *     name: product
+   *     description: Product
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   oidcDiscoveryUrlPost:
+   *     name: oidcDiscoveryUrl
+   *     description: well-known URL where the OpenID Provider configuration is exposed
+   *     in: formData
+   *     type: string
+   *   oidcClientIdPost:
+   *     name: oidcClientId
+   *     description: clientId of the application set up on the OpenID Provider
+   *     in: formData
+   *     type: string
+   *   oidcClientSecretPost:
+   *     name: oidcClientSecret
+   *     description: clientSecret of the application set up on the OpenID Provider
+   *     in: formData
+   *     type: string
    * /api/v1/saml/config:
    *   post:
-   *     summary: Create SAML configuration
-   *     operationId: create-saml-config
-   *     tags: [SAML Config]
+   *    summary: Create SAML config
+   *    operationId: create-saml-config
+   *    deprecated: true
+   *    tags: [SAML Config - Deprecated]
+   *    produces:
+   *      - application/json
+   *    consumes:
+   *      - application/x-www-form-urlencoded
+   *      - application/json
+   *    parameters:
+   *      - $ref: '#/parameters/nameParamPost'
+   *      - $ref: '#/parameters/descriptionParamPost'
+   *      - $ref: '#/parameters/encodedRawMetadataParamPost'
+   *      - $ref: '#/parameters/rawMetadataParamPost'
+   *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
+   *      - $ref: '#/parameters/redirectUrlParamPost'
+   *      - $ref: '#/parameters/tenantParamPost'
+   *      - $ref: '#/parameters/productParamPost'
+   *    responses:
+   *      200:
+   *        description: Success
+   *        schema:
+   *          $ref:  '#/definitions/Connection'
+   *      400:
+   *          $ref: '#/definitions/validationErrorsPost'
+   *      401:
+   *        description: Unauthorized
+   * /api/v1/connections:
+   *   post:
+   *     summary: Create SSO connection
+   *     operationId: create-sso-connection
+   *     tags: [Connections]
    *     produces:
-   *       - application/json
+   *      - application/json
    *     consumes:
-   *       - application/x-www-form-urlencoded
+   *      - application/x-www-form-urlencoded
+   *      - application/json
    *     parameters:
-   *       - name: name
-   *         description: Name/identifier for the config
-   *         type: string
-   *         in: formData
-   *       - name: description
-   *         description: A short description for the config not more than 100 characters
-   *         type: string
-   *         in: formData
-   *       - name: encodedRawMetadata
-   *         description: Base64 encoding of the XML metadata
-   *         in: formData
-   *         type: string
-   *       - name: rawMetadata
-   *         description: Raw XML metadata
-   *         in: formData
-   *         type: string
-   *       - name: defaultRedirectUrl
-   *         description: The redirect URL to use in the IdP login flow
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: redirectUrl
-   *         description: JSON encoded array containing a list of allowed redirect URLs
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: true
-   *         type: string
+   *      - $ref: '#/parameters/nameParamPost'
+   *      - $ref: '#/parameters/descriptionParamPost'
+   *      - $ref: '#/parameters/encodedRawMetadataParamPost'
+   *      - $ref: '#/parameters/rawMetadataParamPost'
+   *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
+   *      - $ref: '#/parameters/redirectUrlParamPost'
+   *      - $ref: '#/parameters/tenantParamPost'
+   *      - $ref: '#/parameters/productParamPost'
+   *      - $ref: '#/parameters/oidcDiscoveryUrlPost'
+   *      - $ref: '#/parameters/oidcClientIdPost'
+   *      - $ref: '#/parameters/oidcClientSecretPost'
    *     responses:
    *       200:
    *         description: Success
    *         schema:
-   *           type: object
-   *           example:
-   *             {
-   *               "idpMetadata": {
-   *                 "sso": {
-   *                   "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-   *                   "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-   *                 },
-   *                 "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-   *                 "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-   *                 "loginType": "idp",
-   *                 "provider": "okta.com"
-   *               },
-   *               "defaultRedirectUrl": "https://hoppscotch.io/",
-   *               "redirectUrl": ["https://hoppscotch.io/"],
-   *               "tenant": "hoppscotch.io",
-   *               "product": "API Engine",
-   *               "name": "Hoppscotch-SP",
-   *               "description": "SP for hoppscotch.io",
-   *               "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *               "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *               "certs": {
-   *                 "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *                 "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *               }
-   *           }
+   *           $ref: '#/definitions/Connection'
    *       400:
-   *         description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters
+   *           $ref: '#/definitions/validationErrorsPost'
    *       401:
    *         description: Unauthorized
    */
-  public async config(body: IdPConfig): Promise<any> {
-    const {
-      encodedRawMetadata,
-      rawMetadata,
-      defaultRedirectUrl,
-      redirectUrl,
-      tenant,
-      product,
-      name,
-      description,
-    } = body;
+  public async createSAMLConnection(
+    body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
+  ): Promise<any> {
+    metrics.increment('createConnection');
+    const record = await samlConnection.create(body, this.connectionStore);
+    return record;
+  }
+  // For backwards compatibility
+  public async config(...args: Parameters<ConnectionAPIController['createSAMLConnection']>): Promise<any> {
+    return this.createSAMLConnection(...args);
+  }
 
-    metrics.increment('createConfig');
-
-    this._validateIdPConfig(body);
-    const redirectUrlList = extractRedirectUrls(redirectUrl);
-    this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
-
-    let metaData = rawMetadata;
-    if (encodedRawMetadata) {
-      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
-    }
-
-    const idpMetadata = await saml.parseMetadata(metaData!, {});
-
-    // extract provider
-    let providerName = extractHostName(idpMetadata.entityID);
-    if (!providerName) {
-      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl);
-    }
-
-    idpMetadata.provider = providerName ? providerName : 'Unknown';
-
-    const clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, idpMetadata.entityID));
-
-    let clientSecret;
-
-    const exists = await this.configStore.get(clientID);
-
-    if (exists) {
-      clientSecret = exists.clientSecret;
-    } else {
-      clientSecret = crypto.randomBytes(24).toString('hex');
-    }
-
-    const certs = await x509.generate();
-
-    if (!certs) {
-      throw new Error('Error generating x509 certs');
-    }
-
-    const record = {
-      idpMetadata,
-      defaultRedirectUrl,
-      redirectUrl: redirectUrlList,
-      tenant,
-      product,
-      name,
-      description,
-      clientID,
-      clientSecret,
-      certs,
-    };
-
-    await this.configStore.put(
-      clientID,
-      record,
-      {
-        // secondary index on entityID
-        name: IndexNames.EntityID,
-        value: idpMetadata.entityID,
-      },
-      {
-        // secondary index on tenant + product
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      }
-    );
-
+  public async createOIDCConnection(body: OIDCSSOConnection): Promise<any> {
+    metrics.increment('createConnection');
+    const record = await oidcConnection.create(body, this.connectionStore);
     return record;
   }
   /**
    * @swagger
-   *
+   * definitions:
+   *   validationErrorsPatch:
+   *     description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
+   * parameters:
+   *   clientIDParamPatch:
+   *     name: clientID
+   *     description: Client ID for the connection
+   *     type: string
+   *     in: formData
+   *     required: true
+   *   clientSecretParamPatch:
+   *     name: clientSecret
+   *     description: Client Secret for the connection
+   *     type: string
+   *     in: formData
+   *     required: true
+   *   nameParamPatch:
+   *     name: name
+   *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   descriptionParamPatch:
+   *     name: description
+   *     description: A short description for the connection not more than 100 characters
+   *     type: string
+   *     in: formData
+   *   encodedRawMetadataParamPatch:
+   *     name: encodedRawMetadata
+   *     description: Base64 encoding of the XML metadata
+   *     in: formData
+   *     type: string
+   *   rawMetadataParamPatch:
+   *     name: rawMetadata
+   *     description: Raw XML metadata
+   *     in: formData
+   *     type: string
+   *   oidcDiscoveryUrlPatch:
+   *     name: oidcDiscoveryUrl
+   *     description: well-known URL where the OpenID Provider configuration is exposed
+   *     in: formData
+   *     type: string
+   *   oidcClientIdPatch:
+   *     name: oidcClientId
+   *     description: clientId of the application set up on the OpenID Provider
+   *     in: formData
+   *     type: string
+   *   oidcClientSecretPatch:
+   *     name: oidcClientSecret
+   *     description: clientSecret of the application set up on the OpenID Provider
+   *     in: formData
+   *     type: string
+   *   defaultRedirectUrlParamPatch:
+   *     name: defaultRedirectUrl
+   *     description: The redirect URL to use in the IdP login flow
+   *     in: formData
+   *     type: string
+   *   redirectUrlParamPatch:
+   *     name: redirectUrl
+   *     description: JSON encoded array containing a list of allowed redirect URLs
+   *     in: formData
+   *     type: string
+   *   tenantParamPatch:
+   *     name: tenant
+   *     description: Tenant
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   productParamPatch:
+   *     name: product
+   *     description: Product
+   *     in: formData
+   *     required: true
+   *     type: string
    * /api/v1/saml/config:
    *   patch:
-   *     summary: Update SAML configuration
+   *     summary: Update SAML Config
    *     operationId: update-saml-config
-   *     tags: [SAML Config]
+   *     tags: [SAML Config - Deprecated]
+   *     deprecated: true
    *     consumes:
    *       - application/json
    *       - application/x-www-form-urlencoded
    *     parameters:
-   *       - name: clientID
-   *         description: Client ID for the config
-   *         type: string
-   *         in: formData
-   *         required: true
-   *       - name: clientSecret
-   *         description: Client Secret for the config
-   *         type: string
-   *         in: formData
-   *         required: true
-   *       - name: name
-   *         description: Name/identifier for the config
-   *         type: string
-   *         in: formData
-   *       - name: description
-   *         description: A short description for the config not more than 100 characters
-   *         type: string
-   *         in: formData
-   *       - name: encodedRawMetadata
-   *         description: Base64 encoding of the XML metadata
-   *         in: formData
-   *         type: string
-   *       - name: rawMetadata
-   *         description: Raw XML metadata
-   *         in: formData
-   *         type: string
-   *       - name: defaultRedirectUrl
-   *         description: The redirect URL to use in the IdP login flow
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: redirectUrl
-   *         description: JSON encoded array containing a list of allowed redirect URLs
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: true
-   *         type: string
+   *       - $ref: '#/parameters/clientIDParamPatch'
+   *       - $ref: '#/parameters/clientSecretParamPatch'
+   *       - $ref: '#/parameters/nameParamPatch'
+   *       - $ref: '#/parameters/descriptionParamPatch'
+   *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
+   *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
+   *       - $ref: '#/parameters/redirectUrlParamPatch'
+   *       - $ref: '#/parameters/tenantParamPatch'
+   *       - $ref: '#/parameters/productParamPatch'
    *     responses:
    *       204:
    *         description: Success
    *       400:
-   *         description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters
+   *         $ref: '#/definitions/validationErrorsPatch'
+   *       401:
+   *         description: Unauthorized
+   * /api/v1/connections:
+   *   patch:
+   *     summary: Update SSO Connection
+   *     operationId: update-sso-connection
+   *     tags: [Connections]
+   *     consumes:
+   *       - application/json
+   *       - application/x-www-form-urlencoded
+   *     parameters:
+   *       - $ref: '#/parameters/clientIDParamPatch'
+   *       - $ref: '#/parameters/clientSecretParamPatch'
+   *       - $ref: '#/parameters/nameParamPatch'
+   *       - $ref: '#/parameters/descriptionParamPatch'
+   *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
+   *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/oidcDiscoveryUrlPatch'
+   *       - $ref: '#/parameters/oidcClientIdPatch'
+   *       - $ref: '#/parameters/oidcClientSecretPatch'
+   *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
+   *       - $ref: '#/parameters/redirectUrlParamPatch'
+   *       - $ref: '#/parameters/tenantParamPatch'
+   *       - $ref: '#/parameters/productParamPatch'
+   *     responses:
+   *       204:
+   *         description: Success
+   *       400:
+   *         $ref: '#/definitions/validationErrorsPatch'
    *       401:
    *         description: Unauthorized
    */
-  public async updateConfig(body): Promise<void> {
-    const {
-      encodedRawMetadata, // could be empty
-      rawMetadata, // could be empty
-      defaultRedirectUrl,
-      redirectUrl,
-      name,
-      description,
-      ...clientInfo
-    } = body;
-    if (!clientInfo?.clientID) {
-      throw new JacksonError('Please provide clientID', 400);
+  public async updateSAMLConnection(
+    body: (SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata) & {
+      clientID: string;
+      clientSecret: string;
     }
-    if (!clientInfo?.clientSecret) {
-      throw new JacksonError('Please provide clientSecret', 400);
-    }
-    if (description && description.length > 100) {
-      throw new JacksonError('Description should not exceed 100 characters', 400);
-    }
-    const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
-    this._validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
+  ): Promise<void> {
+    await samlConnection.update(body, this.connectionStore, this.getConnections.bind(this));
+  }
 
-    const _currentConfig = await this.getConfig(clientInfo);
+  // For backwards compatibility
+  public async updateConfig(
+    ...args: Parameters<ConnectionAPIController['updateSAMLConnection']>
+  ): Promise<any> {
+    await this.updateSAMLConnection(...args);
+  }
+  public async updateOIDCConnection(
+    body: OIDCSSOConnection & { clientID: string; clientSecret: string }
+  ): Promise<void> {
+    await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
+  }
+  /**
+   * @swagger
+   * parameters:
+   *  tenantParamGet:
+   *     in: query
+   *     name: tenant
+   *     type: string
+   *     description: Tenant
+   *  productParamGet:
+   *     in: query
+   *     name: product
+   *     type: string
+   *     description: Product
+   *  clientIDParamGet:
+   *     in: query
+   *     name: clientID
+   *     type: string
+   *     description: Client ID
+   * definitions:
+   *   Connection:
+   *      type: object
+   *      properties:
+   *        clientID:
+   *          type: string
+   *          description: Connection clientID
+   *        clientSecret:
+   *          type: string
+   *          description: Connection clientSecret
+   *        name:
+   *          type: string
+   *          description: Connection name
+   *        description:
+   *          type: string
+   *          description: Connection description
+   *        redirectUrl:
+   *          type: string
+   *          description: A list of allowed redirect URLs
+   *        defaultRedirectUrl:
+   *          type: string
+   *          description: The redirect URL to use in the IdP login flow
+   *        tenant:
+   *          type: string
+   *          description: Connection tenant
+   *        product:
+   *          type: string
+   *          description: Connection product
+   *        idpMetadata:
+   *          type: object
+   *          description: SAML IdP metadata
+   *        certs:
+   *          type: object
+   *          description: Certs generated for SAML connection
+   *        oidcProvider:
+   *          type: object
+   *          description: OIDC IdP metadata
+   * responses:
+   *   '200Get':
+   *     description: Success
+   *     schema:
+   *       type: array
+   *       items:
+   *         $ref: '#/definitions/Connection'
+   *   '400Get':
+   *     description: Please provide `clientID` or `tenant` and `product`.
+   *   '401Get':
+   *     description: Unauthorized
+   * /api/v1/connections:
+   *   get:
+   *     summary: Get SSO Connections
+   *     parameters:
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/clientIDParamGet'
+   *     operationId: get-connections
+   *     tags: [Connections]
+   *     responses:
+   *      '200':
+   *        $ref: '#/responses/200Get'
+   *      '400':
+   *        $ref: '#/responses/400Get'
+   *      '401':
+   *        $ref: '#/responses/401Get'
+   */
+  public async getConnections(body: GetConnectionsQuery): Promise<Array<any>> {
+    const clientID = 'clientID' in body ? body.clientID : undefined;
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
+    const strategy = 'strategy' in body ? body.strategy : undefined;
 
-    if (_currentConfig.clientSecret !== clientInfo?.clientSecret) {
-      throw new JacksonError('clientSecret mismatch', 400);
-    }
-    let metaData = rawMetadata;
-    if (encodedRawMetadata) {
-      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
-    }
-    let newMetadata;
-    if (metaData) {
-      newMetadata = await saml.parseMetadata(metaData, {});
+    metrics.increment('getConnections');
 
-      // extract provider
-      let providerName = extractHostName(newMetadata.entityID);
-      if (!providerName) {
-        providerName = extractHostName(newMetadata.sso.redirectUrl || newMetadata.sso.postUrl);
+    if (clientID) {
+      const connection = await this.connectionStore.get(clientID);
+
+      if (!connection || typeof connection !== 'object') {
+        return [];
       }
 
-      newMetadata.provider = providerName ? providerName : 'Unknown';
+      return [connection];
     }
 
-    if (newMetadata) {
-      // check if clientID matches with new metadata payload
-      const clientID = dbutils.keyDigest(
-        dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, newMetadata.entityID)
-      );
-
-      if (clientID !== clientInfo?.clientID) {
-        throw new JacksonError('Tenant/Product config mismatch with IdP metadata', 400);
-      }
-    }
-
-    const record = {
-      ..._currentConfig,
-      name: name ? name : _currentConfig.name,
-      description: description ? description : _currentConfig.description,
-      idpMetadata: newMetadata ? newMetadata : _currentConfig.idpMetadata,
-      defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _currentConfig.defaultRedirectUrl,
-      redirectUrl: redirectUrlList ? redirectUrlList : _currentConfig.redirectUrl,
-    };
-
-    await this.configStore.put(
-      clientInfo?.clientID,
-      record,
-      {
-        // secondary index on entityID
-        name: IndexNames.EntityID,
-        value: _currentConfig.idpMetadata.entityID,
-      },
-      {
-        // secondary index on tenant + product
+    if (tenant && product) {
+      const connections = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(_currentConfig.tenant, _currentConfig.product),
+        value: dbutils.keyFromParts(tenant, product),
+      });
+
+      if (!connections || !connections.length) {
+        return [];
       }
-    );
+      // filter if strategy is passed
+      const filteredConnections = strategy
+        ? connections.filter((connection) => {
+            if (strategy === 'saml') {
+              if (connection.idpMetadata) {
+                return true;
+              }
+            }
+            if (strategy === 'oidc') {
+              if (connection.oidcProvider) {
+                return true;
+              }
+            }
+            return false;
+          })
+        : connections;
+
+      if (!filteredConnections.length) {
+        return [];
+      }
+      return filteredConnections;
+    }
+
+    throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
   }
 
   /**
    * @swagger
-   *
    * /api/v1/saml/config:
    *   get:
-   *     summary: Get SAML configuration
+   *     summary: Get SAML Config
    *     operationId: get-saml-config
-   *     tags:
-   *       - SAML Config
+   *     tags: [SAML Config - Deprecated]
+   *     deprecated: true
    *     parameters:
-   *       - in: query
-   *         name: tenant
-   *         type: string
-   *         description: Tenant
-   *       - in: query
-   *         name: product
-   *         type: string
-   *         description: Product
-   *       - in: query
-   *         name: clientID
-   *         type: string
-   *         description: Client ID
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/clientIDParamGet'
    *     responses:
-   *       '200':
+   *      '200':
    *         description: Success
    *         schema:
    *           type: object
    *           example:
    *             {
-   *               "idpMetadata": {
-   *                 "sso": {
-   *                   "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-   *                   "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-   *                 },
-   *                 "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-   *                 "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-   *                 "loginType": "idp",
-   *                 "provider": "okta.com"
-   *               },
-   *               "defaultRedirectUrl": "https://hoppscotch.io/",
-   *               "redirectUrl": ["https://hoppscotch.io/"],
-   *               "tenant": "hoppscotch.io",
-   *               "product": "API Engine",
-   *               "name": "Hoppscotch-SP",
-   *               "description": "SP for hoppscotch.io",
-   *               "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *               "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *               "certs": {
-   *                 "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *                 "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *               }
-   *           }
-   *       '400':
-   *         description: Please provide `clientID` or `tenant` and `product`.
-   *       '401':
-   *         description: Unauthorized
+   *                "idpMetadata": {
+   *                  "sso": {
+   *                    "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+   *                    "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
+   *                  },
+   *                  "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+   *                  "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+   *                  "loginType": "idp",
+   *                  "provider": "okta.com"
+   *                },
+   *                "defaultRedirectUrl": "https://hoppscotch.io/",
+   *                "redirectUrl": ["https://hoppscotch.io/"],
+   *                "tenant": "hoppscotch.io",
+   *                "product": "API Engine",
+   *                "name": "Hoppscotch-SP",
+   *                "description": "SP for hoppscotch.io",
+   *                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+   *                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *                "certs": {
+   *                  "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+   *                  "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+   *                }
+   *            }
+   *      '400':
+   *        $ref: '#/responses/400Get'
+   *      '401':
+   *        $ref: '#/responses/401Get'
    */
-  public async getConfig(body: { clientID: string; tenant: string; product: string }): Promise<any> {
-    const { clientID, tenant, product } = body;
+  public async getConfig(body: GetConfigQuery): Promise<any> {
+    const clientID = 'clientID' in body ? body.clientID : undefined;
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
 
-    metrics.increment('getConfig');
+    metrics.increment('getConnections');
 
     if (clientID) {
-      const samlConfig = await this.configStore.get(clientID);
+      const samlConfig = await this.connectionStore.get(clientID);
 
       return samlConfig || {};
     }
 
     if (tenant && product) {
-      const samlConfigs = await this.configStore.getByIndex({
+      const samlConfigs = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
@@ -455,60 +559,93 @@ export class APIController implements IAPIController {
 
   /**
    * @swagger
-   * /api/v1/saml/config:
+   * parameters:
+   *   clientIDDel:
+   *     name: clientID
+   *     in: formData
+   *     type: string
+   *     description: Client ID
+   *   clientSecretDel:
+   *     name: clientSecret
+   *     in: formData
+   *     type: string
+   *     description: Client Secret
+   *   tenantDel:
+   *     name: tenant
+   *     in: formData
+   *     type: string
+   *     description: Tenant
+   *   productDel:
+   *     name: product
+   *     in: formData
+   *     type: string
+   *     description: Product
+   *   strategyDel:
+   *     name: strategy
+   *     in: formData
+   *     type: string
+   *     description: Strategy
+   * /api/v1/connections:
    *   delete:
-   *     summary: Delete SAML configuration
-   *     operationId: delete-saml-config
-   *     tags:
-   *       - SAML Config
+   *     parameters:
+   *      - $ref: '#/parameters/clientIDDel'
+   *      - $ref: '#/parameters/clientSecretDel'
+   *      - $ref: '#/parameters/tenantDel'
+   *      - $ref: '#/parameters/productDel'
+   *      - $ref: '#/parameters/strategyDel'
+   *     summary: Delete SSO Connections
+   *     operationId: delete-sso-connection
+   *     tags: [Connections]
    *     consumes:
    *       - application/x-www-form-urlencoded
-   *     parameters:
-   *       - name: clientID
-   *         in: formData
-   *         type: string
-   *         required: true
-   *         description: Client ID
-   *       - name: clientSecret
-   *         in: formData
-   *         type: string
-   *         required: true
-   *         description: Client Secret
-   *       - name: tenant
-   *         in: formData
-   *         type: string
-   *         description: Tenant
-   *       - name: product
-   *         in: formData
-   *         type: string
-   *         description: Product
+   *       - application/json
    *     responses:
    *       '200':
    *         description: Success
    *       '400':
-   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'
+   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
+   *       '401':
+   *         description: Unauthorized
+   * /api/v1/saml/config:
+   *   delete:
+   *     summary: Delete SAML Config
+   *     operationId: delete-saml-config
+   *     tags: [SAML Config - Deprecated]
+   *     deprecated: true
+   *     consumes:
+   *       - application/x-www-form-urlencoded
+   *       - application/json
+   *     parameters:
+   *      - $ref: '#/parameters/clientIDDel'
+   *      - $ref: '#/parameters/clientSecretDel'
+   *      - $ref: '#/parameters/tenantDel'
+   *      - $ref: '#/parameters/productDel'
+   *     responses:
+   *       '200':
+   *         description: Success
+   *       '400':
+   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
    *       '401':
    *         description: Unauthorized
    */
-  public async deleteConfig(body: {
-    clientID: string;
-    clientSecret: string;
-    tenant: string;
-    product: string;
-  }): Promise<void> {
-    const { clientID, clientSecret, tenant, product } = body;
+  public async deleteConnections(body: DelConnectionsQuery): Promise<void> {
+    const clientID = 'clientID' in body ? body.clientID : undefined;
+    const clientSecret = 'clientSecret' in body ? body.clientSecret : undefined;
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
+    const strategy = 'strategy' in body ? body.strategy : undefined;
 
-    metrics.increment('deleteConfig');
+    metrics.increment('deleteConnections');
 
     if (clientID && clientSecret) {
-      const samlConfig = await this.configStore.get(clientID);
+      const connection = await this.connectionStore.get(clientID);
 
-      if (!samlConfig) {
+      if (!connection) {
         return;
       }
 
-      if (samlConfig.clientSecret === clientSecret) {
-        await this.configStore.delete(clientID);
+      if (connection.clientSecret === clientSecret) {
+        await this.connectionStore.delete(clientID);
       } else {
         throw new JacksonError('clientSecret mismatch', 400);
       }
@@ -517,17 +654,33 @@ export class APIController implements IAPIController {
     }
 
     if (tenant && product) {
-      const samlConfigs = await this.configStore.getByIndex({
+      const connections = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!samlConfigs || !samlConfigs.length) {
+      if (!connections || !connections.length) {
         return;
       }
+      // filter if strategy is passed
+      const filteredConnections = strategy
+        ? connections.filter((connection) => {
+            if (strategy === 'saml') {
+              if (connection.idpMetadata) {
+                return true;
+              }
+            }
+            if (strategy === 'oidc') {
+              if (connection.oidcProvider) {
+                return true;
+              }
+            }
+            return false;
+          })
+        : connections;
 
-      for (const conf of samlConfigs) {
-        await this.configStore.delete(conf.clientID);
+      for (const conf of filteredConnections) {
+        await this.connectionStore.delete(conf.clientID);
       }
 
       return;
@@ -535,36 +688,7 @@ export class APIController implements IAPIController {
 
     throw new JacksonError('Please provide `clientID` and `clientSecret` or `tenant` and `product`.', 400);
   }
+  public async deleteConfig(body: DelConnectionsQuery): Promise<void> {
+    await this.deleteConnections({ ...body, strategy: 'saml' });
+  }
 }
-
-const extractHostName = (url: string): string | null => {
-  try {
-    const pUrl = new URL(url);
-
-    if (pUrl.hostname.startsWith('www.')) {
-      return pUrl.hostname.substring(4);
-    }
-
-    return pUrl.hostname;
-  } catch (err) {
-    return null;
-  }
-};
-
-const extractRedirectUrls = (urls: string[] | string): string[] => {
-  if (!urls) {
-    return [];
-  }
-
-  if (typeof urls === 'string') {
-    if (urls.startsWith('[')) {
-      // redirectUrl is a stringified array
-      return JSON.parse(urls);
-    }
-    // redirectUrl is a single URL
-    return [urls];
-  }
-
-  // redirectUrl is an array of URLs
-  return urls;
-};

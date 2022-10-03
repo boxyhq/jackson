@@ -4,22 +4,23 @@ import * as utils from '../../src/controller/utils';
 import path from 'path';
 import {
   IOAuthController,
-  IAPIController,
-  JacksonOption,
-  OAuthReqBody,
+  IConnectionAPIController,
   OAuthTokenReq,
   SAMLResponsePayload,
+  OAuthReq,
 } from '../../src/typings';
 import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../../src/controller/error';
-import readConfig from '../../src/read-config';
 import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
   authz_request_normal,
+  authz_request_with_prompt_login,
+  authz_request_with_prompt_more_than_one,
   authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
+  authz_request_normal_with_code_challenge,
   authz_request_normal_with_resource,
   authz_request_normal_with_scope,
   bodyWithDummyCredentials,
@@ -29,20 +30,23 @@ import {
   bodyWithMissingRedirectUri,
   bodyWithUnencodedClientId_InvalidClientSecret_gen,
   invalid_client_id,
+  invalid_tenant_product,
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
   saml_binding_absent,
   state_not_set,
+  token_req_cv_mismatch,
   token_req_encoded_client_id,
   token_req_idp_initiated_saml_login,
   token_req_unencoded_client_id_gen,
+  token_req_with_cv,
 } from './fixture';
-import { getDatabaseOption } from '../utils';
+import { addSSOConnections, databaseOptions } from '../utils';
 
-let apiController: IAPIController;
+let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
-let idpEnabledApiController: IAPIController;
+let idpEnabledConnectionAPIController: IConnectionAPIController; //idp initiated saml flow enabled
 let idpEnabledOAuthController: IOAuthController;
 let keyPair: jose.GenerateKeyPairResult;
 
@@ -51,44 +55,25 @@ const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-const options = <JacksonOption>{
-  externalUrl: 'https://my-cool-app.com',
-  samlAudience: 'https://saml.boxyhq.com',
-  samlPath: '/sso/oauth/saml',
-  db: {
-    engine: 'mem',
-  },
-  clientSecretVerifier: 'TOP-SECRET',
-  openid: {
-    jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
-    jwsAlg: 'RS256',
-  },
-};
-
-const configRecords: Array<any> = [];
-
-const addMetadata = async (metadataPath) => {
-  const configs = await readConfig(metadataPath);
-  for (const config of configs) {
-    const _record = await apiController.config(config);
-    await idpEnabledApiController.config(config);
-    configRecords.push(_record);
-  }
-};
+let connections: Array<any> = [];
 
 tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
 
-  const controller = await (await import('../../src/index')).default(options);
+  const controller = await (await import('../../src/index')).default(databaseOptions);
   const idpFlowEnabledController = await (
     await import('../../src/index')
-  ).default({ ...options, idpEnabled: true });
+  ).default({ ...databaseOptions, idpEnabled: true });
 
-  apiController = controller.apiController;
+  connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
-  idpEnabledApiController = idpFlowEnabledController.apiController;
+  idpEnabledConnectionAPIController = idpFlowEnabledController.connectionAPIController;
   idpEnabledOAuthController = idpFlowEnabledController.oauthController;
-  await addMetadata(metadataPath);
+  connections = await addSSOConnections(
+    metadataPath,
+    connectionAPIController,
+    idpEnabledConnectionAPIController
+  );
 });
 
 tap.teardown(async () => {
@@ -100,7 +85,7 @@ tap.test('authorize()', async (t) => {
     const body = redirect_uri_not_set;
 
     try {
-      await oauthController.authorize(<OAuthReqBody>body);
+      await oauthController.authorize(<OAuthReq>body);
       t.fail('Expecting JacksonError.');
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
@@ -114,7 +99,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return OAuth Error response if `state` is not set', async (t) => {
     const body = state_not_set;
 
-    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
+      redirect_url: string;
+    };
 
     t.equal(
       redirect_url,
@@ -128,7 +115,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return OAuth Error response if `response_type` is not `code`', async (t) => {
     const body = response_type_not_code;
 
-    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
+      redirect_url: string;
+    };
 
     t.equal(
       redirect_url,
@@ -142,7 +131,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
     const body = saml_binding_absent;
 
-    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
+      redirect_url: string;
+    };
 
     t.equal(
       redirect_url,
@@ -156,7 +147,9 @@ tap.test('authorize()', async (t) => {
   t.test('Should return OAuth Error response if request creation fails', async (t) => {
     const body = authz_request_normal;
     const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
-    const { redirect_url } = await oauthController.authorize(<OAuthReqBody>body);
+    const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
+      redirect_url: string;
+    };
     t.equal(
       redirect_url,
       `${body.redirect_uri}?error=server_error&error_description=Internal+error%3A+Fatal&state=${body.state}`,
@@ -170,12 +163,12 @@ tap.test('authorize()', async (t) => {
     const body = invalid_client_id;
 
     try {
-      await oauthController.authorize(<OAuthReqBody>body);
+      await oauthController.authorize(<OAuthReq>body);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
-      t.equal(message, 'SAML configuration not found.', 'got expected error message');
+      t.equal(message, 'IdP connection not found.', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
 
@@ -186,7 +179,7 @@ tap.test('authorize()', async (t) => {
     const body = redirect_uri_not_allowed;
 
     try {
-      await oauthController.authorize(<OAuthReqBody>body);
+      await oauthController.authorize(<OAuthReq>body);
 
       t.fail('Expecting JacksonError.');
     } catch (err) {
@@ -202,7 +195,35 @@ tap.test('authorize()', async (t) => {
     t.test('accepts client_id', async (t) => {
       const body = authz_request_normal;
 
-      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const response = (await oauthController.authorize(<OAuthReq>body)) as {
+        redirect_url: string;
+      };
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+      t.end();
+    });
+
+    t.test('accepts single value in prompt', async (t) => {
+      const body = authz_request_with_prompt_login;
+
+      const response = await oauthController.authorize(<OAuthReq>body);
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('RelayState'), 'RelayState present in the query string');
+      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
+
+      t.end();
+    });
+
+    t.test('accepts multiple values in prompt', async (t) => {
+      const body = authz_request_with_prompt_more_than_one;
+
+      const response = await oauthController.authorize(<OAuthReq>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -215,7 +236,9 @@ tap.test('authorize()', async (t) => {
     t.test('accepts access_type', async (t) => {
       const body = authz_request_normal_with_access_type;
 
-      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const response = (await oauthController.authorize(<OAuthReq>body)) as {
+        redirect_url: string;
+      };
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -228,7 +251,9 @@ tap.test('authorize()', async (t) => {
     t.test('accepts resource', async (t) => {
       const body = authz_request_normal_with_resource;
 
-      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const response = (await oauthController.authorize(<OAuthReq>body)) as {
+        redirect_url: string;
+      };
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -241,7 +266,9 @@ tap.test('authorize()', async (t) => {
     t.test('accepts scope', async (t) => {
       const body = authz_request_normal_with_scope;
 
-      const response = await oauthController.authorize(<OAuthReqBody>body);
+      const response = (await oauthController.authorize(<OAuthReq>body)) as {
+        redirect_url: string;
+      };
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
@@ -258,7 +285,9 @@ tap.test('authorize()', async (t) => {
 tap.test('samlResponse()', async (t) => {
   const authBody = authz_request_normal;
 
-  const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+  const { redirect_url } = (await oauthController.authorize(<OAuthReq>authBody)) as {
+    redirect_url: string;
+  };
 
   const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
 
@@ -359,6 +388,54 @@ tap.test('token()', (t) => {
     t.end();
   });
 
+  t.test('Should throw an error if `tenant` is invalid', async (t) => {
+    const body = invalid_tenant_product(undefined, 'invalidTenant');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    t.end();
+  });
+
+  t.test('Should throw an error if `product` is invalid', async (t) => {
+    const body = invalid_tenant_product('invalidProduct');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    t.end();
+  });
+
+  t.test('Should throw an error if `tenant` and `product` is invalid', async (t) => {
+    const body = invalid_tenant_product('invalidProduct', 'invalidTenant');
+
+    try {
+      await oauthController.token(<OAuthTokenReq>body);
+
+      t.fail('Expecting JacksonError.');
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid tenant or product');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    t.end();
+  });
+
   t.test('Should throw an error if `code` is missing', async (t) => {
     const body = {
       grant_type: 'authorization_code',
@@ -420,7 +497,7 @@ tap.test('token()', (t) => {
 
     try {
       const bodyWithUnencodedClientId_InvalidClientSecret =
-        bodyWithUnencodedClientId_InvalidClientSecret_gen(configRecords);
+        bodyWithUnencodedClientId_InvalidClientSecret_gen(connections);
       await oauthController.token(<OAuthTokenReq>bodyWithUnencodedClientId_InvalidClientSecret);
 
       t.fail('Expecting JacksonError.');
@@ -475,7 +552,9 @@ tap.test('token()', (t) => {
         // have to call authorize, because previous happy path deletes the code.
         const authBody = authz_request_normal;
 
-        const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+        const { redirect_url } = (await oauthController.authorize(<OAuthReq>authBody)) as {
+          redirect_url: string;
+        };
 
         const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
 
@@ -495,7 +574,7 @@ tap.test('token()', (t) => {
 
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
-        const body = token_req_unencoded_client_id_gen(configRecords);
+        const body = token_req_unencoded_client_id_gen(connections);
 
         const tokenRes = await oauthController.token(<OAuthTokenReq>body);
 
@@ -527,7 +606,9 @@ tap.test('token()', (t) => {
       t.test('openid flow', async (t) => {
         const authBody = authz_request_normal_oidc_flow;
 
-        const { redirect_url } = await oauthController.authorize(<OAuthReqBody>authBody);
+        const { redirect_url } = (await oauthController.authorize(<OAuthReq>authBody)) as {
+          redirect_url: string;
+        };
 
         const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
 
@@ -562,9 +643,9 @@ tap.test('token()', (t) => {
         if (tokenRes.id_token) {
           const claims = jose.decodeJwt(tokenRes.id_token);
           const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
-          t.match(protectedHeader.alg, options.openid.jwsAlg);
+          t.match(protectedHeader.alg, databaseOptions.openid.jwsAlg);
           t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
-          t.match(claims.iss, options.samlAudience);
+          t.match(claims.iss, databaseOptions.samlAudience);
         }
         t.match(tokenRes.access_token, token);
         t.match(tokenRes.token_type, 'bearer');
@@ -587,6 +668,71 @@ tap.test('token()', (t) => {
         stubRandomBytes.restore();
         stubValidate.restore();
         stubLoadJWSPrivateKey.restore();
+
+        t.end();
+      });
+
+      t.test('PKCE check', async (t) => {
+        const authBody = authz_request_normal_with_code_challenge;
+
+        const { redirect_url } = (await oauthController.authorize(<OAuthReq>authBody)) as {
+          redirect_url: string;
+        };
+
+        const relayState = new URLSearchParams(new URL(redirect_url!).search).get('RelayState');
+
+        const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+        const responseBody = {
+          SAMLResponse: rawResponse,
+          RelayState: relayState,
+        };
+
+        // const stubLoadJWSPrivateKey = sinon.stub(utils, 'loadJWSPrivateKey').resolves(keyPair.privateKey);
+        const stubValidate = sinon.stub(saml, 'validate').resolves({
+          audience: '',
+          claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+          issuer: '',
+          sessionIndex: '',
+        });
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+
+        await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
+
+        try {
+          await oauthController.token(<OAuthTokenReq>token_req_cv_mismatch);
+          t.fail('Expecting JacksonError.');
+        } catch (err) {
+          const { message, statusCode } = err as JacksonError;
+          t.equal(message, 'Invalid code_verifier', 'got expected error message');
+          t.equal(statusCode, 401, 'got expected status code');
+        }
+
+        const tokenRes = await oauthController.token(<OAuthTokenReq>token_req_with_cv);
+
+        t.ok('access_token' in tokenRes, 'includes access_token');
+        t.ok('token_type' in tokenRes, 'includes token_type');
+        t.ok('expires_in' in tokenRes, 'includes expires_in');
+        t.match(tokenRes.access_token, token);
+        t.match(tokenRes.token_type, 'bearer');
+        t.match(tokenRes.expires_in, 300);
+
+        const profile = await oauthController.userInfo(tokenRes.access_token);
+        t.equal(profile.requested.client_id, authz_request_normal_with_code_challenge.client_id);
+        t.equal(profile.requested.state, authz_request_normal_with_code_challenge.state);
+        t.equal(
+          profile.requested.tenant,
+          new URLSearchParams(authz_request_normal_with_code_challenge.client_id).get('tenant')
+        );
+        t.equal(
+          profile.requested.product,
+          new URLSearchParams(authz_request_normal_with_code_challenge.client_id).get('product')
+        );
+
+        stubRandomBytes.restore();
+        stubValidate.restore();
 
         t.end();
       });
@@ -625,7 +771,7 @@ tap.test('IdP initiated flow should return token and profile', async (t) => {
   t.match(tokenRes.expires_in, 300);
   const profile = await oauthController.userInfo(tokenRes.access_token);
 
-  t.equal(profile.sub, 'id');
+  t.equal(profile.id, 'id');
   stubRandomBytes.restore();
   stubValidate.restore();
   t.end();
