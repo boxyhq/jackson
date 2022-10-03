@@ -70,7 +70,7 @@
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
     "@babel/plugin-proposal-decorators": "7.19.3",
-    "@playwright/test": "1.26.0",
+    "@playwright/test": "1.26.1",
     "@types/cors": "2.8.12",
     "@types/micromatch": "4.0.2",
     "@types/node": "18.7.23",
