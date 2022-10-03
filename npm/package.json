@@ -43,7 +43,7 @@
     "@opentelemetry/api-metrics": "0.27.0",
     "axios": "0.27.2",
     "jose": "4.10.0",
-    "marked": "4.1.0",
+    "marked": "4.1.1",
     "mongodb": "4.10.0",
     "mysql2": "2.3.3",
     "openid-client": "5.1.10",
