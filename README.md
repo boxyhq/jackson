@@ -17,7 +17,7 @@
 
 SAML SSO service
 
-Jackson implements the SAML login flow as an OAuth 2.0 flow, abstracting away all the complexities of the SAML protocol. Integrate SAML with just a few lines of code.
+Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, abstracting away all the complexities of the SAML protocol. Integrate SAML with just a few lines of code. We also now support OpenID Connect providers.
 
 Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
 
@@ -25,7 +25,15 @@ You can also try our hosted demo showcasing the SAML IdP login flow [here](https
 
 ## Documentation
 
-For full documentation, visit [boxyhq.com/docs/jackson/introduction](https://boxyhq.com/docs/jackson/introduction)
+For full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
+
+## Directory Sync
+
+SAML Jackson also includes support for Directory Sync based on the SCIM 2.0 protocol.
+
+Directory sync helps organizations automate the provisioning and de-provisioning of their users. As a result, it streamlines the user lifecycle management process by saving valuable organizational hours, creating a single truth source of the user identity data, and facilitating them to keep the data secure.
+
+For full documentation, visit [boxyhq.com/docs/directory-sync/overview](https://boxyhq.com/docs/directory-sync/overview)
 
 ## Source code visualizer
 

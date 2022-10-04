@@ -15,6 +15,9 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+  # Schedule
+  schedule:
+    - cron: '0 8 * * MON,THU' # Run every Monday and Thursday at 08:00 UTC
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -30,6 +33,10 @@ jobs:
       DEBUG: pw:webserver
       SAML_AUDIENCE: https://saml.boxyhq.com
       JACKSON_API_KEYS: secret
+      OPENID_JWS_ALG: RS256
+      OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
+      OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
+      PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
     strategy:
       matrix:
         node-version: [16.x]
@@ -91,7 +98,7 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - run: npm install
+      - run: npm install --legacy-peer-deps
       - run: npm run build
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
@@ -100,7 +107,7 @@ jobs:
       - run: npm run test
         working-directory: ./npm
       - run: |
-          npm install
+          npm install --legacy-peer-deps
           npm run build
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
@@ -194,12 +201,11 @@ jobs:
       #     fail-build: true
       #     severity-cutoff: high
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
 
-      - name: Install Cosign with brew
-        run: brew install cosign
+      - name: Check install!
+        run: cosign version
 
       - name: place the cosign private key in a file
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
@@ -364,7 +370,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
-      - run: npm install
+      - run: npm install --legacy-peer-deps
         working-directory: ./npm
 
       - name: Publish NPM

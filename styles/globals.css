@@ -23,22 +23,24 @@ a {
   box-sizing: border-box;
 }
 
-.theme-default {
-  --color-primary: 37 194 160;
-  --color-secondary: 48 56 70;
-}
-
 @layer components {
   #__next {
     @apply h-full;
   }
+
+  .btn {
+    @apply min-h-8 h-10 rounded normal-case;
+  }
+
   .btn-primary {
-    @apply cursor-pointer rounded-lg bg-primary/70 px-4 py-2 font-semibold text-white shadow-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-75;
+    @apply text-white;
   }
-  .btn-secondary {
-    @apply btn-primary bg-white font-medium text-gray-900 hover:bg-white disabled:cursor-not-allowed disabled:bg-gray-50;
+
+  .btn-error {
+    @apply text-white;
   }
-  .link-primary {
-    @apply mt-2 flex items-center px-4 py-2 font-medium text-secondary/90 hover:font-bold dark:text-gray-400 dark:hover:text-gray-300 md:text-sm md:leading-6;
+
+  .modal-box {
+    @apply rounded;
   }
 }

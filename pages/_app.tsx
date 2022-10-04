@@ -1,10 +1,19 @@
-import Layout from '@components/Layout';
-import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
+import type { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { Toaster } from 'react-hot-toast';
+
+import { AccountLayout } from '@components/layouts';
+
 import '../styles/globals.css';
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function MyApp({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps<{
+  session: Session;
+}>) {
   const { pathname } = useRouter();
 
   if (pathname !== '/' && !pathname.startsWith('/admin')) {
@@ -13,9 +22,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
   return (
     <SessionProvider session={session}>
-      <Layout>
+      <AccountLayout>
         <Component {...pageProps} />
-      </Layout>
+        <Toaster />
+      </AccountLayout>
     </SessionProvider>
   );
 }

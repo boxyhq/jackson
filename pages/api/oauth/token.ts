@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await cors(req, res);
 
     if (req.method !== 'POST') {
-      throw new Error('Method not allowed');
+      throw { message: 'Method not allowed', statusCode: 405 };
     }
 
     const { oauthController } = await jackson();

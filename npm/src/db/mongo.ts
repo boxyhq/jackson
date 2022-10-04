@@ -50,7 +50,9 @@ class Mongo implements DatabaseDriver {
       .find({ namespace: namespace }, { sort: { createdAt: -1 }, skip: offset, limit: limit })
       .toArray();
 
-    if (docs) return docs.map(({ value }) => value);
+    if (docs) {
+      return docs.map(({ value }) => value);
+    }
     return [];
   }
 

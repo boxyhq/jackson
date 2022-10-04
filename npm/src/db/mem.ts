@@ -53,26 +53,37 @@ class Mem implements DatabaseDriver {
 
   async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
-    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
-    let count = 0;
-    take += skip;
     const returnValue: string[] = [];
+    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
+
+    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    let count = 0;
+
+    take += skip;
+
     if (namespace) {
-      const val: string[] = Array.from(
-        this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)]
-      );
+      const index = dbutils.keyFromParts(dbutils.createdAtPrefix, namespace);
+
+      if (this.indexes[index] === undefined) {
+        return [];
+      }
+
+      const val: string[] = Array.from(this.indexes[index]);
       const iterator: IterableIterator<string> = val.reverse().values();
+
       for (const value of iterator) {
         if (count >= take) {
           break;
         }
+
         if (count >= skip) {
           returnValue.push(this.store[dbutils.keyFromParts(namespace, value)]);
         }
+
         count++;
       }
     }
+
     return returnValue || [];
   }
 
@@ -92,7 +103,6 @@ class Mem implements DatabaseDriver {
 
     this.store[k] = val;
 
-    // console.log(this.store)
     if (ttl) {
       this.ttlStore[k] = {
         namespace,

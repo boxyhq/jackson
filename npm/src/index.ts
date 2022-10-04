@@ -1,13 +1,17 @@
-import { AdminController } from './controller/admin';
-import { APIController } from './controller/api';
-import { OAuthController } from './controller/oauth';
-import { HealthCheckController } from './controller/health-check';
-import { LogoutController } from './controller/logout';
+import type { DirectorySync, JacksonOption } from './typings';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
-import readConfig from './read-config';
-import { JacksonOption } from './typings';
+import loadConnection from './loadConnection';
+
+import { AdminController } from './controller/admin';
+import { ConnectionAPIController } from './controller/api';
+import { OAuthController } from './controller/oauth';
+import { HealthCheckController } from './controller/health-check';
+import { LogoutController } from './controller/logout';
+import initDirectorySync from './directory-sync';
+import { OidcDiscoveryController } from './controller/oidc-discovery';
+import { SPSAMLConfig } from './controller/sp-config';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -22,13 +26,25 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
     throw new Error('samlPath is required');
   }
 
+  newOpts.scimPath = newOpts.scimPath || '/api/scim/v2.0';
+
+  if (!newOpts.oidcPath) {
+    throw new Error('oidcPath is required');
+  }
+
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
-  newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // path to folder containing static SAML config that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
+  // path to folder containing static IdP connections that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
+  newOpts.preLoadedConnection = newOpts.preLoadedConnection || '';
+  newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // for backwards compatibility
+
   newOpts.idpEnabled = newOpts.idpEnabled === true;
   defaultDb(newOpts);
 
   newOpts.clientSecretVerifier = newOpts.clientSecretVerifier || 'dummy';
   newOpts.db.pageLimit = newOpts.db.pageLimit || 50;
+
+  newOpts.openid = newOpts.openid || {};
+  newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
 
   return newOpts;
 };
@@ -36,28 +52,33 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 export const controllers = async (
   opts: JacksonOption
 ): Promise<{
-  apiController: APIController;
+  apiController: ConnectionAPIController;
+  connectionAPIController: ConnectionAPIController;
   oauthController: OAuthController;
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
+  directorySync: DirectorySync;
+  oidcDiscoveryController: OidcDiscoveryController;
+  spConfig: SPSAMLConfig;
 }> => {
   opts = defaultOpts(opts);
 
   const db = await DB.new(opts.db);
 
-  const configStore = db.store('saml:config');
+  const connectionStore = db.store('saml:config');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
 
-  const apiController = new APIController({ configStore });
-  const adminController = new AdminController({ configStore });
+  const connectionAPIController = new ConnectionAPIController({ connectionStore });
+  const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
+
   const oauthController = new OAuthController({
-    configStore,
+    connectionStore,
     sessionStore,
     codeStore,
     tokenStore,
@@ -65,19 +86,30 @@ export const controllers = async (
   });
 
   const logoutController = new LogoutController({
-    configStore,
+    connectionStore,
     sessionStore,
     opts,
   });
 
-  // write pre-loaded config if present
-  if (opts.preLoadedConfig && opts.preLoadedConfig.length > 0) {
-    const configs = await readConfig(opts.preLoadedConfig);
+  const directorySync = await initDirectorySync({ db, opts });
 
-    for (const config of configs) {
-      await apiController.config(config);
+  const oidcDiscoveryController = new OidcDiscoveryController({ opts });
 
-      console.log(`loaded config for tenant "${config.tenant}" and product "${config.product}"`);
+  const spConfig = new SPSAMLConfig(opts);
+
+  // write pre-loaded connections if present
+  const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
+  if (preLoadedConnection && preLoadedConnection.length > 0) {
+    const connections = await loadConnection(preLoadedConnection);
+
+    for (const connection of connections) {
+      if ('oidcDiscoveryUrl' in connection) {
+        await connectionAPIController.createOIDCConnection(connection);
+      } else {
+        await connectionAPIController.createSAMLConnection(connection);
+      }
+
+      console.log(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
   }
 
@@ -86,11 +118,15 @@ export const controllers = async (
   console.log(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
-    apiController,
+    spConfig,
+    apiController: connectionAPIController,
+    connectionAPIController,
     oauthController,
     adminController,
     logoutController,
     healthCheckController,
+    directorySync,
+    oidcDiscoveryController,
   };
 };
 

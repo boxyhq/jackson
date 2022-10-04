@@ -1,7 +1,20 @@
 require('reflect-metadata');
 import { DataSource, DatabaseType, DataSourceOptions } from 'typeorm';
 
-const type = <DatabaseType>process.env.DB_TYPE || <DatabaseType>'postgres';
+const type =
+  process.env.DB_ENGINE === 'planetscale'
+    ? 'mysql'
+    : <DatabaseType>process.env.DB_TYPE || <DatabaseType>'postgres';
+
+const entitiesDir = process.env.DB_ENGINE === 'planetscale' ? 'planetscale' : 'sql';
+const migrationsDir = process.env.DB_ENGINE === 'planetscale' ? 'planetscale' : type;
+
+let ssl;
+if (process.env.DB_SSL === 'true') {
+  ssl = {
+    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
+  };
+}
 
 const AppDataSource = new DataSource(<DataSourceOptions>{
   type,
@@ -9,8 +22,9 @@ const AppDataSource = new DataSource(<DataSourceOptions>{
   synchronize: false,
   migrationsTableName: '_jackson_migrations',
   logging: 'all',
-  entities: ['src/db/sql/entity/**/*.ts'],
-  migrations: [`migration/${type}/**/*.ts`, 'migration/sql/**/*.ts'],
+  entities: [`src/db/${entitiesDir}/entity/**/*.ts`],
+  migrations: [`migration/${migrationsDir}/**/*.ts`],
+  ssl,
 });
 
 export default AppDataSource;

@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-
 import jackson from '@lib/jackson';
-import { extractAuthToken } from '@lib/utils';
+import { extractAuthToken } from '@lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method !== 'GET') {
-      throw new Error('Method not allowed');
+      throw { message: 'Method not allowed', statusCode: 405 };
     }
 
     const { oauthController } = await jackson();
@@ -15,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // check for query param
     if (!token) {
       let arr: string[] = [];
-      arr = arr.concat(req.query.access_token);
+      arr = arr.concat(req.query.access_token || '');
       if (arr[0].length > 0) {
         token = arr[0];
       }

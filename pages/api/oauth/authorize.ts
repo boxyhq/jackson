@@ -1,18 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { OAuthReqBody } from '@boxyhq/saml-jackson';
+import { OAuthReq } from '@boxyhq/saml-jackson';
 import { setErrorCookie } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    if (req.method !== 'GET') {
-      throw new Error('Method not allowed');
+    if (req.method !== 'GET' && req.method !== 'POST') {
+      throw { message: 'Method not allowed', statusCode: 405 };
     }
 
     const { oauthController } = await jackson();
+    const requestParams = req.method === 'GET' ? req.query : req.body;
     const { redirect_url, authorize_form } = await oauthController.authorize(
-      req.query as unknown as OAuthReqBody
+      requestParams as unknown as OAuthReq
     );
     if (redirect_url) {
       res.redirect(302, redirect_url);
