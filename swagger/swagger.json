@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "0.4.1",
+    "version": "1.3.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -36,96 +36,54 @@
   "paths": {
     "/api/v1/saml/config": {
       "post": {
-        "summary": "Create SAML configuration",
+        "summary": "Create SAML config",
         "operationId": "create-saml-config",
+        "deprecated": true,
         "tags": [
-          "SAML Config"
+          "SAML Config - Deprecated"
         ],
         "produces": [
           "application/json"
         ],
         "consumes": [
-          "application/x-www-form-urlencoded"
+          "application/x-www-form-urlencoded",
+          "application/json"
         ],
         "parameters": [
           {
-            "name": "name",
-            "description": "Name/identifier for the config",
-            "type": "string",
-            "in": "formData"
+            "$ref": "#/parameters/nameParamPost"
           },
           {
-            "name": "description",
-            "description": "A short description for the config not more than 100 characters",
-            "type": "string",
-            "in": "formData"
+            "$ref": "#/parameters/descriptionParamPost"
           },
           {
-            "name": "encodedRawMetadata",
-            "description": "Base64 encoding of the XML metadata",
-            "in": "formData",
-            "type": "string"
+            "$ref": "#/parameters/encodedRawMetadataParamPost"
           },
           {
-            "name": "rawMetadata",
-            "description": "Raw XML metadata",
-            "in": "formData",
-            "type": "string"
+            "$ref": "#/parameters/rawMetadataParamPost"
           },
           {
-            "name": "defaultRedirectUrl",
-            "description": "The redirect URL to use in the IdP login flow",
-            "in": "formData",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/defaultRedirectUrlParamPost"
           },
           {
-            "name": "redirectUrl",
-            "description": "JSON encoded array containing a list of allowed redirect URLs",
-            "in": "formData",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/redirectUrlParamPost"
           },
           {
-            "name": "tenant",
-            "description": "Tenant",
-            "in": "formData",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/tenantParamPost"
           },
           {
-            "name": "product",
-            "description": "Product",
-            "in": "formData",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/productParamPost"
           }
         ],
         "responses": {
           "200": {
             "description": "Success",
             "schema": {
-              "type": "object",
-              "properties": {
-                "client_id": {
-                  "type": "string"
-                },
-                "client_secret": {
-                  "type": "string"
-                },
-                "provider": {
-                  "type": "string"
-                }
-              },
-              "example": {
-                "client_id": "8958e13053832b5af58fdf2ee83f35f5d013dc74",
-                "client_secret": "13f01f4df5b01770c616e682d14d3ba23f20948cfa89b1d7",
-                "type": "accounts.google.com"
-              }
+              "$ref": "#/definitions/Connection"
             }
           },
           "400": {
-            "description": "Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters"
+            "$ref": "#/definitions/validationErrorsPost"
           },
           "401": {
             "description": "Unauthorized"
@@ -133,81 +91,46 @@
         }
       },
       "patch": {
-        "summary": "Update SAML configuration",
+        "summary": "Update SAML Config",
         "operationId": "update-saml-config",
         "tags": [
-          "SAML Config"
+          "SAML Config - Deprecated"
         ],
+        "deprecated": true,
         "consumes": [
           "application/json",
           "application/x-www-form-urlencoded"
         ],
         "parameters": [
           {
-            "name": "clientID",
-            "description": "Client ID for the config",
-            "type": "string",
-            "in": "formData",
-            "required": true
+            "$ref": "#/parameters/clientIDParamPatch"
           },
           {
-            "name": "clientSecret",
-            "description": "Client Secret for the config",
-            "type": "string",
-            "in": "formData",
-            "required": true
+            "$ref": "#/parameters/clientSecretParamPatch"
           },
           {
-            "name": "name",
-            "description": "Name/identifier for the config",
-            "type": "string",
-            "in": "formData"
+            "$ref": "#/parameters/nameParamPatch"
           },
           {
-            "name": "description",
-            "description": "A short description for the config not more than 100 characters",
-            "type": "string",
-            "in": "formData"
+            "$ref": "#/parameters/descriptionParamPatch"
           },
           {
-            "name": "encodedRawMetadata",
-            "description": "Base64 encoding of the XML metadata",
-            "in": "formData",
-            "type": "string"
+            "$ref": "#/parameters/encodedRawMetadataParamPatch"
           },
           {
-            "name": "rawMetadata",
-            "description": "Raw XML metadata",
-            "in": "formData",
-            "type": "string"
+            "$ref": "#/parameters/rawMetadataParamPatch"
           },
           {
-            "name": "defaultRedirectUrl",
-            "description": "The redirect URL to use in the IdP login flow",
-            "in": "formData",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/defaultRedirectUrlParamPatch"
           },
           {
-            "name": "redirectUrl",
-            "description": "JSON encoded array containing a list of allowed redirect URLs",
-            "in": "formData",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/redirectUrlParamPatch"
           },
           {
-            "name": "tenant",
-            "description": "Tenant",
-            "in": "formData",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/tenantParamPatch"
           },
           {
-            "name": "product",
-            "description": "Product",
-            "in": "formData",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/productParamPatch"
           }
         ],
         "responses": {
@@ -215,7 +138,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters"
+            "$ref": "#/definitions/validationErrorsPatch"
           },
           "401": {
             "description": "Unauthorized"
@@ -223,29 +146,21 @@
         }
       },
       "get": {
-        "summary": "Get SAML configuration",
+        "summary": "Get SAML Config",
         "operationId": "get-saml-config",
         "tags": [
-          "SAML Config"
+          "SAML Config - Deprecated"
         ],
+        "deprecated": true,
         "parameters": [
           {
-            "in": "query",
-            "name": "tenant",
-            "type": "string",
-            "description": "Tenant"
+            "$ref": "#/parameters/tenantParamGet"
           },
           {
-            "in": "query",
-            "name": "product",
-            "type": "string",
-            "description": "Product"
+            "$ref": "#/parameters/productParamGet"
           },
           {
-            "in": "query",
-            "name": "clientID",
-            "type": "string",
-            "description": "Client ID"
+            "$ref": "#/parameters/clientIDParamGet"
           }
         ],
         "responses": {
@@ -254,78 +169,64 @@
             "schema": {
               "type": "object",
               "example": {
-                "config": {
-                  "idpMetadata": {
-                    "sso": {
-                      "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-                      "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-                    },
-                    "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-                    "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-                    "loginType": "idp",
-                    "provider": "okta.com"
+                "idpMetadata": {
+                  "sso": {
+                    "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
+                    "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
                   },
-                  "defaultRedirectUrl": "https://hoppscotch.io/",
-                  "redirectUrl": [
-                    "https://hoppscotch.io/"
-                  ],
-                  "tenant": "hoppscotch.io",
-                  "product": "API Engine",
-                  "name": "Hoppscotch-SP",
-                  "description": "SP for hoppscotch.io",
-                  "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-                  "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-                  "certs": {
-                    "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-                    "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-                  }
+                  "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+                  "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+                  "loginType": "idp",
+                  "provider": "okta.com"
+                },
+                "defaultRedirectUrl": "https://hoppscotch.io/",
+                "redirectUrl": [
+                  "https://hoppscotch.io/"
+                ],
+                "tenant": "hoppscotch.io",
+                "product": "API Engine",
+                "name": "Hoppscotch-SP",
+                "description": "SP for hoppscotch.io",
+                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+                "certs": {
+                  "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+                  "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
                 }
               }
             }
           },
           "400": {
-            "description": "Please provide `clientID` or `tenant` and `product`."
+            "$ref": "#/responses/400Get"
           },
           "401": {
-            "description": "Unauthorized"
+            "$ref": "#/responses/401Get"
           }
         }
       },
       "delete": {
-        "summary": "Delete SAML configuration",
+        "summary": "Delete SAML Config",
         "operationId": "delete-saml-config",
         "tags": [
-          "SAML Config"
+          "SAML Config - Deprecated"
         ],
+        "deprecated": true,
         "consumes": [
-          "application/x-www-form-urlencoded"
+          "application/x-www-form-urlencoded",
+          "application/json"
         ],
         "parameters": [
           {
-            "name": "clientID",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Client ID"
+            "$ref": "#/parameters/clientIDDel"
           },
           {
-            "name": "clientSecret",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Client Secret"
+            "$ref": "#/parameters/clientSecretDel"
           },
           {
-            "name": "tenant",
-            "in": "formData",
-            "type": "string",
-            "description": "Tenant"
+            "$ref": "#/parameters/tenantDel"
           },
           {
-            "name": "product",
-            "in": "formData",
-            "type": "string",
-            "description": "Product"
+            "$ref": "#/parameters/productDel"
           }
         ],
         "responses": {
@@ -333,7 +234,203 @@
             "description": "Success"
           },
           "400": {
-            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.'"
+            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/connections": {
+      "post": {
+        "summary": "Create SSO connection",
+        "operationId": "create-sso-connection",
+        "tags": [
+          "Connections"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/nameParamPost"
+          },
+          {
+            "$ref": "#/parameters/descriptionParamPost"
+          },
+          {
+            "$ref": "#/parameters/encodedRawMetadataParamPost"
+          },
+          {
+            "$ref": "#/parameters/rawMetadataParamPost"
+          },
+          {
+            "$ref": "#/parameters/defaultRedirectUrlParamPost"
+          },
+          {
+            "$ref": "#/parameters/redirectUrlParamPost"
+          },
+          {
+            "$ref": "#/parameters/tenantParamPost"
+          },
+          {
+            "$ref": "#/parameters/productParamPost"
+          },
+          {
+            "$ref": "#/parameters/oidcDiscoveryUrlPost"
+          },
+          {
+            "$ref": "#/parameters/oidcClientIdPost"
+          },
+          {
+            "$ref": "#/parameters/oidcClientSecretPost"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Connection"
+            }
+          },
+          "400": {
+            "$ref": "#/definitions/validationErrorsPost"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update SSO Connection",
+        "operationId": "update-sso-connection",
+        "tags": [
+          "Connections"
+        ],
+        "consumes": [
+          "application/json",
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/clientIDParamPatch"
+          },
+          {
+            "$ref": "#/parameters/clientSecretParamPatch"
+          },
+          {
+            "$ref": "#/parameters/nameParamPatch"
+          },
+          {
+            "$ref": "#/parameters/descriptionParamPatch"
+          },
+          {
+            "$ref": "#/parameters/encodedRawMetadataParamPatch"
+          },
+          {
+            "$ref": "#/parameters/rawMetadataParamPatch"
+          },
+          {
+            "$ref": "#/parameters/oidcDiscoveryUrlPatch"
+          },
+          {
+            "$ref": "#/parameters/oidcClientIdPatch"
+          },
+          {
+            "$ref": "#/parameters/oidcClientSecretPatch"
+          },
+          {
+            "$ref": "#/parameters/defaultRedirectUrlParamPatch"
+          },
+          {
+            "$ref": "#/parameters/redirectUrlParamPatch"
+          },
+          {
+            "$ref": "#/parameters/tenantParamPatch"
+          },
+          {
+            "$ref": "#/parameters/productParamPatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "$ref": "#/definitions/validationErrorsPatch"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get SSO Connections",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenantParamGet"
+          },
+          {
+            "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/clientIDParamGet"
+          }
+        ],
+        "operationId": "get-connections",
+        "tags": [
+          "Connections"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200Get"
+          },
+          "400": {
+            "$ref": "#/responses/400Get"
+          },
+          "401": {
+            "$ref": "#/responses/401Get"
+          }
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/clientIDDel"
+          },
+          {
+            "$ref": "#/parameters/clientSecretDel"
+          },
+          {
+            "$ref": "#/parameters/tenantDel"
+          },
+          {
+            "$ref": "#/parameters/productDel"
+          },
+          {
+            "$ref": "#/parameters/strategyDel"
+          }
+        ],
+        "summary": "Delete SSO Connections",
+        "operationId": "delete-sso-connection",
+        "tags": [
+          "Connections"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
           },
           "401": {
             "description": "Unauthorized"
@@ -364,15 +461,21 @@
             "name": "client_id",
             "in": "formData",
             "type": "string",
-            "description": "Use the client_id returned by the SAML config API",
+            "description": "Use the client_id returned by the SAML connection API",
             "required": true
           },
           {
             "name": "client_secret",
             "in": "formData",
             "type": "string",
-            "description": "Use the client_secret returned by the SAML config API",
+            "description": "Use the client_secret returned by the SAML connection API",
             "required": true
+          },
+          {
+            "name": "code_verifier",
+            "in": "formData",
+            "type": "string",
+            "description": "code_verifier against the code_challenge in the authz request (relevant to PKCE flow)"
           },
           {
             "name": "redirect_uri",
@@ -439,13 +542,21 @@
                 },
                 "lastName": {
                   "type": "string"
+                },
+                "raw": {
+                  "type": "object"
+                },
+                "requested": {
+                  "type": "object"
                 }
               },
               "example": {
                 "id": "32b5af58fdf",
                 "email": "jackson@coolstartup.com",
                 "firstName": "SAML",
-                "lastName": "Jackson"
+                "lastName": "Jackson",
+                "raw": {},
+                "requested": {}
               }
             }
           }
@@ -453,8 +564,307 @@
       }
     }
   },
-  "definitions": {},
-  "responses": {},
-  "parameters": {},
+  "definitions": {
+    "Connection": {
+      "type": "object",
+      "example": {
+        "idpMetadata": {
+          "sso": {
+            "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml",
+            "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml"
+          },
+          "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
+          "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
+          "loginType": "idp",
+          "provider": "okta.com"
+        },
+        "defaultRedirectUrl": "https://hoppscotch.io/",
+        "redirectUrl": [
+          "https://hoppscotch.io/"
+        ],
+        "tenant": "hoppscotch.io",
+        "product": "API Engine",
+        "name": "Hoppscotch-SP",
+        "description": "SP for hoppscotch.io",
+        "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
+        "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+        "certs": {
+          "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
+          "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
+        }
+      },
+      "properties": {
+        "clientID": {
+          "type": "string",
+          "description": "Connection clientID"
+        },
+        "clientSecret": {
+          "type": "string",
+          "description": "Connection clientSecret"
+        },
+        "name": {
+          "type": "string",
+          "description": "Connection name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Connection description"
+        },
+        "redirectUrl": {
+          "type": "string",
+          "description": "A list of allowed redirect URLs"
+        },
+        "defaultRedirectUrl": {
+          "type": "string",
+          "description": "The redirect URL to use in the IdP login flow"
+        },
+        "tenant": {
+          "type": "string",
+          "description": "Connection tenant"
+        },
+        "product": {
+          "type": "string",
+          "description": "Connection product"
+        },
+        "idpMetadata": {
+          "type": "object",
+          "description": "SAML IdP metadata"
+        },
+        "certs": {
+          "type": "object",
+          "description": "Certs generated for SAML connection"
+        },
+        "oidcProvider": {
+          "type": "object",
+          "description": "OIDC IdP metadata"
+        }
+      }
+    },
+    "validationErrorsPost": {
+      "description": "Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider"
+    },
+    "validationErrorsPatch": {
+      "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata"
+    }
+  },
+  "responses": {
+    "200Get": {
+      "description": "Success",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Connection"
+        }
+      }
+    },
+    "400Get": {
+      "description": "Please provide `clientID` or `tenant` and `product`."
+    },
+    "401Get": {
+      "description": "Unauthorized"
+    }
+  },
+  "parameters": {
+    "nameParamPost": {
+      "name": "name",
+      "description": "Name/identifier for the connection",
+      "type": "string",
+      "in": "formData"
+    },
+    "descriptionParamPost": {
+      "name": "description",
+      "description": "A short description for the connection not more than 100 characters",
+      "type": "string",
+      "in": "formData"
+    },
+    "encodedRawMetadataParamPost": {
+      "name": "encodedRawMetadata",
+      "description": "Base64 encoding of the XML metadata",
+      "in": "formData",
+      "type": "string"
+    },
+    "rawMetadataParamPost": {
+      "name": "rawMetadata",
+      "description": "Raw XML metadata",
+      "in": "formData",
+      "type": "string"
+    },
+    "defaultRedirectUrlParamPost": {
+      "name": "defaultRedirectUrl",
+      "description": "The redirect URL to use in the IdP login flow",
+      "in": "formData",
+      "required": true,
+      "type": "string"
+    },
+    "redirectUrlParamPost": {
+      "name": "redirectUrl",
+      "description": "JSON encoded array containing a list of allowed redirect URLs",
+      "in": "formData",
+      "required": true,
+      "type": "string"
+    },
+    "tenantParamPost": {
+      "name": "tenant",
+      "description": "Tenant",
+      "in": "formData",
+      "required": true,
+      "type": "string"
+    },
+    "productParamPost": {
+      "name": "product",
+      "description": "Product",
+      "in": "formData",
+      "required": true,
+      "type": "string"
+    },
+    "oidcDiscoveryUrlPost": {
+      "name": "oidcDiscoveryUrl",
+      "description": "well-known URL where the OpenID Provider configuration is exposed",
+      "in": "formData",
+      "type": "string"
+    },
+    "oidcClientIdPost": {
+      "name": "oidcClientId",
+      "description": "clientId of the application set up on the OpenID Provider",
+      "in": "formData",
+      "type": "string"
+    },
+    "oidcClientSecretPost": {
+      "name": "oidcClientSecret",
+      "description": "clientSecret of the application set up on the OpenID Provider",
+      "in": "formData",
+      "type": "string"
+    },
+    "clientIDParamPatch": {
+      "name": "clientID",
+      "description": "Client ID for the connection",
+      "type": "string",
+      "in": "formData",
+      "required": true
+    },
+    "clientSecretParamPatch": {
+      "name": "clientSecret",
+      "description": "Client Secret for the connection",
+      "type": "string",
+      "in": "formData",
+      "required": true
+    },
+    "nameParamPatch": {
+      "name": "name",
+      "description": "Name/identifier for the connection",
+      "type": "string",
+      "in": "formData"
+    },
+    "descriptionParamPatch": {
+      "name": "description",
+      "description": "A short description for the connection not more than 100 characters",
+      "type": "string",
+      "in": "formData"
+    },
+    "encodedRawMetadataParamPatch": {
+      "name": "encodedRawMetadata",
+      "description": "Base64 encoding of the XML metadata",
+      "in": "formData",
+      "type": "string"
+    },
+    "rawMetadataParamPatch": {
+      "name": "rawMetadata",
+      "description": "Raw XML metadata",
+      "in": "formData",
+      "type": "string"
+    },
+    "oidcDiscoveryUrlPatch": {
+      "name": "oidcDiscoveryUrl",
+      "description": "well-known URL where the OpenID Provider configuration is exposed",
+      "in": "formData",
+      "type": "string"
+    },
+    "oidcClientIdPatch": {
+      "name": "oidcClientId",
+      "description": "clientId of the application set up on the OpenID Provider",
+      "in": "formData",
+      "type": "string"
+    },
+    "oidcClientSecretPatch": {
+      "name": "oidcClientSecret",
+      "description": "clientSecret of the application set up on the OpenID Provider",
+      "in": "formData",
+      "type": "string"
+    },
+    "defaultRedirectUrlParamPatch": {
+      "name": "defaultRedirectUrl",
+      "description": "The redirect URL to use in the IdP login flow",
+      "in": "formData",
+      "type": "string"
+    },
+    "redirectUrlParamPatch": {
+      "name": "redirectUrl",
+      "description": "JSON encoded array containing a list of allowed redirect URLs",
+      "in": "formData",
+      "type": "string"
+    },
+    "tenantParamPatch": {
+      "name": "tenant",
+      "description": "Tenant",
+      "in": "formData",
+      "required": true,
+      "type": "string"
+    },
+    "productParamPatch": {
+      "name": "product",
+      "description": "Product",
+      "in": "formData",
+      "required": true,
+      "type": "string"
+    },
+    "tenantParamGet": {
+      "in": "query",
+      "name": "tenant",
+      "type": "string",
+      "description": "Tenant"
+    },
+    "productParamGet": {
+      "in": "query",
+      "name": "product",
+      "type": "string",
+      "description": "Product"
+    },
+    "clientIDParamGet": {
+      "in": "query",
+      "name": "clientID",
+      "type": "string",
+      "description": "Client ID"
+    },
+    "clientIDDel": {
+      "name": "clientID",
+      "in": "formData",
+      "type": "string",
+      "description": "Client ID"
+    },
+    "clientSecretDel": {
+      "name": "clientSecret",
+      "in": "formData",
+      "type": "string",
+      "description": "Client Secret"
+    },
+    "tenantDel": {
+      "name": "tenant",
+      "in": "formData",
+      "type": "string",
+      "description": "Tenant"
+    },
+    "productDel": {
+      "name": "product",
+      "in": "formData",
+      "type": "string",
+      "description": "Product"
+    },
+    "strategyDel": {
+      "name": "strategy",
+      "in": "formData",
+      "type": "string",
+      "description": "Strategy"
+    }
+  },
   "tags": []
 }
