@@ -11,6 +11,7 @@ import ConfirmationModal from '@components/ConfirmationModal';
  * to render parsed metadata and other attributes.
  * All fields are editable unless they have `editable` set to false.
  * All fields are required unless they have `required` or `requiredInEditView` set to false.
+ * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
  */
 const fieldCatalog = [
   {
@@ -56,6 +57,27 @@ const fieldCatalog = [
     attributes: {},
   },
   {
+    key: 'oidcDiscoveryUrl',
+    label: 'Well-known URL of OpenId Provider',
+    type: 'url',
+    placeholder: 'https://example.com/.well-known/openid-configuration',
+    attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl },
+  },
+  {
+    key: 'oidcClientId',
+    label: 'Client ID [OIDC Provider]',
+    type: 'text',
+    placeholder: '',
+    attributes: { editable: false, connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientId },
+  },
+  {
+    key: 'oidcClientSecret',
+    label: 'Client Secret [OIDC Provider]',
+    type: 'text',
+    placeholder: '',
+    attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret },
+  },
+  {
     key: 'rawMetadata',
     label: 'Raw IdP XML',
     type: 'textarea',
@@ -64,6 +86,7 @@ const fieldCatalog = [
       rows: 5,
       requiredInEditView: false, //not required in edit view
       labelInEditView: 'Raw IdP XML (fully replaces the current one)',
+      connection: 'saml',
     },
   },
   {
@@ -74,6 +97,7 @@ const fieldCatalog = [
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
+      connection: 'saml',
       formatForDisplay: (value) => {
         const obj = JSON.parse(JSON.stringify(value));
         delete obj.validTo;
@@ -82,7 +106,7 @@ const fieldCatalog = [
     },
   },
   {
-    key: 'idpMetadata',
+    key: 'idpCertExpiry',
     label: 'IdP Certificate Validity',
     type: 'pre',
     attributes: {
@@ -90,28 +114,29 @@ const fieldCatalog = [
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
-      showWarning: (value) => new Date(value.validTo) < new Date(),
-      formatForDisplay: (value) => new Date(value.validTo).toString(),
+      connection: 'saml',
+      accessor: (o) => o?.idpMetadata?.validTo,
+      showWarning: (value) => new Date(value) < new Date(),
+      formatForDisplay: (value) => new Date(value).toString(),
     },
   },
   {
     key: 'clientID',
     label: 'Client ID',
     type: 'text',
-    attributes: { showOnlyInEditView: true },
+    attributes: { showOnlyInEditView: true, editable: false },
   },
   {
     key: 'clientSecret',
     label: 'Client Secret',
     type: 'password',
-    attributes: { showOnlyInEditView: true },
+    attributes: { showOnlyInEditView: true, editable: false },
   },
   {
     key: 'forceAuthn',
     label: 'Force Authentication',
     type: 'checkbox',
-
-    attributes: { showOnlyInEditView: false, requiredInEditView: false, required: false },
+    attributes: { requiredInEditView: false, required: false, connection: 'saml' },
   },
 ];
 
@@ -121,51 +146,78 @@ function getFieldList(isEditView) {
     : fieldCatalog.filter(({ attributes: { showOnlyInEditView } }) => !showOnlyInEditView); // filtered list for add view
 }
 
-function getInitialState(samlConfig, isEditView) {
+function getInitialState(connection, isEditView) {
   const _state = {};
   const _fieldCatalog = getFieldList(isEditView);
 
   _fieldCatalog.forEach(({ key, attributes }) => {
-    _state[key] = samlConfig?.[key]
+    let value;
+
+    if (typeof attributes.accessor === 'function') {
+      value = attributes.accessor(connection);
+    } else {
+      value = connection?.[key];
+    }
+    _state[key] = value
       ? attributes.isArray
-        ? samlConfig[key].join('\r\n') // render list of items on newline eg:- redirect URLs
-        : samlConfig[key]
+        ? value.join('\r\n') // render list of items on newline eg:- redirect URLs
+        : value
       : '';
   });
   return _state;
 }
 
 type AddEditProps = {
-  samlConfig?: Record<string, any>;
+  connection?: Record<string, any>;
 };
 
-const AddEdit = ({ samlConfig }: AddEditProps) => {
+const AddEdit = ({ connection }: AddEditProps) => {
   const router = useRouter();
-  const isEditView = !!samlConfig;
+  // STATE: New connection type
+  const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
+  const handleNewConnectionTypeChange = (event) => {
+    setNewConnectionType(event.target.value);
+  };
+
+  const { id: connectionClientId } = router.query;
+  const isEditView = !!connection && !!connectionClientId;
+  const connectionIsSAML = isEditView
+    ? connection?.idpMetadata && typeof connection.idpMetadata === 'object'
+    : newConnectionType === 'saml';
+  const connectionIsOIDC = isEditView
+    ? connection?.oidcProvider && typeof connection.oidcProvider === 'object'
+    : newConnectionType === 'oidc';
   // FORM LOGIC: SUBMIT
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
     status: 'UNKNOWN',
   });
-  const saveSAMLConfiguration = async (event) => {
+  const saveConnection = async (event) => {
     event.preventDefault();
-    const { rawMetadata, redirectUrl, ...rest } = formObj;
+    const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, ...rest } = formObj;
     const encodedRawMetadata = btoa(rawMetadata || '');
     const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-    const res = await fetch('/api/admin/saml/config', {
+    const res = await fetch('/api/admin/connections', {
       method: isEditView ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...rest, encodedRawMetadata, redirectUrl: JSON.stringify(redirectUrlList) }),
+      body: JSON.stringify({
+        ...rest,
+        encodedRawMetadata: connectionIsSAML ? encodedRawMetadata : undefined,
+        oidcDiscoveryUrl: connectionIsOIDC ? oidcDiscoveryUrl : undefined,
+        oidcClientId: connectionIsOIDC ? oidcClientId : undefined,
+        oidcClientSecret: connectionIsOIDC ? oidcClientSecret : undefined,
+        redirectUrl: JSON.stringify(redirectUrlList),
+      }),
     });
     if (res.ok) {
       if (!isEditView) {
-        router.replace('/admin/saml/config');
+        router.replace('/admin/connection');
       } else {
         setSaveStatus({ status: 'SUCCESS' });
         // revalidate on save
-        mutate(`/api/admin/saml/config/${router.query.id}`);
+        mutate(`/api/admin/connections/${connectionClientId}`);
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
       }
     } else {
@@ -178,28 +230,28 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
   // LOGIC: DELETE
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
-  const deleteConfiguration = async () => {
-    await fetch('/api/admin/saml/config', {
+  const deleteConnection = async () => {
+    await fetch('/api/admin/connections', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ clientID: samlConfig?.clientID, clientSecret: samlConfig?.clientSecret }),
+      body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
     });
     toggleDelConfirm();
-    await mutate('/api/admin/saml/config');
-    router.replace('/admin/saml/config');
+    await mutate('/api/admin/connections');
+    router.replace('/admin/connection');
   };
 
   // STATE: FORM
   const [formObj, setFormObj] = useState<Record<string, string>>(() =>
-    getInitialState(samlConfig, isEditView)
+    getInitialState(connection, isEditView)
   );
   // Resync form state on save
   useEffect(() => {
-    const _state = getInitialState(samlConfig, isEditView);
+    const _state = getInitialState(connection, isEditView);
     setFormObj(_state);
-  }, [samlConfig, isEditView]);
+  }, [connection, isEditView]);
 
   function getHandleChange(opts: any = {}) {
     return (event: FormEvent) => {
@@ -208,9 +260,14 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
     };
   }
 
+  function fieldCatalogFilterByConnection(connection) {
+    return ({ attributes }) =>
+      attributes.connection && connection !== null ? attributes.connection === connection : true;
+  }
+
   return (
     <>
-      <Link href='/admin/saml/config'>
+      <Link href='/admin/connection'>
         <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span>Back</span>
@@ -220,9 +277,58 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {isEditView ? 'Edit Connection' : 'Create Connection'}
         </h2>
-        <form onSubmit={saveSAMLConfiguration}>
+        {!isEditView && (
+          <div className='mb-4 flex'>
+            <div className='mr-2 py-3'>Select Type:</div>
+            <div className='flex flex-nowrap items-stretch justify-start gap-1 rounded-md border-2 border-dashed py-3'>
+              <div>
+                <input
+                  type='radio'
+                  name='connection'
+                  value='saml'
+                  className='peer sr-only'
+                  checked={newConnectionType === 'saml'}
+                  onChange={handleNewConnectionTypeChange}
+                  id='saml-conn'></input>
+                {/* var(--radio-border-width) solid var(--color-gray) */}
+                <label
+                  htmlFor='saml-conn'
+                  className='cursor-pointer rounded-md border-2 border-solid py-3 px-8 font-semibold hover:shadow-md peer-checked:border-secondary-focus peer-checked:bg-secondary peer-checked:text-white'>
+                  SAML
+                </label>
+              </div>
+              <div>
+                <input
+                  type='radio'
+                  name='connection'
+                  value='oidc'
+                  className='peer sr-only'
+                  checked={newConnectionType === 'oidc'}
+                  onChange={handleNewConnectionTypeChange}
+                  id='oidc-conn'></input>
+                <label
+                  htmlFor='oidc-conn'
+                  className='cursor-pointer rounded-md border-2 border-solid px-8 py-3 font-semibold hover:shadow-md peer-checked:bg-secondary peer-checked:text-white'>
+                  OIDC
+                </label>
+              </div>
+            </div>
+          </div>
+        )}
+        <form onSubmit={saveConnection}>
           <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
             {fieldCatalog
+              .filter(
+                fieldCatalogFilterByConnection(
+                  isEditView
+                    ? connectionIsSAML
+                      ? 'saml'
+                      : connectionIsOIDC
+                      ? 'oidc'
+                      : null
+                    : newConnectionType
+                )
+              )
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
               .map(
                 ({
@@ -347,7 +453,7 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
               </p>
             </div>
           </div>
-          {samlConfig?.clientID && samlConfig.clientSecret && (
+          {connection?.clientID && connection.clientSecret && (
             <section className='mt-10 flex items-center rounded bg-red-100 p-6 text-red-900'>
               <div className='flex-1'>
                 <h6 className='mb-1 font-medium'>Delete this connection</h6>
@@ -364,10 +470,10 @@ const AddEdit = ({ samlConfig }: AddEditProps) => {
           )}
         </form>
         <ConfirmationModal
-          title='Delete the SAML Connection'
-          description='This action cannot be undone. This will permanently delete the SAML config.'
+          title='Delete the Connection'
+          description='This action cannot be undone. This will permanently delete the Connection.'
           visible={delModalVisible}
-          onConfirm={deleteConfiguration}
+          onConfirm={deleteConnection}
           onCancel={toggleDelConfirm}></ConfirmationModal>
       </div>
     </>

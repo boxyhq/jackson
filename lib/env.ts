@@ -4,13 +4,13 @@ const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5225');
 const externalUrl = process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const samlPath = '/api/oauth/saml';
+const oidcPath = '/api/oauth/oidc';
 const idpDiscoveryPath = '/idp/select';
 
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
 
 const samlAudience = process.env.SAML_AUDIENCE;
-const preLoadedConfig = process.env.PRE_LOADED_CONFIG;
-
+const preLoadedConnection = process.env.PRE_LOADED_CONNECTION || process.env.PRE_LOADED_CONFIG;
 const idpEnabled = process.env.IDP_ENABLED === 'true';
 
 let ssl;
@@ -45,9 +45,10 @@ export default {
   hostPort,
   externalUrl,
   samlPath,
+  oidcPath,
   idpDiscoveryPath,
   samlAudience,
-  preLoadedConfig,
+  preLoadedConnection,
   apiKeys,
   idpEnabled,
   db,

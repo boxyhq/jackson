@@ -3,14 +3,14 @@ import useSWR from 'swr';
 import { useRouter } from 'next/router';
 
 import { fetcher } from '@lib/ui/utils';
-import AddEdit from '@components/saml/AddEdit';
+import AddEdit from '@components/connection/AddEdit';
 
-const EditSAMLConfiguration: NextPage = () => {
+const EditConnection: NextPage = () => {
   const router = useRouter();
 
   const { id } = router.query;
 
-  const { data: samlConfig, error } = useSWR(`/api/admin/saml/config/${id}`, fetcher, {
+  const { data: connection, error } = useSWR(id ? `/api/admin/connections/${id}` : null, fetcher, {
     revalidateOnFocus: false,
   });
 
@@ -22,11 +22,11 @@ const EditSAMLConfiguration: NextPage = () => {
     );
   }
 
-  if (!samlConfig) {
+  if (!connection) {
     return null;
   }
 
-  return <AddEdit samlConfig={samlConfig} />;
+  return <AddEdit connection={connection} />;
 };
 
-export default EditSAMLConfiguration;
+export default EditConnection;
