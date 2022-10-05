@@ -34,6 +34,8 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
+ENV NODE_OPTIONS="--max-http-header-size=81920"
+
 
 ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
