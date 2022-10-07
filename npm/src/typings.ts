@@ -29,6 +29,41 @@ export interface OIDCSSOConnection extends SSOConnection {
   oidcClientSecret: string;
 }
 
+export interface SAMLSSORecord extends SAMLSSOConnection {
+  clientID: string; // set by Jackson
+  clientSecret: string; // set by Jackson
+  idpMetadata: {
+    entityID: string;
+    loginType?: string;
+    provider: string | 'Unknown';
+    slo: {
+      postUrl?: string;
+      redirectUrl?: string;
+    };
+    sso: {
+      postUrl?: string;
+      redirectUrl?: string;
+    };
+    thumbprint?: string;
+    validTo?: string;
+  };
+  certs: {
+    privateKey: string;
+    publicKey: string;
+  };
+}
+
+export interface OIDCSSORecord extends SSOConnection {
+  clientID: string; // set by Jackson
+  clientSecret: string; // set by Jackson
+  oidcProvider: {
+    provider?: string;
+    discoveryUrl?: string;
+    clientId?: string;
+    clientSecret?: string;
+  };
+}
+
 export type ConnectionType = 'saml' | 'oidc';
 
 type ClientIDQuery = {
@@ -46,21 +81,21 @@ export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
 export type DelConfigQuery = (ClientIDQuery & { clientSecret: string }) | Omit<TenantQuery, 'strategy'>;
 
 export interface IConnectionAPIController {
-  config(body: SAMLSSOConnection): Promise<any>;
+  config(body: SAMLSSOConnection): Promise<SAMLSSORecord>;
   createSAMLConnection(
     body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata
-  ): Promise<any>;
-  createOIDCConnection(body: OIDCSSOConnection): Promise<any>;
-  updateConfig(body: SAMLSSOConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  ): Promise<SAMLSSORecord>;
+  createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord>;
+  updateConfig(body: SAMLSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
   updateSAMLConnection(
     body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
       clientID: string;
       clientSecret: string;
     }
-  ): Promise<any>;
-  updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<any>;
-  getConnections(body: GetConnectionsQuery): Promise<Array<any>>;
-  getConfig(body: GetConfigQuery): Promise<any>;
+  ): Promise<void>;
+  updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
+  getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
+  getConfig(body: GetConfigQuery): Promise<SAMLSSORecord>;
   deleteConnections(body: DelConnectionsQuery): Promise<void>;
   deleteConfig(body: DelConfigQuery): Promise<void>;
 }
