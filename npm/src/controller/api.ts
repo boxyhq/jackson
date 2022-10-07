@@ -337,7 +337,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   // For backwards compatibility
   public async updateConfig(
     ...args: Parameters<ConnectionAPIController['updateSAMLConnection']>
-  ): Promise<any> {
+  ): Promise<void> {
     await this.updateSAMLConnection(...args);
   }
   public async updateOIDCConnection(
@@ -363,6 +363,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: clientID
    *     type: string
    *     description: Client ID
+   *  strategyParamGet:
+   *     in: query
+   *     name: strategy
+   *     type: string
+   *     description: Strategy which can help to filter connections with tenant/product query
    * definitions:
    *   Connection:
    *      type: object
@@ -418,6 +423,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/tenantParamGet'
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/clientIDParamGet'
+   *       - $ref: '#/parameters/strategyParamGet'
    *     operationId: get-connections
    *     tags: [Connections]
    *     responses:
@@ -584,7 +590,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: strategy
    *     in: formData
    *     type: string
-   *     description: Strategy
+   *     description: Strategy which can help to filter connections with tenant/product query
    * /api/v1/connections:
    *   delete:
    *     parameters:

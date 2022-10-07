@@ -380,6 +380,9 @@
           },
           {
             "$ref": "#/parameters/clientIDParamGet"
+          },
+          {
+            "$ref": "#/parameters/strategyParamGet"
           }
         ],
         "operationId": "get-connections",
@@ -835,6 +838,12 @@
       "type": "string",
       "description": "Client ID"
     },
+    "strategyParamGet": {
+      "in": "query",
+      "name": "strategy",
+      "type": "string",
+      "description": "Strategy which can help to filter connections with tenant/product query"
+    },
     "clientIDDel": {
       "name": "clientID",
       "in": "formData",
@@ -863,7 +872,7 @@
       "name": "strategy",
       "in": "formData",
       "type": "string",
-      "description": "Strategy"
+      "description": "Strategy which can help to filter connections with tenant/product query"
     }
   },
   "tags": []
