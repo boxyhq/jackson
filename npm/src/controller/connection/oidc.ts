@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { IConnectionAPIController, OIDCSSOConnection, Storable } from '../../typings';
+import { IConnectionAPIController, OIDCSSOConnection, OIDCSSORecord, Storable } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
   extractHostName,
@@ -30,16 +30,7 @@ const oidc = {
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<OIDCSSOConnection> & {
-      clientID: string; // set by Jackson
-      clientSecret: string; // set by Jackson
-      oidcProvider?: {
-        provider?: string;
-        discoveryUrl?: string;
-        clientId?: string;
-        clientSecret?: string;
-      };
-    } = {
+    const record: Partial<OIDCSSORecord> = {
       defaultRedirectUrl,
       redirectUrl: redirectUrlList,
       tenant,
@@ -114,7 +105,7 @@ const oidc = {
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const _savedConnection = (await connectionsGetter(clientInfo))[0];
+    const _savedConnection = (await connectionsGetter(clientInfo))[0] as OIDCSSORecord;
 
     if (_savedConnection.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
