@@ -81,7 +81,7 @@ const saml = {
     const certs = await x509.generate();
 
     if (!certs) {
-      throw new Error('Error generating x509 certs');
+      throw new JacksonError('Error generating x509 certs');
     }
 
     record.idpMetadata = idpMetadata;
