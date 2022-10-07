@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 import {
   IConnectionAPIController,
-  SAMLSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
+  SAMLSSORecord,
   Storable,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
@@ -41,12 +41,7 @@ const saml = {
     const redirectUrlList = extractRedirectUrls(redirectUrl);
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<SAMLSSOConnection> & {
-      clientID: string; // set by Jackson
-      clientSecret: string; // set by Jackson
-      idpMetadata?: Record<string, any>;
-      certs?: Record<'publicKey' | 'privateKey', string>;
-    } = {
+    const record: Partial<SAMLSSORecord> = {
       defaultRedirectUrl,
       redirectUrl: redirectUrlList,
       tenant,
@@ -58,12 +53,12 @@ const saml = {
       forceAuthn,
     };
 
-    let metaData = rawMetadata;
+    let metaData = rawMetadata as string;
     if (encodedRawMetadata) {
       metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
-    const idpMetadata = await saml20.parseMetadata(metaData!, {});
+    const idpMetadata = (await saml20.parseMetadata(metaData, {})) as SAMLSSORecord['idpMetadata'];
 
     if (!idpMetadata.entityID) {
       throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
@@ -71,7 +66,7 @@ const saml = {
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);
     if (!providerName) {
-      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl);
+      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl || '');
     }
 
     idpMetadata.provider = providerName ? providerName : 'Unknown';
@@ -149,7 +144,7 @@ const saml = {
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const _savedConnection = (await connectionsGetter(clientInfo))[0];
+    const _savedConnection = (await connectionsGetter(clientInfo))[0] as SAMLSSORecord;
 
     if (_savedConnection.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
