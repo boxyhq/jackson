@@ -81,11 +81,17 @@ export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
 export type DelConfigQuery = (ClientIDQuery & { clientSecret: string }) | Omit<TenantQuery, 'strategy'>;
 
 export interface IConnectionAPIController {
+  /**
+   * @deprecated Use `createSAMLConnection` instead.
+   */
   config(body: SAMLSSOConnection): Promise<SAMLSSORecord>;
   createSAMLConnection(
     body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata
   ): Promise<SAMLSSORecord>;
   createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord>;
+  /**
+   * @deprecated Use `updateSAMLConnection` instead.
+   */
   updateConfig(body: SAMLSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
   updateSAMLConnection(
     body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
@@ -95,8 +101,14 @@ export interface IConnectionAPIController {
   ): Promise<void>;
   updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
   getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
+  /**
+   * @deprecated Use `getConnections` instead.
+   */
   getConfig(body: GetConfigQuery): Promise<SAMLSSORecord>;
   deleteConnections(body: DelConnectionsQuery): Promise<void>;
+  /**
+   * @deprecated Use `deleteConnections` instead.
+   */
   deleteConfig(body: DelConfigQuery): Promise<void>;
 }
 
