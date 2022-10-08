@@ -25,7 +25,7 @@ export class OidcDiscoveryController implements IOidcDiscoveryController {
   }
 
   async jwks() {
-    const { jwtSigningKeys, jwsAlg } = this.opts.openid;
+    const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
     if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
       throw new JacksonError('JWT signing keys are not loaded', 501);
     }
