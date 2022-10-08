@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
-import { IConnectionAPIController, OIDCSSOConnection } from '../../src/typings';
+import { IConnectionAPIController, OIDCSSOConnection, OIDCSSORecord } from '../../src/typings';
 import { oidc_connection } from './fixture';
 import { databaseOptions } from '../utils';
 
@@ -179,7 +179,7 @@ tap.test('controller/api', async (t) => {
         await connectionAPIController.getConnections({
           clientID: CLIENT_ID_OIDC,
         })
-      )[0];
+      )[0] as OIDCSSORecord;
 
       t.equal(savedConnection.name, oidc_connection.name);
       t.equal(savedConnection.oidcProvider.clientId, oidc_connection.oidcClientId);

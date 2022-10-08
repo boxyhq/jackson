@@ -8,6 +8,7 @@ import {
   IConnectionAPIController,
   SAMLSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSORecord,
 } from '../../src/typings';
 import { saml_connection } from './fixture';
 import { databaseOptions } from '../utils';
@@ -182,7 +183,7 @@ tap.test('controller/api', async (t) => {
         await connectionAPIController.getConnections({
           clientID: CLIENT_ID_SAML,
         })
-      )[0];
+      )[0] as SAMLSSORecord;
 
       t.equal(savedConnection.name, 'testConfig');
       t.equal(savedConnection.forceAuthn, false);
@@ -207,7 +208,7 @@ tap.test('controller/api', async (t) => {
         await connectionAPIController.getConnections({
           clientID: CLIENT_ID_SAML,
         })
-      )[0];
+      )[0] as SAMLSSORecord;
 
       t.equal(savedConnection.forceAuthn, true);
 
