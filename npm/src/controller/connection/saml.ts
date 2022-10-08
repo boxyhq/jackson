@@ -158,6 +158,9 @@ const saml = {
     if (metaData) {
       newMetadata = await saml20.parseMetadata(metaData, {});
 
+      if (!newMetadata.entityID) {
+        throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
+      }
       // extract provider
       let providerName = extractHostName(newMetadata.entityID);
       if (!providerName) {
