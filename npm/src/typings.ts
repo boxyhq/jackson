@@ -308,7 +308,7 @@ export interface JacksonOption {
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
   scimPath?: string;
-  openid: {
+  openid?: {
     jwsAlg?: string;
     jwtSigningKeys?: {
       private: string;

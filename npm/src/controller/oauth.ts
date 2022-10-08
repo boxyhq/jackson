@@ -288,7 +288,7 @@ export class OAuthController implements IOAuthController {
 
     if (
       requestedOIDCFlow &&
-      (!this.opts.openid.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
+      (!this.opts.openid?.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
     ) {
       return {
         redirect_url: OAuthErrorResponse({
@@ -955,7 +955,7 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = !!codeVal.requested?.oidc;
     const requestHasNonce = !!codeVal.requested?.nonce;
     if (requestedOIDCFlow) {
-      const { jwtSigningKeys, jwsAlg } = this.opts.openid;
+      const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
       if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
         throw new JacksonError('JWT signing keys are not loaded', 500);
       }
