@@ -1,6 +1,13 @@
-node_modules
+Dockerfile
+.dockerignore
+**/node_modules
 npm-debug.log
+README.md
+.next
 .git
 .github
 _dev
 .vscode
+swagger
+uffizzi
+.husky
