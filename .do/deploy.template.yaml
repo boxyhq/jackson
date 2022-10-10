@@ -1,5 +1,5 @@
 spec:
-  name: SAML Jackson
+  name: SAML-Jackson
   services:
     - name: web
       build_command: npm run build
