@@ -45,6 +45,32 @@ tap.test('[OIDCProvider]', async (t) => {
     context.state = params.get('state');
   });
 
+  t.test('[authorize] Should return error if `oidcPath` is not set', async (t) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    oauthController.opts.oidcPath = undefined;
+    const response = (await oauthController.authorize(<OAuthReq>authz_request_oidc_provider)) as {
+      redirect_url: string;
+    };
+    const response_params = new URLSearchParams(new URL(response.redirect_url!).search);
+
+    t.match(response_params.get('error'), 'server_error', 'got server_error when `oidcPath` is not set');
+    t.match(
+      response_params.get('error_description'),
+      'OpenID response handler path (oidcPath) is not set',
+      'matched error_description when `oidcPath` is not set'
+    );
+    t.match(
+      response_params.get('state'),
+      authz_request_oidc_provider.state,
+      'state present in error response'
+    );
+    // Restore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    oauthController.opts.oidcPath = databaseOptions.oidcPath;
+  });
+
   t.test('[oidcAuthzResponse] Should throw an error if `state` is missing', async (t) => {
     try {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -404,6 +404,16 @@ export class OAuthController implements IOAuthController {
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
     if (connectionIsOIDC) {
+      if (!this.opts.oidcPath) {
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'server_error',
+            error_description: 'OpenID response handler path (oidcPath) is not set',
+            redirect_uri,
+            state,
+          }),
+        };
+      }
       const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
       try {
         const oidcIssuer = await Issuer.discover(discoveryUrl);
