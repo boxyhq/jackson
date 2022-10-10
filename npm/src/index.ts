@@ -28,10 +28,6 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 
   newOpts.scimPath = newOpts.scimPath || '/api/scim/v2.0';
 
-  if (!newOpts.oidcPath) {
-    throw new Error('oidcPath is required');
-  }
-
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   // path to folder containing static IdP connections that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.preLoadedConnection = newOpts.preLoadedConnection || '';
