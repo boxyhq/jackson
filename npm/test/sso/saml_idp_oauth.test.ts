@@ -334,7 +334,7 @@ tap.test('samlResponse()', async (t) => {
   });
 });
 
-tap.test('token()', (t) => {
+tap.test('token()', async (t) => {
   t.test('Should throw an error if `grant_type` is not `authorization_code`', async (t) => {
     const body = {
       grant_type: 'authorization_code_1',
