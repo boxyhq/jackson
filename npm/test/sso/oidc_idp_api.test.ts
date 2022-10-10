@@ -211,7 +211,6 @@ tap.test('controller/api', async (t) => {
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientID');
         t.equal(err.statusCode, 400);
-        t.end();
       }
     });
 
@@ -235,7 +234,6 @@ tap.test('controller/api', async (t) => {
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientSecret');
         t.equal(err.statusCode, 400);
-        t.end();
       }
     });
 
