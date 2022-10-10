@@ -70,7 +70,7 @@ const oidc = {
       value: dbutils.keyFromParts(tenant, product),
     });
 
-    return record;
+    return record as OIDCSSORecord;
   },
   update: async (
     body: OIDCSSOConnection & { clientID: string; clientSecret: string },

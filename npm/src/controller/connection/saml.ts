@@ -106,7 +106,7 @@ const saml = {
       }
     );
 
-    return record;
+    return record as SAMLSSORecord;
   },
   update: async (
     body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {

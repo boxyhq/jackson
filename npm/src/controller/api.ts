@@ -10,6 +10,8 @@ import {
   SAMLSSOConnectionWithRawMetadata,
   OIDCSSOConnection,
   JacksonOption,
+  SAMLSSORecord,
+  OIDCSSORecord,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
@@ -183,17 +185,19 @@ export class ConnectionAPIController implements IConnectionAPIController {
    */
   public async createSAMLConnection(
     body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
-  ): Promise<any> {
+  ): Promise<SAMLSSORecord> {
     metrics.increment('createConnection');
     const record = await samlConnection.create(body, this.connectionStore);
     return record;
   }
   // For backwards compatibility
-  public async config(...args: Parameters<ConnectionAPIController['createSAMLConnection']>): Promise<any> {
+  public async config(
+    ...args: Parameters<ConnectionAPIController['createSAMLConnection']>
+  ): Promise<SAMLSSORecord> {
     return this.createSAMLConnection(...args);
   }
 
-  public async createOIDCConnection(body: OIDCSSOConnection): Promise<any> {
+  public async createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord> {
     metrics.increment('createConnection');
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
