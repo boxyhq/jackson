@@ -68,7 +68,7 @@ export const controllers = async (
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
 
-  const connectionAPIController = new ConnectionAPIController({ connectionStore });
+  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();

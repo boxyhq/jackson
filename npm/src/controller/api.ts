@@ -9,6 +9,7 @@ import {
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
   OIDCSSOConnection,
+  JacksonOption,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
@@ -17,9 +18,11 @@ import samlConnection from './connection/saml';
 
 export class ConnectionAPIController implements IConnectionAPIController {
   private connectionStore: Storable;
+  private opts: JacksonOption;
 
-  constructor({ connectionStore }) {
+  constructor({ connectionStore, opts }) {
     this.connectionStore = connectionStore;
+    this.opts = opts;
   }
 
   /**
@@ -144,6 +147,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *          $ref: '#/definitions/validationErrorsPost'
    *      401:
    *        description: Unauthorized
+   *      500:
+   *        description: Please set OpenID response handler path (oidcPath) on Jackson
    * /api/v1/connections:
    *   post:
    *     summary: Create SSO connection
@@ -190,6 +195,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
   public async createOIDCConnection(body: OIDCSSOConnection): Promise<any> {
     metrics.increment('createConnection');
+    if (!this.opts.oidcPath) {
+      throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
+    }
     const record = await oidcConnection.create(body, this.connectionStore);
     return record;
   }
@@ -324,6 +332,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         $ref: '#/definitions/validationErrorsPatch'
    *       401:
    *         description: Unauthorized
+   *       500:
+   *         description: Please set OpenID response handler path (oidcPath) on Jackson
    */
   public async updateSAMLConnection(
     body: (SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata) & {
@@ -343,6 +353,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async updateOIDCConnection(
     body: OIDCSSOConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
+    if (!this.opts.oidcPath) {
+      throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
+    }
     await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
   /**
