@@ -24,10 +24,12 @@ const oidc = {
       oidcClientSecret = '',
     } = body;
 
-    let connectionClientSecret;
+    let connectionClientSecret: string;
 
     validateSSOConnection(body, 'oidc');
+
     const redirectUrlList = extractRedirectUrls(redirectUrl);
+
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
     const record: Partial<OIDCSSORecord> = {
@@ -40,6 +42,7 @@ const oidc = {
       clientID: '',
       clientSecret: '',
     };
+
     //  from OpenID Provider
     record.oidcProvider = {
       discoveryUrl: oidcDiscoveryUrl,
@@ -72,6 +75,7 @@ const oidc = {
 
     return record as OIDCSSORecord;
   },
+
   update: async (
     body: OIDCSSOConnection & { clientID: string; clientSecret: string },
     connectionStore: Storable,
@@ -87,21 +91,27 @@ const oidc = {
       oidcClientSecret,
       ...clientInfo
     } = body;
+
     if (!clientInfo?.clientID) {
       throw new JacksonError('Please provide clientID', 400);
     }
+
     if (!clientInfo?.clientSecret) {
       throw new JacksonError('Please provide clientSecret', 400);
     }
+
     if (!clientInfo?.tenant) {
       throw new JacksonError('Please provide tenant', 400);
     }
+
     if (!clientInfo?.product) {
       throw new JacksonError('Please provide product', 400);
     }
+
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
+
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
@@ -114,6 +124,7 @@ const oidc = {
     let oidcProvider;
     if (_savedConnection && typeof _savedConnection.oidcProvider === 'object') {
       oidcProvider = { ..._savedConnection.oidcProvider };
+
       if (oidcClientId && typeof oidcClientId === 'string') {
         const clientID = dbutils.keyDigest(
           dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, oidcClientId)
@@ -122,9 +133,11 @@ const oidc = {
           throw new JacksonError('Tenant/Product config mismatch with OIDC Provider metadata', 400);
         }
       }
+
       if (oidcClientSecret && typeof oidcClientSecret === 'string') {
         oidcProvider.clientSecret = oidcClientSecret;
       }
+
       if (oidcDiscoveryUrl && typeof oidcDiscoveryUrl === 'string') {
         oidcProvider.discoveryUrl = oidcDiscoveryUrl;
         const providerName = extractHostName(oidcDiscoveryUrl);

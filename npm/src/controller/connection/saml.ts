@@ -35,10 +35,12 @@ const saml = {
     } = body;
     const forceAuthn = body.forceAuthn == 'true' || body.forceAuthn == true;
 
-    let connectionClientSecret;
+    let connectionClientSecret: string;
 
     validateSSOConnection(body, 'saml');
+
     const redirectUrlList = extractRedirectUrls(redirectUrl);
+
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
     const record: Partial<SAMLSSORecord> = {
@@ -63,6 +65,7 @@ const saml = {
     if (!idpMetadata.entityID) {
       throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
     }
+
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);
     if (!providerName) {
@@ -108,6 +111,7 @@ const saml = {
 
     return record as SAMLSSORecord;
   },
+
   update: async (
     body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
       clientID: string;
@@ -126,21 +130,27 @@ const saml = {
       forceAuthn = false,
       ...clientInfo
     } = body;
+
     if (!clientInfo?.clientID) {
       throw new JacksonError('Please provide clientID', 400);
     }
+
     if (!clientInfo?.clientSecret) {
       throw new JacksonError('Please provide clientSecret', 400);
     }
+
     if (!clientInfo?.tenant) {
       throw new JacksonError('Please provide tenant', 400);
     }
+
     if (!clientInfo?.product) {
       throw new JacksonError('Please provide product', 400);
     }
+
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
+
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
@@ -154,6 +164,7 @@ const saml = {
     if (encodedRawMetadata) {
       metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
+
     let newMetadata;
     if (metaData) {
       newMetadata = await saml20.parseMetadata(metaData, {});

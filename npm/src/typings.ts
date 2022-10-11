@@ -69,11 +69,13 @@ export type ConnectionType = 'saml' | 'oidc';
 type ClientIDQuery = {
   clientID: string;
 };
+
 type TenantQuery = {
   tenant: string;
   product: string;
   strategy?: ConnectionType;
 };
+
 export type GetConnectionsQuery = ClientIDQuery | TenantQuery;
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 
@@ -170,11 +172,13 @@ export interface OAuthReqBody {
 export interface OAuthReqBodyWithClientId extends OAuthReqBody {
   client_id: string;
 }
+
 export interface OAuthReqBodyWithTenantProduct extends OAuthReqBody {
   client_id: 'dummy';
   tenant: string;
   product: string;
 }
+
 export interface OAuthReqBodyWithAccessType extends OAuthReqBody {
   client_id: 'dummy';
   access_type: string;
@@ -218,6 +222,7 @@ interface OAuthTokenReqBody {
   grant_type: 'authorization_code';
   redirect_uri: string;
 }
+
 export interface OAuthTokenReqWithCodeVerifier extends OAuthTokenReqBody {
   code_verifier: string;
   client_id?: never;

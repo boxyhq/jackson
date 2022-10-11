@@ -187,9 +187,10 @@ export class ConnectionAPIController implements IConnectionAPIController {
     body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
   ): Promise<SAMLSSORecord> {
     metrics.increment('createConnection');
-    const record = await samlConnection.create(body, this.connectionStore);
-    return record;
+
+    return await samlConnection.create(body, this.connectionStore);
   }
+
   // For backwards compatibility
   public async config(
     ...args: Parameters<ConnectionAPIController['createSAMLConnection']>
@@ -199,12 +200,14 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
   public async createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord> {
     metrics.increment('createConnection');
+
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
-    const record = await oidcConnection.create(body, this.connectionStore);
-    return record;
+
+    return await oidcConnection.create(body, this.connectionStore);
   }
+
   /**
    * @swagger
    * definitions:
@@ -354,14 +357,17 @@ export class ConnectionAPIController implements IConnectionAPIController {
   ): Promise<void> {
     await this.updateSAMLConnection(...args);
   }
+
   public async updateOIDCConnection(
     body: OIDCSSOConnection & { clientID: string; clientSecret: string }
   ): Promise<void> {
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
+
     await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
+
   /**
    * @swagger
    * parameters:
@@ -498,6 +504,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       if (!filteredConnections.length) {
         return [];
       }
+
       return filteredConnections;
     }
 
@@ -685,6 +692,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       if (!connections || !connections.length) {
         return;
       }
+
       // filter if strategy is passed
       const filteredConnections = strategy
         ? connections.filter((connection) => {
@@ -711,6 +719,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
     throw new JacksonError('Please provide `clientID` and `clientSecret` or `tenant` and `product`.', 400);
   }
+
   public async deleteConfig(body: DelConnectionsQuery): Promise<void> {
     await this.deleteConnections({ ...body, strategy: 'saml' });
   }
