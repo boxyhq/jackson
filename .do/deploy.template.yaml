@@ -10,6 +10,7 @@ spec:
       envs:
         # Jackson settings
         - key: EXTERNAL_URL
+          value: ${APP_URL}
         - key: SAML_AUDIENCE
           value: 'https://saml.boxyhq.com'
         - key: JACKSON_API_KEYS
@@ -37,6 +38,7 @@ spec:
         - key: SMTP_PASSWORD
         - key: SMTP_FROM
         - key: NEXTAUTH_URL
+          value: ${APP_URL}
         - key: NEXTAUTH_SECRET
         - key: NEXTAUTH_ACL
 
