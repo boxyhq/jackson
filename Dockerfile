@@ -37,6 +37,7 @@ COPY --from=builder /app/npm ./npm
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 RUN chmod +x bootstrap.sh
+RUN npm install -g ts-node migrate-mongo
 
 USER nextjs
 

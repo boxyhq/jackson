@@ -7,6 +7,7 @@ then
     cd ./npm
     # && ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts
     if [ "$DB_ENGINE" == "sql" ]
+    then
         npm run db:migration:run:$DB_TYPE
     else
         npm run db:migration:run:$DB_ENGINE
