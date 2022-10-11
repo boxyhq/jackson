@@ -299,7 +299,7 @@ export interface DatabaseOption {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
-  oidcPath: string;
+  oidcPath?: string;
   samlAudience?: string;
   preLoadedConfig?: string;
   preLoadedConnection?: string;
