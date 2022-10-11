@@ -5,10 +5,13 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import jackson from '@lib/jackson';
+import { useTranslation } from 'next-i18next';
 
 const New: NextPage<{ providers: any }> = ({ providers }) => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
   const [directory, setDirectory] = React.useState({
@@ -62,7 +65,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
       <Link href='/admin/directory-sync'>
         <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span>Back</span>
+          <span>{t('back')}</span>
         </a>
       </Link>
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>New Directory</h2>
@@ -153,12 +156,13 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const { directorySyncController } = await jackson();
 
   return {
     props: {
       providers: directorySyncController.providers(),
+      ...(await serverSideTranslations(locale ?? '', ['common'])),
     },
   };
 };
