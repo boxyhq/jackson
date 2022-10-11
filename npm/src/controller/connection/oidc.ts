@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { IConnectionAPIController, OIDCSSOConnection, Storable } from '../../typings';
+import { IConnectionAPIController, OIDCSSOConnection, OIDCSSORecord, Storable } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
   extractHostName,
@@ -24,22 +24,15 @@ const oidc = {
       oidcClientSecret = '',
     } = body;
 
-    let connectionClientSecret;
+    let connectionClientSecret: string;
 
     validateSSOConnection(body, 'oidc');
+
     const redirectUrlList = extractRedirectUrls(redirectUrl);
+
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<OIDCSSOConnection> & {
-      clientID: string; // set by Jackson
-      clientSecret: string; // set by Jackson
-      oidcProvider?: {
-        provider?: string;
-        discoveryUrl?: string;
-        clientId?: string;
-        clientSecret?: string;
-      };
-    } = {
+    const record: Partial<OIDCSSORecord> = {
       defaultRedirectUrl,
       redirectUrl: redirectUrlList,
       tenant,
@@ -49,6 +42,7 @@ const oidc = {
       clientID: '',
       clientSecret: '',
     };
+
     //  from OpenID Provider
     record.oidcProvider = {
       discoveryUrl: oidcDiscoveryUrl,
@@ -79,8 +73,9 @@ const oidc = {
       value: dbutils.keyFromParts(tenant, product),
     });
 
-    return record;
+    return record as OIDCSSORecord;
   },
+
   update: async (
     body: OIDCSSOConnection & { clientID: string; clientSecret: string },
     connectionStore: Storable,
@@ -96,25 +91,31 @@ const oidc = {
       oidcClientSecret,
       ...clientInfo
     } = body;
+
     if (!clientInfo?.clientID) {
       throw new JacksonError('Please provide clientID', 400);
     }
+
     if (!clientInfo?.clientSecret) {
       throw new JacksonError('Please provide clientSecret', 400);
     }
+
     if (!clientInfo?.tenant) {
       throw new JacksonError('Please provide tenant', 400);
     }
+
     if (!clientInfo?.product) {
       throw new JacksonError('Please provide product', 400);
     }
+
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
+
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const _savedConnection = (await connectionsGetter(clientInfo))[0];
+    const _savedConnection = (await connectionsGetter(clientInfo))[0] as OIDCSSORecord;
 
     if (_savedConnection.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
@@ -123,6 +124,7 @@ const oidc = {
     let oidcProvider;
     if (_savedConnection && typeof _savedConnection.oidcProvider === 'object') {
       oidcProvider = { ..._savedConnection.oidcProvider };
+
       if (oidcClientId && typeof oidcClientId === 'string') {
         const clientID = dbutils.keyDigest(
           dbutils.keyFromParts(clientInfo.tenant, clientInfo.product, oidcClientId)
@@ -131,9 +133,11 @@ const oidc = {
           throw new JacksonError('Tenant/Product config mismatch with OIDC Provider metadata', 400);
         }
       }
+
       if (oidcClientSecret && typeof oidcClientSecret === 'string') {
         oidcProvider.clientSecret = oidcClientSecret;
       }
+
       if (oidcDiscoveryUrl && typeof oidcDiscoveryUrl === 'string') {
         oidcProvider.discoveryUrl = oidcDiscoveryUrl;
         const providerName = extractHostName(oidcDiscoveryUrl);

@@ -288,7 +288,7 @@ export class OAuthController implements IOAuthController {
 
     if (
       requestedOIDCFlow &&
-      (!this.opts.openid.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
+      (!this.opts.openid?.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
     ) {
       return {
         redirect_url: OAuthErrorResponse({
@@ -404,6 +404,16 @@ export class OAuthController implements IOAuthController {
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
     if (connectionIsOIDC) {
+      if (!this.opts.oidcPath) {
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'server_error',
+            error_description: 'OpenID response handler path (oidcPath) is not set',
+            redirect_uri,
+            state,
+          }),
+        };
+      }
       const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
       try {
         const oidcIssuer = await Issuer.discover(discoveryUrl);
@@ -955,7 +965,7 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = !!codeVal.requested?.oidc;
     const requestHasNonce = !!codeVal.requested?.nonce;
     if (requestedOIDCFlow) {
-      const { jwtSigningKeys, jwsAlg } = this.opts.openid;
+      const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
       if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
         throw new JacksonError('JWT signing keys are not loaded', 500);
       }

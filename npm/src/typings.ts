@@ -29,16 +29,53 @@ export interface OIDCSSOConnection extends SSOConnection {
   oidcClientSecret: string;
 }
 
+export interface SAMLSSORecord extends SAMLSSOConnection {
+  clientID: string; // set by Jackson
+  clientSecret: string; // set by Jackson
+  idpMetadata: {
+    entityID: string;
+    loginType?: string;
+    provider: string | 'Unknown';
+    slo: {
+      postUrl?: string;
+      redirectUrl?: string;
+    };
+    sso: {
+      postUrl?: string;
+      redirectUrl?: string;
+    };
+    thumbprint?: string;
+    validTo?: string;
+  };
+  certs: {
+    privateKey: string;
+    publicKey: string;
+  };
+}
+
+export interface OIDCSSORecord extends SSOConnection {
+  clientID: string; // set by Jackson
+  clientSecret: string; // set by Jackson
+  oidcProvider: {
+    provider?: string;
+    discoveryUrl?: string;
+    clientId?: string;
+    clientSecret?: string;
+  };
+}
+
 export type ConnectionType = 'saml' | 'oidc';
 
 type ClientIDQuery = {
   clientID: string;
 };
+
 type TenantQuery = {
   tenant: string;
   product: string;
   strategy?: ConnectionType;
 };
+
 export type GetConnectionsQuery = ClientIDQuery | TenantQuery;
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 
@@ -46,22 +83,34 @@ export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
 export type DelConfigQuery = (ClientIDQuery & { clientSecret: string }) | Omit<TenantQuery, 'strategy'>;
 
 export interface IConnectionAPIController {
-  config(body: SAMLSSOConnection): Promise<any>;
+  /**
+   * @deprecated Use `createSAMLConnection` instead.
+   */
+  config(body: SAMLSSOConnection): Promise<SAMLSSORecord>;
   createSAMLConnection(
     body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata
-  ): Promise<any>;
-  createOIDCConnection(body: OIDCSSOConnection): Promise<any>;
-  updateConfig(body: SAMLSSOConnection & { clientID: string; clientSecret: string }): Promise<any>;
+  ): Promise<SAMLSSORecord>;
+  createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord>;
+  /**
+   * @deprecated Use `updateSAMLConnection` instead.
+   */
+  updateConfig(body: SAMLSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
   updateSAMLConnection(
     body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
       clientID: string;
       clientSecret: string;
     }
-  ): Promise<any>;
-  updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<any>;
-  getConnections(body: GetConnectionsQuery): Promise<Array<any>>;
-  getConfig(body: GetConfigQuery): Promise<any>;
+  ): Promise<void>;
+  updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
+  getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
+  /**
+   * @deprecated Use `getConnections` instead.
+   */
+  getConfig(body: GetConfigQuery): Promise<SAMLSSORecord | Record<string, never>>;
   deleteConnections(body: DelConnectionsQuery): Promise<void>;
+  /**
+   * @deprecated Use `deleteConnections` instead.
+   */
   deleteConfig(body: DelConfigQuery): Promise<void>;
 }
 
@@ -123,11 +172,13 @@ export interface OAuthReqBody {
 export interface OAuthReqBodyWithClientId extends OAuthReqBody {
   client_id: string;
 }
+
 export interface OAuthReqBodyWithTenantProduct extends OAuthReqBody {
   client_id: 'dummy';
   tenant: string;
   product: string;
 }
+
 export interface OAuthReqBodyWithAccessType extends OAuthReqBody {
   client_id: 'dummy';
   access_type: string;
@@ -171,6 +222,7 @@ interface OAuthTokenReqBody {
   grant_type: 'authorization_code';
   redirect_uri: string;
 }
+
 export interface OAuthTokenReqWithCodeVerifier extends OAuthTokenReqBody {
   code_verifier: string;
   client_id?: never;
@@ -252,7 +304,7 @@ export interface DatabaseOption {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
-  oidcPath: string;
+  oidcPath?: string;
   samlAudience?: string;
   preLoadedConfig?: string;
   preLoadedConnection?: string;
@@ -261,7 +313,7 @@ export interface JacksonOption {
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
   scimPath?: string;
-  openid: {
+  openid?: {
     jwsAlg?: string;
     jwtSigningKeys?: {
       private: string;

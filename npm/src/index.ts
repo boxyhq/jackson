@@ -28,10 +28,6 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 
   newOpts.scimPath = newOpts.scimPath || '/api/scim/v2.0';
 
-  if (!newOpts.oidcPath) {
-    throw new Error('oidcPath is required');
-  }
-
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   // path to folder containing static IdP connections that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.preLoadedConnection = newOpts.preLoadedConnection || '';
@@ -72,7 +68,7 @@ export const controllers = async (
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
 
-  const connectionAPIController = new ConnectionAPIController({ connectionStore });
+  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();

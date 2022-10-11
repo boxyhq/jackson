@@ -1,88 +1,83 @@
-name: Build Images and Create Uffizzi Environment.
+name: Deploy Uffizzi Preview
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  workflow_run:
+    workflows:
+      - 'Build PR Image'
+    types:
+      - completed
 
 jobs:
-  build-saml-jackson:
-    name: Build and Push `saml-jackson`
+  cache-compose-file:
+    name: Cache Compose File
     runs-on: ubuntu-latest
-    outputs:
-      tags: ${{ steps.meta.outputs.tags }}
-    steps:
-      - name: Set Build Variables
-        run: |
-          if [[ "$GITHUB_REF" =~ ^refs/tags/v* ]]; then
-            echo "Using TAG mode: $GITHUB_REF_NAME"
-            echo "REL_VERSION=$GITHUB_REF_NAME" >> $GITHUB_ENV
-            echo "REL_VERSION_STRICT=${GITHUB_REF_NAME#?}" >> $GITHUB_ENV
-          else
-            echo "Using BRANCH mode: v$BASE_DEV_VERSION-dev.$GITHUB_RUN_NUMBER"
-            echo "REL_VERSION=v$BASE_DEV_VERSION-dev.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
-            echo "REL_VERSION_STRICT=$BASE_DEV_VERSION-dev.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
-          fi
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Checkout git repo
-        uses: actions/checkout@v3
-      - name: Docker metadata
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/jackson-dev/jackson-${{ env.REL_VERSION_STRICT }}
-      - name: Build and Push Image to GHCR
-        uses: docker/build-push-action@v2.9.0
-        with:
-          context: ./
-          file: ./uffizzi/Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          push: true
-
-  render-compose-file:
-    name: Render Docker Compose File
-    runs-on: ubuntu-latest
-    needs:
-      - build-saml-jackson
     outputs:
       compose-file-cache-key: ${{ steps.hash.outputs.hash }}
+      pr-number: ${{ steps.pr.outputs.number }}
     steps:
-      - name: Checkout git repo
-        uses: actions/checkout@v3
-      - name: Render Compose File
+      - name: 'Download artifacts'
+        # Fetch output (zip archive) from the workflow run that triggered this workflow.
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "preview-spec"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/preview-spec.zip`, Buffer.from(download.data));
+      - name: 'Unzip artifact'
+        run: unzip preview-spec.zip
+      - name: Read Event into ENV
         run: |
-          SAML_JACKSON_IMAGE=$(echo ${{ needs.build-saml-jackson.outputs.tags }})
-          export SAML_JACKSON_IMAGE
-          # Render simple template from environment variables.
-          envsubst < uffizzi/docker-compose.template.yml > docker-compose.rendered.yml
-          cat docker-compose.rendered.yml
+          echo 'EVENT_JSON<<EOF' >> $GITHUB_ENV
+          cat event.json >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
       - name: Hash Rendered Compose File
         id: hash
+        # If the previous workflow was triggered by a PR close event, we will not have a compose file artifact.
+        if: ${{ fromJSON(env.EVENT_JSON).action != 'closed' }}
         run: echo "::set-output name=hash::$(md5sum docker-compose.rendered.yml | awk '{ print $1 }')"
       - name: Cache Rendered Compose File
+        if: ${{ fromJSON(env.EVENT_JSON).action != 'closed' }}
         uses: actions/cache@v3
         with:
           path: docker-compose.rendered.yml
           key: ${{ steps.hash.outputs.hash }}
 
+      - name: Read PR Number From Event Object
+        id: pr
+        run: echo "::set-output name=number::${{ fromJSON(env.EVENT_JSON).number }}"
+      - name: DEBUG - Print Job Outputs
+        if: ${{ runner.debug }}
+        run: |
+          echo "PR number: ${{ steps.pr.outputs.number }}"
+          echo "Compose file hash: ${{ steps.hash.outputs.hash }}"
+          cat event.json
+
   deploy-uffizzi-preview:
     name: Use Remote Workflow to Preview on Uffizzi
-    needs: render-compose-file
-    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@v2.1.0
-    if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
+    needs:
+      - cache-compose-file
+    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@v2
     with:
-      compose-file-cache-key: ${{ needs.render-compose-file.outputs.compose-file-cache-key }}
+      # If this workflow was triggered by a PR close event, cache-key will be an empty string
+      # and this reusable workflow will delete the preview deployment.
+      compose-file-cache-key: ${{ needs.cache-compose-file.outputs.compose-file-cache-key }}
       compose-file-cache-path: docker-compose.rendered.yml
-      username: deepak@boxyhq.com
-      server: https://app.uffizzi.com
-      project: saml-jackson-hje1
-    secrets:
-      password: ${{ secrets.UFFIZZI_PASSWORD }}
+      server: https://app.uffizzi.com/
+      pr-number: ${{ needs.cache-compose-file.outputs.pr-number }}
     permissions:
       contents: read
       pull-requests: write
+      id-token: write

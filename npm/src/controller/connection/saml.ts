@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 import {
   IConnectionAPIController,
-  SAMLSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
+  SAMLSSORecord,
   Storable,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
@@ -35,18 +35,15 @@ const saml = {
     } = body;
     const forceAuthn = body.forceAuthn == 'true' || body.forceAuthn == true;
 
-    let connectionClientSecret;
+    let connectionClientSecret: string;
 
     validateSSOConnection(body, 'saml');
+
     const redirectUrlList = extractRedirectUrls(redirectUrl);
+
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<SAMLSSOConnection> & {
-      clientID: string; // set by Jackson
-      clientSecret: string; // set by Jackson
-      idpMetadata?: Record<string, any>;
-      certs?: Record<'publicKey' | 'privateKey', string>;
-    } = {
+    const record: Partial<SAMLSSORecord> = {
       defaultRedirectUrl,
       redirectUrl: redirectUrlList,
       tenant,
@@ -58,17 +55,21 @@ const saml = {
       forceAuthn,
     };
 
-    let metaData = rawMetadata;
+    let metaData = rawMetadata as string;
     if (encodedRawMetadata) {
       metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
-    const idpMetadata = await saml20.parseMetadata(metaData!, {});
+    const idpMetadata = (await saml20.parseMetadata(metaData, {})) as SAMLSSORecord['idpMetadata'];
+
+    if (!idpMetadata.entityID) {
+      throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
+    }
 
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);
     if (!providerName) {
-      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl);
+      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl || '');
     }
 
     idpMetadata.provider = providerName ? providerName : 'Unknown';
@@ -78,7 +79,7 @@ const saml = {
     const certs = await x509.generate();
 
     if (!certs) {
-      throw new Error('Error generating x509 certs');
+      throw new JacksonError('Error generating x509 certs');
     }
 
     record.idpMetadata = idpMetadata;
@@ -108,8 +109,9 @@ const saml = {
       }
     );
 
-    return record;
+    return record as SAMLSSORecord;
   },
+
   update: async (
     body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
       clientID: string;
@@ -128,25 +130,31 @@ const saml = {
       forceAuthn = false,
       ...clientInfo
     } = body;
+
     if (!clientInfo?.clientID) {
       throw new JacksonError('Please provide clientID', 400);
     }
+
     if (!clientInfo?.clientSecret) {
       throw new JacksonError('Please provide clientSecret', 400);
     }
+
     if (!clientInfo?.tenant) {
       throw new JacksonError('Please provide tenant', 400);
     }
+
     if (!clientInfo?.product) {
       throw new JacksonError('Please provide product', 400);
     }
+
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
+
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const _savedConnection = (await connectionsGetter(clientInfo))[0];
+    const _savedConnection = (await connectionsGetter(clientInfo))[0] as SAMLSSORecord;
 
     if (_savedConnection.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
@@ -156,10 +164,14 @@ const saml = {
     if (encodedRawMetadata) {
       metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
+
     let newMetadata;
     if (metaData) {
       newMetadata = await saml20.parseMetadata(metaData, {});
 
+      if (!newMetadata.entityID) {
+        throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
+      }
       // extract provider
       let providerName = extractHostName(newMetadata.entityID);
       if (!providerName) {
