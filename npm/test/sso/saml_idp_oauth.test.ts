@@ -92,8 +92,6 @@ tap.test('authorize()', async (t) => {
       t.equal(message, 'Please specify a redirect URL.', 'got expected error message');
       t.equal(statusCode, 400, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should return OAuth Error response if `state` is not set', async (t) => {
@@ -108,8 +106,6 @@ tap.test('authorize()', async (t) => {
       `${body.redirect_uri}?error=invalid_request&error_description=Please+specify+a+state+to+safeguard+against+XSRF+attacks`,
       'got OAuth error'
     );
-
-    t.end();
   });
 
   t.test('Should return OAuth Error response if `response_type` is not `code`', async (t) => {
@@ -124,8 +120,6 @@ tap.test('authorize()', async (t) => {
       `${body.redirect_uri}?error=unsupported_response_type&error_description=Only+Authorization+Code+grant+is+supported&state=${body.state}`,
       'got OAuth error'
     );
-
-    t.end();
   });
 
   t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
@@ -140,8 +134,6 @@ tap.test('authorize()', async (t) => {
       `${body.redirect_uri}?error=invalid_request&error_description=SAML+binding+could+not+be+retrieved&state=${body.state}`,
       'got OAuth error'
     );
-
-    t.end();
   });
 
   t.test('Should return OAuth Error response if request creation fails', async (t) => {
@@ -156,7 +148,6 @@ tap.test('authorize()', async (t) => {
       'got OAuth error'
     );
     stubSamlRequest.restore();
-    t.end();
   });
 
   t.test('Should throw an error if `client_id` is invalid', async (t) => {
@@ -171,8 +162,6 @@ tap.test('authorize()', async (t) => {
       t.equal(message, 'IdP connection not found.', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should throw an error if `redirect_uri` is not allowed', async (t) => {
@@ -187,8 +176,6 @@ tap.test('authorize()', async (t) => {
       t.equal(message, 'Redirect URL is not allowed.', 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should return the Idp SSO URL', async (t) => {
@@ -203,8 +190,6 @@ tap.test('authorize()', async (t) => {
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
       t.ok(params.has('RelayState'), 'RelayState present in the query string');
       t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-
-      t.end();
     });
 
     t.test('accepts single value in prompt', async (t) => {
@@ -216,8 +201,6 @@ tap.test('authorize()', async (t) => {
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
       t.ok(params.has('RelayState'), 'RelayState present in the query string');
       t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-
-      t.end();
     });
 
     t.test('accepts multiple values in prompt', async (t) => {
@@ -229,8 +212,6 @@ tap.test('authorize()', async (t) => {
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
       t.ok(params.has('RelayState'), 'RelayState present in the query string');
       t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-
-      t.end();
     });
 
     t.test('accepts access_type', async (t) => {
@@ -244,8 +225,6 @@ tap.test('authorize()', async (t) => {
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
       t.ok(params.has('RelayState'), 'RelayState present in the query string');
       t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-
-      t.end();
     });
 
     t.test('accepts resource', async (t) => {
@@ -259,8 +238,6 @@ tap.test('authorize()', async (t) => {
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
       t.ok(params.has('RelayState'), 'RelayState present in the query string');
       t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-
-      t.end();
     });
 
     t.test('accepts scope', async (t) => {
@@ -274,12 +251,8 @@ tap.test('authorize()', async (t) => {
       t.ok('redirect_url' in response, 'got the Idp authorize URL');
       t.ok(params.has('RelayState'), 'RelayState present in the query string');
       t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-
-      t.end();
     });
   });
-
-  t.end();
 });
 
 tap.test('samlResponse()', async (t) => {
@@ -312,8 +285,6 @@ tap.test('samlResponse()', async (t) => {
 
       t.equal(statusCode, 403, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should return OAuth Error response if response validation fails', async (t) => {
@@ -331,8 +302,6 @@ tap.test('samlResponse()', async (t) => {
     t.match(params.get('error_description'), 'Internal error: Fatal');
 
     stubValidate.restore();
-
-    t.end();
   });
 
   t.test('Should return a URL with code and state as query params', async (t) => {
@@ -362,14 +331,10 @@ tap.test('samlResponse()', async (t) => {
 
     stubRandomBytes.restore();
     stubValidate.restore();
-
-    t.end();
   });
-
-  t.end();
 });
 
-tap.test('token()', (t) => {
+tap.test('token()', async (t) => {
   t.test('Should throw an error if `grant_type` is not `authorization_code`', async (t) => {
     const body = {
       grant_type: 'authorization_code_1',
@@ -384,8 +349,6 @@ tap.test('token()', (t) => {
       t.equal(message, 'Unsupported grant_type', 'got expected error message');
       t.equal(statusCode, 400, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should throw an error if `tenant` is invalid', async (t) => {
@@ -400,8 +363,6 @@ tap.test('token()', (t) => {
       t.equal(message, 'Invalid tenant or product');
       t.equal(statusCode, 401, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should throw an error if `product` is invalid', async (t) => {
@@ -416,8 +377,6 @@ tap.test('token()', (t) => {
       t.equal(message, 'Invalid tenant or product');
       t.equal(statusCode, 401, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should throw an error if `tenant` and `product` is invalid', async (t) => {
@@ -432,8 +391,6 @@ tap.test('token()', (t) => {
       t.equal(message, 'Invalid tenant or product');
       t.equal(statusCode, 401, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should throw an error if `code` is missing', async (t) => {
@@ -450,8 +407,6 @@ tap.test('token()', (t) => {
       t.equal(message, 'Please specify code', 'got expected error message');
       t.equal(statusCode, 400, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test('Should throw an error if `code` or `client_secret` is invalid', async (t) => {
@@ -516,8 +471,6 @@ tap.test('token()', (t) => {
       t.equal(message, 'Invalid client_secret', 'got expected error message');
       t.equal(statusCode, 401, 'got expected status code');
     }
-
-    t.end();
   });
 
   t.test(
@@ -544,8 +497,6 @@ tap.test('token()', (t) => {
         t.match(response.expires_in, 300);
 
         stubRandomBytes.restore();
-
-        t.end();
       });
 
       t.test('unencoded client_id', async (t) => {
@@ -599,8 +550,6 @@ tap.test('token()', (t) => {
 
         stubRandomBytes.restore();
         stubValidate.restore();
-
-        t.end();
       });
 
       t.test('openid flow', async (t) => {
@@ -643,7 +592,7 @@ tap.test('token()', (t) => {
         if (tokenRes.id_token) {
           const claims = jose.decodeJwt(tokenRes.id_token);
           const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
-          t.match(protectedHeader.alg, databaseOptions.openid.jwsAlg);
+          t.match(protectedHeader.alg, databaseOptions.openid?.jwsAlg);
           t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
           t.match(claims.iss, databaseOptions.samlAudience);
         }
@@ -668,8 +617,6 @@ tap.test('token()', (t) => {
         stubRandomBytes.restore();
         stubValidate.restore();
         stubLoadJWSPrivateKey.restore();
-
-        t.end();
       });
 
       t.test('PKCE check', async (t) => {
@@ -733,13 +680,9 @@ tap.test('token()', (t) => {
 
         stubRandomBytes.restore();
         stubValidate.restore();
-
-        t.end();
       });
     }
   );
-
-  t.end();
 });
 
 tap.test('IdP initiated flow should return token and profile', async (t) => {
@@ -774,5 +717,4 @@ tap.test('IdP initiated flow should return token and profile', async (t) => {
   t.equal(profile.id, 'id');
   stubRandomBytes.restore();
   stubValidate.restore();
-  t.end();
 });
