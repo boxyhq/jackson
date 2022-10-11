@@ -106,7 +106,7 @@ export interface IConnectionAPIController {
   /**
    * @deprecated Use `getConnections` instead.
    */
-  getConfig(body: GetConfigQuery): Promise<SAMLSSORecord>;
+  getConfig(body: GetConfigQuery): Promise<SAMLSSORecord | Record<string, never>>;
   deleteConnections(body: DelConnectionsQuery): Promise<void>;
   /**
    * @deprecated Use `deleteConnections` instead.

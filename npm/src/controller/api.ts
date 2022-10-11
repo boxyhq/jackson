@@ -457,7 +457,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      '401':
    *        $ref: '#/responses/401Get'
    */
-  public async getConnections(body: GetConnectionsQuery): Promise<Array<any>> {
+  public async getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>> {
     const clientID = 'clientID' in body ? body.clientID : undefined;
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
@@ -558,7 +558,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      '401':
    *        $ref: '#/responses/401Get'
    */
-  public async getConfig(body: GetConfigQuery): Promise<any> {
+  public async getConfig(body: GetConfigQuery): Promise<SAMLSSORecord | Record<string, never>> {
     const clientID = 'clientID' in body ? body.clientID : undefined;
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
