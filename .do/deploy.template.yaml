@@ -13,7 +13,6 @@ spec:
         - key: SAML_AUDIENCE
           value: 'https://saml.boxyhq.com'
         - key: JACKSON_API_KEYS
-          type: SECRET
         - key: IDP_ENABLED
         - key: PRE_LOADED_CONFIG
         - key: CLIENT_SECRET_VERIFIER
@@ -32,18 +31,14 @@ spec:
         - key: DB_PAGE_LIMIT
           value: '50'
         - key: DB_ENCRYPTION_KEY
-          type: SECRET
-
         # Admin UI settings
         - key: SMTP_HOST
         - key: SMTP_PORT
         - key: SMTP_USER
         - key: SMTP_PASSWORD
-          type: SECRET
         - key: SMTP_FROM
         - key: NEXTAUTH_URL
         - key: NEXTAUTH_SECRET
-          type: SECRET
         - key: NEXTAUTH_ACL
 
         # OpenTelemetry
@@ -54,6 +49,4 @@ spec:
 
         # JWT signing keys
         - key: OPENID_RSA_PRIVATE_KEY
-          type: SECRET
-        - key: OPENID_RSA_PUBLIC_KEY
-          type: SECRET
+        - key: OPENID_RSA_PUBLIC_KE
