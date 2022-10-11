@@ -37,8 +37,6 @@ COPY --from=builder /app/npm ./npm
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 RUN chmod +x bootstrap.sh
-# ts-node is devDependancy but we need it for typeorm migrations
-RUN npm install -g ts-node
 
 USER nextjs
 
