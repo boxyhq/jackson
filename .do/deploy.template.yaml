@@ -21,7 +21,6 @@ spec:
         - key: DB_ENGINE
           value: 'sql'
         - key: DB_URL
-          value: 'postgres://postgres:postgres@localhost:5432/postgres'
         - key: DB_TYPE
           value: 'postgres'
         - key: DB_TTL
