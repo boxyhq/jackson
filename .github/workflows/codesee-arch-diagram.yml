@@ -35,11 +35,11 @@ jobs:
 
       # CodeSee Maps Go support uses a static binary so there's no setup step required.
 
-      - name: Configure Node.js 14
-        uses: actions/setup-node@v2
+      - name: Configure Node.js 16
+        uses: actions/setup-node@v3
         if: ${{ fromJSON(steps.detect-languages.outputs.languages).javascript }}
         with:
-          node-version: '14'
+          node-version: '16'
 
       - name: Configure Python 3.x
         uses: actions/setup-python@v2
