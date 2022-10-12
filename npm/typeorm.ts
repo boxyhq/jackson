@@ -23,7 +23,7 @@ const AppDataSource = new DataSource(<DataSourceOptions>{
   migrationsTableName: '_jackson_migrations',
   logging: 'all',
   entities: [`src/db/${entitiesDir}/entity/**/*.ts`],
-  migrations: [`migration/${migrationsDir}/**/*.ts`],
+  migrations: [`migration/${migrationsDir}/**/*.ts`, `migration/sql/**/*.ts`],
   ssl,
 });
 
