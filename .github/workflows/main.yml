@@ -37,7 +37,6 @@ jobs:
       OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
-      RUN_MIGRATION: 1
     strategy:
       matrix:
         node-version: [16.x]
