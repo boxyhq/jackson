@@ -17,4 +17,10 @@ then
     cd ..
 fi
 echo "Starting Jackson service..."
-node server.js
+{
+    # For docker environment
+    node server.js
+} || {
+    # For local environment
+    npm run dev
+}

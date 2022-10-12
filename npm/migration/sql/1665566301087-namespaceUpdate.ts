@@ -10,7 +10,7 @@ export class namespaceUpdate1648805358887 implements MigrationInterface {
         const key = responseJson[k].key;
         const tokens2 = key.split(searchTerm).slice(0, 2);
         const value = tokens2.join(searchTerm);
-        queryRunner.query("update jackson_store set namespace = ? where key = ?" , [value, key])
+        queryRunner.query(`update jackson_store set namespace = '${value}' where key = '${key}'`)
       }
 }
 
