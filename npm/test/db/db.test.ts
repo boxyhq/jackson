@@ -116,17 +116,17 @@ const dbs = [
   },
 ];
 
-if (process.env.PLANETSCALE_URL) {
-  dbs.push(
-    {
-      ...planetscaleDbConfig,
-    },
-    {
-      ...planetscaleDbConfig,
-      encryptionKey,
-    }
-  );
-}
+// if (process.env.PLANETSCALE_URL) {
+//   dbs.push(
+//     {
+//       ...planetscaleDbConfig,
+//     },
+//     {
+//       ...planetscaleDbConfig,
+//       encryptionKey,
+//     }
+//   );
+// }
 
 tap.before(async () => {
   for (const idx in dbs) {
