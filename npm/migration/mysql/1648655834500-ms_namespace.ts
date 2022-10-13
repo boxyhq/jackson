@@ -5,7 +5,6 @@ export class msNamespace1648655834500 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const columns = await queryRunner.query(`SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='jackson_store';`);
-        console.log(columns);
         if (columns.filter((c) => c.COLUMN_NAME === "namespace").length === 0) {
             await queryRunner.query(`ALTER TABLE \`jackson_store\` ADD \`namespace\` varchar(64) NULL`);
         }

@@ -5,7 +5,6 @@ export class createdAt1644332636666 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const columns = await queryRunner.query(`SELECT * FROM information_schema.COLUMNS WHERE table_name = 'jackson_store';`);
-        console.log(columns);
         if (columns.filter((c) => c.COLUMN_NAME === "createdAt").length === 0) {
             await queryRunner.query(`ALTER TABLE \`jackson_store\` ADD \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()`);
         }
