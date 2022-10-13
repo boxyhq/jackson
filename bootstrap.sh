@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$RUN_MIGRATION" == 1 ]
+if [ "$RUN_MIGRATION" == "true" ]
 then
     echo "Initiating Migration..."
 
@@ -8,7 +8,7 @@ then
     # && ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts
     if [ "$DB_ENGINE" = "mongo" ]
     then
-        npm run db:migration:run:$DB_ENGINE
+        migrate-mongo up
     else
         ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts
     fi
