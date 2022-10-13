@@ -19,7 +19,7 @@ public async down(queryRunner: QueryRunner): Promise<void> {
     const responseJson = JSON.parse(JSON.stringify(response));
       for (const k in responseJson) {
         const key = responseJson[k].key;
-        queryRunner.query("update jackson_store set namespace = ? where key = ?" , ['NULL', key])
+        queryRunner.query(`update jackson_store set namespace = NULL where key = '${key}'` , ['NULL', key])
       }
 }
 

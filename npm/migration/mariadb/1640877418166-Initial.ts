@@ -7,7 +7,7 @@ export class Initial1640877418166 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS \`jackson_store\` (\`key\` varchar(1500) NOT NULL, \`value\` text NOT NULL, \`iv\` varchar(64) NULL, \`tag\` varchar(64) NULL, PRIMARY KEY (\`key\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS \`jackson_index\` (\`id\` int NOT NULL AUTO_INCREMENT, \`key\` varchar(1500) NOT NULL, \`storeKey\` varchar(1500) NOT NULL, INDEX \`_jackson_index_key\` (\`key\`), INDEX \`_jackson_index_key_store\` (\`key\`, \`storeKey\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS \`jackson_ttl\` (\`key\` varchar(1500) NOT NULL, \`expiresAt\` bigint NOT NULL, INDEX \`_jackson_ttl_expires_at\` (\`expiresAt\`), PRIMARY KEY (\`key\`)) ENGINE=InnoDB`);
-        const constraint = await queryRunner.query(`SELECT * FROM pg_catalog.pg_constraint con WHERE conname = 'FK_937b040fb2592b4671cbde09e83'`);
+        const constraint = await queryRunner.query(`SELECT * FROM information_schema.table_constraints con WHERE TABLE_NAME='jackson_index' AND CONSTRAINT_NAME = 'FK_937b040fb2592b4671cbde09e83'`);
         if (constraint.length === 0) {
             await queryRunner.query(`ALTER TABLE \`jackson_index\` ADD CONSTRAINT \`FK_937b040fb2592b4671cbde09e83\` FOREIGN KEY (\`storeKey\`) REFERENCES \`jackson_store\`(\`key\`) ON DELETE CASCADE ON UPDATE NO ACTION`);
         }
