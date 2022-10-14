@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class msNocascade1653746497237 implements MigrationInterface {
-    name = 'msNocascade1653746497237'
+export class msNocascade1646805358887 implements MigrationInterface {
+    name = 'msNocascade1646805358887'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS \`jackson_store\` (\`key\` varchar(250) NOT NULL, \`value\` text NOT NULL, \`iv\` varchar(64) NULL, \`tag\` varchar(64) NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`modifiedAt\` timestamp NULL, PRIMARY KEY (\`key\`)) ENGINE=InnoDB`);
