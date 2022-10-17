@@ -38,10 +38,10 @@
     "statements": 70
   },
   "dependencies": {
-    "@boxyhq/saml20": "1.0.7",
+    "@boxyhq/saml20": "1.0.8",
     "@opentelemetry/api": "1.0.4",
     "@opentelemetry/api-metrics": "0.27.0",
-    "axios": "1.1.2",
+    "axios": "1.1.3",
     "jose": "4.10.0",
     "marked": "4.1.1",
     "mongodb": "4.10.0",
@@ -57,7 +57,7 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "7.5.0",
+    "@faker-js/faker": "7.6.0",
     "@types/node": "18.8.3",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",
