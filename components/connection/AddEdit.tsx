@@ -19,63 +19,63 @@ const fieldCatalog = [
     label: 'Name',
     type: 'text',
     placeholder: 'MyApp',
-    attributes: { required: false, requiredInEditView: false },
+    attributes: { required: false, requiredInEditView: false, visibleInSetupView: true },
   },
   {
     key: 'description',
     label: 'Description',
     type: 'text',
     placeholder: 'A short description not more than 100 characters',
-    attributes: { maxLength: 100, required: false, requiredInEditView: false }, // not required in create/edit view
+    attributes: { maxLength: 100, required: false, requiredInEditView: false, visibleInSetupView: true }, // not required in create/edit view
   },
   {
     key: 'tenant',
     label: 'Tenant',
     type: 'text',
     placeholder: 'acme.com',
-    attributes: { editable: false },
+    attributes: { editable: false, visibleInSetupView: false },
   },
   {
     key: 'product',
     label: 'Product',
     type: 'text',
     placeholder: 'demo',
-    attributes: { editable: false },
+    attributes: { editable: false, visibleInSetupView: false },
   },
   {
     key: 'redirectUrl',
     label: 'Allowed redirect URLs (newline separated)',
     type: 'textarea',
     placeholder: 'http://localhost:3366',
-    attributes: { isArray: true, rows: 3 },
+    attributes: { isArray: true, rows: 3, visibleInSetupView: true },
   },
   {
     key: 'defaultRedirectUrl',
     label: 'Default redirect URL',
     type: 'url',
     placeholder: 'http://localhost:3366/login/saml',
-    attributes: {},
+    attributes: { visibleInSetupView: true },
   },
   {
     key: 'oidcDiscoveryUrl',
     label: 'Well-known URL of OpenId Provider',
     type: 'url',
     placeholder: 'https://example.com/.well-known/openid-configuration',
-    attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl },
+    attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl, visibleInSetupView: true },
   },
   {
     key: 'oidcClientId',
     label: 'Client ID [OIDC Provider]',
     type: 'text',
     placeholder: '',
-    attributes: { editable: false, connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientId },
+    attributes: { editable: false, connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientId, visibleInSetupView: true },
   },
   {
     key: 'oidcClientSecret',
     label: 'Client Secret [OIDC Provider]',
     type: 'text',
     placeholder: '',
-    attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret },
+    attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret, visibleInSetupView: true },
   },
   {
     key: 'rawMetadata',
@@ -86,7 +86,7 @@ const fieldCatalog = [
       rows: 5,
       requiredInEditView: false, //not required in edit view
       labelInEditView: 'Raw IdP XML (fully replaces the current one)',
-      connection: 'saml',
+      connection: 'saml', visibleInSetupView: true
     },
   },
   {
@@ -97,7 +97,7 @@ const fieldCatalog = [
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
-      connection: 'saml',
+      connection: 'saml', visibleInSetupView: true,
       formatForDisplay: (value) => {
         const obj = JSON.parse(JSON.stringify(value));
         delete obj.validTo;
@@ -118,25 +118,26 @@ const fieldCatalog = [
       accessor: (o) => o?.idpMetadata?.validTo,
       showWarning: (value) => new Date(value) < new Date(),
       formatForDisplay: (value) => new Date(value).toString(),
+      visibleInSetupView: true
     },
   },
   {
     key: 'clientID',
     label: 'Client ID',
     type: 'text',
-    attributes: { showOnlyInEditView: true, editable: false },
+    attributes: { showOnlyInEditView: true, editable: false, visibleInSetupView: true },
   },
   {
     key: 'clientSecret',
     label: 'Client Secret',
     type: 'password',
-    attributes: { showOnlyInEditView: true, editable: false },
+    attributes: { showOnlyInEditView: true, editable: false, visibleInSetupView: true },
   },
   {
     key: 'forceAuthn',
     label: 'Force Authentication',
     type: 'checkbox',
-    attributes: { requiredInEditView: false, required: false, connection: 'saml' },
+    attributes: { requiredInEditView: false, required: false, connection: 'saml', visibleInSetupView: true },
   },
 ];
 
@@ -169,9 +170,10 @@ function getInitialState(connection, isEditView) {
 
 type AddEditProps = {
   connection?: Record<string, any>;
+  setup?: Record<string, any>;
 };
 
-const AddEdit = ({ connection }: AddEditProps) => {
+const AddEdit = ({ connection, setup }: AddEditProps) => {
   const router = useRouter();
   // STATE: New connection type
   const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
@@ -197,8 +199,8 @@ const AddEdit = ({ connection }: AddEditProps) => {
     const encodedRawMetadata = btoa(rawMetadata || '');
     const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-    const res = await fetch('/api/admin/connections', {
-      method: isEditView ? 'PATCH' : 'POST',
+    const res = await fetch(setup ? `/api/setup/${setup.setupID}` : '/api/admin/connections', {
+      method: setup ? 'PUT' : isEditView ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -212,12 +214,14 @@ const AddEdit = ({ connection }: AddEditProps) => {
       }),
     });
     if (res.ok) {
-      if (!isEditView) {
+      if (!isEditView && !setup) {
         router.replace('/admin/connection');
       } else {
         setSaveStatus({ status: 'SUCCESS' });
         // revalidate on save
-        mutate(`/api/admin/connections/${connectionClientId}`);
+        if (!setup) {
+          mutate(`/api/admin/connections/${connectionClientId}`);
+        }
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
       }
     } else {
@@ -267,12 +271,12 @@ const AddEdit = ({ connection }: AddEditProps) => {
 
   return (
     <>
-      <Link href='/admin/connection'>
+      { !setup && <Link href='/admin/connection'>
         <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span>Back</span>
         </a>
-      </Link>
+      </Link>}
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {isEditView ? 'Edit Connection' : 'Create Connection'}
@@ -329,6 +333,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
                     : newConnectionType
                 )
               )
+              .filter(({ attributes: { visibleInSetupView } }) => (setup ? visibleInSetupView : true))
               .filter(({ attributes: { showOnlyInEditView } }) => (isEditView ? true : !showOnlyInEditView))
               .map(
                 ({

@@ -661,3 +661,34 @@ export interface WebhookEventLog extends DirectorySyncEvent {
   status_code?: number;
   delivered?: boolean;
 }
+export type SetupLinkCreatePayload = {
+  tenant: string;
+  product: string;
+  path: '/admin/connection/new' | '/admin/directory-sync/new';
+  regenerate?: boolean;
+};
+
+export type SetupLinkRegeneratePayload = {
+  reference: string;
+};
+
+export type SetupLink = {
+  setupID: string;
+  tenant: string;
+  product: string;
+  url: string;
+  path: string;
+  validTill: number;
+};
+
+export type SetupLinkApiResponse = {
+  data: SetupLink | SetupLink[] | undefined;
+  error: ApiError | undefined;
+};
+
+export interface ISetupLinkController {
+  create(body: SetupLinkCreatePayload): Promise<SetupLinkApiResponse>;
+  regenerate(body: SetupLinkRegeneratePayload): Promise<SetupLinkApiResponse>;
+  getAll(): Promise<SetupLinkApiResponse>;
+  getByToken(token): Promise<SetupLinkApiResponse>;
+}

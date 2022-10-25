@@ -6,12 +6,12 @@ import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 
-export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
+export const Sidebar = (props: { isOpen: boolean; setIsOpen: any, hideMenus?: boolean }) => {
   const { isOpen, setIsOpen } = props;
 
   const { asPath } = useRouter();
 
-  const menus = [
+  const menus = props.hideMenus ? [] : [
     {
       href: '/admin/connection',
       text: 'SSO Connections',

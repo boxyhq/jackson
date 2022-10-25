@@ -1,6 +1,6 @@
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { PencilIcon, CircleStackIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, CircleStackIcon, LinkIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 import jackson from '@lib/jackson';
 import EmptyState from '@components/EmptyState';
@@ -16,9 +16,18 @@ const Index = ({
     <>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Directory Sync</h2>
-        <Link href={'/admin/directory-sync/new'}>
-          <a className='btn btn-primary'>+ New Directory</a>
-        </Link>
+        <div>
+          <Link href={'/admin/directory-sync/new'}>
+            <a className='btn btn-primary'>
+              <PlusIcon className='mr-1 h-5 w-5' /> New Directory
+            </a>
+          </Link>
+          <Link href={`/admin/setup-link/new?service=Directory-Sync`}>
+            <a className='btn btn-primary m-2' data-test-id='create-setup-link'>
+              <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
+            </a>
+          </Link>
+        </div>
       </div>
       {directories?.length === 0 && pageOffset === 0 ? (
         <EmptyState title='No directories found' href='/admin/directory-sync/new' />

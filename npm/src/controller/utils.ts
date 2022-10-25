@@ -12,7 +12,9 @@ import * as jose from 'jose';
 
 export enum IndexNames {
   EntityID = 'entityID',
+  SetupToken = 'token',
   TenantProduct = 'tenantProduct',
+  TenantProductService = 'tenantProductService',
   OIDCProviderClientID = 'OIDCProviderClientID',
 }
 
