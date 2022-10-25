@@ -14,9 +14,9 @@ const Setup: NextPage = () => {
     console.log(setup.data);
       switch(setup.data.path) {
         case '/admin/connection/new':
-          return <AddEdit setup={setup.data}/>;
+          return <AddEdit setup={{...setup.data, token}} />;
         default:
-          return <AddEdit setup={setup.data}/>;
+          return <AddEdit setup={{...setup.data, token}} />;
       }
   }
 };

@@ -199,8 +199,8 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
     const encodedRawMetadata = btoa(rawMetadata || '');
     const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-    const res = await fetch(setup ? `/api/setup/${setup.setupID}` : '/api/admin/connections', {
-      method: setup ? 'PUT' : isEditView ? 'PATCH' : 'POST',
+    const res = await fetch(setup ? `/api/setup/${setup.token}/create` : '/api/admin/connections', {
+      method: isEditView ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',
       },

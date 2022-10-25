@@ -1,5 +1,6 @@
 import {
   ISetupLinkController,
+  SetupLinkAllApiResponse,
   SetupLinkApiResponse,
   SetupLinkCreatePayload,
   SetupLinkRegeneratePayload,
@@ -76,10 +77,7 @@ export class SetupLinkController implements ISetupLinkController {
     }
     return { data: val[0], error: undefined };
   }
-  regenerate(body: SetupLinkRegeneratePayload): Promise<SetupLinkApiResponse> {
-    throw new Error('Method not implemented.' + body);
-  }
-  getAll(): Promise<SetupLinkApiResponse> {
+  getAll(): Promise<SetupLinkAllApiResponse> {
     throw new Error('Method not implemented.');
   }
 }

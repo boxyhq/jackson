@@ -682,13 +682,17 @@ export type SetupLink = {
 };
 
 export type SetupLinkApiResponse = {
-  data: SetupLink | SetupLink[] | undefined;
+  data: SetupLink | undefined;
+  error: ApiError | undefined;
+};
+
+export type SetupLinkAllApiResponse = {
+  data: SetupLink[] | undefined;
   error: ApiError | undefined;
 };
 
 export interface ISetupLinkController {
   create(body: SetupLinkCreatePayload): Promise<SetupLinkApiResponse>;
-  regenerate(body: SetupLinkRegeneratePayload): Promise<SetupLinkApiResponse>;
-  getAll(): Promise<SetupLinkApiResponse>;
+  getAll(): Promise<SetupLinkAllApiResponse>;
   getByToken(token): Promise<SetupLinkApiResponse>;
 }
