@@ -39,7 +39,7 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
             <div className='my-3 flex justify-end'>
               <button
                 onClick={clearEvents}
-                className={classNames('btn btn-error btn-sm', loading ? 'loading' : '')}>
+                className={classNames('btn-error btn-sm btn', loading ? 'loading' : '')}>
                 Clear Events
               </button>
             </div>
@@ -75,7 +75,9 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
                           )}
                         </td>
                         <td className='px-6 py-3'>
-                          <Link href={`/admin/directory-sync/${directory.id}/events/${event.id}`}>
+                          <Link
+                            legacyBehavior={true}
+                            href={`/admin/directory-sync/${directory.id}/events/${event.id}`}>
                             <a>
                               <EyeIcon className='h-5 w-5' />
                             </a>

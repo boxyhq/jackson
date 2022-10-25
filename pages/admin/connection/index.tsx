@@ -32,8 +32,8 @@ const Connections: NextPage = () => {
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Connections</h2>
-        <Link href={`/admin/connection/new`}>
-          <a className='btn btn-primary' data-test-id='create-connection'>
+        <Link legacyBehavior={true} href={`/admin/connection/new`}>
+          <a className='btn-primary btn' data-test-id='create-connection'>
             + New Connection
           </a>
         </Link>
@@ -80,7 +80,7 @@ const Connections: NextPage = () => {
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
                       </td>
                       <td className='px-6 py-3'>
-                        <Link href={`/admin/connection/edit/${connection.clientID}`}>
+                        <Link legacyBehavior={true} href={`/admin/connection/edit/${connection.clientID}`}>
                           <a className='link-primary'>
                             <PencilIcon className='h-5 w-5 text-secondary' />
                           </a>
@@ -95,7 +95,7 @@ const Connections: NextPage = () => {
           <div className='mt-4 flex justify-center'>
             <button
               type='button'
-              className='btn btn-outline'
+              className='btn-outline btn'
               disabled={paginate.page === 0}
               aria-label='Previous'
               onClick={() =>
@@ -111,7 +111,7 @@ const Connections: NextPage = () => {
             &nbsp;&nbsp;&nbsp;&nbsp;
             <button
               type='button'
-              className='btn btn-outline'
+              className='btn-outline btn'
               disabled={connections.length === 0 || connections.length < paginate.pageLimit}
               onClick={() =>
                 setPaginate((curState) => ({

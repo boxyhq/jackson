@@ -8,8 +8,8 @@ const EmptyState = ({ title, href, className }: { title: string; href?: string; 
       <InformationCircleIcon className='h-10 w-10' />
       <h4 className='text-center'>{title}</h4>
       {href && (
-        <Link href={href}>
-          <a className='btn btn-primary'>+ Create New</a>
+        <Link legacyBehavior={true} href={href}>
+          <a className='btn-primary btn'>+ Create New</a>
         </Link>
       )}
     </div>

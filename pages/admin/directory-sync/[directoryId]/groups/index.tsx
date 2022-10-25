@@ -44,7 +44,9 @@ const GroupsList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                         className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
                         <td className='px-6 py-3'>{group.name}</td>
                         <td className='px-6 py-3'>
-                          <Link href={`/admin/directory-sync/${directory.id}/groups/${group.id}`}>
+                          <Link
+                            legacyBehavior={true}
+                            href={`/admin/directory-sync/${directory.id}/groups/${group.id}`}>
                             <a>
                               <EyeIcon className='h-5 w-5' />
                             </a>

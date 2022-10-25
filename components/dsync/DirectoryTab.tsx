@@ -32,7 +32,7 @@ const DirectoryTab = (props: { directory: Directory; activeTab: string }) => {
     <nav className='-mb-px flex space-x-5 border-b' aria-label='Tabs'>
       {menus.map((menu) => {
         return (
-          <Link href={menu.href} key={menu.href}>
+          <Link legacyBehavior={true} href={menu.href} key={menu.href}>
             <a
               className={classNames(
                 'inline-flex items-center border-b-2 py-4 text-sm font-medium',

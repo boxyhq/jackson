@@ -1,5 +1,5 @@
 import { ShieldCheckIcon, UsersIcon } from '@heroicons/react/20/solid';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 import Link from 'next/link';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
@@ -56,7 +56,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
               </button>
             </div>
             <div className='flex flex-shrink-0 items-center px-4'>
-              <Link href='/'>
+              <Link legacyBehavior={true} href='/'>
                 <a className='flex items-center'>
                   <Image
                     src={Logo}
@@ -90,7 +90,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
       <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
         <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
           <div className='flex flex-shrink-0 items-center px-4'>
-            <Link href='/'>
+            <Link legacyBehavior={true} href='/'>
               <a className='flex items-center'>
                 <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} className='h-8 w-auto' />
                 <span className='ml-4 text-lg font-bold text-gray-900'>Admin UI - BoxyHQ</span>
@@ -100,7 +100,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
           <div className='mt-5 flex flex-1 flex-col'>
             <nav className='flex-1 space-y-1 px-2 pb-4' id='menu'>
               {menus.map((menu) => (
-                <Link key={menu.text} href={menu.href}>
+                <Link legacyBehavior={true} key={menu.text} href={menu.href}>
                   <a
                     className={classNames(
                       'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',

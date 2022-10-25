@@ -63,7 +63,9 @@ const UsersList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                           )}
                         </td>
                         <td className='px-6 py-3'>
-                          <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
+                          <Link
+                            legacyBehavior={true}
+                            href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
                             <a>
                               <EyeIcon className='h-5 w-5' />
                             </a>

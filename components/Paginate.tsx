@@ -20,7 +20,7 @@ const Paginate = ({
 
   return (
     <div className='flex justify-center py-3 px-3'>
-      <Link href={previousPageUrl}>
+      <Link legacyBehavior={true} href={previousPageUrl}>
         <a className='mr-3 inline-flex items-center rounded-lg border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'>
           <svg
             className='mr-2 h-5 w-5'
@@ -37,7 +37,7 @@ const Paginate = ({
         </a>
       </Link>
 
-      <Link href={nextPageUrl}>
+      <Link legacyBehavior={true} href={nextPageUrl}>
         <a className='inline-flex items-center rounded-lg border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'>
           Next
           <svg
