@@ -14,9 +14,9 @@ const loadConnection = async (
 > => {
   if (preLoadedConnection.startsWith('./')) {
     preLoadedConnection = path.resolve(process.cwd(), preLoadedConnection);
+  } else {
+    preLoadedConnection = path.resolve(preLoadedConnection);
   }
-
-  preLoadedConnection = path.resolve(preLoadedConnection);
 
   const files = await fs.promises.readdir(preLoadedConnection);
   const connections: (
