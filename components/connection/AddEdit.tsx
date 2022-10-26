@@ -221,6 +221,8 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
         // revalidate on save
         if (!setup) {
           mutate(`/api/admin/connections/${connectionClientId}`);
+        } else {
+          window.location.reload();
         }
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
       }

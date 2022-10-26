@@ -34,7 +34,7 @@ export class SetupLinkController implements ISetupLinkController {
       name: IndexNames.TenantProductService,
       value: dbutils.keyFromParts(tenant, product, path),
     });
-    if (existing.length > 0 && !regenerate) {
+    if (existing.length > 0 && !regenerate && existing[0].validTill > +new Date()) {
       return { data: existing[0], error: undefined };
     } else {
       await this.setupLinkStore.put(
