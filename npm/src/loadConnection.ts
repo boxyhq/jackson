@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as url from 'url';
 import {
   OIDCSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
@@ -15,6 +16,8 @@ const loadConnection = async (
     preLoadedConnection = path.resolve(process.cwd(), preLoadedConnection);
   }
 
+  preLoadedConnection = path.resolve(preLoadedConnection);
+
   const files = await fs.promises.readdir(preLoadedConnection);
   const connections: (
     | SAMLSSOConnectionWithEncodedMetadata
@@ -25,11 +28,12 @@ const loadConnection = async (
   for (const idx in files) {
     const file = files[idx];
     if (file.endsWith('.js')) {
+      const fileUrl = url.pathToFileURL(path.join(preLoadedConnection, file)).toString();
       const {
         default: connection,
       }: {
         default: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata | OIDCSSOConnection;
-      } = await import(/* webpackIgnore: true */ path.join(preLoadedConnection, file));
+      } = await import(/* webpackIgnore: true */ fileUrl);
       if (!('oidcDiscoveryUrl' in connection)) {
         const rawMetadata = await fs.promises.readFile(
           path.join(preLoadedConnection, path.parse(file).name + '.xml'),
