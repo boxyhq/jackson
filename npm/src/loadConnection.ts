@@ -28,7 +28,9 @@ const loadConnection = async (
   for (const idx in files) {
     const file = files[idx];
     if (file.endsWith('.js')) {
-      const fileUrl = url.pathToFileURL(path.join(preLoadedConnection, file)).toString();
+      const unixPath = preLoadedConnection.startsWith('/');
+      const filePath = path.join(preLoadedConnection, file);
+      const fileUrl = unixPath ? filePath : url.pathToFileURL(filePath).toString();
       const {
         default: connection,
       }: {
