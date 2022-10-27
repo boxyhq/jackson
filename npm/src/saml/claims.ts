@@ -15,6 +15,14 @@ const mapping = [
     attribute: 'lastName',
     schema: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname',
   },
+  {
+    attribute: 'role',
+    schema: 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role',
+  },
+  {
+    attribute: 'group',
+    schema: 'http://schemas.xmlsoap.org/claims/Group',
+  },
 ] as const;
 
 type attributes = typeof mapping[number]['attribute'];
