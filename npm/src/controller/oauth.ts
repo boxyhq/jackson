@@ -99,10 +99,11 @@ export class OAuthController implements IOAuthController {
       } else if (this.opts.idpDiscoveryPath) {
         if (!isIdpFlow) {
           // redirect to IdP selection page
-          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID }) =>
+          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID, name }) =>
             JSON.stringify({
               provider: idpMetadata?.provider ?? oidcProvider?.provider,
               clientID,
+              name,
               connectionIsSAML: idpMetadata && typeof idpMetadata === 'object',
               connectionIsOIDC: oidcProvider && typeof oidcProvider === 'object',
             })
