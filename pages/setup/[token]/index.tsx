@@ -1,6 +1,4 @@
 import type { NextPage } from 'next';
-import AddEdit from '@components/connection/AddEdit';
-import ConnectionList from '@components/connection/ConnectionList';
 import useSWR from 'swr';
 import { fetcher } from '@lib/ui/utils';
 import { useRouter } from 'next/router';
@@ -15,19 +13,11 @@ const Setup: NextPage = () => {
     console.log(setup.data);
       switch(setup.data.path) {
         case '/admin/connection/new':
-          return (
-            <>
-              <ConnectionList setupToken={token as string} />
-              <AddEdit setup={{ ...setup.data, token }}  />
-            </>
-          );
+            router.replace(`/setup/${token}/connection`);
+            return null;
         default:
-          return (
-            <>
-              <ConnectionList setupToken={token as string} />
-              <AddEdit setup={{ ...setup.data, token }} />
-            </>
-          );
+            router.replace(`/setup/${token}/connection`);
+            return null;
       }
   }
 };

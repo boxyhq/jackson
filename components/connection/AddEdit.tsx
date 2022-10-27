@@ -199,7 +199,7 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
     const encodedRawMetadata = btoa(rawMetadata || '');
     const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-    const res = await fetch(setup ? `/api/setup/${setup.token}/create` : '/api/admin/connections', {
+    const res = await fetch(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections', {
       method: isEditView ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -214,16 +214,12 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
       }),
     });
     if (res.ok) {
-      if (!isEditView && !setup) {
-        router.replace('/admin/connection');
+      if (!isEditView) {
+        router.replace(setup ? `/setup/${setup.token}/connection` : '/admin/connection');
       } else {
         setSaveStatus({ status: 'SUCCESS' });
         // revalidate on save
-        if (!setup) {
-          mutate(`/api/admin/connections/${connectionClientId}`);
-        } else {
-          window.location.reload();
-        }
+        mutate(setup ? `/api/setup/${setup.token}/connections` : `/api/admin/connections/${connectionClientId}`);
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
       }
     } else {
@@ -237,7 +233,7 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
-    await fetch('/api/admin/connections', {
+    await fetch(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -245,8 +241,8 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
       body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
     });
     toggleDelConfirm();
-    await mutate('/api/admin/connections');
-    router.replace('/admin/connection');
+    await mutate(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections');
+    router.replace(setup ? `/setup/${setup.token}/connection` : '/admin/connection');
   };
 
   // STATE: FORM
@@ -273,12 +269,12 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
 
   return (
     <>
-      { !setup && <Link href='/admin/connection'>
+      <Link href={setup ? `/setup/${setup.token}` : '/admin/connection'}>
         <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span>Back</span>
         </a>
-      </Link>}
+      </Link>
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {isEditView ? 'Edit Connection' : 'Create Connection'}

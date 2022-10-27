@@ -15,7 +15,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController, connectionAPIController } = await jackson();
-  const token = req.query.token;
+  const { token, id } = req.query;
   const { data: setup, error: err } = await setupLinkController.getByToken(token);
   if (err) {
     return res.status(err ? err.code : 201).json({ err });
@@ -24,12 +24,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (setup) {
     if (setup?.validTill > +new Date()) {
       data = setup;
-      return res.json(
-        await connectionAPIController.getConnections({
-          tenant: setup.tenant,
-          product: setup.product,
-        } as GetConnectionsQuery)
-      );
+      const list = await connectionAPIController.getConnections({
+        tenant: setup.tenant,
+        product: setup.product,
+      } as GetConnectionsQuery);
+      return res.json(list.filter((l) => l.clientID === id)[0]);
     } else {
       data = undefined;
       error = {

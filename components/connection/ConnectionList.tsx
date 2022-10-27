@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeftIcon, ArrowRightIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowRightIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useState } from 'react';
 import { fetcher } from '@lib/ui/utils';
@@ -28,17 +28,33 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
     fetcher,
     { revalidateOnFocus: false }
   );
-  if(!connections) {
+  if (!connections) {
     return null;
   }
   return (
-    <>
+    <div>
+      <div className='mb-5 flex items-center justify-between'>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Connections</h2>
+        <div>
+          <Link href={setupToken ? `/setup/${setupToken}/connection/new` : `/admin/connection/new`}>
+            <a className='btn btn-primary m-2' data-test-id='create-connection'>
+              <PlusIcon className='mr-1 h-5 w-5' /> New Connection
+            </a>
+          </Link>
+          {!setupToken && (
+            <Link href={`/admin/setup-link/new?service=Jackson`}>
+              <a className='btn btn-primary m-2' data-test-id='create-setup-link'>
+                <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
+              </a>
+            </Link>
+          )}
+        </div>
+      </div>
       {connections.length === 0 ? (
-        setupToken ? (
-          ''
-        ) : (
-          <EmptyState title={`No connections found.`} href={`/admin/connection/new`} />
-        )
+        <EmptyState
+          title={`No connections found.`}
+          href={setupToken ? `/setup/${setupToken}/connection/new` : `/admin/connection/new`}
+        />
       ) : (
         <>
           <div className='rounder border'>
@@ -46,11 +62,18 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3'>
-                    Tenant
+                    Name
                   </th>
-                  <th scope='col' className='px-6 py-3'>
-                    Product
-                  </th>
+                  {!setupToken && (
+                    <>
+                      <th scope='col' className='px-6 py-3'>
+                        Tenant
+                      </th>
+                      <th scope='col' className='px-6 py-3'>
+                        Product
+                      </th>
+                    </>
+                  )}
                   <th scope='col' className='px-6 py-3'>
                     IdP Type
                   </th>
@@ -69,17 +92,29 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
                     <tr
                       key={connection.clientID}
                       className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                        {connection.tenant}
-                      </td>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {connection.product}
+                        {connection.name || connection.idpMetadata?.provider}
                       </td>
+                      {!setupToken && (
+                        <>
+                          <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
+                            {connection.tenant}
+                          </td>
+                          <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                            {connection.product}
+                          </td>
+                        </>
+                      )}
                       <td className='px-6 py-3'>
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
                       </td>
                       <td className='px-6 py-3'>
-                        <Link href={`/admin/connection/edit/${connection.clientID}`}>
+                        <Link
+                          href={
+                            setupToken
+                              ? `/setup/${setupToken}/connection/edit/${connection.clientID}`
+                              : `/admin/connection/edit/${connection.clientID}`
+                          }>
                           <a className='link-primary'>
                             <PencilIcon className='h-5 w-5 text-secondary' />
                           </a>
@@ -125,7 +160,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 
