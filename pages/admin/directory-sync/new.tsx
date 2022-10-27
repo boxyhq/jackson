@@ -62,11 +62,9 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
 
   return (
     <div>
-      <Link href='/admin/directory-sync'>
-        <a className='btn btn-outline items-center space-x-2'>
-          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span>{t('back')}</span>
-        </a>
+      <Link href='/admin/directory-sync' className='btn-outline btn items-center space-x-2'>
+        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
+        <span>{t('back')}</span>
       </Link>
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>New Directory</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
@@ -79,7 +77,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
               <input
                 type='text'
                 id='name'
-                className='input input-bordered w-full'
+                className='input-bordered input w-full'
                 required
                 onChange={onChange}
               />
@@ -88,7 +86,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
               <label className='label'>
                 <span className='label-text'>Directory provider</span>
               </label>
-              <select className='select select-bordered w-full' id='type' onChange={onChange} required>
+              <select className='select-bordered select w-full' id='type' onChange={onChange} required>
                 {Object.keys(providers).map((key) => {
                   return (
                     <option key={key} value={key}>
@@ -105,7 +103,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
               <input
                 type='text'
                 id='tenant'
-                className='input input-bordered w-full'
+                className='input-bordered input w-full'
                 required
                 onChange={onChange}
               />
@@ -117,7 +115,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
               <input
                 type='text'
                 id='product'
-                className='input input-bordered w-full'
+                className='input-bordered input w-full'
                 required
                 onChange={onChange}
               />
@@ -129,7 +127,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
               <input
                 type='text'
                 id='webhook_url'
-                className='input input-bordered w-full'
+                className='input-bordered input w-full'
                 onChange={onChange}
               />
             </div>
@@ -140,12 +138,12 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
               <input
                 type='text'
                 id='webhook_secret'
-                className='input input-bordered w-full'
+                className='input-bordered input w-full'
                 onChange={onChange}
               />
             </div>
             <div>
-              <button className={classNames('btn btn-primary', loading ? 'loading' : '')}>
+              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
                 Create Directory
               </button>
             </div>
