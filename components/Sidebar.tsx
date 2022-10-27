@@ -1,5 +1,5 @@
 import { ShieldCheckIcon, UsersIcon } from '@heroicons/react/20/solid';
-import Image from "next/legacy/image";
+import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
@@ -57,7 +57,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
             </div>
             <div className='flex flex-shrink-0 items-center px-4'>
               <Link href='/' className='flex items-center'>
-                <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} className='h-8 w-auto' />
+                <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
                 <span className='ml-4 text-xl font-bold text-gray-900'>Admin UI - BoxyHQ</span>
               </Link>
             </div>
@@ -82,7 +82,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
         <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
           <div className='flex flex-shrink-0 items-center px-4'>
             <Link href='/' className='flex items-center'>
-              <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} className='h-8 w-auto' />
+              <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
               <span className='ml-4 text-lg font-bold text-gray-900'>Admin UI - BoxyHQ</span>
             </Link>
           </div>
