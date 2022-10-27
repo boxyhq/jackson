@@ -1,5 +1,5 @@
 import { ShieldCheckIcon, UsersIcon } from '@heroicons/react/20/solid';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 import Link from 'next/link';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
