@@ -552,8 +552,8 @@
                 "lastName": {
                   "type": "string"
                 },
-                "role": {
-                  "type": "string"
+                "roles": {
+                  "type": "array"
                 },
                 "groups": {
                   "type": "array"
