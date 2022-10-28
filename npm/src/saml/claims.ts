@@ -1,3 +1,6 @@
+const groupAttribute = 'group';
+const groupSchema = 'http://schemas.xmlsoap.org/claims/Group';
+
 const mapping = [
   {
     attribute: 'id',
@@ -20,8 +23,8 @@ const mapping = [
     schema: 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role',
   },
   {
-    attribute: 'group',
-    schema: 'http://schemas.xmlsoap.org/claims/Group',
+    attribute: groupAttribute,
+    schema: groupSchema,
   },
 ] as const;
 
@@ -29,6 +32,15 @@ type attributes = typeof mapping[number]['attribute'];
 type schemas = typeof mapping[number]['schema'];
 
 const map = (claims: Record<attributes | schemas, unknown>) => {
+  if (claims[groupAttribute]) {
+    console.log('claims[groupAttribute]', claims[groupAttribute]);
+    claims[groupAttribute] = [].concat(claims[groupAttribute] as any);
+  }
+  if (claims[groupSchema]) {
+    console.log('claims[groupSchema]', claims[groupSchema]);
+    claims[groupSchema] = [].concat(claims[groupSchema] as any);
+  }
+
   const profile = {
     raw: claims,
   };
