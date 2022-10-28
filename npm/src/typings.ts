@@ -250,7 +250,10 @@ export interface Profile {
   email: string;
   firstName: string;
   lastName: string;
+  role?: string;
+  groups?: string[];
   requested: Record<string, string>;
+  raw: any;
 }
 
 export interface Index {

@@ -1,4 +1,4 @@
-const groupAttribute = 'group';
+const groupAttribute = 'groups';
 const groupSchema = 'http://schemas.xmlsoap.org/claims/Group';
 
 const mapping = [
