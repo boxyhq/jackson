@@ -1,39 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
-import { Sidebar } from '@components/Sidebar';
-import { Navbar } from '@components/Navbar';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import Logo from '../../public/logo.png';
 
 export const SetupLayout = ({ children }: { children: React.ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+  const router = useRouter();
+  const { token } = router.query;
   return (
     <>
       <Head>
         <title>SAML Jackson - BoxyHQ</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Sidebar hideMenus={true} isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className='flex flex-1 flex-col md:pl-64'>
+      <div className='flex flex-1 flex-col'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
-          <button
-            onClick={() => {
-              setIsOpen(!isOpen);
-            }}
-            type='button'
-            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset md:hidden'>
-            <span className='sr-only'>Open sidebar</span>
-            <svg
-              className='h-6 w-6'
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={2}
-              stroke='currentColor'
-              aria-hidden='true'>
-              <path strokeLinecap='round' strokeLinejoin='round' d='M4 6h16M4 12h16M4 18h7' />
-            </svg>
-          </button>
-          <Navbar session={null} />
+        <div className='flex flex-shrink-0 items-center px-4'>
+              <Link href={`/setup/${token}`}>
+                <a className='flex items-center'>
+                  <Image
+                    src={Logo}
+                    alt='BoxyHQ'
+                    layout='fixed'
+                    width={36}
+                    height={36}
+                    className='h-8 w-auto'
+                  />
+                </a>
+              </Link>
+            </div>
         </div>
         <main>
           <div className='py-6'>
