@@ -15,11 +15,11 @@ const createSSOMetadataXML = async ({
   // certificate = saml.stripCertHeaderAndFooter(certificate);
 
   const nodes = {
-    'md:EntityDescriptor': {
+    EntityDescriptor: {
       '@xmlns:md': 'urn:oasis:names:tc:SAML:2.0:metadata',
       '@entityID': entityId,
       '@validUntil': '2026-06-22T18:39:53.000Z', // TODO: fix date
-      'md:SPSSODescriptor': {
+      SPSSODescriptor: {
         //'@WantAuthnRequestsSigned': true,
         '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
         // KeyDescriptor: {
@@ -33,10 +33,10 @@ const createSSOMetadataXML = async ({
         //     },
         //   },
         // },
-        'md:NameIDFormat': {
+        NameIDFormat: {
           '#text': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
         },
-        'md:AssertionConsumerService': {
+        AssertionConsumerService: {
           '@index': 0,
           '@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
           '@Location': acsUrl,
