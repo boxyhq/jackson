@@ -29,7 +29,7 @@ services:
       DB_TTL: 300
       DB_CLEANUP_LIMIT: 1000
       DB_PAGE_LIMIT: 50
-      PRE_LOADED_CONFIG: /app/uffizzi/saml_config
+      PRE_LOADED_CONNECTION: /app/uffizzi/saml_config
     restart: unless-stopped
     ports:
       - "5225"
