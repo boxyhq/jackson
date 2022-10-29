@@ -26,8 +26,8 @@ module.exports = {
         destination: '/api/well-known/openid-configuration',
       },
       {
-        source: '/.well-known/saml-metadata',
-        destination: '/api/well-known/saml-metadata',
+        source: '/.well-known/sp-metadata',
+        destination: '/api/well-known/sp-metadata',
       },
       {
         source: '/.well-known/saml-configuration',

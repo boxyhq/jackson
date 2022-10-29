@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import xmlbuilder from 'xmlbuilder';
-import saml from '@boxyhq/saml20';
 
 const createSSOMetadataXML = async ({
   entityId,
@@ -14,11 +13,13 @@ const createSSOMetadataXML = async ({
 }): Promise<string> => {
   // certificate = saml.stripCertHeaderAndFooter(certificate);
 
+  const today = new Date();
+
   const nodes = {
     EntityDescriptor: {
       '@xmlns:md': 'urn:oasis:names:tc:SAML:2.0:metadata',
       '@entityID': entityId,
-      '@validUntil': '2026-06-22T18:39:53.000Z', // TODO: fix date
+      '@validUntil': new Date(today.setFullYear(today.getFullYear() + 10)).toISOString(),
       SPSSODescriptor: {
         //'@WantAuthnRequestsSigned': true,
         '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
