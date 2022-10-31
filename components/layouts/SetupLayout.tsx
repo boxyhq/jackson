@@ -26,7 +26,8 @@ export const SetupLayout = ({ children }: { children: React.ReactNode }) => {
                     width={36}
                     height={36}
                     className='h-8 w-auto'
-                  />
+                  /> 
+                    <span className='ml-4 text-xl font-bold text-gray-900'>Setup</span>
                 </a>
               </Link>
             </div>

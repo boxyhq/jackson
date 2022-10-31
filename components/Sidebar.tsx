@@ -13,7 +13,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any, hideMenus?: bo
 
   const menus = props.hideMenus ? [] : [
     {
-      href: '/admin/connection',
+      href: '/admin/sso-connection',
       text: 'SSO Connections',
       icon: ShieldCheckIcon,
       active: asPath.includes('/admin/saml'),

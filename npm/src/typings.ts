@@ -664,7 +664,7 @@ export interface WebhookEventLog extends DirectorySyncEvent {
 export type SetupLinkCreatePayload = {
   tenant: string;
   product: string;
-  path: '/admin/connection/new' | '/admin/directory-sync/new';
+  path: 'Jackson' | 'Directory-sync';
   regenerate?: boolean;
 };
 

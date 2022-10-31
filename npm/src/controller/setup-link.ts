@@ -3,7 +3,6 @@ import {
   SetupLinkAllApiResponse,
   SetupLinkApiResponse,
   SetupLinkCreatePayload,
-  SetupLinkRegeneratePayload,
   Storable,
 } from '../typings';
 import * as dbutils from '../db/utils';

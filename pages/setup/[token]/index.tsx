@@ -12,11 +12,11 @@ const Setup: NextPage = () => {
   } else {
     console.log(setup.data);
       switch(setup.data.path) {
-        case '/admin/connection/new':
-            router.replace(`/setup/${token}/connection`);
+        case 'Jackson':
+            router.replace(`/setup/${token}/sso-connection`);
             return null;
         default:
-            router.replace(`/setup/${token}/connection`);
+            router.replace(`/`);
             return null;
       }
   }

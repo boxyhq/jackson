@@ -21,7 +21,7 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
       body: JSON.stringify({
         tenant,
         product,
-        type: types[type],
+        type,
       }),
     });
     if (res.ok) {
@@ -51,7 +51,7 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
       body: JSON.stringify({
         tenant,
         product,
-        type: types[type],
+        type,
         regenerate: true,
       }),
     });
@@ -84,10 +84,6 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
     setFormObj((cur) => ({ ...cur, [target.name]: target.value }));
   };
-  const types = {
-    Jackson: '/admin/connection/new',
-    'Directory-Sync': '/admin/directory-sync/new',
-  };
   const [url, setUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [loading1, setLoading1] = useState<boolean>(false);
@@ -101,7 +97,7 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
 
   return (
     <>
-      <Link href='/admin/connection'>
+      <Link href='/admin/sso-connection'>
         <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span>Back</span>

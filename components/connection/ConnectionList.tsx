@@ -36,7 +36,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Connections</h2>
         <div>
-          <Link href={setupToken ? `/setup/${setupToken}/connection/new` : `/admin/connection/new`}>
+          <Link href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}>
             <a className='btn btn-primary m-2' data-test-id='create-connection'>
               <PlusIcon className='mr-1 h-5 w-5' /> New Connection
             </a>
@@ -53,7 +53,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
       {connections.length === 0 ? (
         <EmptyState
           title={`No connections found.`}
-          href={setupToken ? `/setup/${setupToken}/connection/new` : `/admin/connection/new`}
+          href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
         />
       ) : (
         <>
@@ -112,8 +112,8 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
                         <Link
                           href={
                             setupToken
-                              ? `/setup/${setupToken}/connection/edit/${connection.clientID}`
-                              : `/admin/connection/edit/${connection.clientID}`
+                              ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
+                              : `/admin/sso-connection/edit/${connection.clientID}`
                           }>
                           <a className='link-primary'>
                             <PencilIcon className='h-5 w-5 text-secondary' />

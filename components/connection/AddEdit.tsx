@@ -215,7 +215,7 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
     });
     if (res.ok) {
       if (!isEditView) {
-        router.replace(setup ? `/setup/${setup.token}/connection` : '/admin/connection');
+        router.replace(setup ? `/setup/${setup.token}/sso-connection` : '/admin/sso-connection');
       } else {
         setSaveStatus({ status: 'SUCCESS' });
         // revalidate on save
@@ -242,7 +242,7 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
     });
     toggleDelConfirm();
     await mutate(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections');
-    router.replace(setup ? `/setup/${setup.token}/connection` : '/admin/connection');
+    router.replace(setup ? `/setup/${setup.token}/sso-connection` : '/admin/sso-connection');
   };
 
   // STATE: FORM
@@ -269,7 +269,7 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
 
   return (
     <>
-      <Link href={setup ? `/setup/${setup.token}` : '/admin/connection'}>
+      <Link href={setup ? `/setup/${setup.token}` : '/admin/sso-connection'}>
         <a className='btn btn-outline items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span>Back</span>
