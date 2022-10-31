@@ -99,10 +99,11 @@ export class OAuthController implements IOAuthController {
       } else if (this.opts.idpDiscoveryPath) {
         if (!isIdpFlow) {
           // redirect to IdP selection page
-          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID }) =>
+          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID, name }) =>
             JSON.stringify({
               provider: idpMetadata?.provider ?? oidcProvider?.provider,
               clientID,
+              name,
               connectionIsSAML: idpMetadata && typeof idpMetadata === 'object',
               connectionIsOIDC: oidcProvider && typeof oidcProvider === 'object',
             })
@@ -426,7 +427,7 @@ export class OAuthController implements IOAuthController {
         oidcCodeVerifier = generators.codeVerifier();
         const code_challenge = generators.codeChallenge(oidcCodeVerifier);
         ssoUrl = oidcClient.authorizationUrl({
-          scope: [...requestedScopes, 'openid', 'email', 'profile']
+          scope: [...requestedScopes, 'openid', 'email', 'profile', 'groups']
             .filter((value, index, self) => self.indexOf(value) === index) // filter out duplicates
             .join(' '),
           code_challenge,
@@ -704,6 +705,8 @@ export class OAuthController implements IOAuthController {
     profile.claims.email = idTokenClaims.email ?? userinfo.email;
     profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
     profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
+    profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
+    profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
     profile.claims.raw = userinfo;
     return profile;
   }
@@ -976,6 +979,8 @@ export class OAuthController implements IOAuthController {
         email: codeVal.profile.claims.email,
         firstName: codeVal.profile.claims.firstName,
         lastName: codeVal.profile.claims.lastName,
+        roles: codeVal.profile.claims.roles,
+        groups: codeVal.profile.claims.groups,
       };
       const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
       const id_token = await new jose.SignJWT(claims)
@@ -1035,6 +1040,10 @@ export class OAuthController implements IOAuthController {
    *               type: string
    *             lastName:
    *               type: string
+   *             roles:
+   *               type: array
+   *             groups:
+   *               type: array
    *             raw:
    *               type: object
    *             requested:
