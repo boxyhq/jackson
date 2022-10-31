@@ -25,9 +25,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ttl.sh/${{ steps.uuid.outputs.uuid }}
+          images: registry.uffizzi.com/${{ steps.uuid.outputs.uuid }}
           tags: |
-            type=raw,value=24h
+            type=raw,value=60h
       - name: Build Image
         uses: docker/build-push-action@v3
         with:
@@ -41,10 +41,10 @@ jobs:
       - name: DEBUG - Image information
         if: ${{ runner.debug }}
         run: |
-          docker image ls ttl.sh/${{ steps.uuid.outputs.uuid }}:24h
-          docker history ttl.sh/${{ steps.uuid.outputs.uuid }}:24h
+          docker image ls registry.uffizzi.com/${{ steps.uuid.outputs.uuid }}:60h
+          docker history registry.uffizzi.com/${{ steps.uuid.outputs.uuid }}:60h
       - name: Push Image to TTL.SH
-        run: docker push ttl.sh/${{ steps.uuid.outputs.uuid }}:24h
+        run: docker push registry.uffizzi.com/${{ steps.uuid.outputs.uuid }}:60h
 
   render-compose-file:
     name: Render Docker Compose File
@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Render Compose File
         run: |
-          SAML_JACKSON_IMAGE=$(echo ${{ needs.build-saml-jackson.outputs.tags }})
+          SAML_JACKSON_IMAGE=$(echo ${{ needs.build-jackson.outputs.tags }})
           export SAML_JACKSON_IMAGE
           # Render simple template from environment variables.
           envsubst < uffizzi/docker-compose.template.yml > docker-compose.rendered.yml
