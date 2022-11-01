@@ -15,6 +15,9 @@ const Setup: NextPage = () => {
         case 'Jackson':
             router.replace(`/setup/${token}/sso-connection`);
             return null;
+        case 'Directory-Sync':
+            router.replace(`/setup/${token}/directory-sync`);
+            return null;
         default:
             router.replace(`/`);
             return null;

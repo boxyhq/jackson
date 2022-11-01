@@ -2,11 +2,14 @@ import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
+import { useRouter } from 'next/router';
 import DirectoryInfo from '@components/dsync/DirectoryInfo';
 
 const Info: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory }) => {
+  const router = useRouter();
+  const { token } = router.query;
   return (
-    <DirectoryInfo directory={directory} />
+    <DirectoryInfo directory={directory} token={token as string} />
   );
 };
 

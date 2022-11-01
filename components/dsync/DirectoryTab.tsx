@@ -2,28 +2,34 @@ import Link from 'next/link';
 import type { Directory } from '@lib/jackson';
 import classNames from 'classnames';
 
-const DirectoryTab = (props: { directory: Directory; activeTab: string }) => {
-  const { directory, activeTab } = props;
+const DirectoryTab = (props: { directory: Directory; activeTab: string, token?: any }) => {
+  const { directory, activeTab, token } = props;
 
-  const menus = [
+  const menus = token ? [
+    {
+        name: 'Directory',
+        href: token ? `/setup/${token}/directory-sync/${directory.id}` : `/admin/directory-sync/${directory.id}`,
+        active: activeTab === 'directory',
+      }
+  ] : [
     {
       name: 'Directory',
-      href: `/admin/directory-sync/${directory.id}`,
+      href: token ? `/setup/${token}/directory-sync/${directory.id}` : `/admin/directory-sync/${directory.id}`,
       active: activeTab === 'directory',
     },
     {
       name: 'Users',
-      href: `/admin/directory-sync/${directory.id}/users`,
+      href: token ? `/setup/${token}/directory-sync/${directory.id}/users` : `/admin/directory-sync/${directory.id}/users`,
       active: activeTab === 'users',
     },
     {
       name: 'Groups',
-      href: `/admin/directory-sync/${directory.id}/groups`,
+      href: token ? `/setup/${token}/directory-sync/${directory.id}/groups` : `/admin/directory-sync/${directory.id}/groups`,
       active: activeTab === 'groups',
     },
     {
       name: 'Webhook Events',
-      href: `/admin/directory-sync/${directory.id}/events`,
+      href: token ? `/setup/${token}/directory-sync/${directory.id}/events` : `/admin/directory-sync/${directory.id}/events`,
       active: activeTab === 'events',
     },
   ];
