@@ -14,9 +14,7 @@ import '../styles/globals.css';
 const unauthenticatedRoutes = [
   '/',
   '/admin/auth/login',
-  '/.well-known/openid-configuration',
-  '/.well-known/sp-metadata',
-  '/.well-known/saml-configuration',
+  '/well-known/saml-configuration',
   '/oauth/jwks',
   '/idp/select',
   '/error',
