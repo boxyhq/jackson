@@ -16,29 +16,29 @@ const createSSOMetadataXML = async ({
   const today = new Date();
 
   const nodes = {
-    EntityDescriptor: {
+    'md:EntityDescriptor': {
       '@xmlns:md': 'urn:oasis:names:tc:SAML:2.0:metadata',
       '@entityID': entityId,
       '@validUntil': new Date(today.setFullYear(today.getFullYear() + 10)).toISOString(),
-      SPSSODescriptor: {
+      'md:SPSSODescriptor': {
         //'@WantAuthnRequestsSigned': true,
         '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-        // KeyDescriptor: {
+        // 'md:KeyDescriptor': {
         //   '@use': 'signing',
-        //   KeyInfo: {
+        //   'ds:KeyInfo': {
         //     '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-        //     X509Data: {
-        //       X509Certificate: {
+        //     'ds:X509Data': {
+        //       'ds:X509Certificate': {
         //         '#text': certificate,
         //       },
         //     },
         //   },
         // },
-        NameIDFormat: {
+        'md:NameIDFormat': {
           '#text': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
         },
-        AssertionConsumerService: {
-          '@index': 0,
+        'md:AssertionConsumerService': {
+          '@index': 1,
           '@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
           '@Location': acsUrl,
         },
