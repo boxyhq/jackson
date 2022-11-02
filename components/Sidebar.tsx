@@ -16,7 +16,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
       href: '/admin/connection',
       text: 'SSO Connections',
       icon: ShieldCheckIcon,
-      active: asPath.includes('/admin/saml'),
+      active: asPath.includes('/admin/connection'),
     },
     {
       href: '/admin/directory-sync',
