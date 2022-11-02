@@ -14,7 +14,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
   const menus = [
     {
       href: '/admin/connection',
-      text: 'SSO Connections',
+      text: 'Enterprise SSO',
       icon: ShieldCheckIcon,
       active: asPath.includes('/admin/connection'),
     },
