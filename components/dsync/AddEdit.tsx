@@ -21,7 +21,7 @@ const AddEdit = ({ providers, token } : AddEditProps) => {
     product: '',
     webhook_url: '',
     webhook_secret: '',
-    type: '',
+    type: providers ? Object.keys(providers).length > 0 ? Object.keys(providers)[0] : '' : '',
   });
 
   const onSubmit = async (event: React.FormEvent) => {

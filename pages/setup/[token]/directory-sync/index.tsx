@@ -23,13 +23,26 @@ const Index = ({
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { offset = 0 } = context.query;
-  const { directorySyncController } = await jackson();
-
+  const { offset = 0, token } = context.query;
+  const { directorySyncController, setupLinkController } = await jackson();
+  let directories;
+  if (!token) {
+    directories = [];
+  } else {
+    const { data: setup, error: err } = await setupLinkController.getByToken(token);
+    if (err) {
+        directories = [];
+    } else if (!setup) {
+        directories = [];
+    } else if (setup?.validTill < +new Date()) {
+        directories = [];
+    } else {
+        const { data } = await directorySyncController.directories.getByTenantAndProduct(setup.tenant, setup.product);
+        directories = [data];
+    }
+  }
   const pageOffset = parseInt(offset as string);
   const pageLimit = 25;
-  const { data: directories } = await directorySyncController.directories.list({ pageOffset, pageLimit });
-
   return {
     props: {
       providers: directorySyncController.providers(),
