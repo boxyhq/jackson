@@ -1,16 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import micromatch from 'micromatch';
 
-export const validateEmailWithACL = (email) => {
+export const validateEmailWithACL = (email: string) => {
   const NEXTAUTH_ACL = process.env.NEXTAUTH_ACL || undefined;
-  const acl = NEXTAUTH_ACL?.split(',');
 
-  if (acl) {
-    if (micromatch.isMatch(email, acl)) {
-      return true;
-    }
+  if (!NEXTAUTH_ACL) {
+    return false;
   }
-  return false;
+
+  const acl = NEXTAUTH_ACL.split(',');
+
+  return micromatch.isMatch(email, acl);
 };
 
 /**
