@@ -21,10 +21,10 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
           active: asPath.includes('/admin/dashboard'),
         },
         {
-          href: '/admin/connection',
+          href: '/admin/sso-connection',
           text: 'Enterprise SSO',
           icon: ShieldCheckIcon,
-          active: asPath.includes('/admin/connection'),
+          active: asPath.includes('/admin/sso-connection'),
         },
         {
           href: '/admin/directory-sync',
