@@ -9,7 +9,7 @@ import {
 import ConfirmationModal from '@components/ConfirmationModal';
 
 const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
-  const createSetupLink = async (event) => {
+  const createLink = async (event) => {
     event.preventDefault();
     setLoading(true);
     const { tenant, product, type } = formObj;
@@ -149,7 +149,7 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
           <button
             className={`btn btn-primary mx-2 mt-5 ${loading ? 'loading' : ''}`}
             disabled={!formObj.tenant || !formObj.product || !formObj.type}
-            onClick={createSetupLink}>
+            onClick={createLink}>
             {'Generate'}
           </button>
         </div>
@@ -203,7 +203,7 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
                   ? () => {
                       setDelModalVisible(true);
                     }
-                  : createSetupLink
+                  : createLink
               }>
               {url ? 'Regenerate Link' : 'Generate'}
             </button>
