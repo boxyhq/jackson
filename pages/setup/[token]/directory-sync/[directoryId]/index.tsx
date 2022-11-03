@@ -8,9 +8,7 @@ import DirectoryInfo from '@components/dsync/DirectoryInfo';
 const Info: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory }) => {
   const router = useRouter();
   const { token } = router.query;
-  return (
-    <DirectoryInfo directory={directory} token={token as string} />
-  );
+  return <DirectoryInfo directory={directory} token={token as string} />;
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {

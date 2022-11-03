@@ -8,9 +8,7 @@ import AddEdit from '@components/dsync/AddEdit';
 const New: NextPage<{ providers: any }> = ({ providers }) => {
   const router = useRouter();
   const { token } = router.query;
-  return (
-    <AddEdit providers={providers} token={token as string} />
-  );
+  return <AddEdit providers={providers} token={token as string} />;
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {

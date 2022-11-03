@@ -5,9 +5,7 @@ import { inferSSRProps } from '@lib/inferSSRProps';
 import DirectoryInfo from '@components/dsync/DirectoryInfo';
 
 const Info: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory }) => {
-  return (
-    <DirectoryInfo directory={directory} />
-  );
+  return <DirectoryInfo directory={directory} />;
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {

@@ -6,11 +6,9 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 
 const New: NextPage<{ providers: any }> = ({ providers }) => {
-  return (
-    <AddEdit providers={providers} />
-  );
+  return <AddEdit providers={providers} />;
 };
- 
+
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const { directorySyncController } = await jackson();
 

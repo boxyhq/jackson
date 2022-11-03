@@ -28,13 +28,16 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
     setLoading(true);
 
-    const rawResponse = await fetch(token ? `/api/setup/${token}/directory-sync/${id}` : `/api/admin/directory-sync/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(directory),
-    });
+    const rawResponse = await fetch(
+      token ? `/api/setup/${token}/directory-sync/${id}` : `/api/admin/directory-sync/${id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(directory),
+      }
+    );
 
     setLoading(false);
 

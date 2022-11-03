@@ -9,9 +9,9 @@ import classNames from 'classnames';
 type AddEditProps = {
   providers: any;
   token?: string;
-}
+};
 
-const AddEdit = ({ providers, token } : AddEditProps) => {
+const AddEdit = ({ providers, token }: AddEditProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
@@ -21,7 +21,7 @@ const AddEdit = ({ providers, token } : AddEditProps) => {
     product: '',
     webhook_url: '',
     webhook_secret: '',
-    type: providers ? Object.keys(providers).length > 0 ? Object.keys(providers)[0] : '' : '',
+    type: providers ? (Object.keys(providers).length > 0 ? Object.keys(providers)[0] : '') : '',
   });
 
   const onSubmit = async (event: React.FormEvent) => {
@@ -29,13 +29,16 @@ const AddEdit = ({ providers, token } : AddEditProps) => {
 
     setLoading(true);
 
-    const rawResponse = await fetch(token ? `/api/setup/${token}/directory-sync` : '/api/admin/directory-sync', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(directory),
-    });
+    const rawResponse = await fetch(
+      token ? `/api/setup/${token}/directory-sync` : '/api/admin/directory-sync',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(directory),
+      }
+    );
 
     setLoading(false);
 
@@ -48,7 +51,9 @@ const AddEdit = ({ providers, token } : AddEditProps) => {
 
     if (data) {
       toast.success('Directory created successfully');
-      router.replace(token ? `/setup/${token}/directory-sync/${data.id}` : `/admin/directory-sync/${data.id}`);
+      router.replace(
+        token ? `/setup/${token}/directory-sync/${data.id}` : `/admin/directory-sync/${data.id}`
+      );
     }
   };
 

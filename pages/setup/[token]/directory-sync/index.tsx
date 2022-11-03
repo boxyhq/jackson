@@ -31,14 +31,17 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   } else {
     const { data: setup, error: err } = await setupLinkController.getByToken(token);
     if (err) {
-        directories = [];
+      directories = [];
     } else if (!setup) {
-        directories = [];
+      directories = [];
     } else if (setup?.validTill < +new Date()) {
-        directories = [];
+      directories = [];
     } else {
-        const { data } = await directorySyncController.directories.getByTenantAndProduct(setup.tenant, setup.product);
-        directories = [data];
+      const { data } = await directorySyncController.directories.getByTenantAndProduct(
+        setup.tenant,
+        setup.product
+      );
+      directories = [data];
     }
   }
   const pageOffset = parseInt(offset as string);

@@ -17,7 +17,7 @@ const ConfirmationModal = (props: {
           Cancel
         </button>
         <button className='btn btn-error' onClick={onConfirm}>
-        {actionButtonText || 'Delete'}
+          {actionButtonText || 'Delete'}
         </button>
       </div>
     </Modal>

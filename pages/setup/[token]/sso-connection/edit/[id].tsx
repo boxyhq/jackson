@@ -12,9 +12,13 @@ const EditConnection: NextPage = () => {
   const { data: setup } = useSWR<any>(token ? `/api/setup/${token}` : null, fetcher, {
     revalidateOnFocus: false,
   });
-  const { data: connection, error } = useSWR(token ? (id ? `/api/setup/${token}/connections/${id}` : null) : null, fetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data: connection, error } = useSWR(
+    token ? (id ? `/api/setup/${token}/connections/${id}` : null) : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
   if (error) {
     return (
@@ -28,10 +32,15 @@ const EditConnection: NextPage = () => {
     return null;
   }
 
-  return <AddEdit connection={connection} setup={{
-    ...setup,
-    token
-  }}/>;
+  return (
+    <AddEdit
+      connection={connection}
+      setup={{
+        ...setup,
+        token,
+      }}
+    />
+  );
 };
 
 export default EditConnection;

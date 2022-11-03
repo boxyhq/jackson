@@ -61,21 +61,34 @@ const fieldCatalog = [
     label: 'Well-known URL of OpenId Provider',
     type: 'url',
     placeholder: 'https://example.com/.well-known/openid-configuration',
-    attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl, visibleInSetupView: true },
+    attributes: {
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.discoveryUrl,
+      visibleInSetupView: true,
+    },
   },
   {
     key: 'oidcClientId',
     label: 'Client ID [OIDC Provider]',
     type: 'text',
     placeholder: '',
-    attributes: { editable: false, connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientId, visibleInSetupView: true },
+    attributes: {
+      editable: false,
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.clientId,
+      visibleInSetupView: true,
+    },
   },
   {
     key: 'oidcClientSecret',
     label: 'Client Secret [OIDC Provider]',
     type: 'text',
     placeholder: '',
-    attributes: { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret, visibleInSetupView: true },
+    attributes: {
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.clientSecret,
+      visibleInSetupView: true,
+    },
   },
   {
     key: 'rawMetadata',
@@ -86,7 +99,8 @@ const fieldCatalog = [
       rows: 5,
       requiredInEditView: false, //not required in edit view
       labelInEditView: 'Raw IdP XML (fully replaces the current one)',
-      connection: 'saml', visibleInSetupView: true
+      connection: 'saml',
+      visibleInSetupView: true,
     },
   },
   {
@@ -97,7 +111,8 @@ const fieldCatalog = [
       rows: 10,
       editable: false,
       showOnlyInEditView: true,
-      connection: 'saml', visibleInSetupView: true,
+      connection: 'saml',
+      visibleInSetupView: true,
       formatForDisplay: (value) => {
         const obj = JSON.parse(JSON.stringify(value));
         delete obj.validTo;
@@ -118,7 +133,7 @@ const fieldCatalog = [
       accessor: (o) => o?.idpMetadata?.validTo,
       showWarning: (value) => new Date(value) < new Date(),
       formatForDisplay: (value) => new Date(value).toString(),
-      visibleInSetupView: true
+      visibleInSetupView: true,
     },
   },
   {
@@ -219,7 +234,9 @@ const AddEdit = ({ connection, setup }: AddEditProps) => {
       } else {
         setSaveStatus({ status: 'SUCCESS' });
         // revalidate on save
-        mutate(setup ? `/api/setup/${setup.token}/connections` : `/api/admin/connections/${connectionClientId}`);
+        mutate(
+          setup ? `/api/setup/${setup.token}/connections` : `/api/admin/connections/${connectionClientId}`
+        );
         setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
       }
     } else {

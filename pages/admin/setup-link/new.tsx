@@ -7,7 +7,7 @@ const services = ['Jackson', 'Directory-Sync'];
 
 const SetupLink: NextPage = () => {
   const { query } = useRouter();
-  if(services.indexOf(query.service as string) === -1) {
+  if (services.indexOf(query.service as string) === -1) {
     Router.replace('/');
   }
   return <CreateSetupLink service={query.service as Service} />;
