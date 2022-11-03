@@ -472,7 +472,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return [connection];
+      return [{ ...connection, boxyhqEntityID: `${process.env.SAML_AUDIENCE}/${connection.clientID}` }];
     }
 
     if (tenant && product) {
@@ -505,7 +505,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return filteredConnections;
+      return filteredConnections.map((f) => {
+        return {
+          ...f,
+          boxyhqEntityID: `${process.env.SAML_AUDIENCE}/${f.clientID}`,
+        };
+      });
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
@@ -568,7 +573,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     if (clientID) {
       const samlConfig = await this.connectionStore.get(clientID);
 
-      return samlConfig || {};
+      return { ...samlConfig, boxyhqEntityID: `${process.env.SAML_AUDIENCE}/${samlConfig.clientID}` } || {};
     }
 
     if (tenant && product) {
@@ -581,7 +586,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return {};
       }
 
-      return { ...samlConfigs[0] };
+      return { ...samlConfigs[0], boxyhqEntityID: `${process.env.SAML_AUDIENCE}/${samlConfigs[0].clientID}` };
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);

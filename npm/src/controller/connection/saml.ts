@@ -85,7 +85,22 @@ const saml = {
     record.idpMetadata = idpMetadata;
     record.certs = certs;
 
-    const exists = await connectionStore.get(record.clientID);
+    const existing = await connectionStore.getByIndex({
+      name: IndexNames.EntityID,
+      value: idpMetadata.entityID,
+    });
+
+    if (existing.length > 0) {
+      const samlConfig = existing[0];
+      if (samlConfig.tenant !== tenant || samlConfig.product !== product) {
+        throw new JacksonError('EntityID already exists for different tenant/product');
+      }
+    }
+
+    const exists = await connectionStore.getByIndex({
+      name: IndexNames.EntityID,
+      value: record.clientID,
+    });
 
     if (exists) {
       connectionClientSecret = exists.clientSecret;

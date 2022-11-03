@@ -12,6 +12,11 @@ export class AdminController implements IAdminController {
     if (!connectionList || !connectionList.length) {
       return [];
     }
-    return connectionList;
+    return connectionList.map((c) => {
+      return {
+        ...c,
+        boxyhqEntityID: `${process.env.SAML_AUDIENCE}/${c.clientID}`,
+      };
+    });
   }
 }
