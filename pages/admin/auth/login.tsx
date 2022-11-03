@@ -8,6 +8,8 @@ import { SessionProvider } from 'next-auth/react';
 import { useState } from 'react';
 import classNames from 'classnames';
 
+import WellKnownURLs from '@components/connection/WellKnownURLs';
+
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { status } = useSession();
@@ -47,47 +49,52 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
   };
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-100'>
-      <div className='mt-4 bg-white p-6 text-left shadow-md'>
-        <div className='space-y-3'>
-          <div className='flex justify-center'>
-            <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
+    <>
+      <div className='flex min-h-screen flex-col items-center justify-center'>
+        <div className='flex flex-col'>
+          <div className='mt-4 border p-6 text-left shadow-md'>
+            <div className='space-y-3'>
+              <div className='flex justify-center'>
+                <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
+              </div>
+              <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin UI</h2>
+              <p className='text-center text-sm text-gray-600'>
+                Enterprise readiness for B2B SaaS, straight out of the box.
+              </p>
+            </div>
+            <form onSubmit={onSubmit}>
+              <div className='mt-8'>
+                <div>
+                  <label className='block' htmlFor='email'>
+                    Email
+                    <label>
+                      <input
+                        type='email'
+                        placeholder='Email'
+                        className='input-bordered input mb-5 mt-2 w-full rounded-md'
+                        required
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
+                        value={email}
+                      />
+                    </label>
+                  </label>
+                </div>
+                <div className='flex items-baseline justify-between'>
+                  <button
+                    className={classNames('btn-primary btn-block btn rounded-md', loading ? 'loading' : '')}
+                    type='submit'>
+                    Send Magic Link
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
-          <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin UI</h2>
-          <p className='text-center text-sm text-gray-600'>
-            Enterprise readiness for B2B SaaS, straight out of the box.
-          </p>
+          <WellKnownURLs className='mt-5 border p-5' />
         </div>
-        <form onSubmit={onSubmit}>
-          <div className='mt-8'>
-            <div>
-              <label className='block' htmlFor='email'>
-                Email
-                <label>
-                  <input
-                    type='email'
-                    placeholder='Email'
-                    className='input-bordered input mb-5 mt-2 w-full rounded-md'
-                    required
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
-                    value={email}
-                  />
-                </label>
-              </label>
-            </div>
-            <div className='flex items-baseline justify-between'>
-              <button
-                className={classNames('btn-primary btn-block btn rounded-md', loading ? 'loading' : '')}
-                type='submit'>
-                Send Magic Link
-              </button>
-            </div>
-          </div>
-        </form>
       </div>
-    </div>
+    </>
   );
 };
 
