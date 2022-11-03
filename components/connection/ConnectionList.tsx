@@ -34,16 +34,16 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Connections</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Enterprise SSO</h2>
         <div>
           <Link href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}>
-            <a className='btn btn-primary m-2' data-test-id='create-connection'>
+            <a className='btn-primary btn m-2' data-test-id='create-connection'>
               <PlusIcon className='mr-1 h-5 w-5' /> New Connection
             </a>
           </Link>
           {!setupToken && (
             <Link href={`/admin/setup-link/new?service=Jackson`}>
-              <a className='btn btn-primary m-2' data-test-id='create-setup-link'>
+              <a className='btn-primary btn m-2' data-test-id='create-setup-link'>
                 <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
               </a>
             </Link>
@@ -129,7 +129,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
           <div className='mt-4 flex justify-center'>
             <button
               type='button'
-              className='btn btn-outline'
+              className='btn-outline btn'
               disabled={paginate.page === 0}
               aria-label='Previous'
               onClick={() =>
@@ -145,7 +145,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
             &nbsp;&nbsp;&nbsp;&nbsp;
             <button
               type='button'
-              className='btn btn-outline'
+              className='btn-outline btn'
               disabled={connections.length === 0 || connections.length < paginate.pageLimit}
               onClick={() =>
                 setPaginate((curState) => ({
