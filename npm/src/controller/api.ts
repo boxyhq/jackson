@@ -12,6 +12,7 @@ import {
   JacksonOption,
   SAMLSSORecord,
   OIDCSSORecord,
+  GetEntityIDBody,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
@@ -366,6 +367,16 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
+  }
+
+  public getEntityID(body: GetEntityIDBody): string {
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
+    if (!tenant || !product) {
+      throw new JacksonError('Please provide `tenant` and `product`.', 400);
+    } else {
+      return `${process.env.SAML_AUDIENCE}/${dbutils.keyDigest(dbutils.keyFromParts(tenant, product))}`;
+    }
   }
 
   /**
