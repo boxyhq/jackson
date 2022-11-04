@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import { appWithTranslation } from 'next-i18next';
 import { ReactElement, ReactNode } from 'react';
 
-import { AccountLayout } from '@components/layouts';
+import { AccountLayout, SetupLayout } from '@components/layouts';
 
 import '../styles/globals.css';
 
@@ -18,6 +18,14 @@ const unauthenticatedRoutes = [
   '/oauth/jwks',
   '/idp/select',
   '/error',
+  '/setup/[token]',
+  '/setup/[token]/directory-sync',
+  '/setup/[token]/directory-sync/new',
+  '/setup/[token]/directory-sync/[directoryId]',
+  '/setup/[token]/directory-sync/[directoryId]/edit',
+  '/setup/[token]/sso-connection',
+  '/setup/[token]/sso-connection/new',
+  '/setup/[token]/sso-connection/edit/[id]',
 ];
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
@@ -38,7 +46,15 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   }
 
   if (unauthenticatedRoutes.includes(pathname)) {
-    return <Component {...props} />;
+    if (pathname.startsWith('/setup/')) {
+      return (
+        <SetupLayout>
+          <Component {...props} />
+        </SetupLayout>
+      );
+    } else {
+      return <Component {...props} />;
+    }
   }
 
   return (
