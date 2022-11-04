@@ -25,7 +25,7 @@ const links = [
 const WellKnownURLs = ({ className }: { className?: string }) => {
   return (
     <div className={className}>
-      <p>Here are the set of URIs you might commonly need access to:</p>
+      <p>Here are the set of URIs you would need access to:</p>
       <br />
       <ul className='flex flex-col space-y-1'>
         {links.map((link) => {
