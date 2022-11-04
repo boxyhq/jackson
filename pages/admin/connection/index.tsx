@@ -31,7 +31,7 @@ const Connections: NextPage = () => {
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Connections</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Enterprise SSO</h2>
         <Link href={`/admin/connection/new`} className='btn-primary btn' data-test-id='create-connection'>
           + New Connection
         </Link>

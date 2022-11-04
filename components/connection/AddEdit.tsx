@@ -273,7 +273,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
       </Link>
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {isEditView ? 'Edit Connection' : 'Create Connection'}
+          {isEditView ? 'Edit SSO Connection' : 'Create SSO Connection'}
         </h2>
         {!isEditView && (
           <div className='mb-4 flex'>

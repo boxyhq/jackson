@@ -1,4 +1,4 @@
-import { ShieldCheckIcon, UsersIcon } from '@heroicons/react/20/solid';
+import { ShieldCheckIcon, UsersIcon, HomeIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -13,10 +13,16 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
 
   const menus = [
     {
+      href: '/admin/dashboard',
+      text: 'Dashboard',
+      icon: HomeIcon,
+      active: asPath.includes('/admin/dashboard'),
+    },
+    {
       href: '/admin/connection',
-      text: 'SSO Connections',
+      text: 'Enterprise SSO',
       icon: ShieldCheckIcon,
-      active: asPath.includes('/admin/saml'),
+      active: asPath.includes('/admin/connection'),
     },
     {
       href: '/admin/directory-sync',
