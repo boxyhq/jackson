@@ -470,7 +470,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
           )}
         </form>
         <ConfirmationModal
-          title='Delete the Connection'
+          title='Delete the Connection?'
           description='This action cannot be undone. This will permanently delete the Connection.'
           visible={delModalVisible}
           onConfirm={deleteConnection}
