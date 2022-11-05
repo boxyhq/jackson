@@ -17,6 +17,11 @@ module.exports = {
       );
     }
 
+    config.module = {
+      ...config.module,
+      exprContextCritical: false,
+    };
+
     return config;
   },
   rewrites: async () => {
