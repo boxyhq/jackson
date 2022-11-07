@@ -32,10 +32,8 @@ const Connections: NextPage = () => {
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Enterprise SSO</h2>
-        <Link href={`/admin/connection/new`}>
-          <a className='btn-primary btn' data-test-id='create-connection'>
-            + New Connection
-          </a>
+        <Link href={`/admin/connection/new`} className='btn-primary btn' data-test-id='create-connection'>
+          + New Connection
         </Link>
       </div>
       {connections.length === 0 ? (
@@ -80,10 +78,8 @@ const Connections: NextPage = () => {
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
                       </td>
                       <td className='px-6 py-3'>
-                        <Link href={`/admin/connection/edit/${connection.clientID}`}>
-                          <a className='link-primary'>
-                            <PencilIcon className='h-5 w-5 text-secondary' />
-                          </a>
+                        <Link href={`/admin/connection/edit/${connection.clientID}`} className='link-primary'>
+                          <PencilIcon className='h-5 w-5 text-secondary' />
                         </Link>
                       </td>
                     </tr>

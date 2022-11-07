@@ -16,8 +16,8 @@ const Index = ({
     <>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Directory Sync</h2>
-        <Link href={'/admin/directory-sync/new'}>
-          <a className='btn btn-primary'>+ New Directory</a>
+        <Link href={'/admin/directory-sync/new'} className='btn-primary btn'>
+          + New Directory
         </Link>
       </div>
       {directories?.length === 0 && pageOffset === 0 ? (
@@ -59,15 +59,11 @@ const Index = ({
                       <td className='px-6'>{providers[directory.type]}</td>
                       <td className='px-6'>
                         <div className='flex flex-row'>
-                          <Link href={`/admin/directory-sync/${directory.id}`}>
-                            <a className='link-primary'>
-                              <CircleStackIcon className='h-5 w-5 text-secondary' />
-                            </a>
+                          <Link href={`/admin/directory-sync/${directory.id}`} className='link-primary'>
+                            <CircleStackIcon className='h-5 w-5 text-secondary' />
                           </Link>
-                          <Link href={`/admin/directory-sync/${directory.id}/edit`}>
-                            <a className='link-primary'>
-                              <PencilIcon className='h-5 w-5 text-secondary' />
-                            </a>
+                          <Link href={`/admin/directory-sync/${directory.id}/edit`} className='link-primary'>
+                            <PencilIcon className='h-5 w-5 text-secondary' />
                           </Link>
                         </div>
                       </td>

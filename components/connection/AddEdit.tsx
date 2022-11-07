@@ -267,11 +267,9 @@ const AddEdit = ({ connection }: AddEditProps) => {
 
   return (
     <>
-      <Link href='/admin/connection'>
-        <a className='btn-outline btn items-center space-x-2'>
-          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span>Back</span>
-        </a>
+      <Link href='/admin/connection' className='btn-outline btn items-center space-x-2'>
+        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
+        <span>Back</span>
       </Link>
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
@@ -370,13 +368,11 @@ const AddEdit = ({ connection }: AddEditProps) => {
                       {type === 'pre' ? (
                         <pre
                           className={`block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 
-                        text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 
-                        dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 
-                        dark:focus:ring-blue-500 ${
-                          isHidden ? (isHidden(formObj[key]) == true ? 'hidden' : '') : ''
-                        } ${
-                            showWarning ? (showWarning(formObj[key]) ? 'border-2 border-rose-500' : '') : ''
-                          }`}>
+                      text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 
+                      dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 
+                      dark:focus:ring-blue-500 ${
+                        isHidden ? (isHidden(formObj[key]) == true ? 'hidden' : '') : ''
+                      } ${showWarning ? (showWarning(formObj[key]) ? 'border-2 border-rose-500' : '') : ''}`}>
                           {value}
                         </pre>
                       ) : type === 'textarea' ? (
