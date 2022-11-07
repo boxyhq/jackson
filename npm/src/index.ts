@@ -12,6 +12,7 @@ import { LogoutController } from './controller/logout';
 import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
+import { SetupLinkController } from './controller/setup-link';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -55,6 +56,7 @@ export const controllers = async (
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
   directorySync: DirectorySync;
+  setupLinkController: SetupLinkController;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
 }> => {
@@ -67,10 +69,12 @@ export const controllers = async (
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
+  const setupLinkStore = db.store('setup:link');
 
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
+  const setupLinkController = new SetupLinkController({ setupLinkStore });
   await healthCheckController.init();
 
   const oauthController = new OAuthController({
@@ -122,6 +126,7 @@ export const controllers = async (
     logoutController,
     healthCheckController,
     directorySync,
+    setupLinkController,
     oidcDiscoveryController,
   };
 };

@@ -6,31 +6,33 @@ import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 
-export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
+export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: boolean }) => {
   const { isOpen, setIsOpen } = props;
 
   const { asPath } = useRouter();
 
-  const menus = [
-    {
-      href: '/admin/dashboard',
-      text: 'Dashboard',
-      icon: HomeIcon,
-      active: asPath.includes('/admin/dashboard'),
-    },
-    {
-      href: '/admin/connection',
-      text: 'Enterprise SSO',
-      icon: ShieldCheckIcon,
-      active: asPath.includes('/admin/connection'),
-    },
-    {
-      href: '/admin/directory-sync',
-      text: 'Directory Sync',
-      icon: UsersIcon,
-      active: asPath.includes('/admin/directory-sync'),
-    },
-  ];
+  const menus = props.hideMenus
+    ? []
+    : [
+        {
+          href: '/admin/dashboard',
+          text: 'Dashboard',
+          icon: HomeIcon,
+          active: asPath.includes('/admin/dashboard'),
+        },
+        {
+          href: '/admin/sso-connection',
+          text: 'Enterprise SSO',
+          icon: ShieldCheckIcon,
+          active: asPath.includes('/admin/sso-connection'),
+        },
+        {
+          href: '/admin/directory-sync',
+          text: 'Directory Sync',
+          icon: UsersIcon,
+          active: asPath.includes('/admin/directory-sync'),
+        },
+      ];
 
   return (
     <>

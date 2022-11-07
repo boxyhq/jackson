@@ -671,3 +671,38 @@ export interface WebhookEventLog extends DirectorySyncEvent {
   status_code?: number;
   delivered?: boolean;
 }
+export type SetupLinkCreatePayload = {
+  tenant: string;
+  product: string;
+  path: 'Jackson' | 'Directory-sync';
+  regenerate?: boolean;
+};
+
+export type SetupLinkRegeneratePayload = {
+  reference: string;
+};
+
+export type SetupLink = {
+  setupID: string;
+  tenant: string;
+  product: string;
+  url: string;
+  path: string;
+  validTill: number;
+};
+
+export type SetupLinkApiResponse = {
+  data: SetupLink | undefined;
+  error: ApiError | undefined;
+};
+
+export type SetupLinkAllApiResponse = {
+  data: SetupLink[] | undefined;
+  error: ApiError | undefined;
+};
+
+export interface ISetupLinkController {
+  create(body: SetupLinkCreatePayload): Promise<SetupLinkApiResponse>;
+  getAll(): Promise<SetupLinkAllApiResponse>;
+  getByToken(token): Promise<SetupLinkApiResponse>;
+}

@@ -6,8 +6,9 @@ const ConfirmationModal = (props: {
   description: string;
   onConfirm: any;
   onCancel: any;
+  actionButtonText?: string;
 }) => {
-  const { visible, title, description, onConfirm, onCancel } = props;
+  const { visible, title, description, onConfirm, onCancel, actionButtonText } = props;
 
   return (
     <Modal visible={visible} title={title} description={description}>
@@ -16,7 +17,7 @@ const ConfirmationModal = (props: {
           Cancel
         </button>
         <button className='btn btn-error' onClick={onConfirm}>
-          Delete
+          {actionButtonText || 'Delete'}
         </button>
       </div>
     </Modal>

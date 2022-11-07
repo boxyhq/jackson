@@ -8,6 +8,7 @@ import type {
   IOAuthController,
   IHealthCheckController,
   DirectorySync,
+  ISetupLinkController,
   DirectoryType,
   Directory,
   User,
@@ -31,6 +32,7 @@ let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
 let directorySyncController: DirectorySync;
+let setupLinkController: ISetupLinkController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 
@@ -44,6 +46,7 @@ export default async function init() {
     !g.healthCheckController ||
     !g.logoutController ||
     !g.directorySync ||
+    !g.setupLinkController ||
     !g.oidcDiscoveryController ||
     !g.spConfig
   ) {
@@ -54,6 +57,7 @@ export default async function init() {
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
     directorySyncController = ret.directorySync;
+    setupLinkController = ret.setupLinkController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
 
@@ -63,6 +67,7 @@ export default async function init() {
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
     g.directorySync = directorySyncController;
+    g.setupLinkController = setupLinkController;
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
     g.isJacksonReady = true;
@@ -74,6 +79,7 @@ export default async function init() {
     healthCheckController = g.healthCheckController;
     directorySyncController = g.directorySync;
     oidcDiscoveryController = g.oidcDiscoveryController;
+    setupLinkController = g.setupLinkController;
     spConfig = g.spConfig;
   }
 
@@ -86,6 +92,7 @@ export default async function init() {
     healthCheckController,
     directorySyncController,
     oidcDiscoveryController,
+    setupLinkController,
   };
 }
 

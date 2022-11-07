@@ -1,10 +1,13 @@
-import type { NextPage } from 'next';
-import useSWR from 'swr';
 import Link from 'next/link';
-import { ArrowLeftIcon, ArrowRightIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowRightIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import EmptyState from '@components/EmptyState';
 import { useState } from 'react';
 import { fetcher } from '@lib/ui/utils';
-import EmptyState from '@components/EmptyState';
+import useSWR from 'swr';
+
+type ConnectionListProps = {
+  setupToken?: string;
+};
 
 type Connection = {
   name: string;
@@ -15,31 +18,43 @@ type Connection = {
   oidcProvider?: any;
 };
 
-const Connections: NextPage = () => {
+const ConnectionList = ({ setupToken }: ConnectionListProps) => {
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-
   const { data: connections } = useSWR<Connection[]>(
-    [`/api/admin/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
+    [
+      `${setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections'}`,
+      `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`,
+    ],
     fetcher,
     { revalidateOnFocus: false }
   );
-
   if (!connections) {
     return null;
   }
-
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Enterprise SSO</h2>
-        <Link href={`/admin/connection/new`}>
-          <a className='btn-primary btn' data-test-id='create-connection'>
-            + New Connection
-          </a>
-        </Link>
+        <div>
+          <Link href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}>
+            <a className='btn-primary btn m-2' data-test-id='create-connection'>
+              <PlusIcon className='mr-1 h-5 w-5' /> New Connection
+            </a>
+          </Link>
+          {!setupToken && (
+            <Link href={`/admin/setup-link/new?service=Jackson`}>
+              <a className='btn-primary btn m-2' data-test-id='create-setup-link'>
+                <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
+              </a>
+            </Link>
+          )}
+        </div>
       </div>
       {connections.length === 0 ? (
-        <EmptyState title={`No connections found.`} href={`/admin/connection/new`} />
+        <EmptyState
+          title={`No connections found.`}
+          href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
+        />
       ) : (
         <>
           <div className='rounder border'>
@@ -47,11 +62,18 @@ const Connections: NextPage = () => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3'>
-                    Tenant
+                    Name
                   </th>
-                  <th scope='col' className='px-6 py-3'>
-                    Product
-                  </th>
+                  {!setupToken && (
+                    <>
+                      <th scope='col' className='px-6 py-3'>
+                        Tenant
+                      </th>
+                      <th scope='col' className='px-6 py-3'>
+                        Product
+                      </th>
+                    </>
+                  )}
                   <th scope='col' className='px-6 py-3'>
                     IdP Type
                   </th>
@@ -70,17 +92,29 @@ const Connections: NextPage = () => {
                     <tr
                       key={connection.clientID}
                       className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                        {connection.tenant}
-                      </td>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {connection.product}
+                        {connection.name || connection.idpMetadata?.provider}
                       </td>
+                      {!setupToken && (
+                        <>
+                          <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
+                            {connection.tenant}
+                          </td>
+                          <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                            {connection.product}
+                          </td>
+                        </>
+                      )}
                       <td className='px-6 py-3'>
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
                       </td>
                       <td className='px-6 py-3'>
-                        <Link href={`/admin/connection/edit/${connection.clientID}`}>
+                        <Link
+                          href={
+                            setupToken
+                              ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
+                              : `/admin/sso-connection/edit/${connection.clientID}`
+                          }>
                           <a className='link-primary'>
                             <PencilIcon className='h-5 w-5 text-secondary' />
                           </a>
@@ -130,4 +164,4 @@ const Connections: NextPage = () => {
   );
 };
 
-export default Connections;
+export default ConnectionList;
