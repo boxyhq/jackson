@@ -38,15 +38,17 @@ export default NextAuth({
       },
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user }): Promise<boolean> {
       if (!user.email) {
         return false;
       }
-      const email = user.email;
-      return validateEmailWithACL(email);
+
+      return validateEmailWithACL(user.email);
     },
+  },
+  pages: {
+    signIn: '/admin/auth/login',
   },
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
