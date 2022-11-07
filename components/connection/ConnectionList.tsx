@@ -1,5 +1,12 @@
 import Link from 'next/link';
-import { ArrowLeftIcon, ArrowRightIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ClipboardIcon,
+  LinkIcon,
+  PencilIcon,
+  PlusIcon,
+} from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useState } from 'react';
 import { fetcher } from '@lib/ui/utils';
@@ -28,6 +35,14 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
     fetcher,
     { revalidateOnFocus: false }
   );
+  const { data: boxyhqEntityID } = useSWR<any>(
+    setupToken ? `/api/setup/${setupToken}/connections/entityID` : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const copyUrl = () => {
+    navigator.clipboard.writeText(boxyhqEntityID);
+  };
   if (!connections) {
     return null;
   }
@@ -50,6 +65,18 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
           )}
         </div>
       </div>
+      {boxyhqEntityID && setupToken && (
+        <div className='mb-5 items-center justify-between'>
+        <div className='form-control p-2'>
+          <div className='input-group'>
+            <button className='btn-primary btn h-10 p-2 text-white' onClick={copyUrl}>
+              <ClipboardIcon className='mr-2 h-6 w-6' /> Copy EntityID
+            </button>
+            <input type='text' readOnly value={boxyhqEntityID} className='input-bordered input h-10 w-full' />
+          </div>
+        </div>
+        </div>
+      )}
       {connections.length === 0 ? (
         <EmptyState
           title={`No connections found.`}
