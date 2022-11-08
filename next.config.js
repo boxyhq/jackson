@@ -3,6 +3,9 @@ const { i18n } = require('./next-i18next.config');
 /** @type {import('next').NextConfig} */
 
 module.exports = {
+  experimental: {
+    enableUndici: true,
+  },
   reactStrictMode: true,
   i18n,
   output: 'standalone',
