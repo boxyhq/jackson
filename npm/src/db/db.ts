@@ -14,9 +14,9 @@ import { JacksonStore as JacksonStorePlanetscale } from './planetscale/entity/Ja
 import { JacksonIndex as JacksonIndexPlanetscale } from './planetscale/entity/JacksonIndex';
 import { JacksonTTL as JacksonTTLPlanetscale } from './planetscale/entity/JacksonTTL';
 
-import { JacksonStore as JacksonStoreMSSQL } from './sql/entity/mssql/JacksonStore';
-import { JacksonIndex as JacksonIndexMSSQL } from './sql/entity/mssql/JacksonIndex';
-import { JacksonTTL as JacksonTTLMSSQL } from './sql/entity/mssql/JacksonTTL';
+import { JacksonStore as JacksonStoreMSSQL } from './sql/mssql/entity/JacksonStore';
+import { JacksonIndex as JacksonIndexMSSQL } from './sql/mssql/entity/JacksonIndex';
+import { JacksonTTL as JacksonTTLMSSQL } from './sql/mssql/entity/JacksonTTL';
 
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {

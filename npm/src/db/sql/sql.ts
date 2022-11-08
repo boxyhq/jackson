@@ -3,7 +3,7 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings';
-import { DataSource, Like } from 'typeorm';
+import { DataSource, DataSourceOptions, Like } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
 
@@ -38,7 +38,7 @@ class Sql implements DatabaseDriver {
 
         if (sqlType === 'mssql') {
           const mssqlOpts = mssql.parseURL(this.options.url);
-          this.dataSource = new DataSource({
+          this.dataSource = new DataSource(<DataSourceOptions>{
             host: mssqlOpts.host,
             port: mssqlOpts.port,
             database: mssqlOpts.database,
@@ -46,13 +46,13 @@ class Sql implements DatabaseDriver {
             password: mssqlOpts.password,
             options: mssqlOpts.options,
             ...baseOpts,
-          } as any);
+          });
         } else {
-          this.dataSource = new DataSource({
+          this.dataSource = new DataSource(<DataSourceOptions>{
             url: this.options.url,
             ssl: this.options.ssl,
             ...baseOpts,
-          } as any);
+          });
         }
         await this.dataSource.initialize();
 
