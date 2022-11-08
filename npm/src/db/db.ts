@@ -14,6 +14,10 @@ import { JacksonStore as JacksonStorePlanetscale } from './planetscale/entity/Ja
 import { JacksonIndex as JacksonIndexPlanetscale } from './planetscale/entity/JacksonIndex';
 import { JacksonTTL as JacksonTTLPlanetscale } from './planetscale/entity/JacksonTTL';
 
+import { JacksonStore as JacksonStoreMSSQL } from './sql/entity/mssql/JacksonStore';
+import { JacksonIndex as JacksonIndexMSSQL } from './sql/entity/mssql/JacksonIndex';
+import { JacksonTTL as JacksonTTLMSSQL } from './sql/entity/mssql/JacksonTTL';
+
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
     return JSON.parse(encrypter.decrypt(res.value, res.iv, res.tag, encryptionKey));
@@ -86,14 +90,26 @@ export default {
       case 'redis':
         return new DB(await redis.new(options), encryptionKey);
       case 'sql':
-        return new DB(
-          await sql.new(options, {
-            JacksonStore,
-            JacksonIndex,
-            JacksonTTL,
-          }),
-          encryptionKey
-        );
+        switch (options.type) {
+          case 'mssql':
+            return new DB(
+              await sql.new(options, {
+                JacksonStore: JacksonStoreMSSQL,
+                JacksonIndex: JacksonIndexMSSQL,
+                JacksonTTL: JacksonTTLMSSQL,
+              }),
+              encryptionKey
+            );
+          default:
+            return new DB(
+              await sql.new(options, {
+                JacksonStore,
+                JacksonIndex,
+                JacksonTTL,
+              }),
+              encryptionKey
+            );
+        }
       case 'planetscale':
         return new DB(
           await sql.new(options, {

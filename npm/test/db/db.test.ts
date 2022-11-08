@@ -71,6 +71,14 @@ const mariadbDbConfig = <DatabaseOption>{
   cleanupLimit: 10,
 };
 
+const mssqlDbConfig = <DatabaseOption>{
+  engine: 'sql',
+  type: 'mssql',
+  url: 'sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!',
+  ttl: 1,
+  cleanupLimit: 10,
+};
+
 const dbs = [
   {
     ...memDbConfig,
@@ -112,6 +120,13 @@ const dbs = [
   },
   {
     ...mariadbDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mssqlDbConfig,
+  },
+  {
+    ...mssqlDbConfig,
     encryptionKey,
   },
 ];
