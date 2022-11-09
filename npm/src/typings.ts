@@ -287,7 +287,7 @@ export type EncryptionKey = any;
 
 export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale';
 
-export type DatabaseType = 'postgres' | 'mysql' | 'mariadb';
+export type DatabaseType = 'postgres' | 'mysql' | 'mariadb' | 'mssql';
 
 export interface DatabaseOption {
   engine?: DatabaseEngine;

@@ -78,6 +78,14 @@ jobs:
         env:
           MARIADB_DATABASE: mysql
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+      mssql:
+        image: mcr.microsoft.com/azure-sql-edge:1.0.6
+        #image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+          - 1433:1433
+        env:
+          ACCEPT_EULA: 'Y'
+          SA_PASSWORD: '123ABabc!'
 
     steps:
       - uses: actions/checkout@v3

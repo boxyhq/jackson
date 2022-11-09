@@ -3,8 +3,9 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings';
-import { DataSource, Like } from 'typeorm';
+import { DataSource, DataSourceOptions, Like } from 'typeorm';
 import * as dbutils from '../utils';
+import * as mssql from './mssql';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
@@ -27,15 +28,32 @@ class Sql implements DatabaseDriver {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
     while (true) {
       try {
-        this.dataSource = new DataSource({
+        const baseOpts = {
           type: sqlType,
-          url: this.options.url,
           synchronize: this.options.engine !== 'planetscale',
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
-          ssl: this.options.ssl,
-        });
+        };
+
+        if (sqlType === 'mssql') {
+          const mssqlOpts = mssql.parseURL(this.options.url);
+          this.dataSource = new DataSource(<DataSourceOptions>{
+            host: mssqlOpts.host,
+            port: mssqlOpts.port,
+            database: mssqlOpts.database,
+            username: mssqlOpts.username,
+            password: mssqlOpts.password,
+            options: mssqlOpts.options,
+            ...baseOpts,
+          });
+        } else {
+          this.dataSource = new DataSource(<DataSourceOptions>{
+            url: this.options.url,
+            ssl: this.options.ssl,
+            ...baseOpts,
+          });
+        }
         await this.dataSource.initialize();
 
         break;
@@ -171,7 +189,7 @@ class Sql implements DatabaseDriver {
       // no ttl support for secondary indexes
       for (const idx of indexes || []) {
         const key = dbutils.keyForIndex(namespace, idx);
-        const rec = await this.indexRepository.findOneBy({
+        const rec = await transactionalEntityManager.findOneBy(this.JacksonIndex, {
           key,
           storeKey: store.key,
         });
