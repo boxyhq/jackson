@@ -32,7 +32,7 @@ import {
   loadJWSPrivateKey,
   isJWSKeyPairLoaded,
 } from './utils';
-import x509 from '../saml/x509';
+import { isCertificateExpired, storeDefaultCertificate } from '../saml/x509';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -77,13 +77,15 @@ export class OAuthController implements IOAuthController {
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
+  private certificateStore: Storable;
   private opts: JacksonOption;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, opts }) {
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, certificateStore, opts }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
+    this.certificateStore = certificateStore;
     this.opts = opts;
   }
 
@@ -354,41 +356,25 @@ export class OAuthController implements IOAuthController {
         };
       }
 
+      let certs = await this.certificateStore.get('default');
+
+      // If no default certificate is found or certificate is expired, create a new one on the fly
+      if (!certs || (await isCertificateExpired(certs.publicKey))) {
+        certs = await storeDefaultCertificate(this.certificateStore);
+      }
+
       try {
-        const { validTo } = new crypto.X509Certificate(connection.certs.publicKey);
-        const isValidExpiry = validTo != 'Bad time value' && new Date(validTo) > new Date();
-        if (!isValidExpiry) {
-          const certs = await x509.generate();
-          connection.certs = certs;
-          if (certs) {
-            await this.connectionStore.put(
-              connection.clientID,
-              connection,
-              {
-                // secondary index on entityID
-                name: IndexNames.EntityID,
-                value: connection.idpMetadata.entityID,
-              },
-              {
-                // secondary index on tenant + product
-                name: IndexNames.TenantProduct,
-                value: dbutils.keyFromParts(connection.tenant, connection.product),
-              }
-            );
-          } else {
-            throw new Error('Error generating x509 certs');
-          }
-        }
         // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
         // If login is one of the value in prompt we want to enable forceAuthn
         // Else use the saml connection forceAuthn value
         const promptOptions = prompt ? prompt.split(' ').filter((p) => p === 'login') : [];
+
         samlReq = saml.request({
           ssoUrl,
           entityID: this.opts.samlAudience!,
           callbackUrl: this.opts.externalUrl + this.opts.samlPath,
-          signingKey: connection.certs.privateKey,
-          publicKey: connection.certs.publicKey,
+          signingKey: certs.privateKey,
+          publicKey: certs.publicKey,
           forceAuthn: promptOptions.length > 0 ? true : !!connection.forceAuthn,
         });
       } catch (err: unknown) {
@@ -402,6 +388,7 @@ export class OAuthController implements IOAuthController {
         };
       }
     }
+
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
     if (connectionIsOIDC) {
@@ -616,10 +603,12 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
+    const { privateKey } = await this.certificateStore.get('default');
+
     const validateOpts: Record<string, string> = {
       thumbprint: samlConnection.idpMetadata.thumbprint,
       audience: this.opts.samlAudience!,
-      privateKey: samlConnection.certs.privateKey,
+      privateKey,
     };
 
     if (

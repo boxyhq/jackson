@@ -418,9 +418,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        idpMetadata:
    *          type: object
    *          description: SAML IdP metadata
-   *        certs:
-   *          type: object
-   *          description: Certs generated for SAML connection
    *        oidcProvider:
    *          type: object
    *          description: OIDC IdP metadata

@@ -19,12 +19,14 @@ const logoutXPath = "/*[local-name(.)='LogoutRequest']";
 export class LogoutController {
   private connectionStore: Storable;
   private sessionStore: Storable;
+  private certificateStore: Storable;
   private opts: JacksonOption;
 
-  constructor({ connectionStore, sessionStore, opts }) {
+  constructor({ connectionStore, sessionStore, certificateStore, opts }) {
     this.opts = opts;
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
+    this.certificateStore = certificateStore;
   }
 
   // Create SLO Request
@@ -50,8 +52,9 @@ export class LogoutController {
 
     const {
       idpMetadata: { slo, provider },
-      certs: { privateKey, publicKey },
     } = samlConnection;
+
+    const { privateKey, publicKey } = await this.certificateStore.get('default');
 
     if ('redirectUrl' in slo === false && 'postUrl' in slo === false) {
       throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);

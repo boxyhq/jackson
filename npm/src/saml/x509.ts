@@ -1,4 +1,5 @@
 import * as forge from 'node-forge';
+import crypto from 'crypto';
 
 import type { Storable } from '../typings';
 
@@ -47,15 +48,25 @@ export const generateCertificate = () => {
   };
 };
 
-export const createDefaultCertificate = async (certificateStore: Storable) => {
+export const storeDefaultCertificate = async (
+  certificateStore: Storable
+): Promise<{ publicKey: string; privateKey: string }> => {
   const certificate = await certificateStore.get('default');
 
   if (certificate) {
-    return;
+    return certificate;
   }
 
   // If default certificate is not found, create one and store it.
   const { publicKey, privateKey } = generateCertificate();
 
   await certificateStore.put('default', { publicKey, privateKey });
+
+  return { publicKey, privateKey };
+};
+
+export const isCertificateExpired = async (publicKey: string) => {
+  const { validTo } = new crypto.X509Certificate(publicKey);
+
+  return !(validTo != 'Bad time value' && new Date(validTo) > new Date());
 };

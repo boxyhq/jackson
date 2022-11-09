@@ -47,10 +47,6 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     thumbprint?: string;
     validTo?: string;
   };
-  certs: {
-    privateKey: string;
-    publicKey: string;
-  };
 }
 
 export interface OIDCSSORecord extends SSOConnection {
@@ -349,10 +345,6 @@ interface Metadata {
 
 export interface SAMLConnection {
   idpMetadata: Metadata;
-  certs: {
-    privateKey: string;
-    publicKey: string;
-  };
   defaultRedirectUrl: string;
 }
 
