@@ -12,6 +12,7 @@ import { LogoutController } from './controller/logout';
 import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
+import { createDefaultCertificate } from './saml/x509';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -67,11 +68,15 @@ export const controllers = async (
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
+  const certificateStore = db.store('saml:certificate');
 
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
+
+  // Create default certificate if it doesn't exist.
+  await createDefaultCertificate(certificateStore);
 
   const oauthController = new OAuthController({
     connectionStore,

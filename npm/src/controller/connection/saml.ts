@@ -15,7 +15,6 @@ import {
   validateRedirectUrl,
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
-import x509 from '../../saml/x509';
 import { JacksonError } from '../error';
 
 const saml = {
@@ -76,14 +75,7 @@ const saml = {
 
     record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, idpMetadata.entityID));
 
-    const certs = await x509.generate();
-
-    if (!certs) {
-      throw new JacksonError('Error generating x509 certs');
-    }
-
     record.idpMetadata = idpMetadata;
-    record.certs = certs;
 
     const exists = await connectionStore.get(record.clientID);
 
