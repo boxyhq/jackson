@@ -57,7 +57,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
               <div className='flex justify-center'>
                 <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
               </div>
-              <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin Portal</h2>
+              <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin UI</h2>
               <p className='text-center text-sm text-gray-600'>
                 Enterprise readiness for B2B SaaS, straight out of the box.
               </p>
