@@ -30,6 +30,10 @@ module.exports = {
   rewrites: async () => {
     return [
       {
+        source: '/.well-known/saml.cer',
+        destination: '/api/well-known/saml.cer',
+      },
+      {
         source: '/.well-known/openid-configuration',
         destination: '/api/well-known/openid-configuration',
       },
