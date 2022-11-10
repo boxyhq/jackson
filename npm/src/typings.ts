@@ -376,7 +376,7 @@ export type OIDCErrorCodes =
   | 'registration_not_supported';
 
 export interface ISPSAMLConfig {
-  get(): {
+  get(): Promise<{
     acsUrl: string;
     entityId: string;
     response: string;
@@ -385,7 +385,7 @@ export interface ISPSAMLConfig {
     assertionEncryption: string;
     publicKey: string;
     publicKeyString: string;
-  };
+  }>;
   toMarkdown(): string;
   toHTML(): string;
 }
