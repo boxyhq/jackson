@@ -57,7 +57,7 @@ export const generateCertificate = () => {
 };
 
 export const getDefaultCertificate = async (): Promise<{ publicKey: string; privateKey: string }> => {
-  if (cachedCertificate) {
+  if (cachedCertificate && !(await isCertificateExpired(cachedCertificate.publicKey))) {
     return cachedCertificate;
   }
 
@@ -65,12 +65,10 @@ export const getDefaultCertificate = async (): Promise<{ publicKey: string; priv
     throw new Error('Certificate store not initialized');
   }
 
-  const certificate = await certificateStore.get('default');
+  cachedCertificate = await certificateStore.get('default');
 
   // If certificate is expired let it drop through so it creates a new cert
-  if (certificate && !(await isCertificateExpired(certificate.publicKey))) {
-    cachedCertificate = certificate;
-
+  if (cachedCertificate && !(await isCertificateExpired(cachedCertificate.publicKey))) {
     return cachedCertificate;
   }
 
