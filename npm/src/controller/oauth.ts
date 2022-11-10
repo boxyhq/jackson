@@ -32,7 +32,7 @@ import {
   loadJWSPrivateKey,
   isJWSKeyPairLoaded,
 } from './utils';
-import { isCertificateExpired, storeDefaultCertificate } from '../saml/x509';
+import { getDefaultCertificate } from '../saml/x509';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -77,15 +77,13 @@ export class OAuthController implements IOAuthController {
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
-  private certificateStore: Storable;
   private opts: JacksonOption;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, certificateStore, opts }) {
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, opts }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
-    this.certificateStore = certificateStore;
     this.opts = opts;
   }
 
@@ -356,12 +354,7 @@ export class OAuthController implements IOAuthController {
         };
       }
 
-      let certs = await this.certificateStore.get('default');
-
-      // If no default certificate is found or certificate is expired, create a new one on the fly
-      if (!certs || (await isCertificateExpired(certs.publicKey))) {
-        certs = await storeDefaultCertificate(this.certificateStore);
-      }
+      const cert = await getDefaultCertificate();
 
       try {
         // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
@@ -373,8 +366,8 @@ export class OAuthController implements IOAuthController {
           ssoUrl,
           entityID: this.opts.samlAudience!,
           callbackUrl: this.opts.externalUrl + this.opts.samlPath,
-          signingKey: certs.privateKey,
-          publicKey: certs.publicKey,
+          signingKey: cert.privateKey,
+          publicKey: cert.publicKey,
           forceAuthn: promptOptions.length > 0 ? true : !!connection.forceAuthn,
         });
       } catch (err: unknown) {
@@ -603,7 +596,7 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
-    const { privateKey } = await this.certificateStore.get('default');
+    const { privateKey } = await getDefaultCertificate();
 
     const validateOpts: Record<string, string> = {
       thumbprint: samlConnection.idpMetadata.thumbprint,

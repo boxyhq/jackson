@@ -10,6 +10,7 @@ import { JacksonOption, SAMLConnection, SAMLResponsePayload, SLORequestParams, S
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 import { IndexNames } from './utils';
+import { getDefaultCertificate } from '../saml/x509';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -19,14 +20,12 @@ const logoutXPath = "/*[local-name(.)='LogoutRequest']";
 export class LogoutController {
   private connectionStore: Storable;
   private sessionStore: Storable;
-  private certificateStore: Storable;
   private opts: JacksonOption;
 
-  constructor({ connectionStore, sessionStore, certificateStore, opts }) {
+  constructor({ connectionStore, sessionStore, opts }) {
     this.opts = opts;
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
-    this.certificateStore = certificateStore;
   }
 
   // Create SLO Request
@@ -54,7 +53,7 @@ export class LogoutController {
       idpMetadata: { slo, provider },
     } = samlConnection;
 
-    const { privateKey, publicKey } = await this.certificateStore.get('default');
+    const { privateKey, publicKey } = await getDefaultCertificate();
 
     if ('redirectUrl' in slo === false && 'postUrl' in slo === false) {
       throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);
