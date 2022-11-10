@@ -9,7 +9,15 @@ const Home: NextPage = () => {
     router.push('/admin/sso-connection');
   }, [router]);
 
-  return <p>Redirecting...</p>;
+  return (
+    <div
+      style={{
+        margin: 'auto',
+        textAlign: 'center',
+      }}>
+      <progress className='progress progress-primary w-56'></progress>
+    </div>
+  );
 };
 
 export default Home;

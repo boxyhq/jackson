@@ -52,10 +52,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *            "description": "SP for hoppscotch.io",
    *            "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
    *            "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *            "certs": {
-   *              "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *              "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *            }
    *          }
    *    validationErrorsPost:
    *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
@@ -422,9 +418,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        idpMetadata:
    *          type: object
    *          description: SAML IdP metadata
-   *        certs:
-   *          type: object
-   *          description: Certs generated for SAML connection
    *        oidcProvider:
    *          type: object
    *          description: OIDC IdP metadata
@@ -548,10 +541,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                "description": "SP for hoppscotch.io",
    *                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
    *                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *                "certs": {
-   *                  "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *                  "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *                }
    *            }
    *      '400':
    *        $ref: '#/responses/400Get'

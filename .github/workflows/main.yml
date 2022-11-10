@@ -78,6 +78,14 @@ jobs:
         env:
           MARIADB_DATABASE: mysql
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+      mssql:
+        image: mcr.microsoft.com/azure-sql-edge:1.0.6
+        #image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+          - 1433:1433
+        env:
+          ACCEPT_EULA: 'Y'
+          SA_PASSWORD: '123ABabc!'
 
     steps:
       - uses: actions/checkout@v3
@@ -92,7 +100,9 @@ jobs:
       - name: Setup Next.js cache
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/.next/cache
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
           # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.

@@ -36,16 +36,18 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Enterprise SSO</h2>
         <div>
-          <Link href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}>
-            <a className='btn-primary btn m-2' data-test-id='create-connection'>
-              <PlusIcon className='mr-1 h-5 w-5' /> New Connection
-            </a>
+          <Link
+            href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
+            className='btn-primary btn m-2'
+            data-test-id='create-connection'>
+            <PlusIcon className='mr-1 h-5 w-5' /> New Connection
           </Link>
           {!setupToken && (
-            <Link href={`/admin/setup-link/new?service=Jackson`}>
-              <a className='btn-primary btn m-2' data-test-id='create-setup-link'>
-                <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
-              </a>
+            <Link
+              href={`/admin/setup-link/new?service=Jackson`}
+              className='btn-primary btn m-2'
+              data-test-id='create-setup-link'>
+              <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
             </Link>
           )}
         </div>
@@ -114,10 +116,9 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
                             setupToken
                               ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
                               : `/admin/sso-connection/edit/${connection.clientID}`
-                          }>
-                          <a className='link-primary'>
-                            <PencilIcon className='h-5 w-5 text-secondary' />
-                          </a>
+                          }
+                          className='link-primary'>
+                          <PencilIcon className='h-5 w-5 text-secondary' />
                         </Link>
                       </td>
                     </tr>

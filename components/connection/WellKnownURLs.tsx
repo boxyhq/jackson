@@ -1,4 +1,5 @@
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/20/solid';
+import Link from 'next/link';
 
 const links = [
   {
@@ -14,6 +15,11 @@ const links = [
     href: '/.well-known/saml-configuration',
   },
   {
+    title: 'SAML Public Certificate',
+    description: 'The SAML Public Certificate if you want to enable encryption with your Identity Provider.',
+    href: '/.well-known/saml.cer',
+  },
+  {
     title: 'OpenID Configuration',
     description:
       'Our OpenID configuration URI which your customers will need if they are connecting via OAuth 2.0 or Open ID Connect.',
@@ -24,18 +30,18 @@ const links = [
 const WellKnownURLs = ({ className }: { className?: string }) => {
   return (
     <div className={className}>
-      <p>Here are the set of URIs you might commonly need access to:</p>
+      <p>Here are the set of URIs you would need access to:</p>
       <br />
       <ul className='flex flex-col space-y-1'>
         {links.map((link) => {
           return (
             <li key={link.href} className='text-sm'>
               <p>{link.description}</p>
-              <a href={link.href} target='_blank' rel='noreferrer'>
+              <Link href={link.href} target='_blank' rel='noreferrer'>
                 <div className='link flex'>
                   <ArrowRightOnRectangleIcon className='mr-1 h-5 w-5' /> {link.title}
                 </div>
-              </a>
+              </Link>
               <br />
             </li>
           );

@@ -5,14 +5,12 @@ import xmlbuilder from 'xmlbuilder';
 const createSSOMetadataXML = async ({
   entityId,
   acsUrl,
-}: //certificate,
-{
+  publicKeyString,
+}: {
   entityId: string;
   acsUrl: string;
-  //certificate: string;
+  publicKeyString: string;
 }): Promise<string> => {
-  // certificate = saml.stripCertHeaderAndFooter(certificate);
-
   const today = new Date();
 
   const nodes = {
@@ -23,17 +21,33 @@ const createSSOMetadataXML = async ({
       'md:SPSSODescriptor': {
         //'@WantAuthnRequestsSigned': true,
         '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-        // 'md:KeyDescriptor': {
-        //   '@use': 'signing',
-        //   'ds:KeyInfo': {
-        //     '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-        //     'ds:X509Data': {
-        //       'ds:X509Certificate': {
-        //         '#text': certificate,
-        //       },
-        //     },
-        //   },
-        // },
+        'md:KeyDescriptor': [
+          {
+            '@use': 'signing',
+            'ds:KeyInfo': {
+              '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+              'ds:X509Data': {
+                'ds:X509Certificate': {
+                  '#text': publicKeyString,
+                },
+              },
+            },
+          },
+          {
+            '@use': 'encryption',
+            'ds:KeyInfo': {
+              '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+              'ds:X509Data': {
+                'ds:X509Certificate': {
+                  '#text': publicKeyString,
+                },
+              },
+            },
+            'md:EncryptionMethod': {
+              '@Algorithm': 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+            },
+          },
+        ],
         'md:NameIDFormat': {
           '#text': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
         },
@@ -55,8 +69,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const { spConfig } = await jackson();
 
-  const config = spConfig.get();
+  const config = await spConfig.get();
 
-  const xml = await createSSOMetadataXML({ entityId: config.entityId, acsUrl: config.acsUrl });
+  const xml = await createSSOMetadataXML({
+    entityId: config.entityId,
+    acsUrl: config.acsUrl,
+    publicKeyString: config.publicKeyString,
+  });
   res.status(200).setHeader('Content-Type', 'text/xml').send(xml);
 }
