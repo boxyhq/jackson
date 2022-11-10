@@ -1,4 +1,4 @@
-# SAML Jackson
+# SAML Jackson: Enterprise SSO made simple
 
 <p>
     <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="npm" ></a>
