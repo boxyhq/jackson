@@ -15,6 +15,11 @@ const links = [
     href: '/.well-known/saml-configuration',
   },
   {
+    title: 'SAML Public Certificate',
+    description: 'The SAML Public Certificate if you want to enable encryption with your Identity Provider.',
+    href: '/.well-known/saml.cer',
+  },
+  {
     title: 'OpenID Configuration',
     description:
       'Our OpenID configuration URI which your customers will need if they are connecting via OAuth 2.0 or Open ID Connect.',

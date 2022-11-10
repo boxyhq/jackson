@@ -110,13 +110,13 @@ export const controllers = async (
         await connectionAPIController.createSAMLConnection(connection);
       }
 
-      console.log(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
+      console.info(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
   }
 
   const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
 
-  console.log(`Using engine: ${opts.db.engine}.${type}`);
+  console.info(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
     spConfig,

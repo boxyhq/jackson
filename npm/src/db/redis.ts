@@ -20,7 +20,7 @@ class Redis implements DatabaseDriver {
     }
 
     this.client = redis.createClient(opts);
-    this.client.on('error', (err: any) => console.log('Redis Client Error', err));
+    this.client.on('error', (err: any) => console.info('Redis Client Error', err));
 
     await this.client.connect();
 
