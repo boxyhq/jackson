@@ -69,7 +69,9 @@ export const getDefaultCertificate = async (): Promise<{ publicKey: string; priv
 
   // If certificate is expired let it drop through so it creates a new cert
   if (certificate && !(await isCertificateExpired(certificate.publicKey))) {
-    return certificate;
+    cachedCertificate = certificate;
+
+    return cachedCertificate;
   }
 
   // If default certificate is not found or has expired, create one and store it.
