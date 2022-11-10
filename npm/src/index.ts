@@ -96,7 +96,7 @@ export const controllers = async (
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
 
-  const spConfig = new SPSAMLConfig(opts);
+  const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;

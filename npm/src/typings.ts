@@ -383,6 +383,8 @@ export interface ISPSAMLConfig {
     assertionSignature: string;
     signatureAlgorithm: string;
     assertionEncryption: string;
+    publicKey: string;
+    publicKeyString: string;
   };
   toMarkdown(): string;
   toHTML(): string;

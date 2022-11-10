@@ -1,9 +1,11 @@
 import type { JacksonOption } from '../typings';
 import { marked } from 'marked';
 
+import saml20 from '@boxyhq/saml20';
+
 // Service Provider SAML Configuration
 export class SPSAMLConfig {
-  constructor(private opts: JacksonOption) {}
+  constructor(private opts: JacksonOption, private getDefaultCertificate: any) {}
 
   private get acsUrl(): string {
     return `${this.opts.externalUrl}${this.opts.samlPath}`;
@@ -29,14 +31,18 @@ export class SPSAMLConfig {
     return 'Unencrypted';
   }
 
-  public get(): {
+  public async get(): Promise<{
     acsUrl: string;
     entityId: string;
     response: string;
     assertionSignature: string;
     signatureAlgorithm: string;
     assertionEncryption: string;
-  } {
+    publicKey: string;
+    publicKeyString: string;
+  }> {
+    const cert = await this.getDefaultCertificate();
+
     return {
       acsUrl: this.acsUrl,
       entityId: this.entityId,
@@ -44,6 +50,8 @@ export class SPSAMLConfig {
       assertionSignature: this.assertionSignature,
       signatureAlgorithm: this.signatureAlgorithm,
       assertionEncryption: this.assertionEncryption,
+      publicKey: cert.publicKey,
+      publicKeyString: saml20.stripCertHeaderAndFooter(cert.publicKey),
     };
   }
 

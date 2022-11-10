@@ -10,7 +10,7 @@ let cachedCertificate: { publicKey: string; privateKey: string };
 export const init = async (store: Storable) => {
   certificateStore = store;
 
-  await getDefaultCertificate();
+  return await getDefaultCertificate();
 };
 
 export const generateCertificate = () => {
