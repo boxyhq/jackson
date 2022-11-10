@@ -382,7 +382,6 @@ export interface ISPSAMLConfig {
     response: string;
     assertionSignature: string;
     signatureAlgorithm: string;
-    assertionEncryption: string;
     publicKey: string;
     publicKeyString: string;
   }>;
