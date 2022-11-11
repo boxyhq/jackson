@@ -91,9 +91,15 @@ const saml = {
     });
 
     if (existing.length > 0) {
-      const samlConfig = existing[0];
-      if (samlConfig.tenant !== tenant || samlConfig.product !== product) {
-        throw new JacksonError('EntityID already exists for different tenant/product');
+      for (let i = 0; i < existing.length; i++) {
+        const samlConfig = existing[i];
+        if (samlConfig.tenant !== tenant && samlConfig.product === product) {
+          throw new JacksonError('EntityID already exists for different tenant/product');
+        } else if (samlConfig.tenant !== tenant && samlConfig.product !== product) {
+          throw new JacksonError('EntityID already exists for different tenant/product');
+        } else {
+          continue;
+        }
       }
     }
 
@@ -102,7 +108,7 @@ const saml = {
       value: record.clientID,
     });
 
-    if (exists) {
+    if (exists.length > 0) {
       connectionClientSecret = exists.clientSecret;
     } else {
       connectionClientSecret = crypto.randomBytes(24).toString('hex');
