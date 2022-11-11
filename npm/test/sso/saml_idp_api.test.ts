@@ -52,7 +52,7 @@ tap.test('controller/api', async (t) => {
           await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
-          t.equal(err.message, 'Please provide rawMetadata or encodedRawMetadata');
+          t.equal(err.message, 'Please provide rawMetadata or encodedRawMetadata or metadataUrl');
           t.equal(err.statusCode, 400);
         }
       });
@@ -212,6 +212,43 @@ tap.test('controller/api', async (t) => {
       kdStub.restore();
     });
 
+    t.test('when the request is good with metadataUrl', async (t) => {
+      const body = Object.assign({ metadataUrl: 'https://mocksaml.com/api/saml/metadata' }, saml_connection);
+
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
+
+      const response = await connectionAPIController.createSAMLConnection(
+        body as SAMLSSOConnectionWithEncodedMetadata
+      );
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID_SAML);
+      t.equal(response.idpMetadata.provider, 'saml.example.com');
+
+      const savedConnection = (
+        await connectionAPIController.getConnections({
+          clientID: CLIENT_ID_SAML,
+        })
+      )[0] as SAMLSSORecord;
+
+      t.equal(savedConnection.name, 'testConfig');
+      t.equal(savedConnection.forceAuthn, false);
+
+      kdStub.restore();
+    });
+
+    t.test('when the request is bad with metadataUrl', async (t) => {
+      const body = Object.assign({ metadataUrl: 'invalid url' }, saml_connection);
+
+      try {
+        await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+        t.fail('Expecting JacksonError.');
+      } catch (err: any) {
+        t.equal(err.message, "Couldn't fetch XML data");
+        t.equal(err.statusCode, 400);
+      }
+    });
+
     t.test('when the request is good with forceAuthn', async (t) => {
       const body = Object.assign({}, saml_connection);
       body.forceAuthn = true;
@@ -224,6 +261,30 @@ tap.test('controller/api', async (t) => {
       t.ok(kdStub.called);
       t.equal(response.clientID, CLIENT_ID_SAML);
       t.equal(response.idpMetadata.provider, PROVIDER);
+
+      const savedConnection = (
+        await connectionAPIController.getConnections({
+          clientID: CLIENT_ID_SAML,
+        })
+      )[0] as SAMLSSORecord;
+
+      t.equal(savedConnection.forceAuthn, true);
+
+      kdStub.restore();
+    });
+
+    t.test('when the request is good with forceAuthn and metadataUrl', async (t) => {
+      const body = Object.assign({ metadataUrl: 'https://mocksaml.com/api/saml/metadata' }, saml_connection);
+      body.forceAuthn = true;
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
+
+      const response = await connectionAPIController.createSAMLConnection(
+        body as SAMLSSOConnectionWithEncodedMetadata
+      );
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID_SAML);
+      t.equal(response.idpMetadata.provider, 'saml.example.com');
 
       const savedConnection = (
         await connectionAPIController.getConnections({
