@@ -72,13 +72,13 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
               <nav className='space-y-1 px-2'>
                 {menus.map((menu) => (
-                  <a
+                  <Link
                     key={menu.text}
                     href={menu.href}
                     className='group flex items-center rounded-md bg-gray-100 py-2 px-2 text-base font-medium text-gray-900'>
                     <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                     {menu.text}
-                  </a>
+                  </Link>
                 ))}
               </nav>
             </div>
