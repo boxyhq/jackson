@@ -1,4 +1,5 @@
 import type { GetServerSideProps } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import getRawBody from 'raw-body';
 import { useEffect, useRef, useState } from 'react';
@@ -33,7 +34,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
             const connectionLabel = name ? `${name} (${provider})` : provider;
             return (
               <li className='relative my-3 border-b-[1px] bg-white last:border-b-0' key={clientID}>
-                <a
+                <Link
                   href={`/api/oauth/authorize?${paramsToRelay.toString()}&idp_hint=${clientID}`}
                   className='relative flex w-full cursor-pointer items-center overflow-hidden  py-3 px-8 text-center text-[#3C454C] outline-none transition-colors hover:bg-primary/10 focus:bg-primary/30'
                   aria-label={`Connection ${connectionLabel} of type ${connectionType}`}>
@@ -43,7 +44,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
                   <span aria-hidden className='badge-primary badge badge-md'>
                     {connectionType}
                   </span>
-                </a>
+                </Link>
               </li>
             );
           })}

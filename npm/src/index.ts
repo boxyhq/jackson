@@ -13,6 +13,7 @@ import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
 import { SetupLinkController } from './controller/setup-link';
+import * as x509 from './saml/x509';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -70,12 +71,16 @@ export const controllers = async (
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
   const setupLinkStore = db.store('setup:link');
+  const certificateStore = db.store('x509:certificates');
 
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   const setupLinkController = new SetupLinkController({ setupLinkStore });
   await healthCheckController.init();
+
+  // Create default certificate if it doesn't exist.
+  await x509.init(certificateStore);
 
   const oauthController = new OAuthController({
     connectionStore,
@@ -95,7 +100,7 @@ export const controllers = async (
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
 
-  const spConfig = new SPSAMLConfig(opts);
+  const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -109,13 +114,13 @@ export const controllers = async (
         await connectionAPIController.createSAMLConnection(connection);
       }
 
-      console.log(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
+      console.info(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
   }
 
   const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
 
-  console.log(`Using engine: ${opts.db.engine}.${type}`);
+  console.info(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
     spConfig,

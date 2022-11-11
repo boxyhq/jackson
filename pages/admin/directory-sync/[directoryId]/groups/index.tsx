@@ -45,9 +45,7 @@ const GroupsList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                         <td className='px-6 py-3'>{group.name}</td>
                         <td className='px-6 py-3'>
                           <Link href={`/admin/directory-sync/${directory.id}/groups/${group.id}`}>
-                            <a>
-                              <EyeIcon className='h-5 w-5' />
-                            </a>
+                            <EyeIcon className='h-5 w-5' />
                           </Link>
                         </td>
                       </tr>

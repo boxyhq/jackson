@@ -50,16 +50,16 @@ const DirectoryTab = (props: { directory: Directory; activeTab: string; token?: 
     <nav className='-mb-px flex space-x-5 border-b' aria-label='Tabs'>
       {menus.map((menu) => {
         return (
-          <Link href={menu.href} key={menu.href}>
-            <a
-              className={classNames(
-                'inline-flex items-center border-b-2 py-4 text-sm font-medium',
-                menu.active
-                  ? 'border-gray-700 text-gray-700'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              )}>
-              {menu.name}
-            </a>
+          <Link
+            href={menu.href}
+            key={menu.href}
+            className={classNames(
+              'inline-flex items-center border-b-2 py-4 text-sm font-medium',
+              menu.active
+                ? 'border-gray-700 text-gray-700'
+                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            )}>
+            {menu.name}
           </Link>
         );
       })}

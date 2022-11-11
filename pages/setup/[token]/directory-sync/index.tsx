@@ -41,7 +41,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         setup.tenant,
         setup.product
       );
-      directories = [data];
+      directories = data ? [data] : [];
     }
   }
   const pageOffset = parseInt(offset as string);

@@ -2,6 +2,7 @@ import type { Session } from 'next-auth';
 import React from 'react';
 import { signOut } from 'next-auth/react';
 import classNames from 'classnames';
+import Link from 'next/link';
 
 export const Navbar = ({ session }: { session: Session | null }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -34,14 +35,15 @@ export const Navbar = ({ session }: { session: Session | null }) => {
             aria-orientation='vertical'
             aria-labelledby='user-menu-button'
             tabIndex={-1}>
-            <a
+            <Link
+              href=''
               className='block px-4 py-2 text-sm text-gray-700'
               role='menuitem'
               tabIndex={-1}
               id='user-menu-item-2'
               onClick={() => signOut()}>
               Sign out
-            </a>
+            </Link>
           </div> }
         </div>
       </div>

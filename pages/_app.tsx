@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { Toaster } from 'react-hot-toast';
 import { appWithTranslation } from 'next-i18next';
 import { ReactElement, ReactNode } from 'react';
+import micromatch from 'micromatch';
 
 import { AccountLayout, SetupLayout } from '@components/layouts';
 
@@ -18,15 +19,11 @@ const unauthenticatedRoutes = [
   '/oauth/jwks',
   '/idp/select',
   '/error',
-  '/setup/[token]',
-  '/setup/[token]/directory-sync',
-  '/setup/[token]/directory-sync/new',
-  '/setup/[token]/directory-sync/[directoryId]',
-  '/setup/[token]/directory-sync/[directoryId]/edit',
-  '/setup/[token]/sso-connection',
-  '/setup/[token]/sso-connection/new',
-  '/setup/[token]/sso-connection/edit/[id]',
 ];
+
+const isUnauthenticatedRoute = (pathname: string) => {
+  return micromatch.isMatch(pathname, unauthenticatedRoutes);
+};
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const { pathname } = useRouter();
@@ -45,16 +42,16 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     );
   }
 
-  if (unauthenticatedRoutes.includes(pathname)) {
-    if (pathname.startsWith('/setup/')) {
-      return (
-        <SetupLayout>
-          <Component {...props} />
-        </SetupLayout>
-      );
-    } else {
-      return <Component {...props} />;
-    }
+  if (pathname.startsWith('/setup/')) {
+    return (
+      <SetupLayout>
+        <Component {...props} />
+      </SetupLayout>
+    );
+  }
+
+  if (isUnauthenticatedRoute(pathname)) {
+    return <Component {...props} />;
   }
 
   return (

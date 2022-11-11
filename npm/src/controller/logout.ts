@@ -10,6 +10,7 @@ import { JacksonOption, SAMLConnection, SAMLResponsePayload, SLORequestParams, S
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 import { IndexNames } from './utils';
+import { getDefaultCertificate } from '../saml/x509';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -50,8 +51,9 @@ export class LogoutController {
 
     const {
       idpMetadata: { slo, provider },
-      certs: { privateKey, publicKey },
     } = samlConnection;
+
+    const { privateKey, publicKey } = await getDefaultCertificate();
 
     if ('redirectUrl' in slo === false && 'postUrl' in slo === false) {
       throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);

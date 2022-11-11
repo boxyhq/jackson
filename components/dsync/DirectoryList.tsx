@@ -17,16 +17,17 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Directory Sync</h2>
         <div>
-          <Link href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}>
-            <a className='btn btn-primary'>
-              <PlusIcon className='mr-1 h-5 w-5' /> New Directory
-            </a>
+          <Link
+            href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}
+            className='btn-primary btn'>
+            <PlusIcon className='mr-1 h-5 w-5' /> New Directory
           </Link>
           {!token && (
-            <Link href={`/admin/setup-link/new?service=Directory-Sync`}>
-              <a className='btn btn-primary m-2' data-test-id='create-setup-link'>
-                <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
-              </a>
+            <Link
+              href={`/admin/setup-link/new?service=Directory-Sync`}
+              className='btn-primary btn m-2'
+              data-test-id='create-setup-link'>
+              <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
             </Link>
           )}
         </div>
@@ -86,20 +87,18 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
                               token
                                 ? `/setup/${token}/directory-sync/${directory.id}`
                                 : `/admin/directory-sync/${directory.id}`
-                            }>
-                            <a className='link-primary'>
-                              <CircleStackIcon className='h-5 w-5 text-secondary' />
-                            </a>
+                            }
+                            className='link-primary'>
+                            <CircleStackIcon className='h-5 w-5 text-secondary' />
                           </Link>
                           <Link
                             href={
                               token
                                 ? `/setup/${token}/directory-sync/${directory.id}/edit`
                                 : `/admin/directory-sync/${directory.id}/edit`
-                            }>
-                            <a className='link-primary'>
-                              <PencilIcon className='h-5 w-5 text-secondary' />
-                            </a>
+                            }
+                            className='link-primary'>
+                            <PencilIcon className='h-5 w-5 text-secondary' />
                           </Link>
                         </div>
                       </td>

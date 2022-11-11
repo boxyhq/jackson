@@ -47,10 +47,6 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     thumbprint?: string;
     validTo?: string;
   };
-  certs: {
-    privateKey: string;
-    publicKey: string;
-  };
 }
 
 export interface OIDCSSORecord extends SSOConnection {
@@ -298,7 +294,7 @@ export type EncryptionKey = any;
 
 export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale';
 
-export type DatabaseType = 'postgres' | 'mysql' | 'mariadb';
+export type DatabaseType = 'postgres' | 'mysql' | 'mariadb' | 'mssql';
 
 export interface DatabaseOption {
   engine?: DatabaseEngine;
@@ -356,10 +352,6 @@ interface Metadata {
 
 export interface SAMLConnection {
   idpMetadata: Metadata;
-  certs: {
-    privateKey: string;
-    publicKey: string;
-  };
   defaultRedirectUrl: string;
 }
 
@@ -391,14 +383,15 @@ export type OIDCErrorCodes =
   | 'registration_not_supported';
 
 export interface ISPSAMLConfig {
-  get(): {
+  get(): Promise<{
     acsUrl: string;
     entityId: string;
     response: string;
     assertionSignature: string;
     signatureAlgorithm: string;
-    assertionEncryption: string;
-  };
+    publicKey: string;
+    publicKeyString: string;
+  }>;
   toMarkdown(): string;
   toHTML(): string;
 }

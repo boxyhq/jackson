@@ -97,11 +97,9 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
 
   return (
     <>
-      <Link href='/admin/sso-connection'>
-        <a className='btn btn-outline items-center space-x-2'>
-          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span>Back</span>
-        </a>
+      <Link href='/admin/sso-connection' className='btn-outline btn items-center space-x-2'>
+        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
+        <span>Back</span>
       </Link>
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
@@ -123,7 +121,7 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
               required={true}
               readOnly={false}
               onChange={getHandleChange}
-              className='input input-bordered w-full'
+              className='input-bordered input w-full'
             />
           </div>
           <div className='mb-6'>
@@ -141,13 +139,13 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
               required={true}
               readOnly={false}
               onChange={getHandleChange}
-              className='input input-bordered w-full'
+              className='input-bordered input w-full'
             />
           </div>
         </div>
         <div className='flex'>
           <button
-            className={`btn btn-primary mx-2 mt-5 ${loading ? 'loading' : ''}`}
+            className={`btn-primary btn mx-2 mt-5 ${loading ? 'loading' : ''}`}
             disabled={!formObj.tenant || !formObj.product || !formObj.type}
             onClick={createLink}>
             {'Generate'}
@@ -188,15 +186,15 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
           </h2>
           <div className='form-control p-2'>
             <div className='input-group'>
-              <button className='btn btn-primary h-10 p-2 text-white' onClick={copyUrl}>
+              <button className='btn-primary btn h-10 p-2 text-white' onClick={copyUrl}>
                 <ClipboardIcon className='mr-2 h-6 w-6' /> Copy Setup Link
               </button>
-              <input type='text' readOnly value={url} className='input input-bordered h-10 w-full' />
+              <input type='text' readOnly value={url} className='input-bordered input h-10 w-full' />
             </div>
           </div>
           <div className='flex'>
             <button
-              className={`btn btn-primary mx-2 mt-5 ${loading1 ? 'loading' : ''}`}
+              className={`btn-primary btn mx-2 mt-5 ${loading1 ? 'loading' : ''}`}
               disabled={!formObj.tenant || !formObj.product || !formObj.type}
               onClick={
                 url

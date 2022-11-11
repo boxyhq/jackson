@@ -18,10 +18,10 @@ export const SetupLayout = ({ children }: { children: React.ReactNode }) => {
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <div className='flex flex-shrink-0 items-center px-4'>
             <Link href={`/setup/${token}`}>
-              <a className='flex items-center'>
-                <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} className='h-8 w-auto' />
+              <div className='flex items-center'>
+                <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
                 <span className='ml-4 text-xl font-bold text-gray-900'>Setup</span>
-              </a>
+              </div>
             </Link>
           </div>
         </div>
