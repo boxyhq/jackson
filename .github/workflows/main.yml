@@ -10,7 +10,7 @@ on:
       - '*'
     tags:
       - 'beta-v*'
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
 
   # Allows you to run this workflow manually from the Actions tab
