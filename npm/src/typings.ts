@@ -16,11 +16,13 @@ export interface SAMLSSOConnection extends SSOConnection {
 export interface SAMLSSOConnectionWithRawMetadata extends SAMLSSOConnection {
   rawMetadata: string;
   encodedRawMetadata?: never;
+  metadataUrl?: string;
 }
 
 export interface SAMLSSOConnectionWithEncodedMetadata extends SAMLSSOConnection {
   rawMetadata?: never;
   encodedRawMetadata: string;
+  metadataUrl?: string;
 }
 
 export interface OIDCSSOConnection extends SSOConnection {
@@ -32,6 +34,7 @@ export interface OIDCSSOConnection extends SSOConnection {
 export interface SAMLSSORecord extends SAMLSSOConnection {
   clientID: string; // set by Jackson
   clientSecret: string; // set by Jackson
+  metadataUrl?: string;
   idpMetadata: {
     entityID: string;
     loginType?: string;

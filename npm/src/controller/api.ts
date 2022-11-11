@@ -77,6 +77,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Raw XML metadata
    *     in: formData
    *     type: string
+   *   metadataUrlParamPost:
+   *     name: metadataUrl
+   *     description: URL containing raw XML metadata
+   *     in: formData
+   *     type: string
    *   defaultRedirectUrlParamPost:
    *     name: defaultRedirectUrl
    *     description: The redirect URL to use in the IdP login flow
@@ -132,6 +137,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/descriptionParamPost'
    *      - $ref: '#/parameters/encodedRawMetadataParamPost'
    *      - $ref: '#/parameters/rawMetadataParamPost'
+   *      - $ref: '#/parameters/metadataUrlParamPost'
    *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
    *      - $ref: '#/parameters/redirectUrlParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
@@ -162,6 +168,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/descriptionParamPost'
    *      - $ref: '#/parameters/encodedRawMetadataParamPost'
    *      - $ref: '#/parameters/rawMetadataParamPost'
+   *      - $ref: '#/parameters/metadataUrlParamPost'
    *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
    *      - $ref: '#/parameters/redirectUrlParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
@@ -242,6 +249,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Raw XML metadata
    *     in: formData
    *     type: string
+   *   metadataUrlParamPatch:
+   *     name: metadataUrl
+   *     description: URL containing raw XML metadata
+   *     in: formData
+   *     type: string
    *   oidcDiscoveryUrlPatch:
    *     name: oidcDiscoveryUrl
    *     description: well-known URL where the OpenID Provider configuration is exposed
@@ -295,6 +307,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/descriptionParamPatch'
    *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
    *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/metadataUrlParamPatch'
    *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
    *       - $ref: '#/parameters/redirectUrlParamPatch'
    *       - $ref: '#/parameters/tenantParamPatch'
@@ -321,6 +334,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/descriptionParamPatch'
    *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
    *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/metadataUrlParamPatch'
    *       - $ref: '#/parameters/oidcDiscoveryUrlPatch'
    *       - $ref: '#/parameters/oidcClientIdPatch'
    *       - $ref: '#/parameters/oidcClientSecretPatch'

@@ -84,8 +84,21 @@ const fieldCatalog = [
     placeholder: 'Paste the raw XML here',
     attributes: {
       rows: 5,
+      required: false,
       requiredInEditView: false, //not required in edit view
       labelInEditView: 'Raw IdP XML (fully replaces the current one)',
+      connection: 'saml',
+    },
+  },
+  {
+    key: 'metadataUrl',
+    label: 'Metadata URL',
+    type: 'url',
+    placeholder: 'Paste the Metadata URL here',
+    attributes: {
+      required: false,
+      requiredInEditView: false, //not required in edit view
+      labelInEditView: 'Metadata URL (fully replaces the current one)',
       connection: 'saml',
     },
   },
@@ -191,9 +204,25 @@ const AddEdit = ({ connection }: AddEditProps) => {
   const [{ status }, setSaveStatus] = useState<{ status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' }>({
     status: 'UNKNOWN',
   });
+
   const saveConnection = async (event) => {
     event.preventDefault();
-    const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, ...rest } = formObj;
+    const {
+      rawMetadata,
+      redirectUrl,
+      oidcDiscoveryUrl,
+      oidcClientId,
+      oidcClientSecret,
+      metadataUrl,
+      ...rest
+    } = formObj;
+
+    if (metadataUrl && !metadataUrl.startsWith('https')) {
+      setSaveStatus({ status: 'ERROR' });
+      setTimeout(() => setSaveStatus({ status: 'UNKNOWN' }), 2000);
+      return;
+    }
+
     const encodedRawMetadata = btoa(rawMetadata || '');
     const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
@@ -209,6 +238,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
         oidcClientId: connectionIsOIDC ? oidcClientId : undefined,
         oidcClientSecret: connectionIsOIDC ? oidcClientSecret : undefined,
         redirectUrl: JSON.stringify(redirectUrlList),
+        metadataUrl: connectionIsSAML ? metadataUrl : undefined,
       }),
     });
     if (res.ok) {
