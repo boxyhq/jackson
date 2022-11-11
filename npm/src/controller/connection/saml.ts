@@ -16,6 +16,18 @@ import {
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
 import { JacksonError } from '../error';
+import axios, { AxiosError } from 'axios';
+
+async function fetchMetadata(resource: string) {
+  const response = await axios(resource, {
+    maxContentLength: 1000000,
+    maxBodyLength: 1000000,
+    timeout: 8000,
+  }).catch((error: AxiosError) => {
+    throw new JacksonError("Couldn't fetch XML data", error.response?.status || 400);
+  });
+  return response.data;
+}
 
 const saml = {
   create: async (
@@ -31,6 +43,7 @@ const saml = {
       product,
       name,
       description,
+      metadataUrl,
     } = body;
     const forceAuthn = body.forceAuthn == 'true' || body.forceAuthn == true;
 
@@ -52,14 +65,17 @@ const saml = {
       clientID: '',
       clientSecret: '',
       forceAuthn,
+      metadataUrl,
     };
 
-    let metaData = rawMetadata as string;
+    let metadata = rawMetadata as string;
     if (encodedRawMetadata) {
-      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
+      metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
-    const idpMetadata = (await saml20.parseMetadata(metaData, {})) as SAMLSSORecord['idpMetadata'];
+    metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
+
+    const idpMetadata = (await saml20.parseMetadata(metadata, {})) as SAMLSSORecord['idpMetadata'];
 
     if (!idpMetadata.entityID) {
       throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
@@ -141,6 +157,7 @@ const saml = {
       name,
       description,
       forceAuthn = false,
+      metadataUrl,
       ...clientInfo
     } = body;
 
@@ -173,14 +190,16 @@ const saml = {
       throw new JacksonError('clientSecret mismatch', 400);
     }
 
-    let metaData = rawMetadata;
+    let metadata = rawMetadata;
     if (encodedRawMetadata) {
-      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
+      metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
+    metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
+
     let newMetadata;
-    if (metaData) {
-      newMetadata = await saml20.parseMetadata(metaData, {});
+    if (metadata) {
+      newMetadata = await saml20.parseMetadata(metadata, {});
 
       if (!newMetadata.entityID) {
         throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
