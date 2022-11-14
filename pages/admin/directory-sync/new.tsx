@@ -66,13 +66,13 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
       </Link>
-      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>New Directory</h2>
+      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('new_directory')}</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Directory name</span>
+                <span className='label-text'>{t('directory_name')}</span>
               </label>
               <input
                 type='text'
@@ -84,7 +84,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Directory provider</span>
+                <span className='label-text'>{t('directory_provider')}</span>
               </label>
               <select className='select-bordered select w-full' id='type' onChange={onChange} required>
                 {Object.keys(providers).map((key) => {
@@ -98,7 +98,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Tenant</span>
+                <span className='label-text'>{t('tenant')}</span>
               </label>
               <input
                 type='text'
@@ -110,7 +110,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Product</span>
+                <span className='label-text'>{t('product')}</span>
               </label>
               <input
                 type='text'
@@ -122,7 +122,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Webhook URL</span>
+                <span className='label-text'>{t('webhook_url')}</span>
               </label>
               <input
                 type='text'
@@ -133,7 +133,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Webhook secret</span>
+                <span className='label-text'>{t('webhook_secret')}</span>
               </label>
               <input
                 type='text'
@@ -144,7 +144,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
             </div>
             <div>
               <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
-                Create Directory
+                {t('create_directory')}
               </button>
             </div>
           </div>

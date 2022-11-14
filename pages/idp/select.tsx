@@ -2,8 +2,11 @@ import type { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import getRawBody from 'raw-body';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 export default function IdPSelection({ SAMLResponse, appList }) {
+  const { t } = useTranslation('common');
   const router = useRouter();
 
   const { idp: idpList, ...rest } = router.query as { idp?: string[] };
@@ -25,7 +28,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
     const paramsToRelay = new URLSearchParams(Object.entries(rest));
     return (
       <div className='relative top-1/2 left-1/2  w-1/2 max-w-xl  -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border-[1px] py-4 px-6 text-center'>
-        <h1 className='mb-4 px-3 text-center text-lg font-bold text-black'>Choose an Identity Provider</h1>
+        <h1 className='mb-4 px-3 text-center text-lg font-bold text-black'>{t('choose_an_identity_provider')}</h1>
         <ul className='max-h-96 overflow-auto'>
           {idpList.map((idp) => {
             const { clientID, name, provider, connectionIsSAML, connectionIsOIDC } = JSON.parse(idp);
@@ -65,7 +68,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
             <input key={key} type='hidden' name={key} value={value} />
           ))}
         <fieldset className='border-0'>
-          <legend className='mb-4 px-3 text-center text-lg font-bold text-black'>Select an App</legend>
+          <legend className='mb-4 px-3 text-center text-lg font-bold text-black'>{t('select_an_app')}</legend>
           <div className='max-h-96 overflow-auto'>
             {appList.map((idp) => {
               const { clientID, name, description, product } = idp;
@@ -96,10 +99,10 @@ export default function IdPSelection({ SAMLResponse, appList }) {
     );
   }
 
-  return <div className='text-black'>Selection list empty</div>;
+  return <div className='text-black'>{t('selection_list_empty')}</div>;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, locale }) => {
   if (req.method == 'POST') {
     const body = await getRawBody(req);
     const payload = body.toString('utf-8');
@@ -110,5 +113,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
     return { props: { SAMLResponse, appList: app ? JSON.parse(app) : [] } };
   }
-  return { props: {} };
+  return { props: {
+    ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+  } };
 };
