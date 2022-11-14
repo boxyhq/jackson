@@ -54,7 +54,7 @@
     "@tailwindcss/typography": "0.5.7",
     "classnames": "2.3.2",
     "cors": "2.8.5",
-    "daisyui": "2.36.1",
+    "daisyui": "2.39.1",
     "micromatch": "4.0.5",
     "next": "13.0.0",
     "next-auth": "4.16.4",
