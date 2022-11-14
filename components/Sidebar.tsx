@@ -25,6 +25,12 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
       active: asPath.includes('/admin/connection'),
     },
     {
+      href: '/admin/saml-federation',
+      text: 'SAML Federation',
+      icon: ShieldCheckIcon,
+      active: asPath.includes('/admin/saml-federation'),
+    },
+    {
       href: '/admin/directory-sync',
       text: 'Directory Sync',
       icon: UsersIcon,
