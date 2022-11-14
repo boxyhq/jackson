@@ -13,6 +13,7 @@ import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
 import * as x509 from './saml/x509';
+import initSAMLFederation, { type SAMLFederation } from './saml-federation';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -58,6 +59,7 @@ export const controllers = async (
   directorySync: DirectorySync;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
+  samlFederation: SAMLFederation;
 }> => {
   opts = defaultOpts(opts);
 
@@ -69,6 +71,7 @@ export const controllers = async (
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
   const certificateStore = db.store('x509:certificates');
+  const samlFederationStore = db.store('saml:federation');
 
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
@@ -97,6 +100,8 @@ export const controllers = async (
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
 
   const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
+
+  const samlFederation = await initSAMLFederation({ store: samlFederationStore });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -128,9 +133,12 @@ export const controllers = async (
     healthCheckController,
     directorySync,
     oidcDiscoveryController,
+    samlFederation,
   };
 };
 
 export default controllers;
 
 export * from './typings';
+
+export type { SAMLFederation };

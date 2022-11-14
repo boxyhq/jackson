@@ -660,3 +660,16 @@ export interface WebhookEventLog extends DirectorySyncEvent {
   status_code?: number;
   delivered?: boolean;
 }
+
+export type SAMLFederationApp = {
+  id: string;
+  tenant: string;
+  product: string;
+  acsUrl: string;
+  entityId: string;
+};
+
+export interface ApiResponse<T> {
+  data: T | null;
+  error: ApiError | null;
+}
