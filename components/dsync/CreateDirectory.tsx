@@ -6,12 +6,12 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import classNames from 'classnames';
 
-type AddEditProps = {
+type CreateDirectoryProps = {
   providers: any;
   token?: string;
 };
 
-const AddEdit = ({ providers, token }: AddEditProps) => {
+const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
@@ -166,4 +166,4 @@ const AddEdit = ({ providers, token }: AddEditProps) => {
   );
 };
 
-export default AddEdit;
+export default CreateDirectory;

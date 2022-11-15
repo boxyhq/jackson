@@ -1,7 +1,8 @@
+import { Directory } from '@lib/jackson';
 import DirectoryTab from './DirectoryTab';
 
 type DirectoryInfoProps = {
-  directory: any;
+  directory: Directory;
   token?: string;
 };
 

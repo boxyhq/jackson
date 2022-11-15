@@ -19,12 +19,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { tenant, product, type: path, regenerate } = req.body;
+  const { tenant, product, type: service, regenerate } = req.body;
 
   const { data, error } = await setupLinkController.create({
     tenant,
     product,
-    path,
+    service,
     regenerate,
   });
 
@@ -34,7 +34,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
   const token = req.query.token;
-  if (token === 'undefined' || token === null || !token) {
+  if (!token) {
     return res.status(404).json({
       data: undefined,
       error: {
@@ -44,8 +44,14 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   } else {
     const { data, error } = await setupLinkController.getByToken(req.query.token);
-
-    return res.status(error ? error.code : 200).json({ data, error });
+    return res.status(error ? error.code : 200).json({
+      data: {
+        ...data,
+        tenant: undefined,
+        product: undefined,
+      },
+      error,
+    });
   }
 };
 

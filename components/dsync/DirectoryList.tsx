@@ -1,10 +1,11 @@
 import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 import { CircleStackIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { Directory } from '@lib/jackson';
 import Link from 'next/link';
 
 type DirectoryListProps = {
-  directories: any;
+  directories: Directory[];
   pageOffset: number;
   pageLimit: number;
   providers: any;
@@ -24,7 +25,7 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
           </Link>
           {!token && (
             <Link
-              href={`/admin/setup-link/new?service=Directory-Sync`}
+              href={`/admin/setup-link/new?service=dsync`}
               className='btn-primary btn m-2'
               data-test-id='create-setup-link'>
               <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link

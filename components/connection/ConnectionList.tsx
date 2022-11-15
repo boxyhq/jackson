@@ -44,7 +44,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
           </Link>
           {!setupToken && (
             <Link
-              href={`/admin/setup-link/new?service=Jackson`}
+              href={`/admin/setup-link/new?service=sso`}
               className='btn-primary btn m-2'
               data-test-id='create-setup-link'>
               <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link

@@ -11,7 +11,7 @@ const Index = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <DirectoryList
-      directories={directories}
+      directories={directories || []}
       pageOffset={pageOffset}
       pageLimit={pageLimit}
       providers={providers}
