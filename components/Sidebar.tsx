@@ -5,9 +5,11 @@ import classNames from 'classnames';
 import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
+import { useTranslation } from 'next-i18next';
 
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
   const { isOpen, setIsOpen } = props;
+  const { t } = useTranslation('common');
 
   const { asPath } = useRouter();
 
@@ -48,7 +50,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                 }}
                 type='button'
                 className='ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'>
-                <span className='sr-only'>Close sidebar</span>
+                <span className='sr-only'>{t('close_sidebar')}</span>
                 <svg
                   className='h-6 w-6 text-white'
                   xmlns='http://www.w3.org/2000/svg'

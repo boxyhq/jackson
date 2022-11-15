@@ -10,8 +10,11 @@ import DirectoryTab from '@components/dsync/DirectoryTab';
 import { inferSSRProps } from '@lib/inferSSRProps';
 import Badge from '@components/Badge';
 import classNames from 'classnames';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, events }) => {
+  const { t } = useTranslation('common');
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
 
@@ -40,7 +43,7 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
               <button
                 onClick={clearEvents}
                 className={classNames('btn-error btn-sm btn', loading ? 'loading' : '')}>
-                Clear Events
+                {t('clear_events')}
               </button>
             </div>
             <div className='rounded border'>
@@ -48,13 +51,13 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
                 <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                   <tr>
                     <th scope='col' className='px-6 py-3'>
-                      Event Type
+                      {t('event_type')}
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Sent At
+                      {t('sent_at')}
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Status Code
+                      {t('status_code')}
                     </th>
                     <th scope='col' className='px-6 py-3'></th>
                   </tr>
@@ -95,6 +98,7 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId } = context.query;
   const { directorySyncController } = await jackson();
+  const { locale }: GetServerSidePropsContext = context;
 
   const { data: directory } = await directorySyncController.directories.get(directoryId as string);
 
@@ -110,6 +114,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     props: {
       directory,
       events,
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };

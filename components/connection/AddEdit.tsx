@@ -5,6 +5,7 @@ import { mutate } from 'swr';
 import { ArrowLeftIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
 import ConfirmationModal from '@components/ConfirmationModal';
+import { useTranslation } from 'next-i18next';
 
 /**
  * Edit view will have extra fields (showOnlyInEditView: true)
@@ -185,6 +186,7 @@ type AddEditProps = {
 };
 
 const AddEdit = ({ connection }: AddEditProps) => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   // STATE: New connection type
   const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
@@ -299,15 +301,15 @@ const AddEdit = ({ connection }: AddEditProps) => {
     <>
       <Link href='/admin/connection' className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>Back</span>
+        <span>{t('back')}</span>
       </Link>
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {isEditView ? 'Edit SSO Connection' : 'Create SSO Connection'}
+          {isEditView ? t('edit_sso_connection') : t('create_sso_connection')}
         </h2>
         {!isEditView && (
           <div className='mb-4 flex'>
-            <div className='mr-2 py-3'>Select Type:</div>
+            <div className='mr-2 py-3'>{t('select_type')}:</div>
             <div className='flex flex-nowrap items-stretch justify-start gap-1 rounded-md border-2 border-dashed py-3'>
               <div>
                 <input
@@ -322,7 +324,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
                 <label
                   htmlFor='saml-conn'
                   className='cursor-pointer rounded-md border-2 border-solid py-3 px-8 font-semibold hover:shadow-md peer-checked:border-secondary-focus peer-checked:bg-secondary peer-checked:text-white'>
-                  SAML
+                  {t('saml')}
                 </label>
               </div>
               <div>
@@ -337,7 +339,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
                 <label
                   htmlFor='oidc-conn'
                   className='cursor-pointer rounded-md border-2 border-solid px-8 py-3 font-semibold hover:shadow-md peer-checked:bg-secondary peer-checked:text-white'>
-                  OIDC
+                  {t('oidc')}
                 </label>
               </div>
             </div>
@@ -456,7 +458,7 @@ const AddEdit = ({ connection }: AddEditProps) => {
               )}
             <div className='flex'>
               <button type='submit' className='btn-primary btn'>
-                Save Changes
+                {t('save_changes')}
               </button>
               <p
                 role='status'
@@ -466,14 +468,14 @@ const AddEdit = ({ connection }: AddEditProps) => {
                 {status === 'SUCCESS' && (
                   <span className='inline-flex items-center text-primary'>
                     <CheckCircleIcon aria-hidden className='mr-1 h-5 w-5'></CheckCircleIcon>
-                    Saved
+                    {t('saved')}
                   </span>
                 )}
                 {/* TODO: also display error message once we standardise the response format */}
                 {status === 'ERROR' && (
                   <span className='inline-flex items-center text-red-900'>
                     <ExclamationCircleIcon aria-hidden className='mr-1 h-5 w-5'></ExclamationCircleIcon>
-                    ERROR
+                    {t('error')}
                   </span>
                 )}
               </p>
@@ -482,22 +484,22 @@ const AddEdit = ({ connection }: AddEditProps) => {
           {connection?.clientID && connection.clientSecret && (
             <section className='mt-10 flex items-center rounded bg-red-100 p-6 text-red-900'>
               <div className='flex-1'>
-                <h6 className='mb-1 font-medium'>Delete this connection</h6>
-                <p className='font-light'>All your apps using this connection will stop working.</p>
+                <h6 className='mb-1 font-medium'>{t('delete_this_connection')}</h6>
+                <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
               </div>
               <button
                 type='button'
                 className='btn-error btn'
                 onClick={toggleDelConfirm}
                 data-modal-toggle='popup-modal'>
-                Delete
+                {t('delete')}
               </button>
             </section>
           )}
         </form>
         <ConfirmationModal
-          title='Delete the Connection?'
-          description='This action cannot be undone. This will permanently delete the Connection.'
+          title={t('delete_the_connection')}
+          description={t('confirmation_modal_description')}
           visible={delModalVisible}
           onConfirm={deleteConnection}
           onCancel={toggleDelConfirm}></ConfirmationModal>

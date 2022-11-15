@@ -2,9 +2,11 @@ import type { Session } from 'next-auth';
 import React from 'react';
 import { signOut } from 'next-auth/react';
 import classNames from 'classnames';
+import { useTranslation } from 'next-i18next';
 
 export const Navbar = ({ session }: { session: Session | null }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { t } = useTranslation('common');
 
   return (
     <div className='flex flex-1 justify-between px-4'>
@@ -15,13 +17,12 @@ export const Navbar = ({ session }: { session: Session | null }) => {
             <button
               type='button'
               className='flex h-8 w-8 items-center justify-center rounded-full bg-secondary uppercase text-cyan-50 focus:outline-none'
-              aria-label='user settings'
               aria-expanded='false'
               aria-haspopup='true'
               onClick={() => {
                 setIsOpen(!isOpen);
               }}>
-              <span className='sr-only'>Open menu</span>
+              <span className='sr-only'>{t('open_menu')}</span>
               {session?.user?.name?.[0]}
             </button>
           </div>
@@ -40,7 +41,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
               tabIndex={-1}
               id='user-menu-item-2'
               onClick={() => signOut()}>
-              Sign out
+              {t('sign_out')}
             </a>
           </div>
         </div>

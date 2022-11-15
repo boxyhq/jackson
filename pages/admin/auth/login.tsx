@@ -9,8 +9,11 @@ import { useState } from 'react';
 import classNames from 'classnames';
 
 import WellKnownURLs from '@components/connection/WellKnownURLs';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const { status } = useSession();
 
@@ -45,7 +48,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
       return;
     }
 
-    toast.success('A sign in link has been sent to your email address.');
+    toast.success(t('login_success_toast'));
   };
 
   return (
@@ -59,14 +62,14 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
               </div>
               <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin Portal</h2>
               <p className='text-center text-sm text-gray-600'>
-                Enterprise readiness for B2B SaaS, straight out of the box.
+                {t('enterprise_readiness_for_b2b_saas_straight_out_of_the_box')}
               </p>
             </div>
             <form onSubmit={onSubmit}>
               <div className='mt-8'>
                 <div>
                   <label className='block' htmlFor='email'>
-                    Email
+                    {t('email')}
                     <label>
                       <input
                         type='email'
@@ -85,7 +88,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                   <button
                     className={classNames('btn-primary btn-block btn rounded-md', loading ? 'loading' : '')}
                     type='submit'>
-                    Send Magic Link
+                    {t('send_magic_link')}
                   </button>
                 </div>
               </div>
@@ -103,9 +106,12 @@ Login.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { locale }: GetServerSidePropsContext = context;
   return {
     props: {
       csrfToken: await getCsrfToken(context),
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+      // Will be passed to the page component as props
     },
   };
 };
