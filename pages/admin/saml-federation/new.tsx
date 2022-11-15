@@ -1,4 +1,5 @@
 import type { NextPage, GetServerSideProps } from 'next';
+import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import React from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -8,11 +9,18 @@ import { useTranslation } from 'next-i18next';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
+type ApiResponse<T> = {
+  data: T | null;
+  error?: {
+    message: string;
+  } | null;
+};
+
 const NewApp: NextPage = () => {
   const router = useRouter();
   const { t } = useTranslation('common');
   const [loading, setLoading] = React.useState(false);
-  const [app, setApp] = React.useState({
+  const [newApp, setApp] = React.useState({
     tenant: '',
     product: '',
     acsUrl: '',
@@ -24,31 +32,34 @@ const NewApp: NextPage = () => {
 
     setLoading(true);
 
-    const rawResponse = await fetch('/api/admin/saml-federation', {
+    const response = await fetch('/api/admin/saml-federation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(app),
+      body: JSON.stringify(newApp),
     });
 
     setLoading(false);
 
-    const { error } = await rawResponse.json();
+    const { data, error }: ApiResponse<SAMLFederationApp> = await response.json();
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      router.replace('/admin/saml-federation');
-      toast.success('SAML federation app created successfully');
+    if (!response.ok) {
+      toast.error(error?.message || 'Something went wrong');
+      return;
     }
+
+    const app = data;
+
+    router.replace(`/admin/saml-federation/${app?.id}/metadata`);
+    toast.success('SAML federation app created successfully');
   };
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = event.target as HTMLInputElement;
 
     setApp({
-      ...app,
+      ...newApp,
       [target.id]: target.value,
     });
   };

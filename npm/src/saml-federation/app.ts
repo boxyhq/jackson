@@ -1,5 +1,10 @@
-import type { ApiError, SAMLFederationApp, Storable } from '../typings';
+import type { SAMLFederationApp, SAMLFederationAppWithMetadata, Storable } from '../typings';
 import * as dbutils from '../db/utils';
+import { createMetadataXML } from './utils';
+import { getDefaultCertificate } from '../saml/x509';
+import { JacksonError } from '../controller/error';
+
+type IdPMetadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
 
 export class App {
   protected store: Storable;
@@ -9,20 +14,14 @@ export class App {
   }
 
   // Create a new app
-  public async create({
-    tenant,
-    product,
-    acsUrl,
-    entityId,
-  }: Omit<SAMLFederationApp, 'id'>): Promise<{ data: SAMLFederationApp | null; error: ApiError | null }> {
+  public async create({ tenant, product, acsUrl, entityId }: Omit<SAMLFederationApp, 'id'>): Promise<{
+    data: SAMLFederationApp | null;
+  }> {
     if (!tenant || !product || !acsUrl || !entityId) {
-      return {
-        data: null,
-        error: {
-          code: 400,
-          message: 'Missing required parameters. Required parameters are: tenant, product, acsUrl, entityId',
-        },
-      };
+      throw new JacksonError(
+        'Missing required parameters. Required parameters are: tenant, product, acsUrl, entityId',
+        400
+      );
     }
 
     const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
@@ -37,36 +36,37 @@ export class App {
 
     await this.store.put(id, app);
 
-    return { data: app, error: null };
+    return { data: app };
+  }
+
+  // Get an app by tenant and product
+  public async get(id: string): Promise<{ data: SAMLFederationApp }> {
+    if (!id) {
+      throw new JacksonError('Missing required parameters. Required parameters are: id', 400);
+    }
+
+    const app: SAMLFederationApp = await this.store.get(id);
+
+    if (!app) {
+      throw new JacksonError('SAML Federation app not found', 404);
+    }
+
+    return { data: app };
   }
 
   // Update the app
   public async update(
     id: string,
     { tenant, product, acsUrl, entityId }: Partial<Omit<SAMLFederationApp, 'id'>>
-  ): Promise<{ data: SAMLFederationApp | null; error: ApiError | null }> {
+  ): Promise<{ data: SAMLFederationApp | null }> {
     if (!id || !tenant || !product || !acsUrl || !entityId) {
-      return {
-        data: null,
-        error: {
-          code: 400,
-          message:
-            'Missing required parameters. Required parameters are: id, tenant, product, acsUrl, entityId',
-        },
-      };
+      throw new JacksonError(
+        'Missing required parameters. Required parameters are: id, tenant, product, acsUrl, entityId',
+        400
+      );
     }
 
-    const app: SAMLFederationApp = await this.store.get(id);
-
-    if (!app) {
-      return {
-        data: null,
-        error: {
-          code: 404,
-          message: 'SAML Federation App not found',
-        },
-      };
-    }
+    const { data: app } = await this.get(id);
 
     const updatedApp = {
       ...app,
@@ -78,77 +78,44 @@ export class App {
 
     await this.store.put(id, updatedApp);
 
-    return { data: updatedApp, error: null };
-  }
-
-  // Get an app by tenant and product
-  public async get(id: string): Promise<{ data: SAMLFederationApp | null; error: ApiError | null }> {
-    if (!id) {
-      return {
-        data: null,
-        error: {
-          code: 400,
-          message: 'Missing required parameters. Required parameters are: id',
-        },
-      };
-    }
-
-    const app: SAMLFederationApp = await this.store.get(id);
-
-    if (!app) {
-      return {
-        data: null,
-        error: {
-          code: 404,
-          message: 'SAML Federation App not found',
-        },
-      };
-    }
-
-    return { data: app, error: null };
+    return { data: updatedApp };
   }
 
   // Get all apps
-  public async getAll(): Promise<{ data: SAMLFederationApp[] | null; error: ApiError | null }> {
-    try {
-      const app = (await this.store.getAll()) as SAMLFederationApp[];
+  public async getAll(): Promise<{ data: SAMLFederationApp[] | null }> {
+    const apps = (await this.store.getAll()) as SAMLFederationApp[];
 
-      return { data: app, error: null };
-    } catch (error: any) {
-      return {
-        data: null,
-        error: {
-          code: 500,
-          message: error.message,
-        },
-      };
-    }
+    return { data: apps };
   }
 
   // Delete the app
-  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+  public async delete(id: string): Promise<{ data: null }> {
     if (!id) {
-      return {
-        data: null,
-        error: {
-          code: 400,
-          message: 'Missing required parameters. Required parameters are: id',
-        },
-      };
+      throw new JacksonError('Missing required parameters. Required parameters are: id', 400);
     }
 
-    const app: SAMLFederationApp = await this.store.get(id);
+    await this.get(id);
+    await this.store.delete(id);
 
-    if (!app) {
-      return {
-        data: null,
-        error: {
-          code: 404,
-          message: 'SAML Federation App not found',
-        },
-      };
-    }
+    return { data: null };
+  }
 
-    return { data: null, error: null };
+  // Get the metadata for the app
+  public async getMetadata(id: string): Promise<{ data: IdPMetadata }> {
+    await this.get(id);
+
+    const certificate = await getDefaultCertificate();
+
+    const metadata = await createMetadataXML({
+      entityId: 'https://saml.boxyhq.com',
+      ssoUrl: `http://localhost:5225/saml/sso/`,
+      certificate: certificate.publicKey,
+    });
+
+    return {
+      data: {
+        ...metadata,
+      },
+    };
   }
 }

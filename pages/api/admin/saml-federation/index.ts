@@ -23,31 +23,39 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { tenant, product, acsUrl, entityId } = req.body;
 
-  const { data, error } = await samlFederation.app.create({
-    tenant,
-    product,
-    acsUrl,
-    entityId,
-  });
+  try {
+    const { data } = await samlFederation.app.create({
+      tenant,
+      product,
+      acsUrl,
+      entityId,
+    });
 
-  if (error) {
-    return res.status(error.code).json(error);
+    return res.status(201).json({ data });
+  } catch (error: any) {
+    const { message, statusCode } = error;
+
+    return res.status(statusCode).json({
+      error: { message },
+    });
   }
-
-  return res.status(201).json({ data });
 };
 
 // Get SAML Federation apps
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederation } = await jackson();
 
-  const { data, error } = await samlFederation.app.getAll();
+  try {
+    const { data } = await samlFederation.app.getAll();
 
-  if (error) {
-    return res.status(error.code).json(error);
+    return res.status(200).json({ data });
+  } catch (error: any) {
+    const { message, statusCode } = error;
+
+    return res.status(statusCode).json({
+      error: { message },
+    });
   }
-
-  return res.status(200).json({ data });
 };
 
 export default checkSession(handler);

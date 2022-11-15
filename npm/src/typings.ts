@@ -669,7 +669,11 @@ export type SAMLFederationApp = {
   entityId: string;
 };
 
-export interface ApiResponse<T> {
-  data: T | null;
-  error: ApiError | null;
-}
+export type SAMLFederationAppWithMetadata = SAMLFederationApp & {
+  metadata: {
+    entityId: string;
+    ssoUrl: string;
+    x509cert: string;
+    xml: string;
+  };
+};

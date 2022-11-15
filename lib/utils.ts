@@ -44,3 +44,14 @@ export const strategyChecker = (req: NextApiRequest): { isSAML: boolean; isOIDC:
   const isOIDC = 'oidcDiscoveryUrl' in req.body;
   return { isSAML, isOIDC };
 };
+
+// The method extract the error message from the error object if exists
+export const extractMessageFromError = (error: any) => {
+  const errorInfo = error.info;
+
+  if ('error' in errorInfo) {
+    return errorInfo.error.message;
+  }
+
+  return 'An unknown error occurred on the server side. Please try again later.';
+};

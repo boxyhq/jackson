@@ -1,9 +1,10 @@
 import type { NextPage } from 'next';
+import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
-import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import { extractMessageFromError } from '@lib/utils';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import EmptyState from '@components/EmptyState';
@@ -14,6 +15,10 @@ const AppsList: NextPage = () => {
 
   if (!data && !error) {
     return <Loading />;
+  }
+
+  if (error) {
+    return <Alert type='error' message={extractMessageFromError(error)}></Alert>;
   }
 
   const apps = data?.data;
@@ -49,10 +54,10 @@ const AppsList: NextPage = () => {
                   Product
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  ACS URL
+                  SP ACS URL
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Entity ID
+                  SP Entity ID
                 </th>
                 <th scope='col' className='px-6 py-3'>
                   Actions
@@ -73,11 +78,18 @@ const AppsList: NextPage = () => {
                       <td className='px-6'>{app.acsUrl}</td>
                       <td className='px-6'>{app.entityId}</td>
                       <td className='px-6'>
-                        <Link href={`/admin/saml-federation/${app.id}`} className='btn-link'>
-                          <div className='tooltip' data-tip='Edit app'>
-                            <PencilSquareIcon className='h-5 w-5' />
-                          </div>
-                        </Link>
+                        <div className='flex items-center gap-2'>
+                          <Link href={`/admin/saml-federation/${app.id}`} className='btn-link'>
+                            <div className='tooltip' data-tip='Edit app'>
+                              <PencilSquareIcon className='h-5 w-5' />
+                            </div>
+                          </Link>
+                          <Link href={`/admin/saml-federation/${app.id}/metadata`} className='btn-link'>
+                            <div className='tooltip' data-tip='Download metadata'>
+                              <span>Metadata</span>
+                            </div>
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   );
