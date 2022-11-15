@@ -104,17 +104,24 @@ export class App {
   public async getMetadata(id: string): Promise<{ data: IdPMetadata }> {
     await this.get(id);
 
-    const certificate = await getDefaultCertificate();
+    const { publicKey } = await getDefaultCertificate();
 
-    const metadata = await createMetadataXML({
-      entityId: 'https://saml.boxyhq.com',
-      ssoUrl: `http://localhost:5225/saml/sso/`,
-      certificate: certificate.publicKey,
+    const baseUrl = 'https://f4d4-103-147-208-109.in.ngrok.io';
+    const ssoUrl = `${baseUrl}/api/saml-federation/${id}/sso`;
+    const entityId = 'https://saml.boxyhq.com';
+
+    const xml = await createMetadataXML({
+      entityId,
+      ssoUrl,
+      x509cert: publicKey,
     });
 
     return {
       data: {
-        ...metadata,
+        xml,
+        entityId,
+        ssoUrl,
+        x509cert: publicKey,
       },
     };
   }

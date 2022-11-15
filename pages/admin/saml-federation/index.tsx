@@ -54,12 +54,6 @@ const AppsList: NextPage = () => {
                   Product
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  SP ACS URL
-                </th>
-                <th scope='col' className='px-6 py-3'>
-                  SP Entity ID
-                </th>
-                <th scope='col' className='px-6 py-3'>
                   Actions
                 </th>
               </tr>
@@ -71,12 +65,8 @@ const AppsList: NextPage = () => {
                     <tr
                       key={app.id}
                       className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {app.tenant}
-                      </td>
+                      <td className='px-6 py-3'>{app.tenant}</td>
                       <td className='px-6'>{app.product}</td>
-                      <td className='px-6'>{app.acsUrl}</td>
-                      <td className='px-6'>{app.entityId}</td>
                       <td className='px-6'>
                         <div className='flex items-center gap-2'>
                           <Link href={`/admin/saml-federation/${app.id}`} className='btn-link'>
@@ -85,8 +75,8 @@ const AppsList: NextPage = () => {
                             </div>
                           </Link>
                           <Link href={`/admin/saml-federation/${app.id}/metadata`} className='btn-link'>
-                            <div className='tooltip' data-tip='Download metadata'>
-                              <span>Metadata</span>
+                            <div className='tooltip' data-tip='Metadata URL'>
+                              Metadata
                             </div>
                           </Link>
                         </div>

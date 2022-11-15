@@ -14,18 +14,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Display the metadata for the SAML federation
+// Handle the SAML Request from Service Provider
+// This endpoint act as Single Sign On (SSO) URL for Service Provider
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederation } = await jackson();
 
-  const { id } = req.query as { id: string };
+  const { appId, SAMLRequest, RelayState } = req.query as {
+    appId: string;
+    SAMLRequest: string;
+    RelayState: string;
+  };
 
-  const { data: metadata, error } = await samlFederation.app.getMetadata(id);
+  await samlFederation.sso.handleSAMLRequest({ appId, request: SAMLRequest, relayState: RelayState });
 
-  if (error) {
-    return res.status(error.code).send(error);
-  }
-
-  res.setHeader('Content-type', 'text/xml');
-  res.status(200).send(metadata?.xml);
+  res.status(200).send('OK');
 };

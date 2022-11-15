@@ -36,51 +36,49 @@ const Metadata: NextPage = () => {
         SAML Federation Information for {app?.tenant} - {app?.product}
       </h2>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-        <form>
-          <div className='flex flex-col space-y-6'>
-            <p className='text-sm leading-6 text-gray-800'>
-              Choose from the following options to configure your SAML Federation on the service provider side
-            </p>
-            <div className='flex items-center gap-3'>
-              <button className='btn-outline btn-secondary btn'>Download Metadata</button>
-              <Link href={downloadMetadatUrl} className='btn-outline btn-secondary btn' target='_blank'>
-                Metadata URL
-              </Link>
+        <div className='flex flex-col space-y-6'>
+          <p className='text-sm leading-6 text-gray-800'>
+            Choose from the following options to configure your SAML Federation on the service provider side
+          </p>
+          <div className='flex items-center gap-3'>
+            <button className='btn-outline btn-secondary btn'>Download Metadata</button>
+            <Link href={downloadMetadatUrl} className='btn-outline btn-secondary btn' target='_blank'>
+              Metadata URL
+            </Link>
+          </div>
+          <div className='divider'>OR</div>
+          <div className='space-y-3'>
+            <div className='form-control w-full'>
+              <label className='label'>
+                <span className='label-text'>SSO URL</span>
+              </label>
+              <input
+                type='text'
+                className='input-bordered input w-full'
+                defaultValue={app?.metadata.ssoUrl}
+              />
             </div>
-            <div className='divider'>OR</div>
-            <div className='space-y-3'>
-              <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text'>SSO URL</span>
-                </label>
-                <input
-                  type='text'
-                  className='input-bordered input w-full'
-                  defaultValue={app?.metadata.ssoUrl}
-                />
-              </div>
-              <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text'>Entity ID</span>
-                </label>
-                <input
-                  type='text'
-                  className='input-bordered input w-full'
-                  defaultValue={app?.metadata.entityId}
-                />
-              </div>
-              <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text'>Certificate</span>
-                </label>
-                <textarea
-                  className='textarea-bordered textarea w-full'
-                  rows={5}
-                  defaultValue={app?.metadata.x509cert}></textarea>
-              </div>
+            <div className='form-control w-full'>
+              <label className='label'>
+                <span className='label-text'>Entity ID / Issuer</span>
+              </label>
+              <input
+                type='text'
+                className='input-bordered input w-full'
+                defaultValue={app?.metadata.entityId}
+              />
+            </div>
+            <div className='form-control w-full'>
+              <label className='label'>
+                <span className='label-text'>X.509 Certificate</span>
+              </label>
+              <textarea
+                className='textarea-bordered textarea w-full'
+                rows={5}
+                defaultValue={app?.metadata.x509cert}></textarea>
             </div>
           </div>
-        </form>
+        </div>
       </div>
     </>
   );
