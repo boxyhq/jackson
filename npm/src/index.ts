@@ -100,7 +100,7 @@ export const controllers = async (
 
   const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
 
-  const samlFederation = await initSAMLFederation({ db });
+  const samlFederation = await initSAMLFederation({ db, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;

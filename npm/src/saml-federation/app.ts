@@ -1,16 +1,19 @@
-import type { SAMLFederationApp, SAMLFederationAppWithMetadata, Storable } from '../typings';
+import type { SAMLFederationApp, SAMLFederationAppWithMetadata, Storable, JacksonOption } from '../typings';
 import * as dbutils from '../db/utils';
 import { createMetadataXML } from './utils';
 import { getDefaultCertificate } from '../saml/x509';
 import { JacksonError } from '../controller/error';
+import { IndexNames } from '../controller/utils';
 
 type IdPMetadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
 
 export class App {
   protected store: Storable;
+  private opts: JacksonOption;
 
-  constructor({ store }: { store: Storable }) {
+  constructor({ store, opts }: { store: Storable; opts: JacksonOption }) {
     this.store = store;
+    this.opts = opts;
   }
 
   // Create a new app
@@ -34,7 +37,10 @@ export class App {
       entityId,
     };
 
-    await this.store.put(id, app);
+    await this.store.put(id, app, {
+      name: IndexNames.EntityID,
+      value: entityId,
+    });
 
     return { data: app };
   }
@@ -46,6 +52,24 @@ export class App {
     }
 
     const app: SAMLFederationApp = await this.store.get(id);
+
+    if (!app) {
+      throw new JacksonError('SAML Federation app not found', 404);
+    }
+
+    return { data: app };
+  }
+
+  // Get the app by EntityId
+  public async getByEntityId(entityId: string): Promise<{ data: SAMLFederationApp }> {
+    if (!entityId) {
+      throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
+    }
+
+    const app: SAMLFederationApp = await this.store.getByIndex({
+      name: IndexNames.EntityID,
+      value: entityId,
+    });
 
     if (!app) {
       throw new JacksonError('SAML Federation app not found', 404);
@@ -106,9 +130,8 @@ export class App {
 
     const { publicKey } = await getDefaultCertificate();
 
-    const baseUrl = 'https://f4d4-103-147-208-109.in.ngrok.io';
-    const ssoUrl = `${baseUrl}/api/saml-federation/${id}/sso`;
-    const entityId = 'https://saml.boxyhq.com';
+    const ssoUrl = `${this.opts.externalUrl}/api/saml-federation/sso`;
+    const entityId = `${this.opts.samlAudience}`;
 
     const xml = await createMetadataXML({
       entityId,

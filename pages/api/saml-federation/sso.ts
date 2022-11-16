@@ -19,17 +19,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederation } = await jackson();
 
-  const { appId, SAMLRequest, RelayState } = req.query as {
-    appId: string;
+  const { SAMLRequest, RelayState } = req.query as {
     SAMLRequest: string;
     RelayState: string;
   };
 
-  const { data } = await samlFederation.sso.handleSAMLRequest({
-    appId,
+  const { data: session } = await samlFederation.sso.parseSAMLRequest({
     request: SAMLRequest,
     relayState: RelayState,
   });
 
-  return res.redirect(data.url);
+  const {
+    data: { url },
+  } = await samlFederation.sso.createSAMLRequest(session);
+
+  return res.redirect(url);
 };

@@ -1,6 +1,7 @@
 import saml from '@boxyhq/saml20';
+import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
-import type { SAMLConnection, SAMLFederationApp } from '../typings';
+import type { JacksonOption, SAMLConnection, SAMLFederationApp, Storable } from '../typings';
 import { App } from './app';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
@@ -12,40 +13,46 @@ import {
   decodeBase64,
   extractSAMLRequestAttributes,
   extractSAMLResponseAttributes,
-  createSAMLResponses,
+  createSAMLResponse,
   signSAMLResponse,
 } from './utils';
-import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 const deflateRawAsync = promisify(deflateRaw);
 
 export class SSOHandler {
   private app: App;
-  private session: any;
-  private connection: any;
+  private session: Storable;
+  private connection: Storable;
+  private opts: JacksonOption;
 
-  constructor({ app, sessionStore, connectionStore }: { app: App; sessionStore: any; connectionStore: any }) {
+  constructor({
+    app,
+    sessionStore,
+    connectionStore,
+    opts,
+  }: {
+    app: App;
+    sessionStore: Storable;
+    connectionStore: Storable;
+    opts: JacksonOption;
+  }) {
     this.app = app;
     this.session = sessionStore;
     this.connection = connectionStore;
+    this.opts = opts;
   }
 
-  public handleSAMLRequest = async ({
-    appId,
-    request,
-    relayState,
-  }: {
-    appId: string;
-    request: string;
-    relayState: string;
-  }) => {
-    const { data: app } = await this.app.get(appId);
-
+  // Handle the SAML Request coming from a Service Provider
+  public parseSAMLRequest = async ({ request, relayState }: { request: string; relayState: string }) => {
     const attributes = await extractSAMLRequestAttributes(await decodeBase64(request, true));
 
-    // TODO: Validate the SAML Request
+    if (!attributes.entityId) {
+      throw new JacksonError("Missing 'Entity ID' in SAML Request.", 400);
+    }
 
-    const requestSession = {
+    const { data: app } = await this.app.getByEntityId(attributes.entityId);
+
+    const session = {
       app,
       request: {
         ...attributes,
@@ -53,16 +60,16 @@ export class SSOHandler {
       },
     };
 
-    return await this.createSAMLRequest(requestSession);
+    return { data: session };
   };
 
-  public createSAMLRequest = async (requestSession: SPRequestSession) => {
-    const { app, request: spRequest } = requestSession;
+  public createSAMLRequest = async (session: SPRequestSession) => {
+    const { app, request } = session;
 
     const certificate = await getDefaultCertificate();
 
     // Create a new session to store SP request information
-    await this.session.put(spRequest.relayState, requestSession);
+    await this.session.put(request.relayState, session);
 
     // Find SAML connections for the app
     const connections = await this.connection.getByIndex({
@@ -73,11 +80,11 @@ export class SSOHandler {
     // Assume there is only one connection exists for now
     const connection = connections[0];
 
-    // Create SAML Request
+    // Create SAML Request, we will use this to redirect user to the IdP
     const samlRequest = saml.request({
       ssoUrl: connection.idpMetadata.sso.redirectUrl,
-      entityID: 'https://saml.boxyhq.com',
-      callbackUrl: `https://f4d4-103-147-208-109.in.ngrok.io/api/saml-federation/${app.id}/acs`,
+      entityID: `${this.opts.samlAudience}`,
+      callbackUrl: `${process.env.EXTERNAL_URL}/api/saml-federation/acs`,
       signingKey: certificate.privateKey,
       publicKey: certificate.publicKey,
     });
@@ -85,7 +92,7 @@ export class SSOHandler {
     // We're reusing the RelayState coming from SP's SAML Request
     const url = new URL(connection.idpMetadata.sso.redirectUrl);
 
-    url.searchParams.set('RelayState', spRequest.relayState);
+    url.searchParams.set('RelayState', request.relayState);
     url.searchParams.set(
       'SAMLRequest',
       Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64')
@@ -94,35 +101,25 @@ export class SSOHandler {
     return { data: { url: url.href } };
   };
 
-  public handleSAMLResponse = async ({
-    appId,
-    response,
-    relayState,
-  }: {
-    appId: string;
-    response: string;
-    relayState: string;
-  }) => {
-    await this.app.get(appId);
+  public parseSAMLResponse = async ({ response, relayState }: { response: string; relayState: string }) => {
+    const session = await this.session.get(relayState);
 
-    const requestSession = await this.session.get(relayState);
-
-    if (!requestSession) {
+    if (!session) {
       throw new JacksonError('Unable to validate state from the origin request.', 404);
     }
 
+    const certificate = await getDefaultCertificate();
     const decodedResponse = Buffer.from(response, 'base64').toString();
+    const entityId = saml.parseIssuer(decodedResponse);
 
-    const issuer = saml.parseIssuer(decodedResponse);
-
-    if (!issuer) {
-      throw new JacksonError('Issuer not found.', 403);
+    if (!entityId) {
+      throw new JacksonError("Missing 'Entity ID' in SAML Response.", 400);
     }
 
     // Find SAML connections for the app
     const connections: SAMLConnection[] = await this.connection.getByIndex({
       name: IndexNames.EntityID,
-      value: issuer,
+      value: entityId,
     });
 
     if (connections.length === 0) {
@@ -130,18 +127,17 @@ export class SSOHandler {
     }
 
     const connection = connections[0];
-    const certificate = await getDefaultCertificate();
 
     try {
       const attributes = await extractSAMLResponseAttributes(decodedResponse, {
         thumbprint: connection.idpMetadata.thumbprint,
-        audience: 'https://saml.boxyhq.com',
+        audience: `${this.opts.samlAudience}`,
         privateKey: certificate.privateKey,
       });
 
       return {
         data: {
-          session: requestSession,
+          session,
           attributes,
         },
       };
@@ -157,29 +153,26 @@ export class SSOHandler {
     session: SPRequestSession;
     attributes: SAMLProfile;
   }) => {
-    const { request: spRequest } = session;
-
-    console.log({ session, attributes });
-    // return;
+    const { request } = session;
 
     const certificate = await getDefaultCertificate();
 
-    const xml = await createSAMLResponses({
-      audience: spRequest.audience,
-      acsUrl: spRequest.acsUrl,
-      issuer: 'https://saml.boxyhq.com',
+    const xml = await createSAMLResponse({
+      audience: request.entityId,
+      acsUrl: request.acsUrl,
+      issuer: `${this.opts.samlAudience}`,
+      requestId: request.id,
       profile: {
         ...attributes,
       },
-      requestId: spRequest.id,
     });
 
     const xmlSigned = await signSAMLResponse(xml, certificate.privateKey, certificate.publicKey);
 
-    const htmlForm = saml.createPostForm(spRequest.acsUrl, [
+    const htmlForm = saml.createPostForm(request.acsUrl, [
       {
         name: 'RelayState',
-        value: spRequest.relayState,
+        value: request.relayState,
       },
       {
         name: 'SAMLResponse',
@@ -196,12 +189,9 @@ type SPRequestSession = {
   request: {
     id: string;
     acsUrl: string;
-    providerName: string;
-    audience: string;
+    entityId: string;
     publicKey: string | null;
+    providerName: string;
     relayState: string;
   };
 };
-
-//ACS URL: https://f4d4-103-147-208-109.in.ngrok.io/api/saml-federation/5aabcd41eabf1e97de17d3acf9a6d7e1172ea8ae/acs
-// SSO URL: https://flex.twilio.com/cadet-raven-5421

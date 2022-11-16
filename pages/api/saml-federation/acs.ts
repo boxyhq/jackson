@@ -19,23 +19,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederation } = await jackson();
 
-  const { appId } = req.query as {
-    appId: string;
-  };
-
   const { SAMLResponse, RelayState } = req.body as {
-    appId: string;
     SAMLResponse: string;
     RelayState: string;
   };
 
-  const { data } = await samlFederation.sso.handleSAMLResponse({
-    appId,
+  const {
+    data: { session, attributes },
+  } = await samlFederation.sso.parseSAMLResponse({
     response: SAMLResponse,
     relayState: RelayState,
   });
-
-  const { session, attributes } = data;
 
   const {
     data: { htmlForm },
