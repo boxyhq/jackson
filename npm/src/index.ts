@@ -71,7 +71,6 @@ export const controllers = async (
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
   const certificateStore = db.store('x509:certificates');
-  const samlFederationStore = db.store('saml:federation');
 
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
@@ -101,7 +100,7 @@ export const controllers = async (
 
   const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
 
-  const samlFederation = await initSAMLFederation({ store: samlFederationStore });
+  const samlFederation = await initSAMLFederation({ db });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;

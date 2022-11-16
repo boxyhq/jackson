@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 // Handle the SAML Request from Service Provider
-// This endpoint act as Single Sign On (SSO) URL for Service Provider
+// This endpoint act as Single Sign On (SSO) URL
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederation } = await jackson();
 
@@ -25,7 +25,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     RelayState: string;
   };
 
-  await samlFederation.sso.handleSAMLRequest({ appId, request: SAMLRequest, relayState: RelayState });
+  const { data } = await samlFederation.sso.handleSAMLRequest({
+    appId,
+    request: SAMLRequest,
+    relayState: RelayState,
+  });
 
-  res.status(200).send('OK');
+  return res.redirect(data.url);
 };
