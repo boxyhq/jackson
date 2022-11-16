@@ -211,15 +211,15 @@ export const createSAMLResponse = async ({
         'saml:AttributeStatement': {
           '@xmlns:xs': 'http://www.w3.org/2001/XMLSchema',
           '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-          'saml:Attribute': Object.keys(profile.claims.raw).map((key) => {
+          'saml:Attribute': Object.keys(profile.claims.raw).map((attributeName) => {
             return {
-              '@Name': key,
+              '@Name': attributeName,
               '@NameFormat': 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic',
               'saml:AttributeValue': {
                 '@xmlns:xs': 'http://www.w3.org/2001/XMLSchema',
                 '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
                 '@xsi:type': 'xs:string',
-                '#text': profile.claims.raw[key],
+                '#text': profile.claims.raw[attributeName],
               },
             };
           }),

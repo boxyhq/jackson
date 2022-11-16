@@ -61,21 +61,21 @@ export class App {
   }
 
   // Get the app by EntityId
-  public async getByEntityId(entityId: string): Promise<{ data: SAMLFederationApp }> {
+  public async getByEntityId(entityId: string): Promise<SAMLFederationApp> {
     if (!entityId) {
       throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
     }
 
-    const app: SAMLFederationApp = await this.store.getByIndex({
+    const apps: SAMLFederationApp[] = await this.store.getByIndex({
       name: IndexNames.EntityID,
       value: entityId,
     });
 
-    if (!app) {
+    if (!apps || apps.length === 0) {
       throw new JacksonError('SAML Federation app not found', 404);
     }
 
-    return { data: app };
+    return { ...apps[0] };
   }
 
   // Update the app

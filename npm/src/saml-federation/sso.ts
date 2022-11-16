@@ -42,17 +42,17 @@ export class SSOHandler {
     this.opts = opts;
   }
 
-  // Handle the SAML Request coming from a Service Provider
-  public parseSAMLRequest = async ({ request, relayState }: { request: string; relayState: string }) => {
+  // Get the authorize URL that will be used to redirect the user to the Identity Provider
+  public getAuthorizeUrl = async ({ request, relayState }: { request: string; relayState: string }) => {
     const attributes = await extractSAMLRequestAttributes(await decodeBase64(request, true));
 
     if (!attributes.entityId) {
       throw new JacksonError("Missing 'Entity ID' in SAML Request.", 400);
     }
 
-    const { data: app } = await this.app.getByEntityId(attributes.entityId);
+    const app = await this.app.getByEntityId(attributes.entityId);
 
-    const session = {
+    const session: SPRequestSession = {
       app,
       request: {
         ...attributes,
@@ -60,16 +60,19 @@ export class SSOHandler {
       },
     };
 
-    return { data: session };
+    // Create a new session to store SP request information
+    await this.session.put(relayState, session);
+
+    const { authorizeUrl } = await this.createSAMLRequest(session);
+
+    return {
+      authorizeUrl,
+    };
   };
 
-  public createSAMLRequest = async (session: SPRequestSession) => {
-    const { app, request } = session;
-
+  // Create a SAML Request to be sent to Identity Provider
+  public createSAMLRequest = async ({ app, request }: SPRequestSession) => {
     const certificate = await getDefaultCertificate();
-
-    // Create a new session to store SP request information
-    await this.session.put(request.relayState, session);
 
     // Find SAML connections for the app
     const connections = await this.connection.getByIndex({
@@ -98,9 +101,10 @@ export class SSOHandler {
       Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64')
     );
 
-    return { data: { url: url.href } };
+    return { authorizeUrl: url.href };
   };
 
+  // Handle the SAML Response coming from an Identity Provider
   public parseSAMLResponse = async ({ response, relayState }: { response: string; relayState: string }) => {
     const session = await this.session.get(relayState);
 
@@ -146,6 +150,7 @@ export class SSOHandler {
     }
   };
 
+  // Create SAML Response to send back to the Service Provider
   public createSAMLResponse = async ({
     session,
     attributes,
@@ -180,7 +185,7 @@ export class SSOHandler {
       },
     ]);
 
-    return { data: { htmlForm } };
+    return { htmlForm };
   };
 }
 

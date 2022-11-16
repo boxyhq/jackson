@@ -31,9 +31,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     relayState: RelayState,
   });
 
-  const {
-    data: { htmlForm },
-  } = await samlFederation.sso.createSAMLResponse({ session, attributes });
+  const { htmlForm } = await samlFederation.sso.createSAMLResponse({ session, attributes });
 
   res.send(htmlForm);
 };
