@@ -1,9 +1,9 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
-import AddEdit from '@components/connection/AddEdit';
+import Add from '@components/connection/Add';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const NewConnection: NextPage = () => {
-  return <AddEdit />;
+  return <Add />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
