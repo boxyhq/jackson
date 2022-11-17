@@ -1,4 +1,4 @@
-import { metrics } from '@opentelemetry/api-metrics';
+import { metrics } from '@opentelemetry/api';
 
 const counters = {
   createConnection: {

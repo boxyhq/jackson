@@ -1,16 +1,28 @@
+import { DiagConsoleLogger, DiagLogLevel, diag, metrics } from '@opentelemetry/api';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
-import { MeterProvider } from '@opentelemetry/sdk-metrics-base';
-import { metrics } from '@opentelemetry/api-metrics';
+import { MeterProvider, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { Resource } from '@opentelemetry/resources';
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+
 import packageInfo from '../package.json';
 
 const meterProvider = new MeterProvider({
-  exporter: new OTLPMetricExporter(),
-  interval: 1000,
   resource: new Resource({
-    'service.name': `${packageInfo.name}`,
-    'service.version': `${packageInfo.version}`,
+    [SemanticResourceAttributes.SERVICE_NAME]: `${packageInfo.name}`,
+    [SemanticResourceAttributes.SERVICE_VERSION]: `${packageInfo.version}`,
   }),
 });
+
+const metricExporter = new OTLPMetricExporter({});
+
+meterProvider.addMetricReader(
+  new PeriodicExportingMetricReader({
+    exporter: metricExporter,
+    exportIntervalMillis: 1000,
+  })
+);
+
+// Optional and only needed to see the internal diagnostic logging (during development)
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 
 metrics.setGlobalMeterProvider(meterProvider);
