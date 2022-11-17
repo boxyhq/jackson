@@ -1,15 +1,16 @@
-import type { JacksonOption, DatabaseStore } from '../typings';
+import type { JacksonOption, DatabaseStore, Storable } from '../typings';
 import { SSOHandler } from './sso';
 import { App } from './app';
+import DB from '../db/db';
 
 // This is the main entry point for the SAML Federation module
-const SAMLFederation = async ({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) => {
+const SAMLFederation = async ({ db, opts }: { db: any; opts: JacksonOption }) => {
   const appStore = db.store('samlfed:apps');
-  const sessionStore = db.store('samlfed:session');
+  const sessionStore = db.store('oauth:session', opts.db.ttl);
   const connectionStore = db.store('saml:config');
 
   const app = new App({ store: appStore, opts });
-  const sso = new SSOHandler({ app, opts, sessionStore, connectionStore });
+  const sso = new SSOHandler({ opts, app, session: sessionStore, connection: connectionStore });
 
   const response = {
     app,

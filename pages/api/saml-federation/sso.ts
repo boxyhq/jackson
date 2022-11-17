@@ -24,10 +24,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     RelayState: string;
   };
 
-  const { authorizeUrl } = await samlFederated.sso.getAuthorizeUrl({
+  const { redirectUrl } = await samlFederated.sso.getAuthorizeUrl({
     request: SAMLRequest,
     relayState: RelayState,
   });
 
-  return res.redirect(authorizeUrl);
+  return res.redirect(redirectUrl);
 };
