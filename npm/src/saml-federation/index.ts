@@ -2,8 +2,7 @@ import type { JacksonOption, DatabaseStore } from '../typings';
 import { SSOHandler } from './sso';
 import { App } from './app';
 
-export type SAMLFederation = Awaited<ReturnType<typeof SAMLFederation>>;
-
+// This is the main entry point for the SAML Federation module
 const SAMLFederation = async ({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) => {
   const appStore = db.store('samlfed:apps');
   const sessionStore = db.store('samlfed:session');
@@ -19,3 +18,5 @@ const SAMLFederation = async ({ db, opts }: { db: DatabaseStore; opts: JacksonOp
 };
 
 export default SAMLFederation;
+
+export type SAMLFederation = Awaited<ReturnType<typeof SAMLFederation>>;

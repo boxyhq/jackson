@@ -24,14 +24,10 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     RelayState: string;
   };
 
-  const {
-    data: { session, attributes },
-  } = await samlFederation.sso.parseSAMLResponse({
+  const { htmlForm } = await samlFederation.sso.generateSAMLResponseForm({
     response: SAMLResponse,
     relayState: RelayState,
   });
-
-  const { htmlForm } = await samlFederation.sso.createSAMLResponse({ session, attributes });
 
   res.send(htmlForm);
 };

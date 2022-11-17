@@ -21,7 +21,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { appId } = req.query as { appId: string };
 
   try {
-    const { data: metadata } = await samlFederation.app.getMetadata(appId);
+    const metadata = await samlFederation.app.getMetadata(appId);
 
     res.setHeader('Content-type', 'text/xml');
     res.status(200).send(metadata.xml);

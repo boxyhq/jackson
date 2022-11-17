@@ -104,8 +104,14 @@ export class SSOHandler {
     return { authorizeUrl: url.href };
   };
 
-  // Handle the SAML Response coming from an Identity Provider
-  public parseSAMLResponse = async ({ response, relayState }: { response: string; relayState: string }) => {
+  // Handle the SAML Response coming from an Identity Provider and create a SAML Response to be sent back to the Service Provider
+  public generateSAMLResponseForm = async ({
+    response,
+    relayState,
+  }: {
+    response: string;
+    relayState: string;
+  }) => {
     const session = await this.session.get(relayState);
 
     if (!session) {
@@ -139,12 +145,9 @@ export class SSOHandler {
         privateKey: certificate.privateKey,
       });
 
-      return {
-        data: {
-          session,
-          attributes,
-        },
-      };
+      const { htmlForm } = await this.createSAMLResponse({ session, attributes });
+
+      return { htmlForm };
     } catch (err) {
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }

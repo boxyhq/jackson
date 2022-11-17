@@ -24,14 +24,14 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { tenant, product, acsUrl, entityId } = req.body;
 
   try {
-    const { data } = await samlFederation.app.create({
+    const app = await samlFederation.app.create({
       tenant,
       product,
       acsUrl,
       entityId,
     });
 
-    return res.status(201).json({ data });
+    return res.status(201).json({ data: app });
   } catch (error: any) {
     const { message, statusCode } = error;
 
@@ -46,9 +46,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederation } = await jackson();
 
   try {
-    const { data } = await samlFederation.app.getAll();
+    const apps = await samlFederation.app.getAll();
 
-    return res.status(200).json({ data });
+    return res.status(200).json({ data: apps });
   } catch (error: any) {
     const { message, statusCode } = error;
 

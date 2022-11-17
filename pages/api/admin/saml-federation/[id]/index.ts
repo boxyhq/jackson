@@ -22,8 +22,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query as { id: string };
 
   try {
-    const { data: app } = await samlFederation.app.get(id);
-    const { data: metadata } = await samlFederation.app.getMetadata(id);
+    const app = await samlFederation.app.get(id);
+    const metadata = await samlFederation.app.getMetadata(id);
 
     return res.status(200).json({
       data: {
