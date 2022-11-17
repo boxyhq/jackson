@@ -11,15 +11,14 @@ import {
   JacksonOption,
   SAMLSSORecord,
   OIDCSSORecord,
+  IConnectionAPIController,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
-export type IConnectionAPIController = InstanceType<typeof ConnectionAPIController>;
-
-export class ConnectionAPIController {
+export class ConnectionAPIController implements IConnectionAPIController {
   private connectionStore: Storable;
   private opts: JacksonOption;
 
