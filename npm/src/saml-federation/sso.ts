@@ -2,13 +2,6 @@ import saml from '@boxyhq/saml20';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type { JacksonOption, SAMLConnection, SAMLFederationApp, Storable } from '../typings';
-import { App } from './app';
-import { promisify } from 'util';
-import { deflateRaw } from 'zlib';
-import * as dbutils from '../db/utils';
-import { IndexNames } from '../controller/utils';
-import { JacksonError } from '../controller/error';
-import { getDefaultCertificate } from '../saml/x509';
 import {
   decodeBase64,
   extractSAMLRequestAttributes,
@@ -16,6 +9,13 @@ import {
   createSAMLResponse,
   signSAMLResponse,
 } from './utils';
+import { App } from './app';
+import { promisify } from 'util';
+import { deflateRaw } from 'zlib';
+import * as dbutils from '../db/utils';
+import { IndexNames } from '../controller/utils';
+import { JacksonError } from '../controller/error';
+import { getDefaultCertificate } from '../saml/x509';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -104,7 +104,8 @@ export class SSOHandler {
     return { authorizeUrl: url.href };
   };
 
-  // Handle the SAML Response coming from an Identity Provider and create a SAML Response to be sent back to the Service Provider
+  // Handle the SAML Response coming from an Identity Provider
+  // and create a SAML Response to be sent back to the Service Provider
   public generateSAMLResponseForm = async ({
     response,
     relayState,
@@ -139,13 +140,18 @@ export class SSOHandler {
     const connection = connections[0];
 
     try {
+      // Extract SAML Response attributes sent by the IdP
       const attributes = await extractSAMLResponseAttributes(decodedResponse, {
         thumbprint: connection.idpMetadata.thumbprint,
         audience: `${this.opts.samlAudience}`,
         privateKey: certificate.privateKey,
       });
 
+      // Create a SAML Response to be sent back to the SP
       const { htmlForm } = await this.createSAMLResponse({ session, attributes });
+
+      // Remove the session after we've created the SAML Response
+      await this.session.delete(relayState);
 
       return { htmlForm };
     } catch (err) {
