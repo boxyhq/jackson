@@ -19,12 +19,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Create new SAML Federation app
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederation } = await jackson();
+  const { samlFederated } = await jackson();
 
   const { tenant, product, acsUrl, entityId } = req.body;
 
   try {
-    const app = await samlFederation.app.create({
+    const app = await samlFederated.app.create({
       tenant,
       product,
       acsUrl,
@@ -43,10 +43,10 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Get SAML Federation apps
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederation } = await jackson();
+  const { samlFederated } = await jackson();
 
   try {
-    const apps = await samlFederation.app.getAll();
+    const apps = await samlFederated.app.getAll();
 
     return res.status(200).json({ data: apps });
   } catch (error: any) {

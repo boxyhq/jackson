@@ -1,11 +1,9 @@
-import type { SAMLFederationApp, SAMLFederationAppWithMetadata, Storable, JacksonOption } from '../typings';
-import * as dbutils from '../db/utils';
-import { createMetadataXML } from './utils';
+import type { Storable, JacksonOption } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
 import { JacksonError } from '../controller/error';
 import { IndexNames } from '../controller/utils';
-
-type IdPMetadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
+import { createMetadataXML } from './utils';
+import * as dbutils from '../db/utils';
 
 export class App {
   protected store: Storable;
@@ -16,7 +14,7 @@ export class App {
     this.opts = opts;
   }
 
-  // Create a new app
+  // Create a new SAML Federation app for the tenant and product
   public async create({
     tenant,
     product,
@@ -63,7 +61,7 @@ export class App {
     return { ...app };
   }
 
-  // Get the app by EntityId
+  // Get the app by SP EntityId
   public async getByEntityId(entityId: string): Promise<SAMLFederationApp> {
     if (!entityId) {
       throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
@@ -148,3 +146,22 @@ export class App {
     };
   }
 }
+
+export type SAMLFederationApp = {
+  id: string;
+  tenant: string;
+  product: string;
+  acsUrl: string;
+  entityId: string;
+};
+
+type SAMLFederationAppWithMetadata = SAMLFederationApp & {
+  metadata: {
+    entityId: string;
+    ssoUrl: string;
+    x509cert: string;
+    xml: string;
+  };
+};
+
+type IdPMetadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];

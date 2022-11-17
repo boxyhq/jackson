@@ -1,7 +1,8 @@
 import saml from '@boxyhq/saml20';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
-import type { JacksonOption, SAMLConnection, SAMLFederationApp, Storable } from '../typings';
+import type { JacksonOption, SAMLConnection, Storable } from '../typings';
+import type { SAMLFederationApp } from './app';
 import {
   decodeBase64,
   extractSAMLRequestAttributes,
@@ -50,7 +51,15 @@ export class SSOHandler {
       throw new JacksonError("Missing 'Entity ID' in SAML Request.", 400);
     }
 
+    if (!attributes.acsUrl) {
+      throw new JacksonError("Missing 'ACS URL' in SAML Request.", 400);
+    }
+
     const app = await this.app.getByEntityId(attributes.entityId);
+
+    if (app.acsUrl !== attributes.acsUrl) {
+      throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
+    }
 
     const session: SPRequestSession = {
       app,
@@ -70,42 +79,8 @@ export class SSOHandler {
     };
   };
 
-  // Create a SAML Request to be sent to Identity Provider
-  public createSAMLRequest = async ({ app, request }: SPRequestSession) => {
-    const certificate = await getDefaultCertificate();
-
-    // Find SAML connections for the app
-    const connections = await this.connection.getByIndex({
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(app.tenant, app.product),
-    });
-
-    // Assume there is only one connection exists for now
-    const connection = connections[0];
-
-    // Create SAML Request, we will use this to redirect user to the IdP
-    const samlRequest = saml.request({
-      ssoUrl: connection.idpMetadata.sso.redirectUrl,
-      entityID: `${this.opts.samlAudience}`,
-      callbackUrl: `${process.env.EXTERNAL_URL}/api/saml-federation/acs`,
-      signingKey: certificate.privateKey,
-      publicKey: certificate.publicKey,
-    });
-
-    // We're reusing the RelayState coming from SP's SAML Request
-    const url = new URL(connection.idpMetadata.sso.redirectUrl);
-
-    url.searchParams.set('RelayState', request.relayState);
-    url.searchParams.set(
-      'SAMLRequest',
-      Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64')
-    );
-
-    return { authorizeUrl: url.href };
-  };
-
   // Handle the SAML Response coming from an Identity Provider
-  // and create a SAML Response to be sent back to the Service Provider
+  // and create a new SAML Response to be sent back to the Service Provider
   public generateSAMLResponseForm = async ({
     response,
     relayState,
@@ -157,6 +132,37 @@ export class SSOHandler {
     } catch (err) {
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
+  };
+
+  // Create a SAML Request to be sent to Identity Provider
+  public createSAMLRequest = async ({ app, request }: SPRequestSession) => {
+    const certificate = await getDefaultCertificate();
+
+    // Find SAML connections for the app
+    const connections = await this.connection.getByIndex({
+      name: IndexNames.TenantProduct,
+      value: dbutils.keyFromParts(app.tenant, app.product),
+    });
+
+    // Assume there is only one connection exists for now
+    const connection = connections[0];
+
+    const samlRequest = saml.request({
+      ssoUrl: connection.idpMetadata.sso.redirectUrl,
+      entityID: `${this.opts.samlAudience}`,
+      callbackUrl: `${this.opts.externalUrl}/api/saml-federation/acs`,
+      signingKey: certificate.privateKey,
+      publicKey: certificate.publicKey,
+    });
+
+    const base64SamlRequest = Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64');
+
+    const url = new URL(connection.idpMetadata.sso.redirectUrl);
+
+    url.searchParams.set('RelayState', request.relayState); // We're reusing the RelayState coming from SP's SAML Request
+    url.searchParams.set('SAMLRequest', base64SamlRequest);
+
+    return { authorizeUrl: url.href };
   };
 
   // Create SAML Response to send back to the Service Provider

@@ -17,14 +17,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 // Handle the SAML Response from Identity Provider
 // This endpoint act as Assertion Consumer Service (ACS) URL
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederation } = await jackson();
+  const { samlFederated } = await jackson();
 
   const { SAMLResponse, RelayState } = req.body as {
     SAMLResponse: string;
     RelayState: string;
   };
 
-  const { htmlForm } = await samlFederation.sso.generateSAMLResponseForm({
+  const { htmlForm } = await samlFederated.sso.generateSAMLResponseForm({
     response: SAMLResponse,
     relayState: RelayState,
   });

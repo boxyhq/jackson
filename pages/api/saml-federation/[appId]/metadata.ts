@@ -16,12 +16,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Display the metadata for the SAML federation
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederation } = await jackson();
+  const { samlFederated } = await jackson();
 
   const { appId } = req.query as { appId: string };
 
   try {
-    const metadata = await samlFederation.app.getMetadata(appId);
+    const metadata = await samlFederated.app.getMetadata(appId);
 
     res.setHeader('Content-type', 'text/xml');
     res.status(200).send(metadata.xml);

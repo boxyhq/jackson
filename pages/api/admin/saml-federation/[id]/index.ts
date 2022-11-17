@@ -17,13 +17,13 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Get SAML Federation app by id
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederation } = await jackson();
+  const { samlFederated } = await jackson();
 
   const { id } = req.query as { id: string };
 
   try {
-    const app = await samlFederation.app.get(id);
-    const metadata = await samlFederation.app.getMetadata(id);
+    const app = await samlFederated.app.get(id);
+    const metadata = await samlFederated.app.getMetadata(id);
 
     return res.status(200).json({
       data: {

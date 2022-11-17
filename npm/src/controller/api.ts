@@ -4,7 +4,6 @@ import {
   GetConfigQuery,
   GetConnectionsQuery,
   DelConnectionsQuery,
-  IConnectionAPIController,
   Storable,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
@@ -18,7 +17,9 @@ import { IndexNames } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
-export class ConnectionAPIController implements IConnectionAPIController {
+export type IConnectionAPIController = InstanceType<typeof ConnectionAPIController>;
+
+export class ConnectionAPIController {
   private connectionStore: Storable;
   private opts: JacksonOption;
 

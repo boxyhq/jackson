@@ -34,7 +34,7 @@ let healthCheckController: IHealthCheckController;
 let directorySyncController: DirectorySync;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
-let samlFederation: SAMLFederation;
+let samlFederated: SAMLFederation;
 
 const g = global as any;
 
@@ -58,7 +58,7 @@ export default async function init() {
     directorySyncController = ret.directorySync;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
-    samlFederation = ret.samlFederation;
+    samlFederated = ret.samlFederated;
 
     g.connectionAPIController = connectionAPIController;
     g.oauthController = oauthController;
@@ -69,7 +69,7 @@ export default async function init() {
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
     g.isJacksonReady = true;
-    g.samlFederation = samlFederation;
+    g.samlFederated = samlFederated;
   } else {
     connectionAPIController = g.connectionAPIController;
     oauthController = g.oauthController;
@@ -79,7 +79,7 @@ export default async function init() {
     directorySyncController = g.directorySync;
     oidcDiscoveryController = g.oidcDiscoveryController;
     spConfig = g.spConfig;
-    samlFederation = g.samlFederation;
+    samlFederated = g.samlFederated;
   }
 
   return {
@@ -91,7 +91,7 @@ export default async function init() {
     healthCheckController,
     directorySyncController,
     oidcDiscoveryController,
-    samlFederation,
+    samlFederated,
   };
 }
 

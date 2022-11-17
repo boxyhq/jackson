@@ -17,14 +17,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 // Handle the SAML Request from Service Provider
 // This endpoint act as Single Sign On (SSO) URL
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederation } = await jackson();
+  const { samlFederated } = await jackson();
 
   const { SAMLRequest, RelayState } = req.query as {
     SAMLRequest: string;
     RelayState: string;
   };
 
-  const { authorizeUrl } = await samlFederation.sso.getAuthorizeUrl({
+  const { authorizeUrl } = await samlFederated.sso.getAuthorizeUrl({
     request: SAMLRequest,
     relayState: RelayState,
   });

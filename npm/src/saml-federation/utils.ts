@@ -1,3 +1,4 @@
+import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import xmlbuilder from 'xmlbuilder';
 import saml from '@boxyhq/saml20';
 import xml2js from 'xml2js';
@@ -6,7 +7,6 @@ import { promisify } from 'util';
 import crypto from 'crypto';
 
 import claims from '../saml/claims';
-import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 // Create Metadata XML
 export const createMetadataXML = async ({

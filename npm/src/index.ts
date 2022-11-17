@@ -1,4 +1,4 @@
-import type { DirectorySync, JacksonOption } from './typings';
+import type { DirectorySync, JacksonOption, IConnectionAPIController } from './typings';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
@@ -59,7 +59,7 @@ export const controllers = async (
   directorySync: DirectorySync;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
-  samlFederation: SAMLFederation;
+  samlFederated: SAMLFederation;
 }> => {
   opts = defaultOpts(opts);
 
@@ -100,7 +100,7 @@ export const controllers = async (
 
   const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
 
-  const samlFederation = await initSAMLFederation({ db, opts });
+  const samlFederated = await initSAMLFederation({ db, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -132,7 +132,7 @@ export const controllers = async (
     healthCheckController,
     directorySync,
     oidcDiscoveryController,
-    samlFederation,
+    samlFederated,
   };
 };
 
