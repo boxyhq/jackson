@@ -19,6 +19,7 @@ module.exports = {
         })
       );
     }
+    config.resolve.fallback = { fs: false };
 
     config.module = {
       ...config.module,

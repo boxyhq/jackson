@@ -1,13 +1,16 @@
+import type { GetServerSidePropsContext } from 'next';
+import useSWR from 'swr';
 import Link from 'next/link';
 import { ArrowLeftIcon, ArrowRightIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useState } from 'react';
 import { fetcher } from '@lib/ui/utils';
-import useSWR from 'swr';
 
 type ConnectionListProps = {
   setupToken?: string;
 };
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 type Connection = {
   name: string;
@@ -19,6 +22,7 @@ type Connection = {
 };
 
 const ConnectionList = ({ setupToken }: ConnectionListProps) => {
+  const { t } = useTranslation('common');
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
   const { data: connections } = useSWR<Connection[]>(
     [
@@ -34,27 +38,27 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Enterprise SSO</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
         <div>
           <Link
             href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
             className='btn-primary btn m-2'
             data-test-id='create-connection'>
-            <PlusIcon className='mr-1 h-5 w-5' /> New Connection
+            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_connection')}
           </Link>
           {!setupToken && (
             <Link
               href={`/admin/setup-link/new?service=sso`}
               className='btn-primary btn m-2'
               data-test-id='create-setup-link'>
-              <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
+              <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
             </Link>
           )}
         </div>
       </div>
       {connections.length === 0 ? (
         <EmptyState
-          title={`No connections found.`}
+          title={t('no_connections_found')}
           href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
         />
       ) : (
@@ -64,23 +68,23 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3'>
-                    Name
+                    {t('name')}
                   </th>
                   {!setupToken && (
                     <>
                       <th scope='col' className='px-6 py-3'>
-                        Tenant
+                        {t('tenant')}
                       </th>
                       <th scope='col' className='px-6 py-3'>
-                        Product
+                        {t('product')}
                       </th>
                     </>
                   )}
                   <th scope='col' className='px-6 py-3'>
-                    IdP Type
+                    {t('idp_type')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
-                    Actions
+                    {t('actions')}
                   </th>
                 </tr>
               </thead>
@@ -132,7 +136,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
               type='button'
               className='btn-outline btn'
               disabled={paginate.page === 0}
-              aria-label='Previous'
+              aria-label={t('previous')}
               onClick={() =>
                 setPaginate((curState) => ({
                   ...curState,
@@ -141,7 +145,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
                 }))
               }>
               <ArrowLeftIcon className='mr-1 h-5 w-5' aria-hidden />
-              Prev
+              {t('prev')}
             </button>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <button
@@ -156,7 +160,7 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
                 }))
               }>
               <ArrowRightIcon className='mr-1 h-5 w-5' aria-hidden />
-              Next
+              {t('next')}
             </button>
           </div>
         </>
@@ -166,3 +170,11 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
 };
 
 export default ConnectionList;
+
+export async function getStaticProps({ locale }: GetServerSidePropsContext) {
+  return {
+    props: {
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
+  };
+}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
 
 const Paginate = ({
   pageOffset,
@@ -11,6 +12,7 @@ const Paginate = ({
   itemsCount: number;
   path: string;
 }) => {
+  const { t } = useTranslation('common');
   if ((itemsCount === 0 && pageOffset === 0) || (itemsCount < pageLimit && pageOffset === 0)) {
     return null;
   }
@@ -34,13 +36,13 @@ const Paginate = ({
             clipRule='evenodd'
           />
         </svg>
-        Previous
+        {t('previous')}
       </Link>
 
       <Link
         href={nextPageUrl}
         className='inline-flex items-center rounded-lg border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'>
-        Next
+        {t('next')}
         <svg
           className='ml-2 h-5 w-5'
           fill='currentColor'
