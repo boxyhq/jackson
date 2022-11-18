@@ -1,7 +1,6 @@
-import type { JacksonOption, DatabaseStore, Storable } from '../typings';
+import type { JacksonOption } from '../typings';
 import { SSOHandler } from './sso';
 import { App } from './app';
-import DB from '../db/db';
 
 // This is the main entry point for the SAML Federation module
 const SAMLFederation = async ({ db, opts }: { db: any; opts: JacksonOption }) => {
