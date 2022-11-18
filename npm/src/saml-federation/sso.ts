@@ -10,6 +10,7 @@ import {
   extractSAMLResponseAttributes,
   createSAMLResponse,
   signSAMLResponse,
+  parseSAMLRequest,
 } from './utils';
 import { App } from './app';
 import { promisify } from 'util';
@@ -49,17 +50,7 @@ export class SSOHandler {
 
   // Get the authorize URL that will be used to redirect the user to the Identity Provider
   public getAuthorizeUrl = async ({ request, relayState }: { request: string; relayState: string }) => {
-    const { id, acsUrl, entityId, publicKey, providerName } = await extractSAMLRequestAttributes(
-      await decodeBase64(request, true)
-    );
-
-    if (!entityId) {
-      throw new JacksonError("Missing 'Entity ID' in SAML Request.", 400);
-    }
-
-    if (!acsUrl) {
-      throw new JacksonError("Missing 'ACS URL' in SAML Request.", 400);
-    }
+    const { id, acsUrl, entityId, publicKey, providerName } = await parseSAMLRequest(request, relayState);
 
     const app = await this.app.getByEntityId(entityId);
 
@@ -69,7 +60,8 @@ export class SSOHandler {
 
     const sessionId = crypto.randomBytes(16).toString('hex');
 
-    const session: SPRequestSession = {
+    // Create a new session to store SP request information
+    await this.session.put(sessionId, {
       id: sessionId,
       app,
       request: {
@@ -80,10 +72,7 @@ export class SSOHandler {
         providerName,
         relayState,
       },
-    };
-
-    // Create a new session to store SP request information
-    await this.session.put(sessionId, session);
+    });
 
     const { redirectUrl } = await this.createSAMLRequest({
       tenant: app.tenant,
@@ -175,8 +164,7 @@ export class SSOHandler {
     response: string;
     relayState: string;
   }) => {
-    const session = await this._getSession(relayState);
-    const certificate = await getDefaultCertificate();
+    const { request, id: sessionId } = await this._getSession(relayState);
 
     const decodedResponse = Buffer.from(response, 'base64').toString();
 
@@ -198,6 +186,8 @@ export class SSOHandler {
 
     const connection = connections[0];
 
+    const certificate = await getDefaultCertificate();
+
     try {
       // Extract SAML Response attributes sent by the IdP
       const attributes = await extractSAMLResponseAttributes(decodedResponse, {
@@ -206,54 +196,36 @@ export class SSOHandler {
         privateKey: certificate.privateKey,
       });
 
-      // Create a SAML Response to be sent back to the SP
-      const { htmlForm } = await this.createSAMLResponse({ session, attributes });
+      const xml = await createSAMLResponse({
+        audience: request.entityId,
+        acsUrl: request.acsUrl,
+        issuer: `${this.opts.samlAudience}`,
+        requestId: request.id,
+        profile: {
+          ...attributes,
+        },
+      });
+
+      const xmlSigned = await signSAMLResponse(xml, certificate.privateKey, certificate.publicKey);
+
+      const htmlForm = saml.createPostForm(request.acsUrl, [
+        {
+          name: 'RelayState',
+          value: request.relayState,
+        },
+        {
+          name: 'SAMLResponse',
+          value: Buffer.from(xmlSigned).toString('base64'),
+        },
+      ]);
 
       // Remove the session after we've created the SAML Response
-      await this.session.delete(session.id);
+      await this.session.delete(sessionId);
 
       return { htmlForm };
     } catch (err) {
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
-  };
-
-  // Create SAML Response to send back to the Service Provider
-  public createSAMLResponse = async ({
-    session,
-    attributes,
-  }: {
-    session: SPRequestSession;
-    attributes: SAMLProfile;
-  }) => {
-    const { request } = session;
-
-    const certificate = await getDefaultCertificate();
-
-    const xml = await createSAMLResponse({
-      audience: request.entityId,
-      acsUrl: request.acsUrl,
-      issuer: `${this.opts.samlAudience}`,
-      requestId: request.id,
-      profile: {
-        ...attributes,
-      },
-    });
-
-    const xmlSigned = await signSAMLResponse(xml, certificate.privateKey, certificate.publicKey);
-
-    const htmlForm = saml.createPostForm(request.acsUrl, [
-      {
-        name: 'RelayState',
-        value: request.relayState,
-      },
-      {
-        name: 'SAMLResponse',
-        value: Buffer.from(xmlSigned).toString('base64'),
-      },
-    ]);
-
-    return { htmlForm };
   };
 
   // Get the SAML connections for the given tenant and product
@@ -285,7 +257,7 @@ export class SSOHandler {
     return connections;
   };
 
-  private _getSession = async (relayState: string) => {
+  _getSession = async (relayState: string) => {
     const sessionId = relayState.replace(relayStatePrefix, '');
 
     const session: SPRequestSession = await this.session.get(sessionId);

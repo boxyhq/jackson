@@ -1,9 +1,7 @@
-import type { DirectorySync, JacksonOption, IConnectionAPIController } from './typings';
-
+import type { DirectorySync, JacksonOption } from './typings';
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
-
 import { AdminController } from './controller/admin';
 import { ConnectionAPIController } from './controller/api';
 import { OAuthController } from './controller/oauth';

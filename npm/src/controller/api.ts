@@ -4,6 +4,7 @@ import {
   GetConfigQuery,
   GetConnectionsQuery,
   DelConnectionsQuery,
+  IConnectionAPIController,
   Storable,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
@@ -11,7 +12,6 @@ import {
   JacksonOption,
   SAMLSSORecord,
   OIDCSSORecord,
-  IConnectionAPIController,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';

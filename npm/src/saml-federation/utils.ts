@@ -8,6 +8,33 @@ import crypto from 'crypto';
 
 import claims from '../saml/claims';
 
+// TODO: We can move this to the saml20 package
+
+// Parse SAML Request and return the request attributes
+export const parseSAMLRequest = async (samlRequest: string, relayState: string) => {
+  if (!samlRequest) {
+    throw new Error('Missing SAML Request');
+  }
+
+  if (!relayState) {
+    throw new Error('Missing Relay State');
+  }
+
+  const { id, acsUrl, entityId, publicKey, providerName } = await extractSAMLRequestAttributes(
+    await decodeBase64(samlRequest, true)
+  );
+
+  if (!entityId) {
+    throw new Error("Missing 'Entity ID' in SAML Request.");
+  }
+
+  if (!acsUrl) {
+    throw new Error("Missing 'ACS URL' in SAML Request.");
+  }
+
+  return { id, acsUrl, entityId, publicKey, providerName };
+};
+
 // Create Metadata XML
 export const createMetadataXML = async ({
   ssoUrl,
