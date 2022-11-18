@@ -3,7 +3,7 @@ import { SSOHandler } from './sso';
 import { App } from './app';
 
 // This is the main entry point for the SAML Federation module
-const SAMLFederation = async ({ db, opts }: { db: any; opts: JacksonOption }) => {
+const SAMLFederation = async ({ db, opts }: { db; opts: JacksonOption }) => {
   const appStore = db.store('samlfed:apps');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const connectionStore = db.store('saml:config');

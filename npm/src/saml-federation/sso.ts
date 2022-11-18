@@ -1,14 +1,9 @@
 import saml from '@boxyhq/saml20';
 import crypto from 'crypto';
 
-import type { JacksonOption, SAMLConnection, SAMLSSORecord, Storable } from '../typings';
 import type { SAMLFederationApp } from './app';
-import {
-  createSAMLResponse,
-  signSAMLResponse,
-  extractSAMLRequestAttributes,
-  extractSAMLResponseAttributes,
-} from './utils';
+import type { JacksonOption, SAMLConnection, SAMLSSORecord, Storable } from '../typings';
+import { createSAMLResponse, extractSAMLRequestAttributes, extractSAMLResponseAttributes } from './utils';
 import { App } from './app';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
@@ -49,6 +44,11 @@ export class SSOHandler {
   public getAuthorizeUrl = async ({ request, relayState }: { request: string; relayState: string }) => {
     const { id, acsUrl, entityId, publicKey, providerName } = await extractSAMLRequestAttributes(request);
 
+    // Verify the request if it is signed
+    if (publicKey && !saml.hasValidSignature(request, publicKey, null)) {
+      throw new JacksonError('Invalid SAML Request signature.', 400);
+    }
+
     const app = await this.app.getByEntityId(entityId);
 
     if (app.acsUrl !== acsUrl) {
@@ -82,7 +82,7 @@ export class SSOHandler {
     };
   };
 
-  // Create a SAML Request to be sent to Identity Provider
+  // Create a SAML Request to be sent to Identity Provider for the given tenant and product
   public createSAMLRequest = async ({
     tenant,
     product,
@@ -191,7 +191,7 @@ export class SSOHandler {
         privateKey: certificate.privateKey,
       });
 
-      const xmlSigned = await createSAMLResponse({
+      const responseSigned = await createSAMLResponse({
         audience: request.entityId,
         acsUrl: request.acsUrl,
         issuer: `${this.opts.samlAudience}`,
@@ -209,7 +209,7 @@ export class SSOHandler {
         },
         {
           name: 'SAMLResponse',
-          value: Buffer.from(xmlSigned).toString('base64'),
+          value: Buffer.from(responseSigned).toString('base64'),
         },
       ]);
 

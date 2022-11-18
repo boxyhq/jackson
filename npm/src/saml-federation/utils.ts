@@ -243,12 +243,10 @@ export const createSAMLResponse = async ({
 
   const xml = xmlbuilder.create(nodes, { encoding: 'UTF-8' }).end();
 
-  return await signSAMLResponse(xml, privateKey, publicKey);
-};
-
-export const signSAMLResponse = async (xml: string, signingKey: string, publicKey: string) => {
-  const responseXPath =
-    '/*[local-name(.)="Response" and namespace-uri(.)="urn:oasis:names:tc:SAML:2.0:protocol"]';
-
-  return await saml.sign(xml, signingKey, publicKey, responseXPath);
+  return await saml.sign(
+    xml,
+    privateKey,
+    publicKey,
+    '/*[local-name(.)="Response" and namespace-uri(.)="urn:oasis:names:tc:SAML:2.0:protocol"]'
+  );
 };
