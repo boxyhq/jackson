@@ -8,21 +8,20 @@ import crypto from 'crypto';
 
 import claims from '../saml/claims';
 
-// TODO: We can move this to the saml20 package
+export const extractSAMLRequestAttributes = async (samlRequest: string) => {
+  const decodeRequest = await decodeBase64(samlRequest, true);
+  const result = await parseXML(decodeRequest);
 
-// Parse SAML Request and return the request attributes
-export const parseSAMLRequest = async (samlRequest: string, relayState: string) => {
-  if (!samlRequest) {
-    throw new Error('Missing SAML Request');
-  }
+  const publicKey: string = result['samlp:AuthnRequest']['Signature']
+    ? result['samlp:AuthnRequest']['Signature'][0]['KeyInfo'][0]['X509Data'][0]['X509Certificate'][0]
+    : null;
 
-  if (!relayState) {
-    throw new Error('Missing Relay State');
-  }
+  const attributes = result['samlp:AuthnRequest']['$'];
 
-  const { id, acsUrl, entityId, publicKey, providerName } = await extractSAMLRequestAttributes(
-    await decodeBase64(samlRequest, true)
-  );
+  const id: string = attributes.ID;
+  const providerName: string = attributes.ProviderName;
+  const acsUrl: string = attributes.AssertionConsumerServiceURL;
+  const entityId: string = result['samlp:AuthnRequest']['saml:Issuer'][0];
 
   if (!entityId) {
     throw new Error("Missing 'Entity ID' in SAML Request.");
@@ -32,7 +31,30 @@ export const parseSAMLRequest = async (samlRequest: string, relayState: string) 
     throw new Error("Missing 'ACS URL' in SAML Request.");
   }
 
-  return { id, acsUrl, entityId, publicKey, providerName };
+  return {
+    id,
+    acsUrl,
+    entityId,
+    publicKey,
+    providerName,
+  };
+};
+
+export const extractSAMLResponseAttributes = async (response: string, validateOpts) => {
+  const decodedResponse = Buffer.from(response, 'base64').toString();
+  const attributes = await saml.validate(decodedResponse, validateOpts);
+
+  if (attributes && attributes.claims) {
+    // We map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
+    attributes.claims = claims.map(attributes.claims);
+
+    // Some providers don't return the id in the assertion, we set it to a sha256 hash of the email
+    if (!attributes.claims.id && attributes.claims.email) {
+      attributes.claims.id = crypto.createHash('sha256').update(attributes.claims.email).digest('hex');
+    }
+  }
+
+  return attributes;
 };
 
 // Create Metadata XML
@@ -109,63 +131,27 @@ const parseXML = async (xml: string): Promise<Record<string, string>> => {
   });
 };
 
-// Parse SAMLRequest attributes
-export const extractSAMLRequestAttributes = async (request: string) => {
-  const result = await parseXML(request);
-
-  const publicKey: string = result['samlp:AuthnRequest']['Signature']
-    ? result['samlp:AuthnRequest']['Signature'][0]['KeyInfo'][0]['X509Data'][0]['X509Certificate'][0]
-    : null;
-
-  const attributes = result['samlp:AuthnRequest']['$'];
-
-  const id: string = attributes.ID;
-  const providerName: string = attributes.ProviderName;
-  const acsUrl: string = attributes.AssertionConsumerServiceURL;
-  const entityId: string = result['samlp:AuthnRequest']['saml:Issuer'][0];
-
-  return {
-    id,
-    acsUrl,
-    entityId,
-    publicKey,
-    providerName,
-  };
-};
-
-// Parse SAMLResponse attributes
-export const extractSAMLResponseAttributes = async (response: string, validateOpts) => {
-  const attributes = await saml.validate(response, validateOpts);
-
-  if (attributes && attributes.claims) {
-    // We map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
-    attributes.claims = claims.map(attributes.claims);
-
-    // Some providers don't return the id in the assertion, we set it to a sha256 hash of the email
-    if (!attributes.claims.id && attributes.claims.email) {
-      attributes.claims.id = crypto.createHash('sha256').update(attributes.claims.email).digest('hex');
-    }
-  }
-
-  return attributes;
-};
-
 const randomId = () => {
   return '_' + crypto.randomBytes(10).toString('hex');
 };
 
+// Create SAML Response and sign it
 export const createSAMLResponse = async ({
   audience,
   issuer,
   acsUrl,
   profile,
   requestId,
+  privateKey,
+  publicKey,
 }: {
   audience: string;
   issuer: string;
   acsUrl: string;
   profile: SAMLProfile;
   requestId: string;
+  privateKey: string;
+  publicKey: string;
 }): Promise<string> => {
   const authDate = new Date();
   const authTimestamp = authDate.toISOString();
@@ -255,7 +241,9 @@ export const createSAMLResponse = async ({
     },
   };
 
-  return xmlbuilder.create(nodes, { encoding: 'UTF-8' }).end();
+  const xml = xmlbuilder.create(nodes, { encoding: 'UTF-8' }).end();
+
+  return await signSAMLResponse(xml, privateKey, publicKey);
 };
 
 export const signSAMLResponse = async (xml: string, signingKey: string, publicKey: string) => {

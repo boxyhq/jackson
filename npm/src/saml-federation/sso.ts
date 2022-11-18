@@ -1,16 +1,13 @@
-import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import saml from '@boxyhq/saml20';
 import crypto from 'crypto';
 
 import type { JacksonOption, SAMLConnection, SAMLSSORecord, Storable } from '../typings';
 import type { SAMLFederationApp } from './app';
 import {
-  decodeBase64,
-  extractSAMLRequestAttributes,
-  extractSAMLResponseAttributes,
   createSAMLResponse,
   signSAMLResponse,
-  parseSAMLRequest,
+  extractSAMLRequestAttributes,
+  extractSAMLResponseAttributes,
 } from './utils';
 import { App } from './app';
 import { promisify } from 'util';
@@ -50,7 +47,7 @@ export class SSOHandler {
 
   // Get the authorize URL that will be used to redirect the user to the Identity Provider
   public getAuthorizeUrl = async ({ request, relayState }: { request: string; relayState: string }) => {
-    const { id, acsUrl, entityId, publicKey, providerName } = await parseSAMLRequest(request, relayState);
+    const { id, acsUrl, entityId, publicKey, providerName } = await extractSAMLRequestAttributes(request);
 
     const app = await this.app.getByEntityId(entityId);
 
@@ -164,11 +161,9 @@ export class SSOHandler {
     response: string;
     relayState: string;
   }) => {
-    const { request, id: sessionId } = await this._getSession(relayState);
+    const { id: sessionId, request } = await this._getSession(relayState);
 
-    const decodedResponse = Buffer.from(response, 'base64').toString();
-
-    const entityId = saml.parseIssuer(decodedResponse);
+    const entityId = saml.parseIssuer(Buffer.from(response, 'base64').toString());
 
     if (!entityId) {
       throw new JacksonError("Missing 'Entity ID' in SAML Response.", 400);
@@ -190,13 +185,13 @@ export class SSOHandler {
 
     try {
       // Extract SAML Response attributes sent by the IdP
-      const attributes = await extractSAMLResponseAttributes(decodedResponse, {
+      const attributes = await extractSAMLResponseAttributes(response, {
         thumbprint: connection.idpMetadata.thumbprint,
         audience: `${this.opts.samlAudience}`,
         privateKey: certificate.privateKey,
       });
 
-      const xml = await createSAMLResponse({
+      const xmlSigned = await createSAMLResponse({
         audience: request.entityId,
         acsUrl: request.acsUrl,
         issuer: `${this.opts.samlAudience}`,
@@ -204,9 +199,8 @@ export class SSOHandler {
         profile: {
           ...attributes,
         },
+        ...certificate,
       });
-
-      const xmlSigned = await signSAMLResponse(xml, certificate.privateKey, certificate.publicKey);
 
       const htmlForm = saml.createPostForm(request.acsUrl, [
         {
