@@ -19,6 +19,8 @@ import type {
   Profile,
   SAMLResponsePayload,
   Storable,
+  SAMLSSORecord,
+  OIDCSSORecord,
 } from '../typings';
 import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
@@ -87,6 +89,64 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
   }
 
+  // If there are multiple connections for the given tenant and product, return the url to the IdP selection page
+  // If idp_hint is provided, return the connection with the matching clientID
+  // If there is only one connection, return the connection
+  private async _resolveConnection({
+    tenant,
+    product,
+    idp_hint,
+    originalParams,
+  }: {
+    tenant: string;
+    product: string;
+    relayState: string;
+    idp_hint?: string;
+    originalParams: Record<string, string>;
+  }): Promise<{ redirectUrl: string } | { connection: IdPConnection }> {
+    const connections: IdPConnection[] = await this.connectionStore.getByIndex({
+      name: IndexNames.TenantProduct,
+      value: dbutils.keyFromParts(tenant, product),
+    });
+
+    if (!connections || connections.length === 0) {
+      throw new JacksonError('IdP connection not found.', 403);
+    }
+
+    // If an IdP is specified, find the connection for that IdP and return it
+    if (idp_hint) {
+      const connection = connections.find((c) => c.clientID === idp_hint);
+
+      if (!connection) {
+        throw new JacksonError('No SAML connection found.', 404);
+      }
+
+      return { connection };
+    }
+
+    // If more than one, redirect to the connection selection page
+    if (connections.length > 1) {
+      const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
+
+      url.searchParams.set('tenant', tenant);
+      url.searchParams.set('product', product);
+      url.searchParams.set('authFlow', 'oauth');
+
+      for (const [key, value] of Object.entries(originalParams)) {
+        url.searchParams.set(key, value);
+      }
+
+      return {
+        redirectUrl: url.toString(),
+      };
+    }
+
+    // If only one, use that connection
+    return {
+      connection: connections[0],
+    };
+  }
+
   private resolveMultipleConnectionMatches(
     connections,
     idp_hint,
@@ -97,24 +157,7 @@ export class OAuthController implements IOAuthController {
       if (idp_hint) {
         return { resolvedConnection: connections.find(({ clientID }) => clientID === idp_hint) };
       } else if (this.opts.idpDiscoveryPath) {
-        if (!isIdpFlow) {
-          // redirect to IdP selection page
-          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID, name }) =>
-            JSON.stringify({
-              provider: idpMetadata?.provider ?? oidcProvider?.provider,
-              clientID,
-              name,
-              connectionIsSAML: idpMetadata && typeof idpMetadata === 'object',
-              connectionIsOIDC: oidcProvider && typeof oidcProvider === 'object',
-            })
-          );
-          return {
-            redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
-              ...originalParams,
-              idp: idpList,
-            }),
-          };
-        } else {
+        if (isIdpFlow) {
           // Relevant to IdP initiated SAML flow
           const appList = connections.map(({ product, name, description, clientID }) => ({
             product,
@@ -168,49 +211,26 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Please specify a redirect URL.', 400);
     }
 
-    let connection;
+    let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     const requestedScopes = getScopeValues(scope);
     const requestedOIDCFlow = requestedScopes.includes('openid');
 
     if (tenant && product) {
-      const connections = await this.connectionStore.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
+      const response = await this._resolveConnection({
+        tenant,
+        product,
+        idp_hint,
+        relayState: state,
+        originalParams: { ...body },
       });
 
-      if (!connections || connections.length === 0) {
-        throw new JacksonError('IdP connection not found.', 403);
+      if ('redirectUrl' in response) {
+        return {
+          redirect_url: response.redirectUrl,
+        };
       }
 
-      connection = connections[0];
-
-      // Support multiple matches
-      const { resolvedConnection, redirect_url } = this.resolveMultipleConnectionMatches(
-        connections,
-        idp_hint,
-        {
-          response_type,
-          client_id,
-          redirect_uri,
-          state,
-          tenant,
-          product,
-          access_type,
-          resource,
-          scope,
-          nonce,
-          code_challenge,
-          code_challenge_method,
-        }
-      );
-
-      if (redirect_url) {
-        return { redirect_url };
-      }
-
-      if (resolvedConnection) {
-        connection = resolvedConnection;
-      }
+      connection = response.connection;
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant connection(s)
       let sp = getEncodedTenantProduct(client_id);
@@ -228,46 +248,26 @@ export class OAuthController implements IOAuthController {
         }
       }
       if (sp && sp.tenant && sp.product) {
-        requestedTenant = sp.tenant;
-        requestedProduct = sp.product;
+        const { tenant, product } = sp;
 
-        const connections = await this.connectionStore.getByIndex({
-          name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(sp.tenant, sp.product),
+        requestedTenant = tenant;
+        requestedProduct = product;
+
+        const response = await this._resolveConnection({
+          tenant,
+          product,
+          idp_hint,
+          relayState: state,
+          originalParams: { ...body },
         });
 
-        if (!connections || connections.length === 0) {
-          throw new JacksonError('IdP connection not found.', 403);
+        if ('redirectUrl' in response) {
+          return {
+            redirect_url: response.redirectUrl,
+          };
         }
 
-        connection = connections[0];
-        // Support multiple matches
-        const { resolvedConnection, redirect_url } = this.resolveMultipleConnectionMatches(
-          connections,
-          idp_hint,
-          {
-            response_type,
-            client_id,
-            redirect_uri,
-            state,
-            tenant,
-            product,
-            access_type,
-            resource,
-            scope,
-            nonce,
-            code_challenge,
-            code_challenge_method,
-          }
-        );
-
-        if (redirect_url) {
-          return { redirect_url };
-        }
-
-        if (resolvedConnection) {
-          connection = resolvedConnection;
-        }
+        connection = response.connection;
       } else {
         connection = await this.connectionStore.get(client_id);
         if (connection) {
@@ -283,7 +283,7 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('IdP connection not found.', 403);
     }
 
-    if (!allowed.redirect(redirect_uri, connection.redirectUrl)) {
+    if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
@@ -325,15 +325,15 @@ export class OAuthController implements IOAuthController {
     // Connection retrieved: Handover to IdP starts here
     let ssoUrl;
     let post = false;
-    const connectionIsSAML = connection.idpMetadata && typeof connection.idpMetadata === 'object';
-    const connectionIsOIDC = connection.oidcProvider && typeof connection.oidcProvider === 'object';
+    const connectionIsSAML = 'idpMetadata' in connection;
+    const connectionIsOIDC = 'oidcProvider' in connection;
 
     // Init sessionId
     const sessionId = crypto.randomBytes(16).toString('hex');
     const relayState = relayStatePrefix + sessionId;
     // SAML connection: SAML request will be constructed here
     let samlReq;
-    if (connectionIsSAML) {
+    if ('idpMetadata' in connection) {
       const { sso } = connection.idpMetadata;
 
       if ('redirectUrl' in sso) {
@@ -384,7 +384,7 @@ export class OAuthController implements IOAuthController {
 
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
-    if (connectionIsOIDC) {
+    if (connectionIsOIDC && 'oidcProvider' in connection) {
       if (!this.opts.oidcPath) {
         return {
           redirect_url: OAuthErrorResponse({
@@ -397,9 +397,9 @@ export class OAuthController implements IOAuthController {
       }
       const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
       try {
-        const oidcIssuer = await Issuer.discover(discoveryUrl);
+        const oidcIssuer = await Issuer.discover(discoveryUrl as string);
         const oidcClient = new oidcIssuer.Client({
-          client_id: clientId,
+          client_id: clientId as string,
           client_secret: clientSecret,
           redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
           response_types: ['code'],
@@ -1057,3 +1057,5 @@ export class OAuthController implements IOAuthController {
     };
   }
 }
+
+type IdPConnection = SAMLSSORecord | OIDCSSORecord;

@@ -40,8 +40,16 @@ export class SSOHandler {
     this.opts = opts;
   }
 
-  // Get the authorize URL that will be used to redirect the user to the Identity Provider
-  public getAuthorizeUrl = async ({ request, relayState }: { request: string; relayState: string }) => {
+  // Accept the SAML Request from Service Provider, and create a new SAML Request to be sent to Identity Provider
+  public getAuthorizeUrl = async ({
+    request,
+    relayState,
+    idp_hint,
+  }: {
+    request: string;
+    relayState: string;
+    idp_hint?: string;
+  }) => {
     const { id, acsUrl, entityId, publicKey, providerName } = await extractSAMLRequestAttributes(request);
 
     // Verify the request if it is signed
@@ -55,48 +63,7 @@ export class SSOHandler {
       throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
     }
 
-    const sessionId = crypto.randomBytes(16).toString('hex');
-
-    // Create a new session to store SP request information
-    await this.session.put(sessionId, {
-      id: sessionId,
-      app,
-      request: {
-        id,
-        acsUrl,
-        entityId,
-        publicKey,
-        providerName,
-        relayState,
-      },
-    });
-
-    const { redirectUrl } = await this.createSAMLRequest({
-      tenant: app.tenant,
-      product: app.product,
-      relayState: `${relayStatePrefix}${sessionId}`,
-    });
-
-    return {
-      redirectUrl,
-    };
-  };
-
-  // Create a SAML Request to be sent to Identity Provider for the given tenant and product
-  public createSAMLRequest = async ({
-    tenant,
-    product,
-    relayState,
-    idp,
-  }: {
-    tenant: string;
-    product: string;
-    relayState: string;
-    idp?: string;
-  }) => {
-    const certificate = await getDefaultCertificate();
-
-    await this._getSession(relayState);
+    const { tenant, product } = app;
 
     // Find SAML connections for the app
     const connections: SAMLSSORecord[] = await this.connection.getByIndex({
@@ -111,8 +78,8 @@ export class SSOHandler {
     let connection: SAMLSSORecord | undefined;
 
     // If an IdP is specified, find the connection for that IdP
-    if (idp) {
-      connection = connections.find((c) => c.clientID === idp);
+    if (idp_hint) {
+      connection = connections.find((c) => c.clientID === idp_hint);
 
       if (!connection) {
         throw new JacksonError('No SAML connection found.', 404);
@@ -121,8 +88,20 @@ export class SSOHandler {
 
     // If more than one, redirect to the connection selection page
     if (!connection && connections.length > 1) {
+      const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
+
+      const params = new URLSearchParams({
+        tenant,
+        product,
+        RelayState: relayState,
+        SAMLRequest: request,
+        authFlow: 'saml-federation',
+      });
+
+      url.search = params.toString();
+
       return {
-        redirectUrl: `${this.opts.externalUrl}/idp/choose-connection?tenant=${tenant}&product=${product}&relayState=${relayState}`,
+        redirectUrl: url.toString(),
       };
     }
 
@@ -130,6 +109,11 @@ export class SSOHandler {
     if (!connection) {
       connection = connections[0];
     }
+
+    // We have a connection now, so we can create the SAML request
+    const certificate = await getDefaultCertificate();
+
+    const sessionId = crypto.randomBytes(16).toString('hex');
 
     const samlRequest = saml.request({
       ssoUrl: connection.idpMetadata.sso.redirectUrl,
@@ -139,10 +123,24 @@ export class SSOHandler {
       publicKey: certificate.publicKey,
     });
 
+    // Create a new session to store SP request information
+    await this.session.put(sessionId, {
+      id: samlRequest.id,
+      app,
+      request: {
+        id,
+        acsUrl,
+        entityId,
+        publicKey,
+        providerName,
+        relayState,
+      },
+    });
+
     // Create URL to redirect to the Identity Provider
     const url = new URL(`${connection.idpMetadata.sso.redirectUrl}`);
 
-    url.searchParams.set('RelayState', relayState);
+    url.searchParams.set('RelayState', `${relayStatePrefix}${sessionId}`);
     url.searchParams.set(
       'SAMLRequest',
       Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64')
@@ -220,35 +218,6 @@ export class SSOHandler {
     } catch (err) {
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
-  };
-
-  // Get the SAML connections for the given tenant and product
-  public getConnections = async ({
-    tenant,
-    product,
-    relayState,
-  }: {
-    tenant: string;
-    product: string;
-    relayState: string;
-  }) => {
-    const session = await this._getSession(relayState);
-
-    // Make sure user has access to the app
-    if (tenant !== session.app.tenant || product !== session.app.product) {
-      throw new JacksonError('Invalid RelayState', 400);
-    }
-
-    const connections: SAMLSSORecord[] = await this.connection.getByIndex({
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(tenant, product),
-    });
-
-    if (!connections || connections.length === 0) {
-      throw new JacksonError('No SAML connection found.', 404);
-    }
-
-    return connections;
   };
 
   _getSession = async (relayState: string) => {

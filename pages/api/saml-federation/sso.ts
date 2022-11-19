@@ -19,14 +19,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederated } = await jackson();
 
-  const { SAMLRequest, RelayState } = req.query as {
+  const { SAMLRequest, RelayState, idp_hint } = req.query as {
     SAMLRequest: string;
     RelayState: string;
+    idp_hint: string;
   };
 
   const { redirectUrl } = await samlFederated.sso.getAuthorizeUrl({
     request: SAMLRequest,
     relayState: RelayState,
+    idp_hint,
   });
 
   return res.redirect(redirectUrl);
