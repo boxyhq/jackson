@@ -7,10 +7,10 @@ import { createSAMLResponse, extractSAMLRequestAttributes, extractSAMLResponseAt
 import { App } from './app';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
-import * as dbutils from '../db/utils';
 import { IndexNames } from '../controller/utils';
 import { JacksonError } from '../controller/error';
 import { getDefaultCertificate } from '../saml/x509';
+import { SSOConnection } from '../controller/oauth';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -22,6 +22,7 @@ export class SSOHandler {
   private session: Storable;
   private connection: Storable;
   private opts: JacksonOption;
+  private ssoConnection: SSOConnection;
 
   constructor({
     app,
@@ -38,6 +39,11 @@ export class SSOHandler {
     this.session = session;
     this.connection = connection;
     this.opts = opts;
+
+    this.ssoConnection = new SSOConnection({
+      connection,
+      opts,
+    });
   }
 
   // Accept the SAML Request from Service Provider, and create a new SAML Request to be sent to Identity Provider
@@ -65,49 +71,33 @@ export class SSOHandler {
 
     const { tenant, product } = app;
 
-    // Find SAML connections for the app
-    const connections: SAMLSSORecord[] = await this.connection.getByIndex({
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(tenant, product),
-    });
-
-    if (!connections || connections.length === 0) {
-      throw new JacksonError('No SAML connection found.', 404);
-    }
-
     let connection: SAMLSSORecord | undefined;
 
-    // If an IdP is specified, find the connection for that IdP
-    if (idp_hint) {
-      connection = connections.find((c) => c.clientID === idp_hint);
-
-      if (!connection) {
-        throw new JacksonError('No SAML connection found.', 404);
-      }
-    }
-
-    // If more than one, redirect to the connection selection page
-    if (!connection && connections.length > 1) {
-      const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
-
-      const params = new URLSearchParams({
-        tenant,
-        product,
+    const response = await this.ssoConnection.resolveConnection({
+      tenant,
+      product,
+      idp_hint,
+      authFlow: 'saml',
+      originalParams: {
         RelayState: relayState,
         SAMLRequest: request,
-        authFlow: 'saml-federation',
-      });
+      },
+    });
 
-      url.search = params.toString();
-
+    // If there is a redirect URL, then we need to redirect to that URL
+    if (response.redirectUrl) {
       return {
-        redirectUrl: url.toString(),
+        redirectUrl: response.redirectUrl,
       };
     }
 
-    // If only one, use that connection
+    // If there is a connection, use that connection
+    if (response.connection && 'idpMetadata' in response.connection) {
+      connection = response.connection;
+    }
+
     if (!connection) {
-      connection = connections[0];
+      throw new JacksonError('No SAML connection found.', 404);
     }
 
     // We have a connection now, so we can create the SAML request

@@ -96,6 +96,7 @@ export class OAuthController implements IOAuthController {
   private codeStore: Storable;
   private tokenStore: Storable;
   private opts: JacksonOption;
+  private ssoConnection: SSOConnection;
 
   constructor({ connectionStore, sessionStore, codeStore, tokenStore, opts }) {
     this.connectionStore = connectionStore;
@@ -103,6 +104,11 @@ export class OAuthController implements IOAuthController {
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
     this.opts = opts;
+
+    this.ssoConnection = new SSOConnection({
+      connection: connectionStore,
+      opts,
+    });
   }
 
   private resolveMultipleConnectionMatches(
@@ -174,21 +180,23 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = requestedScopes.includes('openid');
 
     if (tenant && product) {
-      const response = await this._resolveConnection({
+      const response = await this.ssoConnection.resolveConnection({
         tenant,
         product,
         idp_hint,
-        relayState: state,
+        authFlow: 'oauth',
         originalParams: { ...body },
       });
 
-      if ('redirectUrl' in response) {
+      if (response.redirectUrl) {
         return {
           redirect_url: response.redirectUrl,
         };
       }
 
-      connection = response.connection;
+      if (response.connection) {
+        connection = response.connection;
+      }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant connection(s)
       let sp = getEncodedTenantProduct(client_id);
@@ -211,21 +219,23 @@ export class OAuthController implements IOAuthController {
         requestedTenant = tenant;
         requestedProduct = product;
 
-        const response = await this._resolveConnection({
+        const response = await this.ssoConnection.resolveConnection({
           tenant,
           product,
           idp_hint,
-          relayState: state,
+          authFlow: 'oauth',
           originalParams: { ...body },
         });
 
-        if ('redirectUrl' in response) {
+        if (response.redirectUrl) {
           return {
             redirect_url: response.redirectUrl,
           };
         }
 
-        connection = response.connection;
+        if (response.connection) {
+          connection = response.connection;
+        }
       } else {
         connection = await this.connectionStore.get(client_id);
         if (connection) {
@@ -1000,32 +1010,44 @@ export class OAuthController implements IOAuthController {
       requested: rsp.requested,
     };
   }
+}
+
+// Let's pull out SAML pieces into a separate class
+export class SSOConnection {
+  private connection: Storable;
+  private opts: JacksonOption;
+
+  constructor({ connection, opts }: { connection: Storable; opts: JacksonOption }) {
+    this.connection = connection;
+    this.opts = opts;
+  }
 
   // If there are multiple connections for the given tenant and product, return the url to the IdP selection page
   // If idp_hint is provided, return the connection with the matching clientID
   // If there is only one connection, return the connection
-  private async _resolveConnection({
-    tenant,
-    product,
-    idp_hint,
-    originalParams,
-  }: {
+  async resolveConnection(params: {
     tenant: string;
     product: string;
-    relayState: string;
+    authFlow: 'oauth' | 'saml';
     idp_hint?: string;
     originalParams: Record<string, string>;
-  }): Promise<{ redirectUrl: string } | { connection: IdPConnection }> {
-    const connections: IdPConnection[] = await this.connectionStore.getByIndex({
+  }): Promise<
+    | { redirectUrl: string; connection: null }
+    | { redirectUrl: null; connection: SAMLSSORecord | OIDCSSORecord }
+  > {
+    const { tenant, product, idp_hint, authFlow, originalParams } = params;
+
+    // Find SAML connections for the app
+    const connections: SAMLSSORecord[] = await this.connection.getByIndex({
       name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(tenant, product),
     });
 
     if (!connections || connections.length === 0) {
-      throw new JacksonError('IdP connection not found.', 403);
+      throw new JacksonError('No SAML connection found.', 404);
     }
 
-    // If an IdP is specified, find the connection for that IdP and return it
+    // If an IdP is specified, find the connection for that IdP
     if (idp_hint) {
       const connection = connections.find((c) => c.clientID === idp_hint);
 
@@ -1033,28 +1055,30 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('No SAML connection found.', 404);
       }
 
-      return { connection };
+      return { redirectUrl: null, connection };
     }
 
+    let connection: SAMLSSORecord | undefined;
+
     // If more than one, redirect to the connection selection page
-    if (connections.length > 1) {
+    if (!connection && connections.length > 1) {
       const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
 
       const params = new URLSearchParams({
         tenant,
         product,
-        authFlow: 'oauth',
+        authFlow,
         ...originalParams,
       });
 
-      return { redirectUrl: `${url.toString()}?${params.toString()}` };
+      return { redirectUrl: `${url.toString()}?${params.toString()}`, connection: null };
     }
 
     // If only one, use that connection
-    return {
-      connection: connections[0],
-    };
+    if (!connection) {
+      connection = connections[0];
+    }
+
+    return { redirectUrl: null, connection };
   }
 }
-
-type IdPConnection = SAMLSSORecord | OIDCSSORecord;

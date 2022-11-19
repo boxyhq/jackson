@@ -69,7 +69,7 @@ export const getServerSideProps: GetServerSideProps<{
   const { tenant, product, idp_hint, authFlow } = query as {
     tenant: string;
     product: string;
-    authFlow: 'saml-federation' | 'oauth';
+    authFlow: 'saml' | 'oauth';
     idp_hint?: string;
   };
 
@@ -78,7 +78,7 @@ export const getServerSideProps: GetServerSideProps<{
     const params = new URLSearchParams(paramsToRelay).toString();
 
     const destinations = {
-      'saml-federation': `/api/saml-federation/sso?${params}`,
+      saml: `/api/saml-federation/sso?${params}`,
       oauth: `/api/oauth/authorize?${params}`,
     };
 
