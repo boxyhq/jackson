@@ -1,13 +1,9 @@
 import crypto from 'crypto';
+import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
-import { Client, errors, generators, Issuer, TokenSet } from 'openid-client';
-import * as jose from 'jose';
-import * as dbutils from '../db/utils';
-import * as metrics from '../opentelemetry/metrics';
-
 import saml from '@boxyhq/saml20';
-import claims from '../saml/claims';
+import { Client, errors, generators, Issuer, TokenSet } from 'openid-client';
 
 import type {
   OIDCAuthzResponsePayload,
@@ -22,10 +18,6 @@ import type {
   SAMLSSORecord,
   OIDCSSORecord,
 } from '../typings';
-import { JacksonError } from './error';
-import * as allowed from './oauth/allowed';
-import * as codeVerifier from './oauth/code-verifier';
-import * as redirect from './oauth/redirect';
 import {
   relayStatePrefix,
   IndexNames,
@@ -34,6 +26,13 @@ import {
   loadJWSPrivateKey,
   isJWSKeyPairLoaded,
 } from './utils';
+import claims from '../saml/claims';
+import * as dbutils from '../db/utils';
+import * as metrics from '../opentelemetry/metrics';
+import { JacksonError } from './error';
+import * as allowed from './oauth/allowed';
+import * as codeVerifier from './oauth/code-verifier';
+import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 
 const deflateRawAsync = promisify(deflateRaw);
@@ -74,6 +73,23 @@ function getScopeValues(scope?: string): string[] {
   return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
 }
 
+const extractOIDCUserProfile = async (tokenSet: TokenSet, oidcClient: Client) => {
+  const idTokenClaims = tokenSet.claims();
+  const userinfo = await oidcClient.userinfo(tokenSet);
+
+  const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
+
+  profile.claims.id = idTokenClaims.sub;
+  profile.claims.email = idTokenClaims.email ?? userinfo.email;
+  profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
+  profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
+  profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
+  profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
+  profile.claims.raw = userinfo;
+
+  return profile;
+};
+
 export class OAuthController implements IOAuthController {
   private connectionStore: Storable;
   private sessionStore: Storable;
@@ -87,64 +103,6 @@ export class OAuthController implements IOAuthController {
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
     this.opts = opts;
-  }
-
-  // If there are multiple connections for the given tenant and product, return the url to the IdP selection page
-  // If idp_hint is provided, return the connection with the matching clientID
-  // If there is only one connection, return the connection
-  private async _resolveConnection({
-    tenant,
-    product,
-    idp_hint,
-    originalParams,
-  }: {
-    tenant: string;
-    product: string;
-    relayState: string;
-    idp_hint?: string;
-    originalParams: Record<string, string>;
-  }): Promise<{ redirectUrl: string } | { connection: IdPConnection }> {
-    const connections: IdPConnection[] = await this.connectionStore.getByIndex({
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(tenant, product),
-    });
-
-    if (!connections || connections.length === 0) {
-      throw new JacksonError('IdP connection not found.', 403);
-    }
-
-    // If an IdP is specified, find the connection for that IdP and return it
-    if (idp_hint) {
-      const connection = connections.find((c) => c.clientID === idp_hint);
-
-      if (!connection) {
-        throw new JacksonError('No SAML connection found.', 404);
-      }
-
-      return { connection };
-    }
-
-    // If more than one, redirect to the connection selection page
-    if (connections.length > 1) {
-      const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
-
-      url.searchParams.set('tenant', tenant);
-      url.searchParams.set('product', product);
-      url.searchParams.set('authFlow', 'oauth');
-
-      for (const [key, value] of Object.entries(originalParams)) {
-        url.searchParams.set(key, value);
-      }
-
-      return {
-        redirectUrl: url.toString(),
-      };
-    }
-
-    // If only one, use that connection
-    return {
-      connection: connections[0],
-    };
   }
 
   private resolveMultipleConnectionMatches(
@@ -679,20 +637,6 @@ export class OAuthController implements IOAuthController {
     return { redirect_url: redirectUrl };
   }
 
-  private async extractOIDCUserProfile(tokenSet: TokenSet, oidcClient: Client) {
-    const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
-    const idTokenClaims = tokenSet.claims();
-    const userinfo = await oidcClient.userinfo(tokenSet);
-    profile.claims.id = idTokenClaims.sub;
-    profile.claims.email = idTokenClaims.email ?? userinfo.email;
-    profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
-    profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
-    profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
-    profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
-    profile.claims.raw = userinfo;
-    return profile;
-  }
-
   public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
     const { code: opCode, state, error, error_description } = body;
 
@@ -754,7 +698,7 @@ export class OAuthController implements IOAuthController {
         },
         { code_verifier: session.oidcCodeVerifier }
       );
-      profile = await this.extractOIDCUserProfile(tokenSet, oidcClient);
+      profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
       if (err) {
         return {
@@ -1054,6 +998,61 @@ export class OAuthController implements IOAuthController {
     return {
       ...rsp.claims,
       requested: rsp.requested,
+    };
+  }
+
+  // If there are multiple connections for the given tenant and product, return the url to the IdP selection page
+  // If idp_hint is provided, return the connection with the matching clientID
+  // If there is only one connection, return the connection
+  private async _resolveConnection({
+    tenant,
+    product,
+    idp_hint,
+    originalParams,
+  }: {
+    tenant: string;
+    product: string;
+    relayState: string;
+    idp_hint?: string;
+    originalParams: Record<string, string>;
+  }): Promise<{ redirectUrl: string } | { connection: IdPConnection }> {
+    const connections: IdPConnection[] = await this.connectionStore.getByIndex({
+      name: IndexNames.TenantProduct,
+      value: dbutils.keyFromParts(tenant, product),
+    });
+
+    if (!connections || connections.length === 0) {
+      throw new JacksonError('IdP connection not found.', 403);
+    }
+
+    // If an IdP is specified, find the connection for that IdP and return it
+    if (idp_hint) {
+      const connection = connections.find((c) => c.clientID === idp_hint);
+
+      if (!connection) {
+        throw new JacksonError('No SAML connection found.', 404);
+      }
+
+      return { connection };
+    }
+
+    // If more than one, redirect to the connection selection page
+    if (connections.length > 1) {
+      const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
+
+      const params = new URLSearchParams({
+        tenant,
+        product,
+        authFlow: 'oauth',
+        ...originalParams,
+      });
+
+      return { redirectUrl: `${url.toString()}?${params.toString()}` };
+    }
+
+    // If only one, use that connection
+    return {
+      connection: connections[0],
     };
   }
 }
