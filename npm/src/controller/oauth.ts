@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { Client, errors, generators, Issuer, TokenSet } from 'openid-client';
+import { errors, generators, Issuer } from 'openid-client';
 
 import type {
   OIDCAuthzResponsePayload,
@@ -25,70 +25,21 @@ import {
   getErrorMessage,
   loadJWSPrivateKey,
   isJWSKeyPairLoaded,
+  extractOIDCUserProfile,
+  getScopeValues,
+  getEncodedTenantProduct,
+  validateSAMLResponse,
 } from './utils';
-import claims from '../saml/claims';
-import * as dbutils from '../db/utils';
+
 import * as metrics from '../opentelemetry/metrics';
 import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
+import { SSOConnection } from './sso-connection';
 
 const deflateRawAsync = promisify(deflateRaw);
-
-const validateSAMLResponse = async (rawResponse: string, validateOpts) => {
-  const profile = await saml.validate(rawResponse, validateOpts);
-  if (profile && profile.claims) {
-    // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
-    profile.claims = claims.map(profile.claims);
-
-    // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
-    if (!profile.claims.id && profile.claims.email) {
-      profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
-    }
-  }
-  return profile;
-};
-
-function getEncodedTenantProduct(param: string): { tenant: string | null; product: string | null } | null {
-  try {
-    const sp = new URLSearchParams(param);
-    const tenant = sp.get('tenant');
-    const product = sp.get('product');
-    if (tenant && product) {
-      return {
-        tenant: sp.get('tenant'),
-        product: sp.get('product'),
-      };
-    }
-
-    return null;
-  } catch (err) {
-    return null;
-  }
-}
-
-function getScopeValues(scope?: string): string[] {
-  return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
-}
-
-const extractOIDCUserProfile = async (tokenSet: TokenSet, oidcClient: Client) => {
-  const idTokenClaims = tokenSet.claims();
-  const userinfo = await oidcClient.userinfo(tokenSet);
-
-  const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
-
-  profile.claims.id = idTokenClaims.sub;
-  profile.claims.email = idTokenClaims.email ?? userinfo.email;
-  profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
-  profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
-  profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
-  profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
-  profile.claims.raw = userinfo;
-
-  return profile;
-};
 
 export class OAuthController implements IOAuthController {
   private connectionStore: Storable;
@@ -107,10 +58,12 @@ export class OAuthController implements IOAuthController {
 
     this.ssoConnection = new SSOConnection({
       connection: connectionStore,
+      session: sessionStore,
       opts,
     });
   }
 
+  // TODO: Refactor this method
   private resolveMultipleConnectionMatches(
     connections,
     idp_hint,
@@ -293,8 +246,8 @@ export class OAuthController implements IOAuthController {
     // Connection retrieved: Handover to IdP starts here
     let ssoUrl;
     let post = false;
-    const connectionIsSAML = 'idpMetadata' in connection;
-    const connectionIsOIDC = 'oidcProvider' in connection;
+    const connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
+    const connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
 
     // Init sessionId
     const sessionId = crypto.randomBytes(16).toString('hex');
@@ -1009,76 +962,5 @@ export class OAuthController implements IOAuthController {
       ...rsp.claims,
       requested: rsp.requested,
     };
-  }
-}
-
-// Let's pull out SAML pieces into a separate class
-export class SSOConnection {
-  private connection: Storable;
-  private opts: JacksonOption;
-
-  constructor({ connection, opts }: { connection: Storable; opts: JacksonOption }) {
-    this.connection = connection;
-    this.opts = opts;
-  }
-
-  // If there are multiple connections for the given tenant and product, return the url to the IdP selection page
-  // If idp_hint is provided, return the connection with the matching clientID
-  // If there is only one connection, return the connection
-  async resolveConnection(params: {
-    tenant: string;
-    product: string;
-    authFlow: 'oauth' | 'saml';
-    idp_hint?: string;
-    originalParams: Record<string, string>;
-  }): Promise<
-    | { redirectUrl: string; connection: null }
-    | { redirectUrl: null; connection: SAMLSSORecord | OIDCSSORecord }
-  > {
-    const { tenant, product, idp_hint, authFlow, originalParams } = params;
-
-    // Find SAML connections for the app
-    const connections: SAMLSSORecord[] = await this.connection.getByIndex({
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(tenant, product),
-    });
-
-    if (!connections || connections.length === 0) {
-      throw new JacksonError('No SAML connection found.', 404);
-    }
-
-    // If an IdP is specified, find the connection for that IdP
-    if (idp_hint) {
-      const connection = connections.find((c) => c.clientID === idp_hint);
-
-      if (!connection) {
-        throw new JacksonError('No SAML connection found.', 404);
-      }
-
-      return { redirectUrl: null, connection };
-    }
-
-    let connection: SAMLSSORecord | undefined;
-
-    // If more than one, redirect to the connection selection page
-    if (!connection && connections.length > 1) {
-      const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
-
-      const params = new URLSearchParams({
-        tenant,
-        product,
-        authFlow,
-        ...originalParams,
-      });
-
-      return { redirectUrl: `${url.toString()}?${params.toString()}`, connection: null };
-    }
-
-    // If only one, use that connection
-    if (!connection) {
-      connection = connections[0];
-    }
-
-    return { redirectUrl: null, connection };
   }
 }

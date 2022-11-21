@@ -1,18 +1,13 @@
 import saml from '@boxyhq/saml20';
-import crypto from 'crypto';
 
-import type { SAMLFederationApp } from './app';
 import type { JacksonOption, SAMLConnection, SAMLSSORecord, Storable } from '../typings';
+import type { SAMLFederationApp } from './app';
 import { createSAMLResponse, extractSAMLRequestAttributes, extractSAMLResponseAttributes } from './utils';
-import { App } from './app';
-import { promisify } from 'util';
-import { deflateRaw } from 'zlib';
+import { SSOConnection } from '../controller/sso-connection';
+import { getDefaultCertificate } from '../saml/x509';
 import { IndexNames } from '../controller/utils';
 import { JacksonError } from '../controller/error';
-import { getDefaultCertificate } from '../saml/x509';
-import { SSOConnection } from '../controller/oauth';
-
-const deflateRawAsync = promisify(deflateRaw);
+import { App } from './app';
 
 // Used to identify the relay state as a federated SAML request
 const relayStatePrefix = 'federated_saml_';
@@ -42,6 +37,7 @@ export class SSOHandler {
 
     this.ssoConnection = new SSOConnection({
       connection,
+      session,
       opts,
     });
   }
@@ -69,13 +65,9 @@ export class SSOHandler {
       throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
     }
 
-    const { tenant, product } = app;
-
-    let connection: SAMLSSORecord | undefined;
-
     const response = await this.ssoConnection.resolveConnection({
-      tenant,
-      product,
+      tenant: app.tenant,
+      product: app.product,
       idp_hint,
       authFlow: 'saml',
       originalParams: {
@@ -91,6 +83,8 @@ export class SSOHandler {
       };
     }
 
+    let connection: SAMLSSORecord | undefined;
+
     // If there is a connection, use that connection
     if (response.connection && 'idpMetadata' in response.connection) {
       connection = response.connection;
@@ -100,24 +94,9 @@ export class SSOHandler {
       throw new JacksonError('No SAML connection found.', 404);
     }
 
-    // We have a connection now, so we can create the SAML request
-    const certificate = await getDefaultCertificate();
-
-    const sessionId = crypto.randomBytes(16).toString('hex');
-
-    const samlRequest = saml.request({
-      ssoUrl: connection.idpMetadata.sso.redirectUrl,
-      entityID: `${this.opts.samlAudience}`,
-      callbackUrl: `${this.opts.externalUrl}/api/oauth/saml`,
-      signingKey: certificate.privateKey,
-      publicKey: certificate.publicKey,
-    });
-
-    // Create a new session to store SP request information
-    await this.session.put(sessionId, {
-      id: samlRequest.id,
-      app,
-      request: {
+    const { redirectUrl } = await this.ssoConnection.createSAMLRequest({
+      connection,
+      requestParams: {
         id,
         acsUrl,
         entityId,
@@ -127,17 +106,8 @@ export class SSOHandler {
       },
     });
 
-    // Create URL to redirect to the Identity Provider
-    const url = new URL(`${connection.idpMetadata.sso.redirectUrl}`);
-
-    url.searchParams.set('RelayState', `${relayStatePrefix}${sessionId}`);
-    url.searchParams.set(
-      'SAMLRequest',
-      Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64')
-    );
-
     return {
-      redirectUrl: url.toString(),
+      redirectUrl,
     };
   };
 
@@ -149,7 +119,13 @@ export class SSOHandler {
     response: string;
     relayState: string;
   }) => {
-    const { id: sessionId, request } = await this._getSession(relayState);
+    const sessionId = relayState.replace(relayStatePrefix, '');
+
+    const session: SPRequestSession = await this.session.get(sessionId);
+
+    if (!session) {
+      throw new JacksonError('Unable to validate state from the origin request.', 404);
+    }
 
     const entityId = saml.parseIssuer(Buffer.from(response, 'base64').toString());
 
@@ -180,20 +156,20 @@ export class SSOHandler {
       });
 
       const responseSigned = await createSAMLResponse({
-        audience: request.entityId,
-        acsUrl: request.acsUrl,
+        audience: session.request.entityId,
+        acsUrl: session.request.acsUrl,
+        requestId: session.request.id,
         issuer: `${this.opts.samlAudience}`,
-        requestId: request.id,
         profile: {
           ...attributes,
         },
         ...certificate,
       });
 
-      const htmlForm = saml.createPostForm(request.acsUrl, [
+      const htmlForm = saml.createPostForm(session.request.acsUrl, [
         {
           name: 'RelayState',
-          value: request.relayState,
+          value: session.request.relayState,
         },
         {
           name: 'SAMLResponse',
@@ -208,18 +184,6 @@ export class SSOHandler {
     } catch (err) {
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
-  };
-
-  _getSession = async (relayState: string) => {
-    const sessionId = relayState.replace(relayStatePrefix, '');
-
-    const session: SPRequestSession = await this.session.get(sessionId);
-
-    if (!session) {
-      throw new JacksonError('Unable to validate state from the origin request.', 404);
-    }
-
-    return session;
   };
 }
 

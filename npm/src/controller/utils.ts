@@ -1,14 +1,19 @@
+import crypto from 'crypto';
+import * as jose from 'jose';
+import { Client, TokenSet } from 'openid-client';
+import saml from '@boxyhq/saml20';
+
 import type {
   ConnectionType,
   OAuthErrorHandlerParams,
   OIDCSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
+  Profile,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
-import crypto from 'crypto';
-import * as jose from 'jose';
+import claims from '../saml/claims';
 
 export enum IndexNames {
   EntityID = 'entityID',
@@ -190,6 +195,61 @@ export const extractHostName = (url: string): string | null => {
     }
 
     return pUrl.hostname;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const extractOIDCUserProfile = async (tokenSet: TokenSet, oidcClient: Client) => {
+  const idTokenClaims = tokenSet.claims();
+  const userinfo = await oidcClient.userinfo(tokenSet);
+
+  const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
+
+  profile.claims.id = idTokenClaims.sub;
+  profile.claims.email = idTokenClaims.email ?? userinfo.email;
+  profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
+  profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
+  profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
+  profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
+  profile.claims.raw = userinfo;
+
+  return profile;
+};
+
+export const getScopeValues = (scope?: string): string[] => {
+  return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
+};
+
+export const validateSAMLResponse = async (rawResponse: string, validateOpts) => {
+  const profile = await saml.validate(rawResponse, validateOpts);
+  if (profile && profile.claims) {
+    // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
+    profile.claims = claims.map(profile.claims);
+
+    // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
+    if (!profile.claims.id && profile.claims.email) {
+      profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
+    }
+  }
+  return profile;
+};
+
+export const getEncodedTenantProduct = (
+  param: string
+): { tenant: string | null; product: string | null } | null => {
+  try {
+    const sp = new URLSearchParams(param);
+    const tenant = sp.get('tenant');
+    const product = sp.get('product');
+    if (tenant && product) {
+      return {
+        tenant: sp.get('tenant'),
+        product: sp.get('product'),
+      };
+    }
+
+    return null;
   } catch (err) {
     return null;
   }
