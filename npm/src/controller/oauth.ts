@@ -687,6 +687,7 @@ export class OAuthController implements IOAuthController {
     const idTokenClaims = tokenSet.claims();
     const userinfo = await oidcClient.userinfo(tokenSet);
     profile.claims.id = idTokenClaims.sub;
+    profile.claims.idHash = dbutils.keyDigest(idTokenClaims.sub);
     profile.claims.email = idTokenClaims.email ?? userinfo.email;
     profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
     profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
