@@ -46,6 +46,9 @@ const validateSAMLResponse = async (rawResponse: string, validateOpts) => {
     if (!profile.claims.id && profile.claims.email) {
       profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
     }
+
+    // we'll send a ripemd160 hash of the id, this can be used in the case of email missing it can be used as the local part
+    profile.claims.idHash = dbutils.keyDigest(profile.claims.id);
   }
   return profile;
 };
