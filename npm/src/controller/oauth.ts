@@ -38,6 +38,7 @@ import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SSOConnection } from './sso-connection';
 import { extractSAMLResponseAttributes } from '../saml/lib';
+import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -434,16 +435,13 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
-    let session;
-    let connection: SAMLSSORecord | undefined;
+    const session = sessionId ? await this.sessionStore.get(sessionId) : null;
 
-    if (RelayState !== '') {
-      session = await this.sessionStore.get(sessionId);
-
-      if (!session) {
-        throw new JacksonError('Unable to validate state from the origin request.', 403);
-      }
+    if (!isIdPFlow && !session) {
+      throw new JacksonError('Unable to validate state from the origin request.', 403);
     }
+
+    let connection: SAMLSSORecord | undefined;
 
     // IdP initiated SSO flow
     if (isIdPFlow) {
@@ -487,14 +485,6 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
-    const { privateKey } = await getDefaultCertificate();
-
-    const validateOpts = {
-      thumbprint: `${connection.idpMetadata.thumbprint}`,
-      audience: `${this.opts.samlAudience}`,
-      privateKey,
-    };
-
     if (
       session &&
       session.redirect_uri &&
@@ -503,12 +493,21 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
+    const { privateKey } = await getDefaultCertificate();
+
+    const validateOpts = {
+      thumbprint: `${connection.idpMetadata.thumbprint}`,
+      audience: `${this.opts.samlAudience}`,
+      privateKey,
+    };
+
     if (session && session.id) {
       validateOpts['inResponseTo'] = session.id;
     }
 
-    let profile;
     const redirect_uri = (session && session.redirect_uri) || connection.defaultRedirectUrl;
+
+    let profile: SAMLProfile | null = null;
 
     try {
       profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
@@ -518,37 +517,12 @@ export class OAuthController implements IOAuthController {
           error: 'access_denied',
           error_description: getErrorMessage(err),
           redirect_uri,
-          state: session?.requested?.state,
+          state: session.requested.state,
         }),
       };
     }
 
-    // Store details against a code
-    const code = crypto.randomBytes(20).toString('hex');
-
-    const codeVal: Record<string, unknown> = {
-      profile,
-      clientID: connection.clientID,
-      clientSecret: connection.clientSecret,
-      requested: session?.requested,
-    };
-
-    if (session) {
-      codeVal.session = session;
-    }
-
-    try {
-      await this.codeStore.put(code, codeVal);
-    } catch (err: unknown) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'server_error',
-          error_description: getErrorMessage(err),
-          redirect_uri,
-          state: session?.requested?.state,
-        }),
-      };
-    }
+    const code = await this._buildAuthorizationCode(connection, profile, session);
 
     const params = {
       code,
@@ -637,51 +611,47 @@ export class OAuthController implements IOAuthController {
         };
       }
     }
-    // store details against a code
-    const code = crypto.randomBytes(20).toString('hex');
 
-    const codeVal: Record<string, unknown> = {
-      profile,
-      clientID: oidcConnection.clientID,
-      clientSecret: oidcConnection.clientSecret,
-      requested: session?.requested,
-    };
+    const code = await this._buildAuthorizationCode(oidcConnection, profile, session);
 
-    if (session) {
-      codeVal.session = session;
-    }
-
-    try {
-      await this.codeStore.put(code, codeVal);
-    } catch (err: unknown) {
-      // return error to redirect_uri
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'server_error',
-          error_description: getErrorMessage(err),
-          redirect_uri,
-          state: session.state,
-        }),
-      };
-    }
-    const params: Record<string, string> = {
+    const params = {
       code,
     };
 
     if (session && session.state) {
-      params.state = session.state;
+      params['state'] = session.state;
     }
 
     const redirectUrl = redirect.success(redirect_uri, params);
 
-    // delete the session
-    try {
-      await this.sessionStore.delete(RelayState);
-    } catch (_err) {
-      // ignore error
-    }
+    await this.sessionStore.delete(RelayState);
 
     return { redirect_url: redirectUrl };
+  }
+
+  // Build the authorization code for the session
+  private async _buildAuthorizationCode(
+    connection: SAMLSSORecord | OIDCSSORecord,
+    profile: any,
+    session: any
+  ) {
+    // Store details against a code
+    const code = crypto.randomBytes(20).toString('hex');
+
+    const codeVal = {
+      profile,
+      clientID: connection.clientID,
+      clientSecret: connection.clientSecret,
+      requested: session ? session.requested : null,
+    };
+
+    if (session) {
+      codeVal['session'] = session;
+    }
+
+    await this.codeStore.put(code, codeVal);
+
+    return code;
   }
 
   /**

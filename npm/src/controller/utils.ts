@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import * as jose from 'jose';
 import { Client, TokenSet } from 'openid-client';
-import saml from '@boxyhq/saml20';
 
 import type {
   ConnectionType,
@@ -13,7 +12,6 @@ import type {
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
-import claims from '../saml/claims';
 
 export enum IndexNames {
   EntityID = 'entityID',

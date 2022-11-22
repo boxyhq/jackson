@@ -1,14 +1,13 @@
 import saml from '@boxyhq/saml20';
 
-import type { JacksonOption, SAMLConnection, SAMLSSORecord, Storable } from '../typings';
+import { App } from './app';
 import type { SAMLFederationApp } from './app';
-import { createSAMLResponse, extractSAMLRequestAttributes } from './utils';
-import { SSOConnection } from '../controller/sso-connection';
-import { getDefaultCertificate } from '../saml/x509';
 import { IndexNames } from '../controller/utils';
 import { JacksonError } from '../controller/error';
-import { App } from './app';
-import { extractSAMLResponseAttributes } from '../saml/lib';
+import { getDefaultCertificate } from '../saml/x509';
+import { SSOConnection } from '../controller/sso-connection';
+import type { JacksonOption, SAMLConnection, SAMLSSORecord, Storable } from '../typings';
+import { extractSAMLResponseAttributes, createSAMLResponse, extractSAMLRequestAttributes } from '../saml/lib';
 
 // Used to identify the relay state as a federated SAML request
 const relayStatePrefix = 'federated_saml_';

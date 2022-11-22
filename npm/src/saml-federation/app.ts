@@ -2,7 +2,7 @@ import type { Storable, JacksonOption } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
 import { JacksonError } from '../controller/error';
 import { IndexNames } from '../controller/utils';
-import { createMetadataXML } from './utils';
+import { createMetadataXML } from '../saml/lib';
 import * as dbutils from '../db/utils';
 
 export class App {
