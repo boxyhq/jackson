@@ -75,7 +75,7 @@ type TenantQuery = {
   strategy?: ConnectionType;
 };
 
-export type GetConnectionsQuery = ClientIDQuery | TenantQuery;
+export type GetConnectionsQuery = ClientIDQuery | TenantQuery | { entityId: string };
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 
 export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;

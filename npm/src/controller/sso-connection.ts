@@ -37,22 +37,41 @@ export class SSOConnection {
   // If idp_hint is provided, return the connection with the matching clientID
   // If there is only one connection, return the connection
   async resolveConnection(params: {
-    tenant: string;
-    product: string;
-    authFlow: 'oauth' | 'saml';
-    idp_hint?: string;
+    authFlow: 'oauth' | 'saml' | 'idp-initiated';
     originalParams: Record<string, string>;
+    tenant?: string;
+    product?: string;
+    entityId?: string;
+    idp_hint?: string;
   }): Promise<
-    | { redirectUrl: string; connection: null }
-    | { redirectUrl: null; connection: SAMLSSORecord | OIDCSSORecord }
+    | {
+        connection: SAMLSSORecord | OIDCSSORecord;
+      }
+    | {
+        redirectUrl: string;
+      }
+    | {
+        postForm: string;
+      }
   > {
-    const { tenant, product, idp_hint, authFlow, originalParams } = params;
+    const { authFlow, originalParams, tenant, product, idp_hint, entityId } = params;
+
+    let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
 
     // Find SAML connections for the app
-    const connections: (SAMLSSORecord | OIDCSSORecord)[] = await this.connection.getByIndex({
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(tenant, product),
-    });
+    if (tenant && product) {
+      connections = await this.connection.getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
+    }
+
+    if (entityId) {
+      connections = await this.connection.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+    }
 
     if (!connections || connections.length === 0) {
       throw new JacksonError('No SAML connection found.', 404);
@@ -66,25 +85,44 @@ export class SSOConnection {
         throw new JacksonError('No SAML connection found.', 404);
       }
 
-      return { redirectUrl: null, connection };
+      return { connection };
     }
 
     // If more than one, redirect to the connection selection page
     if (connections.length > 1) {
       const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
 
-      const params = new URLSearchParams({
-        tenant,
-        product,
-        authFlow,
-        ...originalParams,
-      });
+      // SP initiated flow
+      if (['oauth', 'saml'].includes(authFlow) && tenant && product) {
+        const params = new URLSearchParams({
+          tenant,
+          product,
+          authFlow,
+          ...originalParams,
+        });
 
-      return { redirectUrl: `${url.toString()}?${params.toString()}`, connection: null };
+        return { redirectUrl: `${url.toString()}?${params.toString()}` };
+      }
+
+      // IdP initiated flow
+      if (authFlow === 'idp-initiated' && entityId) {
+        const params = new URLSearchParams({
+          entityId,
+        });
+
+        const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params.toString()}`, [
+          {
+            name: 'SAMLResponse',
+            value: originalParams.SAMLResponse,
+          },
+        ]);
+
+        return { postForm };
+      }
     }
 
     // If only one, use that connection
-    return { redirectUrl: null, connection: connections[0] };
+    return { connection: connections[0] };
   }
 
   // Create SAML Request using the provided connection and return the url to the IdP

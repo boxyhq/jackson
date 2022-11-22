@@ -63,43 +63,6 @@ export class OAuthController implements IOAuthController {
     });
   }
 
-  // TODO: Refactor this method
-  private resolveMultipleConnectionMatches(
-    connections,
-    idp_hint,
-    originalParams,
-    isIdpFlow = false
-  ): { resolvedConnection?: unknown; redirect_url?: string; app_select_form?: string } {
-    if (connections.length > 1) {
-      if (idp_hint) {
-        return { resolvedConnection: connections.find(({ clientID }) => clientID === idp_hint) };
-      } else if (this.opts.idpDiscoveryPath) {
-        if (isIdpFlow) {
-          // Relevant to IdP initiated SAML flow
-          const appList = connections.map(({ product, name, description, clientID }) => ({
-            product,
-            name,
-            description,
-            clientID,
-          }));
-          return {
-            app_select_form: saml.createPostForm(this.opts.idpDiscoveryPath, [
-              {
-                name: 'SAMLResponse',
-                value: originalParams.SAMLResponse,
-              },
-              {
-                name: 'app',
-                value: encodeURIComponent(JSON.stringify(appList)),
-              },
-            ]),
-          };
-        }
-      }
-    }
-    return {};
-  }
-
   public async authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
       response_type = 'code',
@@ -141,13 +104,13 @@ export class OAuthController implements IOAuthController {
         originalParams: { ...body },
       });
 
-      if (response.redirectUrl) {
+      if ('redirectUrl' in response) {
         return {
           redirect_url: response.redirectUrl,
         };
       }
 
-      if (response.connection) {
+      if ('connection' in response) {
         connection = response.connection;
       }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
@@ -180,13 +143,13 @@ export class OAuthController implements IOAuthController {
           originalParams: { ...body },
         });
 
-        if (response.redirectUrl) {
+        if ('redirectUrl' in response) {
           return {
             redirect_url: response.redirectUrl,
           };
         }
 
-        if (response.connection) {
+        if ('connection' in response) {
           connection = response.connection;
         }
       } else {
@@ -442,107 +405,114 @@ export class OAuthController implements IOAuthController {
   public async samlResponse(
     body: SAMLResponsePayload
   ): Promise<{ redirect_url?: string; app_select_form?: string }> {
-    const { SAMLResponse, idp_hint } = body;
-
-    let RelayState = body.RelayState || ''; // RelayState will contain the sessionId from earlier quasi-oauth flow
+    const { SAMLResponse, idp_hint, RelayState = '' } = body;
 
     const isIdPFlow = !RelayState.startsWith(relayStatePrefix);
 
+    // IdP is disabled so block the request
     if (!this.opts.idpEnabled && isIdPFlow) {
-      // IDP is disabled so block the request
-
       throw new JacksonError(
         'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
         403
       );
     }
 
-    RelayState = RelayState.replace(relayStatePrefix, '');
-
+    const sessionId = RelayState.replace(relayStatePrefix, '');
     const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
-
     const issuer = saml.parseIssuer(rawResponse);
+
     if (!issuer) {
       throw new JacksonError('Issuer not found.', 403);
     }
-    const samlConnections = await this.connectionStore.getByIndex({
+
+    const connections: SAMLSSORecord[] = await this.connectionStore.getByIndex({
       name: IndexNames.EntityID,
       value: issuer,
     });
 
-    if (!samlConnections || samlConnections.length === 0) {
+    if (!connections || connections.length === 0) {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
-    let samlConnection = samlConnections[0];
-
-    if (isIdPFlow) {
-      RelayState = '';
-      const { resolvedConnection, app_select_form } = this.resolveMultipleConnectionMatches(
-        samlConnections,
-        idp_hint,
-        { SAMLResponse },
-        true
-      );
-      if (app_select_form) {
-        return { app_select_form };
-      }
-      if (resolvedConnection) {
-        samlConnection = resolvedConnection;
-      }
-    }
-
     let session;
+    let connection: SAMLSSORecord | undefined;
 
     if (RelayState !== '') {
-      session = await this.sessionStore.get(RelayState);
+      session = await this.sessionStore.get(sessionId);
+
       if (!session) {
         throw new JacksonError('Unable to validate state from the origin request.', 403);
       }
     }
-    if (!isIdPFlow) {
-      // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
-      samlConnection =
-        samlConnections.length === 1
-          ? samlConnections[0]
-          : samlConnections.filter((c) => {
-              return (
-                c.clientID === session?.requested?.client_id ||
-                (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
-              );
-            })[0];
+
+    // IdP initiated SSO flow
+    if (isIdPFlow) {
+      const response = await this.ssoConnection.resolveConnection({
+        idp_hint,
+        authFlow: 'idp-initiated',
+        entityId: issuer,
+        originalParams: {
+          SAMLResponse,
+        },
+      });
+
+      // Redirect to the product selection page
+      if ('postForm' in response) {
+        return {
+          app_select_form: response.postForm,
+        };
+      }
+
+      // Found a connection
+      if ('connection' in response) {
+        connection = response.connection as SAMLSSORecord;
+      }
+    } else {
+      // Resolve if there are multiple matches for SP login
+      // TODO: Support multiple matches for IdP login
+
+      if (connections.length === 1) {
+        connection = connections[0];
+      } else {
+        connection = connections.filter((c) => {
+          return (
+            c.clientID === session?.requested?.client_id ||
+            (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
+          );
+        })[0];
+      }
     }
 
-    if (!samlConnection) {
+    if (!connection) {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
     const { privateKey } = await getDefaultCertificate();
 
-    const validateOpts: Record<string, string> = {
-      thumbprint: samlConnection.idpMetadata.thumbprint,
-      audience: this.opts.samlAudience!,
+    const validateOpts = {
+      thumbprint: connection.idpMetadata.thumbprint,
+      audience: `${this.opts.samlAudience}`,
       privateKey,
     };
 
     if (
       session &&
       session.redirect_uri &&
-      !allowed.redirect(session.redirect_uri, samlConnection.redirectUrl)
+      !allowed.redirect(session.redirect_uri, connection.redirectUrl as string[])
     ) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
     if (session && session.id) {
-      validateOpts.inResponseTo = session.id;
+      validateOpts['inResponseTo'] = session.id;
     }
 
     let profile;
-    const redirect_uri = (session && session.redirect_uri) || samlConnection.defaultRedirectUrl;
+    const redirect_uri = (session && session.redirect_uri) || connection.defaultRedirectUrl;
+
     try {
       profile = await validateSAMLResponse(rawResponse, validateOpts);
     } catch (err: unknown) {
-      // return error to redirect_uri
       return {
         redirect_url: OAuthErrorResponse({
           error: 'access_denied',
@@ -552,13 +522,14 @@ export class OAuthController implements IOAuthController {
         }),
       };
     }
-    // store details against a code
+
+    // Store details against a code
     const code = crypto.randomBytes(20).toString('hex');
 
     const codeVal: Record<string, unknown> = {
       profile,
-      clientID: samlConnection.clientID,
-      clientSecret: samlConnection.clientSecret,
+      clientID: connection.clientID,
+      clientSecret: connection.clientSecret,
       requested: session?.requested,
     };
 
@@ -569,7 +540,6 @@ export class OAuthController implements IOAuthController {
     try {
       await this.codeStore.put(code, codeVal);
     } catch (err: unknown) {
-      // return error to redirect_uri
       return {
         redirect_url: OAuthErrorResponse({
           error: 'server_error',
@@ -580,24 +550,17 @@ export class OAuthController implements IOAuthController {
       };
     }
 
-    const params: Record<string, string> = {
+    const params = {
       code,
     };
 
     if (session && session.state) {
-      params.state = session.state;
+      params['state'] = session.state;
     }
 
-    const redirectUrl = redirect.success(redirect_uri, params);
+    await this.sessionStore.delete(sessionId);
 
-    // delete the session
-    try {
-      await this.sessionStore.delete(RelayState);
-    } catch (_err) {
-      // ignore error
-    }
-
-    return { redirect_url: redirectUrl };
+    return { redirect_url: redirect.success(redirect_uri, params) };
   }
 
   public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {

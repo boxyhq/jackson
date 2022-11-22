@@ -1,79 +1,147 @@
-import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import { useRef } from 'react';
+import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import jackson from '@lib/jackson';
 
 export default function ChooseIdPConnection({
   connections,
+  SAMLResponse,
+  requestType,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const router = useRouter();
-  const { t } = useTranslation('common');
-
-  // Redirect to the same path with idp_hint set to the selected connection clientID
-  const handleConnectionClick = (clientID: string) => {
-    router.push(`${router.asPath}&idp_hint=${clientID}`);
-  };
-
   return (
     <div className='mx-auto my-28 w-[500px]'>
       <div className='mx-5 flex flex-col space-y-10 rounded border border-gray-300 p-10'>
-        <h3 className='text-center text-xl font-bold'>{t('choose_an_identity_provider')}</h3>
-        <ul className='flex flex-col space-y-5'>
-          {connections.map((connection) => {
-            const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
-            const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
-
-            const name =
-              connection.name || (idpMetadata ? idpMetadata.provider : `${oidcProvider?.provider}`);
-
-            return (
-              <li key={connection.clientID} className='rounded bg-gray-100'>
-                <button
-                  type='button'
-                  className='w-full'
-                  onClick={() => {
-                    handleConnectionClick(connection.clientID);
-                  }}>
-                  <div className='flex items-center gap-2 py-3 px-3'>
-                    <div className='placeholder avatar'>
-                      <div className='w-8 rounded-full bg-primary text-white'>
-                        <span className='text-xs font-bold'>{name.charAt(0).toUpperCase()}</span>
-                      </div>
-                    </div>
-                    {name}
-                  </div>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <p className='text-center text-sm text-slate-600'>
-          Choose an Identity Provider to continue. If you don&apos;t see your Identity Provider, please
-          contact your administrator.
-        </p>
+        {requestType === 'sp-initiated' ? (
+          <IdpSelector connections={connections} />
+        ) : (
+          <AppSelector connections={connections} SAMLResponse={SAMLResponse} />
+        )}
       </div>
     </div>
   );
 }
 
+const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORecord)[] }) => {
+  const router = useRouter();
+
+  // SP initiated SSO: Redirect to the same path with idp_hint set to the selected connection clientID
+  const connectionSelected = (clientID: string) => {
+    return router.push(`${router.asPath}&idp_hint=${clientID}`);
+  };
+
+  return (
+    <>
+      <h3 className='text-center text-xl font-bold'>Select an Identity Provider to continue</h3>
+      <ul className='flex flex-col space-y-5'>
+        {connections.map((connection) => {
+          const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
+          const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
+
+          const name = connection.name || (idpMetadata ? idpMetadata.provider : `${oidcProvider?.provider}`);
+
+          return (
+            <li key={connection.clientID} className='rounded bg-gray-100'>
+              <button
+                type='button'
+                className='w-full'
+                onClick={() => {
+                  connectionSelected(connection.clientID);
+                }}>
+                <div className='flex items-center gap-2 py-3 px-3'>
+                  <div className='placeholder avatar'>
+                    <div className='w-8 rounded-full bg-primary text-white'>
+                      <span className='text-xs font-bold'>{name.charAt(0).toUpperCase()}</span>
+                    </div>
+                  </div>
+                  {name}
+                </div>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <p className='text-center text-sm text-slate-600'>
+        Choose an Identity Provider to continue. If you don&apos;t see your Identity Provider, please contact
+        your administrator.
+      </p>
+    </>
+  );
+};
+
+const AppSelector = ({
+  connections,
+  SAMLResponse,
+}: {
+  connections: (OIDCSSORecord | SAMLSSORecord)[];
+  SAMLResponse: string | null;
+}) => {
+  const { t } = useTranslation('common');
+  const formRef = useRef<HTMLFormElement>(null);
+
+  if (!SAMLResponse) {
+    return <p className='text-center text-sm text-slate-600'>No SAMLResponse found.</p>;
+  }
+
+  // IdP initiated SSO: Submit the SAMLResponse and idp_hint to the SAML ACS endpoint
+  const appSelected = () => {
+    formRef.current?.submit();
+  };
+
+  return (
+    <>
+      <h3 className='text-center text-xl font-bold'>{t('select_an_app')}</h3>
+      <form method='POST' action='/api/oauth/saml' ref={formRef}>
+        <input type='hidden' name='SAMLResponse' value={SAMLResponse} />
+        <ul className='flex flex-col space-y-5'>
+          {connections.map((connection) => {
+            return (
+              <li key={connection.clientID} className='rounded bg-gray-100'>
+                <div className='flex items-center gap-2 py-3 px-3'>
+                  <input
+                    type='radio'
+                    name='idp_hint'
+                    className='radio'
+                    value={connection.clientID}
+                    onChange={appSelected}
+                    id={connection.clientID}
+                  />
+                  <label htmlFor={connection.clientID}>{connection.product}</label>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </form>
+      <p className='text-center text-sm text-slate-600'>
+        Choose an app to continue. If you don&apos;t see your app, please contact your administrator.
+      </p>
+    </>
+  );
+};
+
 export const getServerSideProps: GetServerSideProps<{
   connections: (OIDCSSORecord | SAMLSSORecord)[];
-}> = async ({ query, locale }) => {
+  SAMLResponse: string | null;
+  requestType: 'sp-initiated' | 'idp-initiated';
+}> = async ({ query, locale, req }) => {
   const { connectionAPIController } = await jackson();
 
   const paramsToRelay = { ...query } as { [key: string]: string };
 
-  const { tenant, product, idp_hint, authFlow } = query as {
-    tenant: string;
-    product: string;
+  const { authFlow, entityId, tenant, product, idp_hint } = query as {
     authFlow: 'saml' | 'oauth';
+    tenant?: string;
+    product?: string;
     idp_hint?: string;
+    entityId?: string;
   };
 
-  // If the user has already selected an IdP, proceed to the next step
+  // The user has selected an IdP to continue with
   if (idp_hint) {
     const params = new URLSearchParams(paramsToRelay).toString();
 
@@ -91,11 +159,43 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   // Otherwise, show the list of IdPs
-  const connections = await connectionAPIController.getConnections({ tenant, product });
+  let connections: (OIDCSSORecord | SAMLSSORecord)[] = [];
+
+  if (tenant && product) {
+    connections = await connectionAPIController.getConnections({ tenant, product });
+  } else if (entityId) {
+    connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
+  }
+
+  // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
+  if (req.method == 'POST') {
+    const body = await getRawBody(req);
+    const params = new URLSearchParams(body.toString('utf-8'));
+
+    const SAMLResponse = params.get('SAMLResponse');
+
+    // SAMLResponse should exist with idp-initiated flow
+    if (!SAMLResponse) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+        requestType: 'idp-initiated',
+        SAMLResponse,
+        connections,
+      },
+    };
+  }
 
   return {
     props: {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+      requestType: 'sp-initiated',
+      SAMLResponse: null,
       connections,
     },
   };

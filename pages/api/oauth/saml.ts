@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
 
     // If RelayState starts "federated_saml_", it's the part of federated SAML login flow.
-    if (RelayState.startsWith('federated_saml_')) {
+    if (RelayState && RelayState.startsWith('federated_saml_')) {
       const { htmlForm } = await samlFederated.sso.generateSAMLResponse({
         response: SAMLResponse,
         relayState: RelayState,

@@ -51,7 +51,7 @@
   "scim_endpoint": "SCIM Endpoint",
   "scim_token": "SCIM Token",
   "select_type": "Select Type",
-  "select_an_app": "Select an App",
+  "select_an_app": "Select an App to continue",
   "selection_list_empty": "Selection list empty",
   "send_magic_link": "Send Magic Link",
   "sent_at": "Sent At",

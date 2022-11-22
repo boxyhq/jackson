@@ -77,7 +77,7 @@ export class SSOHandler {
     });
 
     // If there is a redirect URL, then we need to redirect to that URL
-    if (response.redirectUrl) {
+    if ('redirectUrl' in response) {
       return {
         redirectUrl: response.redirectUrl,
       };
@@ -86,7 +86,7 @@ export class SSOHandler {
     let connection: SAMLSSORecord | undefined;
 
     // If there is a connection, use that connection
-    if (response.connection && 'idpMetadata' in response.connection) {
+    if ('connection' in response && 'idpMetadata' in response.connection) {
       connection = response.connection;
     }
 

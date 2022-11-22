@@ -469,8 +469,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
     const strategy = 'strategy' in body ? body.strategy : undefined;
+    const entityId = 'entityId' in body ? body.entityId : undefined;
 
     metrics.increment('getConnections');
+
+    if (entityId) {
+      const connections = await this.connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+
+      if (!connections || typeof connections !== 'object') {
+        return [];
+      }
+
+      return connections;
+    }
 
     if (clientID) {
       const connection = await this.connectionStore.get(clientID);
