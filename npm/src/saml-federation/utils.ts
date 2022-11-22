@@ -6,8 +6,6 @@ import { inflateRaw } from 'zlib';
 import { promisify } from 'util';
 import crypto from 'crypto';
 
-import claims from '../saml/claims';
-
 export const extractSAMLRequestAttributes = async (samlRequest: string) => {
   const decodeRequest = await decodeBase64(samlRequest, true);
   const result = await parseXML(decodeRequest);
@@ -38,23 +36,6 @@ export const extractSAMLRequestAttributes = async (samlRequest: string) => {
     publicKey,
     providerName,
   };
-};
-
-export const extractSAMLResponseAttributes = async (response: string, validateOpts) => {
-  const decodedResponse = Buffer.from(response, 'base64').toString();
-  const attributes = await saml.validate(decodedResponse, validateOpts);
-
-  if (attributes && attributes.claims) {
-    // We map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
-    attributes.claims = claims.map(attributes.claims);
-
-    // Some providers don't return the id in the assertion, we set it to a sha256 hash of the email
-    if (!attributes.claims.id && attributes.claims.email) {
-      attributes.claims.id = crypto.createHash('sha256').update(attributes.claims.email).digest('hex');
-    }
-  }
-
-  return attributes;
 };
 
 // Create Metadata XML

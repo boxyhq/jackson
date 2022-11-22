@@ -28,7 +28,6 @@ import {
   extractOIDCUserProfile,
   getScopeValues,
   getEncodedTenantProduct,
-  validateSAMLResponse,
 } from './utils';
 
 import * as metrics from '../opentelemetry/metrics';
@@ -38,6 +37,7 @@ import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SSOConnection } from './sso-connection';
+import { extractSAMLResponseAttributes } from '../saml/lib';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -490,7 +490,7 @@ export class OAuthController implements IOAuthController {
     const { privateKey } = await getDefaultCertificate();
 
     const validateOpts = {
-      thumbprint: connection.idpMetadata.thumbprint,
+      thumbprint: `${connection.idpMetadata.thumbprint}`,
       audience: `${this.opts.samlAudience}`,
       privateKey,
     };
@@ -511,7 +511,7 @@ export class OAuthController implements IOAuthController {
     const redirect_uri = (session && session.redirect_uri) || connection.defaultRedirectUrl;
 
     try {
-      profile = await validateSAMLResponse(rawResponse, validateOpts);
+      profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
     } catch (err: unknown) {
       return {
         redirect_url: OAuthErrorResponse({

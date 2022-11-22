@@ -2,12 +2,13 @@ import saml from '@boxyhq/saml20';
 
 import type { JacksonOption, SAMLConnection, SAMLSSORecord, Storable } from '../typings';
 import type { SAMLFederationApp } from './app';
-import { createSAMLResponse, extractSAMLRequestAttributes, extractSAMLResponseAttributes } from './utils';
+import { createSAMLResponse, extractSAMLRequestAttributes } from './utils';
 import { SSOConnection } from '../controller/sso-connection';
 import { getDefaultCertificate } from '../saml/x509';
 import { IndexNames } from '../controller/utils';
 import { JacksonError } from '../controller/error';
 import { App } from './app';
+import { extractSAMLResponseAttributes } from '../saml/lib';
 
 // Used to identify the relay state as a federated SAML request
 const relayStatePrefix = 'federated_saml_';
@@ -146,10 +147,11 @@ export class SSOHandler {
     const connection = connections[0];
 
     const certificate = await getDefaultCertificate();
+    const decodedResponse = Buffer.from(response, 'base64').toString();
 
     try {
       // Extract SAML Response attributes sent by the IdP
-      const attributes = await extractSAMLResponseAttributes(response, {
+      const attributes = await extractSAMLResponseAttributes(decodedResponse, {
         thumbprint: connection.idpMetadata.thumbprint,
         audience: `${this.opts.samlAudience}`,
         privateKey: certificate.privateKey,

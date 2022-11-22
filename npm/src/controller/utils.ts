@@ -221,20 +221,6 @@ export const getScopeValues = (scope?: string): string[] => {
   return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
 };
 
-export const validateSAMLResponse = async (rawResponse: string, validateOpts) => {
-  const profile = await saml.validate(rawResponse, validateOpts);
-  if (profile && profile.claims) {
-    // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
-    profile.claims = claims.map(profile.claims);
-
-    // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
-    if (!profile.claims.id && profile.claims.email) {
-      profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
-    }
-  }
-  return profile;
-};
-
 export const getEncodedTenantProduct = (
   param: string
 ): { tenant: string | null; product: string | null } | null => {
