@@ -310,9 +310,14 @@ tap.test('samlResponse()', async (t) => {
       RelayState: relayState,
     };
 
-    const stubValidate = sinon
-      .stub(saml, 'validate')
-      .resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
+    const stubValidate = sinon.stub(saml, 'validate').resolves({
+      audience: '',
+      claims: {
+        id: '123',
+      },
+      issuer: '',
+      sessionIndex: '',
+    });
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -515,9 +520,14 @@ tap.test('token()', async (t) => {
           RelayState: relayState,
         };
 
-        const stubValidate = sinon
-          .stub(saml, 'validate')
-          .resolves({ audience: '', claims: {}, issuer: '', sessionIndex: '' });
+        const stubValidate = sinon.stub(saml, 'validate').resolves({
+          audience: '',
+          claims: {
+            id: '123',
+          },
+          issuer: '',
+          sessionIndex: '',
+        });
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
