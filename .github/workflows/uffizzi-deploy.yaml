@@ -12,8 +12,8 @@ jobs:
     name: Cache Compose File
     runs-on: ubuntu-latest
     outputs:
-      compose-file-cache-key: ${{ steps.hash.outputs.hash }}
-      pr-number: ${{ steps.pr.outputs.number }}
+      compose-file-cache-key: ${{ env.COMPOSE_FILE_HASH }}
+      pr-number: ${{ env.PR_NUMBER }}
     steps:
       - name: 'Download artifacts'
         # Fetch output (zip archive) from the workflow run that triggered this workflow.
@@ -80,7 +80,7 @@ jobs:
       # and this reusable workflow will delete the preview deployment.
       compose-file-cache-key: ${{ needs.cache-compose-file.outputs.compose-file-cache-key }}
       compose-file-cache-path: docker-compose.rendered.yml
-      server: https://app.uffizzi.com/
+      server: https://app.uffizzi.com
       pr-number: ${{ needs.cache-compose-file.outputs.pr-number }}
       healthcheck-url-path: '/api/health'
     permissions:
