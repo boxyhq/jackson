@@ -46,6 +46,9 @@ const validateSAMLResponse = async (rawResponse: string, validateOpts) => {
     if (!profile.claims.id && profile.claims.email) {
       profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
     }
+
+    // we'll send a ripemd160 hash of the id, this can be used in the case of email missing it can be used as the local part
+    profile.claims.idHash = dbutils.keyDigest(profile.claims.id);
   }
   return profile;
 };
@@ -684,6 +687,7 @@ export class OAuthController implements IOAuthController {
     const idTokenClaims = tokenSet.claims();
     const userinfo = await oidcClient.userinfo(tokenSet);
     profile.claims.id = idTokenClaims.sub;
+    profile.claims.idHash = dbutils.keyDigest(idTokenClaims.sub);
     profile.claims.email = idTokenClaims.email ?? userinfo.email;
     profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
     profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
