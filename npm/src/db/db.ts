@@ -18,9 +18,9 @@ import { JacksonStore as JacksonStoreMSSQL } from './sql/mssql/entity/JacksonSto
 import { JacksonIndex as JacksonIndexMSSQL } from './sql/mssql/entity/JacksonIndex';
 import { JacksonTTL as JacksonTTLMSSQL } from './sql/mssql/entity/JacksonTTL';
 
-import { JacksonStore as JacksonStoreMariaDB } from './mariadb/entity/JacksonStore';
-import { JacksonIndex as JacksonIndexMariaDB } from './mariadb/entity/JacksonIndex';
-import { JacksonTTL as JacksonTTLMariaDB } from './mariadb/entity/JacksonTTL';
+import { JacksonStore as JacksonStoreMariaDB } from './sql/mariadb/entity/JacksonStore';
+import { JacksonIndex as JacksonIndexMariaDB } from './sql/mariadb/entity/JacksonIndex';
+import { JacksonTTL as JacksonTTLMariaDB } from './sql/mariadb/entity/JacksonTTL';
 
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
@@ -105,6 +105,7 @@ export default {
               encryptionKey
             );
           case 'mariadb':
+          case 'mysql':
             return new DB(
               await sql.new(options, {
                 JacksonStore: JacksonStoreMariaDB,

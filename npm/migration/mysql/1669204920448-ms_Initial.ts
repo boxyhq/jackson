@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class md_1669117677879 implements MigrationInterface {
-    name = 'md_1669117677879'
+export class msInitial1669204920448 implements MigrationInterface {
+    name = 'msInitial1669204920448'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE \`jackson_store\` (\`key\` varchar(250) NOT NULL, \`value\` text NOT NULL, \`iv\` varchar(64) NULL, \`tag\` varchar(64) NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(), \`modifiedAt\` timestamp NULL, PRIMARY KEY (\`key\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`jackson_store\` (\`key\` varchar(250) NOT NULL, \`value\` text NOT NULL, \`iv\` varchar(64) NULL, \`tag\` varchar(64) NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`modifiedAt\` timestamp NULL, PRIMARY KEY (\`key\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`jackson_index\` (\`id\` int NOT NULL AUTO_INCREMENT, \`key\` varchar(250) NOT NULL, \`storeKey\` varchar(250) NOT NULL, INDEX \`_jackson_index_key\` (\`key\`), INDEX \`_jackson_index_key_store\` (\`key\`, \`storeKey\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`jackson_ttl\` (\`key\` varchar(250) NOT NULL, \`expiresAt\` bigint NOT NULL, INDEX \`_jackson_ttl_expires_at\` (\`expiresAt\`), PRIMARY KEY (\`key\`)) ENGINE=InnoDB`);
         await queryRunner.query(`ALTER TABLE \`jackson_index\` ADD CONSTRAINT \`FK_937b040fb2592b4671cbde09e83\` FOREIGN KEY (\`storeKey\`) REFERENCES \`jackson_store\`(\`key\`) ON DELETE CASCADE ON UPDATE NO ACTION`);
