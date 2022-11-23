@@ -2,6 +2,7 @@ import saml from '@boxyhq/saml20';
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
+import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type { JacksonOption, Storable, SAMLSSORecord, OIDCSSORecord } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
@@ -13,7 +14,7 @@ import { createSAMLResponse } from '../saml/lib';
 
 const deflateRawAsync = promisify(deflateRaw);
 
-export class SSOConnection {
+export class SAMLHandler {
   private connection: Storable;
   private session: Storable;
   private opts: JacksonOption;
@@ -166,7 +167,7 @@ export class SSOConnection {
     };
   }
 
-  public createSAMLResponse = async (params: { profile: any; session: any }) => {
+  createSAMLResponse = async (params: { profile: SAMLProfile; session: any }) => {
     const { profile, session } = params;
 
     const certificate = await getDefaultCertificate();
@@ -194,26 +195,9 @@ export class SSOConnection {
         },
       ]);
 
-      console.log(session);
-
-      // Remove the session after we've created the SAML Response
-      await this.session.delete(session.id);
-
       return { responseForm };
     } catch (err) {
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
   };
 }
-
-// type SPRequestSession = {
-//   id: string;
-//   request: {
-//     id: string;
-//     acsUrl: string;
-//     entityId: string;
-//     publicKey: string | null;
-//     providerName: string;
-//     relayState: string;
-//   };
-// };

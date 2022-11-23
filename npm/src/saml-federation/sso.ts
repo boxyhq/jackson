@@ -1,40 +1,18 @@
 import saml from '@boxyhq/saml20';
 
 import { App } from './app';
-import type { SAMLFederationApp } from './app';
 import { JacksonError } from '../controller/error';
-import { SSOConnection } from '../controller/sso-connection';
-import type { JacksonOption, SAMLSSORecord, Storable } from '../typings';
+import { SAMLHandler } from '../controller/saml-handler';
+import type { SAMLSSORecord } from '../typings';
 import { extractSAMLRequestAttributes } from '../saml/lib';
 
-export class SSOHandler {
+export class SSO {
   private app: App;
-  private session: Storable;
-  private connection: Storable;
-  private opts: JacksonOption;
-  private ssoConnection: SSOConnection;
+  private samlHandler: SAMLHandler;
 
-  constructor({
-    app,
-    session,
-    connection,
-    opts,
-  }: {
-    app: App;
-    session: Storable;
-    connection: Storable;
-    opts: JacksonOption;
-  }) {
+  constructor({ app, samlHandler }: { app: App; samlHandler: SAMLHandler }) {
     this.app = app;
-    this.session = session;
-    this.connection = connection;
-    this.opts = opts;
-
-    this.ssoConnection = new SSOConnection({
-      connection,
-      session,
-      opts,
-    });
+    this.samlHandler = samlHandler;
   }
 
   // Accept the SAML Request from Service Provider, and create a new SAML Request to be sent to Identity Provider
@@ -60,7 +38,7 @@ export class SSOHandler {
       throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
     }
 
-    const response = await this.ssoConnection.resolveConnection({
+    const response = await this.samlHandler.resolveConnection({
       tenant: app.tenant,
       product: app.product,
       idp_hint,
@@ -89,7 +67,7 @@ export class SSOHandler {
       throw new JacksonError('No SAML connection found.', 404);
     }
 
-    const { redirectUrl } = await this.ssoConnection.createSAMLRequest({
+    const { redirectUrl } = await this.samlHandler.createSAMLRequest({
       connection,
       requestParams: {
         id,

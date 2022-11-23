@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
 import { errors, generators, Issuer } from 'openid-client';
+import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
   OIDCAuthzResponsePayload,
@@ -36,9 +37,8 @@ import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
-import { SSOConnection } from './sso-connection';
+import { SAMLHandler } from './saml-handler';
 import { extractSAMLResponseAttributes } from '../saml/lib';
-import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -48,7 +48,7 @@ export class OAuthController implements IOAuthController {
   private codeStore: Storable;
   private tokenStore: Storable;
   private opts: JacksonOption;
-  private ssoConnection: SSOConnection;
+  private samlHandler: SAMLHandler;
 
   constructor({ connectionStore, sessionStore, codeStore, tokenStore, opts }) {
     this.connectionStore = connectionStore;
@@ -57,7 +57,7 @@ export class OAuthController implements IOAuthController {
     this.tokenStore = tokenStore;
     this.opts = opts;
 
-    this.ssoConnection = new SSOConnection({
+    this.samlHandler = new SAMLHandler({
       connection: connectionStore,
       session: sessionStore,
       opts,
@@ -97,7 +97,7 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = requestedScopes.includes('openid');
 
     if (tenant && product) {
-      const response = await this.ssoConnection.resolveConnection({
+      const response = await this.samlHandler.resolveConnection({
         tenant,
         product,
         idp_hint,
@@ -136,7 +136,7 @@ export class OAuthController implements IOAuthController {
         requestedTenant = tenant;
         requestedProduct = product;
 
-        const response = await this.ssoConnection.resolveConnection({
+        const response = await this.samlHandler.resolveConnection({
           tenant,
           product,
           idp_hint,
@@ -448,7 +448,7 @@ export class OAuthController implements IOAuthController {
 
     // IdP initiated SSO flow
     if (isIdPFlow) {
-      const response = await this.ssoConnection.resolveConnection({
+      const response = await this.samlHandler.resolveConnection({
         idp_hint,
         authFlow: 'idp-initiated',
         entityId: issuer,
@@ -528,7 +528,9 @@ export class OAuthController implements IOAuthController {
 
     // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
     if (isSAMLFederated) {
-      const { responseForm } = await this.ssoConnection.createSAMLResponse({ profile, session });
+      const { responseForm } = await this.samlHandler.createSAMLResponse({ profile, session });
+
+      await this.sessionStore.delete(sessionId);
 
       return { responseForm };
     }
