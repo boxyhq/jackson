@@ -20,7 +20,7 @@ services:
       - 27017:27017
     restart: always
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0.31
     platform: linux/amd64
     ports:
       - 3307:3306
