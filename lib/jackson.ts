@@ -1,24 +1,14 @@
 import type {
   IAdminController,
   IConnectionAPIController,
-  SAMLSSOConnectionWithEncodedMetadata,
-  SAMLSSOConnectionWithRawMetadata,
-  OIDCSSOConnection,
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
   DirectorySync,
-  DirectoryType,
-  Directory,
   User,
   Group,
-  DirectorySyncEvent,
-  HTTPMethod,
-  DirectorySyncRequest,
   IOidcDiscoveryController,
   ISPSAMLConfig,
-  GetConnectionsQuery,
-  GetConfigQuery,
   SAMLFederation,
 } from '@boxyhq/saml-jackson';
 
@@ -95,17 +85,4 @@ export default async function init() {
   };
 }
 
-export type {
-  SAMLSSOConnectionWithEncodedMetadata,
-  SAMLSSOConnectionWithRawMetadata,
-  OIDCSSOConnection,
-  DirectoryType,
-  Directory,
-  User,
-  Group,
-  DirectorySyncEvent,
-  HTTPMethod,
-  DirectorySyncRequest,
-  GetConnectionsQuery,
-  GetConfigQuery,
-};
+export type { User, Group };

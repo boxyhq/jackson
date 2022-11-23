@@ -12,6 +12,7 @@ import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
 import * as x509 from './saml/x509';
 import initFederatedSAML, { type SAMLFederation } from './ee/federated-saml';
+import checkLicense from './ee/common/checkLicense';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -60,6 +61,7 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederated: SAMLFederation;
+  checkLicense: typeof checkLicense;
 }> => {
   opts = defaultOpts(opts);
 
@@ -130,6 +132,7 @@ export const controllers = async (
     directorySync,
     oidcDiscoveryController,
     samlFederated,
+    checkLicense,
   };
 };
 

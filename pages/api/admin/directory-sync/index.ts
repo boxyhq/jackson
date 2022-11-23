@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { DirectoryType } from '@lib/jackson';
+import type { DirectoryType } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
 
