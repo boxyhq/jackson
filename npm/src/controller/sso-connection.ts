@@ -8,11 +8,10 @@ import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
+import { relayStatePrefix } from './utils';
+import { createSAMLResponse } from '../saml/lib';
 
 const deflateRawAsync = promisify(deflateRaw);
-
-// Used to identify the relay state as a federated SAML request
-const relayStatePrefix = 'federated_saml_';
 
 export class SSOConnection {
   private connection: Storable;
@@ -125,7 +124,6 @@ export class SSOConnection {
     return { connection: connections[0] };
   }
 
-  // Create SAML Request using the provided connection and return the url to the IdP
   async createSAMLRequest(params: {
     connection: SAMLSSORecord;
     requestParams: Record<string, any>;
@@ -151,6 +149,7 @@ export class SSOConnection {
       request: {
         ...requestParams,
       },
+      samlFederated: true,
     });
 
     // Create URL to redirect to the Identity Provider
@@ -166,4 +165,55 @@ export class SSOConnection {
       redirectUrl: url.toString(),
     };
   }
+
+  public createSAMLResponse = async (params: { profile: any; session: any }) => {
+    const { profile, session } = params;
+
+    const certificate = await getDefaultCertificate();
+
+    try {
+      const responseSigned = await createSAMLResponse({
+        audience: session.request.entityId,
+        acsUrl: session.request.acsUrl,
+        requestId: session.request.id,
+        issuer: `${this.opts.samlAudience}`,
+        profile: {
+          ...profile,
+        },
+        ...certificate,
+      });
+
+      const responseForm = saml.createPostForm(session.request.acsUrl, [
+        {
+          name: 'RelayState',
+          value: session.request.relayState,
+        },
+        {
+          name: 'SAMLResponse',
+          value: Buffer.from(responseSigned).toString('base64'),
+        },
+      ]);
+
+      console.log(session);
+
+      // Remove the session after we've created the SAML Response
+      await this.session.delete(session.id);
+
+      return { responseForm };
+    } catch (err) {
+      throw new JacksonError('Unable to validate SAML Response.', 403);
+    }
+  };
 }
+
+// type SPRequestSession = {
+//   id: string;
+//   request: {
+//     id: string;
+//     acsUrl: string;
+//     entityId: string;
+//     publicKey: string | null;
+//     providerName: string;
+//     relayState: string;
+//   };
+// };

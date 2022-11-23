@@ -2,15 +2,10 @@ import saml from '@boxyhq/saml20';
 
 import { App } from './app';
 import type { SAMLFederationApp } from './app';
-import { IndexNames } from '../controller/utils';
 import { JacksonError } from '../controller/error';
-import { getDefaultCertificate } from '../saml/x509';
 import { SSOConnection } from '../controller/sso-connection';
-import type { JacksonOption, SAMLConnection, SAMLSSORecord, Storable } from '../typings';
-import { extractSAMLResponseAttributes, createSAMLResponse, extractSAMLRequestAttributes } from '../saml/lib';
-
-// Used to identify the relay state as a federated SAML request
-const relayStatePrefix = 'federated_saml_';
+import type { JacksonOption, SAMLSSORecord, Storable } from '../typings';
+import { extractSAMLRequestAttributes } from '../saml/lib';
 
 export class SSOHandler {
   private app: App;
@@ -110,93 +105,4 @@ export class SSOHandler {
       redirectUrl,
     };
   };
-
-  // Handle the SAML Response coming from an Identity Provider and create a new SAML Response to be sent back to the Service Provider
-  public generateSAMLResponse = async ({
-    response,
-    relayState,
-  }: {
-    response: string;
-    relayState: string;
-  }) => {
-    const sessionId = relayState.replace(relayStatePrefix, '');
-
-    const session: SPRequestSession = await this.session.get(sessionId);
-
-    if (!session) {
-      throw new JacksonError('Unable to validate state from the origin request.', 404);
-    }
-
-    const entityId = saml.parseIssuer(Buffer.from(response, 'base64').toString());
-
-    if (!entityId) {
-      throw new JacksonError("Missing 'Entity ID' in SAML Response.", 400);
-    }
-
-    // Find SAML connections for the app
-    const connections: SAMLConnection[] = await this.connection.getByIndex({
-      name: IndexNames.EntityID,
-      value: entityId,
-    });
-
-    if (!connections || connections.length === 0) {
-      throw new JacksonError('No SAML connection found.', 404);
-    }
-
-    const connection = connections[0];
-
-    const certificate = await getDefaultCertificate();
-    const decodedResponse = Buffer.from(response, 'base64').toString();
-
-    try {
-      // Extract SAML Response attributes sent by the IdP
-      const attributes = await extractSAMLResponseAttributes(decodedResponse, {
-        thumbprint: connection.idpMetadata.thumbprint,
-        audience: `${this.opts.samlAudience}`,
-        privateKey: certificate.privateKey,
-      });
-
-      const responseSigned = await createSAMLResponse({
-        audience: session.request.entityId,
-        acsUrl: session.request.acsUrl,
-        requestId: session.request.id,
-        issuer: `${this.opts.samlAudience}`,
-        profile: {
-          ...attributes,
-        },
-        ...certificate,
-      });
-
-      const htmlForm = saml.createPostForm(session.request.acsUrl, [
-        {
-          name: 'RelayState',
-          value: session.request.relayState,
-        },
-        {
-          name: 'SAMLResponse',
-          value: Buffer.from(responseSigned).toString('base64'),
-        },
-      ]);
-
-      // Remove the session after we've created the SAML Response
-      await this.session.delete(sessionId);
-
-      return { htmlForm };
-    } catch (err) {
-      throw new JacksonError('Unable to validate SAML Response.', 403);
-    }
-  };
 }
-
-type SPRequestSession = {
-  id: string;
-  app: SAMLFederationApp;
-  request: {
-    id: string;
-    acsUrl: string;
-    entityId: string;
-    publicKey: string | null;
-    providerName: string;
-    relayState: string;
-  };
-};

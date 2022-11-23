@@ -405,7 +405,7 @@ export class OAuthController implements IOAuthController {
 
   public async samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string }> {
+  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }> {
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
 
     const isIdPFlow = !RelayState.startsWith(relayStatePrefix);
@@ -441,6 +441,9 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Unable to validate state from the origin request.', 403);
     }
 
+    const isSAMLFederated = session && 'samlFederated' in session;
+    const isSPFflow = !isIdPFlow && !isSAMLFederated;
+
     let connection: SAMLSSORecord | undefined;
 
     // IdP initiated SSO flow
@@ -465,20 +468,21 @@ export class OAuthController implements IOAuthController {
       if ('connection' in response) {
         connection = response.connection as SAMLSSORecord;
       }
-    } else {
-      // Resolve if there are multiple matches for SP login
-      // TODO: Support multiple matches for IdP login
+    }
 
-      if (connections.length === 1) {
-        connection = connections[0];
-      } else {
-        connection = connections.filter((c) => {
-          return (
-            c.clientID === session?.requested?.client_id ||
-            (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
-          );
-        })[0];
-      }
+    // SP initiated SSO flow
+    // Resolve if there are multiple matches for SP login
+    if (isSPFflow) {
+      connection = connections.filter((c) => {
+        return (
+          c.clientID === session.requested.client_id ||
+          (c.tenant === session.requested.tenant && c.product === session.requested.product)
+        );
+      })[0];
+    }
+
+    if (!connection) {
+      connection = connections[0];
     }
 
     if (!connection) {
@@ -520,6 +524,13 @@ export class OAuthController implements IOAuthController {
           state: session.requested.state,
         }),
       };
+    }
+
+    // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
+    if (isSAMLFederated) {
+      const { responseForm } = await this.ssoConnection.createSAMLResponse({ profile, session });
+
+      return { responseForm };
     }
 
     const code = await this._buildAuthorizationCode(connection, profile, session);
