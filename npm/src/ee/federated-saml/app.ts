@@ -1,9 +1,10 @@
-import type { Storable, JacksonOption } from '../typings';
-import { getDefaultCertificate } from '../saml/x509';
-import { JacksonError } from '../controller/error';
-import { IndexNames } from '../controller/utils';
-import { createMetadataXML } from '../saml/lib';
-import * as dbutils from '../db/utils';
+import { getDefaultCertificate } from '../../saml/x509';
+import { JacksonError } from '../../controller/error';
+import { IndexNames } from '../../controller/utils';
+import { createMetadataXML } from '../../saml/lib';
+import * as dbutils from '../../db/utils';
+import type { Storable, JacksonOption } from '../../typings';
+import type { SAMLFederationAppWithMetadata, SAMLFederationApp } from './types';
 
 export class App {
   protected store: Storable;
@@ -124,7 +125,7 @@ export class App {
   }
 
   // Get the metadata for the app
-  public async getMetadata(id: string): Promise<IdPMetadata> {
+  public async getMetadata(id: string): Promise<Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata']> {
     await this.get(id);
 
     const { publicKey } = await getDefaultCertificate();
@@ -146,22 +147,3 @@ export class App {
     };
   }
 }
-
-export type SAMLFederationApp = {
-  id: string;
-  tenant: string;
-  product: string;
-  acsUrl: string;
-  entityId: string;
-};
-
-type SAMLFederationAppWithMetadata = SAMLFederationApp & {
-  metadata: {
-    entityId: string;
-    ssoUrl: string;
-    x509cert: string;
-    xml: string;
-  };
-};
-
-type IdPMetadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];

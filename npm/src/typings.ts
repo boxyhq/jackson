@@ -324,6 +324,7 @@ export interface JacksonOption {
       public: string;
     };
   };
+  boxyhqLicenseKey?: string;
 }
 
 export interface SLORequestParams {

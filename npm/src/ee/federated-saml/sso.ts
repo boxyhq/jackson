@@ -1,10 +1,10 @@
 import saml from '@boxyhq/saml20';
 
 import { App } from './app';
-import { JacksonError } from '../controller/error';
-import { SAMLHandler } from '../controller/saml-handler';
-import type { SAMLSSORecord } from '../typings';
-import { extractSAMLRequestAttributes } from '../saml/lib';
+import { JacksonError } from '../../controller/error';
+import { SAMLHandler } from '../../controller/saml-handler';
+import type { SAMLSSORecord } from '../../typings';
+import { extractSAMLRequestAttributes } from '../../saml/lib';
 
 export class SSO {
   private app: App;

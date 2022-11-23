@@ -11,7 +11,7 @@ import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
 import * as x509 from './saml/x509';
-import initSAMLFederation, { type SAMLFederation } from './saml-federation';
+import initFederatedSAML, { type SAMLFederation } from './ee/federated-saml';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -41,6 +41,8 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 
   newOpts.openid = newOpts.openid || {};
   newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
+
+  newOpts.boxyhqLicenseKey = newOpts.boxyhqLicenseKey || undefined;
 
   return newOpts;
 };
@@ -92,13 +94,10 @@ export const controllers = async (
     opts,
   });
 
-  const directorySync = await initDirectorySync({ db, opts });
-
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
-
   const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
-
-  const samlFederated = await initSAMLFederation({ db, opts });
+  const directorySync = await initDirectorySync({ db, opts });
+  const samlFederated = await initFederatedSAML({ db, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -137,5 +136,4 @@ export const controllers = async (
 export default controllers;
 
 export * from './typings';
-
-export type { SAMLFederation };
+export * from './ee/federated-saml/types';
