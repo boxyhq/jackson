@@ -51,6 +51,6 @@ export default checkSession(handler);
 // Success, Send proper http status code with the response
 // {
 //   data: {
-//     id: "saml-federation-app-id",
+//     id: "federated-saml-app-id",
 //   }
 // }

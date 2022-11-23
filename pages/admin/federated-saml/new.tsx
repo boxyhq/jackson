@@ -32,7 +32,7 @@ const NewApp: NextPage = () => {
 
     setLoading(true);
 
-    const response = await fetch('/api/admin/saml-federation', {
+    const response = await fetch('/api/admin/federated-saml', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const NewApp: NextPage = () => {
 
     const app = data;
 
-    router.replace(`/admin/saml-federation/${app?.id}/metadata`);
+    router.replace(`/admin/federated-saml/${app?.id}/metadata`);
     toast.success('SAML federation app created successfully');
   };
 
@@ -66,7 +66,7 @@ const NewApp: NextPage = () => {
 
   return (
     <div>
-      <Link href='/admin/saml-federation' className='btn-outline btn items-center space-x-2'>
+      <Link href='/admin/federated-saml' className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
       </Link>

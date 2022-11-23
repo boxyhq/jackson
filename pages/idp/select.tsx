@@ -146,7 +146,7 @@ export const getServerSideProps: GetServerSideProps<{
     const params = new URLSearchParams(paramsToRelay).toString();
 
     const destinations = {
-      saml: `/api/saml-federation/sso?${params}`,
+      saml: `/api/federated-saml/sso?${params}`,
       oauth: `/api/oauth/authorize?${params}`,
     };
 

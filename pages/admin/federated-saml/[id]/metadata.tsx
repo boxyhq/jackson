@@ -15,7 +15,7 @@ const Metadata: NextPage = () => {
   const { id } = router.query;
 
   const { data, error } = useSWR<{ data: SAMLFederationAppWithMetadata }>(
-    `/api/admin/saml-federation/${id}`,
+    `/api/admin/federated-saml/${id}`,
     fetcher
   );
 
@@ -28,7 +28,7 @@ const Metadata: NextPage = () => {
   }
 
   const app = data?.data;
-  const downloadMetadatUrl = `/api/saml-federation/${id}/metadata`;
+  const downloadMetadatUrl = `/api/federated-saml/${id}/metadata`;
 
   return (
     <>

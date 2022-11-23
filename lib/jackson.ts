@@ -85,4 +85,4 @@ export default async function init() {
   };
 }
 
-export type { User, Group };
+// export type { User, Group };

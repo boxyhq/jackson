@@ -11,7 +11,7 @@ import EmptyState from '@components/EmptyState';
 import Alert from '@components/Alert';
 
 const AppsList: NextPage = () => {
-  const { data, error } = useSWR<{ data: SAMLFederationApp[] }>('/api/admin/saml-federation', fetcher);
+  const { data, error } = useSWR<{ data: SAMLFederationApp[] }>('/api/admin/federated-saml', fetcher);
 
   if (!data && !error) {
     return <Loading />;
@@ -29,7 +29,7 @@ const AppsList: NextPage = () => {
       {error && <Alert message={error.message} type='error' />}
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>SAML Federation Apps</h2>
-        <Link href={'/admin/saml-federation/new'} className='btn-primary btn'>
+        <Link href={'/admin/federated-saml/new'} className='btn-primary btn'>
           + Create New
         </Link>
       </div>
@@ -39,7 +39,7 @@ const AppsList: NextPage = () => {
             title='No SAML federation apps found'
             description='SAML Federation allows you to connect your application with other SAML enabled application like
             Twilio Flex.'
-            href='/admin/saml-federation/new'
+            href='/admin/federated-saml/new'
           />
         </>
       ) : (
@@ -69,12 +69,12 @@ const AppsList: NextPage = () => {
                       <td className='px-6'>{app.product}</td>
                       <td className='px-6'>
                         <div className='flex items-center gap-2'>
-                          <Link href={`/admin/saml-federation/${app.id}`} className='btn-link'>
+                          <Link href={`/admin/federated-saml/${app.id}`} className='btn-link'>
                             <div className='tooltip' data-tip='Edit app'>
                               <PencilSquareIcon className='h-5 w-5' />
                             </div>
                           </Link>
-                          <Link href={`/admin/saml-federation/${app.id}/metadata`} className='btn-link'>
+                          <Link href={`/admin/federated-saml/${app.id}/metadata`} className='btn-link'>
                             <div className='tooltip' data-tip='Metadata URL'>
                               Metadata
                             </div>
