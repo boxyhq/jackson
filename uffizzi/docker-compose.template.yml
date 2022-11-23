@@ -30,7 +30,7 @@ services:
       DB_CLEANUP_LIMIT: 1000
       DB_PAGE_LIMIT: 50
       PRE_LOADED_CONNECTION: /app/uffizzi/saml_config
-      NEXTAUTH_SECRET: secret
+      NEXTAUTH_SECRET: 'secret'
     restart: unless-stopped
     ports:
       - '5225:5225'
