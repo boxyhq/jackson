@@ -1,5 +1,6 @@
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
 
 const links = [
   {
@@ -28,9 +29,10 @@ const links = [
 ];
 
 const WellKnownURLs = ({ className }: { className?: string }) => {
+  const { t } = useTranslation('common');
   return (
     <div className={className}>
-      <p>Here are the set of URIs you would need access to:</p>
+      <p>{t('here_are_the_set_of_uris_you_would_need_access_to')}:</p>
       <br />
       <ul className='flex flex-col space-y-1'>
         {links.map((link) => {

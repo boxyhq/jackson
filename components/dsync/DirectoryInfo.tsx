@@ -1,11 +1,13 @@
+import { Directory } from '@lib/jackson';
 import DirectoryTab from './DirectoryTab';
-
+import { useTranslation } from 'next-i18next';
 type DirectoryInfoProps = {
-  directory: any;
+  directory: Directory;
   token?: string;
 };
 
 const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
+  const { t } = useTranslation('common');
   return (
     <>
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>

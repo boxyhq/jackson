@@ -252,6 +252,7 @@ export interface OAuthTokenRes {
 
 export interface Profile {
   id: string;
+  idHash: string;
   sub?: string;
   email: string;
   firstName: string;
@@ -670,7 +671,7 @@ export interface WebhookEventLog extends DirectorySyncEvent {
 export type SetupLinkCreatePayload = {
   tenant: string;
   product: string;
-  path: 'Jackson' | 'Directory-sync';
+  service: 'sso' | 'dsync';
   regenerate?: boolean;
 };
 
@@ -683,22 +684,17 @@ export type SetupLink = {
   tenant: string;
   product: string;
   url: string;
-  path: string;
+  service: string;
   validTill: number;
 };
 
-export type SetupLinkApiResponse = {
-  data: SetupLink | undefined;
-  error: ApiError | undefined;
-};
-
-export type SetupLinkAllApiResponse = {
-  data: SetupLink[] | undefined;
-  error: ApiError | undefined;
+export type ApiResponse<T> = {
+  data: T | null;
+  error: ApiError | null;
 };
 
 export interface ISetupLinkController {
-  create(body: SetupLinkCreatePayload): Promise<SetupLinkApiResponse>;
-  getAll(): Promise<SetupLinkAllApiResponse>;
-  getByToken(token): Promise<SetupLinkApiResponse>;
+  create(body: SetupLinkCreatePayload): Promise<ApiResponse<SetupLink>>;
+  getAll(): Promise<ApiResponse<SetupLink[]>>;
+  getByToken(token): Promise<ApiResponse<SetupLink>>;
 }

@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
 
-const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
+const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const createLink = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -90,7 +90,7 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
   const [formObj, setFormObj] = useState<Record<string, string>>({
     tenant: '',
     product: '',
-    type: props.service || 'Jackson',
+    type: props.service || 'sso',
   });
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
@@ -103,7 +103,7 @@ const CreateSetupLink = (props: { service: 'Jackson' | 'Directory-Sync' }) => {
       </Link>
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {`Create Setup Link (${props.service})`}
+          {`Create Setup Link (${props.service === 'sso' ? 'Jackson' : 'Directory-Sync'})`}
         </h2>
         <div>
           <div className='mb-6'>

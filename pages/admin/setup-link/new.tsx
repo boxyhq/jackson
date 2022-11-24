@@ -2,8 +2,8 @@ import type { NextPage } from 'next';
 import Router, { useRouter } from 'next/router';
 import CreateSetupLink from '@components/CreateSetupLink';
 
-type Service = 'Jackson' | 'Directory-Sync';
-const services = ['Jackson', 'Directory-Sync'];
+type Service = 'sso' | 'dsync';
+const services = ['sso', 'dsync'];
 
 const SetupLink: NextPage = () => {
   const { query } = useRouter();

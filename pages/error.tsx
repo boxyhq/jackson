@@ -1,8 +1,12 @@
 import { getErrorCookie } from '@lib/ui/utils';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GetServerSidePropsContext } from 'next';
 
 export default function Error() {
+  const { t } = useTranslation('common');
   const [error, setError] = useState({ statusCode: null, message: '' });
   const { pathname } = useRouter();
 
@@ -20,10 +24,10 @@ export default function Error() {
   let statusText = '';
   if (typeof statusCode === 'number') {
     if (statusCode >= 400 && statusCode <= 499) {
-      statusText = 'client error';
+      statusText = t('client_error');
     }
     if (statusCode >= 500 && statusCode <= 599) {
-      statusText = 'server error';
+      statusText = t('server_error');
     }
   }
 
@@ -43,11 +47,19 @@ export default function Error() {
               <p className='mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl'>
                 {statusText}
               </p>
-              <p className='mb-4 text-lg font-light'>SAML error: {message}</p>
+              <p className='mb-4 text-lg font-light'>{t('saml_error')}: {message}</p>
             </div>
           </div>
         </section>
       </div>
     </div>
   );
+}
+
+export async function getStaticProps({ locale }: GetServerSidePropsContext) {
+  return {
+    props: {
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
+  };
 }

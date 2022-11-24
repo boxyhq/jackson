@@ -1,10 +1,12 @@
 import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 import { CircleStackIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { Directory } from '@lib/jackson';
 import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
 
 type DirectoryListProps = {
-  directories: any;
+  directories: Directory[];
   pageOffset: number;
   pageLimit: number;
   providers: any;
@@ -12,22 +14,23 @@ type DirectoryListProps = {
 };
 
 const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }: DirectoryListProps) => {
+  const { t } = useTranslation('common');
   return (
     <>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Directory Sync</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
         <div>
           <Link
             href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}
             className='btn-primary btn'>
-            <PlusIcon className='mr-1 h-5 w-5' /> New Directory
+            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_directory')}
           </Link>
           {!token && (
             <Link
-              href={`/admin/setup-link/new?service=Directory-Sync`}
+              href={`/admin/setup-link/new?service=dsync`}
               className='btn-primary btn m-2'
               data-test-id='create-setup-link'>
-              <LinkIcon className='mr-1 h-5 w-5' /> New Setup Link
+              <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
             </Link>
           )}
         </div>
@@ -43,23 +46,23 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
             <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
               <tr>
                 <th scope='col' className='px-6 py-3'>
-                  Name
+                  {t('name')}
                 </th>
                 {!token && (
                   <>
                     <th scope='col' className='px-6 py-3'>
-                      Tenant
+                      {t('tenant')}
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Product
+                      {t('product')}
                     </th>
                   </>
                 )}
                 <th scope='col' className='px-6 py-3'>
-                  Type
+                  {t('type')}
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Actions
+                  {t('actions')}
                 </th>
               </tr>
             </thead>

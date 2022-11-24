@@ -2,6 +2,7 @@ import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'nex
 
 import jackson from '@lib/jackson';
 import DirectoryList from '@components/dsync/DirectoryList';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Index = ({
   directories,
@@ -11,7 +12,7 @@ const Index = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <DirectoryList
-      directories={directories}
+      directories={directories || []}
       pageOffset={pageOffset}
       pageLimit={pageLimit}
       providers={providers}
@@ -22,6 +23,7 @@ const Index = ({
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { offset = 0 } = context.query;
   const { directorySyncController } = await jackson();
+  const { locale }: GetServerSidePropsContext = context;
 
   const pageOffset = parseInt(offset as string);
   const pageLimit = 25;
@@ -33,6 +35,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       directories,
       pageOffset,
       pageLimit,
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };

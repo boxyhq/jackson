@@ -1,4 +1,5 @@
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import jackson from '@lib/jackson';
 import DirectoryList from '@components/dsync/DirectoryList';
@@ -25,6 +26,7 @@ const Index = ({
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { offset = 0, token } = context.query;
   const { directorySyncController, setupLinkController } = await jackson();
+  const { locale }: GetServerSidePropsContext = context;
   let directories;
   if (!token) {
     directories = [];
@@ -52,6 +54,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       directories,
       pageOffset,
       pageLimit,
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };

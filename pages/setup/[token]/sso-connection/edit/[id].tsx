@@ -1,9 +1,9 @@
-import type { NextPage } from 'next';
+import type { NextPage, GetServerSidePropsContext, GetStaticPaths } from 'next';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
-
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { fetcher } from '@lib/ui/utils';
-import AddEdit from '@components/connection/AddEdit';
+import Edit from '@components/connection/Edit';
 
 const EditConnection: NextPage = () => {
   const router = useRouter();
@@ -33,7 +33,7 @@ const EditConnection: NextPage = () => {
   }
 
   return (
-    <AddEdit
+    <Edit
       connection={connection}
       setup={{
         ...setup,
@@ -44,3 +44,18 @@ const EditConnection: NextPage = () => {
 };
 
 export default EditConnection;
+
+export async function getStaticProps({ locale }: GetServerSidePropsContext) {
+  return {
+    props: {
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: 'blocking', //indicates the type of fallback
+  };
+};
