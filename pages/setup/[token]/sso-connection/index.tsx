@@ -2,13 +2,34 @@ import type { GetServerSidePropsContext, NextPage, GetStaticPaths } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ConnectionList from '@components/connection/ConnectionList';
 import { useRouter } from 'next/router';
-import { useTranslation } from 'next-i18next';
+import { fetcher } from '@lib/ui/utils';
+import { useState } from 'react';
+import useSWR from 'swr';
 
 const Connections: NextPage = () => {
   const router = useRouter();
   const { token } = router.query;
-  const { t } = useTranslation('common');
-  return token ? <ConnectionList setupToken={token as string} /> : null;
+  //   const { t } = useTranslation('common');
+  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
+  const { data: connections } = useSWR<any>(
+    [`/api/setup/${token}/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const { data: boxyhqEntityID } = useSWR<any>(
+    token ? `/api/setup/${token}/connections/entityID` : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  return token ? (
+    <ConnectionList
+      setupToken={token as string}
+      paginate={paginate}
+      setPaginate={setPaginate}
+      connections={connections}
+      boxyhqEntityID={boxyhqEntityID}
+    />
+  ) : null;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {

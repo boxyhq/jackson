@@ -1,5 +1,3 @@
-import type { GetServerSidePropsContext } from 'next';
-import useSWR from 'swr';
 import Link from 'next/link';
 import {
   ArrowLeftIcon,
@@ -10,14 +8,7 @@ import {
   PlusIcon,
 } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
-import { useState } from 'react';
-import { fetcher } from '@lib/ui/utils';
-
-type ConnectionListProps = {
-  setupToken?: string;
-};
 import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 type Connection = {
   name: string;
@@ -28,25 +19,23 @@ type Connection = {
   oidcProvider?: any;
 };
 
-const ConnectionList = ({ setupToken }: ConnectionListProps) => {
+type ConnectionListProps = {
+  setupToken?: string;
+  connections: Connection[] | undefined;
+  paginate: any;
+  setPaginate: any;
+  boxyhqEntityID?: string;
+};
+
+const ConnectionList = ({ setupToken, connections, paginate, setPaginate, boxyhqEntityID }: ConnectionListProps) => {
   const { t } = useTranslation('common');
-  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data: connections } = useSWR<Connection[]>(
-    [
-      `${setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections'}`,
-      `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`,
-    ],
-    fetcher,
-    { revalidateOnFocus: false }
-  );
-  const { data: boxyhqEntityID } = useSWR<any>(
-    setupToken ? `/api/setup/${setupToken}/connections/entityID` : null,
-    fetcher,
-    { revalidateOnFocus: false }
-  );
+
   const copyUrl = () => {
-    navigator.clipboard.writeText(boxyhqEntityID);
+    if(boxyhqEntityID) {
+      navigator.clipboard.writeText(boxyhqEntityID);
+    }
   };
+    
   if (!connections) {
     return null;
   }
@@ -197,11 +186,3 @@ const ConnectionList = ({ setupToken }: ConnectionListProps) => {
 };
 
 export default ConnectionList;
-
-export async function getStaticProps({ locale }: GetServerSidePropsContext) {
-  return {
-    props: {
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-    },
-  };
-}
