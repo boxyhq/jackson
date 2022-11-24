@@ -1,1 +1,1 @@
-export { default } from 'ee/admin/federated-saml/new';
+export { default } from 'ee/federated-saml/pages/new';
