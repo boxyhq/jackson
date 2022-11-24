@@ -398,6 +398,7 @@ export interface ISPSAMLConfig {
   }>;
   toMarkdown(): string;
   toHTML(): string;
+  toXMLMetadata(): Promise<string>;
 }
 
 export type DirectorySyncEventType =
