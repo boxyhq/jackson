@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "sourceMap": true,
     "outDir": "./dist",
     "allowJs": true,
     "skipLibCheck": true,
