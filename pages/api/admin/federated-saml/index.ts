@@ -21,10 +21,11 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederated } = await jackson();
 
-  const { tenant, product, acsUrl, entityId } = req.body;
+  const { name, tenant, product, acsUrl, entityId } = req.body;
 
   try {
     const app = await samlFederated.app.create({
+      name,
       tenant,
       product,
       acsUrl,
@@ -48,11 +49,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const apps = await samlFederated.app.getAll();
 
-    return res.status(200).json({ data: apps });
+    res.status(200).json({ data: apps });
   } catch (error: any) {
     const { message, statusCode } = error;
 
-    return res.status(statusCode).json({
+    res.status(statusCode).json({
       error: { message },
     });
   }

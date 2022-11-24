@@ -4,6 +4,7 @@ export type SAMLFederation = Awaited<ReturnType<typeof SAMLFederation>>;
 
 export type SAMLFederationApp = {
   id: string;
+  name: string;
   tenant: string;
   product: string;
   acsUrl: string;

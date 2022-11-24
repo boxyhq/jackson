@@ -61,7 +61,7 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederated: SAMLFederation;
-  checkLicense: typeof checkLicense;
+  checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
 
@@ -132,7 +132,9 @@ export const controllers = async (
     directorySync,
     oidcDiscoveryController,
     samlFederated,
-    checkLicense,
+    checkLicense: () => {
+      return checkLicense(opts.boxyhqLicenseKey);
+    },
   };
 };
 
@@ -140,3 +142,4 @@ export default controllers;
 
 export * from './typings';
 export * from './ee/federated-saml/types';
+export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;

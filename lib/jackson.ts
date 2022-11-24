@@ -5,8 +5,6 @@ import type {
   IOAuthController,
   IHealthCheckController,
   DirectorySync,
-  User,
-  Group,
   IOidcDiscoveryController,
   ISPSAMLConfig,
   SAMLFederation,
@@ -25,6 +23,7 @@ let directorySyncController: DirectorySync;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 let samlFederated: SAMLFederation;
+let checkLicense: () => Promise<boolean>;
 
 const g = global as any;
 
@@ -49,6 +48,7 @@ export default async function init() {
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
     samlFederated = ret.samlFederated;
+    checkLicense = ret.checkLicense;
 
     g.connectionAPIController = connectionAPIController;
     g.oauthController = oauthController;
@@ -60,6 +60,7 @@ export default async function init() {
     g.spConfig = spConfig;
     g.isJacksonReady = true;
     g.samlFederated = samlFederated;
+    g.checkLicense = checkLicense;
   } else {
     connectionAPIController = g.connectionAPIController;
     oauthController = g.oauthController;
@@ -70,6 +71,7 @@ export default async function init() {
     oidcDiscoveryController = g.oidcDiscoveryController;
     spConfig = g.spConfig;
     samlFederated = g.samlFederated;
+    checkLicense = g.checkLicense;
   }
 
   return {
@@ -82,7 +84,6 @@ export default async function init() {
     directorySyncController,
     oidcDiscoveryController,
     samlFederated,
+    checkLicense,
   };
 }
-
-// export type { User, Group };

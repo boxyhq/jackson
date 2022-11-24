@@ -17,14 +17,15 @@ export class App {
 
   // Create a new SAML Federation app for the tenant and product
   public async create({
+    name,
     tenant,
     product,
     acsUrl,
     entityId,
   }: Omit<SAMLFederationApp, 'id'>): Promise<SAMLFederationApp> {
-    if (!tenant || !product || !acsUrl || !entityId) {
+    if (!tenant || !product || !acsUrl || !entityId || !name) {
       throw new JacksonError(
-        'Missing required parameters. Required parameters are: tenant, product, acsUrl, entityId',
+        'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
         400
       );
     }
@@ -33,6 +34,7 @@ export class App {
 
     const app = {
       id,
+      name,
       tenant,
       product,
       acsUrl,
@@ -83,11 +85,11 @@ export class App {
   // Update the app
   public async update(
     id: string,
-    { tenant, product, acsUrl, entityId }: Partial<Omit<SAMLFederationApp, 'id'>>
+    { acsUrl, entityId, name }: Partial<Omit<SAMLFederationApp, 'id'>>
   ): Promise<SAMLFederationApp> {
-    if (!id || !tenant || !product || !acsUrl || !entityId) {
+    if (!id || !acsUrl || !entityId || !name) {
       throw new JacksonError(
-        'Missing required parameters. Required parameters are: id, tenant, product, acsUrl, entityId',
+        'Missing required parameters. Required parameters are: id, name, acsUrl, entityId',
         400
       );
     }
@@ -96,8 +98,7 @@ export class App {
 
     const updatedApp = {
       ...app,
-      tenant: tenant || app.tenant,
-      product: product || app.product,
+      name: name || app.name,
       acsUrl: acsUrl || app.acsUrl,
       entityId: entityId || app.entityId,
     };
