@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import { ApiResponse } from 'types';
+import LicenseRequired from '@components/LicenseRequired';
 
 const initialValue = {
   name: '',
@@ -59,7 +60,7 @@ const NewApp: NextPage = () => {
   };
 
   return (
-    <div>
+    <LicenseRequired>
       <Link href='/admin/federated-saml' className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
@@ -79,9 +80,10 @@ const NewApp: NextPage = () => {
               <input
                 type='text'
                 id='name'
-                className='input-bordered input w-full'
+                className='input-bordered input'
                 required
                 onChange={onChange}
+                placeholder='Your app'
               />
             </div>
             <div className='form-control w-full md:w-1/2'>
@@ -91,9 +93,10 @@ const NewApp: NextPage = () => {
               <input
                 type='text'
                 id='tenant'
-                className='input-bordered input w-full'
+                className='input-bordered input'
                 required
                 onChange={onChange}
+                placeholder='boxyhq'
               />
             </div>
             <div className='form-control w-full md:w-1/2'>
@@ -103,33 +106,36 @@ const NewApp: NextPage = () => {
               <input
                 type='text'
                 id='product'
-                className='input-bordered input w-full'
+                className='input-bordered input'
                 required
                 onChange={onChange}
+                placeholder='saml-jackson'
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control'>
               <label className='label'>
                 <span className='label-text'>ACS URL</span>
               </label>
               <input
                 type='url'
                 id='acsUrl'
-                className='input-bordered input w-full'
+                className='input-bordered input'
                 required
                 onChange={onChange}
+                placeholder='https://your-idp.com/saml/acs'
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control'>
               <label className='label'>
                 <span className='label-text'>Entity ID</span>
               </label>
               <input
                 type='url'
                 id='entityId'
-                className='input-bordered input w-full'
+                className='input-bordered input'
                 required
                 onChange={onChange}
+                placeholder='https://your-idp.com/saml/entityId'
               />
             </div>
             <div>
@@ -138,7 +144,7 @@ const NewApp: NextPage = () => {
           </div>
         </form>
       </div>
-    </div>
+    </LicenseRequired>
   );
 };
 

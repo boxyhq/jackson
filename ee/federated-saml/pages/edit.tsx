@@ -13,6 +13,7 @@ import { fetcher } from '@lib/ui/utils';
 import { ApiSuccess, ApiError, ApiResponse } from 'types';
 import Loading from '@components/Loading';
 import Alert from '@components/Alert';
+import LicenseRequired from '@components/LicenseRequired';
 
 const initialValue = {
   name: '',
@@ -86,7 +87,7 @@ const UpdateApp: NextPage = () => {
   };
 
   return (
-    <div>
+    <LicenseRequired>
       <Link href='/admin/federated-saml' className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
@@ -99,18 +100,13 @@ const UpdateApp: NextPage = () => {
               <label className='label'>
                 <span className='label-text'>Tenant</span>
               </label>
-              <input type='text' className='input-bordered input w-full' defaultValue={app.tenant} disabled />
+              <input type='text' className='input-bordered input' defaultValue={app.tenant} disabled />
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
                 <span className='label-text'>Product</span>
               </label>
-              <input
-                type='text'
-                className='input-bordered input w-full'
-                defaultValue={app.product}
-                disabled
-              />
+              <input type='text' className='input-bordered input' defaultValue={app.product} disabled />
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
@@ -119,33 +115,33 @@ const UpdateApp: NextPage = () => {
               <input
                 type='text'
                 id='name'
-                className='input-bordered input w-full'
+                className='input-bordered input'
                 required
                 onChange={onChange}
                 value={existingApp.name}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control'>
               <label className='label'>
                 <span className='label-text'>ACS URL</span>
               </label>
               <input
                 type='url'
                 id='acsUrl'
-                className='input-bordered input w-full'
+                className='input-bordered input'
                 required
                 onChange={onChange}
                 value={existingApp.acsUrl}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control'>
               <label className='label'>
                 <span className='label-text'>Entity ID</span>
               </label>
               <input
                 type='url'
                 id='entityId'
-                className='input-bordered input w-full'
+                className='input-bordered input'
                 required
                 onChange={onChange}
                 value={existingApp.entityId}
@@ -159,7 +155,7 @@ const UpdateApp: NextPage = () => {
           </div>
         </form>
       </div>
-    </div>
+    </LicenseRequired>
   );
 };
 

@@ -127,11 +127,11 @@ export class App {
 
   // Get the metadata for the app
   public async getMetadata(id: string): Promise<Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata']> {
-    await this.get(id);
+    const app = await this.get(id);
 
     const { publicKey } = await getDefaultCertificate();
 
-    const ssoUrl = `${this.opts.externalUrl}/api/oauth/saml`;
+    const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
     const entityId = `${this.opts.samlAudience}`;
 
     const xml = await createMetadataXML({

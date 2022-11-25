@@ -16,7 +16,7 @@ const AppsList: NextPage = () => {
     fetcher
   );
 
-  if (!data && !error) {
+  if (!data) {
     return <Loading />;
   }
 
@@ -24,7 +24,7 @@ const AppsList: NextPage = () => {
     return <Alert type='error' message={error.message}></Alert>;
   }
 
-  const apps = data?.data;
+  const apps = data.data;
   const noApps = apps && apps.length === 0;
 
   return (
@@ -80,7 +80,9 @@ const AppsList: NextPage = () => {
                       <td className='px-6 py-3'>{app.tenant}</td>
                       <td className='px-6'>{app.product}</td>
                       <td className='px-6'>
-                        <Link href='' className='link-secondary link underline-offset-4'>
+                        <Link
+                          href={`/admin/federated-saml/${app.id}/metadata`}
+                          className='link-secondary link underline-offset-4'>
                           Download
                         </Link>
                       </td>

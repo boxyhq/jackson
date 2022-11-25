@@ -3,7 +3,6 @@ import useSWR from 'swr';
 import { fetcher } from '@lib/ui/utils';
 import EmptyState from './EmptyState';
 import Loading from './Loading';
-import Alert from './Alert';
 
 type Props = {
   children: React.ReactNode;
@@ -18,10 +17,6 @@ const LicenseRequired = (props: Props) => {
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert type='error' message={error.message} />;
-  }
-
   const hasValidLicense = data?.data.status;
 
   return (
@@ -31,7 +26,7 @@ const LicenseRequired = (props: Props) => {
       ) : (
         <EmptyState
           title='This is an Enterprise feature.'
-          description=" Please add a valid license to use this feature. If you don't have a license, please contact BoxyHQ Support."
+          description="Please add a valid license to use this feature. If you don't have a license, please contact BoxyHQ Support."
         />
       )}
     </>
