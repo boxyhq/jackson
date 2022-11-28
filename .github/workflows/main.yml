@@ -92,6 +92,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
+          check-latest: true
           always-auth: true
           node-version: ${{ matrix.node }}
           registry-url: https://registry.npmjs.org
@@ -375,6 +376,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
+          check-latest: true
           always-auth: true
           node-version: ${{ matrix.node }}
           registry-url: https://registry.npmjs.org
