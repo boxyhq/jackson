@@ -2,18 +2,9 @@ import { SSO } from './sso';
 import { App } from './app';
 import type { JacksonOption } from '../../typings';
 import { SAMLHandler } from '../../controller/saml-handler';
-import checkLicense from '../common/checkLicense';
-import { JacksonError } from '../../controller/error';
 
 // This is the main entry point for the SAML Federation module
 const SAMLFederation = async ({ db, opts }: { db; opts: JacksonOption }) => {
-  // if (!(await checkLicense(opts.boxyhqLicenseKey))) {
-  //   throw new JacksonError(
-  //     "This is an Enterprise feature. Please contact BoxyHQ's support team to enable this feature.",
-  //     400
-  //   );
-  // }
-
   const appStore = db.store('samlfed:apps');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const connectionStore = db.store('saml:config');

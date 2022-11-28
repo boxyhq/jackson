@@ -4,6 +4,14 @@ import { checkSession } from '@lib/middleware';
 import jackson from '@lib/jackson';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { checkLicense } = await jackson();
+
+  if (!(await checkLicense())) {
+    return res.status(404).json({
+      error: { message: 'License not found. Please add a valid license to use this feature.' },
+    });
+  }
+
   const { method } = req;
 
   switch (method) {
