@@ -55,7 +55,7 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
-  directorySync: DirectorySync;
+  directorySyncController: DirectorySync;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
 }> => {
@@ -92,7 +92,7 @@ export const controllers = async (
     opts,
   });
 
-  const directorySync = await initDirectorySync({ db, opts });
+  const directorySyncController = await initDirectorySync({ db, opts });
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
 
@@ -126,7 +126,7 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
-    directorySync,
+    directorySyncController,
     oidcDiscoveryController,
   };
 };

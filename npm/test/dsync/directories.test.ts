@@ -8,7 +8,7 @@ let directorySync: DirectorySync;
 tap.before(async () => {
   const jackson = await (await import('../../src/index')).default(databaseOptions);
 
-  directorySync = jackson.directorySync;
+  directorySync = jackson.directorySyncController;
 });
 
 tap.teardown(async () => {

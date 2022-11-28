@@ -24,7 +24,7 @@ const webhook: Directory['webhook'] = {
 tap.before(async () => {
   const jackson = await (await import('../../src/index')).default(databaseOptions);
 
-  directorySync = jackson.directorySync;
+  directorySync = jackson.directorySyncController;
 
   // Create a directory before starting the test
   const { data, error } = await directorySync.directories.create({

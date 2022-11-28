@@ -14,7 +14,7 @@ const fakeDirectory = getFakeDirectory();
 tap.before(async () => {
   const jackson = await (await import('../../src/index')).default(databaseOptions);
 
-  directorySync = jackson.directorySync;
+  directorySync = jackson.directorySyncController;
 
   const { data, error } = await directorySync.directories.create(fakeDirectory);
 

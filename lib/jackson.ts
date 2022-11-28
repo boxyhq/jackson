@@ -53,7 +53,7 @@ export default async function init() {
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
-    directorySyncController = ret.directorySync;
+    directorySyncController = ret.directorySyncController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
 
