@@ -39,8 +39,7 @@ jobs:
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
     strategy:
       matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: '18'
 
     services:
       postgres:
@@ -349,7 +348,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: '18'
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
