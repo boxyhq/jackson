@@ -1,4 +1,4 @@
-import type { DirectorySync, JacksonOption } from './typings';
+import type { IDirectorySyncController, JacksonOption } from './typings';
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
@@ -57,7 +57,7 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
-  directorySync: DirectorySync;
+  directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: SAMLFederation;
@@ -98,7 +98,7 @@ export const controllers = async (
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
-  const directorySync = await initDirectorySync({ db, opts });
+  const directorySyncController = await initDirectorySync({ db, opts });
   const samlFederated = await initFederatedSAML({ db, opts });
 
   // write pre-loaded connections if present
@@ -129,7 +129,7 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
-    directorySync,
+    directorySyncController,
     oidcDiscoveryController,
     samlFederatedController: samlFederated,
     checkLicense: () => {

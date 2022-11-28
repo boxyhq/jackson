@@ -21,20 +21,6 @@ const EventInfo: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directo
       </div>
     </>
   );
-
-  return (
-    <div>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2 className='font-bold text-primary dark:text-white md:text-2xl'>{directory.name}</h2>
-      </div>
-      <DirectoryTab directory={directory} activeTab='events' />
-      <div className='w-3/4 rounded border text-sm'>
-        <SyntaxHighlighter language='json' style={coy}>
-          {JSON.stringify(event, null, 3)}
-        </SyntaxHighlighter>
-      </div>
-    </div>
-  );
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
