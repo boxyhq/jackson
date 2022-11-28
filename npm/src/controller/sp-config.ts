@@ -2,6 +2,7 @@ import type { JacksonOption } from '../typings';
 import { marked } from 'marked';
 
 import saml20 from '@boxyhq/saml20';
+import xmlbuilder from 'xmlbuilder';
 
 // Service Provider SAML Configuration
 export class SPSAMLConfig {
@@ -60,6 +61,61 @@ export class SPSAMLConfig {
 
   public toHTML(): string {
     return marked.parse(this.toMarkdown());
+  }
+
+  public async toXMLMetadata(): Promise<string> {
+    const { entityId, acsUrl, publicKeyString } = await this.get();
+
+    const today = new Date();
+
+    const nodes = {
+      'md:EntityDescriptor': {
+        '@xmlns:md': 'urn:oasis:names:tc:SAML:2.0:metadata',
+        '@entityID': entityId,
+        '@validUntil': new Date(today.setFullYear(today.getFullYear() + 10)).toISOString(),
+        'md:SPSSODescriptor': {
+          //'@WantAuthnRequestsSigned': true,
+          '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
+          'md:KeyDescriptor': [
+            {
+              '@use': 'signing',
+              'ds:KeyInfo': {
+                '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+                'ds:X509Data': {
+                  'ds:X509Certificate': {
+                    '#text': publicKeyString,
+                  },
+                },
+              },
+            },
+            {
+              '@use': 'encryption',
+              'ds:KeyInfo': {
+                '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+                'ds:X509Data': {
+                  'ds:X509Certificate': {
+                    '#text': publicKeyString,
+                  },
+                },
+              },
+              'md:EncryptionMethod': {
+                '@Algorithm': 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+              },
+            },
+          ],
+          'md:NameIDFormat': {
+            '#text': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+          },
+          'md:AssertionConsumerService': {
+            '@index': 1,
+            '@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+            '@Location': acsUrl,
+          },
+        },
+      },
+    };
+
+    return xmlbuilder.create(nodes, { encoding: 'UTF-8', standalone: false }).end({ pretty: true });
   }
 }
 

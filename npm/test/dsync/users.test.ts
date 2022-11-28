@@ -1,18 +1,18 @@
-import { DirectorySync, Directory } from '../../src/typings';
+import { IDirectorySyncController, Directory } from '../../src/typings';
 import tap from 'tap';
 import users from './data/users';
 import requests from './data/user-requests';
 import { getFakeDirectory } from './data/directories';
 import { databaseOptions } from '../utils';
 
-let directorySync: DirectorySync;
+let directorySync: IDirectorySyncController;
 let directory: Directory;
 const fakeDirectory = getFakeDirectory();
 
 tap.before(async () => {
   const jackson = await (await import('../../src/index')).default(databaseOptions);
 
-  directorySync = jackson.directorySync;
+  directorySync = jackson.directorySyncController;
 
   const { data, error } = await directorySync.directories.create(fakeDirectory);
 

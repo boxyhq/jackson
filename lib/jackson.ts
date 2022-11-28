@@ -7,7 +7,7 @@ import type {
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
-  DirectorySync,
+  IDirectorySyncController,
   DirectoryType,
   Directory,
   User,
@@ -30,7 +30,7 @@ let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
-let directorySyncController: DirectorySync;
+let directorySyncController: IDirectorySyncController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 
@@ -53,7 +53,7 @@ export default async function init() {
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
-    directorySyncController = ret.directorySync;
+    directorySyncController = ret.directorySyncController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
 

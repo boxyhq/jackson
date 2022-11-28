@@ -245,6 +245,7 @@ export interface OAuthTokenRes {
 
 export interface Profile {
   id: string;
+  idHash: string;
   sub?: string;
   email: string;
   firstName: string;
@@ -390,6 +391,7 @@ export interface ISPSAMLConfig {
   }>;
   toMarkdown(): string;
   toHTML(): string;
+  toXMLMetadata(): Promise<string>;
 }
 
 export type DirectorySyncEventType =
@@ -624,7 +626,7 @@ export interface DirectorySyncRequest {
   };
 }
 
-export type DirectorySync = {
+export type IDirectorySyncController = {
   requests: DirectorySyncRequestHandler;
   directories: DirectoryConfig;
   groups: Groups;

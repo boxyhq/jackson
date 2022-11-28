@@ -3,7 +3,7 @@ import useSWR from 'swr';
 import { useRouter } from 'next/router';
 
 import { fetcher } from '@lib/ui/utils';
-import AddEdit from '@components/connection/AddEdit';
+import Edit from '@components/connection/Edit';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const EditConnection: NextPage = () => {
@@ -27,7 +27,7 @@ const EditConnection: NextPage = () => {
     return null;
   }
 
-  return <AddEdit connection={connection} />;
+  return <Edit connection={connection} />;
 };
 
 export async function getServerSideProps({ locale }: GetServerSidePropsContext) {
