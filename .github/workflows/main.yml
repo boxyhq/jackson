@@ -39,7 +39,7 @@ jobs:
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
     strategy:
       matrix:
-        node-version: 18
+        node-version: '18'
 
     services:
       postgres:
@@ -349,7 +349,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: 18
+        node-version: '18'
 
     steps:
       - name: Check Out Repo
