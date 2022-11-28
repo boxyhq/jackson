@@ -39,7 +39,7 @@ jobs:
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
     strategy:
       matrix:
-        node-version: '18'
+        node: 18
 
     services:
       postgres:
@@ -87,12 +87,13 @@ jobs:
           SA_PASSWORD: '123ABabc!'
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Check Out Repo
+        uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
           always-auth: true
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node }}
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
@@ -348,11 +349,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: '18'
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node: 18
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Check Out Repo
+        uses: actions/checkout@v3
       - name: Download saml-jackson npm version
         uses: actions/download-artifact@v3
         with:
@@ -371,11 +372,11 @@ jobs:
         run: echo "::set-output name=publishTag::$(cat publishTag.txt)"
       - run: echo ${{ steps.publishTag.outputs.publishTag }}
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
           always-auth: true
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node }}
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
