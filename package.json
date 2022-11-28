@@ -60,6 +60,7 @@
     "next-auth": "4.17.0",
     "next-i18next": "12.1.0",
     "next-mdx-remote": "4.1.0",
+    "node-fetch": "3.2.10",
     "nodemailer": "6.8.0",
     "raw-body": "2.5.1",
     "react": "18.2.0",
