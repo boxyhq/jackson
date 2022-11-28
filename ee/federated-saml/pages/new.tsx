@@ -46,7 +46,7 @@ const NewApp: NextPage = () => {
       toast.error(error.message);
     } else {
       router.replace(`/admin/federated-saml/${app.id}/metadata`);
-      toast.success('SAML federation app created successfully');
+      toast.success(t('saml_federation_new_success'));
     }
   };
 
@@ -65,17 +65,14 @@ const NewApp: NextPage = () => {
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
       </Link>
-      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>Add SAML Federation App</h2>
+      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_add_new_app')}</h2>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
-            <p className='text-sm leading-6 text-gray-800'>
-              To configure SAML Federation app, add service provider details such as ACS URL and Entity ID.
-              You can find the details from your service provider portal or from the documentation.
-            </p>
+            <p className='text-sm leading-6 text-gray-800'>{t('saml_federation_add_new_app_description')}</p>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>App Name</span>
+                <span className='label-text'>{t('name')}</span>
               </label>
               <input
                 type='text'
@@ -88,7 +85,7 @@ const NewApp: NextPage = () => {
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>Tenant</span>
+                <span className='label-text'>{t('tenant')}</span>
               </label>
               <input
                 type='text'
@@ -101,7 +98,7 @@ const NewApp: NextPage = () => {
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>Product</span>
+                <span className='label-text'>{t('product')}</span>
               </label>
               <input
                 type='text'
@@ -114,7 +111,7 @@ const NewApp: NextPage = () => {
             </div>
             <div className='form-control'>
               <label className='label'>
-                <span className='label-text'>ACS URL</span>
+                <span className='label-text'>{t('acs_url')}</span>
               </label>
               <input
                 type='url'
@@ -127,7 +124,7 @@ const NewApp: NextPage = () => {
             </div>
             <div className='form-control'>
               <label className='label'>
-                <span className='label-text'>Entity ID</span>
+                <span className='label-text'>{t('entity_id')}</span>
               </label>
               <input
                 type='url'
@@ -139,7 +136,9 @@ const NewApp: NextPage = () => {
               />
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>Create App</button>
+              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
+                {t('create_app')}
+              </button>
             </div>
           </div>
         </form>

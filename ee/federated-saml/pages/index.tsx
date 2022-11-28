@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import useSWR from 'swr';
 import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
 
 import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
@@ -11,6 +12,8 @@ import Alert from '@components/Alert';
 import LicenseRequired from '@components/LicenseRequired';
 
 const AppsList: NextPage = () => {
+  const { t } = useTranslation('common');
+
   const { data, error } = useSWR<ApiSuccess<SAMLFederationApp[]>, ApiError>(
     '/api/admin/federated-saml',
     fetcher
@@ -30,19 +33,14 @@ const AppsList: NextPage = () => {
   return (
     <LicenseRequired>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>SAML Federation Apps</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('saml_federation_apps')}</h2>
         <Link href={'/admin/federated-saml/new'} className='btn-primary btn'>
           + Create New
         </Link>
       </div>
       {noApps ? (
         <>
-          <EmptyState
-            title='No SAML federation apps found'
-            description='SAML Federation allows you to connect your application with other SAML enabled application like
-            Twilio Flex.'
-            href='/admin/federated-saml/new'
-          />
+          <EmptyState title={t('no_saml_federation_apps')} href='/admin/federated-saml/new' />
         </>
       ) : (
         <div className='rounder border'>
@@ -50,16 +48,16 @@ const AppsList: NextPage = () => {
             <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
               <tr>
                 <th scope='col' className='px-6 py-3'>
-                  Name
+                  {t('name')}
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Tenant
+                  {t('tenant')}
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Product
+                  {t('product')}
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Metadata
+                  {t('metadata')}
                 </th>
               </tr>
             </thead>
@@ -83,7 +81,7 @@ const AppsList: NextPage = () => {
                         <Link
                           href={`/admin/federated-saml/${app.id}/metadata`}
                           className='link-secondary link underline-offset-4'>
-                          Download
+                          {t('download')}
                         </Link>
                       </td>
                     </tr>

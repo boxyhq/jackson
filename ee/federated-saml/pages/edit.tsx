@@ -14,7 +14,8 @@ import { ApiSuccess, ApiError, ApiResponse } from 'types';
 import Loading from '@components/Loading';
 import Alert from '@components/Alert';
 import LicenseRequired from '@components/LicenseRequired';
-import { DeleteApp } from '@components/federated-saml/DeleteApp';
+
+import ConfirmationModal from '@components/ConfirmationModal';
 
 const initialValue = {
   name: '',
@@ -74,7 +75,7 @@ const UpdateApp: NextPage = () => {
     if (!response.ok) {
       toast.error(error.message);
     } else {
-      toast.success('SAML federation app updated successfully');
+      toast.success(t('saml_federation_update_success'));
     }
   };
 
@@ -93,25 +94,25 @@ const UpdateApp: NextPage = () => {
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
       </Link>
-      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>Update SAML Federation App</h2>
+      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>Tenant</span>
+                <span className='label-text'>{t('tenant')}</span>
               </label>
               <input type='text' className='input-bordered input' defaultValue={app.tenant} disabled />
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>Product</span>
+                <span className='label-text'>{t('product')}</span>
               </label>
               <input type='text' className='input-bordered input' defaultValue={app.product} disabled />
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>App Name</span>
+                <span className='label-text'>{t('name')}</span>
               </label>
               <input
                 type='text'
@@ -124,7 +125,7 @@ const UpdateApp: NextPage = () => {
             </div>
             <div className='form-control'>
               <label className='label'>
-                <span className='label-text'>ACS URL</span>
+                <span className='label-text'>{t('acs_url')}</span>
               </label>
               <input
                 type='url'
@@ -137,7 +138,7 @@ const UpdateApp: NextPage = () => {
             </div>
             <div className='form-control'>
               <label className='label'>
-                <span className='label-text'>Entity ID</span>
+                <span className='label-text'>{t('entity_id')}</span>
               </label>
               <input
                 type='url'
@@ -150,14 +151,63 @@ const UpdateApp: NextPage = () => {
             </div>
             <div>
               <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
-                Save Changes
+                {t('save_changes')}
               </button>
             </div>
           </div>
         </form>
-        <DeleteApp app={app} />
       </div>
+      <DeleteApp app={app} />
     </LicenseRequired>
+  );
+};
+
+export const DeleteApp = ({ app }: { app: SAMLFederationApp }) => {
+  const { t } = useTranslation('common');
+  const [delModalVisible, setDelModalVisible] = useState(false);
+
+  const deleteApp = async () => {
+    const response = await fetch(`/api/admin/federated-saml/${app.id}`, {
+      method: 'DELETE',
+    });
+
+    const { error } = await response.json();
+
+    if (!response.ok) {
+      toast.error(error.message);
+    } else {
+      toast.success(t('saml_federation_delete_success'));
+      window.location.href = '/admin/federated-saml';
+    }
+  };
+
+  return (
+    <>
+      <section className='mt-5 flex items-center rounded bg-red-100 p-6 text-red-900'>
+        <div className='flex-1'>
+          <h6 className='mb-1 font-medium'>{t('delete_this_saml_federation_app')}</h6>
+          <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
+        </div>
+        <button
+          type='button'
+          className='btn-error btn'
+          data-modal-toggle='popup-modal'
+          onClick={() => {
+            setDelModalVisible(true);
+          }}>
+          Delete
+        </button>
+      </section>
+      <ConfirmationModal
+        title={t('delete_the_saml_federation_app')}
+        description={t('confirmation_modal_description')}
+        visible={delModalVisible}
+        onConfirm={deleteApp}
+        onCancel={() => {
+          setDelModalVisible(false);
+        }}
+      />
+    </>
   );
 };
 
