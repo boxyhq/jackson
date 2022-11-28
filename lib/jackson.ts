@@ -22,7 +22,7 @@ let healthCheckController: IHealthCheckController;
 let directorySyncController: DirectorySync;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
-let samlFederated: SAMLFederation;
+let samlFederatedController: SAMLFederation;
 let checkLicense: () => Promise<boolean>;
 
 const g = global as any;
@@ -36,7 +36,8 @@ export default async function init() {
     !g.logoutController ||
     !g.directorySync ||
     !g.oidcDiscoveryController ||
-    !g.spConfig
+    !g.spConfig ||
+    !g.samlFederatedController
   ) {
     const ret = await jackson(env);
     connectionAPIController = ret.connectionAPIController;
@@ -47,7 +48,7 @@ export default async function init() {
     directorySyncController = ret.directorySync;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
-    samlFederated = ret.samlFederated;
+    samlFederatedController = ret.samlFederatedController;
     checkLicense = ret.checkLicense;
 
     g.connectionAPIController = connectionAPIController;
@@ -59,7 +60,7 @@ export default async function init() {
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
     g.isJacksonReady = true;
-    g.samlFederated = samlFederated;
+    g.samlFederatedController = samlFederatedController;
     g.checkLicense = checkLicense;
   } else {
     connectionAPIController = g.connectionAPIController;
@@ -70,7 +71,7 @@ export default async function init() {
     directorySyncController = g.directorySync;
     oidcDiscoveryController = g.oidcDiscoveryController;
     spConfig = g.spConfig;
-    samlFederated = g.samlFederated;
+    samlFederatedController = g.samlFederatedController;
     checkLicense = g.checkLicense;
   }
 
@@ -83,7 +84,7 @@ export default async function init() {
     healthCheckController,
     directorySyncController,
     oidcDiscoveryController,
-    samlFederated,
+    samlFederatedController,
     checkLicense,
   };
 }

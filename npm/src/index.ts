@@ -60,7 +60,7 @@ export const controllers = async (
   directorySync: DirectorySync;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
-  samlFederated: SAMLFederation;
+  samlFederatedController: SAMLFederation;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
@@ -131,7 +131,7 @@ export const controllers = async (
     healthCheckController,
     directorySync,
     oidcDiscoveryController,
-    samlFederated,
+    samlFederatedController: samlFederated,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
     },
