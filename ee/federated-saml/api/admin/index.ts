@@ -11,8 +11,9 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return handlePOST(req, res);
     case 'GET':
       return handleGET(req, res);
+
     default:
-      res.setHeader('Allow', ['GET']);
+      res.setHeader('Allow', ['GET', 'POST']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
 };

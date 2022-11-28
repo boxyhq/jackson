@@ -12,8 +12,10 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return handleGET(req, res);
     case 'PUT':
       return handlePUT(req, res);
+    case 'DELETE':
+      return handleDELETE(req, res);
     default:
-      res.setHeader('Allow', ['GET', 'PUT']);
+      res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
 };
@@ -64,6 +66,25 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     const { message, statusCode } = error;
 
     res.status(statusCode).json({
+      error: { message },
+    });
+  }
+};
+
+// Delete the SAML Federation app
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { samlFederated } = await jackson();
+
+  const { id } = req.query as { id: string };
+
+  try {
+    await samlFederated.app.delete(id);
+
+    return res.status(200).json({ data: {} });
+  } catch (error: any) {
+    const { message, statusCode } = error;
+
+    return res.status(statusCode).json({
       error: { message },
     });
   }

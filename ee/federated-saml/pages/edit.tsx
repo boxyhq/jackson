@@ -14,6 +14,7 @@ import { ApiSuccess, ApiError, ApiResponse } from 'types';
 import Loading from '@components/Loading';
 import Alert from '@components/Alert';
 import LicenseRequired from '@components/LicenseRequired';
+import { DeleteApp } from '@components/federated-saml/DeleteApp';
 
 const initialValue = {
   name: '',
@@ -154,6 +155,7 @@ const UpdateApp: NextPage = () => {
             </div>
           </div>
         </form>
+        <DeleteApp app={app} />
       </div>
     </LicenseRequired>
   );
