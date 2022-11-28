@@ -7,7 +7,7 @@ import type {
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
-  DirectorySync,
+  IDirectorySyncController,
   DirectoryType,
   Directory,
   User,
@@ -30,7 +30,7 @@ let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
-let directorySyncController: DirectorySync;
+let directorySyncController: IDirectorySyncController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 

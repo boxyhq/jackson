@@ -1,4 +1,4 @@
-import { DirectorySync, Directory, DirectorySyncEvent, EventCallback } from '../../src/typings';
+import { IDirectorySyncController, Directory, DirectorySyncEvent, EventCallback } from '../../src/typings';
 import tap from 'tap';
 import groups from './data/groups';
 import users from './data/users';
@@ -10,7 +10,7 @@ import sinon from 'sinon';
 import axios from 'axios';
 import { createSignatureString } from '../../src/directory-sync/utils';
 
-let directorySync: DirectorySync;
+let directorySync: IDirectorySyncController;
 let directory: Directory;
 let eventCallback: EventCallback;
 

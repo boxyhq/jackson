@@ -626,7 +626,7 @@ export interface DirectorySyncRequest {
   };
 }
 
-export type DirectorySync = {
+export type IDirectorySyncController = {
   requests: DirectorySyncRequestHandler;
   directories: DirectoryConfig;
   groups: Groups;

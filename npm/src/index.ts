@@ -1,4 +1,4 @@
-import type { DirectorySync, JacksonOption } from './typings';
+import type { IDirectorySyncController, JacksonOption } from './typings';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
@@ -55,7 +55,7 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
-  directorySyncController: DirectorySync;
+  directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
 }> => {
