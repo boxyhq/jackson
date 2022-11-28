@@ -40,7 +40,6 @@ jobs:
         if: ${{ fromJSON(steps.detect-languages.outputs.languages).javascript }}
         with:
           node-version: 18
-          check-latest: true
 
       - name: Configure Python 3.x
         uses: actions/setup-python@v2

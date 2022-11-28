@@ -39,7 +39,7 @@ jobs:
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
     strategy:
       matrix:
-        node: 18
+        node-version: 18
 
     services:
       postgres:
@@ -89,12 +89,11 @@ jobs:
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node }}
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          check-latest: true
           always-auth: true
-          node-version: ${{ matrix.node }}
+          node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
@@ -350,7 +349,7 @@ jobs:
 
     strategy:
       matrix:
-        node: 18
+        node-version: 18
 
     steps:
       - name: Check Out Repo
@@ -373,12 +372,11 @@ jobs:
         run: echo "::set-output name=publishTag::$(cat publishTag.txt)"
       - run: echo ${{ steps.publishTag.outputs.publishTag }}
 
-      - name: Use Node.js ${{ matrix.node }}
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          check-latest: true
           always-auth: true
-          node-version: ${{ matrix.node }}
+          node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
