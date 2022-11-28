@@ -97,7 +97,9 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
 
   return (
     <>
-      <Link href='/admin/sso-connection' className='btn-outline btn items-center space-x-2'>
+      <Link
+        href={`/admin/${formObj.type === 'sso' ? 'sso-connection' : 'directory-sync'}`}
+        className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>Back</span>
       </Link>
