@@ -26,6 +26,8 @@ const map = {
     'src/directory-sync/request.ts',
   ],
   'test/dsync/events.test.ts': ['src/directory-sync/events.ts'],
+  'test/federated-saml/app.test.ts': ['src/ee/federated-saml/app.ts'],
+  'test/federated-saml/sso.test.ts': ['src/ee/federated-saml/sso.ts'],
 };
 
 module.exports = (testFile) => {
