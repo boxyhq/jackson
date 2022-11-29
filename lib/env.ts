@@ -1,4 +1,4 @@
-import { DatabaseEngine, DatabaseType } from '@boxyhq/saml-jackson';
+import type { DatabaseEngine, DatabaseType, JacksonOption } from '@boxyhq/saml-jackson';
 
 const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5225');
@@ -40,18 +40,22 @@ const jwtSigningKeys = {
 };
 const openid = { jwsAlg, jwtSigningKeys };
 
-export default {
-  hostUrl,
-  hostPort,
+const jacksonOptions: JacksonOption = {
   externalUrl,
   samlPath,
   oidcPath,
   idpDiscoveryPath,
   samlAudience,
   preLoadedConnection,
-  apiKeys,
   idpEnabled,
   db,
   clientSecretVerifier,
   openid,
+  certs: {
+    privateKey: process.env.CERT_PRIVATE_KEY || '',
+    publicKey: process.env.CERT_PUBLIC_KEY || '',
+  },
 };
+
+export { apiKeys };
+export { jacksonOptions };

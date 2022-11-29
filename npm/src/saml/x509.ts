@@ -1,16 +1,16 @@
 import * as forge from 'node-forge';
 import crypto from 'crypto';
 
-import type { Storable } from '../typings';
+import type { JacksonOption, Storable } from '../typings';
 
 const pki = forge.pki;
 let certificateStore: Storable;
 let cachedCertificate: { publicKey: string; privateKey: string };
 
-export const init = async (store: Storable) => {
+export const init = async (store: Storable, opts: JacksonOption) => {
   certificateStore = store;
 
-  return await getDefaultCertificate();
+  return await getDefaultCertificate(opts);
 };
 
 export const generateCertificate = () => {
@@ -56,7 +56,9 @@ export const generateCertificate = () => {
   };
 };
 
-export const getDefaultCertificate = async (): Promise<{ publicKey: string; privateKey: string }> => {
+export const getDefaultCertificate = async (
+  opts: JacksonOption
+): Promise<{ publicKey: string; privateKey: string }> => {
   if (cachedCertificate && !(await isCertificateExpired(cachedCertificate.publicKey))) {
     return cachedCertificate;
   }
@@ -65,6 +67,17 @@ export const getDefaultCertificate = async (): Promise<{ publicKey: string; priv
     throw new Error('Certificate store not initialized');
   }
 
+  // If the user has provided a certificate, use that instead of the default.
+  if (opts.certs?.privateKey && opts.certs?.publicKey) {
+    cachedCertificate = {
+      publicKey: opts.certs.publicKey,
+      privateKey: opts.certs.privateKey,
+    };
+
+    return cachedCertificate;
+  }
+
+  // Otherwise, use the default certificate.
   cachedCertificate = await certificateStore.get('default');
 
   // If certificate is expired let it drop through so it creates a new cert

@@ -76,7 +76,7 @@ export const controllers = async (
   await healthCheckController.init();
 
   // Create default certificate if it doesn't exist.
-  await x509.init(certificateStore);
+  await x509.init(certificateStore, opts);
 
   const oauthController = new OAuthController({
     connectionStore,

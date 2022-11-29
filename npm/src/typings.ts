@@ -323,6 +323,10 @@ export interface JacksonOption {
       public: string;
     };
   };
+  certs?: {
+    privateKey: string;
+    publicKey: string;
+  };
 }
 
 export interface SLORequestParams {

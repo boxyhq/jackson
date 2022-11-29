@@ -6,7 +6,10 @@ import xmlbuilder from 'xmlbuilder';
 
 // Service Provider SAML Configuration
 export class SPSAMLConfig {
-  constructor(private opts: JacksonOption, private getDefaultCertificate: any) {}
+  constructor(
+    private opts: JacksonOption,
+    private getDefaultCertificate: (opts: JacksonOption) => Promise<{ publicKey: string; privateKey: string }>
+  ) {}
 
   private get acsUrl(): string {
     return `${this.opts.externalUrl}${this.opts.samlPath}`;
@@ -37,7 +40,7 @@ export class SPSAMLConfig {
     publicKey: string;
     publicKeyString: string;
   }> {
-    const cert = await this.getDefaultCertificate();
+    const cert = await this.getDefaultCertificate(this.opts);
 
     return {
       acsUrl: this.acsUrl,
