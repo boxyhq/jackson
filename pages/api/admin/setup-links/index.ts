@@ -35,7 +35,15 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
   const token = req.query.token;
-  if (!token) {
+  const service = req.query.service;
+  if (token) {
+    const { data, error } = await setupLinkController.getByToken(req.query.token);
+
+    return res.status(error ? error.code : 200).json({ data, error });
+  } else if (service) {
+    const { data, error } = await setupLinkController.getByService(req.query.service);
+    return res.status(error ? error.code : 200).json({ data, error });
+  } else {
     return res.status(404).json({
       data: undefined,
       error: {
@@ -43,10 +51,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
         code: 404,
       },
     });
-  } else {
-    const { data, error } = await setupLinkController.getByToken(req.query.token);
-
-    return res.status(error ? error.code : 200).json({ data, error });
   }
 };
 

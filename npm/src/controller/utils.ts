@@ -15,6 +15,7 @@ export enum IndexNames {
   SetupToken = 'token',
   TenantProduct = 'tenantProduct',
   TenantProductService = 'tenantProductService',
+  Service = 'service',
   OIDCProviderClientID = 'OIDCProviderClientID',
 }
 

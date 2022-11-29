@@ -3,7 +3,7 @@ import { ArrowLeftIcon, ArrowRightIcon, PencilIcon, PlusIcon } from '@heroicons/
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 
-const ConnectionList = ({ links, paginate, setPaginate }) => {
+const LinkList = ({ links, paginate, setPaginate }) => {
   const { t } = useTranslation('common');
 
   if (!links) {
@@ -12,7 +12,7 @@ const ConnectionList = ({ links, paginate, setPaginate }) => {
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('setup_links')}</h2>
         <div>
           <Link
             href={`/admin/sso-connection/new`}
@@ -34,18 +34,13 @@ const ConnectionList = ({ links, paginate, setPaginate }) => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3'>
-                    {t('name')}
+                    {t('tenant')}
                   </th>
-                    <>
-                      <th scope='col' className='px-6 py-3'>
-                        {t('tenant')}
-                      </th>
-                      <th scope='col' className='px-6 py-3'>
-                        {t('product')}
-                      </th>
-                    </>
                   <th scope='col' className='px-6 py-3'>
-                    {t('idp_type')}
+                    {t('product')}
+                  </th>
+                  <th scope='col' className='px-6 py-3'>
+                    {t('validity')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
                     {t('actions')}
@@ -53,33 +48,22 @@ const ConnectionList = ({ links, paginate, setPaginate }) => {
                 </tr>
               </thead>
               <tbody>
-                {links.map((connection) => {
-                  const connectionIsSAML =
-                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
-                  const connectionIsOIDC =
-                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
+                {links.map((link) => {
                   return (
                     <tr
-                      key={connection.clientID}
+                      key={link.setupID}
                       className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
+                      <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
+                        {link.tenant}
+                      </td>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {connection.name || connection.idpMetadata?.provider}
+                        {link.product}
                       </td>
-                      <>
-                          <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                            {connection.tenant}
-                          </td>
-                          <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                            {connection.product}
-                          </td>
-                        </>
-                      <td className='px-6 py-3'>
-                        {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
+                      <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                        {new Date(link.validTill).toString()}
                       </td>
                       <td className='px-6 py-3'>
-                        <Link
-                          href={`/admin/sso-connection/edit/${connection.clientID}`}
-                          className='link-primary'>
+                        <Link href={`/admin/sso-connection/edit/${link.setupID}`} className='link-primary'>
                           <PencilIcon className='h-5 w-5 text-secondary' />
                         </Link>
                       </td>
@@ -127,4 +111,4 @@ const ConnectionList = ({ links, paginate, setPaginate }) => {
   );
 };
 
-export default ConnectionList;
+export default LinkList;

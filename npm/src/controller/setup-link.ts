@@ -40,6 +40,10 @@ export class SetupLinkController implements ISetupLinkController {
         {
           name: IndexNames.TenantProductService,
           value: dbutils.keyFromParts(tenant, product, service),
+        },
+        {
+          name: IndexNames.Service,
+          value: service,
         }
       );
       return { data: val, error: null };
@@ -69,6 +73,16 @@ export class SetupLinkController implements ISetupLinkController {
       };
     }
     return { data: val[0], error: null };
+  }
+  async getByService(service: string): Promise<ApiResponse<SetupLink[]>> {
+    if (!service) {
+      return { data: [], error: null };
+    }
+    const val = await this.setupLinkStore.getByIndex({
+      name: IndexNames.Service,
+      value: service,
+    });
+    return { data: val, error: null };
   }
   getAll(): Promise<ApiResponse<SetupLink[]>> {
     throw new Error('Method not implemented.');
