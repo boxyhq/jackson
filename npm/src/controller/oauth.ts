@@ -521,7 +521,7 @@ export class OAuthController implements IOAuthController {
           error: 'access_denied',
           error_description: getErrorMessage(err),
           redirect_uri,
-          state: session.requested.state,
+          state: session.requested?.state,
         }),
       };
     }

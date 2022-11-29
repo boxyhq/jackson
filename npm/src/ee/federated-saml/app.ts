@@ -87,9 +87,9 @@ export class App {
     id: string,
     { acsUrl, entityId, name }: Partial<Omit<SAMLFederationApp, 'id'>>
   ): Promise<SAMLFederationApp> {
-    if (!id || !acsUrl || !entityId || !name) {
+    if (!id && (!acsUrl || !entityId || !name)) {
       throw new JacksonError(
-        'Missing required parameters. Required parameters are: id, name, acsUrl, entityId',
+        "Missing required parameters. Required parameters are: id, acsUrl, entityId, name'",
         400
       );
     }
@@ -123,10 +123,14 @@ export class App {
 
     await this.get(id);
     await this.store.delete(id);
+
+    return;
   }
 
   // Get the metadata for the app
   public async getMetadata(id: string): Promise<Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata']> {
+    // TODO: Fix the entityID
+
     const app = await this.get(id);
 
     const { publicKey } = await getDefaultCertificate();
