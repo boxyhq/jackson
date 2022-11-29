@@ -7,7 +7,7 @@ import type {
   IDirectorySyncController,
   IOidcDiscoveryController,
   ISPSAMLConfig,
-  SAMLFederation,
+  ISAMLFederationController,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -22,7 +22,7 @@ let healthCheckController: IHealthCheckController;
 let directorySyncController: IDirectorySyncController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
-let samlFederatedController: SAMLFederation;
+let samlFederatedController: ISAMLFederationController;
 let checkLicense: () => Promise<boolean>;
 
 const g = global as any;

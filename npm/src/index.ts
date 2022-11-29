@@ -11,7 +11,7 @@ import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
 import * as x509 from './saml/x509';
-import initFederatedSAML, { type SAMLFederation } from './ee/federated-saml';
+import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
@@ -60,7 +60,7 @@ export const controllers = async (
   directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
-  samlFederatedController: SAMLFederation;
+  samlFederatedController: ISAMLFederationController;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
@@ -99,7 +99,7 @@ export const controllers = async (
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
   const directorySyncController = await initDirectorySync({ db, opts });
-  const samlFederated = await initFederatedSAML({ db, opts });
+  const samlFederatedController = await initFederatedSAML({ db, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -131,7 +131,7 @@ export const controllers = async (
     healthCheckController,
     directorySyncController,
     oidcDiscoveryController,
-    samlFederatedController: samlFederated,
+    samlFederatedController,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
     },

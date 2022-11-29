@@ -11,19 +11,17 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { ApiResponse } from 'types';
 import LicenseRequired from '@components/LicenseRequired';
 
-const initialValue = {
-  name: '',
-  tenant: '',
-  product: '',
-  acsUrl: '',
-  entityId: '',
-};
-
 const NewApp: NextPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [newApp, setApp] = useState(initialValue);
+  const [newApp, setApp] = useState({
+    name: '',
+    tenant: '',
+    product: '',
+    acsUrl: '',
+    entityId: '',
+  });
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

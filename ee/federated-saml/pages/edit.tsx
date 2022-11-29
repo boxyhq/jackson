@@ -17,17 +17,15 @@ import LicenseRequired from '@components/LicenseRequired';
 
 import ConfirmationModal from '@components/ConfirmationModal';
 
-const initialValue = {
-  name: '',
-  acsUrl: '',
-  entityId: '',
-};
-
 const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [existingApp, setApp] = useState<typeof initialValue>(initialValue);
+  const [existingApp, setApp] = useState({
+    name: '',
+    acsUrl: '',
+    entityId: '',
+  });
 
   const { id } = router.query as { id: string };
 

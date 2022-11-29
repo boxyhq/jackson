@@ -11,7 +11,7 @@ const deflateRawAsync = promisify(deflateRaw);
 import { databaseOptions } from '../utils';
 import { tenant, product, serviceProvider } from './constants';
 import type {
-  SAMLFederation,
+  ISAMLFederationController,
   IConnectionAPIController,
   IOAuthController,
   SAMLFederationApp,
@@ -19,7 +19,7 @@ import type {
 } from '../../src';
 
 let oauthController: IOAuthController;
-let samlFederatedController: SAMLFederation;
+let samlFederatedController: ISAMLFederationController;
 let connectionAPIController: IConnectionAPIController;
 
 let app: SAMLFederationApp;

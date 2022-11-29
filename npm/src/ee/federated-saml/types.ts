@@ -1,6 +1,6 @@
 import SAMLFederation from '.';
 
-export type SAMLFederation = Awaited<ReturnType<typeof SAMLFederation>>;
+export type ISAMLFederationController = Awaited<ReturnType<typeof SAMLFederation>>;
 
 export type SAMLFederationApp = {
   id: string;
