@@ -83,8 +83,6 @@ tap.test('Federated SAML flow', async (t) => {
   });
 
   tap.test('Should be able to accept SAML Response from IdP and generate SAML Response for SP', async (t) => {
-    const fakeClock = sinon.useFakeTimers(Date.parse('2022-11-29T06:43:40.309Z'));
-
     const stubValidate = sinon.stub(saml, 'validate').resolves({
       audience: 'https://saml.boxyhq.com',
       claims: {
@@ -115,7 +113,6 @@ tap.test('Federated SAML flow', async (t) => {
     t.match(relayState, relayStateFromSP, 'Should have the same relay state as the one sent by SP');
 
     stubValidate.restore();
-    fakeClock.restore();
 
     t.end();
   });
