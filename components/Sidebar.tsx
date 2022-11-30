@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 import { useTranslation } from 'next-i18next';
-import { useState } from 'react';
 
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: boolean }) => {
   const { isOpen, setIsOpen } = props;
