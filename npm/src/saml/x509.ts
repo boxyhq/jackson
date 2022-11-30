@@ -68,10 +68,11 @@ export const getDefaultCertificate = async (
   }
 
   // If the user has provided a certificate, use that instead of the default.
+  // We expect the developer to provide base64 encoded keys, so we need to decode them.
   if (opts.certs?.privateKey && opts.certs?.publicKey) {
     cachedCertificate = {
-      publicKey: opts.certs.publicKey,
-      privateKey: opts.certs.privateKey,
+      publicKey: Buffer.from(opts.certs.publicKey, 'base64').toString('utf-8'),
+      privateKey: Buffer.from(opts.certs.privateKey, 'base64').toString('utf-8'),
     };
 
     return cachedCertificate;
