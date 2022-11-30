@@ -13,11 +13,6 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
   const { t } = useTranslation('common');
 
   const { asPath } = useRouter();
-  const [navOpen, setNavOpen] = useState({
-    'Enterprise SSO': asPath.includes('/admin/sso-connection'),
-    'Directory Sync': asPath.includes('/admin/directory-sync'),
-    Dashboard: false,
-  } as any);
 
   const menus = props.hideMenus
     ? []
@@ -114,22 +109,23 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                       <Link
                         key={menu.text}
                         href={menu.href}
-                        onClick={() => {
-                          setNavOpen({
-                            [menu.text]: navOpen[menu.text] ? false : true,
-                          });
-                        }}
-                        className='group flex items-center rounded-md bg-gray-100 py-2 px-2 text-base font-medium text-gray-900'>
+                        className={classNames(
+                          'group flex items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
+                          menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
+                        )}>
                         <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                         {menu.text}
                       </Link>
-                      {hasSubMenu && navOpen[menu.text] ? (
+                      {hasSubMenu ? (
                         <nav key={`{menu.text}-nav`} className={`hide space-y-1 px-2`}>
-                          {(menu.items || []).map((subMenu) => (
+                          {(menu.items || []).map((subMenu, idx) => (
                             <Link
-                              key={subMenu.text}
+                              key={`${subMenu.text}${idx}`}
                               href={subMenu.href}
-                              className='group flex items-center rounded-md bg-gray-100 py-2 px-2 text-base font-medium text-gray-900'>
+                              className={classNames(
+                                'group flex items-center h-8 rounded-md py-2 px-2 text-base font-medium text-gray-900',
+                                subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
+                              )}>
                               <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                               {subMenu.text}
                             </Link>
@@ -164,11 +160,6 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                     <Link
                       key={menu.text}
                       href={menu.href}
-                      onClick={() => {
-                        setNavOpen({
-                          [menu.text]: navOpen[menu.text] ? false : true,
-                        });
-                      }}
                       className={classNames(
                         'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
                         menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
@@ -176,15 +167,15 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                       <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                       {menu.text}
                     </Link>
-                    {hasSubMenu && navOpen[menu.text] ? (
+                    {hasSubMenu ? (
                       <nav key={`{menu.text}-nav`} className='flex-1 space-y-1 px-2 pb-4' id='subMenu'>
-                        {(menu.items || []).map((subMenu) => (
+                        {(menu.items || []).map((subMenu, idx) => (
                           <Link
-                            key={subMenu.text}
+                            key={`${subMenu.text}${idx}`}
                             href={subMenu.href}
                             className={classNames(
-                              'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
-                              subMenu.active ? 'bg-gray-100 font-bold' : 'font-medium'
+                              'group flex h-8 items-center rounded-md px-2 py-2 text-sm text-gray-900',
+                              subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
                             )}>
                             <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                             {subMenu.text}

@@ -20,7 +20,7 @@ export class SetupLinkController implements ISetupLinkController {
       tenant,
       product,
       service,
-      validTill: +new Date(new Date().setHours(new Date().getHours() + 3)),
+      validTill: +new Date(new Date().setDate(new Date().getDate() + 3)),
       url: `${process.env.NEXTAUTH_URL}/setup/${token}`,
     };
     const existing = await this.setupLinkStore.getByIndex({

@@ -1,10 +1,21 @@
 import Link from 'next/link';
-import { ArrowLeftIcon, ArrowRightIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  DocumentDuplicateIcon,
+  PlusIcon,
+  ArrowPathIcon,
+  TrashIcon
+} from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 
 const LinkList = ({ links, paginate, setPaginate }) => {
   const { t } = useTranslation('common');
+
+  const copyUrl = (url) => {
+    navigator.clipboard.writeText(url);
+  };
 
   if (!links) {
     return null;
@@ -23,10 +34,7 @@ const LinkList = ({ links, paginate, setPaginate }) => {
         </div>
       </div>
       {links.length === 0 ? (
-        <EmptyState
-          title={t('no_connections_found')}
-          href={`/admin/sso-connection/new`}
-        />
+        <EmptyState title={t('no_connections_found')} href={`/admin/sso-connection/new`} />
       ) : (
         <>
           <div className='rounder border'>
@@ -60,12 +68,22 @@ const LinkList = ({ links, paginate, setPaginate }) => {
                         {link.product}
                       </td>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {new Date(link.validTill).toString()}
+                        <p className={new Date(link.validTill) < new Date() ? `text-red-400` : ``}>
+                          {new Date(link.validTill).toString()}
+                        </p>
                       </td>
                       <td className='px-6 py-3'>
-                        <Link href={`/admin/sso-connection/edit/${link.setupID}`} className='link-primary'>
-                          <PencilIcon className='h-5 w-5 text-secondary' />
-                        </Link>
+                        <span className='inline-flex items-baseline'>
+                          <DocumentDuplicateIcon
+                            className='h-5 w-5 text-secondary'
+                            onClick={() => copyUrl(link.url)}
+                          />
+                          <ArrowPathIcon
+                            className='h-5 w-5 text-secondary'
+                            onClick={() => copyUrl(link.url)}
+                          />
+                          <TrashIcon className='h-5 w-5 text-secondary' onClick={() => copyUrl(link.url)} />
+                        </span>
                       </td>
                     </tr>
                   );
