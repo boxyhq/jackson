@@ -944,7 +944,7 @@ export class OAuthController implements IOAuthController {
           throw new JacksonError('Invalid client_secret', 401);
         }
       }
-    } else if (codeVal && codeVal.session) {
+    } else {
       throw new JacksonError('Please specify client_secret or code_verifier', 401);
     }
 
