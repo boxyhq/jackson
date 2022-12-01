@@ -214,14 +214,14 @@ export const token_req_unencoded_client_id_gen = (connectionRecords) => {
   };
 };
 
-export const token_req_idp_saml_login_wrong_secretverifier = {
+export const token_req_dummy_client_id_idp_saml_login_wrong_secretverifier = {
   grant_type: 'authorization_code',
   code: CODE,
   client_id: 'dummy',
   client_secret: 'TOP-SECRET-WRONG',
 };
 
-export const token_req_idp_saml_login = {
+export const token_req_dummy_client_id_idp_saml_login = {
   grant_type: 'authorization_code',
   code: CODE,
   client_id: 'dummy',

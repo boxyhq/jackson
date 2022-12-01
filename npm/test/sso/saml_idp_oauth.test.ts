@@ -38,11 +38,11 @@ import {
   state_not_set,
   token_req_cv_mismatch,
   token_req_encoded_client_id,
-  token_req_idp_saml_login,
+  token_req_dummy_client_id_idp_saml_login,
   token_req_unencoded_client_id_gen,
   token_req_with_cv,
   token_req_encoded_client_id_idp_saml_login,
-  token_req_idp_saml_login_wrong_secretverifier,
+  token_req_dummy_client_id_idp_saml_login_wrong_secretverifier,
   token_req_encoded_client_id_idp_saml_login_wrong_secretverifier,
 } from './fixture';
 import { addSSOConnections, databaseOptions } from '../utils';
@@ -751,7 +751,7 @@ tap.test('IdP initiated flow', async (t) => {
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
     t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
 
-    const body = token_req_idp_saml_login_wrong_secretverifier;
+    const body = token_req_dummy_client_id_idp_saml_login_wrong_secretverifier;
 
     try {
       await idpEnabledOAuthController.token(<OAuthTokenReq>body);
@@ -819,7 +819,7 @@ tap.test('IdP initiated flow', async (t) => {
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
     t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
 
-    const body = token_req_idp_saml_login;
+    const body = token_req_dummy_client_id_idp_saml_login;
 
     const tokenRes = await idpEnabledOAuthController.token(<OAuthTokenReq>body);
     t.ok('access_token' in tokenRes, 'includes access_token');
