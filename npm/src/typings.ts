@@ -324,8 +324,8 @@ export interface JacksonOption {
     };
   };
   certs?: {
-    privateKey: string;
     publicKey: string;
+    privateKey: string;
   };
 }
 

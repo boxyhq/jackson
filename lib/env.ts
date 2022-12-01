@@ -52,8 +52,8 @@ const jacksonOptions: JacksonOption = {
   clientSecretVerifier,
   openid,
   certs: {
-    privateKey: process.env.JACKSON_PRIVATE_KEY || '',
-    publicKey: process.env.JACKSON_PUBLIC_KEY || '',
+    publicKey: process.env.PUBLIC_KEY || '',
+    privateKey: process.env.PRIVATE_KEY || '',
   },
 };
 
