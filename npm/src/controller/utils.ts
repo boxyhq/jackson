@@ -194,3 +194,15 @@ export const extractHostName = (url: string): string | null => {
     return null;
   }
 };
+
+export const validateTenantAndProduct = (tenant: string, product: string) => {
+  const disallowedCharacters = [':'];
+
+  if (disallowedCharacters.some((char) => tenant.includes(char))) {
+    throw new JacksonError('Tenant cannot contain the character :', 400);
+  }
+
+  if (disallowedCharacters.some((char) => product.includes(char))) {
+    throw new JacksonError('Product cannot contain the character :', 400);
+  }
+};
