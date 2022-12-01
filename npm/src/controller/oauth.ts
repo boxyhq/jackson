@@ -637,11 +637,15 @@ export class OAuthController implements IOAuthController {
     // store details against a code
     const code = crypto.randomBytes(20).toString('hex');
 
+    const requested = isIdPFlow
+      ? { tenant: samlConnection.tenant, product: samlConnection.product }
+      : session?.requested;
+
     const codeVal: Record<string, unknown> = {
       profile,
       clientID: samlConnection.clientID,
       clientSecret: samlConnection.clientSecret,
-      requested: session?.requested,
+      requested,
     };
 
     if (session) {
