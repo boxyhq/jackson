@@ -84,6 +84,19 @@ export class SetupLinkController implements ISetupLinkController {
     });
     return { data: val, error: null };
   }
+  async remove(key: string): Promise<ApiResponse<boolean>> {
+    if (!key) {
+      return {
+        data: false,
+        error: {
+          message: 'Invalid setup key sent!',
+          code: 400,
+        },
+      };
+    }
+    await this.setupLinkStore.delete(key);
+    return { data: true, error: null };
+  }
   getAll(): Promise<ApiResponse<SetupLink[]>> {
     throw new Error('Method not implemented.');
   }

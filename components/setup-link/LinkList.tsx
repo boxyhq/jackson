@@ -9,13 +9,26 @@ import {
 } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
+import ConfirmationModal from '@components/ConfirmationModal';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
-const LinkList = ({ links, paginate, setPaginate }) => {
+const LinkList = ({ links, paginate, setPaginate, service, deleteLink, regenerateLink }) => {
   const { t } = useTranslation('common');
-
+  const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
+  const [showRegenConfirmModal, setShowRegenConfirmModal] = useState(false);
+  const toggleDelConfirmModal = () => setShowDelConfirmModal(!showDelConfirmModal);
+  const toggleRegenConfirmModal = () => setShowRegenConfirmModal(!showRegenConfirmModal);
+  const [actionId, setActionId] = useState(0);
   const copyUrl = (url) => {
     navigator.clipboard.writeText(url);
   };
+  const invokeRegenerate = () => {
+    regenerateLink(links[actionId], service);
+  }
+  const invokeDelete = () => {
+    deleteLink(links[actionId].setupID, service);
+  }
 
   if (!links) {
     return null;
@@ -26,15 +39,15 @@ const LinkList = ({ links, paginate, setPaginate }) => {
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('setup_links')}</h2>
         <div>
           <Link
-            href={`/admin/sso-connection/new`}
+            href={`/admin/setup-link/new?service=${service}`}
             className='btn-primary btn m-2'
-            data-test-id='create-connection'>
-            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_connection')}
+            data-test-id='create-setup-link'>
+            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
           </Link>
         </div>
       </div>
       {links.length === 0 ? (
-        <EmptyState title={t('no_connections_found')} href={`/admin/sso-connection/new`} />
+        <EmptyState title={t('no_setup_links_found')} href={`/admin/setup-link/new?service=${service}`} />
       ) : (
         <>
           <div className='rounder border'>
@@ -56,7 +69,7 @@ const LinkList = ({ links, paginate, setPaginate }) => {
                 </tr>
               </thead>
               <tbody>
-                {links.map((link) => {
+                {links.map((link, idx) => {
                   return (
                     <tr
                       key={link.setupID}
@@ -76,13 +89,22 @@ const LinkList = ({ links, paginate, setPaginate }) => {
                         <span className='inline-flex items-baseline'>
                           <DocumentDuplicateIcon
                             className='h-5 w-5 text-secondary'
-                            onClick={() => copyUrl(link.url)}
+                            onClick={() => {copyUrl(link.url); toast.success("Copied!")}}
                           />
                           <ArrowPathIcon
                             className='h-5 w-5 text-secondary'
-                            onClick={() => copyUrl(link.url)}
+                            onClick={() => {
+                              setActionId(idx);
+                              toggleRegenConfirmModal();
+                            }}
                           />
-                          <TrashIcon className='h-5 w-5 text-secondary' onClick={() => copyUrl(link.url)} />
+                          <TrashIcon
+                            className='h-5 w-5 text-secondary'
+                            onClick={() => {
+                              setActionId(idx);
+                              toggleDelConfirmModal();
+                            }}
+                          />
                         </span>
                       </td>
                     </tr>
@@ -125,6 +147,19 @@ const LinkList = ({ links, paginate, setPaginate }) => {
           </div>
         </>
       )}
+      <ConfirmationModal
+        title='Regenerate this setup link?'
+        description='This action cannot be undone. This will permanently delete the old setup link.'
+        visible={showRegenConfirmModal}
+        onConfirm={invokeRegenerate}
+        actionButtonText={'Regenerate'}
+        onCancel={toggleRegenConfirmModal}></ConfirmationModal>
+      <ConfirmationModal
+        title='Delete this setup link?'
+        description='This action cannot be undone. This will permanently delete the setup link.'
+        visible={showDelConfirmModal}
+        onConfirm={invokeDelete}
+        onCancel={toggleDelConfirmModal}></ConfirmationModal>
     </div>
   );
 };

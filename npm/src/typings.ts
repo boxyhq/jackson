@@ -692,4 +692,5 @@ export interface ISetupLinkController {
   getAll(): Promise<ApiResponse<SetupLink[]>>;
   getByService(service): Promise<ApiResponse<SetupLink[]>>;
   getByToken(token): Promise<ApiResponse<SetupLink>>;
+  remove(key: string): Promise<ApiResponse<boolean>>;
 }

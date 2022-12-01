@@ -1,5 +1,6 @@
 import { FormEvent, SetStateAction } from 'react';
 import toast from 'react-hot-toast';
+import { mutate } from 'swr';
 
 export const saveConnection = async ({
   formObj,
@@ -170,3 +171,37 @@ export function renderFieldList(args: {
   };
   return FieldList;
 }
+
+export const deleteLink = async (setupID: string, service: string) => {
+  await fetch(`/api/admin/setup-links?setupID=${setupID}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  await mutate(`/api/admin/setup-links?service=${service}`);
+  window.location.reload();
+};
+
+export const regenerateLink = async (setupLink: any, service: string) => {
+  const { tenant, product } = setupLink;
+
+  const res = await fetch('/api/admin/setup-links', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      tenant,
+      product,
+      type: service,
+      regenerate: true,
+    }),
+  });
+  if (res.ok) {
+    await mutate(`/api/admin/setup-links?service=${service}`);
+    window.location.reload();
+  } else {
+    // save failed
+  }
+};

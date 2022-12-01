@@ -7,8 +7,10 @@ import {
   ArrowLeftIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
+import { useRouter } from 'next/router';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
+  const router = useRouter()
   const createLink = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -98,7 +100,8 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   return (
     <>
       <Link
-        href={`/admin/${formObj.type === 'sso' ? 'sso-connection' : 'directory-sync'}`}
+        href=''
+        onClick={() => router.back()}
         className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>Back</span>

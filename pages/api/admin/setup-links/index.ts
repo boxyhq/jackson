@@ -10,6 +10,8 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return handlePOST(req, res);
     case 'GET':
       return handleGET(req, res);
+    case 'DELETE':
+      return handleDELETE(req, res);
     default:
       res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
@@ -30,6 +32,16 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   return res.status(error ? error.code : 201).json({ data, error });
+};
+
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { setupLinkController } = await jackson();
+
+  const { setupID } = req.query;
+
+  const { data, error } = await setupLinkController.remove(setupID as string);
+
+  return res.status(error ? error.code : 200).json({ data, error });
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
