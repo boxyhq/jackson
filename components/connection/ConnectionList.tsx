@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  ClipboardIcon,
+  ClipboardDocumentListIcon,
   LinkIcon,
   PencilIcon,
   PlusIcon,
@@ -27,15 +27,21 @@ type ConnectionListProps = {
   boxyhqEntityID?: string;
 };
 
-const ConnectionList = ({ setupToken, connections, paginate, setPaginate, boxyhqEntityID }: ConnectionListProps) => {
+const ConnectionList = ({
+  setupToken,
+  connections,
+  paginate,
+  setPaginate,
+  boxyhqEntityID,
+}: ConnectionListProps) => {
   const { t } = useTranslation('common');
 
   const copyUrl = () => {
-    if(boxyhqEntityID) {
+    if (boxyhqEntityID) {
       navigator.clipboard.writeText(boxyhqEntityID);
     }
   };
-    
+
   if (!connections) {
     return null;
   }
@@ -62,14 +68,19 @@ const ConnectionList = ({ setupToken, connections, paginate, setPaginate, boxyhq
       </div>
       {boxyhqEntityID && setupToken && (
         <div className='mb-5 items-center justify-between'>
-        <div className='form-control p-2'>
-          <div className='input-group'>
-            <button className='btn-primary btn h-10 p-2 text-white' onClick={copyUrl}>
-              <ClipboardIcon className='mr-2 h-6 w-6' /> Copy EntityID
-            </button>
-            <input type='text' readOnly value={boxyhqEntityID} className='input-bordered input h-10 w-full' />
+          <div className='form-control p-2'>
+            <div className='input-group'>
+              <button className='btn-primary btn h-10 p-2 text-white' onClick={copyUrl}>
+                <ClipboardDocumentListIcon className='h-6 w-6' />
+              </button>
+              <input
+                type='text'
+                readOnly
+                value={boxyhqEntityID}
+                className='input-bordered input h-10 w-full'
+              />
+            </div>
           </div>
-        </div>
         </div>
       )}
       {connections.length === 0 ? (
