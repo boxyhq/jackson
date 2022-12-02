@@ -99,16 +99,13 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
 
   return (
     <>
-      <Link
-        href=''
-        onClick={() => router.back()}
-        className='btn-outline btn items-center space-x-2'>
+      <Link href='' onClick={() => router.back()} className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>Back</span>
       </Link>
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {`Create Setup Link (${props.service === 'sso' ? 'Jackson' : 'Directory-Sync'})`}
+          {`Create Setup Link (${props.service === 'sso' ? 'Enterprise SSO' : 'Directory-Sync'})`}
         </h2>
         <div>
           <div className='mb-6'>

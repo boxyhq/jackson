@@ -1,16 +1,20 @@
 import type { NextPage } from 'next';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import CreateSetupLink from '@components/CreateSetupLink';
 
 type Service = 'sso' | 'dsync';
-const services = ['sso', 'dsync'];
 
 const SetupLink: NextPage = () => {
-  const { query } = useRouter();
-  if (services.indexOf(query.service as string) === -1) {
-    Router.replace('/');
+  const router = useRouter();
+  const service = router.asPath.includes('sso-connection')
+    ? 'sso'
+    : router.asPath.includes('directory-sync')
+    ? 'dsync'
+    : '';
+  if(!service) {
+    return null;
   }
-  return <CreateSetupLink service={query.service as Service} />;
+  return <CreateSetupLink service={service as Service} />;
 };
 
 export default SetupLink;

@@ -5,7 +5,7 @@ import {
   DocumentDuplicateIcon,
   PlusIcon,
   ArrowPathIcon,
-  TrashIcon
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
@@ -25,10 +25,10 @@ const LinkList = ({ links, paginate, setPaginate, service, deleteLink, regenerat
   };
   const invokeRegenerate = () => {
     regenerateLink(links[actionId], service);
-  }
+  };
   const invokeDelete = () => {
     deleteLink(links[actionId].setupID, service);
-  }
+  };
 
   if (!links) {
     return null;
@@ -39,7 +39,9 @@ const LinkList = ({ links, paginate, setPaginate, service, deleteLink, regenerat
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('setup_links')}</h2>
         <div>
           <Link
-            href={`/admin/setup-link/new?service=${service}`}
+            href={`/admin/${
+              service === 'sso' ? 'sso-connection' : service === 'dsync' ? 'directory-sync' : ''
+            }/setup-link/new`}
             className='btn-primary btn m-2'
             data-test-id='create-setup-link'>
             <PlusIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
@@ -47,7 +49,12 @@ const LinkList = ({ links, paginate, setPaginate, service, deleteLink, regenerat
         </div>
       </div>
       {links.length === 0 ? (
-        <EmptyState title={t('no_setup_links_found')} href={`/admin/setup-link/new?service=${service}`} />
+        <EmptyState
+          title={t('no_setup_links_found')}
+          href={`/admin/${
+            service === 'sso' ? 'sso-connection' : service === 'dsync' ? 'directory-sync' : ''
+          }/setup-link/new`}
+        />
       ) : (
         <>
           <div className='rounder border'>
@@ -88,18 +95,21 @@ const LinkList = ({ links, paginate, setPaginate, service, deleteLink, regenerat
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>
                           <DocumentDuplicateIcon
-                            className='h-5 w-5 text-secondary'
-                            onClick={() => {copyUrl(link.url); toast.success("Copied!")}}
+                            className='mr-3 h-5 w-5 text-secondary hover:text-green-200'
+                            onClick={() => {
+                              copyUrl(link.url);
+                              toast.success('Copied!');
+                            }}
                           />
                           <ArrowPathIcon
-                            className='h-5 w-5 text-secondary'
+                            className='mr-3 h-5 w-5 text-secondary hover:text-green-200'
                             onClick={() => {
                               setActionId(idx);
                               toggleRegenConfirmModal();
                             }}
                           />
                           <TrashIcon
-                            className='h-5 w-5 text-secondary'
+                            className='h-5 w-5 text-secondary hover:text-green-200'
                             onClick={() => {
                               setActionId(idx);
                               toggleDelConfirmModal();
