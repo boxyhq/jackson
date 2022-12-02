@@ -12,8 +12,17 @@ import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { fetcher } from '@lib/ui/utils';
+import useSWR from 'swr';
+import { deleteLink, regenerateLink } from '@components/connection/utils';
 
-const LinkList = ({ links, paginate, setPaginate, service, deleteLink, regenerateLink }) => {
+const LinkList = ({ service }) => {
+  const [queryParam] = useState(`?service=${service}`);
+  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
+  const { data: setupLinks, mutate } = useSWR<any>([`/api/admin/setup-links`, queryParam], fetcher, {
+    revalidateOnFocus: false,
+  });
+  const links = setupLinks?.data;
   const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
   const [showRegenConfirmModal, setShowRegenConfirmModal] = useState(false);
@@ -23,11 +32,17 @@ const LinkList = ({ links, paginate, setPaginate, service, deleteLink, regenerat
   const copyUrl = (url) => {
     navigator.clipboard.writeText(url);
   };
-  const invokeRegenerate = () => {
-    regenerateLink(links[actionId], service);
+  const invokeRegenerate = async () => {
+    await regenerateLink(links[actionId], service);
+    toggleRegenConfirmModal();
+    await mutate();
+    toast.success('Regenerated!');
   };
-  const invokeDelete = () => {
-    deleteLink(links[actionId].setupID, service);
+  const invokeDelete = async () => {
+    await deleteLink(links[actionId].setupID, service);
+    toggleDelConfirmModal();
+    await mutate();
+    toast.success('Deleted!');
   };
 
   if (!links) {

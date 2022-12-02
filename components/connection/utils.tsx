@@ -179,8 +179,6 @@ export const deleteLink = async (setupID: string, service: string) => {
       'Content-Type': 'application/json',
     },
   });
-  await mutate(`/api/admin/setup-links?service=${service}`);
-  window.location.reload();
 };
 
 export const regenerateLink = async (setupLink: any, service: string) => {
@@ -198,10 +196,4 @@ export const regenerateLink = async (setupLink: any, service: string) => {
       regenerate: true,
     }),
   });
-  if (res.ok) {
-    await mutate(`/api/admin/setup-links?service=${service}`);
-    window.location.reload();
-  } else {
-    // save failed
-  }
 };
