@@ -3,14 +3,14 @@ import Link from 'next/link';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
-  ClipboardIcon,
+  ClipboardDocumentListIcon,
   ArrowLeftIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useRouter } from 'next/router';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
-  const router = useRouter()
+  const router = useRouter();
   const createLink = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -189,7 +189,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
           <div className='form-control p-2'>
             <div className='input-group'>
               <button className='btn-primary btn h-10 p-2 text-white' onClick={copyUrl}>
-                <ClipboardIcon className='mr-2 h-6 w-6' /> Copy Setup Link
+                <ClipboardDocumentListIcon className='h-6 w-6' />
               </button>
               <input type='text' readOnly value={url} className='input-bordered input h-10 w-full' />
             </div>

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  DocumentDuplicateIcon,
+  ClipboardDocumentListIcon,
   PlusIcon,
   ArrowPathIcon,
   TrashIcon,
@@ -109,7 +109,7 @@ const LinkList = ({ service }) => {
                       </td>
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>
-                          <DocumentDuplicateIcon
+                          <ClipboardDocumentListIcon
                             className='mr-3 h-5 w-5 text-secondary hover:text-green-200'
                             onClick={() => {
                               copyUrl(link.url);
