@@ -385,7 +385,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     if (!tenant || !product) {
       throw new JacksonError('Please provide `tenant` and `product`.', 400);
     } else {
-      return `${process.env.SAML_AUDIENCE}/${dbutils.keyDigest(dbutils.keyFromParts(tenant, product))}`;
+      return `${this.opts.samlAudience}/${dbutils.keyDigest(dbutils.keyFromParts(tenant, product))}`;
     }
   }
 
