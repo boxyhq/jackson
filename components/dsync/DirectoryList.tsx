@@ -27,7 +27,7 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
           </Link>
           {!token && (
             <Link
-              href={`/admin/setup-link/new?service=dsync`}
+              href={`/admin/directory-sync/setup-link/new`}
               className='btn-primary btn m-2'
               data-test-id='create-setup-link'>
               <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}

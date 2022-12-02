@@ -52,7 +52,7 @@ const ConnectionList = ({ setupToken, connections, paginate, setPaginate, boxyhq
           </Link>
           {!setupToken && (
             <Link
-              href={`/admin/setup-link/new?service=sso`}
+              href={`/admin/sso-connection/setup-link/new`}
               className='btn-primary btn m-2'
               data-test-id='create-setup-link'>
               <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}

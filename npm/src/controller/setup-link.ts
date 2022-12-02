@@ -20,7 +20,7 @@ export class SetupLinkController implements ISetupLinkController {
       tenant,
       product,
       service,
-      validTill: +new Date(new Date().setHours(new Date().getHours() + 3)),
+      validTill: +new Date(new Date().setDate(new Date().getDate() + 3)),
       url: `${process.env.NEXTAUTH_URL}/setup/${token}`,
     };
     const existing = await this.setupLinkStore.getByIndex({
@@ -40,6 +40,10 @@ export class SetupLinkController implements ISetupLinkController {
         {
           name: IndexNames.TenantProductService,
           value: dbutils.keyFromParts(tenant, product, service),
+        },
+        {
+          name: IndexNames.Service,
+          value: service,
         }
       );
       return { data: val, error: null };
@@ -69,6 +73,29 @@ export class SetupLinkController implements ISetupLinkController {
       };
     }
     return { data: val[0], error: null };
+  }
+  async getByService(service: string): Promise<ApiResponse<SetupLink[]>> {
+    if (!service) {
+      return { data: [], error: null };
+    }
+    const val = await this.setupLinkStore.getByIndex({
+      name: IndexNames.Service,
+      value: service,
+    });
+    return { data: val, error: null };
+  }
+  async remove(key: string): Promise<ApiResponse<boolean>> {
+    if (!key) {
+      return {
+        data: false,
+        error: {
+          message: 'Invalid setup key sent!',
+          code: 400,
+        },
+      };
+    }
+    await this.setupLinkStore.delete(key);
+    return { data: true, error: null };
   }
   getAll(): Promise<ApiResponse<SetupLink[]>> {
     throw new Error('Method not implemented.');

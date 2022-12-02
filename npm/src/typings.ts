@@ -277,7 +277,7 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
-  getAll(pageOffset?: number, pageLimit?: number): Promise<unknown[]>;
+  getAll(pageOffset?: number, pageLimit?: number): Promise<any[]>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
@@ -697,5 +697,7 @@ export type ApiResponse<T> = {
 export interface ISetupLinkController {
   create(body: SetupLinkCreatePayload): Promise<ApiResponse<SetupLink>>;
   getAll(): Promise<ApiResponse<SetupLink[]>>;
+  getByService(service): Promise<ApiResponse<SetupLink[]>>;
   getByToken(token): Promise<ApiResponse<SetupLink>>;
+  remove(key: string): Promise<ApiResponse<boolean>>;
 }
