@@ -15,10 +15,10 @@ const ConfirmationModal = (props: {
   return (
     <Modal visible={visible} title={title} description={description}>
       <div className='modal-action'>
-        <button className='btn btn-outline' onClick={onCancel}>
+        <button className='btn-outline btn' onClick={onCancel}>
           {t('cancel')}
         </button>
-        <button className='btn btn-error' onClick={onConfirm}>
+        <button className='btn-error btn' onClick={onConfirm}>
           {actionButtonText || t('delete')}
         </button>
       </div>

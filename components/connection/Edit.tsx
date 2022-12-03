@@ -50,7 +50,7 @@ const Edit = ({ connection, setup }: EditProps) => {
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
       isEditView: true,
-      setupToken: setup ? setup.token: '',
+      setupToken: setup ? setup.token : '',
       callback: (res) => {
         if (res.ok) {
           toast.success('Saved');

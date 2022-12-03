@@ -39,7 +39,7 @@ const LinkList = ({ service }) => {
     toast.success('Regenerated!');
   };
   const invokeDelete = async () => {
-    await deleteLink(links[actionId].setupID, service);
+    await deleteLink(links[actionId].setupID);
     toggleDelConfirmModal();
     await mutate();
     toast.success('Deleted!');

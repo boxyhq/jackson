@@ -1,6 +1,5 @@
 import { FormEvent, SetStateAction } from 'react';
 import toast from 'react-hot-toast';
-import { mutate } from 'swr';
 
 export const saveConnection = async ({
   formObj,
@@ -172,7 +171,7 @@ export function renderFieldList(args: {
   return FieldList;
 }
 
-export const deleteLink = async (setupID: string, service: string) => {
+export const deleteLink = async (setupID: string) => {
   await fetch(`/api/admin/setup-links?setupID=${setupID}`, {
     method: 'DELETE',
     headers: {
