@@ -21,7 +21,7 @@ type ConnectionListProps = {
 
 const ConnectionList = ({ setupToken, connections, paginate, setPaginate }: ConnectionListProps) => {
   const { t } = useTranslation('common');
-    
+
   if (!connections) {
     return null;
   }

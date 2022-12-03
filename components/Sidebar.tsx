@@ -122,7 +122,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                               key={`${subMenu.text}${idx}`}
                               href={subMenu.href}
                               className={classNames(
-                                'group flex items-center h-8 rounded-md py-2 px-2 text-base font-medium text-gray-900',
+                                'group flex h-8 items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
                                 subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
                               )}>
                               <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />

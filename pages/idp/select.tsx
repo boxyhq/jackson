@@ -29,7 +29,9 @@ export default function IdPSelection({ SAMLResponse, appList }) {
     const paramsToRelay = new URLSearchParams(Object.entries(rest));
     return (
       <div className='relative top-1/2 left-1/2  w-1/2 max-w-xl  -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border-[1px] py-4 px-6 text-center'>
-        <h1 className='mb-4 px-3 text-center text-lg font-bold text-black'>{t('choose_an_identity_provider')}</h1>
+        <h1 className='mb-4 px-3 text-center text-lg font-bold text-black'>
+          {t('choose_an_identity_provider')}
+        </h1>
         <ul className='max-h-96 overflow-auto'>
           {idpList.map((idp) => {
             const { clientID, name, provider, connectionIsSAML, connectionIsOIDC } = JSON.parse(idp);
@@ -114,7 +116,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, locale }) =>
 
     return { props: { SAMLResponse, appList: app ? JSON.parse(app) : [] } };
   }
-  return { props: {
-    ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-  } };
+  return {
+    props: {
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
+  };
 };

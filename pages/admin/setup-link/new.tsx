@@ -11,7 +11,7 @@ const SetupLink: NextPage = () => {
     : router.asPath.includes('directory-sync')
     ? 'dsync'
     : '';
-  if(!service) {
+  if (!service) {
     return null;
   }
   return <CreateSetupLink service={service as Service} />;
