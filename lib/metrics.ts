@@ -6,7 +6,7 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 
 import packageInfo from '../package.json';
 
-if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT) {
+if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT || process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
   const meterProvider = new MeterProvider({
     resource: new Resource({
       [SemanticResourceAttributes.SERVICE_NAME]: `${packageInfo.name}`,
