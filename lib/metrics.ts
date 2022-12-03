@@ -1,4 +1,4 @@
-// import { DiagConsoleLogger, DiagLogLevel, diag, metrics } from '@opentelemetry/api';
+import { metrics } from '@opentelemetry/api';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { MeterProvider, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { Resource } from '@opentelemetry/resources';
@@ -26,5 +26,6 @@ if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT) {
   metrics.setGlobalMeterProvider(meterProvider);
 }
 
-// // Optional and only needed to see the internal diagnostic logging (during development)
+// Optional and only needed to see the internal diagnostic logging (during development)
+//import { DiagConsoleLogger, DiagLogLevel, diag } from '@opentelemetry/api';
 // diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
