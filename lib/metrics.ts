@@ -37,5 +37,6 @@ if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT || process.env.OTEL_EXPORTER
 }
 
 if (process.env.OTEL_EXPORTER_DEBUG) {
+  diag.disable();
   diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 }
