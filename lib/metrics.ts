@@ -19,7 +19,7 @@ if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT || process.env.OTEL_EXPORTER
   meterProvider.addMetricReader(
     new PeriodicExportingMetricReader({
       exporter: metricExporter,
-      exportIntervalMillis: 1000,
+      exportIntervalMillis: 60000,
     })
   );
 
