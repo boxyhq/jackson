@@ -1,8 +1,10 @@
 import { metrics } from '@opentelemetry/api';
-import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
+import { OTLPMetricExporter as OTLPMetricExporterGRPC } from '@opentelemetry/exporter-metrics-otlp-grpc';
 import { MeterProvider, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { Resource } from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { DiagConsoleLogger, DiagLogLevel, diag } from '@opentelemetry/api';
 
 import packageInfo from '../package.json';
 
@@ -14,7 +16,15 @@ if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT || process.env.OTEL_EXPORTER
     }),
   });
 
-  const metricExporter = new OTLPMetricExporter({});
+  let metricExporter;
+  if (
+    process.env.OTEL_EXPORTER_OTLP_PROTOCOL === 'grpc' ||
+    process.env.OTEL_EXPORTER_OTLP_METRICS_PROTOCOL === 'grpc'
+  ) {
+    metricExporter = new OTLPMetricExporterGRPC();
+  } else {
+    metricExporter = new OTLPMetricExporter();
+  }
 
   meterProvider.addMetricReader(
     new PeriodicExportingMetricReader({
@@ -26,6 +36,6 @@ if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT || process.env.OTEL_EXPORTER
   metrics.setGlobalMeterProvider(meterProvider);
 }
 
-// Optional and only needed to see the internal diagnostic logging (during development)
-//import { DiagConsoleLogger, DiagLogLevel, diag } from '@opentelemetry/api';
-// diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+if (process.env.OTEL_EXPORTER_DEBUG) {
+  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+}
