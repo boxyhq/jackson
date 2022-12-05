@@ -1,5 +1,6 @@
-module.exports = {
+const postcss = {
   plugins: {
     autoprefixer: {},
   },
 };
+export default postcss;
