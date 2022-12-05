@@ -23,5 +23,11 @@ module.exports = {
         '@typescript-eslint/no-var-requires': 'off',
       },
     },
+    {
+      files: ['sdk/**/*'],
+      rules: {
+        '@next/next/no-img-element': 'off',
+      },
+    },
   ],
 };
