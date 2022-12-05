@@ -13,6 +13,7 @@ import {
   IndexNames,
   validateSSOConnection,
   validateRedirectUrl,
+  validateTenantAndProduct,
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
 import { JacksonError } from '../error';
@@ -54,6 +55,8 @@ const saml = {
     const redirectUrlList = extractRedirectUrls(redirectUrl);
 
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
+
+    validateTenantAndProduct(tenant, product);
 
     const record: Partial<SAMLSSORecord> = {
       defaultRedirectUrl,

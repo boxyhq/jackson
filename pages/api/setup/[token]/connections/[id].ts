@@ -17,34 +17,15 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController, connectionAPIController } = await jackson();
   const { token, id } = req.query;
   const { data: setup, error: err } = await setupLinkController.getByToken(token);
-  if (err) {
-    return res.status(err ? err.code : 201).json({ err });
-  }
-  let data, error;
-  if (setup) {
-    if (setup?.validTill > +new Date()) {
-      data = setup;
-      const list = await connectionAPIController.getConnections({
-        tenant: setup.tenant,
-        product: setup.product,
-      } as GetConnectionsQuery);
-      return res.json(list.filter((l) => l.clientID === id)[0]);
-    } else {
-      data = undefined;
-      error = {
-        code: 400,
-        message: 'Setup Link expired!',
-      };
-    }
-  } else {
-    data = undefined;
-    error = {
-      code: 404,
-      message: 'Invalid setup token!',
-    };
+  if (err || !setup) {
+    return res.status(err ? err.code : 401).json({ err });
   }
 
-  return res.status(error ? error.code : 201).json({ data, error });
+  const list = await connectionAPIController.getConnections({
+    tenant: setup.tenant,
+    product: setup.product,
+  } as GetConnectionsQuery);
+  return res.json(list.filter((l) => l.clientID === id)[0]);
 };
 
 export default handler;

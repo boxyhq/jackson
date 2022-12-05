@@ -10,15 +10,14 @@ const Setup: NextPage = () => {
     revalidateOnFocus: false,
   });
   if (error) {
-      return (
-        <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
-          {error.info ? JSON.stringify(error.info.error) : error.status}
-        </div>
-      );
+    return (
+      <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
+        {error.info ? JSON.stringify(error.info.error) : error.status}
+      </div>
+    );
   } else if (!token || !setup) {
     return null;
   } else {
-    console.log(setup.data);
     switch (setup.data.service) {
       case 'sso':
         router.replace(`/setup/${token}/sso-connection`);

@@ -5,30 +5,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
 
   switch (method) {
-    case 'POST':
-      return handlePOST(req, res);
     case 'GET':
       return handleGET(req, res);
     default:
-      res.setHeader('Allow', ['GET', 'POST']);
+      res.setHeader('Allow', ['GET']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
-};
-
-// Create a new setup link
-const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { setupLinkController } = await jackson();
-
-  const { tenant, product, type: service, regenerate } = req.body;
-
-  const { data, error } = await setupLinkController.create({
-    tenant,
-    product,
-    service,
-    regenerate,
-  });
-
-  return res.status(error ? error.code : 201).json({ data, error });
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
