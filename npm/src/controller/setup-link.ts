@@ -2,8 +2,6 @@ import { ApiResponse, ISetupLinkController, SetupLink, SetupLinkCreatePayload, S
 import * as dbutils from '../db/utils';
 import { IndexNames } from './utils';
 import crypto from 'crypto';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const g = global as never;
 
 export class SetupLinkController implements ISetupLinkController {
   setupLinkStore: Storable;
@@ -50,29 +48,39 @@ export class SetupLinkController implements ISetupLinkController {
     }
   }
   async getByToken(token: string): Promise<ApiResponse<SetupLink>> {
-    const val = await this.setupLinkStore.getByIndex({
-      name: IndexNames.SetupToken,
-      value: token,
-    });
-    if (val.length === 0) {
+    if (!token) {
       return {
         data: null,
         error: {
-          message: 'Link not found!',
+          message: 'Invalid setup token',
           code: 404,
         },
       };
+    } else {
+      const val = await this.setupLinkStore.getByIndex({
+        name: IndexNames.SetupToken,
+        value: token,
+      });
+      if (val.length === 0) {
+        return {
+          data: null,
+          error: {
+            message: 'Link not found!',
+            code: 404,
+          },
+        };
+      } else if (val.validTill < new Date()) {
+        return {
+          data: null,
+          error: {
+            message: 'Link is expired!',
+            code: 401,
+          },
+        };
+      } else {
+        return { data: val[0], error: null };
+      }
     }
-    if (val.validTill < new Date()) {
-      return {
-        data: null,
-        error: {
-          message: 'Link is expired!',
-          code: 401,
-        },
-      };
-    }
-    return { data: val[0], error: null };
   }
   async getByService(service: string): Promise<ApiResponse<SetupLink[]>> {
     if (!service) {

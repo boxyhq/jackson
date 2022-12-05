@@ -110,21 +110,21 @@ const LinkList = ({ service }) => {
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>
                           <ClipboardDocumentListIcon
-                            className='mr-3 h-5 w-5 text-secondary hover:text-green-200'
+                            className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
                             onClick={() => {
                               copyUrl(link.url);
                               toast.success('Copied!');
                             }}
                           />
                           <ArrowPathIcon
-                            className='mr-3 h-5 w-5 text-secondary hover:text-green-200'
+                            className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
                             onClick={() => {
                               setActionId(idx);
                               toggleRegenConfirmModal();
                             }}
                           />
                           <TrashIcon
-                            className='h-5 w-5 text-secondary hover:text-green-200'
+                            className='h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
                             onClick={() => {
                               setActionId(idx);
                               toggleDelConfirmModal();
