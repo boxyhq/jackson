@@ -41,8 +41,7 @@
   },
   "dependencies": {
     "@boxyhq/saml20": "1.1.0",
-    "@opentelemetry/api": "1.0.4",
-    "@opentelemetry/api-metrics": "0.27.0",
+    "@opentelemetry/api": "1.3.0",
     "axios": "1.1.3",
     "jose": "4.11.1",
     "marked": "4.2.3",
