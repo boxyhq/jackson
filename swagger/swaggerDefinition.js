@@ -1,9 +1,9 @@
-const package = require('../package.json');
+const packageInfo = require('../package.json');
 
 module.exports = {
   info: {
     title: 'SAML Jackson API',
-    version: package.version,
+    version: packageInfo.version,
     description: 'This is the API documentation for SAML Jackson service.',
     termsOfService: 'https://boxyhq.com/terms.html',
     contact: {
