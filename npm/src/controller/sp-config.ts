@@ -127,6 +127,8 @@ const markdownTemplate = `
 
 Your Identity Provider (IdP) will ask for the following information while configuring the SAML application. Share this information with your IT administrator.
 
+For provider specific instructions, refer to our <a href="https://boxyhq.com/docs/jackson/sso-providers" target="_blank">guides</a>
+
 **ACS (Assertion Consumer Service) URL / Single Sign-On URL / Destination URL** <br />
 {{acsUrl}}
 
