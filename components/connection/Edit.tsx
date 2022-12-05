@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
+import { ApiResponse } from 'types';
 
 const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
@@ -49,14 +50,14 @@ const Edit = ({ connection }: EditProps) => {
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
       isEditView: true,
-      callback: (res) => {
+      callback: async (res) => {
+        const { error }: ApiResponse = await res.json();
+
         if (res.ok) {
           toast.success('Saved');
-          // revalidate on save
           mutate(`/api/admin/connections/${connectionClientId}`);
         } else {
-          // save failed
-          toast.error('ERROR');
+          toast.error(error.message);
         }
       },
     });
@@ -66,16 +67,24 @@ const Edit = ({ connection }: EditProps) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
-    await fetch('/api/admin/connections', {
+    const res = await fetch('/api/admin/connections', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
     });
+
+    const { error }: ApiResponse = await res.json();
+
     toggleDelConfirm();
-    await mutate('/api/admin/connections');
-    router.replace('/admin/connection');
+
+    if (res.ok) {
+      await mutate('/api/admin/connections');
+      router.replace('/admin/connection');
+    } else {
+      toast.error(error.message);
+    }
   };
 
   // STATE: FORM

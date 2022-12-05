@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
+import { ApiResponse } from 'types';
 
 const fieldCatalog = [...getCommonFields()];
 
@@ -25,12 +26,13 @@ const Add = () => {
       formObj: formObj,
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
-      callback: (res) => {
+      callback: async (res) => {
+        const { error }: ApiResponse = await res.json();
+
         if (res.ok) {
           router.replace('/admin/connection');
         } else {
-          // save failed
-          toast.error('ERROR');
+          toast.error(error.message);
         }
       },
     });
