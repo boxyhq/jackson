@@ -1,6 +1,6 @@
 import type { Storable, Directory, JacksonOption, DatabaseStore, DirectoryType, ApiError } from '../typings';
 import * as dbutils from '../db/utils';
-import { createRandomSecret } from '../controller/utils';
+import { createRandomSecret, validateTenantAndProduct } from '../controller/utils';
 import { apiError, JacksonError } from '../controller/error';
 import { storeNamespacePrefix } from '../controller/utils';
 
@@ -39,6 +39,8 @@ export class DirectoryConfig {
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
       }
+
+      validateTenantAndProduct(tenant, product);
 
       if (!name) {
         name = `scim-${tenant}-${product}`;
