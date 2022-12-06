@@ -3,10 +3,11 @@ import { marked } from 'marked';
 
 import saml20 from '@boxyhq/saml20';
 import xmlbuilder from 'xmlbuilder';
+import { getDefaultCertificate } from '../saml/x509';
 
 // Service Provider SAML Configuration
 export class SPSAMLConfig {
-  constructor(private opts: JacksonOption, private getDefaultCertificate: any) {}
+  constructor(private opts: JacksonOption) {}
 
   private get acsUrl(): string {
     return `${this.opts.externalUrl}${this.opts.samlPath}`;
@@ -37,7 +38,7 @@ export class SPSAMLConfig {
     publicKey: string;
     publicKeyString: string;
   }> {
-    const cert = await this.getDefaultCertificate();
+    const cert = await getDefaultCertificate();
 
     return {
       acsUrl: this.acsUrl,
