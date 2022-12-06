@@ -1,11 +1,11 @@
-import env from '@lib/env';
+import { apiKeys } from '@lib/env';
 
 export const validateApiKey = (token: string | null) => {
   if (!token) {
     return false;
   }
 
-  return env.apiKeys.includes(token);
+  return apiKeys.includes(token);
 };
 
 export const extractAuthToken = (req): string | null => {
