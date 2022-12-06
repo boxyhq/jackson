@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 
 const Toast = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className='pointer-events-auto flex w-full max-w-md rounded bg-white shadow-lg'>
+    <div className='pointer-events-auto flex w-full max-w-md rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-10'>
       <div className='w-0 flex-1 p-3'>
         <div className='flex items-start'>
           <div className='flex-shrink-0 pt-0.5'></div>
