@@ -10,8 +10,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { SAMLSSORecord, OIDCSSORecord } from '@boxyhq/saml-jackson';
 import type { ApiError, ApiSuccess } from 'types';
 import { Loader } from '@components/Loader';
-import toast from 'react-hot-toast';
-import { ErrorToast } from '@components/Toast';
+import { errorToast } from '@components/Toast';
 
 type Connection = SAMLSSORecord | OIDCSSORecord;
 
@@ -30,7 +29,7 @@ const Connections: NextPage = () => {
   }
 
   if (error) {
-    toast.custom(() => <ErrorToast message={error.message} />);
+    errorToast(error.message);
     return null;
   }
 

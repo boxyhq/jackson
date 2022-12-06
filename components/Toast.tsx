@@ -21,7 +21,7 @@ const Toast = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const ErrorToast = ({ message }: { message: string }) => {
+const ErrorToast = ({ message }: { message: string }) => {
   const { t } = useTranslation('common');
 
   return (
@@ -32,7 +32,7 @@ export const ErrorToast = ({ message }: { message: string }) => {
   );
 };
 
-export const SuccessToast = ({ message }: { message: string }) => {
+const SuccessToast = ({ message }: { message: string }) => {
   const { t } = useTranslation('common');
 
   return (
@@ -41,4 +41,16 @@ export const SuccessToast = ({ message }: { message: string }) => {
       <p className='mt-1 text-sm text-gray-500'>{message}</p>
     </Toast>
   );
+};
+
+export const errorToast = (message: string) => {
+  toast.custom(() => <ErrorToast message={message} />, {
+    id: 'custom-error-toast',
+  });
+};
+export const successToast = (message: string) => {
+  toast.custom(() => <SuccessToast message={message} />, {
+    id: 'custom-success-toast',
+    duration: 5000,
+  });
 };

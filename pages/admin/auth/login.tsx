@@ -3,7 +3,6 @@ import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'nex
 import { useSession, getCsrfToken, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import toast from 'react-hot-toast';
 import { SessionProvider } from 'next-auth/react';
 import { useState } from 'react';
 import classNames from 'classnames';
@@ -11,7 +10,7 @@ import classNames from 'classnames';
 import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { ErrorToast, SuccessToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toast';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
@@ -45,9 +44,9 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
     const { error } = response;
 
     if (error) {
-      toast.custom(() => <ErrorToast message={error} />);
+      errorToast(error);
     } else {
-      toast.custom(() => <SuccessToast message={t('login_success_toast')} />);
+      successToast(t('login_success_toast'));
     }
   };
 

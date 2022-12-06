@@ -1,7 +1,6 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
@@ -10,7 +9,7 @@ import { inferSSRProps } from '@lib/inferSSRProps';
 import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { ErrorToast, SuccessToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toast';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -44,12 +43,12 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
     const response = await rawResponse.json();
 
     if ('error' in response) {
-      toast.custom(() => <ErrorToast message={response.error.message} />);
+      errorToast(response.error.message);
       return null;
     }
 
     if (rawResponse.ok) {
-      toast.custom(() => <SuccessToast message={t('directory_updated_successfully')} />);
+      successToast(t('directory_updated_successfully'));
       router.replace('/admin/directory-sync');
     }
   };

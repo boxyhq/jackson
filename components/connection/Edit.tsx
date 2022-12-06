@@ -3,13 +3,12 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import toast from 'react-hot-toast';
 
 import ConfirmationModal from '@components/ConfirmationModal';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { ApiResponse } from 'types';
-import { ErrorToast, SuccessToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 
 const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
@@ -57,12 +56,12 @@ const Edit = ({ connection }: EditProps) => {
         const response: ApiResponse = await res.json();
 
         if ('error' in response) {
-          toast.custom(() => <ErrorToast message={response.error.message} />);
+          errorToast(response.error.message);
           return;
         }
 
         if (res.ok) {
-          toast.custom(() => <SuccessToast message={t('saved')} />);
+          successToast(t('saved'));
           mutate(`/api/admin/connections/${connectionClientId}`);
         }
       },
@@ -86,7 +85,7 @@ const Edit = ({ connection }: EditProps) => {
     toggleDelConfirm();
 
     if ('error' in response) {
-      toast.custom(() => <ErrorToast message={response.error.message} />);
+      errorToast(response.error.message);
       return;
     }
 

@@ -2,11 +2,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import toast from 'react-hot-toast';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { ApiResponse } from 'types';
-import { ErrorToast } from '@components/Toast';
+import { errorToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 
 const fieldCatalog = [...getCommonFields()];
@@ -33,7 +32,7 @@ const Add = () => {
         const response: ApiResponse = await res.json();
 
         if ('error' in response) {
-          toast.custom(() => <ErrorToast message={response.error.message} />);
+          errorToast(response.error.message);
           return;
         }
 
