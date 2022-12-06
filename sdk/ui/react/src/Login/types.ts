@@ -6,5 +6,5 @@ export interface LoginProps {
    * a unique value that will be used to generate id attribute for form controls
    * @defaultValue ''
    */
-  id: string;
+  signIn: (tenant: string) => Promise<void>;
 }
