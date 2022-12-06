@@ -63,5 +63,6 @@
   "update_directory": "Update Directory",
   "webhook_endpoint": "Webhook Endpoint",
   "webhook_secret": "Webhook secret",
-  "webhook_url": "Webhook URL"
+  "webhook_url": "Webhook URL",
+  "directory_created_successfully": "Directory created successfully"
 }

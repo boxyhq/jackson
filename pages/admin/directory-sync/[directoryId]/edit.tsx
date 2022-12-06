@@ -10,6 +10,7 @@ import { inferSSRProps } from '@lib/inferSSRProps';
 import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { ErrorToast } from '@components/Toast';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -43,8 +44,8 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
     const { data, error } = await rawResponse.json();
 
     if (error) {
-      toast.error(error.message);
-      return;
+      toast.custom(() => <ErrorToast message={error.message} />);
+      return null;
     }
 
     if (data) {
@@ -120,7 +121,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                   className='h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600'
                 />
                 <label className='ml-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
-                 {t('enable_webhook_events_logging')}
+                  {t('enable_webhook_events_logging')}
                 </label>
               </div>
             </div>

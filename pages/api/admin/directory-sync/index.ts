@@ -30,7 +30,13 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     webhook_secret,
   });
 
-  return res.status(error ? error.code : 201).json({ data, error });
+  if (data) {
+    return res.status(201).json({ data });
+  }
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
 };
 
 export default checkSession(handler);

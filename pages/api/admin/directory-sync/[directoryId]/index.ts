@@ -30,7 +30,13 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  return res.status(error ? error.code : 201).json({ data, error });
+  if (data) {
+    return res.status(200).json({ data });
+  }
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
 };
 
 export default checkSession(handler);

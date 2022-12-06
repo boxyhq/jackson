@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { ErrorToast } from '@components/Toast';
+import { ErrorToast, SuccessToast } from '@components/Toast';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
@@ -46,10 +46,9 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
 
     if (error) {
       toast.custom(() => <ErrorToast message={error} />);
-      return;
+    } else {
+      toast.custom(() => <SuccessToast message={t('login_success_toast')} />);
     }
-
-    toast.success(t('login_success_toast'));
   };
 
   return (
@@ -74,7 +73,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                     <label>
                       <input
                         type='email'
-                        placeholder='Email'
+                        placeholder={t('email')}
                         className='input-bordered input mb-5 mt-2 w-full rounded-md'
                         required
                         onChange={(e) => {
@@ -112,7 +111,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     props: {
       csrfToken: await getCsrfToken(context),
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-      // Will be passed to the page component as props
     },
   };
 };
