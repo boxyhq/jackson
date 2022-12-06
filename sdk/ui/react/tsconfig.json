@@ -1,10 +1,12 @@
+// This file was originally from https://github.com/vitejs/vite-plugin-react-pages/blob/main/packages/create-project/template-lib/tsconfig.json
+// Modified by referring https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/tsconfig.json
 {
   "compilerOptions": {
-    "target": "ES2019",
+    "target": "ESNext",
     "baseUrl": ".",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "moduleResolution": "Node",
-    "lib": ["DOM", "DOM.Iterable", "ES2015"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "paths": {
       "@boxyhq/sso-react": ["./src"]
     },
