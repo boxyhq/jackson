@@ -4,11 +4,10 @@
  * @order 2
  */
 
-import React from 'react';
 import { Login } from '@boxyhq/sso-react';
 
 const Demo2 = () => {
-  return <Login id='demo2' />;
+  return <Login signIn={async () => void 0} />;
 };
 
 export default Demo2;
