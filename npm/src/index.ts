@@ -4,6 +4,8 @@ import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
 
+import { init as metricsInit } from './opentelemetry/metrics';
+
 import { AdminController } from './controller/admin';
 import { ConnectionAPIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
@@ -60,6 +62,8 @@ export const controllers = async (
   spConfig: SPSAMLConfig;
 }> => {
   opts = defaultOpts(opts);
+
+  metricsInit();
 
   const db = await DB.new(opts.db);
 
