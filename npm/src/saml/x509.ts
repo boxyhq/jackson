@@ -79,8 +79,6 @@ export const getDefaultCertificate = async (): Promise<{ publicKey: string; priv
       privateKey: Buffer.from(jacksonOption.certs.privateKey, 'base64').toString('utf-8'),
     };
 
-    console.log('Using provided certificate');
-
     return cachedCertificate;
   }
 
