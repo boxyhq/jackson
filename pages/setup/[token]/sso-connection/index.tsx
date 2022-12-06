@@ -8,8 +8,7 @@ import useSWR from 'swr';
 
 const Connections: NextPage = () => {
   const router = useRouter();
-  const { token } = router.query;
-  //   const { t } = useTranslation('common');
+  const { token, redirect } = router.query;
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
   const { data: connections } = useSWR<any>(
     [`/api/setup/${token}/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
@@ -22,6 +21,7 @@ const Connections: NextPage = () => {
       paginate={paginate}
       setPaginate={setPaginate}
       connections={connections}
+      redirect={redirect === 'false' ? false : true}
     />
   ) : null;
 };

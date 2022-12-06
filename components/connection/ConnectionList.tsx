@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { ArrowLeftIcon, ArrowRightIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
-import EmptyState from '@components/EmptyState';
+import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import EmptyState from '@components/EmptyState';
 
 type Connection = {
   name: string;
@@ -17,12 +18,22 @@ type ConnectionListProps = {
   connections: Connection[] | undefined;
   paginate: any;
   setPaginate: any;
+  redirect?: boolean;
 };
 
-const ConnectionList = ({ setupToken, connections, paginate, setPaginate }: ConnectionListProps) => {
+const ConnectionList = ({
+  setupToken,
+  connections,
+  paginate,
+  setPaginate,
+  redirect = true,
+}: ConnectionListProps) => {
+  const router = useRouter();
   const { t } = useTranslation('common');
-
   if (!connections) {
+    return null;
+  } else if (connections.length === 0 && setupToken && redirect) {
+    router.replace(`/setup/${setupToken}/sso-connection/new`);
     return null;
   }
   return (
