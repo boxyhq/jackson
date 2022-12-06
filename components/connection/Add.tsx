@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { ApiResponse } from 'types';
+import { ErrorToast } from '@components/Toast';
 
 const fieldCatalog = [...getCommonFields()];
 
@@ -32,7 +33,7 @@ const Add = () => {
         if (res.ok) {
           router.replace('/admin/connection');
         } else {
-          toast.error(error.message);
+          toast.custom(() => <ErrorToast message={error.message} />);
         }
       },
     });

@@ -9,6 +9,7 @@ import { ApiError, ApiSuccess } from 'types';
 import { Loader } from '@components/Loader';
 import { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import toast from 'react-hot-toast';
+import { ErrorToast } from '@components/Toast';
 
 const EditConnection: NextPage = () => {
   const router = useRouter();
@@ -28,7 +29,7 @@ const EditConnection: NextPage = () => {
   }
 
   if (error) {
-    toast.error(error.message);
+    toast.custom(() => <ErrorToast message={error.message} />);
     return null;
   }
 

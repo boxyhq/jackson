@@ -9,6 +9,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import jackson from '@lib/jackson';
 import { useTranslation } from 'next-i18next';
+import { ErrorToast } from '@components/Toast';
 
 const New: NextPage<{ providers: any }> = ({ providers }) => {
   const { t } = useTranslation('common');
@@ -41,7 +42,7 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
     const { data, error } = await rawResponse.json();
 
     if (error) {
-      toast.error(error.message);
+      toast.custom(() => <ErrorToast message={error.message} />);
       return;
     }
 

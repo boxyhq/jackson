@@ -11,6 +11,7 @@ import classNames from 'classnames';
 import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { ErrorToast } from '@components/Toast';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
@@ -44,7 +45,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
     const { error } = response;
 
     if (error) {
-      toast.error(error);
+      toast.custom(() => <ErrorToast message={error} />);
       return;
     }
 

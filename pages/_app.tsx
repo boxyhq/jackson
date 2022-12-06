@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     return (
       <>
         {getLayout(<Component {...props} />)}
-        <Toaster toastOptions={{ duration: 5000 }} />
+        <Toaster toastOptions={{ duration: 10000 }} />
       </>
     );
   }
@@ -45,7 +45,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     <SessionProvider session={session}>
       <AccountLayout>
         <Component {...props} />
-        <Toaster toastOptions={{ duration: 5000 }} />
+        <Toaster toastOptions={{ duration: 10000 }} />
       </AccountLayout>
     </SessionProvider>
   );

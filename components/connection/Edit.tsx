@@ -9,6 +9,7 @@ import ConfirmationModal from '@components/ConfirmationModal';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { ApiResponse } from 'types';
+import { ErrorToast } from '@components/Toast';
 
 const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
@@ -57,7 +58,7 @@ const Edit = ({ connection }: EditProps) => {
           toast.success('Saved');
           mutate(`/api/admin/connections/${connectionClientId}`);
         } else {
-          toast.error(error.message);
+          toast.custom(() => <ErrorToast message={error.message} />);
         }
       },
     });
@@ -83,7 +84,7 @@ const Edit = ({ connection }: EditProps) => {
       await mutate('/api/admin/connections');
       router.replace('/admin/connection');
     } else {
-      toast.error(error.message);
+      toast.custom(() => <ErrorToast message={error.message} />);
     }
   };
 
