@@ -91,6 +91,13 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                     {t('send_magic_link')}
                   </button>
                 </div>
+                <div className='mt-2 flex items-baseline justify-between'>
+                  <button
+                    className={classNames('btn-primary btn-block btn rounded-md', loading ? 'loading' : '')}
+                    type='button'>
+                    {t('login_with_sso')}
+                  </button>
+                </div>
               </div>
             </form>
           </div>

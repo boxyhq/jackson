@@ -30,6 +30,7 @@
   "here_are_the_set_of_uris_you_would_need_access_to": "Here are the set of URIs you would need access to",
   "idp_type": "IdP Type",
   "last_name": "Last Name",
+  "login_with_sso": "Login with SSO",
   "login_success_toast": "A sign in link has been sent to your email address.",
   "name": "Name",
   "new_directory": "New Directory",
