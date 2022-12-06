@@ -53,7 +53,7 @@ export class LogoutController {
       idpMetadata: { slo, provider },
     } = samlConnection;
 
-    const { privateKey, publicKey } = await getDefaultCertificate(this.opts);
+    const { privateKey, publicKey } = await getDefaultCertificate();
 
     if ('redirectUrl' in slo === false && 'postUrl' in slo === false) {
       throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);

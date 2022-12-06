@@ -357,7 +357,7 @@ export class OAuthController implements IOAuthController {
         };
       }
 
-      const cert = await getDefaultCertificate(this.opts);
+      const cert = await getDefaultCertificate();
 
       try {
         // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
@@ -599,7 +599,7 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
-    const { privateKey } = await getDefaultCertificate(this.opts);
+    const { privateKey } = await getDefaultCertificate();
 
     const validateOpts: Record<string, string> = {
       thumbprint: samlConnection.idpMetadata.thumbprint,

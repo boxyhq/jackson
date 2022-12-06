@@ -6,11 +6,13 @@ import type { JacksonOption, Storable } from '../typings';
 const pki = forge.pki;
 let certificateStore: Storable;
 let cachedCertificate: { publicKey: string; privateKey: string };
+let jacksonOption: JacksonOption;
 
 export const init = async (store: Storable, opts: JacksonOption) => {
   certificateStore = store;
+  jacksonOption = opts;
 
-  return await getDefaultCertificate(opts);
+  return await getDefaultCertificate();
 };
 
 export const generateCertificate = () => {
@@ -56,9 +58,7 @@ export const generateCertificate = () => {
   };
 };
 
-export const getDefaultCertificate = async (
-  opts: JacksonOption
-): Promise<{ publicKey: string; privateKey: string }> => {
+export const getDefaultCertificate = async (): Promise<{ publicKey: string; privateKey: string }> => {
   if (cachedCertificate && !(await isCertificateExpired(cachedCertificate.publicKey))) {
     return cachedCertificate;
   }
@@ -67,13 +67,19 @@ export const getDefaultCertificate = async (
     throw new Error('Certificate store not initialized');
   }
 
+  if (!jacksonOption) {
+    throw new Error('Jackson option not initialized');
+  }
+
   // If the user has provided a certificate, use that instead of the default.
   // We expect the developer to provide base64 encoded keys, so we need to decode them.
-  if (opts.certs?.privateKey && opts.certs?.publicKey) {
+  if (jacksonOption.certs?.privateKey && jacksonOption.certs?.publicKey) {
     cachedCertificate = {
-      publicKey: Buffer.from(opts.certs.publicKey, 'base64').toString('utf-8'),
-      privateKey: Buffer.from(opts.certs.privateKey, 'base64').toString('utf-8'),
+      publicKey: Buffer.from(jacksonOption.certs.publicKey, 'base64').toString('utf-8'),
+      privateKey: Buffer.from(jacksonOption.certs.privateKey, 'base64').toString('utf-8'),
     };
+
+    console.log('Using provided certificate');
 
     return cachedCertificate;
   }
