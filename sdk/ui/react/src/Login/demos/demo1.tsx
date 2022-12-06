@@ -7,7 +7,7 @@
 import { Login } from '@boxyhq/sso-react';
 
 const Demo1 = () => {
-  return <Login signIn={async () => void 0} />;
+  return <Login forwardTenant={async () => void 0} label='Tenant' />;
 };
 
 export default Demo1;

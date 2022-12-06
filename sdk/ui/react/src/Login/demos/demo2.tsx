@@ -7,7 +7,16 @@
 import { Login } from '@boxyhq/sso-react';
 
 const Demo2 = () => {
-  return <Login signIn={async () => void 0} />;
+  return (
+    <Login
+      forwardTenant={async () => ({
+        error: {
+          message: 'Invalid team domain',
+        },
+      })}
+      label='Team domain'
+    />
+  );
 };
 
 export default Demo2;

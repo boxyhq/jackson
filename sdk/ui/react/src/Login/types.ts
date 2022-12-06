@@ -1,10 +1,19 @@
-/**
- * This is the description of the Button component's props
- */
+import type { FC } from 'react';
+
 export interface LoginProps {
   /**
-   * a unique value that will be used to generate id attribute for form controls
-   * @defaultValue ''
+   * Handler that takes in the tenant and initiates the login flow
+   * @param {string} tenant The value for tenant input from the user
+   * @returns {Promise} Error from the application
    */
-  signIn: (tenant: string) => Promise<void>;
+  forwardTenant: (tenant: string) => Promise<{ error: { message: string } }>;
+  /**
+   * Label for the tenant input
+   * @defaultValue Tenant
+   */
+  label: string;
+  /**
+   * Custom component that would be rendered below the tenant input to display error
+   */
+  ErrorDisplayComponent?: FC;
 }
