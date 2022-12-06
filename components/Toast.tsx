@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast';
+import { useTranslation } from 'next-i18next';
 
 const Toast = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -21,18 +22,22 @@ const Toast = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const ErrorToast = ({ message }: { message: string }) => {
+  const { t } = useTranslation('common');
+
   return (
     <Toast>
-      <p className='text-sm font-bold text-error'>Error</p>
+      <p className='text-sm font-bold text-error'>{t('error')}</p>
       <p className='mt-1 text-sm text-gray-500'>{message}</p>
     </Toast>
   );
 };
 
 export const SuccessToast = ({ message }: { message: string }) => {
+  const { t } = useTranslation('common');
+
   return (
     <Toast>
-      <p className='text-sm font-bold text-success'>Success</p>
+      <p className='text-sm font-bold text-success'>{t('success')}</p>
       <p className='mt-1 text-sm text-gray-500'>{message}</p>
     </Toast>
   );
