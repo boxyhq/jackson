@@ -18,6 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error('connection api error:', err);
     const { message, statusCode = 500 } = err;
 
-    res.status(statusCode).send(message);
+    res.status(statusCode).json({ error: { message } });
   }
 }
