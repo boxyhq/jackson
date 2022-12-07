@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import htmlIdGenerator from '../utils/htmlIdGenerator';
 
 const useId = (elementType?: string) => {
-  const idRef = useRef(Math.round(Math.random() * 1000000).toString());
   const [id, setId] = useState('');
 
   useEffect(() => {
-    setId(htmlIdGenerator(idRef.current, elementType));
+    const uniqueId = Math.round(Math.random() * 1000000).toString();
+    setId(htmlIdGenerator(uniqueId, elementType));
   }, [elementType]);
 
   return id;
