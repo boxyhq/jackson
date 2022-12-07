@@ -48,6 +48,7 @@ export const errorToast = (message: string) => {
     id: 'custom-error-toast',
   });
 };
+
 export const successToast = (message: string) => {
   toast.custom(() => <SuccessToast message={message} />, {
     id: 'custom-success-toast',
