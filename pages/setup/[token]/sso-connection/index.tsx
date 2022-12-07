@@ -8,20 +8,23 @@ import useSWR from 'swr';
 
 const Connections: NextPage = () => {
   const router = useRouter();
-  const { token, redirect } = router.query;
+  const { token } = router.query;
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data: connections } = useSWR<any>(
+  const {
+    data: connections,
+    error,
+    isValidating,
+  } = useSWR<any>(
     [`/api/setup/${token}/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }
   );
-  return token ? (
+  return token && connections && !error && !isValidating ? (
     <ConnectionList
       setupToken={token as string}
       paginate={paginate}
       setPaginate={setPaginate}
       connections={connections}
-      redirect={redirect === 'false' ? false : true}
     />
   ) : null;
 };
