@@ -6,9 +6,25 @@ import toast from 'react-hot-toast';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 
-const fieldCatalog = [...getCommonFields()];
+type AddProps = {
+  showBackButton?: boolean;
+  titleText?: string;
+  readonlyTenant?: string;
+  readonlyProduct?: string;
+};
 
-const Add = () => {
+const Add = ({
+  showBackButton = true,
+  titleText = 'Create SSO Connection',
+  readonlyProduct = '',
+  readonlyTenant = '',
+}: AddProps) => {
+  const fieldCatalog = [
+    ...getCommonFields({
+      readonlyProduct,
+      readonlyTenant,
+    }),
+  ];
   const router = useRouter();
   // STATE: New connection type
   const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
@@ -36,19 +52,30 @@ const Add = () => {
     });
   };
 
+  const getInitialFormState = () => {
+    const initState = {};
+    if (readonlyTenant) {
+      initState['tenant'] = readonlyTenant;
+    }
+    if (readonlyProduct) {
+      initState['product'] = readonlyProduct;
+    }
+    return initState;
+  };
+
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>({});
+  const [formObj, setFormObj] = useState<Record<string, string>>(getInitialFormState());
 
   return (
     <>
-      <Link href='/admin/connection' className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>Back</span>
-      </Link>
+      {showBackButton && (
+        <Link href='/admin/connection' className='btn-outline btn items-center space-x-2'>
+          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
+          <span>Back</span>
+        </Link>
+      )}
       <div>
-        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {'Create SSO Connection'}
-        </h2>
+        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>{titleText}</h2>
         <div className='mb-4 flex'>
           <div className='mr-2 py-3'>Select Type:</div>
           <div className='flex flex-nowrap items-stretch justify-start gap-1 rounded-md border-2 border-dashed py-3'>

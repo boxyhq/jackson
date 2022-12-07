@@ -1,4 +1,4 @@
-import { ShieldCheckIcon, UsersIcon, HomeIcon } from '@heroicons/react/20/solid';
+import { ShieldCheckIcon, UsersIcon, HomeIcon, Cog8ToothIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -31,6 +31,12 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
       text: 'Directory Sync',
       icon: UsersIcon,
       active: asPath.includes('/admin/directory-sync'),
+    },
+    {
+      href: '/admin/settings',
+      text: 'Settings',
+      icon: Cog8ToothIcon,
+      active: asPath.includes('/admin/settings'),
     },
   ];
 

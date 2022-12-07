@@ -9,7 +9,7 @@ import ConfirmationModal from '@components/ConfirmationModal';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 
-const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
+const fieldCatalog = [...getCommonFields({}, true), ...EditViewOnlyFields];
 
 function getInitialState(connection) {
   const _state = {};

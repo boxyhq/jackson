@@ -18,6 +18,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
   const { status } = useSession();
 
   const [loading, setLoading] = useState(false);
+  const [loadingSSO, setLoadingSSO] = useState(false);
   const [email, setEmail] = useState('');
 
   if (status === 'authenticated') {
@@ -93,7 +94,10 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                 </div>
                 <div className='mt-2 flex items-baseline justify-between'>
                   <button
-                    className={classNames('btn-primary btn-block btn rounded-md', loading ? 'loading' : '')}
+                    className={classNames(
+                      'btn-primary btn-block btn rounded-md',
+                      loadingSSO ? 'loading' : ''
+                    )}
                     type='button'>
                     {t('login_with_sso')}
                   </button>
