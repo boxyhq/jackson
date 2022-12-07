@@ -2,11 +2,7 @@ import { useState, type ChangeEventHandler, type FormEvent } from 'react';
 import useId from '../hooks/useId';
 import type { LoginProps } from './types';
 
-const DefaultErrorDisplayComponent = ({ id, error }) => {
-  return <span id={id}>{error}</span>;
-};
-
-const Login = ({ forwardTenant, label, ErrorDisplayComponent }: LoginProps) => {
+const Login = ({ forwardTenant, label }: LoginProps) => {
   const inputId = useId('input');
   const errorSpanId = useId('span');
   const [tenant, setTenant] = useState('');
@@ -28,16 +24,6 @@ const Login = ({ forwardTenant, label, ErrorDisplayComponent }: LoginProps) => {
     }
   };
 
-  let errorDisplay = null;
-  if (errMsg) {
-    errorDisplay =
-      typeof ErrorDisplayComponent === 'function' ? (
-        <ErrorDisplayComponent />
-      ) : (
-        <DefaultErrorDisplayComponent id={errorSpanId} error={errMsg} />
-      );
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor={inputId}>{label}</label>
@@ -48,7 +34,7 @@ const Login = ({ forwardTenant, label, ErrorDisplayComponent }: LoginProps) => {
         aria-invalid={!!errMsg}
         aria-describedby={errorSpanId}
       />
-      {errorDisplay}
+      {errMsg && <span id={errorSpanId}>{errMsg}</span>}
       <button type='submit'>Proceed</button>
     </form>
   );

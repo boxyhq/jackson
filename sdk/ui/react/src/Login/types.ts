@@ -14,8 +14,4 @@ export interface LoginProps {
    * @defaultValue Tenant
    */
   label: string;
-  /**
-   * Custom component that would be rendered below the tenant input to display error
-   */
-  ErrorDisplayComponent?: FC;
 }
