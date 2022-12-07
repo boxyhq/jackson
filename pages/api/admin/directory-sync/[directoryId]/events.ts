@@ -9,25 +9,26 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'DELETE':
       return handleDELETE(req, res);
     default:
-      res.setHeader('Allow', ['GET']);
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.setHeader('Allow', ['DELETE']);
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 };
 
 // Delete all events
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directoryId } = req.query;
   const { directorySyncController } = await jackson();
 
-  const { data: directory, error } = await directorySyncController.directories.get(directoryId as string);
+  const { directoryId } = req.query as { directoryId: string };
+
+  const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (!directory) {
-    return res.status(404).json({ data: null, error });
+    return res.status(404).json({ error });
   }
 
   await directorySyncController.webhookLogs.setTenantAndProduct(directory.tenant, directory.product).clear();
 
-  return res.status(201).json({ data: null, error: null });
+  return res.status(200).json({ data: null });
 };
 
 export default checkSession(handler);
