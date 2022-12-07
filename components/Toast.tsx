@@ -12,7 +12,7 @@ const Toast = ({ children }: { children: React.ReactNode }) => {
       </div>
       <div className='flex border-l border-gray-200'>
         <button
-          onClick={() => toast.dismiss()}
+          onClick={() => toast.remove()}
           className='flex w-full items-center justify-center rounded-none rounded-r-lg border border-transparent p-4 text-sm font-medium focus:outline-none'>
           Close
         </button>
