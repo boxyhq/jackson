@@ -24,6 +24,8 @@ const Login = ({ forwardTenant, label }: LoginProps) => {
     }
   };
 
+  const isError = !!errMsg;
+
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor={inputId}>{label}</label>
@@ -31,10 +33,10 @@ const Login = ({ forwardTenant, label }: LoginProps) => {
         id={inputId}
         value={tenant}
         onChange={handleChange}
-        aria-invalid={!!errMsg}
+        aria-invalid={isError}
         aria-describedby={errorSpanId}
       />
-      {errMsg && <span id={errorSpanId}>{errMsg}</span>}
+      {isError && <span id={errorSpanId}>{errMsg}</span>}
       <button type='submit'>Proceed</button>
     </form>
   );
