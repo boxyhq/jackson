@@ -15,7 +15,7 @@ const Metadata: NextPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
 
-  const { id } = router.query;
+  const { id } = router.query as { id: string };
 
   const { data, error } = useSWR<ApiSuccess<SAMLFederationAppWithMetadata>, ApiError>(
     `/api/admin/federated-saml/${id}`,
@@ -51,31 +51,48 @@ const Metadata: NextPage = () => {
             </div>
           </div>
           <div className='divider'>OR</div>
-          <div className='space-y-3'>
+          <div className='space-y-6'>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>{t('sso_url')}</span>
+                <span className='label-text font-bold'>{t('sso_url')}</span>
               </label>
-              <input type='text' className='input-bordered input w-full' defaultValue={app.metadata.ssoUrl} />
+              <input
+                type='text'
+                className='input-bordered input w-full'
+                defaultValue={app.metadata.ssoUrl}
+                readOnly
+              />
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>{t('entity_id')}</span>
+                <span className='label-text font-bold'>{t('entity_id')}</span>
               </label>
               <input
                 type='text'
                 className='input-bordered input w-full'
                 defaultValue={app.metadata.entityId}
+                readOnly
               />
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>{t('x509_certificate')}</span>
+                <div className='flex w-full items-center justify-between'>
+                  <span className='label-text font-bold'>{t('x509_certificate')}</span>
+                  <span>
+                    <a
+                      href='/.well-known/saml.cer'
+                      target='_blank'
+                      className='label-text font-bold text-gray-500'>
+                      {t('download')}
+                    </a>
+                  </span>
+                </div>
               </label>
               <textarea
                 className='textarea-bordered textarea w-full'
-                rows={5}
-                defaultValue={app.metadata.x509cert}></textarea>
+                rows={10}
+                defaultValue={app.metadata.x509cert}
+                readOnly></textarea>
             </div>
           </div>
         </div>

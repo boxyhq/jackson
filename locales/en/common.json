@@ -73,7 +73,7 @@
   "saml_federation_add_new_app": "Add SAML Federation App",
   "saml_federation_add_new_app_description": "To configure SAML Federation app, add service provider details such as ACS URL and Entity ID.",
   "acs_url": "ACS URL",
-  "entity_id": "Entity ID",
+  "entity_id": "Entity ID / Audience URI / Audience Restriction",
   "create_app": "Create App",
   "saml_federation_update_success": "SAML Federation app updated successfully.",
   "saml_federation_update_app": "Update SAML Federation App",
