@@ -2,27 +2,28 @@ import type { NextPage } from 'next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import toast from 'react-hot-toast';
+import useSWR from 'swr';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import useSWR from 'swr';
 
 import { fetcher } from '@lib/ui/utils';
-import { ApiSuccess, ApiError, ApiResponse } from 'types';
 import Loading from '@components/Loading';
-import Alert from '@components/Alert';
 import LicenseRequired from '@components/LicenseRequired';
-
+import { errorToast, successToast } from '@components/Toast';
 import ConfirmationModal from '@components/ConfirmationModal';
+import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 
 const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [existingApp, setApp] = useState({
+  const [app, setApp] = useState<SAMLFederationApp>({
+    id: '',
     name: '',
+    tenant: '',
+    product: '',
     acsUrl: '',
     entityId: '',
   });
@@ -44,36 +45,38 @@ const UpdateApp: NextPage = () => {
   }, [data]);
 
   if (error) {
-    return <Alert type='error' message={error.message}></Alert>;
+    errorToast(error.message);
+    return null;
   }
 
   if (!data) {
     return <Loading />;
   }
 
-  const app = data.data;
-
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     setLoading(true);
 
-    const response = await fetch(`/api/admin/federated-saml/${app.id}`, {
+    const rawResponse = await fetch(`/api/admin/federated-saml/${app.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(existingApp),
+      body: JSON.stringify(app),
     });
 
     setLoading(false);
 
-    const { error }: ApiResponse<SAMLFederationApp> = await response.json();
+    const response: ApiResponse<SAMLFederationApp> = await rawResponse.json();
 
-    if (!response.ok) {
-      toast.error(error.message);
-    } else {
-      toast.success(t('saml_federation_update_success'));
+    if ('error' in response) {
+      errorToast(response.error.message);
+      return;
+    }
+
+    if ('data' in response) {
+      successToast(t('saml_federation_update_success'));
     }
   };
 
@@ -81,7 +84,7 @@ const UpdateApp: NextPage = () => {
     const target = event.target as HTMLInputElement;
 
     setApp({
-      ...existingApp,
+      ...app,
       [target.id]: target.value,
     });
   };
@@ -118,7 +121,7 @@ const UpdateApp: NextPage = () => {
                 className='input-bordered input'
                 required
                 onChange={onChange}
-                value={existingApp.name}
+                value={app.name}
               />
             </div>
             <div className='form-control'>
@@ -131,7 +134,7 @@ const UpdateApp: NextPage = () => {
                 className='input-bordered input'
                 required
                 onChange={onChange}
-                value={existingApp.acsUrl}
+                value={app.acsUrl}
               />
             </div>
             <div className='form-control'>
@@ -144,7 +147,7 @@ const UpdateApp: NextPage = () => {
                 className='input-bordered input'
                 required
                 onChange={onChange}
-                value={existingApp.entityId}
+                value={app.entityId}
               />
             </div>
             <div>
@@ -165,16 +168,19 @@ export const DeleteApp = ({ app }: { app: SAMLFederationApp }) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
 
   const deleteApp = async () => {
-    const response = await fetch(`/api/admin/federated-saml/${app.id}`, {
+    const rawResponse = await fetch(`/api/admin/federated-saml/${app.id}`, {
       method: 'DELETE',
     });
 
-    const { error } = await response.json();
+    const response: ApiResponse<unknown> = await rawResponse.json();
 
-    if (!response.ok) {
-      toast.error(error.message);
-    } else {
-      toast.success(t('saml_federation_delete_success'));
+    if ('error' in response) {
+      errorToast(response.error.message);
+      return;
+    }
+
+    if ('data' in response) {
+      successToast(t('saml_federation_delete_success'));
       window.location.href = '/admin/federated-saml';
     }
   };

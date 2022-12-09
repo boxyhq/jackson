@@ -1,15 +1,15 @@
 import type { NextPage } from 'next';
-import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useState } from 'react';
 import Link from 'next/link';
-import toast from 'react-hot-toast';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 
-import { ApiResponse } from 'types';
+import type { ApiResponse } from 'types';
 import LicenseRequired from '@components/LicenseRequired';
+import { errorToast, successToast } from '@components/Toast';
 
 const NewApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -28,7 +28,7 @@ const NewApp: NextPage = () => {
 
     setLoading(true);
 
-    const response = await fetch('/api/admin/federated-saml', {
+    const rawResponse = await fetch('/api/admin/federated-saml', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -38,13 +38,16 @@ const NewApp: NextPage = () => {
 
     setLoading(false);
 
-    const { data: app, error }: ApiResponse<SAMLFederationApp> = await response.json();
+    const response: ApiResponse<SAMLFederationApp> = await rawResponse.json();
 
-    if (!response.ok) {
-      toast.error(error.message);
-    } else {
-      router.replace(`/admin/federated-saml/${app.id}/metadata`);
-      toast.success(t('saml_federation_new_success'));
+    if ('error' in response) {
+      errorToast(response.error.message);
+      return;
+    }
+
+    if ('data' in response) {
+      successToast(t('saml_federation_new_success'));
+      router.replace(`/admin/federated-saml/${response.data.id}/metadata`);
     }
   };
 

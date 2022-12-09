@@ -1,5 +1,7 @@
 import { type JWK } from 'jose';
 
+export * from '../src/ee/federated-saml/types';
+
 interface SSOConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;

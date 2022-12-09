@@ -8,8 +8,8 @@ import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import EmptyState from '@components/EmptyState';
-import Alert from '@components/Alert';
 import LicenseRequired from '@components/LicenseRequired';
+import { errorToast } from '@components/Toast';
 
 const AppsList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -19,12 +19,13 @@ const AppsList: NextPage = () => {
     fetcher
   );
 
-  if (!data) {
-    return <Loading />;
+  if (error) {
+    errorToast(error.message);
+    return null;
   }
 
-  if (error) {
-    return <Alert type='error' message={error.message}></Alert>;
+  if (!data) {
+    return <Loading />;
   }
 
   const apps = data.data;

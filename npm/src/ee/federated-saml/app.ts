@@ -1,10 +1,14 @@
-import { getDefaultCertificate } from '../../saml/x509';
-import { JacksonError } from '../../controller/error';
-import { IndexNames } from '../../controller/utils';
-import { createMetadataXML } from '../../saml/lib';
+import type {
+  Storable,
+  JacksonOption,
+  SAMLFederationAppWithMetadata,
+  SAMLFederationApp,
+} from '../../typings';
 import * as dbutils from '../../db/utils';
-import type { Storable, JacksonOption } from '../../typings';
-import type { SAMLFederationAppWithMetadata, SAMLFederationApp } from './types';
+import { createMetadataXML } from '../../saml/lib';
+import { JacksonError } from '../../controller/error';
+import { getDefaultCertificate } from '../../saml/x509';
+import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
 
 export class App {
   protected store: Storable;
@@ -29,6 +33,8 @@ export class App {
         400
       );
     }
+
+    validateTenantAndProduct(tenant, product);
 
     const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
 

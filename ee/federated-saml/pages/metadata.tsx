@@ -2,12 +2,12 @@ import useSWR from 'swr';
 import Link from 'next/link';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
 import { useTranslation } from 'next-i18next';
+import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
 
-import Alert from '@components/Alert';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
+import { errorToast } from '@components/Toast';
 import type { ApiError, ApiSuccess } from 'types';
 import LicenseRequired from '@components/LicenseRequired';
 
@@ -23,7 +23,8 @@ const Metadata: NextPage = () => {
   );
 
   if (error) {
-    return <Alert type='error' message={error.message} />;
+    errorToast(error.message);
+    return null;
   }
 
   if (!data) {
