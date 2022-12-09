@@ -32,7 +32,7 @@ import {
   loadJWSPrivateKey,
   isJWSKeyPairLoaded,
 } from './utils';
-import x509 from '../saml/x509';
+import { getDefaultCertificate } from '../saml/x509';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -46,6 +46,9 @@ const validateSAMLResponse = async (rawResponse: string, validateOpts) => {
     if (!profile.claims.id && profile.claims.email) {
       profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
     }
+
+    // we'll send a ripemd160 hash of the id, this can be used in the case of email missing it can be used as the local part
+    profile.claims.idHash = dbutils.keyDigest(profile.claims.id);
   }
   return profile;
 };
@@ -99,10 +102,11 @@ export class OAuthController implements IOAuthController {
       } else if (this.opts.idpDiscoveryPath) {
         if (!isIdpFlow) {
           // redirect to IdP selection page
-          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID }) =>
+          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID, name }) =>
             JSON.stringify({
               provider: idpMetadata?.provider ?? oidcProvider?.provider,
               clientID,
+              name,
               connectionIsSAML: idpMetadata && typeof idpMetadata === 'object',
               connectionIsOIDC: oidcProvider && typeof oidcProvider === 'object',
             })
@@ -288,7 +292,7 @@ export class OAuthController implements IOAuthController {
 
     if (
       requestedOIDCFlow &&
-      (!this.opts.openid.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
+      (!this.opts.openid?.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
     ) {
       return {
         redirect_url: OAuthErrorResponse({
@@ -353,41 +357,20 @@ export class OAuthController implements IOAuthController {
         };
       }
 
+      const cert = await getDefaultCertificate();
+
       try {
-        const { validTo } = new crypto.X509Certificate(connection.certs.publicKey);
-        const isValidExpiry = validTo != 'Bad time value' && new Date(validTo) > new Date();
-        if (!isValidExpiry) {
-          const certs = await x509.generate();
-          connection.certs = certs;
-          if (certs) {
-            await this.connectionStore.put(
-              connection.clientID,
-              connection,
-              {
-                // secondary index on entityID
-                name: IndexNames.EntityID,
-                value: connection.idpMetadata.entityID,
-              },
-              {
-                // secondary index on tenant + product
-                name: IndexNames.TenantProduct,
-                value: dbutils.keyFromParts(connection.tenant, connection.product),
-              }
-            );
-          } else {
-            throw new Error('Error generating x509 certs');
-          }
-        }
         // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
         // If login is one of the value in prompt we want to enable forceAuthn
         // Else use the saml connection forceAuthn value
         const promptOptions = prompt ? prompt.split(' ').filter((p) => p === 'login') : [];
+
         samlReq = saml.request({
           ssoUrl,
           entityID: this.opts.samlAudience!,
           callbackUrl: this.opts.externalUrl + this.opts.samlPath,
-          signingKey: connection.certs.privateKey,
-          publicKey: connection.certs.publicKey,
+          signingKey: cert.privateKey,
+          publicKey: cert.publicKey,
           forceAuthn: promptOptions.length > 0 ? true : !!connection.forceAuthn,
         });
       } catch (err: unknown) {
@@ -401,9 +384,20 @@ export class OAuthController implements IOAuthController {
         };
       }
     }
+
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
     if (connectionIsOIDC) {
+      if (!this.opts.oidcPath) {
+        return {
+          redirect_url: OAuthErrorResponse({
+            error: 'server_error',
+            error_description: 'OpenID response handler path (oidcPath) is not set',
+            redirect_uri,
+            state,
+          }),
+        };
+      }
       const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
       try {
         const oidcIssuer = await Issuer.discover(discoveryUrl);
@@ -605,10 +599,12 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
+    const { privateKey } = await getDefaultCertificate();
+
     const validateOpts: Record<string, string> = {
       thumbprint: samlConnection.idpMetadata.thumbprint,
       audience: this.opts.samlAudience!,
-      privateKey: samlConnection.certs.privateKey,
+      privateKey,
     };
 
     if (
@@ -646,6 +642,7 @@ export class OAuthController implements IOAuthController {
       clientID: samlConnection.clientID,
       clientSecret: samlConnection.clientSecret,
       requested: session?.requested,
+      isIdPFlow,
     };
 
     if (session) {
@@ -691,9 +688,12 @@ export class OAuthController implements IOAuthController {
     const idTokenClaims = tokenSet.claims();
     const userinfo = await oidcClient.userinfo(tokenSet);
     profile.claims.id = idTokenClaims.sub;
+    profile.claims.idHash = dbutils.keyDigest(idTokenClaims.sub);
     profile.claims.email = idTokenClaims.email ?? userinfo.email;
     profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
     profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
+    profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
+    profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
     profile.claims.raw = userinfo;
     return profile;
   }
@@ -928,7 +928,10 @@ export class OAuthController implements IOAuthController {
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
         } else {
-          if (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product) {
+          if (
+            !codeVal.isIdPFlow &&
+            (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product)
+          ) {
             throw new JacksonError('Invalid tenant or product', 401);
           }
           // encoded client_id, verify client_secret
@@ -955,7 +958,7 @@ export class OAuthController implements IOAuthController {
     const requestedOIDCFlow = !!codeVal.requested?.oidc;
     const requestHasNonce = !!codeVal.requested?.nonce;
     if (requestedOIDCFlow) {
-      const { jwtSigningKeys, jwsAlg } = this.opts.openid;
+      const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
       if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
         throw new JacksonError('JWT signing keys are not loaded', 500);
       }
@@ -966,6 +969,8 @@ export class OAuthController implements IOAuthController {
         email: codeVal.profile.claims.email,
         firstName: codeVal.profile.claims.firstName,
         lastName: codeVal.profile.claims.lastName,
+        roles: codeVal.profile.claims.roles,
+        groups: codeVal.profile.claims.groups,
       };
       const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
       const id_token = await new jose.SignJWT(claims)
@@ -1025,6 +1030,10 @@ export class OAuthController implements IOAuthController {
    *               type: string
    *             lastName:
    *               type: string
+   *             roles:
+   *               type: array
+   *             groups:
+   *               type: array
    *             raw:
    *               type: object
    *             requested:

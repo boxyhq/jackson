@@ -10,7 +10,7 @@ on:
       - '*'
     tags:
       - 'beta-v*'
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -78,11 +78,19 @@ jobs:
         env:
           MARIADB_DATABASE: mysql
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+      mssql:
+        image: mcr.microsoft.com/azure-sql-edge:1.0.6
+        #image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+          - 1433:1433
+        env:
+          ACCEPT_EULA: 'Y'
+          SA_PASSWORD: '123ABabc!'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           always-auth: true
           node-version: ${{ matrix.node-version }}
@@ -90,9 +98,11 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
       - name: Setup Next.js cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/.next/cache
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
           # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
@@ -132,12 +142,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Upload saml-jackson npm version
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: npmversion
           path: ./npm/npmversion.txt
       - name: Upload saml-jackson publish tag
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: publishTag
           path: ./npm/publishTag.txt
@@ -148,10 +158,10 @@ jobs:
 
     steps:
       - name: Check Out Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: npmversion
 
@@ -167,11 +177,11 @@ jobs:
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to Docker Hub
         if: github.ref == 'refs/heads/release'
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
@@ -179,7 +189,7 @@ jobs:
       - name: Build and push
         if: github.ref == 'refs/heads/release'
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./
           file: ./Dockerfile
@@ -238,11 +248,11 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: npm_sbom.cyclonedx
       - name: Remove older SBOMs
@@ -278,15 +288,15 @@ jobs:
       - name: Remove older SBOMs
         run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: sbom.spdx
       - name: Download artifact for CycloneDx Report
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: sbom.cyclonedx
       - name: Scan docker image using TERN
-        uses: philips-labs/tern-action@v1.1.0
+        uses: philips-labs/tern-action@v1.2.0
         id: scan
         with:
           image: ${{ github.repository }}:latest
@@ -303,7 +313,7 @@ jobs:
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
       - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: npmversion
       - name: Get saml-jackson npm version
@@ -343,9 +353,9 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: npmversion
       - name: Get saml-jackson npm version
@@ -354,7 +364,7 @@ jobs:
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
       - name: Download saml-jackson publish tag
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: publishTag
       - name: Get saml-jackson npm version
@@ -363,7 +373,7 @@ jobs:
       - run: echo ${{ steps.publishTag.outputs.publishTag }}
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           always-auth: true
           node-version: ${{ matrix.node-version }}

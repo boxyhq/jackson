@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
-import { IConnectionAPIController, OIDCSSOConnection } from '../../src/typings';
+import { IConnectionAPIController, OIDCSSOConnection, OIDCSSORecord } from '../../src/typings';
 import { oidc_connection } from './fixture';
 import { databaseOptions } from '../utils';
 
@@ -30,6 +30,23 @@ tap.test('controller/api', async (t) => {
   });
 
   t.test('Create the connection', async (t) => {
+    t.test('should throw when `oidcPath` is not set', async (t) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      connectionAPIController.opts.oidcPath = undefined;
+      const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+      try {
+        await connectionAPIController.createOIDCConnection(body);
+        t.fail('Expecting JacksonError.');
+      } catch (err: any) {
+        t.equal(err.message, 'Please set OpenID response handler path (oidcPath) on Jackson');
+        t.equal(err.statusCode, 500);
+      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      connectionAPIController.opts.oidcPath = databaseOptions.oidcPath;
+    });
+
     t.test('when required fields are missing or invalid', async (t) => {
       t.test('missing discoveryUrl', async (t) => {
         const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
@@ -179,7 +196,7 @@ tap.test('controller/api', async (t) => {
         await connectionAPIController.getConnections({
           clientID: CLIENT_ID_OIDC,
         })
-      )[0];
+      )[0] as OIDCSSORecord;
 
       t.equal(savedConnection.name, oidc_connection.name);
       t.equal(savedConnection.oidcProvider.clientId, oidc_connection.oidcClientId);
@@ -191,6 +208,34 @@ tap.test('controller/api', async (t) => {
 
   t.test('Update the connection', async (t) => {
     const body_oidc_provider: OIDCSSOConnection = Object.assign({}, oidc_connection);
+    t.test('should throw when `oidcPath` is not set', async (t) => {
+      const { clientSecret, clientID } = await connectionAPIController.createOIDCConnection(
+        body_oidc_provider as OIDCSSOConnection
+      );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      connectionAPIController.opts.oidcPath = undefined;
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        await connectionAPIController.updateOIDCConnection({
+          clientID,
+          clientSecret,
+          defaultRedirectUrl: oidc_connection.defaultRedirectUrl,
+          redirectUrl: oidc_connection.redirectUrl,
+          tenant: oidc_connection.tenant,
+          product: oidc_connection.product,
+        });
+        t.fail('Expecting JacksonError.');
+      } catch (err: any) {
+        t.equal(err.message, 'Please set OpenID response handler path (oidcPath) on Jackson');
+        t.equal(err.statusCode, 500);
+      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      connectionAPIController.opts.oidcPath = databaseOptions.oidcPath;
+    });
+
     t.test('When clientID is missing', async (t) => {
       const { clientSecret } = await connectionAPIController.createOIDCConnection(
         body_oidc_provider as OIDCSSOConnection
@@ -211,7 +256,6 @@ tap.test('controller/api', async (t) => {
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientID');
         t.equal(err.statusCode, 400);
-        t.end();
       }
     });
 
@@ -235,7 +279,6 @@ tap.test('controller/api', async (t) => {
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientSecret');
         t.equal(err.statusCode, 400);
-        t.end();
       }
     });
 

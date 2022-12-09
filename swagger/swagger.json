@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.3.0",
+    "version": "1.3.7",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -63,6 +63,9 @@
             "$ref": "#/parameters/rawMetadataParamPost"
           },
           {
+            "$ref": "#/parameters/metadataUrlParamPost"
+          },
+          {
             "$ref": "#/parameters/defaultRedirectUrlParamPost"
           },
           {
@@ -87,6 +90,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Please set OpenID response handler path (oidcPath) on Jackson"
           }
         }
       },
@@ -119,6 +125,9 @@
           },
           {
             "$ref": "#/parameters/rawMetadataParamPatch"
+          },
+          {
+            "$ref": "#/parameters/metadataUrlParamPatch"
           },
           {
             "$ref": "#/parameters/defaultRedirectUrlParamPatch"
@@ -188,11 +197,7 @@
                 "name": "Hoppscotch-SP",
                 "description": "SP for hoppscotch.io",
                 "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-                "certs": {
-                  "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-                  "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-                }
+                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943"
               }
             }
           },
@@ -270,6 +275,9 @@
             "$ref": "#/parameters/rawMetadataParamPost"
           },
           {
+            "$ref": "#/parameters/metadataUrlParamPost"
+          },
+          {
             "$ref": "#/parameters/defaultRedirectUrlParamPost"
           },
           {
@@ -336,6 +344,9 @@
             "$ref": "#/parameters/rawMetadataParamPatch"
           },
           {
+            "$ref": "#/parameters/metadataUrlParamPatch"
+          },
+          {
             "$ref": "#/parameters/oidcDiscoveryUrlPatch"
           },
           {
@@ -366,6 +377,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Please set OpenID response handler path (oidcPath) on Jackson"
           }
         }
       },
@@ -380,6 +394,9 @@
           },
           {
             "$ref": "#/parameters/clientIDParamGet"
+          },
+          {
+            "$ref": "#/parameters/strategyParamGet"
           }
         ],
         "operationId": "get-connections",
@@ -543,6 +560,12 @@
                 "lastName": {
                   "type": "string"
                 },
+                "roles": {
+                  "type": "array"
+                },
+                "groups": {
+                  "type": "array"
+                },
                 "raw": {
                   "type": "object"
                 },
@@ -587,11 +610,7 @@
         "name": "Hoppscotch-SP",
         "description": "SP for hoppscotch.io",
         "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-        "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-        "certs": {
-          "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-          "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-        }
+        "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943"
       },
       "properties": {
         "clientID": {
@@ -629,10 +648,6 @@
         "idpMetadata": {
           "type": "object",
           "description": "SAML IdP metadata"
-        },
-        "certs": {
-          "type": "object",
-          "description": "Certs generated for SAML connection"
         },
         "oidcProvider": {
           "type": "object",
@@ -686,6 +701,12 @@
     "rawMetadataParamPost": {
       "name": "rawMetadata",
       "description": "Raw XML metadata",
+      "in": "formData",
+      "type": "string"
+    },
+    "metadataUrlParamPost": {
+      "name": "metadataUrl",
+      "description": "URL containing raw XML metadata",
       "in": "formData",
       "type": "string"
     },
@@ -773,6 +794,12 @@
       "in": "formData",
       "type": "string"
     },
+    "metadataUrlParamPatch": {
+      "name": "metadataUrl",
+      "description": "URL containing raw XML metadata",
+      "in": "formData",
+      "type": "string"
+    },
     "oidcDiscoveryUrlPatch": {
       "name": "oidcDiscoveryUrl",
       "description": "well-known URL where the OpenID Provider configuration is exposed",
@@ -835,6 +862,12 @@
       "type": "string",
       "description": "Client ID"
     },
+    "strategyParamGet": {
+      "in": "query",
+      "name": "strategy",
+      "type": "string",
+      "description": "Strategy which can help to filter connections with tenant/product query"
+    },
     "clientIDDel": {
       "name": "clientID",
       "in": "formData",
@@ -863,7 +896,7 @@
       "name": "strategy",
       "in": "formData",
       "type": "string",
-      "description": "Strategy"
+      "description": "Strategy which can help to filter connections with tenant/product query"
     }
   },
   "tags": []

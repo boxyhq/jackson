@@ -1,9 +1,12 @@
 import type { JacksonOption } from '../typings';
 import { marked } from 'marked';
 
+import saml20 from '@boxyhq/saml20';
+import xmlbuilder from 'xmlbuilder';
+
 // Service Provider SAML Configuration
 export class SPSAMLConfig {
-  constructor(private opts: JacksonOption) {}
+  constructor(private opts: JacksonOption, private getDefaultCertificate: any) {}
 
   private get acsUrl(): string {
     return `${this.opts.externalUrl}${this.opts.samlPath}`;
@@ -25,25 +28,25 @@ export class SPSAMLConfig {
     return 'RSA-SHA256';
   }
 
-  private get assertionEncryption(): string {
-    return 'Unencrypted';
-  }
-
-  public get(): {
+  public async get(): Promise<{
     acsUrl: string;
     entityId: string;
     response: string;
     assertionSignature: string;
     signatureAlgorithm: string;
-    assertionEncryption: string;
-  } {
+    publicKey: string;
+    publicKeyString: string;
+  }> {
+    const cert = await this.getDefaultCertificate();
+
     return {
       acsUrl: this.acsUrl,
       entityId: this.entityId,
       response: this.responseSigned,
       assertionSignature: this.assertionSignature,
       signatureAlgorithm: this.signatureAlgorithm,
-      assertionEncryption: this.assertionEncryption,
+      publicKey: cert.publicKey,
+      publicKeyString: saml20.stripCertHeaderAndFooter(cert.publicKey),
     };
   }
 
@@ -53,12 +56,66 @@ export class SPSAMLConfig {
       .replace('{{entityId}}', this.entityId)
       .replace('{{responseSigned}}', this.responseSigned)
       .replace('{{assertionSignature}}', this.assertionSignature)
-      .replace('{{signatureAlgorithm}}', this.signatureAlgorithm)
-      .replace('{{assertionEncryption}}', this.assertionEncryption);
+      .replace('{{signatureAlgorithm}}', this.signatureAlgorithm);
   }
 
   public toHTML(): string {
     return marked.parse(this.toMarkdown());
+  }
+
+  public async toXMLMetadata(): Promise<string> {
+    const { entityId, acsUrl, publicKeyString } = await this.get();
+
+    const today = new Date();
+
+    const nodes = {
+      'md:EntityDescriptor': {
+        '@xmlns:md': 'urn:oasis:names:tc:SAML:2.0:metadata',
+        '@entityID': entityId,
+        '@validUntil': new Date(today.setFullYear(today.getFullYear() + 10)).toISOString(),
+        'md:SPSSODescriptor': {
+          //'@WantAuthnRequestsSigned': true,
+          '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
+          'md:KeyDescriptor': [
+            {
+              '@use': 'signing',
+              'ds:KeyInfo': {
+                '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+                'ds:X509Data': {
+                  'ds:X509Certificate': {
+                    '#text': publicKeyString,
+                  },
+                },
+              },
+            },
+            {
+              '@use': 'encryption',
+              'ds:KeyInfo': {
+                '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+                'ds:X509Data': {
+                  'ds:X509Certificate': {
+                    '#text': publicKeyString,
+                  },
+                },
+              },
+              'md:EncryptionMethod': {
+                '@Algorithm': 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+              },
+            },
+          ],
+          'md:NameIDFormat': {
+            '#text': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+          },
+          'md:AssertionConsumerService': {
+            '@index': 1,
+            '@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+            '@Location': acsUrl,
+          },
+        },
+      },
+    };
+
+    return xmlbuilder.create(nodes, { encoding: 'UTF-8', standalone: false }).end({ pretty: true });
   }
 }
 
@@ -66,6 +123,8 @@ const markdownTemplate = `
 ## Service Provider (SP) SAML Configuration
 
 Your Identity Provider (IdP) will ask for the following information while configuring the SAML application. Share this information with your IT administrator.
+
+For provider specific instructions, refer to our <a href="https://boxyhq.com/docs/jackson/sso-providers" target="_blank">guides</a>
 
 **ACS (Assertion Consumer Service) URL / Single Sign-On URL / Destination URL** <br />
 {{acsUrl}}
@@ -83,5 +142,5 @@ Your Identity Provider (IdP) will ask for the following information while config
 {{signatureAlgorithm}}
 
 **Assertion Encryption** <br />
-{{assertionEncryption}}
+If you want to encrypt the assertion, you can download our [public certificate](/.well-known/saml.cer). Otherwise select the 'Unencrypted' option.
 `;

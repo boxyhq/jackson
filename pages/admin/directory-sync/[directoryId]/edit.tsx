@@ -8,10 +8,13 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
 import classNames from 'classnames';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
 }) => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const [directory, setDirectory] = React.useState({
     name,
@@ -62,24 +65,22 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
   return (
     <div>
-      <Link href='/admin/directory-sync'>
-        <a className='btn btn-outline items-center space-x-2'>
-          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span>Back</span>
-        </a>
+      <Link href='/admin/directory-sync' className='btn-outline btn items-center space-x-2'>
+        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
+        <span>{t('back')}</span>
       </Link>
-      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>Update Directory</h2>
+      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('update_directory')}</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Directory name</span>
+                <span className='label-text'>{t('directory_name')}</span>
               </label>
               <input
                 type='text'
                 id='name'
-                className='input input-bordered w-full'
+                className='input-bordered input w-full'
                 required
                 onChange={onChange}
                 value={directory.name}
@@ -87,24 +88,24 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Webhook URL</span>
+                <span className='label-text'>{t('webhook_url')}</span>
               </label>
               <input
                 type='text'
                 id='webhook_url'
-                className='input input-bordered w-full'
+                className='input-bordered input w-full'
                 onChange={onChange}
                 value={directory.webhook_url}
               />
             </div>
             <div className='form-control w-full'>
               <label className='label'>
-                <span className='label-text'>Webhook secret</span>
+                <span className='label-text'>{t('webhook_secret')}</span>
               </label>
               <input
                 type='text'
                 id='webhook_secret'
-                className='input input-bordered w-full'
+                className='input-bordered input w-full'
                 onChange={onChange}
                 value={directory.webhook_secret}
               />
@@ -119,13 +120,13 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                   className='h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600'
                 />
                 <label className='ml-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
-                  Enable Webhook events logging
+                 {t('enable_webhook_events_logging')}
                 </label>
               </div>
             </div>
             <div>
-              <button className={classNames('btn btn-primary', loading ? 'loading' : '')}>
-                Save Changes
+              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
+                {t('save_changes')}
               </button>
             </div>
           </div>
@@ -138,6 +139,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId } = context.query;
   const { directorySyncController } = await jackson();
+  const { locale }: GetServerSidePropsContext = context;
 
   const { data: directory } = await directorySyncController.directories.get(directoryId as string);
 
@@ -150,6 +152,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   return {
     props: {
       directory,
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };

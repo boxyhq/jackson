@@ -66,8 +66,6 @@ tap.test('LogoutController -> createRequest', async (t) => {
         t.equal(err.message, 'SAML connection not found.');
         t.equal(err.statusCode, 403);
       }
-
-      t.end();
     });
 
     t.test("Should throw an error if metadata doesn't present SingleLogoutService URL", async (t) => {
@@ -79,8 +77,6 @@ tap.test('LogoutController -> createRequest', async (t) => {
         t.equal(err.message, `accounts.google.com doesn't support SLO or disabled by IdP.`);
         t.equal(err.statusCode, 400);
       }
-
-      t.end();
     });
 
     t.test('Should return logoutUrl and logoutForm for a valid logout request', async (t) => {
@@ -97,11 +93,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
 
       t.ok(params.has('SAMLRequest'));
       t.ok(params.has('RelayState'));
-
-      t.end();
     });
-
-    t.end();
   });
 
   t.test('handleResponse', async (t) => {
@@ -136,8 +128,6 @@ tap.test('LogoutController -> createRequest', async (t) => {
         t.equal(err.message, 'Unable to validate state from the origin request.');
         t.equal(err.statusCode, 403);
       }
-
-      t.end();
     });
 
     t.test('Should throw an error is logout request not success', async (t) => {
@@ -150,8 +140,6 @@ tap.test('LogoutController -> createRequest', async (t) => {
         t.equal(err.message, 'SLO failed with status urn:oasis:names:tc:SAML:2.0:status:AuthnFailed.');
         t.equal(err.statusCode, 400);
       }
-
-      t.end();
     });
 
     t.test('Should throw an error when request ID mismatch', async (t) => {
@@ -168,8 +156,6 @@ tap.test('LogoutController -> createRequest', async (t) => {
         t.equal(err.message, 'SLO failed with mismatched request ID.');
         t.equal(err.statusCode, 400);
       }
-
-      t.end();
     });
 
     t.test('Return the redirectUrl after the post logout', async (t) => {
@@ -180,12 +166,6 @@ tap.test('LogoutController -> createRequest', async (t) => {
 
       t.ok('redirectUrl' in result);
       t.match(result.redirectUrl, saml_connection.defaultRedirectUrl);
-
-      t.end();
     });
-
-    t.end();
   });
-
-  t.end();
 });

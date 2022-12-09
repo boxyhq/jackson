@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres:13
     ports:
-      - "5432:5432"
+      - 5432:5432
     restart: always
     environment:
       POSTGRES_PASSWORD: ""
@@ -11,18 +11,18 @@ services:
   redis:
     image: redis:6.2.5-alpine
     ports:
-      - "6379:6379"
+      - 6379:6379
     restart: always
   mongo:
     image: mongo:4.4.10
     ports:
-      - "27017:27017"
+      - 27017:27017
     restart: always
   mysql:
     image: mysql:5.7
     platform: linux/amd64
     ports:
-      - "3307:3306"
+      - 3307:3306
     restart: always
     environment:
       MYSQL_DATABASE: mysql
@@ -30,7 +30,7 @@ services:
   maria:
     image: mariadb:10.4.22
     ports:
-      - "3306:3306"
+      - 3306:3306
     restart: always
     environment:
       MARIADB_DATABASE: mysql
@@ -44,3 +44,11 @@ services:
       -  JACKSON_API_KEYS="secret"
       -  DB_TYPE=mysql
       -  DB_URL=mysql://root:mysql@mysql:3306/mysql
+  mssql:
+    image: mcr.microsoft.com/azure-sql-edge:1.0.6
+    ports:
+      - 1433:1433
+    restart: always
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: '123ABabc!'

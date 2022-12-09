@@ -5,6 +5,8 @@ import { PencilIcon, CircleStackIcon } from '@heroicons/react/24/outline';
 import jackson from '@lib/jackson';
 import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Index = ({
   directories,
@@ -12,12 +14,13 @@ const Index = ({
   pageLimit,
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { t } = useTranslation('common');
   return (
     <>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Directory Sync</h2>
-        <Link href={'/admin/directory-sync/new'}>
-          <a className='btn btn-primary'>+ New Directory</a>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
+        <Link href={'/admin/directory-sync/new'} className='btn-primary btn'>
+          + {t('new_directory')}
         </Link>
       </div>
       {directories?.length === 0 && pageOffset === 0 ? (
@@ -28,19 +31,19 @@ const Index = ({
             <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
               <tr>
                 <th scope='col' className='px-6 py-3'>
-                  Name
+                  {t('name')}
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Tenant
+                  {t('tenant')}
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Product
+                  {t('product')}
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Type
+                  {t('type')}
                 </th>
                 <th scope='col' className='px-6 py-3'>
-                  Actions
+                  {t('actions')}
                 </th>
               </tr>
             </thead>
@@ -59,15 +62,11 @@ const Index = ({
                       <td className='px-6'>{providers[directory.type]}</td>
                       <td className='px-6'>
                         <div className='flex flex-row'>
-                          <Link href={`/admin/directory-sync/${directory.id}`}>
-                            <a className='link-primary'>
-                              <CircleStackIcon className='h-5 w-5 text-secondary' />
-                            </a>
+                          <Link href={`/admin/directory-sync/${directory.id}`} className='link-primary'>
+                            <CircleStackIcon className='h-5 w-5 text-secondary' />
                           </Link>
-                          <Link href={`/admin/directory-sync/${directory.id}/edit`}>
-                            <a className='link-primary'>
-                              <PencilIcon className='h-5 w-5 text-secondary' />
-                            </a>
+                          <Link href={`/admin/directory-sync/${directory.id}/edit`} className='link-primary'>
+                            <PencilIcon className='h-5 w-5 text-secondary' />
                           </Link>
                         </div>
                       </td>
@@ -91,6 +90,7 @@ const Index = ({
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { offset = 0 } = context.query;
   const { directorySyncController } = await jackson();
+  const { locale }: GetServerSidePropsContext = context;
 
   const pageOffset = parseInt(offset as string);
   const pageLimit = 25;
@@ -102,6 +102,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       directories,
       pageOffset,
       pageLimit,
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };

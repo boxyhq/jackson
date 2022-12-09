@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 import {
   IConnectionAPIController,
-  SAMLSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
+  SAMLSSORecord,
   Storable,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
@@ -13,10 +13,22 @@ import {
   IndexNames,
   validateSSOConnection,
   validateRedirectUrl,
+  validateTenantAndProduct,
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
-import x509 from '../../saml/x509';
 import { JacksonError } from '../error';
+import axios, { AxiosError } from 'axios';
+
+async function fetchMetadata(resource: string) {
+  const response = await axios(resource, {
+    maxContentLength: 1000000,
+    maxBodyLength: 1000000,
+    timeout: 8000,
+  }).catch((error: AxiosError) => {
+    throw new JacksonError("Couldn't fetch XML data", error.response?.status || 400);
+  });
+  return response.data;
+}
 
 const saml = {
   create: async (
@@ -32,21 +44,21 @@ const saml = {
       product,
       name,
       description,
+      metadataUrl,
     } = body;
     const forceAuthn = body.forceAuthn == 'true' || body.forceAuthn == true;
 
-    let connectionClientSecret;
+    let connectionClientSecret: string;
 
     validateSSOConnection(body, 'saml');
+
     const redirectUrlList = extractRedirectUrls(redirectUrl);
+
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const record: Partial<SAMLSSOConnection> & {
-      clientID: string; // set by Jackson
-      clientSecret: string; // set by Jackson
-      idpMetadata?: Record<string, any>;
-      certs?: Record<'publicKey' | 'privateKey', string>;
-    } = {
+    validateTenantAndProduct(tenant, product);
+
+    const record: Partial<SAMLSSORecord> = {
       defaultRedirectUrl,
       redirectUrl: redirectUrlList,
       tenant,
@@ -56,33 +68,33 @@ const saml = {
       clientID: '',
       clientSecret: '',
       forceAuthn,
+      metadataUrl,
     };
 
-    let metaData = rawMetadata;
+    let metadata = rawMetadata as string;
     if (encodedRawMetadata) {
-      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
+      metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
-    const idpMetadata = await saml20.parseMetadata(metaData!, {});
+    metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
+
+    const idpMetadata = (await saml20.parseMetadata(metadata, {})) as SAMLSSORecord['idpMetadata'];
+
+    if (!idpMetadata.entityID) {
+      throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
+    }
 
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);
     if (!providerName) {
-      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl);
+      providerName = extractHostName(idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl || '');
     }
 
     idpMetadata.provider = providerName ? providerName : 'Unknown';
 
     record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, idpMetadata.entityID));
 
-    const certs = await x509.generate();
-
-    if (!certs) {
-      throw new Error('Error generating x509 certs');
-    }
-
     record.idpMetadata = idpMetadata;
-    record.certs = certs;
 
     const exists = await connectionStore.get(record.clientID);
 
@@ -108,8 +120,9 @@ const saml = {
       }
     );
 
-    return record;
+    return record as SAMLSSORecord;
   },
+
   update: async (
     body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
       clientID: string;
@@ -126,40 +139,53 @@ const saml = {
       name,
       description,
       forceAuthn = false,
+      metadataUrl,
       ...clientInfo
     } = body;
+
     if (!clientInfo?.clientID) {
       throw new JacksonError('Please provide clientID', 400);
     }
+
     if (!clientInfo?.clientSecret) {
       throw new JacksonError('Please provide clientSecret', 400);
     }
+
     if (!clientInfo?.tenant) {
       throw new JacksonError('Please provide tenant', 400);
     }
+
     if (!clientInfo?.product) {
       throw new JacksonError('Please provide product', 400);
     }
+
     if (description && description.length > 100) {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
+
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
-    const _savedConnection = (await connectionsGetter(clientInfo))[0];
+    const _savedConnection = (await connectionsGetter(clientInfo))[0] as SAMLSSORecord;
 
     if (_savedConnection.clientSecret !== clientInfo?.clientSecret) {
       throw new JacksonError('clientSecret mismatch', 400);
     }
 
-    let metaData = rawMetadata;
+    let metadata = rawMetadata;
     if (encodedRawMetadata) {
-      metaData = Buffer.from(encodedRawMetadata, 'base64').toString();
+      metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
-    let newMetadata;
-    if (metaData) {
-      newMetadata = await saml20.parseMetadata(metaData, {});
 
+    metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
+
+    let newMetadata;
+    if (metadata) {
+      newMetadata = await saml20.parseMetadata(metadata, {});
+
+      if (!newMetadata.entityID) {
+        throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
+      }
       // extract provider
       let providerName = extractHostName(newMetadata.entityID);
       if (!providerName) {

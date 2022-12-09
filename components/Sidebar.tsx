@@ -1,21 +1,29 @@
-import { ShieldCheckIcon, UsersIcon, QueueListIcon } from '@heroicons/react/20/solid';
+import { ShieldCheckIcon, UsersIcon, QueueListIcon, HomeIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
+import { useTranslation } from 'next-i18next';
 
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
   const router = useRouter();
-
   const { isOpen, setIsOpen } = props;
+  const { t } = useTranslation('common');
+
   const currentPath = router.asPath;
 
   const menus = [
     {
+      href: '/admin/dashboard',
+      text: 'Dashboard',
+      icon: HomeIcon,
+      active: currentPath.includes('/admin/dashboard'),
+    },
+    {
       href: '/admin/connection',
-      text: 'SSO Connections',
+      text: 'Enterprise SSO',
       icon: ShieldCheckIcon,
       active: currentPath.includes('/admin/saml'),
     },
@@ -24,6 +32,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
       text: 'Audit Logs',
       icon: QueueListIcon,
       current: currentPath.includes('retraced'),
+      active: currentPath.includes('/admin/connection'),
     },
     {
       href: '/admin/directory-sync',
@@ -49,7 +58,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
                 }}
                 type='button'
                 className='ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'>
-                <span className='sr-only'>Close sidebar</span>
+                <span className='sr-only'>{t('close_sidebar')}</span>
                 <svg
                   className='h-6 w-6 text-white'
                   xmlns='http://www.w3.org/2000/svg'
@@ -63,18 +72,9 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
               </button>
             </div>
             <div className='flex flex-shrink-0 items-center px-4'>
-              <Link href='/'>
-                <a className='flex items-center'>
-                  <Image
-                    src={Logo}
-                    alt='BoxyHQ'
-                    layout='fixed'
-                    width={36}
-                    height={36}
-                    className='h-8 w-auto'
-                  />
-                  <span className='ml-4 text-xl font-bold text-gray-900'>Admin UI - BoxyHQ</span>
-                </a>
+              <Link href='/' className='flex items-center'>
+                <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
+                <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ Admin Portal</span>
               </Link>
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
@@ -100,25 +100,23 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any }) => {
       <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
         <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
           <div className='flex flex-shrink-0 items-center px-4'>
-            <Link href='/'>
-              <a className='flex items-center'>
-                <Image src={Logo} alt='BoxyHQ' layout='fixed' width={36} height={36} className='h-8 w-auto' />
-                <span className='ml-4 text-lg font-bold text-gray-900'>Admin UI - BoxyHQ</span>
-              </a>
+            <Link href='/' className='flex items-center'>
+              <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
+              <span className='ml-4 text-lg font-bold text-gray-900'>BoxyHQ Admin Portal</span>
             </Link>
           </div>
           <div className='mt-5 flex flex-1 flex-col'>
             <nav className='flex-1 space-y-1 px-2 pb-4' id='menu'>
               {menus.map((menu) => (
-                <Link key={menu.text} href={menu.href}>
-                  <a
-                    className={classNames(
-                      'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
-                      menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
-                    )}>
-                    <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                    <div>{menu.text}</div>
-                  </a>
+                <Link
+                  key={menu.text}
+                  href={menu.href}
+                  className={classNames(
+                    'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
+                    menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
+                  )}>
+                  <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
+                  <div>{menu.text}</div>
                 </Link>
               ))}
             </nav>

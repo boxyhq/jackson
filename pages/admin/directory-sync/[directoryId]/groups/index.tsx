@@ -8,6 +8,8 @@ import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import { inferSSRProps } from '@lib/inferSSRProps';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const GroupsList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory,
@@ -15,6 +17,7 @@ const GroupsList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   pageOffset,
   pageLimit,
 }) => {
+  const { t } = useTranslation('common');
   return (
     <>
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
@@ -28,10 +31,10 @@ const GroupsList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='w-5/6 px-6 py-3'>
-                    Name
+                    {t('name')}
                   </th>
                   <th scope='col' className='w-1/6 px-6 py-3'>
-                    Actions
+                    {t('actions')}
                   </th>
                 </tr>
               </thead>
@@ -45,9 +48,7 @@ const GroupsList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                         <td className='px-6 py-3'>{group.name}</td>
                         <td className='px-6 py-3'>
                           <Link href={`/admin/directory-sync/${directory.id}/groups/${group.id}`}>
-                            <a>
-                              <EyeIcon className='h-5 w-5' />
-                            </a>
+                            <EyeIcon className='h-5 w-5' />
                           </Link>
                         </td>
                       </tr>
@@ -71,6 +72,7 @@ const GroupsList: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId, offset = 0 } = context.query;
   const { directorySyncController } = await jackson();
+  const { locale }: GetServerSidePropsContext = context;
 
   const pageOffset = parseInt(offset as string);
   const pageLimit = 25;
@@ -93,6 +95,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       groups,
       pageOffset,
       pageLimit,
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };

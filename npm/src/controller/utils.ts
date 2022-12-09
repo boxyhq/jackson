@@ -105,14 +105,15 @@ export const validateSSOConnection = (
   const oidcDiscoveryUrl = 'oidcDiscoveryUrl' in body ? body.oidcDiscoveryUrl : undefined;
   const oidcClientId = 'oidcClientId' in body ? body.oidcClientId : undefined;
   const oidcClientSecret = 'oidcClientSecret' in body ? body.oidcClientSecret : undefined;
+  const metadataUrl = 'metadataUrl' in body ? body.metadataUrl : undefined;
 
   if (strategy !== 'saml' && strategy !== 'oidc') {
     throw new JacksonError(`Strategy: ${strategy} not supported`, 400);
   }
 
   if (strategy === 'saml') {
-    if (!rawMetadata && !encodedRawMetadata) {
-      throw new JacksonError('Please provide rawMetadata or encodedRawMetadata', 400);
+    if (!rawMetadata && !encodedRawMetadata && !metadataUrl) {
+      throw new JacksonError('Please provide rawMetadata or encodedRawMetadata or metadataUrl', 400);
     }
   }
   if (strategy === 'oidc') {
@@ -191,5 +192,15 @@ export const extractHostName = (url: string): string | null => {
     return pUrl.hostname;
   } catch (err) {
     return null;
+  }
+};
+
+export const validateTenantAndProduct = (tenant: string, product: string) => {
+  if (tenant.indexOf(':') !== -1) {
+    throw new JacksonError('Tenant cannot contain the character :', 400);
+  }
+
+  if (product.indexOf(':') !== -1) {
+    throw new JacksonError('Product cannot contain the character :', 400);
   }
 };

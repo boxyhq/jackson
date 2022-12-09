@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../../src/db/utils';
@@ -8,9 +9,11 @@ import {
   IConnectionAPIController,
   SAMLSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSORecord,
 } from '../../src/typings';
 import { saml_connection } from './fixture';
 import { databaseOptions } from '../utils';
+import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 
 let connectionAPIController: IConnectionAPIController;
 
@@ -49,7 +52,7 @@ tap.test('controller/api', async (t) => {
           await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
-          t.equal(err.message, 'Please provide rawMetadata or encodedRawMetadata');
+          t.equal(err.message, 'Please provide rawMetadata or encodedRawMetadata or metadataUrl');
           t.equal(err.statusCode, 400);
         }
       });
@@ -165,6 +168,25 @@ tap.test('controller/api', async (t) => {
       });
     });
 
+    t.test('When metadata XML is malformed', async (t) => {
+      t.test('entityID missing in XML', async (t) => {
+        const body = Object.assign({}, boxyhqNoentityID);
+        const metadataPath = path.join(__dirname, '/data/metadata/noentityID');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        body.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, "Couldn't parse EntityID from SAML metadata");
+          t.equal(err.statusCode, 400);
+        }
+      });
+    });
+
     t.test('when the request is good', async (t) => {
       const body = Object.assign({}, saml_connection);
 
@@ -182,12 +204,49 @@ tap.test('controller/api', async (t) => {
         await connectionAPIController.getConnections({
           clientID: CLIENT_ID_SAML,
         })
-      )[0];
+      )[0] as SAMLSSORecord;
 
       t.equal(savedConnection.name, 'testConfig');
       t.equal(savedConnection.forceAuthn, false);
 
       kdStub.restore();
+    });
+
+    t.test('when the request is good with metadataUrl', async (t) => {
+      const body = Object.assign({ metadataUrl: 'https://mocksaml.com/api/saml/metadata' }, saml_connection);
+
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
+
+      const response = await connectionAPIController.createSAMLConnection(
+        body as SAMLSSOConnectionWithEncodedMetadata
+      );
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID_SAML);
+      t.equal(response.idpMetadata.provider, 'saml.example.com');
+
+      const savedConnection = (
+        await connectionAPIController.getConnections({
+          clientID: CLIENT_ID_SAML,
+        })
+      )[0] as SAMLSSORecord;
+
+      t.equal(savedConnection.name, 'testConfig');
+      t.equal(savedConnection.forceAuthn, false);
+
+      kdStub.restore();
+    });
+
+    t.test('when the request is bad with metadataUrl', async (t) => {
+      const body = Object.assign({ metadataUrl: 'invalid url' }, saml_connection);
+
+      try {
+        await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+        t.fail('Expecting JacksonError.');
+      } catch (err: any) {
+        t.equal(err.message, "Couldn't fetch XML data");
+        t.equal(err.statusCode, 400);
+      }
     });
 
     t.test('when the request is good with forceAuthn', async (t) => {
@@ -207,7 +266,31 @@ tap.test('controller/api', async (t) => {
         await connectionAPIController.getConnections({
           clientID: CLIENT_ID_SAML,
         })
-      )[0];
+      )[0] as SAMLSSORecord;
+
+      t.equal(savedConnection.forceAuthn, true);
+
+      kdStub.restore();
+    });
+
+    t.test('when the request is good with forceAuthn and metadataUrl', async (t) => {
+      const body = Object.assign({ metadataUrl: 'https://mocksaml.com/api/saml/metadata' }, saml_connection);
+      body.forceAuthn = true;
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
+
+      const response = await connectionAPIController.createSAMLConnection(
+        body as SAMLSSOConnectionWithEncodedMetadata
+      );
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID_SAML);
+      t.equal(response.idpMetadata.provider, 'saml.example.com');
+
+      const savedConnection = (
+        await connectionAPIController.getConnections({
+          clientID: CLIENT_ID_SAML,
+        })
+      )[0] as SAMLSSORecord;
 
       t.equal(savedConnection.forceAuthn, true);
 
@@ -237,7 +320,6 @@ tap.test('controller/api', async (t) => {
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientID');
         t.equal(err.statusCode, 400);
-        t.end();
       }
     });
 
@@ -261,7 +343,6 @@ tap.test('controller/api', async (t) => {
       } catch (err: any) {
         t.equal(err.message, 'Please provide clientSecret');
         t.equal(err.statusCode, 400);
-        t.end();
       }
     });
 
@@ -287,6 +368,35 @@ tap.test('controller/api', async (t) => {
       const savedConnection = (await connectionAPIController.getConnections({ clientID }))[0];
       t.equal(savedConnection.name, 'A new name');
       t.equal(savedConnection.description, 'A new description');
+    });
+
+    t.test('When metadata XML is malformed', async (t) => {
+      t.test('entityID missing in XML', async (t) => {
+        const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
+          body_saml_provider as SAMLSSOConnectionWithEncodedMetadata
+        );
+        const metadataPath = path.join(__dirname, '/data/metadata/noentityID');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        const encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.updateSAMLConnection({
+            clientID,
+            clientSecret,
+            tenant: body_saml_provider.tenant,
+            product: body_saml_provider.product,
+            redirectUrl: saml_connection.redirectUrl,
+            defaultRedirectUrl: saml_connection.defaultRedirectUrl,
+            encodedRawMetadata,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, "Couldn't parse EntityID from SAML metadata");
+          t.equal(err.statusCode, 400);
+        }
+      });
     });
   });
 

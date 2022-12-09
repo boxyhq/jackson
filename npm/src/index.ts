@@ -1,8 +1,10 @@
-import type { DirectorySync, JacksonOption } from './typings';
+import type { IDirectorySyncController, JacksonOption } from './typings';
 
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
+
+import { init as metricsInit } from './opentelemetry/metrics';
 
 import { AdminController } from './controller/admin';
 import { ConnectionAPIController } from './controller/api';
@@ -12,6 +14,7 @@ import { LogoutController } from './controller/logout';
 import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
+import * as x509 from './saml/x509';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -27,10 +30,6 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   }
 
   newOpts.scimPath = newOpts.scimPath || '/api/scim/v2.0';
-
-  if (!newOpts.oidcPath) {
-    throw new Error('oidcPath is required');
-  }
 
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   // path to folder containing static IdP connections that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
@@ -58,11 +57,13 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
-  directorySync: DirectorySync;
+  directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
 }> => {
   opts = defaultOpts(opts);
+
+  metricsInit();
 
   const db = await DB.new(opts.db);
 
@@ -71,11 +72,15 @@ export const controllers = async (
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
+  const certificateStore = db.store('x509:certificates');
 
-  const connectionAPIController = new ConnectionAPIController({ connectionStore });
+  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
+
+  // Create default certificate if it doesn't exist.
+  await x509.init(certificateStore);
 
   const oauthController = new OAuthController({
     connectionStore,
@@ -91,11 +96,11 @@ export const controllers = async (
     opts,
   });
 
-  const directorySync = await initDirectorySync({ db, opts });
+  const directorySyncController = await initDirectorySync({ db, opts });
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
 
-  const spConfig = new SPSAMLConfig(opts);
+  const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -109,13 +114,13 @@ export const controllers = async (
         await connectionAPIController.createSAMLConnection(connection);
       }
 
-      console.log(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
+      console.info(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
   }
 
   const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
 
-  console.log(`Using engine: ${opts.db.engine}.${type}`);
+  console.info(`Using engine: ${opts.db.engine}.${type}`);
 
   return {
     spConfig,
@@ -125,7 +130,7 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
-    directorySync,
+    directorySyncController,
     oidcDiscoveryController,
   };
 };
