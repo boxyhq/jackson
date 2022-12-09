@@ -1,7 +1,6 @@
 import type { NextPage, GetServerSideProps } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
@@ -9,6 +8,9 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import jackson from '@lib/jackson';
 import { useTranslation } from 'next-i18next';
+import { errorToast, successToast } from '@components/Toast';
+import { ApiResponse } from 'types';
+import type { Directory } from '@boxyhq/saml-jackson';
 
 const New: NextPage<{ providers: any }> = ({ providers }) => {
   const { t } = useTranslation('common');
@@ -38,16 +40,17 @@ const New: NextPage<{ providers: any }> = ({ providers }) => {
 
     setLoading(false);
 
-    const { data, error } = await rawResponse.json();
+    const response: ApiResponse<Directory> = await rawResponse.json();
 
-    if (error) {
-      toast.error(error.message);
+    if ('error' in response) {
+      errorToast(response.error.message);
       return;
     }
 
-    if (data) {
-      toast.success('Directory created successfully');
-      router.replace(`/admin/directory-sync/${data.id}`);
+    if (rawResponse.ok) {
+      router.replace(`/admin/directory-sync/${response.data.id}`);
+      successToast(t('directory_created_successfully'));
+      return;
     }
   };
 

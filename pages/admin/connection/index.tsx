@@ -7,29 +7,33 @@ import { fetcher } from '@lib/ui/utils';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import type { SAMLSSORecord, OIDCSSORecord } from '@boxyhq/saml-jackson';
+import type { ApiError, ApiSuccess } from 'types';
+import { Loader } from '@components/Loader';
+import { errorToast } from '@components/Toast';
 
-type Connection = {
-  name: string;
-  tenant: string;
-  product: string;
-  clientID: string;
-  idpMetadata?: any;
-  oidcProvider?: any;
-};
+type Connection = SAMLSSORecord | OIDCSSORecord;
 
 const Connections: NextPage = () => {
   const { t } = useTranslation('common');
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
 
-  const { data: connections } = useSWR<Connection[]>(
+  const { data, error } = useSWR<ApiSuccess<Connection[]>, ApiError>(
     [`/api/admin/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }
   );
 
-  if (!connections) {
+  if (!data && !error) {
+    return <Loader />;
+  }
+
+  if (error) {
+    errorToast(error.message);
     return null;
   }
+
+  const connections = data?.data || [];
 
   return (
     <div>
@@ -63,10 +67,8 @@ const Connections: NextPage = () => {
               </thead>
               <tbody>
                 {connections.map((connection) => {
-                  const connectionIsSAML =
-                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
-                  const connectionIsOIDC =
-                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
+                  const connectionIsSAML = 'idpMetadata' in connection;
+                  const connectionIsOIDC = 'oidcProvider' in connection;
                   return (
                     <tr
                       key={connection.clientID}

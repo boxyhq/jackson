@@ -2,13 +2,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import toast from 'react-hot-toast';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
+import { ApiResponse } from 'types';
+import { errorToast } from '@components/Toast';
+import { useTranslation } from 'next-i18next';
 
 const fieldCatalog = [...getCommonFields()];
 
 const Add = () => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   // STATE: New connection type
   const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
@@ -25,12 +28,16 @@ const Add = () => {
       formObj: formObj,
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
-      callback: (res) => {
+      callback: async (res) => {
+        const response: ApiResponse = await res.json();
+
+        if ('error' in response) {
+          errorToast(response.error.message);
+          return;
+        }
+
         if (res.ok) {
           router.replace('/admin/connection');
-        } else {
-          // save failed
-          toast.error('ERROR');
         }
       },
     });
@@ -43,14 +50,14 @@ const Add = () => {
     <>
       <Link href='/admin/connection' className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>Back</span>
+        <span>{t('back')}</span>
       </Link>
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {'Create SSO Connection'}
+          {t('create_sso_connection')}
         </h2>
         <div className='mb-4 flex'>
-          <div className='mr-2 py-3'>Select Type:</div>
+          <div className='mr-2 py-3'>{t('select_type')}:</div>
           <div className='flex flex-nowrap items-stretch justify-start gap-1 rounded-md border-2 border-dashed py-3'>
             <div>
               <input
@@ -61,11 +68,10 @@ const Add = () => {
                 checked={newConnectionType === 'saml'}
                 onChange={handleNewConnectionTypeChange}
                 id='saml-conn'></input>
-              {/* var(--radio-border-width) solid var(--color-gray) */}
               <label
                 htmlFor='saml-conn'
                 className='cursor-pointer rounded-md border-2 border-solid py-3 px-8 font-semibold hover:shadow-md peer-checked:border-secondary-focus peer-checked:bg-secondary peer-checked:text-white'>
-                SAML
+                {t('saml')}
               </label>
             </div>
             <div>
@@ -80,7 +86,7 @@ const Add = () => {
               <label
                 htmlFor='oidc-conn'
                 className='cursor-pointer rounded-md border-2 border-solid px-8 py-3 font-semibold hover:shadow-md peer-checked:bg-secondary peer-checked:text-white'>
-                OIDC
+                {t('oidc')}
               </label>
             </div>
           </div>
@@ -92,7 +98,7 @@ const Add = () => {
               .map(renderFieldList({ formObj, setFormObj }))}
             <div className='flex'>
               <button type='submit' className='btn-primary btn'>
-                Save Changes
+                {t('save_changes')}
               </button>
             </div>
           </div>

@@ -80,7 +80,7 @@ export const controllers = async (
   await healthCheckController.init();
 
   // Create default certificate if it doesn't exist.
-  await x509.init(certificateStore);
+  await x509.init(certificateStore, opts);
 
   const oauthController = new OAuthController({
     connectionStore,
@@ -100,7 +100,7 @@ export const controllers = async (
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
 
-  const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
+  const spConfig = new SPSAMLConfig(opts);
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
