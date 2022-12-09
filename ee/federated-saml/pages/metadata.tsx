@@ -91,7 +91,7 @@ const Metadata: NextPage = () => {
               <textarea
                 className='textarea-bordered textarea w-full'
                 rows={10}
-                defaultValue={app.metadata.x509cert}
+                defaultValue={app.metadata.x509cert.trim()}
                 readOnly></textarea>
             </div>
           </div>

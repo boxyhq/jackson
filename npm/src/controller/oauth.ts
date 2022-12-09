@@ -535,7 +535,7 @@ export class OAuthController implements IOAuthController {
       return { responseForm };
     }
 
-    const code = await this._buildAuthorizationCode(connection, profile, session);
+    const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);
 
     const params = {
       code,
@@ -625,7 +625,7 @@ export class OAuthController implements IOAuthController {
       }
     }
 
-    const code = await this._buildAuthorizationCode(oidcConnection, profile, session);
+    const code = await this._buildAuthorizationCode(oidcConnection, profile, session, false);
 
     const params = {
       code,
@@ -646,7 +646,8 @@ export class OAuthController implements IOAuthController {
   private async _buildAuthorizationCode(
     connection: SAMLSSORecord | OIDCSSORecord,
     profile: any,
-    session: any
+    session: any,
+    isIdPFlow: boolean
   ) {
     // Store details against a code
     const code = crypto.randomBytes(20).toString('hex');
@@ -656,6 +657,7 @@ export class OAuthController implements IOAuthController {
       clientID: connection.clientID,
       clientSecret: connection.clientSecret,
       requested: session ? session.requested : null,
+      isIdPFlow,
     };
 
     if (session) {
