@@ -1,4 +1,4 @@
-FROM node:16.18.0-alpine3.16 AS base
+FROM --platform=$BUILDPLATFORM node:16.18.0-alpine3.16 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -31,7 +31,7 @@ RUN npm run build
 
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM node:16.18.0-alpine3.16 AS runner
 WORKDIR /app
 
 ENV NODE_OPTIONS="--max-http-header-size=81920"
