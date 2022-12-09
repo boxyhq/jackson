@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return handleGET(req, res);
     default:
       res.setHeader('Allow', ['GET']);
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 }
 
@@ -34,7 +34,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('Content-type', 'text/xml');
     res.status(200).send(metadata.xml);
   } catch (error: any) {
-    const { message, statusCode } = error;
+    const { message, statusCode = 500 } = error;
 
     return res.status(statusCode).json({
       error: { message },

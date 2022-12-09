@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return handleGET(req, res);
     default:
       res.setHeader('Allow', ['GET']);
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 }
 

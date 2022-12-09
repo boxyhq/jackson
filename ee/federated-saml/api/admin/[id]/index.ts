@@ -23,7 +23,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'DELETE':
       return handleDELETE(req, res);
     default:
-      res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
+      res.setHeader('Allow', ['GET, PUT, DELETE']);
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
 };
@@ -45,7 +45,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
   } catch (error: any) {
-    const { message, statusCode } = error;
+    const { message, statusCode = 500 } = error;
 
     return res.status(statusCode).json({
       error: { message },
@@ -71,7 +71,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
       data: updatedApp,
     });
   } catch (error: any) {
-    const { message, statusCode } = error;
+    const { message, statusCode = 500 } = error;
 
     res.status(statusCode).json({
       error: { message },
@@ -90,7 +90,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
     return res.status(200).json({ data: {} });
   } catch (error: any) {
-    const { message, statusCode } = error;
+    const { message, statusCode = 500 } = error;
 
     return res.status(statusCode).json({
       error: { message },
