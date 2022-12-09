@@ -77,6 +77,7 @@ export function renderFieldList(args: {
   isEditView?: boolean;
   formObj: Record<string, string>;
   setFormObj: (value: SetStateAction<Record<string, string>>) => void;
+  selfSSOSetup?: boolean;
 }) {
   const FieldList = ({
     key,
@@ -94,7 +95,7 @@ export function renderFieldList(args: {
       required = true,
     },
   }: FieldCatalog) => {
-    const disabled = args.isEditView && editable === false;
+    const disabled = editable === false;
     const value =
       disabled && typeof formatForDisplay === 'function'
         ? formatForDisplay(args.formObj[key])
@@ -129,14 +130,18 @@ export function renderFieldList(args: {
             disabled={disabled}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj)}
-            className={`textarea-bordered textarea h-24 w-full ${isArray ? 'whitespace-pre' : ''}`}
+            className={`textarea-bordered textarea h-24 w-full ${isArray ? 'whitespace-pre' : ''} ${
+              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
+            }`}
             rows={rows}
           />
         ) : type === 'checkbox' ? (
           <>
             <label
               htmlFor={key}
-              className='inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300'>
+              className={`inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300 ${
+                isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
+              }`}>
               {label}
             </label>
             <input
@@ -160,7 +165,9 @@ export function renderFieldList(args: {
             disabled={disabled}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj)}
-            className='input-bordered input w-full'
+            className={`input-bordered input w-full ${
+              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
+            }`}
           />
         )}
       </div>

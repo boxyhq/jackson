@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { mutate } from 'swr';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
@@ -9,9 +9,7 @@ import ConfirmationModal from '@components/ConfirmationModal';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 
-const fieldCatalog = [...getCommonFields({}, true), ...EditViewOnlyFields];
-
-function getInitialState(connection) {
+function getInitialState(fieldCatalog, connection) {
   const _state = {};
 
   fieldCatalog.forEach(({ key, attributes }) => {
@@ -33,9 +31,13 @@ function getInitialState(connection) {
 
 type EditProps = {
   connection?: Record<string, any>;
+  selfSSOSetup?: boolean;
 };
 
-const Edit = ({ connection }: EditProps) => {
+const Edit = ({ connection, selfSSOSetup = false }: EditProps) => {
+  const fieldCatalog = useMemo(() => {
+    return [...getCommonFields(selfSSOSetup, true), ...EditViewOnlyFields];
+  }, [selfSSOSetup]);
   const router = useRouter();
 
   const { id: connectionClientId } = router.query;
@@ -75,16 +77,18 @@ const Edit = ({ connection }: EditProps) => {
     });
     toggleDelConfirm();
     await mutate('/api/admin/connections');
-    router.replace('/admin/connection');
+    router.replace(selfSSOSetup ? '/admin/settings/sso-connection' : '/admin/connection');
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(() => getInitialState(connection));
+  const [formObj, setFormObj] = useState<Record<string, string>>(() =>
+    getInitialState(fieldCatalog, connection)
+  );
   // Resync form state on save
   useEffect(() => {
-    const _state = getInitialState(connection);
+    const _state = getInitialState(fieldCatalog, connection);
     setFormObj(_state);
-  }, [connection]);
+  }, [connection, fieldCatalog]);
 
   const filteredFieldsByConnection = fieldCatalog.filter(
     fieldCatalogFilterByConnection(connectionIsSAML ? 'saml' : connectionIsOIDC ? 'oidc' : null)
@@ -92,7 +96,9 @@ const Edit = ({ connection }: EditProps) => {
 
   return (
     <>
-      <Link href='/admin/connection' className='btn-outline btn items-center space-x-2'>
+      <Link
+        href={selfSSOSetup ? '/admin/settings/sso-connection' : '/admin/connection'}
+        className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>Back</span>
       </Link>

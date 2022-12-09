@@ -1,12 +1,9 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
-// import Add from '@components/connection/Add';
-import { useRouter } from 'next/router'; 
+import Add from '@components/connection/Add';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const Settings: NextPage = () => {
-  const router = useRouter();
-  router.replace('/admin/settings/sso-connection');
-  return null;
+const NewSSOConnection: NextPage = () => {
+  return <Add showBackButton={false} titleText={'Create Admin Panel SSO Connection'} selfSSOSetup={true} />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
@@ -17,4 +14,4 @@ export async function getStaticProps({ locale }: GetServerSidePropsContext) {
   };
 }
 
-export default Settings;
+export default NewSSOConnection;

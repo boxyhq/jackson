@@ -52,6 +52,14 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
     toast.success(t('login_success_toast'));
   };
 
+  const onSSOSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    setLoadingSSO(true);
+
+    signIn('boxyhq-saml');
+  };
+
   return (
     <>
       <div className='flex min-h-screen flex-col items-center justify-center'>
@@ -98,6 +106,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                       'btn-primary btn-block btn rounded-md',
                       loadingSSO ? 'loading' : ''
                     )}
+                    onClick={onSSOSubmit}
                     type='button'>
                     {t('login_with_sso')}
                   </button>

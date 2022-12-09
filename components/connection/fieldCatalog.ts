@@ -5,7 +5,7 @@
  * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
  */
 
-export const getCommonFields = (opts: any = {}, isEditView?: boolean) => [
+export const getCommonFields = (selfSSOSetup: boolean, isEditView?: boolean) => [
   {
     key: 'name',
     label: 'Name',
@@ -25,14 +25,20 @@ export const getCommonFields = (opts: any = {}, isEditView?: boolean) => [
     label: 'Tenant',
     type: 'text',
     placeholder: 'acme.com',
-    attributes: isEditView || opts.readonlyTenant ? { editable: false } : {},
+    attributes: {
+      editable: !(isEditView || selfSSOSetup),
+      isHidden: (): boolean => (selfSSOSetup ? selfSSOSetup : false),
+    },
   },
   {
     key: 'product',
     label: 'Product',
     type: 'text',
     placeholder: 'demo',
-    attributes: isEditView || opts.readonlyProduct ? { editable: false } : {},
+    attributes: {
+      editable: !(isEditView || selfSSOSetup),
+      isHidden: (): boolean => (selfSSOSetup ? selfSSOSetup : false),
+    },
   },
   {
     key: 'redirectUrl',

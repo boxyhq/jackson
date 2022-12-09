@@ -1,13 +1,21 @@
 import Adapter from '@lib/nextAuthAdapter';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
+import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { validateEmailWithACL } from '@lib/utils';
+import env from '@lib/env';
 
 export default NextAuth({
   theme: {
     colorScheme: 'light',
   },
   providers: [
+    BoxyHQSAMLProvider({
+      authorization: { params: { scope: '' } },
+      issuer: env.externalUrl,
+      clientId: `tenant=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT}&product=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT}`,
+      clientSecret: 'dummy',
+    }),
     EmailProvider({
       server: {
         host: process.env.SMTP_HOST,

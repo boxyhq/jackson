@@ -13,8 +13,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const connection = (await connectionAPIController.getConnections({ clientID: slug[0] }))[0];
         res.json(connection);
       } else {
+        const allConnections = await adminController.getAllConnection(
+          +(pageOffset || 0) as number,
+          +(pageLimit || 0) as number
+        );
         res.json(
-          await adminController.getAllConnection(+(pageOffset || 0) as number, +(pageLimit || 0) as number)
+          allConnections.filter(
+            (conn) =>
+              conn.tenant !== process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT &&
+              conn.product !== process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT
+          )
         );
       }
     } else if (req.method === 'POST') {

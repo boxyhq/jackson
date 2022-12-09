@@ -9,22 +9,15 @@ import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from 
 type AddProps = {
   showBackButton?: boolean;
   titleText?: string;
-  readonlyTenant?: string;
-  readonlyProduct?: string;
+  selfSSOSetup: boolean;
 };
 
 const Add = ({
   showBackButton = true,
   titleText = 'Create SSO Connection',
-  readonlyProduct = '',
-  readonlyTenant = '',
+  selfSSOSetup = false,
 }: AddProps) => {
-  const fieldCatalog = [
-    ...getCommonFields({
-      readonlyProduct,
-      readonlyTenant,
-    }),
-  ];
+  const fieldCatalog = [...getCommonFields(selfSSOSetup)];
   const router = useRouter();
   // STATE: New connection type
   const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
@@ -43,7 +36,7 @@ const Add = ({
       connectionIsOIDC: connectionIsOIDC,
       callback: (res) => {
         if (res.ok) {
-          router.replace('/admin/connection');
+          router.replace(selfSSOSetup ? '/admin/settings/sso-connection' : '/admin/connection');
         } else {
           // save failed
           toast.error('ERROR');
@@ -52,19 +45,15 @@ const Add = ({
     });
   };
 
-  const getInitialFormState = () => {
+  const getSelfSSOSetupState = () => {
     const initState = {};
-    if (readonlyTenant) {
-      initState['tenant'] = readonlyTenant;
-    }
-    if (readonlyProduct) {
-      initState['product'] = readonlyProduct;
-    }
+    initState['tenant'] = process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT;
+    initState['product'] = process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT;
     return initState;
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(getInitialFormState());
+  const [formObj, setFormObj] = useState<Record<string, string>>(selfSSOSetup ? getSelfSSOSetupState() : {});
 
   return (
     <>
@@ -116,7 +105,7 @@ const Add = ({
           <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
             {fieldCatalog
               .filter(fieldCatalogFilterByConnection(newConnectionType))
-              .map(renderFieldList({ formObj, setFormObj }))}
+              .map(renderFieldList({ formObj, setFormObj, selfSSOSetup }))}
             <div className='flex'>
               <button type='submit' className='btn-primary btn'>
                 Save Changes
