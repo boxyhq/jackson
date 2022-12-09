@@ -1,5 +1,5 @@
 import Chance from 'chance';
-import * as Retraced from 'retraced';
+import * as Retraced from '@retraced-hq/retraced';
 import env from '@lib/env';
 const chance = new Chance();
 

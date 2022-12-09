@@ -1,4 +1,4 @@
-import RetracedEventsBrowser from 'retraced-logs-viewer';
+import RetracedEventsBrowser from '@retraced-hq/logs-viewer';
 import useSWR from 'swr';
 
 import type { ApiResponse, Project } from 'types';

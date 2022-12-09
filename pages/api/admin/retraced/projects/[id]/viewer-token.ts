@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import * as Retraced from 'retraced';
+import * as Retraced from '@retraced-hq/retraced';
 import requestIp from 'request-ip';
 
 import env from '@lib/env';
