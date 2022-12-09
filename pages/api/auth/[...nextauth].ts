@@ -15,6 +15,10 @@ export default NextAuth({
       issuer: env.externalUrl,
       clientId: `tenant=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT}&product=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT}`,
       clientSecret: 'dummy',
+      httpOptions: {
+        timeout: 30000,
+      },
+      allowDangerousEmailAccountLinking: true,
     }),
     EmailProvider({
       server: {
@@ -47,12 +51,11 @@ export default NextAuth({
     },
   },
   callbacks: {
-    async signIn({ user }): Promise<boolean> {
+    async signIn({ user, account }): Promise<boolean> {
       if (!user.email) {
         return false;
       }
-
-      return validateEmailWithACL(user.email);
+      return account?.provider === 'boxyhq-saml' ? true : validateEmailWithACL(user.email);
     },
   },
   pages: {

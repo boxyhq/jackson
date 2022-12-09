@@ -9,7 +9,7 @@ import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from 
 type AddProps = {
   showBackButton?: boolean;
   titleText?: string;
-  selfSSOSetup: boolean;
+  selfSSOSetup?: boolean;
 };
 
 const Add = ({
