@@ -1,14 +1,16 @@
 import * as forge from 'node-forge';
 import crypto from 'crypto';
 
-import type { Storable } from '../typings';
+import type { JacksonOption, Storable } from '../typings';
 
 const pki = forge.pki;
 let certificateStore: Storable;
 let cachedCertificate: { publicKey: string; privateKey: string };
+let jacksonOption: JacksonOption;
 
-export const init = async (store: Storable) => {
+export const init = async (store: Storable, opts: JacksonOption) => {
   certificateStore = store;
+  jacksonOption = opts;
 
   return await getDefaultCertificate();
 };
@@ -65,6 +67,22 @@ export const getDefaultCertificate = async (): Promise<{ publicKey: string; priv
     throw new Error('Certificate store not initialized');
   }
 
+  if (!jacksonOption) {
+    throw new Error('Jackson option not initialized');
+  }
+
+  // If the user has provided a certificate, use that instead of the default.
+  // We expect the developer to provide base64 encoded keys, so we need to decode them.
+  if (jacksonOption.certs?.privateKey && jacksonOption.certs?.publicKey) {
+    cachedCertificate = {
+      publicKey: Buffer.from(jacksonOption.certs.publicKey, 'base64').toString('utf-8'),
+      privateKey: Buffer.from(jacksonOption.certs.privateKey, 'base64').toString('utf-8'),
+    };
+
+    return cachedCertificate;
+  }
+
+  // Otherwise, use the default certificate.
   cachedCertificate = await certificateStore.get('default');
 
   // If certificate is expired let it drop through so it creates a new cert

@@ -3,10 +3,11 @@ import { marked } from 'marked';
 
 import saml20 from '@boxyhq/saml20';
 import xmlbuilder from 'xmlbuilder';
+import { getDefaultCertificate } from '../saml/x509';
 
 // Service Provider SAML Configuration
 export class SPSAMLConfig {
-  constructor(private opts: JacksonOption, private getDefaultCertificate: any) {}
+  constructor(private opts: JacksonOption) {}
 
   private get acsUrl(): string {
     return `${this.opts.externalUrl}${this.opts.samlPath}`;
@@ -37,7 +38,7 @@ export class SPSAMLConfig {
     publicKey: string;
     publicKeyString: string;
   }> {
-    const cert = await this.getDefaultCertificate();
+    const cert = await getDefaultCertificate();
 
     return {
       acsUrl: this.acsUrl,
@@ -123,6 +124,8 @@ const markdownTemplate = `
 ## Service Provider (SP) SAML Configuration
 
 Your Identity Provider (IdP) will ask for the following information while configuring the SAML application. Share this information with your IT administrator.
+
+For provider specific instructions, refer to our <a href="https://boxyhq.com/docs/jackson/sso-providers" target="_blank">guides</a>
 
 **ACS (Assertion Consumer Service) URL / Single Sign-On URL / Destination URL** <br />
 {{acsUrl}}

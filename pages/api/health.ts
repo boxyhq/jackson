@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { version } from '../../package.json';
+import packageInfo from '../../package.json';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { status } = await healthCheckController.status();
     res.status(status).json({
-      version,
+      version: packageInfo.version,
     });
   } catch (err: any) {
     const { statusCode = 503 } = err;

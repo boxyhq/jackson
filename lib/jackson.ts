@@ -11,7 +11,7 @@ import type {
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
-import env from '@lib/env';
+import { jacksonOptions } from '@lib/env';
 import '@lib/metrics';
 
 let connectionAPIController: IConnectionAPIController;
@@ -39,7 +39,7 @@ export default async function init() {
     !g.spConfig ||
     !g.samlFederatedController
   ) {
-    const ret = await jackson(env);
+    const ret = await jackson(jacksonOptions);
     connectionAPIController = ret.connectionAPIController;
     oauthController = ret.oauthController;
     adminController = ret.adminController;

@@ -24,7 +24,8 @@
   "enable_webhook_events_logging": "Enable Webhook events logging",
   "enterprise_readiness_for_b2b_saas_straight_out_of_the_box": "Enterprise readiness for B2B SaaS, straight out of the box.",
   "enterprise_sso": "Enterprise SSO",
-  "error": "ERROR",
+  "error": "Error",
+  "success": "Success",
   "event_type": "Event Type",
   "first_name": "First Name",
   "here_are_the_set_of_uris_you_would_need_access_to": "Here are the set of URIs you would need access to",
@@ -84,5 +85,7 @@
   "download_metadata": "Download Metadata",
   "metadata_url": "Metadata URL",
   "sso_url": "SSO URL",
-  "x509_certificate": "X.509 Certificate"
+  "x509_certificate": "X.509 Certificate",
+  "directory_created_successfully": "Directory created successfully",
+  "directory_updated_successfully": "Directory updated successfully"
 }

@@ -325,6 +325,10 @@ export interface JacksonOption {
       public: string;
     };
   };
+  certs?: {
+    publicKey: string;
+    privateKey: string;
+  };
   boxyhqLicenseKey?: string;
 }
 

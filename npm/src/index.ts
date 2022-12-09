@@ -2,6 +2,7 @@ import type { IDirectorySyncController, JacksonOption } from './typings';
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
+import { init as metricsInit } from './opentelemetry/metrics';
 import { AdminController } from './controller/admin';
 import { ConnectionAPIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
@@ -65,6 +66,8 @@ export const controllers = async (
 }> => {
   opts = defaultOpts(opts);
 
+  metricsInit();
+
   const db = await DB.new(opts.db);
 
   const connectionStore = db.store('saml:config');
@@ -80,7 +83,7 @@ export const controllers = async (
   await healthCheckController.init();
 
   // Create default certificate if it doesn't exist.
-  await x509.init(certificateStore);
+  await x509.init(certificateStore, opts);
 
   const oauthController = new OAuthController({
     connectionStore,
@@ -97,7 +100,7 @@ export const controllers = async (
   });
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
-  const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
+  const spConfig = new SPSAMLConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts });
   const samlFederatedController = await initFederatedSAML({ db, opts });
 

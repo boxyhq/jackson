@@ -7,6 +7,7 @@ import {
   IndexNames,
   validateSSOConnection,
   validateRedirectUrl,
+  validateTenantAndProduct,
 } from '../utils';
 import { JacksonError } from '../error';
 
@@ -31,6 +32,8 @@ const oidc = {
     const redirectUrlList = extractRedirectUrls(redirectUrl);
 
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
+
+    validateTenantAndProduct(tenant, product);
 
     const record: Partial<OIDCSSORecord> = {
       defaultRedirectUrl,

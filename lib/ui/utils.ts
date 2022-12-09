@@ -25,8 +25,6 @@ export const fetcher = async (url: string, queryParams = '') => {
       (resContent.error.message as string) || 'An error occurred while fetching the data.'
     );
 
-    error['status'] = res.status;
-
     throw error;
   }
 

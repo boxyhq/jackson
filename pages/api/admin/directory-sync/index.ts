@@ -10,8 +10,8 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'POST':
       return handlePOST(req, res);
     default:
-      res.setHeader('Allow', ['GET']);
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.setHeader('Allow', ['POST']);
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 };
 
@@ -30,7 +30,13 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     webhook_secret,
   });
 
-  return res.status(error ? error.code : 201).json({ data, error });
+  if (data) {
+    return res.status(201).json({ data });
+  }
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
 };
 
 export default checkSession(handler);
