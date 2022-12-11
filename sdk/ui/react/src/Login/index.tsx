@@ -2,9 +2,11 @@ import { useState, type ChangeEventHandler, type FormEvent } from 'react';
 import useId from '../hooks/useId';
 import type { LoginProps } from './types';
 
+const COMPONENT = 'sso';
+
 const Login = ({ forwardTenant, label }: LoginProps) => {
-  const inputId = useId('input');
-  const errorSpanId = useId('span');
+  const inputId = useId(COMPONENT, 'input');
+  const errorSpanId = useId(COMPONENT, 'span');
   const [tenant, setTenant] = useState('');
   const [errMsg, setErrMsg] = useState('');
 

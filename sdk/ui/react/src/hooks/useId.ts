@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 import htmlIdGenerator from '../utils/htmlIdGenerator';
 
-const useId = (elementType?: string) => {
+/**
+ *
+ * @param component Pass the SDK component name here (e.g., sso)
+ * @param elementType Pass the HTML element type for which the Id is to be generated (e.g., input)
+ * @returns {string} Id that is gauranteed to be unique suitable for use as HTML id attributes
+ */
+const useId = (component: string, elementType?: string) => {
   const [id, setId] = useState('');
 
   useEffect(() => {
-    const uniqueId = Math.round(Math.random() * 1000000).toString();
-    setId(htmlIdGenerator(uniqueId, elementType));
-  }, [elementType]);
+    setId(htmlIdGenerator(component, elementType));
+  }, [component, elementType]);
 
   return id;
 };
