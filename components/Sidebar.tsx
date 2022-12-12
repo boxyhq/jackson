@@ -1,4 +1,11 @@
-import { ShieldCheckIcon, UsersIcon, HomeIcon, LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid';
+import {
+  ShieldCheckIcon,
+  UsersIcon,
+  HomeIcon,
+  LinkIcon,
+  ListBulletIcon,
+  Cog6ToothIcon,
+} from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -98,6 +105,9 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                 <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
                 <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ Admin Portal</span>
               </Link>
+              <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
+                <Cog6ToothIcon className='h-6 w-6 flex-shrink-0' aria-hidden='true' />
+              </Link>
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
               <nav className='space-y-1 px-2'>
@@ -148,6 +158,9 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
             <Link href='/' className='flex items-center'>
               <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
               <span className='ml-4 text-lg font-bold text-gray-900'>BoxyHQ Admin Portal</span>
+            </Link>
+            <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
+              <Cog6ToothIcon className='h-6 w-6 flex-shrink-0' aria-hidden='true' />
             </Link>
           </div>
           <div className='mt-5 flex flex-1 flex-col'>

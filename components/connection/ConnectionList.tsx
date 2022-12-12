@@ -3,6 +3,9 @@ import { ArrowLeftIcon, ArrowRightIcon, LinkIcon, PencilIcon, PlusIcon } from '@
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import EmptyState from '@components/EmptyState';
+import { useState } from 'react';
+import { fetcher } from '@lib/ui/utils';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 type Connection = {
   name: string;
@@ -34,6 +37,11 @@ const ConnectionList = ({
     router.replace(`/setup/${setupToken}/sso-connection/new`);
     return null;
   }
+
+  if (connections.length === 0 && setupToken) {
+    router.push('/admin/connection/new');
+  }
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
@@ -163,7 +171,8 @@ const ConnectionList = ({
             </button>
           </div>
         </>
-      )}
+      )
+    }
     </div>
   );
 };
