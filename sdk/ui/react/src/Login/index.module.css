@@ -4,8 +4,12 @@
   max-width: 28rem;
 }
 
+.label {
+  margin-bottom: 0.375rem;
+}
+
 .input {
-  font: inherit;
+  font-family: inherit;
   appearance: none;
   background-color: #fff;
   border-radius: 0.375rem;
@@ -21,5 +25,25 @@
 }
 
 .input:focus {
-  box-shadow: 0 0 5px hsl(167deg 68% 85%);
+  box-shadow: 0 0 5px hsl(167deg 58% 65%);
+}
+
+.button {
+  cursor: pointer;
+  font-family: inherit;
+  background-image: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  background-color: #25c2a0;
+  color: #fff;
+  border: none;
+}
+
+.button:focus {
+  outline: 1px solid #fff;
+  outline-offset: -4px;
+}
+
+.button:active {
+  transform: scale(0.99);
 }

@@ -5,7 +5,7 @@ import defaultClasses from './index.module.css';
 
 const COMPONENT = 'sso';
 
-const Login = ({ forwardTenant, label, styles, classNames }: LoginProps) => {
+const Login = ({ forwardTenant, label, styles, classNames, unstyled }: LoginProps) => {
   const inputId = useId(COMPONENT, 'input');
   const errorSpanId = useId(COMPONENT, 'span');
   const [tenant, setTenant] = useState('');
@@ -30,8 +30,11 @@ const Login = ({ forwardTenant, label, styles, classNames }: LoginProps) => {
   const isError = !!errMsg;
 
   return (
-    <form onSubmit={handleSubmit} className={defaultClasses.form}>
-      <label htmlFor={inputId} style={styles?.label} className={classNames?.label}>
+    <form onSubmit={handleSubmit} className={`${defaultClasses.form} ${classNames?.container || ''}`}>
+      <label
+        htmlFor={inputId}
+        style={styles?.label}
+        className={`${defaultClasses.label} ${classNames?.label || ''}`}>
         {label}
       </label>
       <input
@@ -44,7 +47,10 @@ const Login = ({ forwardTenant, label, styles, classNames }: LoginProps) => {
         aria-describedby={errorSpanId}
       />
       {isError && <span id={errorSpanId}>{errMsg}</span>}
-      <button type='submit' style={styles?.button} className={classNames?.button}>
+      <button
+        type='submit'
+        style={styles?.button}
+        className={`${defaultClasses.button} ${classNames?.button}`}>
         Proceed
       </button>
     </form>

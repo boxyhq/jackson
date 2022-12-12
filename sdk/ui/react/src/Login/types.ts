@@ -21,5 +21,9 @@ export interface LoginProps {
   /**
    * Classnames for each inner components that Login is made up of.
    */
-  classNames?: { button?: string; input?: string; label?: string };
+  classNames?: { container?: string; button?: string; input?: string; label?: string };
+  /**
+   * Boolean that disables all the default styling making it easier to style from scratch
+   */
+  unstyled?: boolean;
 }
