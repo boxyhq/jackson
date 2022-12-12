@@ -55,7 +55,6 @@ const Edit = ({ connection, setup }: EditProps) => {
       isEditView: true,
       setupToken: setup ? setup.token : '',
       callback: async (res) => {
-        debugger;
         const response: ApiResponse = await res.json();
 
         if ('error' in response) {
