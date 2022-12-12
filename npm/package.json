@@ -42,9 +42,9 @@
   "dependencies": {
     "@boxyhq/saml20": "1.1.0",
     "@opentelemetry/api": "1.3.0",
-    "axios": "1.1.3",
+    "axios": "1.2.1",
     "jose": "4.11.1",
-    "marked": "4.2.3",
+    "marked": "4.2.4",
     "mongodb": "4.12.1",
     "mssql": "9.0.1",
     "mysql2": "2.3.3",
@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "7.6.0",
-    "@types/node": "18.11.10",
+    "@types/node": "18.11.13",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.7",
     "@typescript-eslint/eslint-plugin": "5.44.0",
