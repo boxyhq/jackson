@@ -11,7 +11,7 @@ import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
+import { successToast } from '@components/Toast';
 import { fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
@@ -22,9 +22,13 @@ const LinkList = ({ service }) => {
     setQueryParam(`?service=${service}`);
   }, [service]);
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data: setupLinks, mutate } = useSWR<any>(queryParam ? [`/api/admin/setup-links`, queryParam] : [], fetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data: setupLinks, mutate } = useSWR<any>(
+    queryParam ? [`/api/admin/setup-links`, queryParam] : [],
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
   const links = setupLinks?.data;
   const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
@@ -39,13 +43,13 @@ const LinkList = ({ service }) => {
     await regenerateLink(links[actionId], service);
     toggleRegenConfirmModal();
     await mutate();
-    toast.success('Regenerated!');
+    successToast(t('link_regenerated'));
   };
   const invokeDelete = async () => {
     await deleteLink(links[actionId].setupID);
     toggleDelConfirmModal();
     await mutate();
-    toast.success('Deleted!');
+    successToast(t('deleted'));
   };
 
   if (!links) {
@@ -117,7 +121,7 @@ const LinkList = ({ service }) => {
                               className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
                               onClick={() => {
                                 copyUrl(link.url);
-                                toast.success('Copied!');
+                                successToast(t('copied'));
                               }}
                             />
                           </div>

@@ -23,7 +23,7 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
     product: '',
     webhook_url: '',
     webhook_secret: '',
-    type: '',
+    type: providers ? (Object.keys(providers).length > 0 ? Object.keys(providers)[0] : '') : '',
   });
 
   const onSubmit = async (event: React.FormEvent) => {
@@ -31,13 +31,16 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
 
     setLoading(true);
 
-    const rawResponse = await fetch('/api/admin/directory-sync', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(directory),
-    });
+    const rawResponse = await fetch(
+      token ? `/api/setup/${token}/directory-sync` : '/api/admin/directory-sync',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(directory),
+      }
+    );
 
     setLoading(false);
 
@@ -49,7 +52,11 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
     }
 
     if (rawResponse.ok) {
-      router.replace(`/admin/directory-sync/${response.data.id}`);
+      router.replace(
+        token
+          ? `/setup/${token}/directory-sync/${response.data.id}`
+          : `/admin/directory-sync/${response.data.id}`
+      );
       successToast(t('directory_created_successfully'));
       return;
     }
@@ -100,30 +107,34 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
                 })}
               </select>
             </div>
-            <div className='form-control w-full'>
-              <label className='label'>
-                <span className='label-text'>{t('tenant')}</span>
-              </label>
-              <input
-                type='text'
-                id='tenant'
-                className='input-bordered input w-full'
-                required
-                onChange={onChange}
-              />
-            </div>
-            <div className='form-control w-full'>
-              <label className='label'>
-                <span className='label-text'>{t('product')}</span>
-              </label>
-              <input
-                type='text'
-                id='product'
-                className='input-bordered input w-full'
-                required
-                onChange={onChange}
-              />
-            </div>
+            {!token && (
+              <>
+                <div className='form-control w-full'>
+                  <label className='label'>
+                    <span className='label-text'>{t('tenant')}</span>
+                  </label>
+                  <input
+                    type='text'
+                    id='tenant'
+                    className='input-bordered input w-full'
+                    required
+                    onChange={onChange}
+                  />
+                </div>
+                <div className='form-control w-full'>
+                  <label className='label'>
+                    <span className='label-text'>{t('product')}</span>
+                  </label>
+                  <input
+                    type='text'
+                    id='product'
+                    className='input-bordered input w-full'
+                    required
+                    onChange={onChange}
+                  />
+                </div>
+              </>
+            )}
             <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('webhook_url')}</span>

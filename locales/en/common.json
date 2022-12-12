@@ -15,6 +15,7 @@
   "create_new": "Create New",
   "create_sso_connection": "Create SSO Connection",
   "delete": "Delete",
+  "deleted": "Deleted",
   "delete_the_connection": "Delete the Connection?",
   "delete_this_connection": "Delete this connection",
   "directory_id": "Directory ID",
