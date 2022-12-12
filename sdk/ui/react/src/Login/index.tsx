@@ -1,10 +1,11 @@
 import { useState, type ChangeEventHandler, type FormEvent } from 'react';
 import useId from '../hooks/useId';
 import type { LoginProps } from './types';
+import defaultClasses from './index.module.css';
 
 const COMPONENT = 'sso';
 
-const Login = ({ forwardTenant, label }: LoginProps) => {
+const Login = ({ forwardTenant, label, styles, classNames }: LoginProps) => {
   const inputId = useId(COMPONENT, 'input');
   const errorSpanId = useId(COMPONENT, 'span');
   const [tenant, setTenant] = useState('');
@@ -29,17 +30,23 @@ const Login = ({ forwardTenant, label }: LoginProps) => {
   const isError = !!errMsg;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor={inputId}>{label}</label>
+    <form onSubmit={handleSubmit} className={defaultClasses.form}>
+      <label htmlFor={inputId} style={styles?.label} className={classNames?.label}>
+        {label}
+      </label>
       <input
         id={inputId}
         value={tenant}
         onChange={handleChange}
+        style={styles?.input}
+        className={`${defaultClasses.input} ${classNames?.input || ''}`}
         aria-invalid={isError}
         aria-describedby={errorSpanId}
       />
       {isError && <span id={errorSpanId}>{errMsg}</span>}
-      <button type='submit'>Proceed</button>
+      <button type='submit' style={styles?.button} className={classNames?.button}>
+        Proceed
+      </button>
     </form>
   );
 };

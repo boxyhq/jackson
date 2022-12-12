@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { CSSProperties } from 'react';
 
 export interface LoginProps {
   /**
@@ -14,4 +14,12 @@ export interface LoginProps {
    * @defaultValue Tenant
    */
   label: string;
+  /**
+   * Styles for each inner components that Login is made up of.
+   */
+  styles?: { button?: CSSProperties; input?: CSSProperties; label?: CSSProperties };
+  /**
+   * Classnames for each inner components that Login is made up of.
+   */
+  classNames?: { button?: string; input?: string; label?: string };
 }

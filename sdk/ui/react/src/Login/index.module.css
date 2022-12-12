@@ -1,0 +1,17 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  max-width: 28rem;
+}
+
+.input {
+  font: inherit;
+  appearance: none;
+  background-color: #fff;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  line-height: 1.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  margin-top: 1px;
+}
