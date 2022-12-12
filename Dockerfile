@@ -9,7 +9,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
-RUN npm ci
+RUN npm i
 
 
 
@@ -19,7 +19,6 @@ WORKDIR /app
 
 COPY --from=deps /app/npm ./npm
 COPY --from=deps /app/node_modules ./node_modules
-RUN npm install --legacy-peer-deps --production --ignore-scripts --prefer-offline
 COPY . .
 
 
@@ -61,5 +60,3 @@ EXPOSE 5225
 ENV PORT 5225
 
 CMD ["node", "server.js"]
-
-
