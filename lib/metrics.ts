@@ -1,18 +1,42 @@
+import { metrics } from '@opentelemetry/api';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
-import { MeterProvider } from '@opentelemetry/sdk-metrics-base';
-import { metrics } from '@opentelemetry/api-metrics';
+import { OTLPMetricExporter as OTLPMetricExporterGRPC } from '@opentelemetry/exporter-metrics-otlp-grpc';
+import { MeterProvider, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { Resource } from '@opentelemetry/resources';
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { DiagConsoleLogger, DiagLogLevel, diag } from '@opentelemetry/api';
+
 import packageInfo from '../package.json';
 
-if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT) {
+if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT || process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
   const meterProvider = new MeterProvider({
-    exporter: new OTLPMetricExporter(),
-    interval: 1000,
     resource: new Resource({
-      'service.name': `${packageInfo.name}`,
-      'service.version': `${packageInfo.version}`,
+      [SemanticResourceAttributes.SERVICE_NAME]: `${packageInfo.name}`,
+      [SemanticResourceAttributes.SERVICE_VERSION]: `${packageInfo.version}`,
     }),
   });
 
+  let metricExporter;
+  if (
+    process.env.OTEL_EXPORTER_OTLP_PROTOCOL === 'grpc' ||
+    process.env.OTEL_EXPORTER_OTLP_METRICS_PROTOCOL === 'grpc'
+  ) {
+    metricExporter = new OTLPMetricExporterGRPC();
+  } else {
+    metricExporter = new OTLPMetricExporter();
+  }
+
+  meterProvider.addMetricReader(
+    new PeriodicExportingMetricReader({
+      exporter: metricExporter,
+      exportIntervalMillis: 60000,
+    })
+  );
+
   metrics.setGlobalMeterProvider(meterProvider);
+}
+
+if (process.env.OTEL_EXPORTER_DEBUG) {
+  diag.disable();
+  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 }

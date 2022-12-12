@@ -1,11 +1,7 @@
 import Link from 'next/link';
-import { ArrowLeftIcon, ArrowRightIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/router';
-import { useTranslation } from 'next-i18next';
+import { ArrowLeftIcon, ArrowRightIcon, PencilIcon, LinkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
-import { useState } from 'react';
-import { fetcher } from '@lib/ui/utils';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 type Connection = {
   name: string;
@@ -18,29 +14,13 @@ type Connection = {
 
 type ConnectionListProps = {
   setupToken?: string;
-  connections: Connection[] | undefined;
+  connections: Connection[];
   paginate: any;
   setPaginate: any;
 };
 
-const ConnectionList = ({
-  setupToken,
-  connections,
-  paginate,
-  setPaginate,
-}: ConnectionListProps) => {
-  const router = useRouter();
+const Connections = ({ paginate, setPaginate, connections, setupToken }: ConnectionListProps) => {
   const { t } = useTranslation('common');
-  if (!connections) {
-    return null;
-  } else if (connections.length === 0 && setupToken) {
-    router.replace(`/setup/${setupToken}/sso-connection/new`);
-    return null;
-  }
-
-  if (connections.length === 0 && setupToken) {
-    router.push('/admin/connection/new');
-  }
 
   return (
     <div>
@@ -171,10 +151,9 @@ const ConnectionList = ({
             </button>
           </div>
         </>
-      )
-    }
+      )}
     </div>
   );
 };
 
-export default ConnectionList;
+export default Connections;
