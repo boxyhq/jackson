@@ -7,7 +7,7 @@ export default createTheme({
   logo: (
     <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
       <img src={logo} alt='BoxyHQ logo' width='40' height='40' />
-      BoxyHQ React component SDK
+      BoxyHQ React SDK
     </div>
   ),
   topNavs: [
