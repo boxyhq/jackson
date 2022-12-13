@@ -8,8 +8,11 @@ import {
 } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
+import { errorToast, successToast } from '@components/Toast';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const createLink = async (event) => {
     event.preventDefault();
@@ -30,13 +33,9 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       setLoading(false);
       const json = await res.json();
       setUrl(json.data.url);
-      setStatus({ status: 'SUCCESS', linkPanelStatus: 'UNKNOWN' });
-      setTimeout(() => setStatus({ status: 'UNKNOWN', linkPanelStatus: 'UNKNOWN' }), 2000);
+      successToast(t('link_generated'));
     } else {
-      // save failed
-      setLoading(false);
-      setStatus({ status: 'ERROR', linkPanelStatus: 'UNKNOWN' });
-      setTimeout(() => setStatus({ status: 'UNKNOWN', linkPanelStatus: 'UNKNOWN' }), 2000);
+      errorToast(t('server_error'));
     }
   };
   const regenerateLink = async (event) => {
@@ -61,27 +60,17 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       setLoading1(false);
       const json = await res.json();
       setUrl(json.data.url);
-      setStatus({ linkPanelStatus: 'SUCCESS', status: 'UNKNOWN' });
-      setTimeout(() => setStatus({ linkPanelStatus: 'UNKNOWN', status: 'UNKNOWN' }), 2000);
+      successToast(t('link_regenerated'));
     } else {
       // save failed
       setLoading1(false);
-      setStatus({ linkPanelStatus: 'ERROR', status: 'UNKNOWN' });
-      setTimeout(() => setStatus({ linkPanelStatus: 'UNKNOWN', status: 'UNKNOWN' }), 2000);
+      errorToast(t('server_error'));
     }
   };
   const copyUrl = () => {
     navigator.clipboard.writeText(url);
-    setStatus({ linkPanelStatus: 'COPIED', status: 'UNKNOWN' });
-    setTimeout(() => setStatus({ linkPanelStatus: 'UNKNOWN', status: 'UNKNOWN' }), 2000);
+    successToast(t('copied'));
   };
-  const [{ status, linkPanelStatus }, setStatus] = useState<{
-    status: 'UNKNOWN' | 'SUCCESS' | 'ERROR' | 'COPIED';
-    linkPanelStatus: 'UNKNOWN' | 'SUCCESS' | 'ERROR' | 'COPIED';
-  }>({
-    status: 'UNKNOWN',
-    linkPanelStatus: 'UNKNOWN',
-  });
   const getHandleChange = (event: FormEvent) => {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
     setFormObj((cur) => ({ ...cur, [target.name]: target.value }));
@@ -208,33 +197,6 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
               {url ? 'Regenerate Link' : 'Generate'}
             </button>
           </div>
-          <p
-            role='status'
-            className={`mt-4 ml-2 inline-flex items-center ${
-              linkPanelStatus === 'SUCCESS' || linkPanelStatus === 'COPIED' || linkPanelStatus === 'ERROR'
-                ? 'opacity-100'
-                : 'opacity-0'
-            } transition-opacity motion-reduce:transition-none`}>
-            {linkPanelStatus === 'SUCCESS' && (
-              <span className='inline-flex items-center text-primary'>
-                <CheckCircleIcon aria-hidden className='mr-1 h-5 w-5'></CheckCircleIcon>
-                Link Regenerated
-              </span>
-            )}
-            {linkPanelStatus === 'COPIED' && (
-              <span className='inline-flex items-center text-primary'>
-                <CheckCircleIcon aria-hidden className='mr-1 h-5 w-5'></CheckCircleIcon>
-                Copied
-              </span>
-            )}
-            {/* TODO: also display error message once we standardise the response format */}
-            {linkPanelStatus === 'ERROR' && (
-              <span className='inline-flex items-center text-red-900'>
-                <ExclamationCircleIcon aria-hidden className='mr-1 h-5 w-5'></ExclamationCircleIcon>
-                ERROR
-              </span>
-            )}
-          </p>
         </div>
       )}
     </>

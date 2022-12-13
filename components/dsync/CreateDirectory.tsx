@@ -1,10 +1,12 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import React from 'react';
 import classNames from 'classnames';
+import { ApiResponse } from 'types';
+import { errorToast, successToast } from '@components/Toast';
+import type { Directory } from '@boxyhq/saml-jackson';
 
 type CreateDirectoryProps = {
   providers: any;
@@ -42,18 +44,21 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
 
     setLoading(false);
 
-    const { data, error } = await rawResponse.json();
+    const response: ApiResponse<Directory> = await rawResponse.json();
 
-    if (error) {
-      toast.error(error.message);
+    if ('error' in response) {
+      errorToast(response.error.message);
       return;
     }
 
-    if (data) {
-      toast.success('Directory created successfully');
+    if (rawResponse.ok) {
       router.replace(
-        token ? `/setup/${token}/directory-sync/${data.id}` : `/admin/directory-sync/${data.id}`
+        token
+          ? `/setup/${token}/directory-sync/${response.data.id}`
+          : `/admin/directory-sync/${response.data.id}`
       );
+      successToast(t('directory_created_successfully'));
+      return;
     }
   };
 
@@ -68,9 +73,7 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
 
   return (
     <div>
-      <Link
-        href={token ? `/setup/${token}/directory-sync` : '/admin/directory-sync'}
-        className='btn-outline btn items-center space-x-2'>
+      <Link href='/admin/directory-sync' className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
       </Link>

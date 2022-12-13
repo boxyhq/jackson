@@ -1,6 +1,7 @@
-import type { NextPage } from 'next';
+import type { GetServerSidePropsContext, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import CreateSetupLink from '@components/CreateSetupLink';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 type Service = 'sso' | 'dsync';
 
@@ -16,5 +17,13 @@ const SetupLink: NextPage = () => {
   }
   return <CreateSetupLink service={service as Service} />;
 };
+
+export async function getServerSideProps({ locale }: GetServerSidePropsContext) {
+  return {
+    props: {
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
+  };
+}
 
 export default SetupLink;

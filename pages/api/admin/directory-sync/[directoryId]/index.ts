@@ -9,8 +9,8 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'PUT':
       return handlePUT(req, res);
     default:
-      res.setHeader('Allow', ['GET']);
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.setHeader('Allow', ['PUT']);
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 };
 
@@ -30,7 +30,13 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  return res.status(error ? error.code : 201).json({ data, error });
+  if (data) {
+    return res.status(200).json({ data });
+  }
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
 };
 
 export default checkSession(handler);

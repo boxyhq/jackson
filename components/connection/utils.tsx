@@ -1,5 +1,5 @@
+import { errorToast } from '@components/Toast';
 import { FormEvent, SetStateAction } from 'react';
-import toast from 'react-hot-toast';
 
 export const saveConnection = async ({
   formObj,
@@ -20,7 +20,7 @@ export const saveConnection = async ({
     formObj;
 
   if (metadataUrl && !metadataUrl.startsWith('https')) {
-    toast.error('ERROR');
+    errorToast('Metadata URL must start with https');
     return;
   }
   const encodedRawMetadata = btoa(rawMetadata || '');

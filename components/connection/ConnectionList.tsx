@@ -21,7 +21,7 @@ type Connection = {
 
 type ConnectionListProps = {
   setupToken?: string;
-  connections: Connection[] | undefined;
+  connections: Connection[];
   paginate: any;
   setPaginate: any;
   boxyhqEntityID?: string;
@@ -45,6 +45,7 @@ const ConnectionList = ({
   if (!connections) {
     return null;
   }
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>

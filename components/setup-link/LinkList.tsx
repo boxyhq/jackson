@@ -10,18 +10,25 @@ import {
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from 'react';
+import { successToast } from '@components/Toast';
 import { fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
 
 const LinkList = ({ service }) => {
-  const [queryParam] = useState(`?service=${service}`);
+  const [queryParam, setQueryParam] = useState('');
+  useEffect(() => {
+    setQueryParam(`?service=${service}`);
+  }, [service]);
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data: setupLinks, mutate } = useSWR<any>([`/api/admin/setup-links`, queryParam], fetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data: setupLinks, mutate } = useSWR<any>(
+    queryParam ? [`/api/admin/setup-links`, queryParam] : [],
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
   const links = setupLinks?.data;
   const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
@@ -36,13 +43,13 @@ const LinkList = ({ service }) => {
     await regenerateLink(links[actionId], service);
     toggleRegenConfirmModal();
     await mutate();
-    toast.success('Regenerated!');
+    successToast(t('link_regenerated'));
   };
   const invokeDelete = async () => {
     await deleteLink(links[actionId].setupID);
     toggleDelConfirmModal();
     await mutate();
-    toast.success('Deleted!');
+    successToast(t('deleted'));
   };
 
   if (!links) {
@@ -109,27 +116,33 @@ const LinkList = ({ service }) => {
                       </td>
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>
-                          <ClipboardDocumentListIcon
-                            className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
-                            onClick={() => {
-                              copyUrl(link.url);
-                              toast.success('Copied!');
-                            }}
-                          />
-                          <ArrowPathIcon
-                            className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
-                            onClick={() => {
-                              setActionId(idx);
-                              toggleRegenConfirmModal();
-                            }}
-                          />
-                          <TrashIcon
-                            className='h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
-                            onClick={() => {
-                              setActionId(idx);
-                              toggleDelConfirmModal();
-                            }}
-                          />
+                          <div className='tooltip' data-tip={t('copy')}>
+                            <ClipboardDocumentListIcon
+                              className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
+                              onClick={() => {
+                                copyUrl(link.url);
+                                successToast(t('copied'));
+                              }}
+                            />
+                          </div>
+                          <div className='tooltip' data-tip={t('regenerate')}>
+                            <ArrowPathIcon
+                              className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
+                              onClick={() => {
+                                setActionId(idx);
+                                toggleRegenConfirmModal();
+                              }}
+                            />
+                          </div>
+                          <div className='tooltip' data-tip={t('delete')}>
+                            <TrashIcon
+                              className='h-5 w-5 cursor-pointer text-secondary hover:text-red-900'
+                              onClick={() => {
+                                setActionId(idx);
+                                toggleDelConfirmModal();
+                              }}
+                            />
+                          </div>
                         </span>
                       </td>
                     </tr>
