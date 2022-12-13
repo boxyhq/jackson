@@ -1,7 +1,6 @@
 {
-  "name": "@boxyhq/react-sso",
-  "description": "React components for Single Sign On (SSO) from BoxyHQ",
-  "private": true,
+  "name": "@boxyhq/react-ui",
+  "description": "React UI components from BoxyHQ",
   "version": "0.0.1",
   "type": "module",
   "files": [

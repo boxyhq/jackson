@@ -11,9 +11,9 @@ export default defineConfig({
     // https://vitejs.dev/guide/build.html#library-mode
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'BoxyHQSSO',
+      name: 'BoxyHQUI',
       // the proper extensions will be added
-      fileName: '@boxyhq/react-sso',
+      fileName: '@boxyhq/react-ui',
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
