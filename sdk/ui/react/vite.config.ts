@@ -37,6 +37,7 @@ export default defineConfig({
       noForceEmit: true,
       declarationDir: resolve(__dirname, 'dist/types'),
       rootDir: resolve(__dirname, 'src'),
+      exclude: ['**/demos/*', '**/utils/*', '**/hooks/*'],
     }),
   ],
 });
