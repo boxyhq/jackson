@@ -8,7 +8,7 @@
     "moduleResolution": "Node",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "paths": {
-      "@boxyhq/sso-react": ["./src"]
+      "@boxyhq/react-ui": ["./src"]
     },
     "esModuleInterop": true
   }

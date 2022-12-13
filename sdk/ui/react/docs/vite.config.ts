@@ -62,7 +62,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@boxyhq/sso-react': path.join(__dirname, '../src'),
+      '@boxyhq/react-ui': path.join(__dirname, '../src'),
     },
   },
 });
