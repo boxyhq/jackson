@@ -1,20 +1,17 @@
----
-title: Login
-subGroup: sso
----
-
 # Login
 
-This is a **markdown** document of the `Login` component.
+## Installation
 
-You can put this page in a subgroup of the side menu using `staticData.subGroup`.
+```bash
+npm install @boxyhq/react-ui
+```
 
-## demos
+## Usage
 
-You can import demos like this:
+```tsx
+import { Login } from '@boxyhq/react-ui';
 
-```jsx
-<Demo src="./demos/demo1.tsx" />
+// Inside render
 
-<Demo src="./demos/demo2.tsx" />
+<Login forwardTenant={async () => void 0} label='Tenant' />;
 ```

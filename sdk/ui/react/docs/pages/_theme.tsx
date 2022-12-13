@@ -1,4 +1,3 @@
-import React from 'react';
 import { createTheme, defaultSideNavs } from 'vite-pages-theme-doc';
 
 import Component404 from './404';
@@ -8,12 +7,12 @@ export default createTheme({
   logo: (
     <div style={{ fontSize: '20px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
       <img src={logo} alt='BoxyHQ logo' width='40' height='40' />
-      BoxyHQ SSO-React
+      BoxyHQ React component SDK
     </div>
   ),
   topNavs: [
     {
-      label: 'Index',
+      label: 'SDK',
       path: '/',
       activeIfMatch: {
         // match all first-level paths
@@ -23,13 +22,8 @@ export default createTheme({
     },
     {
       label: 'Components',
-      path: '/components/Login',
+      path: '/components/demos/Login',
       activeIfMatch: '/components',
-    },
-    { label: 'Vite', href: 'https://github.com/vitejs/vite' },
-    {
-      label: 'Vite Pages',
-      href: 'https://github.com/vitejs/vite-plugin-react-pages',
     },
   ],
   sideNavs: (ctx) => {
