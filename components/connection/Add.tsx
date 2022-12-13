@@ -44,9 +44,7 @@ const Add = ({ setup }: AddProps) => {
 
         if (res.ok) {
           await mutate(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections');
-          router.replace(
-            setup ? `/setup/${setup.token}/sso-connection?redirect=false` : '/admin/sso-connection'
-          );
+          router.replace(setup ? `/setup/${setup.token}/sso-connection` : '/admin/sso-connection');
         }
       },
     });

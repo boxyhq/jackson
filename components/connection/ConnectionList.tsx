@@ -18,20 +18,13 @@ type ConnectionListProps = {
   connections: Connection[];
   paginate: any;
   setPaginate: any;
-  redirect?: string;
 };
 
-const Connections = ({
-  paginate,
-  setPaginate,
-  connections,
-  setupToken,
-  redirect = 'true',
-}: ConnectionListProps) => {
+const Connections = ({ paginate, setPaginate, connections, setupToken }: ConnectionListProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
 
-  if (connections.length === 0 && redirect !== 'false' && setupToken) {
+  if (connections.length === 0 && setupToken) {
     router.replace(`/setup/${setupToken}/sso-connection/new`);
     return null;
   }
