@@ -42,6 +42,7 @@
     "@types/react": "18.0.26",
     "@types/react-router-dom": "5.3.3",
     "@vitejs/plugin-react": "2.2.0",
+    "autoprefixer": "10.4.13",
     "rimraf": "3.0.2",
     "serve": "14.1.2",
     "tslib": "2.4.1",
