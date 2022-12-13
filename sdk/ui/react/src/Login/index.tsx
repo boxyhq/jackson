@@ -1,11 +1,12 @@
 import { useState, type ChangeEventHandler, type FormEvent } from 'react';
-import useId from '../hooks/useId';
 import type { LoginProps } from './types';
+import useId from '../hooks/useId';
+import cssClassAssembler from '../utils/cssClassAssembler';
 import defaultClasses from './index.module.css';
 
 const COMPONENT = 'sso';
 
-const Login = ({ forwardTenant, label, styles, classNames, unstyled }: LoginProps) => {
+const Login = ({ forwardTenant, label, styles, classNames, unstyled = false }: LoginProps) => {
   const inputId = useId(COMPONENT, 'input');
   const errorSpanId = useId(COMPONENT, 'span');
   const [tenant, setTenant] = useState('');
@@ -30,11 +31,13 @@ const Login = ({ forwardTenant, label, styles, classNames, unstyled }: LoginProp
   const isError = !!errMsg;
 
   return (
-    <form onSubmit={handleSubmit} className={`${defaultClasses.form} ${classNames?.container || ''}`}>
+    <form
+      onSubmit={handleSubmit}
+      className={cssClassAssembler(unstyled, classNames?.container, defaultClasses.form)}>
       <label
         htmlFor={inputId}
         style={styles?.label}
-        className={`${defaultClasses.label} ${classNames?.label || ''}`}>
+        className={cssClassAssembler(unstyled, classNames?.label, defaultClasses.label)}>
         {label}
       </label>
       <input
@@ -42,7 +45,7 @@ const Login = ({ forwardTenant, label, styles, classNames, unstyled }: LoginProp
         value={tenant}
         onChange={handleChange}
         style={styles?.input}
-        className={`${defaultClasses.input} ${classNames?.input || ''}`}
+        className={cssClassAssembler(unstyled, classNames?.input, defaultClasses.input)}
         aria-invalid={isError}
         aria-describedby={errorSpanId}
       />
@@ -50,7 +53,7 @@ const Login = ({ forwardTenant, label, styles, classNames, unstyled }: LoginProp
       <button
         type='submit'
         style={styles?.button}
-        className={`${defaultClasses.button} ${classNames?.button}`}>
+        className={cssClassAssembler(unstyled, classNames?.button, defaultClasses.button)}>
         Proceed
       </button>
     </form>
