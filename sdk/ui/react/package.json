@@ -44,6 +44,8 @@
     "@vitejs/plugin-react": "2.2.0",
     "rimraf": "3.0.2",
     "serve": "14.1.2",
+    "tslib": "2.4.1",
+    "typescript": "4.9.4",
     "vite": "3.2.4",
     "vite-pages-theme-doc": "3.4.0",
     "vite-plugin-mdx": "3.5.11",
