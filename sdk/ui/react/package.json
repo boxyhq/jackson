@@ -4,6 +4,17 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/@boxyhq/react-sso.umd.cjs",
+  "module": "./dist/@boxyhq/react-sso.js",
+  "exports": {
+    ".": {
+      "import": "./dist/@boxyhq/react-sso.js",
+      "require": "./dist/@boxyhq/react-sso.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "SHOW_ALL_COMPONENT_DEMOS=true vite serve docs",
     "build-docs": "rimraf docs/dist && vite build docs && serve -s docs/dist",
