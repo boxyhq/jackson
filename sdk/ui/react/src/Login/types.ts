@@ -8,7 +8,7 @@ export interface LoginProps {
    * @param {string} tenant Value for tenant.
    * @returns {Promise} Error from the application
    */
-  forwardTenant: (tenant: string) => Promise<{ error: { message: string } }>;
+  forwardTenant: (tenant: string) => Promise<{ error: { message: string } } | undefined>;
   /**
    * Label for the tenant input
    * @defaultValue Tenant
