@@ -26,7 +26,6 @@ type ConnectionListProps = {
   paginate: any;
   setPaginate: any;
   boxyhqEntityID?: string;
-  redirect?: string;
 };
 
 const Connections = ({
@@ -35,7 +34,6 @@ const Connections = ({
   connections,
   setupToken,
   boxyhqEntityID,
-  redirect = 'true',
 }: ConnectionListProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
@@ -50,7 +48,7 @@ const Connections = ({
     return null;
   }
 
-  if (connections.length === 0 && redirect !== 'false' && setupToken) {
+  if (connections.length === 0 && setupToken) {
     router.replace(`/setup/${setupToken}/sso-connection/new`);
     return null;
   }
