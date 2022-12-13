@@ -1,19 +1,15 @@
-# BoxyHQ UI components for React
+# @boxyhq/react-ui
 
-## How to use
+UI components from [BoxyHQ](https://boxyhq.com/) for plug-n-play enterprise features.
 
-`npm install` or `pnpm install`
+## Installation
 
-`npm run dev` You can play with docs and demos of your packages in the local development environment.
+`npm install @boxyhq/react-ui --save`
 
-> **Notice the "Components" navigation at the top bar!**
+## Example Usage
 
-`npm run build-docs` The demos are built and served.
+```tsx
+import { Login } from '@boxyhq/react-ui';
 
-`npm run ssr-docs` The app is built into a static site (Static-Site Generation) and served.
-
-`npm run build-lib` Build the library for publishing.
-
----
-
-Checkout [vite-plugin-react-pages](https://github.com/vitejs/vite-plugin-react-pages) for more info.
+<Login forwardTenant={async () => void 0} label='Tenant' />;
+```
