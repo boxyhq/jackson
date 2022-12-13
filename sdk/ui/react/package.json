@@ -1,7 +1,7 @@
 {
   "name": "@boxyhq/react-ui",
   "description": "React UI components from BoxyHQ",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "keywords": [
     "react",
@@ -22,7 +22,7 @@
   },
   "main": "./dist/@boxyhq/react-ui.umd.cjs",
   "module": "./dist/@boxyhq/react-ui.js",
-  "types": "./dist/dist/index.d.ts",
+  "types": "./dist/dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/@boxyhq/react-ui.js",
