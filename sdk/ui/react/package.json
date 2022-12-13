@@ -1,5 +1,5 @@
 {
-  "name": "@boxyhq/sso-react",
+  "name": "@boxyhq/react-sso",
   "description": "React components for Single Sign On (SSO) from BoxyHQ",
   "private": true,
   "version": "0.0.1",
@@ -20,7 +20,7 @@
     "@mdx-js/react": "2.1.5",
     "@mdx-js/rollup": "2.1.5",
     "@rollup/plugin-typescript": "10.0.1",
-    "@types/node": "18.11.10",
+    "@types/node": "18.11.14",
     "@types/react": "18.0.26",
     "@types/react-router-dom": "5.3.3",
     "@vitejs/plugin-react": "2.2.0",
