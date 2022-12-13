@@ -26,7 +26,7 @@
     "dev": "SHOW_ALL_COMPONENT_DEMOS=true vite serve docs",
     "build-docs": "rimraf docs/dist && vite build docs && serve -s docs/dist",
     "ssr-docs": "rimraf docs/dist && vite-pages ssr docs && serve docs/dist",
-    "build-lib": "vite build"
+    "build": "vite build"
   },
   "dependencies": {
     "react": "18.2.0",
