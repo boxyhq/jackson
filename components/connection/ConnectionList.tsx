@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
 
 type Connection = {
   name: string;
@@ -25,16 +26,19 @@ type ConnectionListProps = {
   paginate: any;
   setPaginate: any;
   boxyhqEntityID?: string;
+  redirect?: string;
 };
 
-const ConnectionList = ({
-  setupToken,
-  connections,
+const Connections = ({
   paginate,
   setPaginate,
+  connections,
+  setupToken,
   boxyhqEntityID,
+  redirect = 'true',
 }: ConnectionListProps) => {
   const { t } = useTranslation('common');
+  const router = useRouter();
 
   const copyUrl = () => {
     if (boxyhqEntityID) {
@@ -46,6 +50,10 @@ const ConnectionList = ({
     return null;
   }
 
+  if (connections.length === 0 && redirect !== 'false' && setupToken) {
+    router.replace(`/setup/${setupToken}/sso-connection/new`);
+    return null;
+  }
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
@@ -197,4 +205,4 @@ const ConnectionList = ({
   );
 };
 
-export default ConnectionList;
+export default Connections;
