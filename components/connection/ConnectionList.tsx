@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowLeftIcon, ArrowRightIcon, PencilIcon, LinkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
 
 type Connection = {
   name: string;
@@ -17,11 +18,23 @@ type ConnectionListProps = {
   connections: Connection[];
   paginate: any;
   setPaginate: any;
+  redirect?: string;
 };
 
-const Connections = ({ paginate, setPaginate, connections, setupToken }: ConnectionListProps) => {
+const Connections = ({
+  paginate,
+  setPaginate,
+  connections,
+  setupToken,
+  redirect = 'true',
+}: ConnectionListProps) => {
   const { t } = useTranslation('common');
+  const router = useRouter();
 
+  if (connections.length === 0 && redirect !== 'false' && setupToken) {
+    router.replace(`/setup/${setupToken}/sso-connection/new`);
+    return null;
+  }
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
