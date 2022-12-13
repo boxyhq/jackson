@@ -6,12 +6,14 @@ export const saveConnection = async ({
   isEditView,
   connectionIsSAML,
   connectionIsOIDC,
+  setupToken,
   callback,
 }: {
   formObj: Record<string, string>;
   isEditView?: boolean;
   connectionIsSAML: boolean;
   connectionIsOIDC: boolean;
+  setupToken?: string;
   callback: (res: Response) => void;
 }) => {
   const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
@@ -24,7 +26,7 @@ export const saveConnection = async ({
   const encodedRawMetadata = btoa(rawMetadata || '');
   const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-  const res = await fetch('/api/admin/connections', {
+  const res = await fetch(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections', {
     method: isEditView ? 'PATCH' : 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -168,3 +170,29 @@ export function renderFieldList(args: {
   };
   return FieldList;
 }
+
+export const deleteLink = async (setupID: string) => {
+  await fetch(`/api/admin/setup-links?setupID=${setupID}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const regenerateLink = async (setupLink: any, service: string) => {
+  const { tenant, product } = setupLink;
+
+  const res = await fetch('/api/admin/setup-links', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      tenant,
+      product,
+      type: service,
+      regenerate: true,
+    }),
+  });
+};

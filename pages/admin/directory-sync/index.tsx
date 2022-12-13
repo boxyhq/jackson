@@ -1,11 +1,7 @@
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
-import Link from 'next/link';
-import { PencilIcon, CircleStackIcon } from '@heroicons/react/24/outline';
 
 import jackson from '@lib/jackson';
-import EmptyState from '@components/EmptyState';
-import Paginate from '@components/Paginate';
-import { useTranslation } from 'next-i18next';
+import DirectoryList from '@components/dsync/DirectoryList';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Index = ({
@@ -14,76 +10,13 @@ const Index = ({
   pageLimit,
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const { t } = useTranslation('common');
   return (
-    <>
-      <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
-        <Link href={'/admin/directory-sync/new'} className='btn-primary btn'>
-          + {t('new_directory')}
-        </Link>
-      </div>
-      {directories?.length === 0 && pageOffset === 0 ? (
-        <EmptyState title='No directories found' href='/admin/directory-sync/new' />
-      ) : (
-        <div className='rounder border'>
-          <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
-            <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-              <tr>
-                <th scope='col' className='px-6 py-3'>
-                  {t('name')}
-                </th>
-                <th scope='col' className='px-6 py-3'>
-                  {t('tenant')}
-                </th>
-                <th scope='col' className='px-6 py-3'>
-                  {t('product')}
-                </th>
-                <th scope='col' className='px-6 py-3'>
-                  {t('type')}
-                </th>
-                <th scope='col' className='px-6 py-3'>
-                  {t('actions')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {directories &&
-                directories.map((directory) => {
-                  return (
-                    <tr
-                      key={directory.id}
-                      className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {directory.name}
-                      </td>
-                      <td className='px-6'>{directory.tenant}</td>
-                      <td className='px-6'>{directory.product}</td>
-                      <td className='px-6'>{providers[directory.type]}</td>
-                      <td className='px-6'>
-                        <div className='flex flex-row'>
-                          <Link href={`/admin/directory-sync/${directory.id}`} className='link-primary'>
-                            <CircleStackIcon className='h-5 w-5 text-secondary' />
-                          </Link>
-                          <Link href={`/admin/directory-sync/${directory.id}/edit`} className='link-primary'>
-                            <PencilIcon className='h-5 w-5 text-secondary' />
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-          <Paginate
-            pageOffset={pageOffset}
-            pageLimit={pageLimit}
-            itemsCount={directories ? directories.length : 0}
-            path={`/admin/directory-sync?`}
-          />
-        </div>
-      )}
-    </>
+    <DirectoryList
+      directories={directories || []}
+      pageOffset={pageOffset}
+      pageLimit={pageLimit}
+      providers={providers}
+    />
   );
 };
 

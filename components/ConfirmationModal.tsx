@@ -7,18 +7,19 @@ const ConfirmationModal = (props: {
   description: string;
   onConfirm: any;
   onCancel: any;
+  actionButtonText?: string;
 }) => {
-  const { visible, title, description, onConfirm, onCancel } = props;
+  const { visible, title, description, onConfirm, onCancel, actionButtonText } = props;
   const { t } = useTranslation('common');
 
   return (
     <Modal visible={visible} title={title} description={description}>
       <div className='modal-action'>
-        <button className='btn btn-outline' onClick={onCancel}>
+        <button className='btn-outline btn' onClick={onCancel}>
           {t('cancel')}
         </button>
-        <button className='btn btn-error' onClick={onConfirm}>
-          {t('delete')}
+        <button className='btn-error btn' onClick={onConfirm}>
+          {actionButtonText || t('delete')}
         </button>
       </div>
     </Modal>

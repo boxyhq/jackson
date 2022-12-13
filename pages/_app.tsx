@@ -6,8 +6,9 @@ import { useRouter } from 'next/router';
 import { Toaster } from 'react-hot-toast';
 import { appWithTranslation } from 'next-i18next';
 import { ReactElement, ReactNode } from 'react';
+import micromatch from 'micromatch';
 
-import { AccountLayout } from '@components/layouts';
+import { AccountLayout, SetupLayout } from '@components/layouts';
 
 import '../styles/globals.css';
 
@@ -19,6 +20,10 @@ const unauthenticatedRoutes = [
   '/idp/select',
   '/error',
 ];
+
+const isUnauthenticatedRoute = (pathname: string) => {
+  return micromatch.isMatch(pathname, unauthenticatedRoutes);
+};
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const { pathname } = useRouter();
@@ -37,7 +42,16 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     );
   }
 
-  if (unauthenticatedRoutes.includes(pathname)) {
+  if (pathname.startsWith('/setup/')) {
+    return (
+      <SetupLayout>
+        <Component {...props} />
+        <Toaster toastOptions={{ duration: Infinity }} />
+      </SetupLayout>
+    );
+  }
+
+  if (isUnauthenticatedRoute(pathname)) {
     return <Component {...props} />;
   }
 

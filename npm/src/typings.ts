@@ -270,7 +270,7 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
-  getAll(pageOffset?: number, pageLimit?: number): Promise<unknown[]>;
+  getAll(pageOffset?: number, pageLimit?: number): Promise<any[]>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
@@ -665,4 +665,36 @@ export interface WebhookEventLog extends DirectorySyncEvent {
   created_at: Date;
   status_code?: number;
   delivered?: boolean;
+}
+export type SetupLinkCreatePayload = {
+  tenant: string;
+  product: string;
+  service: 'sso' | 'dsync';
+  regenerate?: boolean;
+};
+
+export type SetupLinkRegeneratePayload = {
+  reference: string;
+};
+
+export type SetupLink = {
+  setupID: string;
+  tenant: string;
+  product: string;
+  url: string;
+  service: string;
+  validTill: number;
+};
+
+export type ApiResponse<T> = {
+  data: T | null;
+  error: ApiError | null;
+};
+
+export interface ISetupLinkController {
+  create(body: SetupLinkCreatePayload): Promise<ApiResponse<SetupLink>>;
+  getAll(): Promise<ApiResponse<SetupLink[]>>;
+  getByService(service): Promise<ApiResponse<SetupLink[]>>;
+  getByToken(token): Promise<ApiResponse<SetupLink>>;
+  remove(key: string): Promise<ApiResponse<boolean>>;
 }

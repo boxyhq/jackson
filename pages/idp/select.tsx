@@ -1,4 +1,5 @@
 import type { GetServerSideProps } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import getRawBody from 'raw-body';
 import { useEffect, useRef, useState } from 'react';
@@ -28,7 +29,9 @@ export default function IdPSelection({ SAMLResponse, appList }) {
     const paramsToRelay = new URLSearchParams(Object.entries(rest));
     return (
       <div className='relative top-1/2 left-1/2  w-1/2 max-w-xl  -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border-[1px] py-4 px-6 text-center'>
-        <h1 className='mb-4 px-3 text-center text-lg font-bold text-black'>{t('choose_an_identity_provider')}</h1>
+        <h1 className='mb-4 px-3 text-center text-lg font-bold text-black'>
+          {t('choose_an_identity_provider')}
+        </h1>
         <ul className='max-h-96 overflow-auto'>
           {idpList.map((idp) => {
             const { clientID, name, provider, connectionIsSAML, connectionIsOIDC } = JSON.parse(idp);
@@ -36,7 +39,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
             const connectionLabel = name ? `${name} (${provider})` : provider;
             return (
               <li className='relative my-3 border-b-[1px] bg-white last:border-b-0' key={clientID}>
-                <a
+                <Link
                   href={`/api/oauth/authorize?${paramsToRelay.toString()}&idp_hint=${clientID}`}
                   className='relative flex w-full cursor-pointer items-center overflow-hidden  py-3 px-8 text-center text-[#3C454C] outline-none transition-colors hover:bg-primary/10 focus:bg-primary/30'
                   aria-label={`Connection ${connectionLabel} of type ${connectionType}`}>
@@ -46,7 +49,7 @@ export default function IdPSelection({ SAMLResponse, appList }) {
                   <span aria-hidden className='badge-primary badge badge-md'>
                     {connectionType}
                   </span>
-                </a>
+                </Link>
               </li>
             );
           })}
@@ -113,7 +116,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, locale }) =>
 
     return { props: { SAMLResponse, appList: app ? JSON.parse(app) : [] } };
   }
-  return { props: {
-    ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-  } };
+  return {
+    props: {
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
+  };
 };

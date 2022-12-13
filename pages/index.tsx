@@ -6,7 +6,7 @@ const Home: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/admin/connection');
+    router.push('/admin/sso-connection');
   }, [router]);
 
   return (

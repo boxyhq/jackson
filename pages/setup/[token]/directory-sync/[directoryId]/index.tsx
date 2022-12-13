@@ -2,20 +2,18 @@ import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-
+import { useRouter } from 'next/router';
 import DirectoryInfo from '@components/dsync/DirectoryInfo';
 
 const Info: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory }) => {
-  const { t } = useTranslation('common');
-  return <DirectoryInfo directory={directory} />;
+  const router = useRouter();
+  const { token } = router.query;
+  return <DirectoryInfo directory={directory} token={token as string} />;
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { directoryId } = context.query;
   const { directorySyncController } = await jackson();
-  const { locale }: GetServerSidePropsContext = context;
 
   const { data: directory } = await directorySyncController.directories.get(directoryId as string);
 
@@ -28,7 +26,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   return {
     props: {
       directory,
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };

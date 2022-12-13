@@ -50,6 +50,18 @@ module.exports = {
         source: '/oauth/jwks',
         destination: '/api/oauth/jwks',
       },
+      {
+        source: '/admin/directory-sync/setup-link',
+        destination: '/admin/sso-connection/setup-link',
+      },
+      {
+        source: '/admin/sso-connection/setup-link/new',
+        destination: '/admin/setup-link/new',
+      },
+      {
+        source: '/admin/directory-sync/setup-link/new',
+        destination: '/admin/setup-link/new',
+      },
     ];
   },
 };

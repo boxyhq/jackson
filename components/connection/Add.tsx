@@ -4,13 +4,18 @@ import { useState } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
+import { mutate } from 'swr';
 import { ApiResponse } from 'types';
 import { errorToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 
 const fieldCatalog = [...getCommonFields()];
 
-const Add = () => {
+type AddProps = {
+  setup?: Record<string, any>;
+};
+
+const Add = ({ setup }: AddProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   // STATE: New connection type
@@ -28,6 +33,7 @@ const Add = () => {
       formObj: formObj,
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
+      setupToken: setup ? (setup.token as string) : '',
       callback: async (res) => {
         const response: ApiResponse = await res.json();
 
@@ -37,7 +43,8 @@ const Add = () => {
         }
 
         if (res.ok) {
-          router.replace('/admin/connection');
+          await mutate(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections');
+          router.replace(setup ? `/setup/${setup.token}/sso-connection` : '/admin/sso-connection');
         }
       },
     });
@@ -48,7 +55,9 @@ const Add = () => {
 
   return (
     <>
-      <Link href='/admin/connection' className='btn-outline btn items-center space-x-2'>
+      <Link
+        href={setup ? `/setup/${setup.token}` : '/admin/sso-connection'}
+        className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
       </Link>
@@ -95,6 +104,7 @@ const Add = () => {
           <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
             {fieldCatalog
               .filter(fieldCatalogFilterByConnection(newConnectionType))
+              .filter(({ attributes: { hideInSetupView } }) => (setup ? !hideInSetupView : true))
               .map(renderFieldList({ formObj, setFormObj }))}
             <div className='flex'>
               <button type='submit' className='btn-primary btn'>

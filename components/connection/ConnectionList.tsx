@@ -1,50 +1,59 @@
-import type { GetServerSidePropsContext, NextPage } from 'next';
-import useSWR from 'swr';
 import Link from 'next/link';
-import { ArrowLeftIcon, ArrowRightIcon, PencilIcon } from '@heroicons/react/24/outline';
-import { useState } from 'react';
-import { fetcher } from '@lib/ui/utils';
+import { ArrowLeftIcon, ArrowRightIcon, PencilIcon, LinkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import type { SAMLSSORecord, OIDCSSORecord } from '@boxyhq/saml-jackson';
-import type { ApiError, ApiSuccess } from 'types';
-import { Loader } from '@components/Loader';
-import { errorToast } from '@components/Toast';
+import { useRouter } from 'next/router';
 
-type Connection = SAMLSSORecord | OIDCSSORecord;
+type Connection = {
+  name: string;
+  tenant: string;
+  product: string;
+  clientID: string;
+  idpMetadata?: any;
+  oidcProvider?: any;
+};
 
-const Connections: NextPage = () => {
+type ConnectionListProps = {
+  setupToken?: string;
+  connections: Connection[];
+  paginate: any;
+  setPaginate: any;
+};
+
+const Connections = ({ paginate, setPaginate, connections, setupToken }: ConnectionListProps) => {
   const { t } = useTranslation('common');
-  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
+  const router = useRouter();
 
-  const { data, error } = useSWR<ApiSuccess<Connection[]>, ApiError>(
-    [`/api/admin/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
-    fetcher,
-    { revalidateOnFocus: false }
-  );
-
-  if (!data && !error) {
-    return <Loader />;
-  }
-
-  if (error) {
-    errorToast(error.message);
+  if (connections.length === 0 && setupToken) {
+    router.replace(`/setup/${setupToken}/sso-connection/new`);
     return null;
   }
-
-  const connections = data?.data || [];
-
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
-        <Link href={`/admin/connection/new`} className='btn-primary btn' data-test-id='create-connection'>
-          + {t('new_connection')}
-        </Link>
+        <div>
+          <Link
+            href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
+            className='btn-primary btn m-2'
+            data-test-id='create-connection'>
+            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_connection')}
+          </Link>
+          {!setupToken && (
+            <Link
+              href={`/admin/sso-connection/setup-link/new`}
+              className='btn-primary btn m-2'
+              data-test-id='create-setup-link'>
+              <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
+            </Link>
+          )}
+        </div>
       </div>
       {connections.length === 0 ? (
-        <EmptyState title={t('no_connections_found')} href={`/admin/connection/new`} />
+        <EmptyState
+          title={t('no_connections_found')}
+          href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
+        />
       ) : (
         <>
           <div className='rounder border'>
@@ -52,11 +61,18 @@ const Connections: NextPage = () => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3'>
-                    {t('tenant')}
+                    {t('name')}
                   </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('product')}
-                  </th>
+                  {!setupToken && (
+                    <>
+                      <th scope='col' className='px-6 py-3'>
+                        {t('tenant')}
+                      </th>
+                      <th scope='col' className='px-6 py-3'>
+                        {t('product')}
+                      </th>
+                    </>
+                  )}
                   <th scope='col' className='px-6 py-3'>
                     {t('idp_type')}
                   </th>
@@ -67,23 +83,38 @@ const Connections: NextPage = () => {
               </thead>
               <tbody>
                 {connections.map((connection) => {
-                  const connectionIsSAML = 'idpMetadata' in connection;
-                  const connectionIsOIDC = 'oidcProvider' in connection;
+                  const connectionIsSAML =
+                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
+                  const connectionIsOIDC =
+                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
                   return (
                     <tr
                       key={connection.clientID}
                       className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                        {connection.tenant}
-                      </td>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {connection.product}
+                        {connection.name || connection.idpMetadata?.provider}
                       </td>
+                      {!setupToken && (
+                        <>
+                          <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
+                            {connection.tenant}
+                          </td>
+                          <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                            {connection.product}
+                          </td>
+                        </>
+                      )}
                       <td className='px-6 py-3'>
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
                       </td>
                       <td className='px-6 py-3'>
-                        <Link href={`/admin/connection/edit/${connection.clientID}`} className='link-primary'>
+                        <Link
+                          href={
+                            setupToken
+                              ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
+                              : `/admin/sso-connection/edit/${connection.clientID}`
+                          }
+                          className='link-primary'>
                           <PencilIcon className='h-5 w-5 text-secondary' />
                         </Link>
                       </td>
@@ -132,11 +163,3 @@ const Connections: NextPage = () => {
 };
 
 export default Connections;
-
-export async function getStaticProps({ locale }: GetServerSidePropsContext) {
-  return {
-    props: {
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-    },
-  };
-}

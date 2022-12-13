@@ -7,6 +7,7 @@ import type {
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
+  ISetupLinkController,
   IDirectorySyncController,
   DirectoryType,
   Directory,
@@ -30,6 +31,7 @@ let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
+let setupLinkController: ISetupLinkController;
 let directorySyncController: IDirectorySyncController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
@@ -44,6 +46,7 @@ export default async function init() {
     !g.healthCheckController ||
     !g.logoutController ||
     !g.directorySync ||
+    !g.setupLinkController ||
     !g.oidcDiscoveryController ||
     !g.spConfig
   ) {
@@ -53,6 +56,7 @@ export default async function init() {
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
+    setupLinkController = ret.setupLinkController;
     directorySyncController = ret.directorySyncController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
@@ -63,6 +67,7 @@ export default async function init() {
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
     g.directorySync = directorySyncController;
+    g.setupLinkController = setupLinkController;
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
     g.isJacksonReady = true;
@@ -74,6 +79,7 @@ export default async function init() {
     healthCheckController = g.healthCheckController;
     directorySyncController = g.directorySync;
     oidcDiscoveryController = g.oidcDiscoveryController;
+    setupLinkController = g.setupLinkController;
     spConfig = g.spConfig;
   }
 
@@ -86,6 +92,7 @@ export default async function init() {
     healthCheckController,
     directorySyncController,
     oidcDiscoveryController,
+    setupLinkController,
   };
 }
 
