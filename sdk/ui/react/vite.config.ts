@@ -13,7 +13,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'BoxyHQSSO',
       // the proper extensions will be added
-      fileName: '@boxyhq/sso-react',
+      fileName: '@boxyhq/react-sso',
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
