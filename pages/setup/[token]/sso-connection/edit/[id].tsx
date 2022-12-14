@@ -13,9 +13,6 @@ const EditConnection: NextPage = () => {
     revalidateOnFocus: false,
   });
   const setup = data?.data;
-  if (!token || !setup) {
-    return null;
-  }
 
   const { data: connectionData, error } = useSWR(
     token ? (id ? `/api/setup/${token}/connections/${id}` : null) : null,
@@ -34,7 +31,7 @@ const EditConnection: NextPage = () => {
     );
   }
 
-  if (!connection) {
+  if (!token || !setup || !connection) {
     return null;
   }
 
