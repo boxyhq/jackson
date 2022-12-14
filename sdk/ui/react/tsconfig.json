@@ -3,13 +3,22 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "useDefineForClassFields": true,
+    "allowJs": false,
+    "skipLibCheck": true,
     "baseUrl": ".",
     "jsx": "react-jsx",
+    "module": "ESNext",
     "moduleResolution": "Node",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "paths": {
       "@boxyhq/react-ui": ["./src"]
     },
-    "esModuleInterop": true
-  }
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true
+  },
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
