@@ -531,7 +531,7 @@ export class OAuthController implements IOAuthController {
     const isIdPFlow = !RelayState.startsWith(relayStatePrefix);
 
     if (!this.opts.idpEnabled && isIdPFlow) {
-      // IDP is disabled so block the request
+      // IdP login is disabled so block the request
 
       throw new JacksonError(
         'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
