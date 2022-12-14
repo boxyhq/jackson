@@ -1,11 +1,4 @@
-import {
-  ShieldCheckIcon,
-  UsersIcon,
-  HomeIcon,
-  LinkIcon,
-  ListBulletIcon,
-  //Cog6ToothIcon,
-} from '@heroicons/react/20/solid';
+import { ShieldCheckIcon, UsersIcon, HomeIcon, LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -114,44 +107,33 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                 {menus.map((menu, idx) => {
                   const hasSubMenu = menu.items ? (menu.items.length > 0 ? true : false) : false;
                   return (
-                    <>
+                    <div key={`a-${idx}`}>
                       <Link
-                        key={`a-link-${idx}`}
                         href={menu.href}
                         className={classNames(
                           'group flex items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
                           menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
                         )}>
-                        <menu.icon
-                          key={`a-icon-${idx}`}
-                          className='mr-4 h-6 w-6 flex-shrink-0'
-                          aria-hidden='true'
-                        />
+                        <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                         {menu.text}
                       </Link>
                       {hasSubMenu ? (
                         <nav key={`a-nav-${idx}`} className={`hide space-y-1 px-2`}>
                           {(menu.items || []).map((subMenu, id) => (
                             <Link
-                              key={`a-sub-link-${id}`}
+                              key={`a-sub-link-${idx}-${id}`}
                               href={subMenu.href}
                               className={classNames(
                                 'group flex h-8 items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
                                 subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
                               )}>
-                              <subMenu.icon
-                                key={`a-sub-icon-${id}`}
-                                className='mr-4 h-6 w-6 flex-shrink-0'
-                                aria-hidden='true'
-                              />
+                              <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                               {subMenu.text}
                             </Link>
                           ))}
                         </nav>
-                      ) : (
-                        ''
-                      )}
-                    </>
+                      ) : null}
+                    </div>
                   );
                 })}
               </nav>
@@ -176,44 +158,33 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
               {menus.map((menu, idx) => {
                 const hasSubMenu = menu.items ? (menu.items.length > 0 ? true : false) : false;
                 return (
-                  <>
+                  <div key={`b-${idx}`}>
                     <Link
-                      key={`b-link-${idx}`}
                       href={menu.href}
                       className={classNames(
                         'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
                         menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
                       )}>
-                      <menu.icon
-                        key={`a-icon-${idx}`}
-                        className='mr-4 h-6 w-6 flex-shrink-0'
-                        aria-hidden='true'
-                      />
+                      <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                       {menu.text}
                     </Link>
                     {hasSubMenu ? (
-                      <nav key={`b-nav-${idx}`} className='flex-1 space-y-1 px-2 pb-4' id='subMenu'>
+                      <nav className='flex-1 space-y-1 px-2 pb-4' id='subMenu'>
                         {(menu.items || []).map((subMenu, id) => (
                           <Link
-                            key={`a-sub-link-${id}`}
+                            key={`b-sub-link-${idx}-${id}`}
                             href={subMenu.href}
                             className={classNames(
                               'group flex h-8 items-center rounded-md px-2 py-2 text-sm text-gray-900',
                               subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
                             )}>
-                            <subMenu.icon
-                              key={`a-sub-icon-${id}`}
-                              className='mr-4 h-6 w-6 flex-shrink-0'
-                              aria-hidden='true'
-                            />
+                            <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                             {subMenu.text}
                           </Link>
                         ))}
                       </nav>
-                    ) : (
-                      ''
-                    )}
-                  </>
+                    ) : null}
+                  </div>
                 );
               })}
             </nav>
