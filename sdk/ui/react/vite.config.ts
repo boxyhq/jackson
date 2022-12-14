@@ -4,6 +4,7 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import typescript from '@rollup/plugin-typescript';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   build: {
@@ -29,6 +30,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    react(),
     // use @rollup/plugin-typescript to generate .d.ts files
     // https://github.com/rollup/plugins/tree/master/packages/typescript#noforceemit
     typescript({

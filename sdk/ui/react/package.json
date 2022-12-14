@@ -1,7 +1,7 @@
 {
   "name": "@boxyhq/react-ui",
   "description": "React UI components from BoxyHQ",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "type": "module",
   "keywords": [
     "react",
@@ -13,7 +13,7 @@
     "dist"
   ],
   "bugs": {
-    "url": "https://github.com/boxyhq/jackson/issues"
+    "url": "https://github.com/boxyhq/jackson/issues?q=is%3Aopen+is%3Aissue+label%3Asdk"
   },
   "repository": {
     "type": "git",
