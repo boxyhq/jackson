@@ -20,7 +20,7 @@ const Connections: NextPage = () => {
     { revalidateOnFocus: false }
   );
   const { data: boxyhqEntityID } = useSWR<any>(
-    token ? `/api/setup/${token}/connections/entityID` : null,
+    token ? `/api/setup/${token}/connections/boxyhqEntityid` : null,
     fetcher,
     { revalidateOnFocus: false }
   );
