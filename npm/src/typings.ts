@@ -81,7 +81,7 @@ type TenantProduct = {
 };
 
 export type GetConnectionsQuery = ClientIDQuery | TenantQuery;
-export type GetEntityIDBody = TenantProduct;
+export type GetIDPEntityIDBody = TenantProduct;
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 
 export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
@@ -108,7 +108,7 @@ export interface IConnectionAPIController {
   ): Promise<void>;
   updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
   getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
-  getEntityID(body: GetEntityIDBody): string;
+  getIDPEntityID(body: GetIDPEntityIDBody): string;
   /**
    * @deprecated Use `getConnections` instead.
    */

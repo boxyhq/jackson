@@ -13,6 +13,11 @@ const NewConnection: NextPage = () => {
   const { data: setup } = useSWR<any>(token ? `/api/setup/${token}` : null, fetcher, {
     revalidateOnFocus: false,
   });
+  const { data: boxyhqEntityID } = useSWR<any>(
+    token ? `/api/setup/${token}/connections/idp-entityid` : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
   if (!token || !setup) {
     return null;
   } else {
@@ -22,6 +27,7 @@ const NewConnection: NextPage = () => {
           ...setup,
           token,
         }}
+        boxyhqEntityID={boxyhqEntityID}
       />
     );
   }

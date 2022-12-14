@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import jackson, { GetEntityIDBody } from '@lib/jackson';
+import jackson, { GetIDPEntityIDBody } from '@lib/jackson';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -15,12 +15,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
-  const entityID = await connectionAPIController.getEntityID({
+  const idpEntityID = await connectionAPIController.getIDPEntityID({
     tenant: req.body.tenant,
     product: req.body.product,
-  } as GetEntityIDBody);
+  } as GetIDPEntityIDBody);
   return res.json({
-    boxyhqEntityID: entityID,
+    boxyhqEntityID: idpEntityID,
   });
 };
 

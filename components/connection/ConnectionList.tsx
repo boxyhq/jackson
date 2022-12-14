@@ -10,6 +10,8 @@ import {
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
+import { copyToClipboard } from '@lib/ui/utils';
+import { successToast } from '@components/Toast';
 
 type Connection = {
   name: string;
@@ -37,12 +39,6 @@ const Connections = ({
 }: ConnectionListProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
-
-  const copyUrl = () => {
-    if (boxyhqEntityID) {
-      navigator.clipboard.writeText(boxyhqEntityID);
-    }
-  };
 
   if (!connections) {
     return null;
@@ -74,17 +70,23 @@ const Connections = ({
         </div>
       </div>
       {boxyhqEntityID && setupToken && (
-        <div className='mb-5 items-center justify-between'>
-          <div className='form-control p-2'>
+        <div className='mb-5 mt-5 items-center justify-between'>
+          <div className='form-control'>
             <div className='input-group'>
-              <button className='btn-primary btn h-10 p-2 text-white' onClick={copyUrl}>
+              <div className='pt-2 pr-2'>{t('idp_entity_id')}:</div>
+              <button
+                className='btn-primary btn h-10 p-2 text-white'
+                onClick={() => {
+                  copyToClipboard(boxyhqEntityID);
+                  successToast(t('copied'));
+                }}>
                 <ClipboardDocumentListIcon className='h-6 w-6' />
               </button>
               <input
                 type='text'
                 readOnly
                 value={boxyhqEntityID}
-                className='input-bordered input h-10 w-full'
+                className='input-bordered input h-10 w-4/5'
               />
             </div>
           </div>

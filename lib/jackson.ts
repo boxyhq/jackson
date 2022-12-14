@@ -19,7 +19,7 @@ import type {
   IOidcDiscoveryController,
   ISPSAMLConfig,
   GetConnectionsQuery,
-  GetEntityIDBody,
+  GetIDPEntityIDBody,
   GetConfigQuery,
 } from '@boxyhq/saml-jackson';
 
@@ -109,6 +109,6 @@ export type {
   HTTPMethod,
   DirectorySyncRequest,
   GetConnectionsQuery,
-  GetEntityIDBody,
+  GetIDPEntityIDBody,
   GetConfigQuery,
 };

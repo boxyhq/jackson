@@ -1,21 +1,23 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
-import { errorToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
+import { copyToClipboard } from '@lib/ui/utils';
 
 const fieldCatalog = [...getCommonFields()];
 
 type AddProps = {
   setup?: Record<string, any>;
+  boxyhqEntityID?: string;
 };
 
-const Add = ({ setup }: AddProps) => {
+const Add = ({ setup, boxyhqEntityID }: AddProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   // STATE: New connection type
@@ -61,6 +63,29 @@ const Add = ({ setup }: AddProps) => {
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
       </Link>
+      {boxyhqEntityID && setup && (
+        <div className='mb-5 mt-5 items-center justify-between'>
+          <div className='form-control'>
+            <div className='input-group'>
+              <div className='pt-2 pr-2'>{t('idp_entity_id')}:</div>
+              <button
+                className='btn-primary btn h-10 p-2 text-white'
+                onClick={() => {
+                  copyToClipboard(boxyhqEntityID);
+                  successToast(t('copied'));
+                }}>
+                <ClipboardDocumentListIcon className='h-6 w-6' />
+              </button>
+              <input
+                type='text'
+                readOnly
+                value={boxyhqEntityID}
+                className='input-bordered input h-10 w-4/5'
+              />
+            </div>
+          </div>
+        </div>
+      )}
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_sso_connection')}

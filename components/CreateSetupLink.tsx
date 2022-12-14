@@ -10,6 +10,7 @@ import ConfirmationModal from '@components/ConfirmationModal';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toast';
+import { copyToClipboard } from '@lib/ui/utils';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
@@ -66,10 +67,6 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       setLoading1(false);
       errorToast(t('server_error'));
     }
-  };
-  const copyUrl = () => {
-    navigator.clipboard.writeText(url);
-    successToast(t('copied'));
   };
   const getHandleChange = (event: FormEvent) => {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
@@ -177,7 +174,12 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
           </h2>
           <div className='form-control p-2'>
             <div className='input-group'>
-              <button className='btn-primary btn h-10 p-2 text-white' onClick={copyUrl}>
+              <button
+                className='btn-primary btn h-10 p-2 text-white'
+                onClick={() => {
+                  copyToClipboard(url);
+                  successToast(t('copied'));
+                }}>
                 <ClipboardDocumentListIcon className='h-6 w-6' />
               </button>
               <input type='text' readOnly value={url} className='input-bordered input h-10 w-full' />

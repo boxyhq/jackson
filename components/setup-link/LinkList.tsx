@@ -12,7 +12,7 @@ import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useState, useEffect } from 'react';
 import { successToast } from '@components/Toast';
-import { fetcher } from '@lib/ui/utils';
+import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
 
@@ -36,9 +36,6 @@ const LinkList = ({ service }) => {
   const toggleDelConfirmModal = () => setShowDelConfirmModal(!showDelConfirmModal);
   const toggleRegenConfirmModal = () => setShowRegenConfirmModal(!showRegenConfirmModal);
   const [actionId, setActionId] = useState(0);
-  const copyUrl = (url) => {
-    navigator.clipboard.writeText(url);
-  };
   const invokeRegenerate = async () => {
     await regenerateLink(links[actionId], service);
     toggleRegenConfirmModal();
@@ -120,7 +117,7 @@ const LinkList = ({ service }) => {
                             <ClipboardDocumentListIcon
                               className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
                               onClick={() => {
-                                copyUrl(link.url);
+                                copyToClipboard(link.url);
                                 successToast(t('copied'));
                               }}
                             />
