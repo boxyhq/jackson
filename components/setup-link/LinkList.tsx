@@ -54,10 +54,12 @@ const LinkList = ({ service }) => {
   }
   return (
     <div>
+      <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>
+        {t('setup_links') + ' (' + (service === 'sso' ? t('enterprise_sso') : t('directory_sync')) + ')'}
+      </h2>
+
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>
-          {t('setup_links') + ' (' + (service === 'sso' ? t('enterprise_sso') : t('directory_sync')) + ')'}
-        </h2>
+        <h3>{service === 'sso' ? t('setup_link_sso_description') : t('setup_link_dsync_description')}</h3>
         <div>
           <Link
             href={`/admin/${

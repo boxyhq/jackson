@@ -80,5 +80,7 @@
   "directory_updated_successfully": "Directory updated successfully",
   "dashboard": "Dashboard",
   "create_setup_link": "Create Setup Link ({{service}})",
-  "setup_link_info": "Setup Link Info"
+  "setup_link_info": "Setup Link Info",
+  "setup_link_sso_description": "Create a unique Setup Link to share with your customer so they can setup SSO Connection for your app.",
+  "setup_link_dsync_description": "Create a unique Setup Link to share with your customer so they can setup Directory Sync for your app."
 }
