@@ -49,7 +49,7 @@ const handleGET = async (res: NextApiResponse, setup: any) => {
     tenant: setup.tenant,
     product: setup.product,
   } as GetIDPEntityIDBody);
-  return res.json(idpEntityID);
+  return res.json({ data: idpEntityID, error: null });
 };
 
 export default handler;

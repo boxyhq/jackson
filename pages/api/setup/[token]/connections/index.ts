@@ -28,12 +28,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handleGET = async (res: NextApiResponse, setup: any) => {
   const { connectionAPIController } = await jackson();
-  return res.json(
-    await connectionAPIController.getConnections({
+  return res.json({
+    data: await connectionAPIController.getConnections({
       tenant: setup.tenant,
       product: setup.product,
-    } as GetConnectionsQuery)
-  );
+    } as GetConnectionsQuery),
+  });
 };
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setup: any) => {

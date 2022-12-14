@@ -22,14 +22,10 @@ const LinkList = ({ service }) => {
     setQueryParam(`?service=${service}`);
   }, [service]);
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data: setupLinks, mutate } = useSWR<any>(
-    queryParam ? [`/api/admin/setup-links`, queryParam] : [],
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    }
-  );
-  const links = setupLinks?.data;
+  const { data, mutate } = useSWR<any>(queryParam ? [`/api/admin/setup-links`, queryParam] : [], fetcher, {
+    revalidateOnFocus: false,
+  });
+  const links = data?.data;
   const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
   const [showRegenConfirmModal, setShowRegenConfirmModal] = useState(false);

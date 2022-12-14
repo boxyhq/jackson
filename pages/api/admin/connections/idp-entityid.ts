@@ -19,9 +19,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     tenant: req.body.tenant,
     product: req.body.product,
   } as GetIDPEntityIDBody);
-  return res.json({
-    boxyhqEntityID: idpEntityID,
-  });
+  return res.json({ data: idpEntityID, error: null });
 };
 
 export default handler;

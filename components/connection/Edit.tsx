@@ -35,10 +35,10 @@ function getInitialState(connection) {
 
 type EditProps = {
   connection?: Record<string, any>;
-  setup?: Record<string, any>;
+  setupToken?: string;
 };
 
-const Edit = ({ connection, setup }: EditProps) => {
+const Edit = ({ connection, setupToken }: EditProps) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
@@ -53,7 +53,7 @@ const Edit = ({ connection, setup }: EditProps) => {
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
       isEditView: true,
-      setupToken: setup ? setup.token : '',
+      setupToken: setupToken,
       callback: async (res) => {
         const response: ApiResponse = await res.json();
 
@@ -66,7 +66,9 @@ const Edit = ({ connection, setup }: EditProps) => {
           successToast(t('saved'));
           // revalidate on save
           mutate(
-            setup ? `/api/setup/${setup.token}/connections` : `/api/admin/connections/${connectionClientId}`
+            setupToken
+              ? `/api/setup/${setupToken}/connections`
+              : `/api/admin/connections/${connectionClientId}`
           );
         }
       },
@@ -77,7 +79,7 @@ const Edit = ({ connection, setup }: EditProps) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
-    const res = await fetch(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections', {
+    const res = await fetch(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections', {
       method: 'DELETE',
       body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
     });
@@ -92,8 +94,8 @@ const Edit = ({ connection, setup }: EditProps) => {
     }
 
     if (res.ok) {
-      await mutate(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections');
-      router.replace(setup ? `/setup/${setup.token}/sso-connection` : '/admin/sso-connection');
+      await mutate(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections');
+      router.replace(setupToken ? `/setup/${setupToken}/sso-connection` : '/admin/sso-connection');
     }
   };
 
@@ -112,7 +114,7 @@ const Edit = ({ connection, setup }: EditProps) => {
   return (
     <>
       <Link
-        href={setup ? `/setup/${setup.token}` : '/admin/sso-connection'}
+        href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'}
         className='btn-outline btn items-center space-x-2'>
         <ArrowLeftIcon aria-hidden className='h-4 w-4' />
         <span>{t('back')}</span>
@@ -127,13 +129,13 @@ const Edit = ({ connection, setup }: EditProps) => {
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-3/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable !== false)
-                  .filter(({ attributes: { hideInSetupView } }) => (setup ? !hideInSetupView : true))
+                  .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
                   .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
               </div>
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-2/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable === false)
-                  .filter(({ attributes: { hideInSetupView } }) => (setup ? !hideInSetupView : true))
+                  .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
                   .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
               </div>
             </div>

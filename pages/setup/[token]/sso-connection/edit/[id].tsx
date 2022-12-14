@@ -9,10 +9,15 @@ const EditConnection: NextPage = () => {
   const router = useRouter();
 
   const { id, token } = router.query;
-  const { data: setup } = useSWR<any>(token ? `/api/setup/${token}` : null, fetcher, {
+  const { data } = useSWR<any>(token ? `/api/setup/${token}` : null, fetcher, {
     revalidateOnFocus: false,
   });
-  const { data: connection, error } = useSWR(
+  const setup = data?.data;
+  if (!token || !setup) {
+    return null;
+  }
+
+  const { data: connectionData, error } = useSWR(
     token ? (id ? `/api/setup/${token}/connections/${id}` : null) : null,
     fetcher,
     {
@@ -20,6 +25,7 @@ const EditConnection: NextPage = () => {
     }
   );
 
+  const connection = connectionData?.data;
   if (error) {
     return (
       <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
@@ -32,15 +38,7 @@ const EditConnection: NextPage = () => {
     return null;
   }
 
-  return (
-    <Edit
-      connection={connection}
-      setup={{
-        ...setup,
-        token,
-      }}
-    />
-  );
+  return <Edit connection={connection} setupToken={token as string} />;
 };
 
 export default EditConnection;
