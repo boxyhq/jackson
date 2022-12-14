@@ -22,7 +22,7 @@ const Login = ({ forwardTenant, label, styles, classNames, unstyled = false }: L
     setErrMsg('');
     const {
       error: { message },
-    } = await forwardTenant(tenant);
+    } = (await forwardTenant(tenant)) || { error: {} };
     if (typeof message === 'string' && message) {
       setErrMsg(message);
     }
