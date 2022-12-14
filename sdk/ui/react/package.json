@@ -1,7 +1,7 @@
 {
   "name": "@boxyhq/react-ui",
   "description": "React UI components from BoxyHQ",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "type": "module",
   "keywords": [
     "react",
@@ -56,5 +56,9 @@
     "vite-pages-theme-doc": "3.4.0",
     "vite-plugin-mdx": "3.5.11",
     "vite-plugin-react-pages": "3.3.1"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
   }
 }
