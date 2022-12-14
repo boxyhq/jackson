@@ -1,7 +1,7 @@
 {
   "name": "@boxyhq/react-ui",
   "description": "React UI components from BoxyHQ",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "type": "module",
   "keywords": [
     "react",
@@ -12,6 +12,7 @@
   "files": [
     "dist"
   ],
+  "homepage": "https://github.com/boxyhq/jackson/sdk/ui/react#readme",
   "bugs": {
     "url": "https://github.com/boxyhq/jackson/issues?q=is%3Aopen+is%3Aissue+label%3Asdk"
   },
@@ -54,6 +55,7 @@
     "typescript": "4.9.4",
     "vite": "3.2.4",
     "vite-pages-theme-doc": "3.4.0",
+    "vite-plugin-css-injected-by-js": "2.1.1",
     "vite-plugin-mdx": "3.5.11",
     "vite-plugin-react-pages": "3.3.1"
   },

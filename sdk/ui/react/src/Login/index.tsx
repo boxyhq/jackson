@@ -2,7 +2,7 @@ import { useState, type ChangeEventHandler, type FormEvent } from 'react';
 import type { LoginProps } from './types';
 import useId from '../hooks/useId';
 import cssClassAssembler from '../utils/cssClassAssembler';
-import defaultClasses from './index.module.css';
+import defaultStyles from './index.module.css';
 
 const COMPONENT = 'sso';
 
@@ -33,11 +33,11 @@ const Login = ({ forwardTenant, label, styles, classNames, unstyled = false }: L
   return (
     <form
       onSubmit={handleSubmit}
-      className={cssClassAssembler(unstyled, classNames?.container, defaultClasses.form)}>
+      className={cssClassAssembler(unstyled, classNames?.container, defaultStyles.form)}>
       <label
         htmlFor={inputId}
         style={styles?.label}
-        className={cssClassAssembler(unstyled, classNames?.label, defaultClasses.label)}>
+        className={cssClassAssembler(unstyled, classNames?.label, defaultStyles.label)}>
         {label}
       </label>
       <input
@@ -45,7 +45,7 @@ const Login = ({ forwardTenant, label, styles, classNames, unstyled = false }: L
         value={tenant}
         onChange={handleChange}
         style={styles?.input}
-        className={cssClassAssembler(unstyled, classNames?.input, defaultClasses.input)}
+        className={cssClassAssembler(unstyled, classNames?.input, defaultStyles.input)}
         aria-invalid={isError}
         aria-describedby={errorSpanId}
       />
@@ -53,7 +53,7 @@ const Login = ({ forwardTenant, label, styles, classNames, unstyled = false }: L
       <button
         type='submit'
         style={styles?.button}
-        className={cssClassAssembler(unstyled, classNames?.button, defaultClasses.button)}>
+        className={cssClassAssembler(unstyled, classNames?.button, defaultStyles.button)}>
         Proceed
       </button>
     </form>
