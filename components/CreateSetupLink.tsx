@@ -91,7 +91,9 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       </Link>
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {`Create Setup Link (${props.service === 'sso' ? 'Enterprise SSO' : 'Directory-Sync'})`}
+          {t('create_setup_link', {
+            service: props.service === 'sso' ? t('enterprise_sso') : t('directory_sync'),
+          })}
         </h2>
         <div>
           <div className='mb-6'>
@@ -170,7 +172,11 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       {url && (
         <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
           <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-            {url ? 'Setup Link Info' : `Create Setup Link (${props.service})`}
+            {url
+              ? t('setup_link_info')
+              : t('create_setup_link', {
+                  service: props.service === 'sso' ? t('enterprise_sso') : t('directory_sync'),
+                })}
           </h2>
           <div className='form-control p-2'>
             <div className='input-group'>

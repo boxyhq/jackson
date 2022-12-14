@@ -42,6 +42,7 @@
   "new_directory": "New Directory",
   "new_setup_link": "New Setup Link",
   "next": "Next",
+  "connections": "Connections",
   "new_connection": "New Connection",
   "no_connections_found": "No connections found.",
   "no_setup_links_found": "No setup links found.",
@@ -76,5 +77,8 @@
   "webhook_secret": "Webhook secret",
   "webhook_url": "Webhook URL",
   "directory_created_successfully": "Directory created successfully",
-  "directory_updated_successfully": "Directory updated successfully"
+  "directory_updated_successfully": "Directory updated successfully",
+  "dashboard": "Dashboard",
+  "create_setup_link": "Create Setup Link ({{service}})",
+  "setup_link_info": "Setup Link Info"
 }

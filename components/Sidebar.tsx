@@ -4,7 +4,7 @@ import {
   HomeIcon,
   LinkIcon,
   ListBulletIcon,
-  Cog6ToothIcon,
+  //Cog6ToothIcon,
 } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -25,25 +25,25 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
     : [
         {
           href: '/admin/dashboard',
-          text: 'Dashboard',
+          text: t('dashboard'),
           icon: HomeIcon,
           active: asPath.includes('/admin/dashboard'),
         },
         {
           href: '/admin/sso-connection',
-          text: 'Enterprise SSO',
+          text: t('enterprise_sso'),
           icon: ShieldCheckIcon,
           active: asPath.includes('/admin/sso-connection'),
           items: [
             {
               href: '/admin/sso-connection',
-              text: 'Connections',
+              text: t('connections'),
               icon: ListBulletIcon,
               active: asPath === '/admin/sso-connection',
             },
             {
               href: '/admin/sso-connection/setup-link',
-              text: 'Setup Link',
+              text: t('setup_links'),
               icon: LinkIcon,
               active: asPath.includes('/admin/sso-connection/setup-link'),
             },
@@ -51,19 +51,19 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
         },
         {
           href: '/admin/directory-sync',
-          text: 'Directory Sync',
+          text: t('directory_sync'),
           icon: UsersIcon,
           active: asPath.includes('/admin/directory-sync'),
           items: [
             {
               href: '/admin/directory-sync',
-              text: 'Connections',
+              text: t('connections'),
               icon: ListBulletIcon,
               active: asPath === '/admin/directory-sync',
             },
             {
               href: '/admin/directory-sync/setup-link',
-              text: 'Setup Link',
+              text: t('setup_links'),
               icon: LinkIcon,
               active: asPath.includes('/admin/directory-sync/setup-link'),
             },
@@ -105,9 +105,9 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                 <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
                 <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ Admin Portal</span>
               </Link>
-              <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
+              {/* <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
                 <Cog6ToothIcon className='h-6 w-6 flex-shrink-0' aria-hidden='true' />
-              </Link>
+              </Link> */}
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
               <nav className='space-y-1 px-2'>
@@ -167,9 +167,9 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
               <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
               <span className='ml-4 text-lg font-bold text-gray-900'>BoxyHQ Admin Portal</span>
             </Link>
-            <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
+            {/* <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
               <Cog6ToothIcon className='h-6 w-6 flex-shrink-0' aria-hidden='true' />
-            </Link>
+            </Link> */}
           </div>
           <div className='mt-5 flex flex-1 flex-col'>
             <nav className='flex-1 space-y-1 px-2 pb-4' id='menu'>
