@@ -1,4 +1,11 @@
-import { ShieldCheckIcon, UsersIcon, HomeIcon, LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid';
+import {
+  SquaresPlusIcon,
+  ShieldCheckIcon,
+  UsersIcon,
+  HomeIcon,
+  LinkIcon,
+  ListBulletIcon,
+} from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -40,13 +47,13 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
               icon: LinkIcon,
               active: asPath.includes('/admin/sso-connection/setup-link'),
             },
+            {
+              href: '/admin/federated-saml',
+              text: t('saml_federation'),
+              icon: SquaresPlusIcon,
+              active: asPath.includes('/admin/federated-saml'),
+            },
           ],
-        },
-        {
-          href: '/admin/federated-saml',
-          text: t('saml_federation'),
-          icon: ShieldCheckIcon,
-          active: asPath.includes('/admin/federated-saml'),
         },
         {
           href: '/admin/directory-sync',
