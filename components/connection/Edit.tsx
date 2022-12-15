@@ -81,6 +81,9 @@ const Edit = ({ connection, setupToken }: EditProps) => {
   const deleteConnection = async () => {
     const res = await fetch(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections', {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
     });
 
