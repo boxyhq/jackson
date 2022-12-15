@@ -25,7 +25,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     tenant: setup.tenant,
     product: setup.product,
   } as GetConnectionsQuery);
-  return res.json(list.filter((l) => l.clientID === id)[0]);
+  return res.json({ data: list.filter((l) => l.clientID === id)[0] });
 };
 
 export default handler;
