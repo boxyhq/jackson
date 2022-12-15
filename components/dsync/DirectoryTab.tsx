@@ -2,31 +2,49 @@ import Link from 'next/link';
 import type { Directory } from '@boxyhq/saml-jackson';
 import classNames from 'classnames';
 
-const DirectoryTab = (props: { directory: Directory; activeTab: string }) => {
-  const { directory, activeTab } = props;
+const DirectoryTab = (props: { directory: Directory; activeTab: string; token?: any }) => {
+  const { directory, activeTab, token } = props;
 
-  const menus = [
-    {
-      name: 'Directory',
-      href: `/admin/directory-sync/${directory.id}`,
-      active: activeTab === 'directory',
-    },
-    {
-      name: 'Users',
-      href: `/admin/directory-sync/${directory.id}/users`,
-      active: activeTab === 'users',
-    },
-    {
-      name: 'Groups',
-      href: `/admin/directory-sync/${directory.id}/groups`,
-      active: activeTab === 'groups',
-    },
-    {
-      name: 'Webhook Events',
-      href: `/admin/directory-sync/${directory.id}/events`,
-      active: activeTab === 'events',
-    },
-  ];
+  const menus = token
+    ? [
+        {
+          name: 'Directory',
+          href: token
+            ? `/setup/${token}/directory-sync/${directory.id}`
+            : `/admin/directory-sync/${directory.id}`,
+          active: activeTab === 'directory',
+        },
+      ]
+    : [
+        {
+          name: 'Directory',
+          href: token
+            ? `/setup/${token}/directory-sync/${directory.id}`
+            : `/admin/directory-sync/${directory.id}`,
+          active: activeTab === 'directory',
+        },
+        {
+          name: 'Users',
+          href: token
+            ? `/setup/${token}/directory-sync/${directory.id}/users`
+            : `/admin/directory-sync/${directory.id}/users`,
+          active: activeTab === 'users',
+        },
+        {
+          name: 'Groups',
+          href: token
+            ? `/setup/${token}/directory-sync/${directory.id}/groups`
+            : `/admin/directory-sync/${directory.id}/groups`,
+          active: activeTab === 'groups',
+        },
+        {
+          name: 'Webhook Events',
+          href: token
+            ? `/setup/${token}/directory-sync/${directory.id}/events`
+            : `/admin/directory-sync/${directory.id}/events`,
+          active: activeTab === 'events',
+        },
+      ];
 
   return (
     <nav className='-mb-px flex space-x-5 border-b' aria-label='Tabs'>

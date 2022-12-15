@@ -1,13 +1,27 @@
 import type {
   IAdminController,
   IConnectionAPIController,
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnection,
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
+  ISetupLinkController,
   IDirectorySyncController,
+  DirectoryType,
+  Directory,
+  User,
+  Group,
+  DirectorySyncEvent,
+  HTTPMethod,
+  DirectorySyncRequest,
   IOidcDiscoveryController,
   ISPSAMLConfig,
   ISAMLFederationController,
+  GetConnectionsQuery,
+  GetIDPEntityIDBody,
+  GetConfigQuery,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -19,6 +33,7 @@ let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
+let setupLinkController: ISetupLinkController;
 let directorySyncController: IDirectorySyncController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
@@ -35,6 +50,7 @@ export default async function init() {
     !g.healthCheckController ||
     !g.logoutController ||
     !g.directorySync ||
+    !g.setupLinkController ||
     !g.oidcDiscoveryController ||
     !g.spConfig ||
     !g.samlFederatedController
@@ -45,6 +61,7 @@ export default async function init() {
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
+    setupLinkController = ret.setupLinkController;
     directorySyncController = ret.directorySyncController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
@@ -57,6 +74,7 @@ export default async function init() {
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
     g.directorySync = directorySyncController;
+    g.setupLinkController = setupLinkController;
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
     g.isJacksonReady = true;
@@ -70,6 +88,7 @@ export default async function init() {
     healthCheckController = g.healthCheckController;
     directorySyncController = g.directorySync;
     oidcDiscoveryController = g.oidcDiscoveryController;
+    setupLinkController = g.setupLinkController;
     spConfig = g.spConfig;
     samlFederatedController = g.samlFederatedController;
     checkLicense = g.checkLicense;
@@ -84,7 +103,24 @@ export default async function init() {
     healthCheckController,
     directorySyncController,
     oidcDiscoveryController,
+    setupLinkController,
     samlFederatedController,
     checkLicense,
   };
 }
+
+export type {
+  SAMLSSOConnectionWithEncodedMetadata,
+  SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnection,
+  DirectoryType,
+  Directory,
+  User,
+  Group,
+  DirectorySyncEvent,
+  HTTPMethod,
+  DirectorySyncRequest,
+  GetConnectionsQuery,
+  GetIDPEntityIDBody,
+  GetConfigQuery,
+};

@@ -1,5 +1,3 @@
-import { ApiError } from 'types';
-
 // returns the cookie with the given name,
 // or undefined if not found
 export function getErrorCookie() {
@@ -7,6 +5,10 @@ export function getErrorCookie() {
     new RegExp('(?:^|; )' + 'jackson_error'.replace(/([.$?*|{}()[]\\\/\+^])/g, '\\$1') + '=([^;]*)')
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+export function copyToClipboard(text) {
+  navigator.clipboard.writeText(text);
 }
 
 export const fetcher = async (url: string, queryParams = '') => {

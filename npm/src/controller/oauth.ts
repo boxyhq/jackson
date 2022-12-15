@@ -412,6 +412,7 @@ export class OAuthController implements IOAuthController {
 
     // IdP is disabled so block the request
     if (!this.opts.idpEnabled && isIdPFlow) {
+      // IdP login is disabled so block the request
       throw new JacksonError(
         'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
         403
