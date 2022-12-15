@@ -7,6 +7,10 @@ export function getErrorCookie() {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
+export function copyToClipboard(text) {
+  navigator.clipboard.writeText(text);
+}
+
 export interface APIError extends Error {
   info?: string;
   status: number;

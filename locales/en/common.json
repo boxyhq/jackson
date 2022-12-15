@@ -33,6 +33,7 @@
   "first_name": "First Name",
   "here_are_the_set_of_uris_you_would_need_access_to": "Here are the set of URIs you would need access to",
   "idp_type": "IdP Type",
+  "idp_entity_id": "IdP Entity ID",
   "last_name": "Last Name",
   "login_success_toast": "A sign in link has been sent to your email address.",
   "link_generated": "Link Generated",
@@ -41,6 +42,7 @@
   "new_directory": "New Directory",
   "new_setup_link": "New Setup Link",
   "next": "Next",
+  "connections": "Connections",
   "new_connection": "New Connection",
   "no_connections_found": "No connections found.",
   "no_setup_links_found": "No setup links found.",
@@ -75,5 +77,10 @@
   "webhook_secret": "Webhook secret",
   "webhook_url": "Webhook URL",
   "directory_created_successfully": "Directory created successfully",
-  "directory_updated_successfully": "Directory updated successfully"
+  "directory_updated_successfully": "Directory updated successfully",
+  "dashboard": "Dashboard",
+  "create_setup_link": "Create Setup Link ({{service}})",
+  "setup_link_info": "Setup Link Info",
+  "setup_link_sso_description": "Create a unique Setup Link to share with your customer so they can setup SSO Connection for your app.",
+  "setup_link_dsync_description": "Create a unique Setup Link to share with your customer so they can setup Directory Sync for your app."
 }

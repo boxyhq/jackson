@@ -10,21 +10,26 @@ const Connections: NextPage = () => {
   const router = useRouter();
   const { token } = router.query;
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const {
-    data: connections,
-    error,
-    isValidating,
-  } = useSWR<any>(
+  const { data, error, isValidating } = useSWR<any>(
     [`/api/setup/${token}/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }
   );
+  const connections = data?.data;
+  const { data: idpEntityIDData } = useSWR<any>(
+    token ? `/api/setup/${token}/connections/idp-entityid` : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+
+  const idpEntityID = idpEntityIDData?.data;
   return token && connections && !error && !isValidating ? (
     <ConnectionList
       setupToken={token as string}
       paginate={paginate}
       setPaginate={setPaginate}
       connections={connections}
+      idpEntityID={idpEntityID}
     />
   ) : null;
 };

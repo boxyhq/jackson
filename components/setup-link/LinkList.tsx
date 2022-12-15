@@ -12,7 +12,7 @@ import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useState, useEffect } from 'react';
 import { successToast } from '@components/Toast';
-import { fetcher } from '@lib/ui/utils';
+import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
 
@@ -22,23 +22,16 @@ const LinkList = ({ service }) => {
     setQueryParam(`?service=${service}`);
   }, [service]);
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data: setupLinks, mutate } = useSWR<any>(
-    queryParam ? [`/api/admin/setup-links`, queryParam] : [],
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    }
-  );
-  const links = setupLinks?.data;
+  const { data, mutate } = useSWR<any>(queryParam ? [`/api/admin/setup-links`, queryParam] : [], fetcher, {
+    revalidateOnFocus: false,
+  });
+  const links = data?.data;
   const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
   const [showRegenConfirmModal, setShowRegenConfirmModal] = useState(false);
   const toggleDelConfirmModal = () => setShowDelConfirmModal(!showDelConfirmModal);
   const toggleRegenConfirmModal = () => setShowRegenConfirmModal(!showRegenConfirmModal);
   const [actionId, setActionId] = useState(0);
-  const copyUrl = (url) => {
-    navigator.clipboard.writeText(url);
-  };
   const invokeRegenerate = async () => {
     await regenerateLink(links[actionId], service);
     toggleRegenConfirmModal();
@@ -57,8 +50,12 @@ const LinkList = ({ service }) => {
   }
   return (
     <div>
+      <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>
+        {t('setup_links') + ' (' + (service === 'sso' ? t('enterprise_sso') : t('directory_sync')) + ')'}
+      </h2>
+
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('setup_links')}</h2>
+        <h3>{service === 'sso' ? t('setup_link_sso_description') : t('setup_link_dsync_description')}</h3>
         <div>
           <Link
             href={`/admin/${
@@ -120,7 +117,7 @@ const LinkList = ({ service }) => {
                             <ClipboardDocumentListIcon
                               className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
                               onClick={() => {
-                                copyUrl(link.url);
+                                copyToClipboard(link.url);
                                 successToast(t('copied'));
                               }}
                             />
