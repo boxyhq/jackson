@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ProjectDetails from '@components/retraced/ProjectDetails';
 import { useProject } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
@@ -30,5 +30,13 @@ const ProjectInfo: NextPage = () => {
     </div>
   );
 };
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
+}
 
 export default ProjectInfo;

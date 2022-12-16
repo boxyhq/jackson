@@ -5,9 +5,6 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
-import type { ApiResponse } from 'types';
-import type { Project } from 'types/retraced';
-
 const AddProject = () => {
   const router = useRouter();
 

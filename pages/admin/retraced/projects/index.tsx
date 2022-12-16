@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { InformationCircleIcon, DocumentMagnifyingGlassIcon } from '@heroicons/react/24/outline';
-
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import EmptyState from '@components/EmptyState';
 import { useProjects } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
@@ -80,5 +80,13 @@ const ProjectList: NextPage = () => {
     </div>
   );
 };
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
+}
 
 export default ProjectList;
