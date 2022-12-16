@@ -32,7 +32,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { appId, download } = req.query as { appId: string; download: any };
 
-  console.log('appId', appId, typeof download, req.query);
   try {
     const metadata = await samlFederatedController.app.getMetadata(appId);
 
@@ -42,9 +41,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
       res.setHeader('Content-Disposition', `attachment; filename=saml-metadata-${appId}.xml`);
 
       await pipeline(metadata.xml, res);
-    } else {
-      res.status(200).send(metadata.xml);
+      return;
     }
+
+    res.status(200).send(metadata.xml);
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
 
