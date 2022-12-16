@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import * as jose from 'jose';
 import { Client, TokenSet } from 'openid-client';
+import * as dbutils from '../db/utils';
 
 import type {
   ConnectionType,
@@ -250,4 +251,8 @@ export const validateTenantAndProduct = (tenant: string, product: string) => {
   if (product.indexOf(':') !== -1) {
     throw new JacksonError('product cannot contain the character :', 400);
   }
+};
+
+export const appID = (tenant: string, product: string) => {
+  return dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
 };

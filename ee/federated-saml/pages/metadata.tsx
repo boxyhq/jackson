@@ -41,7 +41,24 @@ const Metadata: NextPage = () => {
           <div className='space-y-3'>
             <p className='text-sm leading-6 text-gray-800'>{t('saml_federation_app_info_details')}</p>
             <div className='flex flex-row gap-5'>
-              <button className='btn-outline btn-secondary btn'>{t('download_metadata')}</button>
+              <Link
+                href={`/api/federated-saml/${id}/metadata?download=true`}
+                className='btn-outline btn-secondary btn'>
+                <svg
+                  className='mr-1 inline-block h-6 w-6'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                  aria-hidden
+                  strokeWidth='2'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
+                  />
+                </svg>
+                {t('download_metadata')}
+              </Link>
               <Link
                 href={`/api/federated-saml/${id}/metadata`}
                 className='btn-outline btn-secondary btn'

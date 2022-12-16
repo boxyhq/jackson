@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import stream from 'stream';
+import { promisify } from 'util';
+
+const pipeline = promisify(stream.pipeline);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { checkLicense } = await jackson();
@@ -26,13 +30,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { appId } = req.query as { appId: string };
+  const { appId, download } = req.query as { appId: string; download: any };
 
+  console.log('appId', appId, typeof download, req.query);
   try {
     const metadata = await samlFederatedController.app.getMetadata(appId);
 
     res.setHeader('Content-type', 'text/xml');
-    res.status(200).send(metadata.xml);
+
+    if (download || download === '') {
+      res.setHeader('Content-Disposition', `attachment; filename=saml-metadata-${appId}.xml`);
+
+      await pipeline(metadata.xml, res);
+    } else {
+      res.status(200).send(metadata.xml);
+    }
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
 

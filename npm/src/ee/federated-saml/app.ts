@@ -4,7 +4,7 @@ import type {
   SAMLFederationAppWithMetadata,
   SAMLFederationApp,
 } from '../../typings';
-import * as dbutils from '../../db/utils';
+import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
@@ -36,7 +36,7 @@ export class App {
 
     validateTenantAndProduct(tenant, product);
 
-    const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
+    const id = appID(tenant, product);
 
     const app = {
       id,
@@ -142,7 +142,7 @@ export class App {
     const { publicKey } = await getDefaultCertificate();
 
     const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
-    const entityId = `${this.opts.samlAudience}`;
+    const entityId = `${this.opts.samlAudience}/${id}`;
 
     const xml = await createMetadataXML({
       entityId,

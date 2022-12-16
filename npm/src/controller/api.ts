@@ -15,7 +15,7 @@ import {
   GetIDPEntityIDBody,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames } from './utils';
+import { IndexNames, appID } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
@@ -385,7 +385,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     if (!tenant || !product) {
       throw new JacksonError('Please provide `tenant` and `product`.', 400);
     } else {
-      return `${this.opts.samlAudience}/${dbutils.keyDigest(dbutils.keyFromParts(tenant, product))}`;
+      return `${this.opts.samlAudience}/${appID(tenant, product)}`;
     }
   }
 
