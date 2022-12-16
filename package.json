@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.3.12",
+  "version": "1.4.0",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
