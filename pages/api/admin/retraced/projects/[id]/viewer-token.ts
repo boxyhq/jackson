@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import * as Retraced from '@retraced-hq/retraced';
 import requestIp from 'request-ip';
 
-import env from '@lib/env';
+import { jacksonOptions } from '@lib/env';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -26,7 +26,7 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   const retraced = new Retraced.Client({
     apiKey: token as string,
     projectId: projectId as string,
-    endpoint: env.retraced.apiHost,
+    endpoint: jacksonOptions.retraced?.apiHost,
     viewLogAction: 'audit.log.view',
   });
   const reqIp = requestIp.getClientIp(req);

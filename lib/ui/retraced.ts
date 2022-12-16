@@ -1,13 +1,14 @@
 import axios from 'axios';
 import useSWR from 'swr';
 
-import type { AdminToken, Project, ApiResponse, Group } from 'types';
+import type { ApiError, ApiSuccess } from 'types';
+import type { AdminToken, Project, Group } from 'types/retraced';
 import { fetcher } from '@lib/ui/utils';
-import env from './env';
+import { jacksonOptions } from '../env';
 
 export const getToken = async (): Promise<AdminToken> => {
   const { data } = await axios.post<{ adminToken: AdminToken }>(
-    `${env.retraced.apiHost}/admin/v1/user/_login`,
+    `${jacksonOptions.retraced?.apiHost}/admin/v1/user/_login`,
     {
       claims: {
         upstreamToken: 'ADMIN_ROOT_TOKEN',
@@ -26,7 +27,7 @@ export const getToken = async (): Promise<AdminToken> => {
 };
 
 export const useProject = (projectId: string) => {
-  const { data, error } = useSWR<ApiResponse<{ project: Project }>>(
+  const { data, error } = useSWR<ApiSuccess<{ project: Project }>, ApiError>(
     `/api/admin/retraced/projects/${projectId}`,
     fetcher,
     {
@@ -35,14 +36,14 @@ export const useProject = (projectId: string) => {
   );
 
   return {
-    project: data?.data?.project,
+    project: data?.data.project,
     isLoading: !error && !data,
     isError: error,
   };
 };
 
 export const useProjects = () => {
-  const { data, error } = useSWR<ApiResponse<{ projects: Project[] }>>(
+  const { data, error } = useSWR<ApiSuccess<{ projects: Project[] }>, ApiError>(
     '/api/admin/retraced/projects',
     fetcher
   );
@@ -55,7 +56,7 @@ export const useProjects = () => {
 };
 
 export const useGroups = (projectId: string, environmentId: string) => {
-  const { data, error } = useSWR<ApiResponse<{ groups: Group[] }>>(
+  const { data, error } = useSWR<ApiSuccess<{ groups: Group[] }>, ApiError>(
     environmentId ? `/api/admin/retraced/projects/${projectId}/groups?environmentId=${environmentId}` : null,
     fetcher,
     {

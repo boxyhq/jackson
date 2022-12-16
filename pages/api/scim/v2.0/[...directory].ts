@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { HTTPMethod, DirectorySyncRequest } from '@lib/jackson';
+import type { HTTPMethod, DirectorySyncRequest } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
 import { extractAuthToken } from '@lib/auth';
 import { bodyParser } from '@lib/utils';

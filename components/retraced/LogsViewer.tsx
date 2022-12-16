@@ -1,18 +1,19 @@
 import RetracedEventsBrowser from '@retraced-hq/logs-viewer';
 import useSWR from 'swr';
 
-import type { ApiResponse, Project } from 'types';
+import type { ApiError, ApiSuccess } from 'types';
+import type { Project } from 'types/retraced';
 import ErrorMessage from '@components/Error';
 import Loading from '@components/Loading';
 import { fetcher } from '@lib/ui/utils';
-import env from '@lib/env';
+import { jacksonOptions } from '@lib/env';
 
 const LogsViewer = (props: { project: Project; environmentId: string; groupId: string }) => {
   const { project, environmentId, groupId } = props;
 
   const token = project.tokens.filter((token) => token.environment_id === environmentId)[0];
 
-  const { data, error } = useSWR<ApiResponse<{ viewerToken: string }>>(
+  const { data, error } = useSWR<ApiSuccess<{ viewerToken: string }>, ApiError>(
     [`/api/admin/retraced/projects/${project.id}/viewer-token`, `?groupId=${groupId}&token=${token.token}`],
     fetcher,
     {
@@ -34,7 +35,7 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
     <>
       {viewerToken && (
         <RetracedEventsBrowser
-          host={`${env.retraced.uiHost}/viewer/v1`}
+          host={`${jacksonOptions.retraced?.uiHost}/viewer/v1`}
           auditLogToken={viewerToken}
           header='Audit Logs'
           customClass={'text-primary dark:text-white'}

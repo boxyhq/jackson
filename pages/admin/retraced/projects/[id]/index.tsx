@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import ProjectDetails from '@components/retraced/ProjectDetails';
-import { useProject } from '@lib/retraced';
+import { useProject } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
 import ErrorMessage from '@components/Error';
 

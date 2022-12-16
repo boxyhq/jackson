@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { InformationCircleIcon, DocumentMagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 import EmptyState from '@components/EmptyState';
-import { useProjects } from '@lib/retraced';
+import { useProjects } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
 import ErrorMessage from '@components/Error';
 
@@ -23,7 +23,7 @@ const ProjectList: NextPage = () => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Projects</h2>
         <Link href={'/admin/retraced/projects/new'}>
-          <a className='btn btn-primary'>+ New Project</a>
+          <a className='btn-primary btn'>+ New Project</a>
         </Link>
       </div>
       {projects?.length === 0 ? (

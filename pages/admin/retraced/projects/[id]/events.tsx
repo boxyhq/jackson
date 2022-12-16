@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-import { useProject, useGroups } from '@lib/retraced';
+import { useProject, useGroups } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
 import ErrorMessage from '@components/Error';
 
@@ -57,7 +57,7 @@ const Events: NextPage = () => {
             <span className='label-text'>Environments</span>
           </label>
           <select
-            className='select select-bordered'
+            className='select-bordered select'
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setEnvironment(e.target.value);
               setGroup('');
@@ -74,7 +74,7 @@ const Events: NextPage = () => {
             <span className='label-text'>Tenants</span>
           </label>
           <select
-            className='select select-bordered'
+            className='select-bordered select'
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setGroup(e.target.value);
             }}>

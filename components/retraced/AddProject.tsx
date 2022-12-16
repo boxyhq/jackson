@@ -5,7 +5,8 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
-import type { ApiResponse, Project } from 'types';
+import type { ApiResponse } from 'types';
+import type { Project } from 'types/retraced';
 
 const AddProject = () => {
   const router = useRouter();
@@ -44,7 +45,7 @@ const AddProject = () => {
       return;
     }
 
-    const { data, error } = (await response.json()) as ApiResponse<{ project: Project }>;
+    const { data, error } = await response.json();
 
     if (error) {
       toast.error('ERROR');
@@ -60,7 +61,7 @@ const AddProject = () => {
   return (
     <>
       <Link href='/admin/retraced/projects'>
-        <a className='btn btn-outline items-center space-x-2'>
+        <a className='btn-outline btn items-center space-x-2'>
           <ArrowLeftIcon aria-hidden className='h-4 w-4' />
           <span>Back</span>
         </a>
@@ -77,13 +78,13 @@ const AddProject = () => {
                 <input
                   type='text'
                   id='name'
-                  className='input input-bordered w-full'
+                  className='input-bordered input w-full'
                   required
                   onChange={onChange}
                 />
               </div>
               <div>
-                <button className={classNames('btn btn-primary', loading ? 'loading' : '')}>
+                <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
                   Create Project
                 </button>
               </div>

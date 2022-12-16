@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
-import type { Project } from 'types';
-import { getToken } from '@lib/retraced';
-import env from '@lib/env';
+import type { Project } from 'types/retraced';
+import { getToken } from '@lib/ui/retraced';
+import { jacksonOptions } from '@lib/env';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -25,11 +25,14 @@ const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query;
 
-  const { data } = await axios.get<{ project: Project }>(`${env.retraced.apiHost}/admin/v1/project/${id}`, {
-    headers: {
-      Authorization: `id=${token.id} token=${token.token}`,
-    },
-  });
+  const { data } = await axios.get<{ project: Project }>(
+    `${jacksonOptions.retraced?.apiHost}/admin/v1/project/${id}`,
+    {
+      headers: {
+        Authorization: `id=${token.id} token=${token.token}`,
+      },
+    }
+  );
 
   return res.status(201).json({
     data,

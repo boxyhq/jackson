@@ -1,6 +1,6 @@
 import Chance from 'chance';
 import * as Retraced from '@retraced-hq/retraced';
-import env from '@lib/env';
+import { jacksonOptions } from '@lib/env';
 const chance = new Chance();
 
 const actions = [
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
   const retraced = new Retraced.Client({
     apiKey: (token as string) || 'dev',
     projectId: (project as string) || 'dev',
-    endpoint: env.retraced.apiHost,
+    endpoint: jacksonOptions.retraced?.apiHost,
     viewLogAction: 'audit.log.view',
   });
 
