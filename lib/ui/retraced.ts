@@ -2,29 +2,8 @@ import axios from 'axios';
 import useSWR from 'swr';
 
 import type { ApiError, ApiSuccess } from 'types';
-import type { AdminToken, Project, Group } from 'types/retraced';
+import type { Project, Group } from 'types/retraced';
 import { fetcher } from '@lib/ui/utils';
-import { jacksonOptions } from '../env';
-
-export const getToken = async (): Promise<AdminToken> => {
-  const { data } = await axios.post<{ adminToken: AdminToken }>(
-    `${jacksonOptions.retraced?.apiHost}/admin/v1/user/_login`,
-    {
-      claims: {
-        upstreamToken: 'ADMIN_ROOT_TOKEN',
-        email: process.env.NEXTAUTH_ACL,
-      },
-    },
-    {
-      headers: {
-        Authorization: `token=${process.env.ADMIN_ROOT_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  return data.adminToken;
-};
 
 export const useProject = (projectId: string) => {
   const { data, error } = useSWR<ApiSuccess<{ project: Project }>, ApiError>(

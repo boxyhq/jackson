@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
-import { getToken } from '@lib/ui/retraced';
+import { getToken } from '@lib/retraced';
 import { jacksonOptions } from '@lib/env';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

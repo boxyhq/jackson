@@ -60,11 +60,9 @@ const AddProject = () => {
 
   return (
     <>
-      <Link href='/admin/retraced/projects'>
-        <a className='btn-outline btn items-center space-x-2'>
-          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span>Back</span>
-        </a>
+      <Link href='/admin/retraced/projects' className='btn-outline btn items-center space-x-2'>
+        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
+        <span>Back</span>
       </Link>
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>Create Project</h2>

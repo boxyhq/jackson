@@ -22,8 +22,8 @@ const ProjectList: NextPage = () => {
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Projects</h2>
-        <Link href={'/admin/retraced/projects/new'}>
-          <a className='btn-primary btn'>+ New Project</a>
+        <Link href={'/admin/retraced/projects/new'} className='btn-primary btn'>
+          + New Project
         </Link>
       </div>
       {projects?.length === 0 ? (
@@ -62,15 +62,11 @@ const ProjectList: NextPage = () => {
                     </td>
                     <td className='px-6 py-3'>
                       <div className='flex gap-2'>
-                        <Link href={`/admin/retraced/projects/${project.id}`}>
-                          <a className='link-primary'>
-                            <InformationCircleIcon className='h-5 w-5 text-secondary' />
-                          </a>
+                        <Link href={`/admin/retraced/projects/${project.id}`} className='link-primary'>
+                          <InformationCircleIcon className='h-5 w-5 text-secondary' />
                         </Link>
-                        <Link href={`/admin/retraced/projects/${project.id}/events`}>
-                          <a className='link-primary'>
-                            <DocumentMagnifyingGlassIcon className='h-5 w-5 text-secondary' />
-                          </a>
+                        <Link href={`/admin/retraced/projects/${project.id}/events`} className='link-primary'>
+                          <DocumentMagnifyingGlassIcon className='h-5 w-5 text-secondary' />
                         </Link>
                       </div>
                     </td>
