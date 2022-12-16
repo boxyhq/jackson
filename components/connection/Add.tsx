@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { ArrowLeftIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { mutate } from 'swr';
@@ -74,7 +74,7 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
                   copyToClipboard(idpEntityID);
                   successToast(t('copied'));
                 }}>
-                <ClipboardDocumentListIcon className='h-6 w-6' />
+                <ClipboardDocumentIcon className='h-6 w-6' />
               </button>
               <input type='text' readOnly value={idpEntityID} className='input-bordered input h-10 w-4/5' />
             </div>

@@ -1,6 +1,6 @@
 import { ApiResponse, ISetupLinkController, SetupLink, SetupLinkCreatePayload, Storable } from '../typings';
 import * as dbutils from '../db/utils';
-import { IndexNames } from './utils';
+import { IndexNames, validateTenantAndProduct } from './utils';
 import crypto from 'crypto';
 
 export class SetupLinkController implements ISetupLinkController {
@@ -11,6 +11,9 @@ export class SetupLinkController implements ISetupLinkController {
   }
   async create(body: SetupLinkCreatePayload): Promise<ApiResponse<SetupLink>> {
     const { tenant, product, service, regenerate } = body;
+
+    validateTenantAndProduct(tenant, product);
+
     const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
     const token = crypto.randomBytes(24).toString('hex');
     const val = {

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  ClipboardDocumentListIcon,
+  ClipboardDocumentIcon,
   LinkIcon,
   PencilIcon,
   PlusIcon,
@@ -80,7 +80,7 @@ const Connections = ({
                   copyToClipboard(idpEntityID);
                   successToast(t('copied'));
                 }}>
-                <ClipboardDocumentListIcon className='h-6 w-6' />
+                <ClipboardDocumentIcon className='h-6 w-6' />
               </button>
               <input type='text' readOnly value={idpEntityID} className='input-bordered input h-10 w-4/5' />
             </div>
