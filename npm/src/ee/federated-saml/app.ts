@@ -140,7 +140,7 @@ export class App {
     const { publicKey } = await getDefaultCertificate();
 
     const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
-    const entityId = `${this.opts.samlAudience}/${id}`;
+    const entityId = `${this.opts.samlAudience}`;
 
     const xml = await createMetadataXML({
       entityId,

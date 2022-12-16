@@ -178,9 +178,7 @@ export class SAMLHandler {
         acsUrl: session.request.acsUrl,
         requestId: session.request.id,
         issuer: `${this.opts.samlAudience}`,
-        profile: {
-          ...profile,
-        },
+        profile,
         ...certificate,
       });
 
