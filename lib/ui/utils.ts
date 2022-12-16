@@ -11,11 +11,6 @@ export function copyToClipboard(text) {
   navigator.clipboard.writeText(text);
 }
 
-export interface APIError extends Error {
-  info?: string;
-  status: number;
-}
-
 export const fetcher = async (url: string, queryParams = '') => {
   const res = await fetch(`${url}${queryParams}`);
 

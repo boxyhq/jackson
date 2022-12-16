@@ -1,5 +1,7 @@
 import { type JWK } from 'jose';
 
+export * from '../src/ee/federated-saml/types';
+
 interface SSOConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
@@ -80,7 +82,7 @@ type TenantProduct = {
   product: string;
 };
 
-export type GetConnectionsQuery = ClientIDQuery | TenantQuery;
+export type GetConnectionsQuery = ClientIDQuery | TenantQuery | { entityId: string };
 export type GetIDPEntityIDBody = TenantProduct;
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 
@@ -122,7 +124,9 @@ export interface IConnectionAPIController {
 
 export interface IOAuthController {
   authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }>;
-  samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
+  samlResponse(
+    body: SAMLResponsePayload
+  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }>;
   oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
@@ -334,6 +338,7 @@ export interface JacksonOption {
     publicKey: string;
     privateKey: string;
   };
+  boxyhqLicenseKey?: string;
 }
 
 export interface SLORequestParams {

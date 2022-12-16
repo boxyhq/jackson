@@ -1,124 +1,202 @@
-import type { GetServerSideProps } from 'next';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRef } from 'react';
 import getRawBody from 'raw-body';
-import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-export default function IdPSelection({ SAMLResponse, appList }) {
-  const { t } = useTranslation('common');
+import jackson from '@lib/jackson';
+
+export default function ChooseIdPConnection({
+  connections,
+  SAMLResponse,
+  requestType,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  return (
+    <div className='mx-auto my-28 w-[500px]'>
+      <div className='mx-5 flex flex-col space-y-10 rounded border border-gray-300 p-10'>
+        {requestType === 'sp-initiated' ? (
+          <IdpSelector connections={connections} />
+        ) : (
+          <AppSelector connections={connections} SAMLResponse={SAMLResponse} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORecord)[] }) => {
   const router = useRouter();
 
-  const { idp: idpList, ...rest } = router.query as { idp?: string[] };
-
-  const formRef = useRef<HTMLFormElement>(null);
-  const [app, setApp] = useState<string>('');
-
-  const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
-    setApp(event.currentTarget.value);
+  // SP initiated SSO: Redirect to the same path with idp_hint set to the selected connection clientID
+  const connectionSelected = (clientID: string) => {
+    return router.push(`${router.asPath}&idp_hint=${clientID}`);
   };
 
-  useEffect(() => {
-    if (app) {
-      formRef.current?.submit();
-    }
-  }, [app]);
+  return (
+    <>
+      <h3 className='text-center text-xl font-bold'>Select an Identity Provider to continue</h3>
+      <ul className='flex flex-col space-y-5'>
+        {connections.map((connection) => {
+          const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
+          const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
 
-  if (Array.isArray(idpList) && idpList.length !== 0) {
-    const paramsToRelay = new URLSearchParams(Object.entries(rest));
-    return (
-      <div className='relative top-1/2 left-1/2  w-1/2 max-w-xl  -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border-[1px] py-4 px-6 text-center'>
-        <h1 className='mb-4 px-3 text-center text-lg font-bold text-black'>
-          {t('choose_an_identity_provider')}
-        </h1>
-        <ul className='max-h-96 overflow-auto'>
-          {idpList.map((idp) => {
-            const { clientID, name, provider, connectionIsSAML, connectionIsOIDC } = JSON.parse(idp);
-            const connectionType = connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : '';
-            const connectionLabel = name ? `${name} (${provider})` : provider;
+          const name = connection.name || (idpMetadata ? idpMetadata.provider : `${oidcProvider?.provider}`);
+
+          return (
+            <li key={connection.clientID} className='rounded bg-gray-100'>
+              <button
+                type='button'
+                className='w-full'
+                onClick={() => {
+                  connectionSelected(connection.clientID);
+                }}>
+                <div className='flex items-center gap-2 py-3 px-3'>
+                  <div className='placeholder avatar'>
+                    <div className='w-8 rounded-full bg-primary text-white'>
+                      <span className='text-xs font-bold'>{name.charAt(0).toUpperCase()}</span>
+                    </div>
+                  </div>
+                  {name}
+                </div>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <p className='text-center text-sm text-slate-600'>
+        Choose an Identity Provider to continue. If you don&apos;t see your Identity Provider, please contact
+        your administrator.
+      </p>
+    </>
+  );
+};
+
+const AppSelector = ({
+  connections,
+  SAMLResponse,
+}: {
+  connections: (OIDCSSORecord | SAMLSSORecord)[];
+  SAMLResponse: string | null;
+}) => {
+  const { t } = useTranslation('common');
+  const formRef = useRef<HTMLFormElement>(null);
+
+  if (!SAMLResponse) {
+    return <p className='text-center text-sm text-slate-600'>No SAMLResponse found.</p>;
+  }
+
+  // IdP initiated SSO: Submit the SAMLResponse and idp_hint to the SAML ACS endpoint
+  const appSelected = () => {
+    formRef.current?.submit();
+  };
+
+  return (
+    <>
+      <h3 className='text-center text-xl font-bold'>{t('select_an_app')}</h3>
+      <form method='POST' action='/api/oauth/saml' ref={formRef}>
+        <input type='hidden' name='SAMLResponse' value={SAMLResponse} />
+        <ul className='flex flex-col space-y-5'>
+          {connections.map((connection) => {
             return (
-              <li className='relative my-3 border-b-[1px] bg-white last:border-b-0' key={clientID}>
-                <Link
-                  href={`/api/oauth/authorize?${paramsToRelay.toString()}&idp_hint=${clientID}`}
-                  className='relative flex w-full cursor-pointer items-center overflow-hidden  py-3 px-8 text-center text-[#3C454C] outline-none transition-colors hover:bg-primary/10 focus:bg-primary/30'
-                  aria-label={`Connection ${connectionLabel} of type ${connectionType}`}>
-                  <span aria-hidden className='m-auto'>
-                    {connectionLabel}
-                  </span>
-                  <span aria-hidden className='badge-primary badge badge-md'>
-                    {connectionType}
-                  </span>
-                </Link>
+              <li key={connection.clientID} className='rounded bg-gray-100'>
+                <div className='flex items-center gap-2 py-3 px-3'>
+                  <input
+                    type='radio'
+                    name='idp_hint'
+                    className='radio'
+                    value={connection.clientID}
+                    onChange={appSelected}
+                    id={connection.clientID}
+                  />
+                  <label htmlFor={connection.clientID}>{connection.product}</label>
+                </div>
               </li>
             );
           })}
         </ul>
-      </div>
-    );
-  }
-  if (Array.isArray(appList) && appList.length !== 0 && SAMLResponse) {
-    const paramsToRelay = Object.entries({ SAMLResponse });
-    return (
-      <form
-        ref={formRef}
-        action='/api/oauth/saml'
-        method='post'
-        className='relative top-1/2 left-1/2  w-1/2 max-w-xl  -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border-[1px] py-4 px-6 text-center'>
-        {paramsToRelay
-          .filter(([, value]) => value !== undefined)
-          .map(([key, value]) => (
-            <input key={key} type='hidden' name={key} value={value} />
-          ))}
-        <fieldset className='border-0'>
-          <legend className='mb-4 px-3 text-center text-lg font-bold text-black'>{t('select_an_app')}</legend>
-          <div className='max-h-96 overflow-auto'>
-            {appList.map((idp) => {
-              const { clientID, name, description, product } = idp;
-              return (
-                <div className='relative my-2 border-b-[1px] bg-white last:border-b-0' key={clientID}>
-                  <input
-                    id={`radio-${clientID}`}
-                    name='idp_hint'
-                    type='radio'
-                    className={`peer sr-only`}
-                    value={clientID}
-                    checked={app === clientID}
-                    onChange={handleChange}
-                  />
-                  <label
-                    htmlFor={`radio-${clientID}`}
-                    className='relative flex w-full cursor-pointer flex-col items-start overflow-hidden py-3 px-8 text-[#3C454C] transition-colors hover:bg-primary/10 focus:bg-primary/30 peer-checked:bg-primary/25'>
-                    <span className='font-bold'>{name || product}</span>
-                    {description && <span className='font-light'>{description}</span>}
-                  </label>
-                </div>
-              );
-            })}
-          </div>
-        </fieldset>
-        <input type='submit' value='submit' />
       </form>
-    );
+      <p className='text-center text-sm text-slate-600'>
+        Choose an app to continue. If you don&apos;t see your app, please contact your administrator.
+      </p>
+    </>
+  );
+};
+
+export const getServerSideProps: GetServerSideProps<{
+  connections: (OIDCSSORecord | SAMLSSORecord)[];
+  SAMLResponse: string | null;
+  requestType: 'sp-initiated' | 'idp-initiated';
+}> = async ({ query, locale, req }) => {
+  const { connectionAPIController } = await jackson();
+
+  const paramsToRelay = { ...query } as { [key: string]: string };
+
+  const { authFlow, entityId, tenant, product, idp_hint } = query as {
+    authFlow: 'saml' | 'oauth';
+    tenant?: string;
+    product?: string;
+    idp_hint?: string;
+    entityId?: string;
+  };
+
+  // The user has selected an IdP to continue with
+  if (idp_hint) {
+    const params = new URLSearchParams(paramsToRelay).toString();
+
+    const destinations = {
+      saml: `/api/federated-saml/sso?${params}`,
+      oauth: `/api/oauth/authorize?${params}`,
+    };
+
+    return {
+      redirect: {
+        destination: destinations[authFlow],
+        permanent: false,
+      },
+    };
   }
 
-  return <div className='text-black'>{t('selection_list_empty')}</div>;
-}
+  // Otherwise, show the list of IdPs
+  let connections: (OIDCSSORecord | SAMLSSORecord)[] = [];
 
-export const getServerSideProps: GetServerSideProps = async ({ req, locale }) => {
+  if (tenant && product) {
+    connections = await connectionAPIController.getConnections({ tenant, product });
+  } else if (entityId) {
+    connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
+  }
+
+  // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
   if (req.method == 'POST') {
     const body = await getRawBody(req);
-    const payload = body.toString('utf-8');
+    const params = new URLSearchParams(body.toString('utf-8'));
 
-    const params = new URLSearchParams(payload);
-    const SAMLResponse = params.get('SAMLResponse') || '';
-    const app = decodeURIComponent(params.get('app') || '');
+    const SAMLResponse = params.get('SAMLResponse');
 
-    return { props: { SAMLResponse, appList: app ? JSON.parse(app) : [] } };
+    // SAMLResponse should exist with idp-initiated flow
+    if (!SAMLResponse) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+        requestType: 'idp-initiated',
+        SAMLResponse,
+        connections,
+      },
+    };
   }
+
   return {
     props: {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+      requestType: 'sp-initiated',
+      SAMLResponse: null,
+      connections,
     },
   };
 };

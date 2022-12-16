@@ -18,6 +18,7 @@ import type {
   DirectorySyncRequest,
   IOidcDiscoveryController,
   ISPSAMLConfig,
+  ISAMLFederationController,
   GetConnectionsQuery,
   GetIDPEntityIDBody,
   GetConfigQuery,
@@ -36,6 +37,8 @@ let setupLinkController: ISetupLinkController;
 let directorySyncController: IDirectorySyncController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
+let samlFederatedController: ISAMLFederationController;
+let checkLicense: () => Promise<boolean>;
 
 const g = global as any;
 
@@ -49,7 +52,8 @@ export default async function init() {
     !g.directorySync ||
     !g.setupLinkController ||
     !g.oidcDiscoveryController ||
-    !g.spConfig
+    !g.spConfig ||
+    !g.samlFederatedController
   ) {
     const ret = await jackson(jacksonOptions);
     connectionAPIController = ret.connectionAPIController;
@@ -61,6 +65,8 @@ export default async function init() {
     directorySyncController = ret.directorySyncController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
+    samlFederatedController = ret.samlFederatedController;
+    checkLicense = ret.checkLicense;
 
     g.connectionAPIController = connectionAPIController;
     g.oauthController = oauthController;
@@ -72,6 +78,8 @@ export default async function init() {
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
     g.isJacksonReady = true;
+    g.samlFederatedController = samlFederatedController;
+    g.checkLicense = checkLicense;
   } else {
     connectionAPIController = g.connectionAPIController;
     oauthController = g.oauthController;
@@ -82,6 +90,8 @@ export default async function init() {
     oidcDiscoveryController = g.oidcDiscoveryController;
     setupLinkController = g.setupLinkController;
     spConfig = g.spConfig;
+    samlFederatedController = g.samlFederatedController;
+    checkLicense = g.checkLicense;
   }
 
   return {
@@ -94,6 +104,8 @@ export default async function init() {
     directorySyncController,
     oidcDiscoveryController,
     setupLinkController,
+    samlFederatedController,
+    checkLicense,
   };
 }
 

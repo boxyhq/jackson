@@ -15,7 +15,7 @@ import {
   GetIDPEntityIDBody,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames } from './utils';
+import { IndexNames, appID } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
@@ -385,7 +385,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     if (!tenant || !product) {
       throw new JacksonError('Please provide `tenant` and `product`.', 400);
     } else {
-      return `${this.opts.samlAudience}/${dbutils.keyDigest(dbutils.keyFromParts(tenant, product))}`;
+      return `${this.opts.samlAudience}/${appID(tenant, product)}`;
     }
   }
 
@@ -480,8 +480,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
     const strategy = 'strategy' in body ? body.strategy : undefined;
+    const entityId = 'entityId' in body ? body.entityId : undefined;
 
     metrics.increment('getConnections');
+
+    if (entityId) {
+      const connections = await this.connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+
+      if (!connections || typeof connections !== 'object') {
+        return [];
+      }
+
+      return connections;
+    }
 
     if (clientID) {
       const connection = await this.connectionStore.get(clientID);
