@@ -26,7 +26,6 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       }),
     });
     if (res.ok) {
-      setLoading(false);
       const json = await res.json();
       setUrl(json.data.url);
       successToast(t('link_generated'));
@@ -34,6 +33,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       const rsp = await res.json();
       errorToast(rsp?.error?.message || t('server_error'));
     }
+    setLoading(false);
   };
   const regenerateLink = async (event) => {
     event.preventDefault();
@@ -134,7 +134,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
             className={`btn-primary btn ${loading ? 'loading' : ''}`}
             disabled={!formObj.tenant || !formObj.product || !formObj.type}
             onClick={createLink}>
-            {'Generate'}
+            {t('generate')}
           </button>
         </div>
         <ConfirmationModal
@@ -143,7 +143,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
           visible={delModalVisible}
           onConfirm={regenerateLink}
           onCancel={toggleDelConfirm}
-          actionButtonText={'Regenerate'}
+          actionButtonText={t('regenerate')}
         />
       </div>
       {url && (
@@ -179,7 +179,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
                     }
                   : createLink
               }>
-              {url ? 'Regenerate Link' : 'Generate'}
+              {url ? t('regenerate') : t('generate')}
             </button>
           </div>
         </div>

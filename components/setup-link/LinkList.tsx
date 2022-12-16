@@ -187,7 +187,7 @@ const LinkList = ({ service }) => {
         description='This action cannot be undone. This will permanently delete the old setup link.'
         visible={showRegenConfirmModal}
         onConfirm={invokeRegenerate}
-        actionButtonText={'Regenerate'}
+        actionButtonText={t('regenerate')}
         onCancel={toggleRegenConfirmModal}></ConfirmationModal>
       <ConfirmationModal
         title='Delete this setup link?'
