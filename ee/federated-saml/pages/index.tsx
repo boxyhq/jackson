@@ -36,7 +36,7 @@ const AppsList: NextPage = () => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('saml_federation_apps')}</h2>
         <Link href={'/admin/federated-saml/new'} className='btn-primary btn'>
-          + Create New
+          + {t('new_saml_federation_app')}
         </Link>
       </div>
       {noApps ? (
@@ -82,7 +82,7 @@ const AppsList: NextPage = () => {
                         <Link
                           href={`/admin/federated-saml/${app.id}/metadata`}
                           className='link-secondary link underline-offset-4'>
-                          {t('download')}
+                          {t('view')}
                         </Link>
                       </td>
                     </tr>
