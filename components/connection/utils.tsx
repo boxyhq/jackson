@@ -157,7 +157,7 @@ export function renderFieldList(args: {
             id={key}
             type={type}
             placeholder={placeholder}
-            value={value}
+            value={type === 'text' ? value || '' : value}
             required={required}
             disabled={disabled}
             maxLength={maxLength}

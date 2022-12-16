@@ -229,8 +229,8 @@ const saml = {
 
     const record = {
       ..._savedConnection,
-      name: name ? name : _savedConnection.name,
-      description: description ? description : _savedConnection.description,
+      name: name || name === '' ? name : _savedConnection.name,
+      description: description || description === '' ? description : _savedConnection.description,
       idpMetadata: newMetadata ? newMetadata : _savedConnection.idpMetadata,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,

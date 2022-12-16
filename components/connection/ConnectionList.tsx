@@ -130,7 +130,10 @@ const Connections = ({
                       key={connection.clientID}
                       className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {connection.name || connection.idpMetadata?.provider}
+                        {connection.name ||
+                          (connectionIsSAML
+                            ? connection.idpMetadata?.provider
+                            : connection.oidcProvider?.provider)}
                       </td>
                       {!setupToken && (
                         <>
