@@ -79,7 +79,6 @@ export const getCommonFields = (isEditView?: boolean) => [
     placeholder: '',
     attributes: isEditView
       ? {
-          editable: false,
           connection: 'oidc',
           accessor: (o) => o?.oidcProvider?.clientId,
           hideInSetupView: false,

@@ -11,7 +11,7 @@ import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 
-const fieldCatalog = [...getCommonFields(), ...EditViewOnlyFields];
+const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
 function getInitialState(connection) {
   const _state = {};
