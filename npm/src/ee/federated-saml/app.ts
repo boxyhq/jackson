@@ -135,9 +135,7 @@ export class App {
 
   // Get the metadata for the app
   public async getMetadata(id: string): Promise<Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata']> {
-    // TODO: Fix the entityID
-
-    const app = await this.get(id);
+    await this.get(id);
 
     const { publicKey } = await getDefaultCertificate();
 

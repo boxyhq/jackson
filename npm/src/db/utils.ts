@@ -14,8 +14,6 @@ export const keyDigest = (k: string): string => {
 };
 
 export const keyFromParts = (...parts: string[]): string => {
-  // TODO: pick a better strategy, keys can collide now
-
   return parts.join(':');
 };
 
