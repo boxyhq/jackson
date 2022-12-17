@@ -15,6 +15,7 @@ import { successToast } from '@components/Toast';
 import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
+import { LinkPrimary } from '@components/LinkPrimary';
 
 const LinkList = ({ service }) => {
   const [queryParam, setQueryParam] = useState('');
@@ -57,14 +58,14 @@ const LinkList = ({ service }) => {
       <div className='mb-5 flex items-center justify-between'>
         <h3>{service === 'sso' ? t('setup_link_sso_description') : t('setup_link_dsync_description')}</h3>
         <div>
-          <Link
+          <LinkPrimary
+            Icon={PlusIcon}
             href={`/admin/${
               service === 'sso' ? 'sso-connection' : service === 'dsync' ? 'directory-sync' : ''
             }/setup-link/new`}
-            className='btn-primary btn m-2'
             data-test-id='create-setup-link'>
-            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
-          </Link>
+            {t('new_setup_link')}
+          </LinkPrimary>
         </div>
       </div>
       {links.length === 0 ? (

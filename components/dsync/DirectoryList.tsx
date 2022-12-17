@@ -4,6 +4,7 @@ import { CircleStackIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/reac
 import { Directory } from '@lib/jackson';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
+import { LinkPrimary } from '@components/LinkPrimary';
 
 type DirectoryListProps = {
   directories: Directory[];
@@ -20,18 +21,15 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
         <div>
-          <Link
-            href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}
-            className='btn-primary btn'>
-            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_directory')}
-          </Link>
+          <LinkPrimary
+            Icon={PlusIcon}
+            href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}>
+            {t('new_directory')}
+          </LinkPrimary>
           {!token && (
-            <Link
-              href={`/admin/directory-sync/setup-link/new`}
-              className='btn-primary btn m-2'
-              data-test-id='create-setup-link'>
-              <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
-            </Link>
+            <LinkPrimary Icon={LinkIcon} href={`/admin/directory-sync/setup-link/new`}>
+              {t('new_setup_link')}
+            </LinkPrimary>
           )}
         </div>
       </div>

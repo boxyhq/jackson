@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import { copyToClipboard } from '@lib/ui/utils';
 import { successToast } from '@components/Toast';
 import { LinkPrimary } from '@components/LinkPrimary';
+import { Button } from '@components/Button';
 
 type Connection = {
   name: string;
@@ -55,13 +56,17 @@ const Connections = ({
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
         <div>
           <LinkPrimary
+            Icon={PlusIcon}
             href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
             data-test-id='create-connection'>
-            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_connection')}
+            {t('new_connection')}
           </LinkPrimary>
           {!setupToken && (
-            <LinkPrimary href={`/admin/sso-connection/setup-link/new`} data-test-id='create-setup-link'>
-              <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
+            <LinkPrimary
+              Icon={LinkIcon}
+              href='/admin/sso-connection/setup-link/new'
+              data-test-id='create-setup-link'>
+              {t('new_setup_link')}
             </LinkPrimary>
           )}
         </div>
@@ -163,11 +168,11 @@ const Connections = ({
             </table>
           </div>
           <div className='mt-4 flex justify-center'>
-            <button
-              type='button'
-              className='btn-outline btn'
-              disabled={paginate.page === 0}
+            <Button
+              Icon={ArrowLeftIcon}
               aria-label={t('previous')}
+              disabled={paginate.page === 0}
+              variant='outline'
               onClick={() =>
                 setPaginate((curState) => ({
                   ...curState,
@@ -175,14 +180,14 @@ const Connections = ({
                   page: curState.page - 1,
                 }))
               }>
-              <ArrowLeftIcon className='mr-1 h-5 w-5' aria-hidden />
               {t('prev')}
-            </button>
+            </Button>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <button
-              type='button'
-              className='btn-outline btn'
+            <Button
+              Icon={ArrowRightIcon}
+              aria-label={t('previous')}
               disabled={connections.length === 0 || connections.length < paginate.pageLimit}
+              variant='outline'
               onClick={() =>
                 setPaginate((curState) => ({
                   ...curState,
@@ -190,9 +195,8 @@ const Connections = ({
                   page: curState.page + 1,
                 }))
               }>
-              <ArrowRightIcon className='mr-1 h-5 w-5' aria-hidden />
               {t('next')}
-            </button>
+            </Button>
           </div>
         </>
       )}
