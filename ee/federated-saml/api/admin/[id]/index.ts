@@ -36,7 +36,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const app = await samlFederatedController.app.get(id);
-    const metadata = await samlFederatedController.app.getMetadata(id);
+    const metadata = await samlFederatedController.app.getMetadata();
 
     return res.status(200).json({
       data: {
