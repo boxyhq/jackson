@@ -12,6 +12,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { copyToClipboard } from '@lib/ui/utils';
 import { successToast } from '@components/Toast';
+import { LinkPrimary } from '@components/LinkPrimary';
 
 type Connection = {
   name: string;
@@ -53,19 +54,15 @@ const Connections = ({
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
         <div>
-          <Link
+          <LinkPrimary
             href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
-            className='btn-primary btn m-2'
             data-test-id='create-connection'>
             <PlusIcon className='mr-1 h-5 w-5' /> {t('new_connection')}
-          </Link>
+          </LinkPrimary>
           {!setupToken && (
-            <Link
-              href={`/admin/sso-connection/setup-link/new`}
-              className='btn-primary btn m-2'
-              data-test-id='create-setup-link'>
+            <LinkPrimary href={`/admin/sso-connection/setup-link/new`} data-test-id='create-setup-link'>
               <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
-            </Link>
+            </LinkPrimary>
           )}
         </div>
       </div>
