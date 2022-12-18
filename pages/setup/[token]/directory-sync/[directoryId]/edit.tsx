@@ -4,14 +4,15 @@ import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-
+import { useTranslation } from 'next-i18next';
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
-import classNames from 'classnames';
+import { Button } from '@components/Button';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
 }) => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const { token } = router.query;
   const [directory, setDirectory] = React.useState({
@@ -125,9 +126,9 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
               </div>
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
-                Save Changes
-              </button>
+              <Button type='submit' color='primary' loading={loading}>
+                {t('save_changes')}
+              </Button>
             </div>
           </div>
         </form>

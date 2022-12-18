@@ -9,6 +9,7 @@ import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 import { copyToClipboard } from '@lib/ui/utils';
+import { Button } from '@components/Button';
 
 const fieldCatalog = [...getCommonFields()];
 
@@ -68,14 +69,14 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
           <div className='form-control'>
             <div className='input-group'>
               <div className='pt-2 pr-2'>{t('idp_entity_id')}:</div>
-              <button
-                className='btn-primary btn h-10 p-2 text-white'
+              <Button
+                Icon={ClipboardDocumentIcon}
+                className='p-2'
+                color='primary'
                 onClick={() => {
                   copyToClipboard(idpEntityID);
                   successToast(t('copied'));
-                }}>
-                <ClipboardDocumentIcon className='h-6 w-6' />
-              </button>
+                }}></Button>
               <input type='text' readOnly value={idpEntityID} className='input-bordered input h-10 w-4/5' />
             </div>
           </div>
@@ -127,9 +128,9 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
               .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
               .map(renderFieldList({ formObj, setFormObj }))}
             <div className='flex'>
-              <button type='submit' className='btn-primary btn'>
+              <Button type='submit' color='primary'>
                 {t('save_changes')}
-              </button>
+              </Button>
             </div>
           </div>
         </form>

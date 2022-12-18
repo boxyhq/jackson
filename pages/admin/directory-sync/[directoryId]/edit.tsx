@@ -6,10 +6,10 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
-import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toast';
+import { Button } from '@components/Button';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -125,9 +125,9 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
               </div>
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
+              <Button type='submit' color='primary' loading={loading}>
                 {t('save_changes')}
-              </button>
+              </Button>
             </div>
           </div>
         </form>

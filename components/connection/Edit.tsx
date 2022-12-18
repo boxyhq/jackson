@@ -10,6 +10,7 @@ import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from 
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
+import { Button } from '@components/Button';
 
 const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
@@ -143,9 +144,9 @@ const Edit = ({ connection, setupToken }: EditProps) => {
               </div>
             </div>
             <div className='flex w-full lg:mt-6'>
-              <button type='submit' className='btn-primary btn'>
+              <Button type='submit' color='primary'>
                 {t('save_changes')}
-              </button>
+              </Button>
             </div>
           </div>
           {connection?.clientID && connection.clientSecret && (
@@ -154,13 +155,9 @@ const Edit = ({ connection, setupToken }: EditProps) => {
                 <h6 className='mb-1 font-medium'>{t('delete_this_connection')}</h6>
                 <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
               </div>
-              <button
-                type='button'
-                className='btn-error btn'
-                onClick={toggleDelConfirm}
-                data-modal-toggle='popup-modal'>
+              <Button type='button' color='error' onClick={toggleDelConfirm} data-modal-toggle='popup-modal'>
                 {t('delete')}
-              </button>
+              </Button>
             </section>
           )}
         </form>

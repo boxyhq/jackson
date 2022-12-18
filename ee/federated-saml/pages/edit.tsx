@@ -3,7 +3,6 @@ import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
-import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
@@ -14,6 +13,7 @@ import LicenseRequired from '@components/LicenseRequired';
 import { errorToast, successToast } from '@components/Toast';
 import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
+import { Button } from '@components/Button';
 
 const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -158,9 +158,9 @@ const UpdateApp: NextPage = () => {
               />
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
+              <Button type='submit' color='primary' loading={loading}>
                 {t('save_changes')}
-              </button>
+              </Button>
             </div>
           </div>
         </form>
@@ -199,15 +199,15 @@ export const DeleteApp = ({ app }: { app: SAMLFederationApp }) => {
           <h6 className='mb-1 font-medium'>{t('delete_this_saml_federation_app')}</h6>
           <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
         </div>
-        <button
+        <Button
           type='button'
-          className='btn-error btn'
+          color='error'
           data-modal-toggle='popup-modal'
           onClick={() => {
             setDelModalVisible(true);
           }}>
-          Delete
-        </button>
+          {t('delete')}
+        </Button>
       </section>
       <ConfirmationModal
         title={t('delete_the_saml_federation_app')}
