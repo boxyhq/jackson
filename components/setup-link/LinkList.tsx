@@ -1,12 +1,4 @@
-import Link from 'next/link';
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ClipboardDocumentIcon,
-  PlusIcon,
-  ArrowPathIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon, PlusIcon, ArrowPathIcon, TrashIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
@@ -16,6 +8,7 @@ import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
 import { LinkPrimary } from '@components/LinkPrimary';
+import { Pagination } from '@components/Pagination';
 
 const LinkList = ({ service }) => {
   const [queryParam, setQueryParam] = useState('');
@@ -149,38 +142,23 @@ const LinkList = ({ service }) => {
               </tbody>
             </table>
           </div>
-          <div className='mt-4 flex justify-center'>
-            <button
-              type='button'
-              className='btn-outline btn'
-              disabled={paginate.page === 0}
-              aria-label={t('previous')}
-              onClick={() =>
-                setPaginate((curState) => ({
-                  ...curState,
-                  pageOffset: (curState.page - 1) * paginate.pageLimit,
-                  page: curState.page - 1,
-                }))
-              }>
-              <ArrowLeftIcon className='mr-1 h-5 w-5' aria-hidden />
-              {t('prev')}
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <button
-              type='button'
-              className='btn-outline btn'
-              disabled={links.length === 0 || links.length < paginate.pageLimit}
-              onClick={() =>
-                setPaginate((curState) => ({
-                  ...curState,
-                  pageOffset: (curState.page + 1) * paginate.pageLimit,
-                  page: curState.page + 1,
-                }))
-              }>
-              <ArrowRightIcon className='mr-1 h-5 w-5' aria-hidden />
-              {t('next')}
-            </button>
-          </div>
+          <Pagination
+            prevDisabled={paginate.page === 0}
+            nextDisabled={links.length === 0 || links.length < paginate.pageLimit}
+            onPrevClick={() =>
+              setPaginate((curState) => ({
+                ...curState,
+                pageOffset: (curState.page - 1) * paginate.pageLimit,
+                page: curState.page - 1,
+              }))
+            }
+            onNextClick={() =>
+              setPaginate((curState) => ({
+                ...curState,
+                pageOffset: (curState.page + 1) * paginate.pageLimit,
+                page: curState.page + 1,
+              }))
+            }></Pagination>
         </>
       )}
       <ConfirmationModal

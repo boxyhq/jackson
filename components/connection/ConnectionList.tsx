@@ -1,19 +1,12 @@
 import Link from 'next/link';
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ClipboardDocumentIcon,
-  LinkIcon,
-  PencilIcon,
-  PlusIcon,
-} from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { copyToClipboard } from '@lib/ui/utils';
 import { successToast } from '@components/Toast';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { Button } from '@components/Button';
+import { Pagination } from '@components/Pagination';
 
 type Connection = {
   name: string;
@@ -167,37 +160,23 @@ const Connections = ({
               </tbody>
             </table>
           </div>
-          <div className='mt-4 flex justify-center'>
-            <Button
-              Icon={ArrowLeftIcon}
-              aria-label={t('previous')}
-              disabled={paginate.page === 0}
-              variant='outline'
-              onClick={() =>
-                setPaginate((curState) => ({
-                  ...curState,
-                  pageOffset: (curState.page - 1) * paginate.pageLimit,
-                  page: curState.page - 1,
-                }))
-              }>
-              {t('prev')}
-            </Button>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <Button
-              Icon={ArrowRightIcon}
-              aria-label={t('previous')}
-              disabled={connections.length === 0 || connections.length < paginate.pageLimit}
-              variant='outline'
-              onClick={() =>
-                setPaginate((curState) => ({
-                  ...curState,
-                  pageOffset: (curState.page + 1) * paginate.pageLimit,
-                  page: curState.page + 1,
-                }))
-              }>
-              {t('next')}
-            </Button>
-          </div>
+          <Pagination
+            prevDisabled={paginate.page === 0}
+            nextDisabled={connections.length === 0 || connections.length < paginate.pageLimit}
+            onPrevClick={() =>
+              setPaginate((curState) => ({
+                ...curState,
+                pageOffset: (curState.page - 1) * paginate.pageLimit,
+                page: curState.page - 1,
+              }))
+            }
+            onNextClick={() =>
+              setPaginate((curState) => ({
+                ...curState,
+                pageOffset: (curState.page + 1) * paginate.pageLimit,
+                page: curState.page + 1,
+              }))
+            }></Pagination>
         </>
       )}
     </div>
