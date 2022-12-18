@@ -80,7 +80,8 @@ const AppsList: NextPage = () => {
                       <td className='px-6'>{app.product}</td>
                       <td className='px-6'>
                         <Link
-                          href={`/admin/federated-saml/${app.id}/metadata`}
+                          href={`/.well-known/idp-configuration`}
+                          target='_blank'
                           className='link-secondary link underline-offset-4'>
                           {t('view')}
                         </Link>

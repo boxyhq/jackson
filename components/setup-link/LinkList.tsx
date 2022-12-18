@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  ClipboardDocumentListIcon,
+  ClipboardDocumentIcon,
   PlusIcon,
   ArrowPathIcon,
   TrashIcon,
@@ -114,7 +114,7 @@ const LinkList = ({ service }) => {
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>
                           <div className='tooltip' data-tip={t('copy')}>
-                            <ClipboardDocumentListIcon
+                            <ClipboardDocumentIcon
                               className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
                               onClick={() => {
                                 copyToClipboard(link.url);
@@ -187,7 +187,7 @@ const LinkList = ({ service }) => {
         description='This action cannot be undone. This will permanently delete the old setup link.'
         visible={showRegenConfirmModal}
         onConfirm={invokeRegenerate}
-        actionButtonText={'Regenerate'}
+        actionButtonText={t('regenerate')}
         onCancel={toggleRegenConfirmModal}></ConfirmationModal>
       <ConfirmationModal
         title='Delete this setup link?'

@@ -7,14 +7,6 @@ import { promisify } from 'util';
 const pipeline = promisify(stream.pipeline);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { checkLicense } = await jackson();
-
-  if (!(await checkLicense())) {
-    return res.status(404).json({
-      error: { message: 'License not found. Please add a valid license to use this feature.' },
-    });
-  }
-
   const { method } = req;
 
   switch (method) {
@@ -30,15 +22,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { appId, download } = req.query as { appId: string; download: any };
+  const { download } = req.query as { download: any };
 
   try {
-    const metadata = await samlFederatedController.app.getMetadata(appId);
+    const metadata = await samlFederatedController.app.getMetadata();
 
     res.setHeader('Content-type', 'text/xml');
 
     if (download || download === '') {
-      res.setHeader('Content-Disposition', `attachment; filename=saml-metadata-${appId}.xml`);
+      res.setHeader('Content-Disposition', `attachment; filename=saml-metadata.xml`);
 
       await pipeline(metadata.xml, res);
       return;

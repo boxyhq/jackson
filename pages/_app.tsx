@@ -16,6 +16,7 @@ const unauthenticatedRoutes = [
   '/',
   '/admin/auth/login',
   '/well-known/saml-configuration',
+  '/well-known/idp-configuration',
   '/oauth/jwks',
   '/idp/select',
   '/error',
@@ -37,7 +38,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     return (
       <>
         {getLayout(<Component {...props} />)}
-        <Toaster toastOptions={{ duration: Infinity }} />
+        <Toaster toastOptions={{ duration: 10000 }} />
       </>
     );
   }
@@ -46,7 +47,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     return (
       <SetupLayout>
         <Component {...props} />
-        <Toaster toastOptions={{ duration: Infinity }} />
+        <Toaster toastOptions={{ duration: 10000 }} />
       </SetupLayout>
     );
   }

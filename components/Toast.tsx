@@ -46,12 +46,13 @@ const SuccessToast = ({ message }: { message: string }) => {
 export const errorToast = (message: string) => {
   toast.custom(() => <ErrorToast message={message} />, {
     id: 'custom-error-toast',
+    duration: Infinity,
   });
 };
 
 export const successToast = (message: string) => {
   toast.custom(() => <SuccessToast message={message} />, {
     id: 'custom-success-toast',
-    duration: 5000,
+    duration: 10000,
   });
 };
