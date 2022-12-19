@@ -1,4 +1,4 @@
-import { Button } from './Button';
+import { ButtonBase } from './ButtonBase';
 import classNames from 'classnames';
 
 export const ButtonPrimary = ({
@@ -20,7 +20,7 @@ export const ButtonPrimary = ({
   className?: string;
 }) => {
   return (
-    <Button
+    <ButtonBase
       type={type}
       color='primary'
       loading={loading}
@@ -30,6 +30,6 @@ export const ButtonPrimary = ({
       {...others}>
       {Icon && <Icon className={classNames('h-4 w-4', children ? 'mr-1' : '')} aria-hidden />}
       {children}
-    </Button>
+    </ButtonBase>
   );
 };
