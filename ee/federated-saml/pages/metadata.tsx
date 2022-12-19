@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import type { NextPage, InferGetStaticPropsType } from 'next';
+import type { NextPage } from 'next';
 
 import LicenseRequired from '@components/LicenseRequired';
 

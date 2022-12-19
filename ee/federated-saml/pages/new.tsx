@@ -47,7 +47,7 @@ const NewApp: NextPage = () => {
 
     if ('data' in response) {
       successToast(t('saml_federation_new_success'));
-      router.replace(`/admin/federated-saml/${response.data.id}/metadata`);
+      router.replace(`/admin/federated-saml/${response.data.id}/edit`);
     }
   };
 
