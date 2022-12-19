@@ -1,3 +1,4 @@
+import type { ButtonProps } from './ButtonBase';
 import { ButtonBase } from './ButtonBase';
 import classNames from 'classnames';
 
@@ -10,15 +11,7 @@ export const ButtonDanger = ({
   loading = undefined,
   className = undefined,
   ...others
-}: {
-  children?: any;
-  disabled?: boolean;
-  Icon?: any;
-  onClick?: any;
-  type?: 'submit' | 'reset' | 'button';
-  loading?: boolean;
-  className?: string;
-}) => {
+}: ButtonProps) => {
   return (
     <ButtonBase
       type={type}

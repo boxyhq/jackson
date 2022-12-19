@@ -1,6 +1,21 @@
 import { Button } from 'react-daisyui';
 import classNames from 'classnames';
 
+export interface ButtonProps {
+  children?: any;
+  disabled?: boolean;
+  Icon?: any;
+  onClick?: any;
+  type?: 'submit' | 'reset' | 'button';
+  loading?: boolean;
+  className?: string;
+}
+
+interface ButtonBaseProps extends ButtonProps {
+  variant?: 'outline' | 'link';
+  color?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'info' | 'success' | 'warning' | 'error';
+}
+
 export const ButtonBase = ({
   children = undefined,
   Icon = undefined,
@@ -12,17 +27,7 @@ export const ButtonBase = ({
   loading = undefined,
   className = undefined,
   ...others
-}: {
-  children?: any;
-  disabled?: boolean;
-  Icon?: any;
-  onClick?: any;
-  variant?: 'outline' | 'link';
-  type?: 'submit' | 'reset' | 'button';
-  color?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'info' | 'success' | 'warning' | 'error';
-  loading?: boolean;
-  className?: string;
-}) => {
+}: ButtonBaseProps) => {
   return (
     <Button
       type={type}
