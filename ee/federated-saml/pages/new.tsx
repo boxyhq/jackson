@@ -1,7 +1,5 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
-import Link from 'next/link';
-import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';

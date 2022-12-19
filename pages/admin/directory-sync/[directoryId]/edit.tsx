@@ -1,7 +1,6 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import jackson from '@lib/jackson';

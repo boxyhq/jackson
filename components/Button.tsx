@@ -1,4 +1,5 @@
 import { Button as ButtonDaisy } from 'react-daisyui';
+import classNames from 'classnames';
 
 export const Button = ({
   children = undefined,
@@ -32,7 +33,7 @@ export const Button = ({
       variant={variant}
       onClick={onClick}
       {...others}>
-      {Icon && <Icon className={children ? 'mr-1 h-5 w-5' : 'h-5 w-5'} aria-hidden />}
+      {Icon && <Icon className={classNames('h-4 w-4', children ? 'mr-1' : '')} aria-hidden />}
       {children}
     </ButtonDaisy>
   );

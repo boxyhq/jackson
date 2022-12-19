@@ -1,5 +1,4 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import React from 'react';
