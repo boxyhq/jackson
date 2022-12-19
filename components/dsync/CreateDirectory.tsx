@@ -1,11 +1,11 @@
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import React from 'react';
-import classNames from 'classnames';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toast';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 type CreateDirectoryProps = {
   providers: any;
@@ -154,9 +154,7 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
               />
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
-                {t('create_directory')}
-              </button>
+              <ButtonPrimary loading={loading}>{t('create_directory')}</ButtonPrimary>
             </div>
           </div>
         </form>
