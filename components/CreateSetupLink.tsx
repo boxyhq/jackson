@@ -1,11 +1,12 @@
 import { FormEvent, useState } from 'react';
-import { ClipboardDocumentIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toast';
 import { copyToClipboard } from '@lib/ui/utils';
 import { Button } from './Button';
+import { ButtonBack } from './ButtonBack';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
@@ -81,9 +82,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
 
   return (
     <>
-      <Button variant='outline' Icon={ArrowLeftIcon} onClick={() => router.back()}>
-        {t('back')}
-      </Button>
+      <ButtonBack onClick={() => router.back()} />
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <h2 className='mb-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_setup_link', {

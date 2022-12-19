@@ -2,14 +2,13 @@ import type { NextPage } from 'next';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 
 import type { ApiResponse } from 'types';
 import LicenseRequired from '@components/LicenseRequired';
 import { errorToast, successToast } from '@components/Toast';
 import { Button } from '@components/Button';
-import { LinkOutline } from '@components/LinkOutline';
+import { LinkBack } from '@components/LinkBack';
 
 const NewApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -62,9 +61,7 @@ const NewApp: NextPage = () => {
 
   return (
     <LicenseRequired>
-      <LinkOutline href='/admin/federated-saml' Icon={ArrowLeftIcon}>
-        {t('back')}
-      </LinkOutline>
+      <LinkBack href='/admin/federated-saml' />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_add_new_app')}</h2>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>

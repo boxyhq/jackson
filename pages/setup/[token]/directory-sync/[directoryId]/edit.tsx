@@ -2,12 +2,11 @@ import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'next-i18next';
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
 import { Button } from '@components/Button';
-import { LinkOutline } from '@components/LinkOutline';
+import { LinkBack } from '@components/LinkBack';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -64,9 +63,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
   return (
     <div>
-      <LinkOutline href={`/setup/${token}/directory-sync`} Icon={ArrowLeftIcon}>
-        {t('back')}
-      </LinkOutline>
+      <LinkBack href={`/setup/${token}/directory-sync`} />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>Update Directory</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
@@ -14,7 +13,7 @@ import { errorToast, successToast } from '@components/Toast';
 import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 import { Button } from '@components/Button';
-import { LinkOutline } from '@components/LinkOutline';
+import { LinkBack } from '@components/LinkBack';
 
 const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -92,9 +91,7 @@ const UpdateApp: NextPage = () => {
 
   return (
     <LicenseRequired>
-      <LinkOutline href='/admin/federated-saml' Icon={ArrowLeftIcon}>
-        {t('back')}
-      </LinkOutline>
+      <LinkBack href='/admin/federated-saml' />
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
         <div>

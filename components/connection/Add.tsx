@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { ArrowLeftIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { mutate } from 'swr';
@@ -9,7 +9,7 @@ import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 import { copyToClipboard } from '@lib/ui/utils';
 import { Button } from '@components/Button';
-import { LinkOutline } from '@components/LinkOutline';
+import { LinkBack } from '@components/LinkBack';
 
 const fieldCatalog = [...getCommonFields()];
 
@@ -58,9 +58,7 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
 
   return (
     <>
-      <LinkOutline href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} Icon={ArrowLeftIcon}>
-        {t('back')}
-      </LinkOutline>
+      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
       {idpEntityID && setupToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>

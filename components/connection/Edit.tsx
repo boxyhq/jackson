@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import ConfirmationModal from '@components/ConfirmationModal';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
@@ -10,7 +9,7 @@ import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 import { Button } from '@components/Button';
-import { LinkOutline } from '@components/LinkOutline';
+import { LinkBack } from '@components/LinkBack';
 
 const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
@@ -117,9 +116,7 @@ const Edit = ({ connection, setupToken }: EditProps) => {
 
   return (
     <>
-      <LinkOutline href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} Icon={ArrowLeftIcon}>
-        {t('back')}
-      </LinkOutline>
+      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}
