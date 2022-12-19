@@ -3,7 +3,7 @@ import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useState, useEffect } from 'react';
-import { successToast } from '@components/Toast';
+import { successToast } from '@components/Toaster';
 import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';

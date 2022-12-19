@@ -3,7 +3,7 @@ import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
 import { copyToClipboard } from '@lib/ui/utils';
 import { ButtonBack } from './ButtonBack';
 import { ButtonPrimary } from './ButtonPrimary';

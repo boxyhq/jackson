@@ -5,7 +5,7 @@ import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
 import { copyToClipboard } from '@lib/ui/utils';
 import { LinkBack } from '@components/LinkBack';

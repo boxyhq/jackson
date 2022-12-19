@@ -9,7 +9,7 @@ import { useTranslation } from 'next-i18next';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import LicenseRequired from '@components/LicenseRequired';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
 import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 import { LinkBack } from '@components/LinkBack';

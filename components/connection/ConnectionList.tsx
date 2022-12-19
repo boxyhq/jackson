@@ -4,7 +4,7 @@ import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { copyToClipboard } from '@lib/ui/utils';
-import { successToast } from '@components/Toast';
+import { successToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { Pagination } from '@components/Pagination';
 import { ButtonPrimary } from '@components/ButtonPrimary';

@@ -9,7 +9,7 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import EmptyState from '@components/EmptyState';
 import LicenseRequired from '@components/LicenseRequired';
-import { errorToast } from '@components/Toast';
+import { errorToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { PlusIcon } from '@heroicons/react/24/outline';
 

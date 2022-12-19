@@ -6,9 +6,9 @@ import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 
 import type { ApiResponse } from 'types';
 import LicenseRequired from '@components/LicenseRequired';
-import { errorToast, successToast } from '@components/Toast';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import { errorToast, successToast } from '@components/Toaster';
 
 const NewApp: NextPage = () => {
   const { t } = useTranslation('common');

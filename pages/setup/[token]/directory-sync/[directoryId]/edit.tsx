@@ -1,12 +1,12 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'next-i18next';
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import { errorToast, successToast } from '@components/Toaster';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -41,12 +41,12 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
     const { data, error } = await rawResponse.json();
 
     if (error) {
-      toast.error(error.message);
+      errorToast(error.message);
       return;
     }
 
     if (data) {
-      toast.success('Directory updated successfully');
+      successToast('Directory updated successfully');
       router.replace(`/setup/${token}/directory-sync`);
     }
   };
