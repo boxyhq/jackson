@@ -7,7 +7,14 @@
 import { Login } from '@boxyhq/react-ui';
 
 const Demo1 = () => {
-  return <Login forwardTenant={async () => void 0} label='Tenant' />;
+  return (
+    <Login
+      forwardTenant={async () => {
+        // return nothing
+      }}
+      label='Tenant'
+    />
+  );
 };
 
 export default Demo1;
