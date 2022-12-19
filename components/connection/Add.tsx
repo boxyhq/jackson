@@ -10,6 +10,7 @@ import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 import { copyToClipboard } from '@lib/ui/utils';
 import { Button } from '@components/Button';
+import { LinkOutline } from '@components/LinkOutline';
 
 const fieldCatalog = [...getCommonFields()];
 
@@ -58,12 +59,9 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
 
   return (
     <>
-      <Link
-        href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'}
-        className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkOutline href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} Icon={ArrowLeftIcon}>
+        {t('back')}
+      </LinkOutline>
       {idpEntityID && setupToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>

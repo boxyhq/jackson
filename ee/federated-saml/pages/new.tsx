@@ -11,6 +11,7 @@ import type { ApiResponse } from 'types';
 import LicenseRequired from '@components/LicenseRequired';
 import { errorToast, successToast } from '@components/Toast';
 import { Button } from '@components/Button';
+import { LinkOutline } from '@components/LinkOutline';
 
 const NewApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -63,10 +64,9 @@ const NewApp: NextPage = () => {
 
   return (
     <LicenseRequired>
-      <Link href='/admin/federated-saml' className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkOutline href='/admin/federated-saml' Icon={ArrowLeftIcon}>
+        {t('back')}
+      </LinkOutline>
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_add_new_app')}</h2>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>

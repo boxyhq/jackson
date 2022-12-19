@@ -1,6 +1,6 @@
 import { LinkBase } from './LinkBase';
 
-export const LinkPrimary = ({
+export const LinkOutline = ({
   href,
   children,
   Icon = null,
@@ -11,7 +11,7 @@ export const LinkPrimary = ({
   Icon?: any;
 }) => {
   return (
-    <LinkBase href={href} className='btn-primary' Icon={Icon} {...others}>
+    <LinkBase href={href} className='btn-outline' Icon={Icon} {...others}>
       {children}
     </LinkBase>
   );

@@ -11,6 +11,7 @@ import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toast';
 import { useTranslation } from 'next-i18next';
 import { Button } from '@components/Button';
+import { LinkOutline } from '@components/LinkOutline';
 
 const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
@@ -117,12 +118,9 @@ const Edit = ({ connection, setupToken }: EditProps) => {
 
   return (
     <>
-      <Link
-        href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'}
-        className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkOutline href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} Icon={ArrowLeftIcon}>
+        {t('back')}
+      </LinkOutline>
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}

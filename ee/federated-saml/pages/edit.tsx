@@ -14,6 +14,7 @@ import { errorToast, successToast } from '@components/Toast';
 import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 import { Button } from '@components/Button';
+import { LinkOutline } from '@components/LinkOutline';
 
 const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -91,10 +92,9 @@ const UpdateApp: NextPage = () => {
 
   return (
     <LicenseRequired>
-      <Link href='/admin/federated-saml' className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkOutline href='/admin/federated-saml' Icon={ArrowLeftIcon}>
+        {t('back')}
+      </LinkOutline>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
         <div>
