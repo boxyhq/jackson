@@ -12,8 +12,9 @@ import LicenseRequired from '@components/LicenseRequired';
 import { errorToast, successToast } from '@components/Toast';
 import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
-import { Button } from '@components/Button';
 import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonDanger } from '@components/ButtonDanger';
 
 const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -155,9 +156,9 @@ const UpdateApp: NextPage = () => {
               />
             </div>
             <div>
-              <Button type='submit' color='primary' loading={loading}>
+              <ButtonPrimary type='submit' loading={loading}>
                 {t('save_changes')}
-              </Button>
+              </ButtonPrimary>
             </div>
           </div>
         </form>
@@ -196,15 +197,14 @@ export const DeleteApp = ({ app }: { app: SAMLFederationApp }) => {
           <h6 className='mb-1 font-medium'>{t('delete_this_saml_federation_app')}</h6>
           <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
         </div>
-        <Button
+        <ButtonDanger
           type='button'
-          color='error'
           data-modal-toggle='popup-modal'
           onClick={() => {
             setDelModalVisible(true);
           }}>
           {t('delete')}
-        </Button>
+        </ButtonDanger>
       </section>
       <ConfirmationModal
         title={t('delete_the_saml_federation_app')}

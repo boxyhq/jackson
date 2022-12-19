@@ -5,8 +5,8 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toast';
 import { copyToClipboard } from '@lib/ui/utils';
-import { Button } from './Button';
 import { ButtonBack } from './ButtonBack';
+import { ButtonPrimary } from './ButtonPrimary';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
@@ -128,13 +128,12 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
           </div>
         </div>
         <div className='flex'>
-          <Button
-            color='primary'
+          <ButtonPrimary
             loading={loading}
             disabled={!formObj.tenant || !formObj.product || !formObj.type}
             onClick={createLink}>
             {t('generate')}
-          </Button>
+          </ButtonPrimary>
         </div>
         <ConfirmationModal
           title='Delete the setup link'
@@ -156,20 +155,18 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
           </h2>
           <div className='form-control'>
             <div className='input-group'>
-              <Button
+              <ButtonPrimary
                 Icon={ClipboardDocumentIcon}
                 className='p-2'
-                color='primary'
                 onClick={() => {
                   copyToClipboard(url);
                   successToast(t('copied'));
-                }}></Button>
+                }}></ButtonPrimary>
               <input type='text' readOnly value={url} className='input-bordered input h-10 w-full' />
             </div>
           </div>
           <div className='mt-5 flex'>
-            <Button
-              color='primary'
+            <ButtonPrimary
               loading={loading1}
               disabled={!formObj.tenant || !formObj.product || !formObj.type}
               onClick={
@@ -180,7 +177,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
                   : createLink
               }>
               {url ? t('regenerate') : t('generate')}
-            </Button>
+            </ButtonPrimary>
           </div>
         </div>
       )}

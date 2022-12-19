@@ -7,7 +7,7 @@ import { copyToClipboard } from '@lib/ui/utils';
 import { successToast } from '@components/Toast';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { Pagination } from '@components/Pagination';
-import { Button } from '@components/Button';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 type Connection = {
   name: string;
@@ -70,14 +70,13 @@ const Connections = ({
           <div className='form-control'>
             <div className='input-group'>
               <div className='pt-2 pr-2'>{t('idp_entity_id')}:</div>
-              <Button
+              <ButtonPrimary
                 Icon={ClipboardDocumentIcon}
                 className='p-2'
-                color='primary'
                 onClick={() => {
                   copyToClipboard(idpEntityID);
                   successToast(t('copied'));
-                }}></Button>
+                }}></ButtonPrimary>
               <input type='text' readOnly value={idpEntityID} className='input-bordered input h-10 w-4/5' />
             </div>
           </div>

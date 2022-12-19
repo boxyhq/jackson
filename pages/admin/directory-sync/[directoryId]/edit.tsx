@@ -7,8 +7,8 @@ import { inferSSRProps } from '@lib/inferSSRProps';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toast';
-import { Button } from '@components/Button';
 import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -121,9 +121,9 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
               </div>
             </div>
             <div>
-              <Button type='submit' color='primary' loading={loading}>
+              <ButtonPrimary type='submit' loading={loading}>
                 {t('save_changes')}
-              </Button>
+              </ButtonPrimary>
             </div>
           </div>
         </form>

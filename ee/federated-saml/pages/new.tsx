@@ -7,8 +7,8 @@ import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import type { ApiResponse } from 'types';
 import LicenseRequired from '@components/LicenseRequired';
 import { errorToast, successToast } from '@components/Toast';
-import { Button } from '@components/Button';
 import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 const NewApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -133,9 +133,7 @@ const NewApp: NextPage = () => {
               />
             </div>
             <div>
-              <Button color='primary' loading={loading}>
-                {t('create_app')}
-              </Button>
+              <ButtonPrimary loading={loading}>{t('create_app')}</ButtonPrimary>
             </div>
           </div>
         </form>

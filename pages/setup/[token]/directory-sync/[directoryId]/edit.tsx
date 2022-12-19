@@ -5,8 +5,8 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'next-i18next';
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
-import { Button } from '@components/Button';
 import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -120,9 +120,9 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
               </div>
             </div>
             <div>
-              <Button type='submit' color='primary' loading={loading}>
+              <ButtonPrimary type='submit' loading={loading}>
                 {t('save_changes')}
-              </Button>
+              </ButtonPrimary>
             </div>
           </div>
         </form>

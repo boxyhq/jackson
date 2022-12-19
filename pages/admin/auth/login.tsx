@@ -10,7 +10,7 @@ import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toast';
-import { Button } from '@components/Button';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
@@ -84,9 +84,9 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                   </label>
                 </div>
                 <div className='flex items-baseline justify-between'>
-                  <Button type='submit' color='primary' loading={loading} className='btn-block'>
+                  <ButtonPrimary type='submit' loading={loading} className='btn-block'>
                     {t('send_magic_link')}
-                  </Button>
+                  </ButtonPrimary>
                 </div>
               </div>
             </form>
