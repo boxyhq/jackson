@@ -7,6 +7,7 @@ import type {
   ILogoutController,
   IOAuthController,
   IHealthCheckController,
+  ISetupLinkController,
   IDirectorySyncController,
   DirectoryType,
   Directory,
@@ -17,7 +18,9 @@ import type {
   DirectorySyncRequest,
   IOidcDiscoveryController,
   ISPSAMLConfig,
+  ISAMLFederationController,
   GetConnectionsQuery,
+  GetIDPEntityIDBody,
   GetConfigQuery,
 } from '@boxyhq/saml-jackson';
 
@@ -30,9 +33,12 @@ let oauthController: IOAuthController;
 let adminController: IAdminController;
 let logoutController: ILogoutController;
 let healthCheckController: IHealthCheckController;
+let setupLinkController: ISetupLinkController;
 let directorySyncController: IDirectorySyncController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
+let samlFederatedController: ISAMLFederationController;
+let checkLicense: () => Promise<boolean>;
 
 const g = global as any;
 
@@ -44,8 +50,10 @@ export default async function init() {
     !g.healthCheckController ||
     !g.logoutController ||
     !g.directorySync ||
+    !g.setupLinkController ||
     !g.oidcDiscoveryController ||
-    !g.spConfig
+    !g.spConfig ||
+    !g.samlFederatedController
   ) {
     const ret = await jackson(jacksonOptions);
     connectionAPIController = ret.connectionAPIController;
@@ -53,9 +61,12 @@ export default async function init() {
     adminController = ret.adminController;
     logoutController = ret.logoutController;
     healthCheckController = ret.healthCheckController;
+    setupLinkController = ret.setupLinkController;
     directorySyncController = ret.directorySyncController;
     oidcDiscoveryController = ret.oidcDiscoveryController;
     spConfig = ret.spConfig;
+    samlFederatedController = ret.samlFederatedController;
+    checkLicense = ret.checkLicense;
 
     g.connectionAPIController = connectionAPIController;
     g.oauthController = oauthController;
@@ -63,9 +74,12 @@ export default async function init() {
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
     g.directorySync = directorySyncController;
+    g.setupLinkController = setupLinkController;
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
     g.isJacksonReady = true;
+    g.samlFederatedController = samlFederatedController;
+    g.checkLicense = checkLicense;
   } else {
     connectionAPIController = g.connectionAPIController;
     oauthController = g.oauthController;
@@ -74,7 +88,10 @@ export default async function init() {
     healthCheckController = g.healthCheckController;
     directorySyncController = g.directorySync;
     oidcDiscoveryController = g.oidcDiscoveryController;
+    setupLinkController = g.setupLinkController;
     spConfig = g.spConfig;
+    samlFederatedController = g.samlFederatedController;
+    checkLicense = g.checkLicense;
   }
 
   return {
@@ -86,6 +103,9 @@ export default async function init() {
     healthCheckController,
     directorySyncController,
     oidcDiscoveryController,
+    setupLinkController,
+    samlFederatedController,
+    checkLicense,
   };
 }
 
@@ -101,5 +121,6 @@ export type {
   HTTPMethod,
   DirectorySyncRequest,
   GetConnectionsQuery,
+  GetIDPEntityIDBody,
   GetConfigQuery,
 };

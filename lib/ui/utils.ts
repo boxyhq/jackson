@@ -7,9 +7,8 @@ export function getErrorCookie() {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-export interface APIError extends Error {
-  info?: string;
-  status: number;
+export function copyToClipboard(text) {
+  navigator.clipboard.writeText(text);
 }
 
 export const fetcher = async (url: string, queryParams = '') => {

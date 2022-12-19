@@ -1,6 +1,7 @@
-import jackson, { type GetConnectionsQuery } from '@lib/jackson';
+import jackson from '@lib/jackson';
 import { strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
+import type { GetConnectionsQuery } from '@boxyhq/saml-jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {

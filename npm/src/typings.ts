@@ -1,5 +1,7 @@
 import { type JWK } from 'jose';
 
+export * from '../src/ee/federated-saml/types';
+
 interface SSOConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
@@ -75,7 +77,13 @@ type TenantQuery = {
   strategy?: ConnectionType;
 };
 
-export type GetConnectionsQuery = ClientIDQuery | TenantQuery;
+type TenantProduct = {
+  tenant: string;
+  product: string;
+};
+
+export type GetConnectionsQuery = ClientIDQuery | TenantQuery | { entityId: string };
+export type GetIDPEntityIDBody = TenantProduct;
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 
 export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
@@ -102,6 +110,7 @@ export interface IConnectionAPIController {
   ): Promise<void>;
   updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
   getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
+  getIDPEntityID(body: GetIDPEntityIDBody): string;
   /**
    * @deprecated Use `getConnections` instead.
    */
@@ -115,7 +124,9 @@ export interface IConnectionAPIController {
 
 export interface IOAuthController {
   authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }>;
-  samlResponse(body: SAMLResponsePayload): Promise<{ redirect_url?: string; app_select_form?: string }>;
+  samlResponse(
+    body: SAMLResponsePayload
+  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }>;
   oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
@@ -270,7 +281,7 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
-  getAll(pageOffset?: number, pageLimit?: number): Promise<unknown[]>;
+  getAll(pageOffset?: number, pageLimit?: number): Promise<any[]>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
@@ -327,6 +338,7 @@ export interface JacksonOption {
     publicKey: string;
     privateKey: string;
   };
+  boxyhqLicenseKey?: string;
 }
 
 export interface SLORequestParams {
@@ -665,4 +677,36 @@ export interface WebhookEventLog extends DirectorySyncEvent {
   created_at: Date;
   status_code?: number;
   delivered?: boolean;
+}
+export type SetupLinkCreatePayload = {
+  tenant: string;
+  product: string;
+  service: 'sso' | 'dsync';
+  regenerate?: boolean;
+};
+
+export type SetupLinkRegeneratePayload = {
+  reference: string;
+};
+
+export type SetupLink = {
+  setupID: string;
+  tenant: string;
+  product: string;
+  url: string;
+  service: string;
+  validTill: number;
+};
+
+export type ApiResponse<T> = {
+  data: T | null;
+  error: ApiError | null;
+};
+
+export interface ISetupLinkController {
+  create(body: SetupLinkCreatePayload): Promise<ApiResponse<SetupLink>>;
+  getAll(): Promise<ApiResponse<SetupLink[]>>;
+  getByService(service): Promise<ApiResponse<SetupLink[]>>;
+  getByToken(token): Promise<ApiResponse<SetupLink>>;
+  remove(key: string): Promise<ApiResponse<boolean>>;
 }
