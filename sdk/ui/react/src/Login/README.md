@@ -12,6 +12,10 @@ npm install @boxyhq/react-ui
 import { Login } from '@boxyhq/react-ui';
 
 // Inside render
-
-<Login forwardTenant={async () => void 0} label='Tenant' />;
+<Login
+  forwardTenant={async (tenant) => {
+    // process the forwarded tenant
+  }}
+  label='Tenant'
+/>;
 ```
