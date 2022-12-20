@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import strings from '@lib/strings';
+import { strings } from '@lib/strings';
 import jackson from '@lib/jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
