@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ClipboardDocumentIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
@@ -8,6 +7,7 @@ import { successToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { Pagination } from '@components/Pagination';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import { IconButton } from '@components/IconButton';
 
 type Connection = {
   name: string;
@@ -144,15 +144,20 @@ const Connections = ({
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
                       </td>
                       <td className='px-6 py-3'>
-                        <Link
-                          href={
-                            setupToken
-                              ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
-                              : `/admin/sso-connection/edit/${connection.clientID}`
-                          }
-                          className='link-primary'>
-                          <PencilIcon className='h-5 w-5 text-secondary' />
-                        </Link>
+                        <span className='inline-flex items-baseline'>
+                          <IconButton
+                            tooltip={t('edit')}
+                            Icon={PencilIcon}
+                            className=' hover:text-green-200'
+                            onClick={() => {
+                              router.push(
+                                setupToken
+                                  ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
+                                  : `/admin/sso-connection/edit/${connection.clientID}`
+                              );
+                            }}
+                          />
+                        </span>
                       </td>
                     </tr>
                   );

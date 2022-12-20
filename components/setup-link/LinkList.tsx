@@ -9,6 +9,7 @@ import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { Pagination } from '@components/Pagination';
+import { IconButton } from '@components/IconButton';
 
 const LinkList = ({ service }) => {
   const [queryParam, setQueryParam] = useState('');
@@ -107,33 +108,33 @@ const LinkList = ({ service }) => {
                       </td>
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>
-                          <div className='tooltip' data-tip={t('copy')}>
-                            <ClipboardDocumentIcon
-                              className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
-                              onClick={() => {
-                                copyToClipboard(link.url);
-                                successToast(t('copied'));
-                              }}
-                            />
-                          </div>
-                          <div className='tooltip' data-tip={t('regenerate')}>
-                            <ArrowPathIcon
-                              className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
-                              onClick={() => {
-                                setActionId(idx);
-                                toggleRegenConfirmModal();
-                              }}
-                            />
-                          </div>
-                          <div className='tooltip' data-tip={t('delete')}>
-                            <TrashIcon
-                              className='h-5 w-5 cursor-pointer text-secondary hover:text-red-900'
-                              onClick={() => {
-                                setActionId(idx);
-                                toggleDelConfirmModal();
-                              }}
-                            />
-                          </div>
+                          <IconButton
+                            tooltip={t('copy')}
+                            Icon={ClipboardDocumentIcon}
+                            className='mr-3 hover:text-green-200'
+                            onClick={() => {
+                              copyToClipboard(link.url);
+                              successToast(t('copied'));
+                            }}
+                          />
+                          <IconButton
+                            tooltip={t('regenerate')}
+                            Icon={ArrowPathIcon}
+                            className='mr-3 hover:text-green-200'
+                            onClick={() => {
+                              setActionId(idx);
+                              toggleRegenConfirmModal();
+                            }}
+                          />
+                          <IconButton
+                            tooltip={t('delete')}
+                            Icon={TrashIcon}
+                            className='mr-3 hover:text-red-900'
+                            onClick={() => {
+                              setActionId(idx);
+                              toggleDelConfirmModal();
+                            }}
+                          />
                         </span>
                       </td>
                     </tr>
