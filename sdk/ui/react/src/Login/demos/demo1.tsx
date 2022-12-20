@@ -9,10 +9,10 @@ import { Login } from '@boxyhq/react-ui';
 const Demo1 = () => {
   return (
     <Login
-      forwardTenant={async () => {
+      onSubmit={async () => {
         // return nothing
       }}
-      label='Tenant'
+      inputLabel='Tenant'
     />
   );
 };

@@ -25,7 +25,9 @@
 }
 
 .input:focus {
-  box-shadow: 0 0 5px hsl(167deg 58% 65%);
+  --bc: 0 0% 20%;
+  outline: 2px solid hsla(var(--bc) / 0.2);
+  outline-offset: 2px;
 }
 
 .button {

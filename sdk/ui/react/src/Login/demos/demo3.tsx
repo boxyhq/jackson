@@ -9,11 +9,12 @@ import { Login } from '@boxyhq/react-ui';
 const Demo3 = () => {
   return (
     <Login
-      forwardTenant={async () => {
+      onSubmit={async () => {
         //return nothing
       }}
-      label='Tenant'
+      ssoIdentifier='some-identifier'
       unstyled
+      buttonText='SIGN IN WITH SSO'
     />
   );
 };

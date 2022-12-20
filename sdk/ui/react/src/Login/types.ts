@@ -2,18 +2,30 @@ import type { CSSProperties } from 'react';
 
 export interface LoginProps {
   /**
-   * Handler to be passed into the component, you might have to validate tenant inside this and initiate login if all good.
-   * Should return an error with message in case of failure. The application can also chose not to return an error message and
-   * handle it by showing a toast or similar UI component.
-   * @param {string} tenant Value for tenant.
-   * @returns {Promise} Error from the application
+   * Could be email, tenant or anything that can help to resolve the SSO connection. Use this if you want to set the value directly instead of taking a user input
    */
-  forwardTenant: (tenant: string) => Promise<{ error: { message: string } } | void>;
+  ssoIdentifier?: string;
   /**
-   * Label for the tenant input
+   * Function to be passed into the component, takes in a value (ssoIdentifier) that can be used to resolve the SSO Connection in the Jackson SSO service.
+   * @param {string} ssoIdentifier Could be email, tenant or anything that can help to resolve the SSO connection.
+   * @returns {Promise} Any error raised while trying to resolve the ssoIdentifier. This could be displayed inline in the component. In case the error is handled upstream by means of a toast or a UI notification, nothing needs to be returned.
+   */
+  onSubmit: (ssoIdentifier: string) => Promise<{ error: { message: string } } | void>;
+  /**
+   * Label for the input field that can accept the ssoIdentifier value
    * @defaultValue Tenant
    */
-  label: string;
+  inputLabel?: string;
+  /**
+   * Placeholder for the input field that can accept the ssoIdentifier value
+   * @defaultValue ''
+   */
+  placeholder?: string;
+  /**
+   * Text/Name of the login button
+   * @defaultValue Sign-in with SSO
+   */
+  buttonText?: string;
   /**
    * Styles for each inner components that Login is made up of.
    */

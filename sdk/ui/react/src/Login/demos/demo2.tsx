@@ -9,12 +9,12 @@ import { Login } from '@boxyhq/react-ui';
 const Demo2 = () => {
   return (
     <Login
-      forwardTenant={async () => ({
+      onSubmit={async () => ({
         error: {
           message: 'Invalid team domain',
         },
       })}
-      label='Team domain'
+      inputLabel='Team domain'
     />
   );
 };
