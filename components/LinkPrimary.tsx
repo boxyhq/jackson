@@ -1,9 +1,9 @@
 import type { LinkProps } from './LinkBase';
 import { LinkBase } from './LinkBase';
 
-export const LinkPrimary = ({ href, children, Icon = null, ...others }: LinkProps) => {
+export const LinkPrimary = ({ href, onClick, children, Icon = null, ...others }: LinkProps) => {
   return (
-    <LinkBase href={href} className='btn-primary' Icon={Icon} {...others}>
+    <LinkBase href={href} onClick={onClick} className='btn-primary' Icon={Icon} {...others}>
       {children}
     </LinkBase>
   );

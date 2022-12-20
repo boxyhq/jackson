@@ -5,8 +5,8 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
 import { copyToClipboard } from '@lib/ui/utils';
-import { ButtonBack } from './ButtonBack';
 import { ButtonPrimary } from './ButtonPrimary';
+import { LinkBack } from './LinkBack';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
@@ -82,7 +82,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
 
   return (
     <>
-      <ButtonBack onClick={() => router.back()} />
+      <LinkBack href='' onClick={() => router.back()} />
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <h2 className='mb-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_setup_link', {
