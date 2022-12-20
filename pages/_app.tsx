@@ -7,6 +7,7 @@ import { Toaster } from '@components/Toaster';
 import { appWithTranslation } from 'next-i18next';
 import { ReactElement, ReactNode } from 'react';
 import micromatch from 'micromatch';
+import nextI18NextConfig from '../next-i18next.config.js';
 
 import { AccountLayout, SetupLayout } from '@components/layouts';
 
@@ -66,7 +67,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   );
 }
 
-export default appWithTranslation<never>(MyApp);
+export default appWithTranslation<never>(MyApp, nextI18NextConfig);
 
 export type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;

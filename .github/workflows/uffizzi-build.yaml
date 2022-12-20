@@ -14,6 +14,12 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
+      - name: Generate Dockerfile
+        id: generate-dockerfile
+        run: |
+          cd uffizzi
+          ./create-dockerfile.sh
+
       - name: Generate UUID image name
         id: uuid
         run: echo "UUID_TAG=$(uuidgen)" >> $GITHUB_ENV
@@ -41,7 +47,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Push Image to TTL.SH
+      - name: Push Image to Uffizzi
         run: docker push registry.uffizzi.com/${{ env.UUID_TAG }}:60h
 
   render-compose-file:
