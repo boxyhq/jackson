@@ -1,17 +1,17 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
-import Link from 'next/link';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-
+import { useTranslation } from 'next-i18next';
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
-import classNames from 'classnames';
+import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import { errorToast, successToast } from '@components/Toaster';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
 }) => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const { token } = router.query;
   const [directory, setDirectory] = React.useState({
@@ -41,12 +41,12 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
     const { data, error } = await rawResponse.json();
 
     if (error) {
-      toast.error(error.message);
+      errorToast(error.message);
       return;
     }
 
     if (data) {
-      toast.success('Directory updated successfully');
+      successToast('Directory updated successfully');
       router.replace(`/setup/${token}/directory-sync`);
     }
   };
@@ -63,12 +63,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
   return (
     <div>
-      <Link href={`/setup/${token}/directory-sync`}>
-        <div className='btn-outline btn items-center space-x-2'>
-          <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-          <span>Back</span>
-        </div>
-      </Link>
+      <LinkBack href={`/setup/${token}/directory-sync`} />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>Update Directory</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
@@ -125,9 +120,9 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
               </div>
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
-                Save Changes
-              </button>
+              <ButtonPrimary type='submit' loading={loading}>
+                {t('save_changes')}
+              </ButtonPrimary>
             </div>
           </div>
         </form>

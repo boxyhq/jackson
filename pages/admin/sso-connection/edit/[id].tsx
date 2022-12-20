@@ -8,7 +8,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ApiError, ApiSuccess } from 'types';
 import Loading from '@components/Loading';
 import { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
-import { errorToast } from '@components/Toast';
+import { errorToast } from '@components/Toaster';
 
 const EditConnection: NextPage = () => {
   const router = useRouter();

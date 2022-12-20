@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { InformationCircleIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'next-i18next';
+import { LinkPrimary } from '@components/LinkPrimary';
 
 const EmptyState = ({
   title,
@@ -22,9 +22,9 @@ const EmptyState = ({
       <h4 className='text-center'>{title}</h4>
       {description && <p className='text-center text-gray-500'>{description}</p>}
       {href && (
-        <Link href={href} className='btn-primary btn'>
-          + {t('create_new')}
-        </Link>
+        <LinkPrimary Icon={PlusIcon} href={href}>
+          {t('create_new')}
+        </LinkPrimary>
       )}
     </div>
   );

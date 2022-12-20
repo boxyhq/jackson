@@ -9,7 +9,9 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import EmptyState from '@components/EmptyState';
 import LicenseRequired from '@components/LicenseRequired';
-import { errorToast } from '@components/Toast';
+import { errorToast } from '@components/Toaster';
+import { LinkPrimary } from '@components/LinkPrimary';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 const AppsList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -35,9 +37,9 @@ const AppsList: NextPage = () => {
     <LicenseRequired>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('saml_federation_apps')}</h2>
-        <Link href={'/admin/federated-saml/new'} className='btn-primary btn'>
-          + {t('new_saml_federation_app')}
-        </Link>
+        <LinkPrimary Icon={PlusIcon} href='/admin/federated-saml/new'>
+          {t('new_saml_federation_app')}
+        </LinkPrimary>
       </div>
       {noApps ? (
         <>

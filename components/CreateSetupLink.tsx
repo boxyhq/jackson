@@ -1,11 +1,12 @@
 import { FormEvent, useState } from 'react';
-import Link from 'next/link';
-import { ClipboardDocumentIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
 import { copyToClipboard } from '@lib/ui/utils';
+import { ButtonPrimary } from './ButtonPrimary';
+import { LinkBack } from './LinkBack';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
@@ -81,10 +82,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
 
   return (
     <>
-      <Link href='' onClick={() => router.back()} className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>Back</span>
-      </Link>
+      <LinkBack href='' onClick={() => router.back()} />
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <h2 className='mb-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_setup_link', {
@@ -130,12 +128,12 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
           </div>
         </div>
         <div className='flex'>
-          <button
-            className={`btn-primary btn ${loading ? 'loading' : ''}`}
+          <ButtonPrimary
+            loading={loading}
             disabled={!formObj.tenant || !formObj.product || !formObj.type}
             onClick={createLink}>
             {t('generate')}
-          </button>
+          </ButtonPrimary>
         </div>
         <ConfirmationModal
           title='Delete the setup link'
@@ -157,20 +155,19 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
           </h2>
           <div className='form-control'>
             <div className='input-group'>
-              <button
-                className='btn-primary btn h-10 p-2 text-white'
+              <ButtonPrimary
+                Icon={ClipboardDocumentIcon}
+                className='p-2'
                 onClick={() => {
                   copyToClipboard(url);
                   successToast(t('copied'));
-                }}>
-                <ClipboardDocumentIcon className='h-6 w-6' />
-              </button>
+                }}></ButtonPrimary>
               <input type='text' readOnly value={url} className='input-bordered input h-10 w-full' />
             </div>
           </div>
-          <div className='flex'>
-            <button
-              className={`btn-primary btn mt-5 ${loading1 ? 'loading' : ''}`}
+          <div className='mt-5 flex'>
+            <ButtonPrimary
+              loading={loading1}
               disabled={!formObj.tenant || !formObj.product || !formObj.type}
               onClick={
                 url
@@ -180,7 +177,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
                   : createLink
               }>
               {url ? t('regenerate') : t('generate')}
-            </button>
+            </ButtonPrimary>
           </div>
         </div>
       )}
