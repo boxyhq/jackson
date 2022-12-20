@@ -1,5 +1,7 @@
 import Modal from './Modal';
 import { useTranslation } from 'next-i18next';
+import { ButtonOutline } from './ButtonOutline';
+import { ButtonDanger } from './ButtonDanger';
 
 const ConfirmationModal = (props: {
   visible: boolean;
@@ -15,12 +17,8 @@ const ConfirmationModal = (props: {
   return (
     <Modal visible={visible} title={title} description={description}>
       <div className='modal-action'>
-        <button className='btn-outline btn' onClick={onCancel}>
-          {t('cancel')}
-        </button>
-        <button className='btn-error btn' onClick={onConfirm}>
-          {actionButtonText || t('delete')}
-        </button>
+        <ButtonOutline onClick={onCancel}>{t('cancel')}</ButtonOutline>
+        <ButtonDanger onClick={onConfirm}>{actionButtonText || t('delete')}</ButtonDanger>
       </div>
     </Modal>
   );

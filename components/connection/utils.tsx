@@ -1,4 +1,4 @@
-import { errorToast } from '@components/Toast';
+import { errorToast } from '@components/Toaster';
 import { FormEvent, SetStateAction } from 'react';
 
 export const saveConnection = async ({

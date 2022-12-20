@@ -108,5 +108,6 @@
   "saml_federation": "SAML Federation",
   "new_saml_federation_app": "New App",
   "view": "View",
-  "view_idp_configuration": "View IdP Configuration"
+  "view_idp_configuration": "View IdP Configuration",
+  "edit": "Edit"
 }
