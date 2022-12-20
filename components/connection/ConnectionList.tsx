@@ -1,17 +1,13 @@
-import Link from 'next/link';
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ClipboardDocumentIcon,
-  LinkIcon,
-  PencilIcon,
-  PlusIcon,
-} from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { copyToClipboard } from '@lib/ui/utils';
-import { successToast } from '@components/Toast';
+import { successToast } from '@components/Toaster';
+import { LinkPrimary } from '@components/LinkPrimary';
+import { Pagination } from '@components/Pagination';
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import { IconButton } from '@components/IconButton';
 
 type Connection = {
   name: string;
@@ -53,19 +49,19 @@ const Connections = ({
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
         <div>
-          <Link
+          <LinkPrimary
+            Icon={PlusIcon}
             href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
-            className='btn-primary btn m-2'
             data-test-id='create-connection'>
-            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_connection')}
-          </Link>
+            {t('new_connection')}
+          </LinkPrimary>
           {!setupToken && (
-            <Link
-              href={`/admin/sso-connection/setup-link/new`}
-              className='btn-primary btn m-2'
+            <LinkPrimary
+              Icon={LinkIcon}
+              href='/admin/sso-connection/setup-link/new'
               data-test-id='create-setup-link'>
-              <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
-            </Link>
+              {t('new_setup_link')}
+            </LinkPrimary>
           )}
         </div>
       </div>
@@ -74,14 +70,13 @@ const Connections = ({
           <div className='form-control'>
             <div className='input-group'>
               <div className='pt-2 pr-2'>{t('idp_entity_id')}:</div>
-              <button
-                className='btn-primary btn h-10 p-2 text-white'
+              <ButtonPrimary
+                Icon={ClipboardDocumentIcon}
+                className='p-2'
                 onClick={() => {
                   copyToClipboard(idpEntityID);
                   successToast(t('copied'));
-                }}>
-                <ClipboardDocumentIcon className='h-6 w-6' />
-              </button>
+                }}></ButtonPrimary>
               <input type='text' readOnly value={idpEntityID} className='input-bordered input h-10 w-4/5' />
             </div>
           </div>
@@ -149,15 +144,20 @@ const Connections = ({
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
                       </td>
                       <td className='px-6 py-3'>
-                        <Link
-                          href={
-                            setupToken
-                              ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
-                              : `/admin/sso-connection/edit/${connection.clientID}`
-                          }
-                          className='link-primary'>
-                          <PencilIcon className='h-5 w-5 text-secondary' />
-                        </Link>
+                        <span className='inline-flex items-baseline'>
+                          <IconButton
+                            tooltip={t('edit')}
+                            Icon={PencilIcon}
+                            className='hover:text-green-200'
+                            onClick={() => {
+                              router.push(
+                                setupToken
+                                  ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
+                                  : `/admin/sso-connection/edit/${connection.clientID}`
+                              );
+                            }}
+                          />
+                        </span>
                       </td>
                     </tr>
                   );
@@ -165,38 +165,23 @@ const Connections = ({
               </tbody>
             </table>
           </div>
-          <div className='mt-4 flex justify-center'>
-            <button
-              type='button'
-              className='btn-outline btn'
-              disabled={paginate.page === 0}
-              aria-label={t('previous')}
-              onClick={() =>
-                setPaginate((curState) => ({
-                  ...curState,
-                  pageOffset: (curState.page - 1) * paginate.pageLimit,
-                  page: curState.page - 1,
-                }))
-              }>
-              <ArrowLeftIcon className='mr-1 h-5 w-5' aria-hidden />
-              {t('prev')}
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <button
-              type='button'
-              className='btn-outline btn'
-              disabled={connections.length === 0 || connections.length < paginate.pageLimit}
-              onClick={() =>
-                setPaginate((curState) => ({
-                  ...curState,
-                  pageOffset: (curState.page + 1) * paginate.pageLimit,
-                  page: curState.page + 1,
-                }))
-              }>
-              <ArrowRightIcon className='mr-1 h-5 w-5' aria-hidden />
-              {t('next')}
-            </button>
-          </div>
+          <Pagination
+            prevDisabled={paginate.page === 0}
+            nextDisabled={connections.length === 0 || connections.length < paginate.pageLimit}
+            onPrevClick={() =>
+              setPaginate((curState) => ({
+                ...curState,
+                pageOffset: (curState.page - 1) * paginate.pageLimit,
+                page: curState.page - 1,
+              }))
+            }
+            onNextClick={() =>
+              setPaginate((curState) => ({
+                ...curState,
+                pageOffset: (curState.page + 1) * paginate.pageLimit,
+                page: curState.page + 1,
+              }))
+            }></Pagination>
         </>
       )}
     </div>
