@@ -3,13 +3,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import { strings } from '@lib/strings';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { checkLicense } = await jackson();
 
   if (!(await checkLicense())) {
     return res.status(404).json({
-      error: { message: 'License not found. Please add a valid license to use this feature.' },
+      error: {
+        message: strings['enterise_license_not_found'],
+      },
     });
   }
 
