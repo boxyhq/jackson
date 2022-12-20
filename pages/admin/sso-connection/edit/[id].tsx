@@ -6,9 +6,9 @@ import { fetcher } from '@lib/ui/utils';
 import Edit from '@components/connection/Edit';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ApiError, ApiSuccess } from 'types';
-import { Loader } from '@components/Loader';
+import Loading from '@components/Loading';
 import { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
-import { errorToast } from '@components/Toast';
+import { errorToast } from '@components/Toaster';
 
 const EditConnection: NextPage = () => {
   const router = useRouter();
@@ -24,7 +24,7 @@ const EditConnection: NextPage = () => {
   );
 
   if (!data && !error) {
-    return <Loader />;
+    return <Loading />;
   }
 
   if (error) {

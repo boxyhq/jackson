@@ -11,7 +11,7 @@ export const SetupLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Head>
-        <title>SAML Jackson - BoxyHQ</title>
+        <title>Enterprise SSO - BoxyHQ</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <div className='flex flex-1 flex-col'>

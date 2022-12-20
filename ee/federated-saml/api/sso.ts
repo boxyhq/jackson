@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-
+import { strings } from '@lib/strings';
 import jackson from '@lib/jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -7,7 +7,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (!(await checkLicense())) {
     return res.status(404).json({
-      error: { message: 'License not found. Please add a valid license to use this feature.' },
+      error: {
+        message: strings['enterise_license_not_found'],
+      },
     });
   }
 

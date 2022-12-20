@@ -1,15 +1,16 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import ConfirmationModal from '@components/ConfirmationModal';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { ApiResponse } from 'types';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
+import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonDanger } from '@components/ButtonDanger';
 
 const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
@@ -116,12 +117,7 @@ const Edit = ({ connection, setupToken }: EditProps) => {
 
   return (
     <>
-      <Link
-        href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'}
-        className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}
@@ -143,9 +139,7 @@ const Edit = ({ connection, setupToken }: EditProps) => {
               </div>
             </div>
             <div className='flex w-full lg:mt-6'>
-              <button type='submit' className='btn-primary btn'>
-                {t('save_changes')}
-              </button>
+              <ButtonPrimary type='submit'>{t('save_changes')}</ButtonPrimary>
             </div>
           </div>
           {connection?.clientID && connection.clientSecret && (
@@ -154,13 +148,9 @@ const Edit = ({ connection, setupToken }: EditProps) => {
                 <h6 className='mb-1 font-medium'>{t('delete_this_connection')}</h6>
                 <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
               </div>
-              <button
-                type='button'
-                className='btn-error btn'
-                onClick={toggleDelConfirm}
-                data-modal-toggle='popup-modal'>
+              <ButtonDanger type='button' onClick={toggleDelConfirm} data-modal-toggle='popup-modal'>
                 {t('delete')}
-              </button>
+              </ButtonDanger>
             </section>
           )}
         </form>

@@ -1,15 +1,14 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
-import Link from 'next/link';
-import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 
 import type { ApiResponse } from 'types';
 import LicenseRequired from '@components/LicenseRequired';
-import { errorToast, successToast } from '@components/Toast';
+import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import { errorToast, successToast } from '@components/Toaster';
 
 const NewApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -47,7 +46,7 @@ const NewApp: NextPage = () => {
 
     if ('data' in response) {
       successToast(t('saml_federation_new_success'));
-      router.replace(`/admin/federated-saml/${response.data.id}/metadata`);
+      router.replace(`/admin/federated-saml/${response.data.id}/edit`);
     }
   };
 
@@ -62,10 +61,7 @@ const NewApp: NextPage = () => {
 
   return (
     <LicenseRequired>
-      <Link href='/admin/federated-saml' className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkBack href='/admin/federated-saml' />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_add_new_app')}</h2>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
@@ -137,9 +133,7 @@ const NewApp: NextPage = () => {
               />
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
-                {t('create_app')}
-              </button>
+              <ButtonPrimary loading={loading}>{t('create_app')}</ButtonPrimary>
             </div>
           </div>
         </form>

@@ -3,17 +3,18 @@ import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
-import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import LicenseRequired from '@components/LicenseRequired';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
 import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
+import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonDanger } from '@components/ButtonDanger';
 
 const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -91,11 +92,15 @@ const UpdateApp: NextPage = () => {
 
   return (
     <LicenseRequired>
-      <Link href='/admin/federated-saml' className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
-      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
+      <LinkBack href='/admin/federated-saml' />
+      <div className='mb-5 flex items-center justify-between'>
+        <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
+        <div>
+          <Link href={'/.well-known/idp-configuration'} target='_blank' className='btn-secondary btn m-2'>
+            {t('view_idp_configuration')}
+          </Link>
+        </div>
+      </div>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
@@ -151,9 +156,9 @@ const UpdateApp: NextPage = () => {
               />
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
+              <ButtonPrimary type='submit' loading={loading}>
                 {t('save_changes')}
-              </button>
+              </ButtonPrimary>
             </div>
           </div>
         </form>
@@ -192,15 +197,14 @@ export const DeleteApp = ({ app }: { app: SAMLFederationApp }) => {
           <h6 className='mb-1 font-medium'>{t('delete_this_saml_federation_app')}</h6>
           <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
         </div>
-        <button
+        <ButtonDanger
           type='button'
-          className='btn-error btn'
           data-modal-toggle='popup-modal'
           onClick={() => {
             setDelModalVisible(true);
           }}>
-          Delete
-        </button>
+          {t('delete')}
+        </ButtonDanger>
       </section>
       <ConfirmationModal
         title={t('delete_the_saml_federation_app')}

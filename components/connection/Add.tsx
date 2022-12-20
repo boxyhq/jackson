@@ -1,14 +1,15 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { ArrowLeftIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
 import { copyToClipboard } from '@lib/ui/utils';
+import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 const fieldCatalog = [...getCommonFields()];
 
@@ -57,25 +58,19 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
 
   return (
     <>
-      <Link
-        href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'}
-        className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
       {idpEntityID && setupToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>
             <div className='input-group'>
               <div className='pt-2 pr-2'>{t('idp_entity_id')}:</div>
-              <button
-                className='btn-primary btn h-10 p-2 text-white'
+              <ButtonPrimary
+                Icon={ClipboardDocumentIcon}
+                className='p-2'
                 onClick={() => {
                   copyToClipboard(idpEntityID);
                   successToast(t('copied'));
-                }}>
-                <ClipboardDocumentListIcon className='h-6 w-6' />
-              </button>
+                }}></ButtonPrimary>
               <input type='text' readOnly value={idpEntityID} className='input-bordered input h-10 w-4/5' />
             </div>
           </div>
@@ -127,9 +122,7 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
               .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
               .map(renderFieldList({ formObj, setFormObj }))}
             <div className='flex'>
-              <button type='submit' className='btn-primary btn'>
-                {t('save_changes')}
-              </button>
+              <ButtonPrimary type='submit'>{t('save_changes')}</ButtonPrimary>
             </div>
           </div>
         </form>

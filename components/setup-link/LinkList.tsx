@@ -1,20 +1,15 @@
-import Link from 'next/link';
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ClipboardDocumentListIcon,
-  PlusIcon,
-  ArrowPathIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon, PlusIcon, ArrowPathIcon, TrashIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useState, useEffect } from 'react';
-import { successToast } from '@components/Toast';
+import { successToast } from '@components/Toaster';
 import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
+import { LinkPrimary } from '@components/LinkPrimary';
+import { Pagination } from '@components/Pagination';
+import { IconButton } from '@components/IconButton';
 
 const LinkList = ({ service }) => {
   const [queryParam, setQueryParam] = useState('');
@@ -57,14 +52,14 @@ const LinkList = ({ service }) => {
       <div className='mb-5 flex items-center justify-between'>
         <h3>{service === 'sso' ? t('setup_link_sso_description') : t('setup_link_dsync_description')}</h3>
         <div>
-          <Link
+          <LinkPrimary
+            Icon={PlusIcon}
             href={`/admin/${
               service === 'sso' ? 'sso-connection' : service === 'dsync' ? 'directory-sync' : ''
             }/setup-link/new`}
-            className='btn-primary btn m-2'
             data-test-id='create-setup-link'>
-            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
-          </Link>
+            {t('new_setup_link')}
+          </LinkPrimary>
         </div>
       </div>
       {links.length === 0 ? (
@@ -113,33 +108,33 @@ const LinkList = ({ service }) => {
                       </td>
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>
-                          <div className='tooltip' data-tip={t('copy')}>
-                            <ClipboardDocumentListIcon
-                              className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
-                              onClick={() => {
-                                copyToClipboard(link.url);
-                                successToast(t('copied'));
-                              }}
-                            />
-                          </div>
-                          <div className='tooltip' data-tip={t('regenerate')}>
-                            <ArrowPathIcon
-                              className='mr-3 h-5 w-5 cursor-pointer text-secondary hover:text-green-200'
-                              onClick={() => {
-                                setActionId(idx);
-                                toggleRegenConfirmModal();
-                              }}
-                            />
-                          </div>
-                          <div className='tooltip' data-tip={t('delete')}>
-                            <TrashIcon
-                              className='h-5 w-5 cursor-pointer text-secondary hover:text-red-900'
-                              onClick={() => {
-                                setActionId(idx);
-                                toggleDelConfirmModal();
-                              }}
-                            />
-                          </div>
+                          <IconButton
+                            tooltip={t('copy')}
+                            Icon={ClipboardDocumentIcon}
+                            className='mr-3 hover:text-green-200'
+                            onClick={() => {
+                              copyToClipboard(link.url);
+                              successToast(t('copied'));
+                            }}
+                          />
+                          <IconButton
+                            tooltip={t('regenerate')}
+                            Icon={ArrowPathIcon}
+                            className='mr-3 hover:text-green-200'
+                            onClick={() => {
+                              setActionId(idx);
+                              toggleRegenConfirmModal();
+                            }}
+                          />
+                          <IconButton
+                            tooltip={t('delete')}
+                            Icon={TrashIcon}
+                            className='mr-3 hover:text-red-900'
+                            onClick={() => {
+                              setActionId(idx);
+                              toggleDelConfirmModal();
+                            }}
+                          />
                         </span>
                       </td>
                     </tr>
@@ -148,38 +143,23 @@ const LinkList = ({ service }) => {
               </tbody>
             </table>
           </div>
-          <div className='mt-4 flex justify-center'>
-            <button
-              type='button'
-              className='btn-outline btn'
-              disabled={paginate.page === 0}
-              aria-label={t('previous')}
-              onClick={() =>
-                setPaginate((curState) => ({
-                  ...curState,
-                  pageOffset: (curState.page - 1) * paginate.pageLimit,
-                  page: curState.page - 1,
-                }))
-              }>
-              <ArrowLeftIcon className='mr-1 h-5 w-5' aria-hidden />
-              {t('prev')}
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <button
-              type='button'
-              className='btn-outline btn'
-              disabled={links.length === 0 || links.length < paginate.pageLimit}
-              onClick={() =>
-                setPaginate((curState) => ({
-                  ...curState,
-                  pageOffset: (curState.page + 1) * paginate.pageLimit,
-                  page: curState.page + 1,
-                }))
-              }>
-              <ArrowRightIcon className='mr-1 h-5 w-5' aria-hidden />
-              {t('next')}
-            </button>
-          </div>
+          <Pagination
+            prevDisabled={paginate.page === 0}
+            nextDisabled={links.length === 0 || links.length < paginate.pageLimit}
+            onPrevClick={() =>
+              setPaginate((curState) => ({
+                ...curState,
+                pageOffset: (curState.page - 1) * paginate.pageLimit,
+                page: curState.page - 1,
+              }))
+            }
+            onNextClick={() =>
+              setPaginate((curState) => ({
+                ...curState,
+                pageOffset: (curState.page + 1) * paginate.pageLimit,
+                page: curState.page + 1,
+              }))
+            }></Pagination>
         </>
       )}
       <ConfirmationModal
@@ -187,7 +167,7 @@ const LinkList = ({ service }) => {
         description='This action cannot be undone. This will permanently delete the old setup link.'
         visible={showRegenConfirmModal}
         onConfirm={invokeRegenerate}
-        actionButtonText={'Regenerate'}
+        actionButtonText={t('regenerate')}
         onCancel={toggleRegenConfirmModal}></ConfirmationModal>
       <ConfirmationModal
         title='Delete this setup link?'
