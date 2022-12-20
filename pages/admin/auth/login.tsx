@@ -20,8 +20,13 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
 
+  if (status === 'loading') {
+    return null;
+  }
+
   if (status === 'authenticated') {
     router.push('/admin/sso-connection');
+    return;
   }
 
   const onSubmit = async (event: React.FormEvent) => {
