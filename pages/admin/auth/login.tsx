@@ -5,12 +5,12 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { SessionProvider } from 'next-auth/react';
 import { useState } from 'react';
-import classNames from 'classnames';
 
 import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
@@ -89,11 +89,9 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                   </label>
                 </div>
                 <div className='flex items-baseline justify-between'>
-                  <button
-                    className={classNames('btn-primary btn-block btn rounded-md', loading ? 'loading' : '')}
-                    type='submit'>
+                  <ButtonPrimary type='submit' loading={loading} className='btn-block'>
                     {t('send_magic_link')}
-                  </button>
+                  </ButtonPrimary>
                 </div>
               </div>
             </form>

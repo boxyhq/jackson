@@ -2,8 +2,10 @@ import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 import { CircleStackIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Directory } from '@lib/jackson';
-import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
+import { LinkPrimary } from '@components/LinkPrimary';
+import { IconButton } from '@components/IconButton';
+import { useRouter } from 'next/router';
 
 type DirectoryListProps = {
   directories: Directory[];
@@ -15,23 +17,22 @@ type DirectoryListProps = {
 
 const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }: DirectoryListProps) => {
   const { t } = useTranslation('common');
+  const router = useRouter();
+
   return (
     <>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
         <div>
-          <Link
-            href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}
-            className='btn-primary btn'>
-            <PlusIcon className='mr-1 h-5 w-5' /> {t('new_directory')}
-          </Link>
+          <LinkPrimary
+            Icon={PlusIcon}
+            href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}>
+            {t('new_directory')}
+          </LinkPrimary>
           {!token && (
-            <Link
-              href={`/admin/directory-sync/setup-link/new`}
-              className='btn-primary btn m-2'
-              data-test-id='create-setup-link'>
-              <LinkIcon className='mr-1 h-5 w-5' /> {t('new_setup_link')}
-            </Link>
+            <LinkPrimary Icon={LinkIcon} href={`/admin/directory-sync/setup-link/new`}>
+              {t('new_setup_link')}
+            </LinkPrimary>
           )}
         </div>
       </div>
@@ -84,26 +85,32 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
                       )}
                       <td className='px-6'>{providers[directory.type]}</td>
                       <td className='px-6'>
-                        <div className='flex flex-row'>
-                          <Link
-                            href={
-                              token
-                                ? `/setup/${token}/directory-sync/${directory.id}`
-                                : `/admin/directory-sync/${directory.id}`
-                            }
-                            className='link-primary'>
-                            <CircleStackIcon className='h-5 w-5 text-secondary' />
-                          </Link>
-                          <Link
-                            href={
-                              token
-                                ? `/setup/${token}/directory-sync/${directory.id}/edit`
-                                : `/admin/directory-sync/${directory.id}/edit`
-                            }
-                            className='link-primary'>
-                            <PencilIcon className='h-5 w-5 text-secondary' />
-                          </Link>
-                        </div>
+                        <span className='inline-flex items-baseline'>
+                          <IconButton
+                            tooltip={t('view')}
+                            Icon={CircleStackIcon}
+                            className='mr-3 hover:text-green-200'
+                            onClick={() => {
+                              router.push(
+                                token
+                                  ? `/setup/${token}/directory-sync/${directory.id}`
+                                  : `/admin/directory-sync/${directory.id}`
+                              );
+                            }}
+                          />
+                          <IconButton
+                            tooltip={t('edit')}
+                            Icon={PencilIcon}
+                            className='hover:text-green-200'
+                            onClick={() => {
+                              router.push(
+                                token
+                                  ? `/setup/${token}/directory-sync/${directory.id}/edit`
+                                  : `/admin/directory-sync/${directory.id}/edit`
+                              );
+                            }}
+                          />
+                        </span>
                       </td>
                     </tr>
                   );

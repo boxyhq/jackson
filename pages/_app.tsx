@@ -3,7 +3,7 @@ import type { Session } from 'next-auth';
 import type { NextPage } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from '@components/Toaster';
 import { appWithTranslation } from 'next-i18next';
 import { ReactElement, ReactNode } from 'react';
 import micromatch from 'micromatch';
@@ -38,7 +38,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     return (
       <>
         {getLayout(<Component {...props} />)}
-        <Toaster toastOptions={{ duration: 10000 }} />
+        <Toaster />
       </>
     );
   }
@@ -47,7 +47,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     return (
       <SetupLayout>
         <Component {...props} />
-        <Toaster toastOptions={{ duration: 10000 }} />
+        <Toaster />
       </SetupLayout>
     );
   }
@@ -60,7 +60,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     <SessionProvider session={session}>
       <AccountLayout>
         <Component {...props} />
-        <Toaster toastOptions={{ duration: Infinity }} />
+        <Toaster />
       </AccountLayout>
     </SessionProvider>
   );
