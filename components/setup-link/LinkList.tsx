@@ -111,7 +111,7 @@ const LinkList = ({ service }) => {
                           <IconButton
                             tooltip={t('copy')}
                             Icon={ClipboardDocumentIcon}
-                            className='mr-3 hover:text-green-200'
+                            className='mr-3 hover:text-green-400'
                             onClick={() => {
                               copyToClipboard(link.url);
                               successToast(t('copied'));
@@ -120,7 +120,7 @@ const LinkList = ({ service }) => {
                           <IconButton
                             tooltip={t('regenerate')}
                             Icon={ArrowPathIcon}
-                            className='mr-3 hover:text-green-200'
+                            className='mr-3 hover:text-green-400'
                             onClick={() => {
                               setActionId(idx);
                               toggleRegenConfirmModal();

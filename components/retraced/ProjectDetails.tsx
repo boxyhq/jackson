@@ -1,10 +1,11 @@
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { ClipboardIcon } from '@heroicons/react/24/outline';
-import toast from 'react-hot-toast';
+import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { successToast } from '@components/Toaster';
+import { copyToClipboard } from '@lib/ui/utils';
 
 import type { Project } from 'types/retraced';
 import { jacksonOptions } from '@lib/env';
 import CodeSnippet from '@components/retraced/CodeSnippet';
+import { IconButton } from '@components/IconButton';
 
 const ProjectDetails = (props: { project: Project }) => {
   const { project } = props;
@@ -52,14 +53,16 @@ const ProjectDetails = (props: { project: Project }) => {
 };
 
 const ClipboardButton = ({ text }: { text: string }) => {
-  const showCopied = () => {
-    toast.success('Copied to clipboard.');
-  };
-
   return (
-    <CopyToClipboard text={text} onCopy={showCopied}>
-      <ClipboardIcon className='h-5 w-5 cursor-pointer text-secondary' />
-    </CopyToClipboard>
+    <IconButton
+      tooltip='Copy'
+      Icon={ClipboardDocumentIcon}
+      className='hover:text-green-400'
+      onClick={() => {
+        copyToClipboard(text);
+        successToast('Copied');
+      }}
+    />
   );
 };
 

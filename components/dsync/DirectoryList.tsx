@@ -89,7 +89,7 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
                           <IconButton
                             tooltip={t('view')}
                             Icon={CircleStackIcon}
-                            className='mr-3 hover:text-green-200'
+                            className='mr-3 hover:text-green-400'
                             onClick={() => {
                               router.push(
                                 token
@@ -101,7 +101,7 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
                           <IconButton
                             tooltip={t('edit')}
                             Icon={PencilIcon}
-                            className='hover:text-green-200'
+                            className='hover:text-green-400'
                             onClick={() => {
                               router.push(
                                 token

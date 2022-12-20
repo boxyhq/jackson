@@ -7,14 +7,20 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
       <div className='text-sm'>
         <div className='mb-5'>
           <p className='text-sm font-bold'>Send your event to the following URL</p>
-          <SyntaxHighlighter language='bash' style={materialOceanic}>
+          <SyntaxHighlighter
+            language='bash'
+            style={materialOceanic}
+            customStyle={{ 'border-radius': '0.5em' }}>
             {`${baseUrl}/event`}
           </SyntaxHighlighter>
         </div>
 
         <div>
           <p className='text-sm font-bold'>CURL Request</p>
-          <SyntaxHighlighter language='bash' style={materialOceanic}>
+          <SyntaxHighlighter
+            language='bash'
+            style={materialOceanic}
+            customStyle={{ 'border-radius': '0.5em' }}>
             {`curl -X POST -H "Content-Type: application/json" -H "Authorization: token=${token}" -d '{
   "action": "some.record.created",
   "teamId": "boxyhq",

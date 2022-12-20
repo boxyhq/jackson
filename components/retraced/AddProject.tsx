@@ -3,7 +3,7 @@ import { useState } from 'react';
 import classNames from 'classnames';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
+import { successToast, errorToast } from '@components/Toaster';
 
 const AddProject = () => {
   const router = useRouter();
@@ -38,19 +38,19 @@ const AddProject = () => {
     setLoading(false);
 
     if (!response.ok) {
-      toast.error('ERROR');
+      errorToast('ERROR');
       return;
     }
 
     const { data, error } = await response.json();
 
     if (error) {
-      toast.error('ERROR');
+      errorToast('ERROR');
       return;
     }
 
     if (data && data.project) {
-      toast.success('Project created successfully.');
+      successToast('Project created successfully.');
       router.replace(`/admin/retraced/projects/${data.project.id}`);
     }
   };
