@@ -17,9 +17,9 @@ jobs:
       - name: Generate Dockerfile
         id: generate-dockerfile
         run: |
-        cd uffizzi
-        ls -lisa
-        ./create-dockerfile.sh
+          cd uffizzi
+          ls -lisa
+          ./create-dockerfile.sh
 
       - name: Generate UUID image name
         id: uuid
