@@ -148,7 +148,7 @@ const Connections = ({
                           <IconButton
                             tooltip={t('edit')}
                             Icon={PencilIcon}
-                            className=' hover:text-green-200'
+                            className='hover:text-green-200'
                             onClick={() => {
                               router.push(
                                 setupToken
