@@ -1,0 +1,7 @@
+FROM runner AS uffizzi
+COPY --from=builder /app/uffizzi/saml_config ./uffizzi/saml_config
+
+COPY ./uffizzi/docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
+
+CMD ["./docker-entrypoint.sh"]
