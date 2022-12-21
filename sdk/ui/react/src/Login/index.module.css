@@ -41,11 +41,12 @@
   border: none;
 }
 
-.button:focus {
-  outline: 1px solid #fff;
-  outline-offset: -4px;
+.button:focus-visible {
+  --p: 167deg 68% 45%;
+  outline: 2px solid hsl(var(--p));
+  outline-offset: 2px;
 }
 
 .button:active {
-  transform: scale(0.99);
+  transform: scale(0.95);
 }

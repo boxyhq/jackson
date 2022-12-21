@@ -27,14 +27,16 @@ const Login = ({
     setErrMsg(''); // clear error if any
     _setSsoIdentifier(e.currentTarget.value);
   };
+  // state for button submission
+  const [isProcessing, setIsProcessing] = useState(false);
   // call onSubmit passing the _ssoIdentifier or the preset ssoIdentifier from props
   const onButtonClick = async (e: FormEvent) => {
     e.preventDefault();
-    setErrMsg('');
+    setIsProcessing(true);
     const {
       error: { message },
     } = (await onSubmit(_ssoIdentifier || ssoIdentifier)) || { error: {} };
-
+    setIsProcessing(false);
     if (typeof message === 'string' && message) {
       setErrMsg(message);
     }
@@ -66,7 +68,7 @@ const Login = ({
     </>
   ) : null;
 
-  const disableButton = !(_ssoIdentifier || ssoIdentifier);
+  const disableButton = !(_ssoIdentifier || ssoIdentifier) || isProcessing;
 
   return (
     <div className={cssClassAssembler(unstyled, classNames?.container, defaultStyles.form)}>
