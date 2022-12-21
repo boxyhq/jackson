@@ -111,5 +111,6 @@
   "view_idp_configuration": "View IdP Configuration",
   "edit": "Edit",
   "configuration": "Configuration",
-  "view_events": "View Events"
+  "view_events": "View Events",
+  "new_project": "New Project"
 }

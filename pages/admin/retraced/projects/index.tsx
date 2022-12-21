@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
-import Link from 'next/link';
-import { DocumentMagnifyingGlassIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
+import { DocumentMagnifyingGlassIcon, PlusIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import EmptyState from '@components/EmptyState';
 import { useProjects } from '@lib/ui/retraced';
@@ -9,6 +8,7 @@ import ErrorMessage from '@components/Error';
 import { IconButton } from '@components/IconButton';
 import { useTranslation } from 'next-i18next';
 import router from 'next/router';
+import { LinkPrimary } from '@components/LinkPrimary';
 
 const ProjectList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -27,9 +27,9 @@ const ProjectList: NextPage = () => {
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Projects</h2>
-        <Link href={'/admin/retraced/projects/new'} className='btn-primary btn'>
-          + New Project
-        </Link>
+        <LinkPrimary Icon={PlusIcon} href={'/admin/retraced/projects/new'}>
+          {t('new_project')}
+        </LinkPrimary>
       </div>
       {projects?.length === 0 ? (
         <EmptyState title='No projects found.' href='/admin/retraced/projects/new' />

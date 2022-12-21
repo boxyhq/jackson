@@ -1,9 +1,8 @@
-import Link from 'next/link';
 import { useState } from 'react';
 import classNames from 'classnames';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 import { successToast, errorToast } from '@components/Toaster';
+import { LinkBack } from '@components/LinkBack';
 
 const AddProject = () => {
   const router = useRouter();
@@ -57,10 +56,7 @@ const AddProject = () => {
 
   return (
     <>
-      <Link href='/admin/retraced/projects' className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>Back</span>
-      </Link>
+      <LinkBack href='/admin/retraced/projects' />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>Create Project</h2>
         <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
