@@ -10,7 +10,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
-RUN npm i
+RUN npm ci
 
 
 
