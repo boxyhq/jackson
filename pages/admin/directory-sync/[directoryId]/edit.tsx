@@ -1,15 +1,14 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
-import Link from 'next/link';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import jackson from '@lib/jackson';
 import { inferSSRProps } from '@lib/inferSSRProps';
-import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { errorToast, successToast } from '@components/Toaster';
+import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
   directory: { id, name, log_webhook_events, webhook },
@@ -40,15 +39,15 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
     setLoading(false);
 
-    const { data, error } = await rawResponse.json();
+    const response = await rawResponse.json();
 
-    if (error) {
-      toast.error(error.message);
-      return;
+    if ('error' in response) {
+      errorToast(response.error.message);
+      return null;
     }
 
-    if (data) {
-      toast.success('Directory updated successfully');
+    if (rawResponse.ok) {
+      successToast(t('directory_updated_successfully'));
       router.replace('/admin/directory-sync');
     }
   };
@@ -65,10 +64,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
   return (
     <div>
-      <Link href='/admin/directory-sync' className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkBack href='/admin/directory-sync' />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('update_directory')}</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
@@ -120,14 +116,14 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
                   className='h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600'
                 />
                 <label className='ml-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
-                 {t('enable_webhook_events_logging')}
+                  {t('enable_webhook_events_logging')}
                 </label>
               </div>
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
+              <ButtonPrimary type='submit' loading={loading}>
                 {t('save_changes')}
-              </button>
+              </ButtonPrimary>
             </div>
           </div>
         </form>

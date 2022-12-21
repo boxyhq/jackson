@@ -163,8 +163,12 @@ class Mem implements DatabaseDriver {
     for (const dbKey of dbKeys || []) {
       this.indexes[dbKey] && this.indexes[dbKey].delete(key);
     }
-    this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)].delete(key);
-    this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)].delete(key);
+    if (this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)]) {
+      this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)].delete(key);
+    }
+    if (this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)]) {
+      this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)].delete(key);
+    }
     delete this.cleanup[idxKey];
     delete this.ttlStore[k];
   }

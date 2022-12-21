@@ -34,6 +34,7 @@ const databaseOptions = <JacksonOption>{
     jwtSigningKeys: { private: 'PRIVATE_KEY', public: 'PUBLIC_KEY' },
     jwsAlg: 'RS256',
   },
+  boxyhqLicenseKey: 'dummy-license',
 };
 
 export { addSSOConnections, databaseOptions };

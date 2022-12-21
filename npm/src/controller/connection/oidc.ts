@@ -150,8 +150,8 @@ const oidc = {
 
     const record = {
       ..._savedConnection,
-      name: name ? name : _savedConnection.name,
-      description: description ? description : _savedConnection.description,
+      name: name || name === '' ? name : _savedConnection.name,
+      description: description || description === '' ? description : _savedConnection.description,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       oidcProvider: oidcProvider ? oidcProvider : _savedConnection.oidcProvider,

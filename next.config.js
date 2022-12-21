@@ -43,12 +43,32 @@ module.exports = {
         destination: '/api/well-known/sp-metadata',
       },
       {
+        source: '/.well-known/idp-metadata',
+        destination: '/api/well-known/idp-metadata',
+      },
+      {
         source: '/.well-known/saml-configuration',
         destination: '/well-known/saml-configuration',
       },
       {
+        source: '/.well-known/idp-configuration',
+        destination: '/well-known/idp-configuration',
+      },
+      {
         source: '/oauth/jwks',
         destination: '/api/oauth/jwks',
+      },
+      {
+        source: '/admin/directory-sync/setup-link',
+        destination: '/admin/sso-connection/setup-link',
+      },
+      {
+        source: '/admin/sso-connection/setup-link/new',
+        destination: '/admin/setup-link/new',
+      },
+      {
+        source: '/admin/directory-sync/setup-link/new',
+        destination: '/admin/setup-link/new',
       },
     ];
   },

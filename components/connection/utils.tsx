@@ -1,30 +1,32 @@
+import { errorToast } from '@components/Toaster';
 import { FormEvent, SetStateAction } from 'react';
-import toast from 'react-hot-toast';
 
 export const saveConnection = async ({
   formObj,
   isEditView,
   connectionIsSAML,
   connectionIsOIDC,
+  setupToken,
   callback,
 }: {
   formObj: Record<string, string>;
   isEditView?: boolean;
   connectionIsSAML: boolean;
   connectionIsOIDC: boolean;
+  setupToken?: string;
   callback: (res: Response) => void;
 }) => {
   const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
     formObj;
 
   if (metadataUrl && !metadataUrl.startsWith('https')) {
-    toast.error('ERROR');
+    errorToast('Metadata URL must start with https');
     return;
   }
   const encodedRawMetadata = btoa(rawMetadata || '');
   const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-  const res = await fetch('/api/admin/connections', {
+  const res = await fetch(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections', {
     method: isEditView ? 'PATCH' : 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -160,7 +162,7 @@ export function renderFieldList(args: {
             id={key}
             type={type}
             placeholder={placeholder}
-            value={value}
+            value={type === 'text' ? value || '' : value}
             required={required}
             disabled={disabled}
             maxLength={maxLength}
@@ -175,3 +177,29 @@ export function renderFieldList(args: {
   };
   return FieldList;
 }
+
+export const deleteLink = async (setupID: string) => {
+  await fetch(`/api/admin/setup-links?setupID=${setupID}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const regenerateLink = async (setupLink: any, service: string) => {
+  const { tenant, product } = setupLink;
+
+  const res = await fetch('/api/admin/setup-links', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      tenant,
+      product,
+      type: service,
+      regenerate: true,
+    }),
+  });
+};

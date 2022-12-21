@@ -1,6 +1,6 @@
 import { Storable } from '@boxyhq/saml-jackson';
 import DB from 'npm/src/db/db';
-import opts from './env';
+import { jacksonOptions } from './env';
 import type { AdapterUser, VerificationToken } from 'next-auth/adapters';
 import { validateEmailWithACL } from './utils';
 import defaultDb from 'npm/src/db/defaultDb';
@@ -9,7 +9,7 @@ const g = global as any;
 
 export async function initNextAuthDB(): Promise<Storable> {
   if (!g.adminAuthStore) {
-    const _opts = defaultDb(opts);
+    const _opts = defaultDb(jacksonOptions);
     const db = await DB.new(_opts.db);
     g.adminAuthStore = db.store('admin:auth');
   }

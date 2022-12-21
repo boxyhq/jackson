@@ -1,11 +1,8 @@
 import type { IDirectorySyncController, JacksonOption } from './typings';
-
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
-
 import { init as metricsInit } from './opentelemetry/metrics';
-
 import { AdminController } from './controller/admin';
 import { ConnectionAPIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
@@ -14,7 +11,10 @@ import { LogoutController } from './controller/logout';
 import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
+import { SetupLinkController } from './controller/setup-link';
 import * as x509 from './saml/x509';
+import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
+import checkLicense from './ee/common/checkLicense';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -45,6 +45,8 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.openid = newOpts.openid || {};
   newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
 
+  newOpts.boxyhqLicenseKey = newOpts.boxyhqLicenseKey || undefined;
+
   return newOpts;
 };
 
@@ -57,9 +59,12 @@ export const controllers = async (
   adminController: AdminController;
   logoutController: LogoutController;
   healthCheckController: HealthCheckController;
+  setupLinkController: SetupLinkController;
   directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
+  samlFederatedController: ISAMLFederationController;
+  checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
 
@@ -72,15 +77,17 @@ export const controllers = async (
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
   const healthCheckStore = db.store('_health:check');
+  const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
 
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
+  const setupLinkController = new SetupLinkController({ setupLinkStore });
   await healthCheckController.init();
 
   // Create default certificate if it doesn't exist.
-  await x509.init(certificateStore);
+  await x509.init(certificateStore, opts);
 
   const oauthController = new OAuthController({
     connectionStore,
@@ -96,11 +103,10 @@ export const controllers = async (
     opts,
   });
 
-  const directorySyncController = await initDirectorySync({ db, opts });
-
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
-
-  const spConfig = new SPSAMLConfig(opts, x509.getDefaultCertificate);
+  const spConfig = new SPSAMLConfig(opts);
+  const directorySyncController = await initDirectorySync({ db, opts });
+  const samlFederatedController = await initFederatedSAML({ db, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -130,11 +136,18 @@ export const controllers = async (
     adminController,
     logoutController,
     healthCheckController,
+    setupLinkController,
     directorySyncController,
     oidcDiscoveryController,
+    samlFederatedController,
+    checkLicense: () => {
+      return checkLicense(opts.boxyhqLicenseKey);
+    },
   };
 };
 
 export default controllers;
 
 export * from './typings';
+export * from './ee/federated-saml/types';
+export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;

@@ -46,7 +46,7 @@ export default NextAuth({
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true,
+        secure: !(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'),
       },
     },
   },

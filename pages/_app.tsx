@@ -3,11 +3,13 @@ import type { Session } from 'next-auth';
 import type { NextPage } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from '@components/Toaster';
 import { appWithTranslation } from 'next-i18next';
 import { ReactElement, ReactNode } from 'react';
+import micromatch from 'micromatch';
+import nextI18NextConfig from '../next-i18next.config.js';
 
-import { AccountLayout } from '@components/layouts';
+import { AccountLayout, SetupLayout } from '@components/layouts';
 
 import '../styles/globals.css';
 
@@ -15,10 +17,15 @@ const unauthenticatedRoutes = [
   '/',
   '/admin/auth/login',
   '/well-known/saml-configuration',
+  '/well-known/idp-configuration',
   '/oauth/jwks',
   '/idp/select',
   '/error',
 ];
+
+const isUnauthenticatedRoute = (pathname: string) => {
+  return micromatch.isMatch(pathname, unauthenticatedRoutes);
+};
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const { pathname } = useRouter();
@@ -32,12 +39,21 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     return (
       <>
         {getLayout(<Component {...props} />)}
-        <Toaster toastOptions={{ duration: 5000 }} />
+        <Toaster />
       </>
     );
   }
 
-  if (unauthenticatedRoutes.includes(pathname)) {
+  if (pathname.startsWith('/setup/')) {
+    return (
+      <SetupLayout>
+        <Component {...props} />
+        <Toaster />
+      </SetupLayout>
+    );
+  }
+
+  if (isUnauthenticatedRoute(pathname)) {
     return <Component {...props} />;
   }
 
@@ -45,13 +61,13 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     <SessionProvider session={session}>
       <AccountLayout>
         <Component {...props} />
-        <Toaster toastOptions={{ duration: 5000 }} />
+        <Toaster />
       </AccountLayout>
     </SessionProvider>
   );
 }
 
-export default appWithTranslation<never>(MyApp);
+export default appWithTranslation<never>(MyApp, nextI18NextConfig);
 
 export type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
