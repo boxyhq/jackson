@@ -129,7 +129,7 @@ const LinkList = ({ service }) => {
                           <IconButton
                             tooltip={t('delete')}
                             Icon={TrashIcon}
-                            className='mr-3 hover:text-red-900'
+                            className='mr-3 hover:text-red-600'
                             onClick={() => {
                               setActionId(idx);
                               toggleDelConfirmModal();
