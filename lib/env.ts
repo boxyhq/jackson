@@ -58,5 +58,6 @@ const jacksonOptions: JacksonOption = {
   retraced,
 };
 
+export { retraced as retracedOptions };
 export { apiKeys };
 export { jacksonOptions };

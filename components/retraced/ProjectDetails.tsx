@@ -3,7 +3,7 @@ import { successToast } from '@components/Toaster';
 import { copyToClipboard } from '@lib/ui/utils';
 
 import type { Project } from 'types/retraced';
-import { jacksonOptions } from '@lib/env';
+import { retracedOptions } from '@lib/env';
 import CodeSnippet from '@components/retraced/CodeSnippet';
 import { IconButton } from '@components/IconButton';
 
@@ -11,7 +11,7 @@ const ProjectDetails = (props: { project: Project }) => {
   const { project } = props;
   const { environments, tokens } = project;
 
-  const baseUrl = `${jacksonOptions.retraced?.host}/publisher/v1/project/${project.id}`;
+  const baseUrl = `${retracedOptions?.host}/publisher/v1/project/${project.id}`;
 
   return (
     <>

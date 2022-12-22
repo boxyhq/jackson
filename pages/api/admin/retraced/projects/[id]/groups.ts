@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
 import { getToken } from '@lib/retraced';
-import { jacksonOptions } from '@lib/env';
+import { retracedOptions } from '@lib/env';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -25,7 +25,7 @@ const getGroups = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id: projectId, environmentId } = req.query;
 
   const { data } = await axios.get(
-    `${jacksonOptions.retraced?.host}/admin/v1/project/${projectId}/groups?environment_id=${environmentId}`,
+    `${retracedOptions?.host}/admin/v1/project/${projectId}/groups?environment_id=${environmentId}`,
     {
       headers: {
         Authorization: `id=${token.id} token=${token.token}`,

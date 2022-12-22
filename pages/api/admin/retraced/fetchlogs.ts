@@ -1,6 +1,6 @@
 import Chance from 'chance';
 import * as Retraced from '@retraced-hq/retraced';
-import { jacksonOptions } from '@lib/env';
+import { retracedOptions } from '@lib/env';
 const chance = new Chance();
 
 const actions = [
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
   const retraced = new Retraced.Client({
     apiKey: (token as string) || 'dev',
     projectId: (project as string) || 'dev',
-    endpoint: jacksonOptions.retraced?.host,
+    endpoint: retracedOptions?.host,
     viewLogAction: 'audit.log.view',
   });
 
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
   retraced
     .getViewerToken(team_id, '', true)
-    .then((t) => res.send(JSON.stringify({ token: t, host: `${jacksonOptions.retraced?.host}/viewer/v1` })))
+    .then((t) => res.send(JSON.stringify({ token: t, host: `${retracedOptions?.host}/viewer/v1` })))
     .catch((e) => {
       console.log(e);
       res.status(500).send({ error: 'An Unexpected Error Occured' });
