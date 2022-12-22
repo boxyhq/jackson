@@ -31,13 +31,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     pageLimit: string;
   };
 
-  const connections = await adminController
-    .getAllConnection(+(pageOffset || 0), +(pageLimit || 0))
-    .filter(
-      (conn) =>
-        conn.tenant !== process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT &&
-        conn.product !== process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT
-    );
+  const connections = (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0))).filter(
+    (conn) =>
+      conn.tenant !== process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT &&
+      conn.product !== process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT
+  );
 
   return res.json({ data: connections });
 };
