@@ -84,7 +84,7 @@ const AppsList: NextPage = () => {
                         <Link
                           href={`/.well-known/idp-configuration`}
                           target='_blank'
-                          className='link-secondary link underline-offset-4'>
+                          className='link underline-offset-4 hover:link-primary'>
                           {t('view')}
                         </Link>
                       </td>
