@@ -56,7 +56,7 @@ const WellKnownURLs = ({ className }: { className?: string }) => {
                 target='_blank'
                 rel='noreferrer'
                 className='link flex hover:link-primary'>
-                <ArrowRightOnRectangleIcon className='mr-1 h-5 w-5' /> {link.title}
+                <ArrowRightOnRectangleIcon className='mr-1 h-5 w-5' aria-hidden /> {link.title}
               </Link>
               <br />
             </li>
