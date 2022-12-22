@@ -1,16 +1,14 @@
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import { useSession, getCsrfToken, signIn } from 'next-auth/react';
+import { useSession, getCsrfToken, signIn, SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import { SessionProvider } from 'next-auth/react';
-import { useState } from 'react';
-
-import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { errorToast, successToast } from '@components/Toaster';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import { Login as SSOLogin } from '@boxyhq/react-ui';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
@@ -18,7 +16,6 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
   const { status } = useSession();
 
   const [loading, setLoading] = useState(false);
-  const [loadingSSO, setLoadingSSO] = useState(false);
   const [email, setEmail] = useState('');
 
   if (status === 'loading') {
@@ -56,12 +53,8 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
     }
   };
 
-  const onSSOSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    setLoadingSSO(true);
-
-    signIn('boxyhq-saml');
+  const onSSOSubmit = async (ssoIdentifier: string) => {
+    await signIn('boxyhq-saml', undefined, { client_id: ssoIdentifier });
   };
 
   return (
@@ -102,19 +95,18 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                     {t('send_magic_link')}
                   </ButtonPrimary>
                 </div>
-                <div className='mt-2 flex items-baseline justify-between'>
-                  <button
-                    className={classNames(
-                      'btn-primary btn-block btn rounded-md',
-                      loadingSSO ? 'loading' : ''
-                    )}
-                    onClick={onSSOSubmit}
-                    type='button'>
-                    {t('login_with_sso')}
-                  </button>
-                </div>
               </div>
             </form>
+            <SSOLogin
+              buttonText={t('login_with_sso')}
+              ssoIdentifier={`tenant=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT}&product=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT}`}
+              onSubmit={onSSOSubmit}
+              classNames={{
+                container: 'mt-2',
+                button: 'btn-primary btn-block btn rounded-md active:-scale-95',
+                input: 'input-bordered input mb-5 mt-2 w-full rounded-md',
+              }}
+            />
           </div>
         </div>
         <WellKnownURLs className='mt-5 border p-5' />
