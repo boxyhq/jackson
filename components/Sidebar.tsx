@@ -1,12 +1,4 @@
-import {
-  SquaresPlusIcon,
-  ShieldCheckIcon,
-  UsersIcon,
-  HomeIcon,
-  LinkIcon,
-  ListBulletIcon,
-  QueueListIcon,
-} from '@heroicons/react/20/solid';
+import { SquaresPlusIcon, HomeIcon, LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -16,7 +8,6 @@ import Logo from '../public/logo.png';
 import { useTranslation } from 'next-i18next';
 import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
-import VaultLogo from '@components/logo/Vault';
 import AuditLogsLogo from '@components/logo/AuditLogs';
 
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: boolean }) => {
@@ -83,7 +74,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
         {
           href: '/admin/retraced',
           text: 'Audit Logs',
-          icon: QueueListIcon,
+          icon: AuditLogsLogo,
           current: asPath.includes('retraced'),
           active: asPath.includes('/admin/connection'),
         },
