@@ -77,7 +77,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
           ],
         },
         {
-          href: '/admin/retraced/projects',
+          href: '/admin/retraced',
           text: 'Audit Logs',
           icon: QueueListIcon,
           current: asPath.includes('retraced'),
