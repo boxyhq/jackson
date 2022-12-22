@@ -3,7 +3,7 @@ import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { validateEmailWithACL } from '@lib/utils';
-import env from '@lib/env';
+import { jacksonOptions as env } from '@lib/env';
 
 export default NextAuth({
   theme: {
