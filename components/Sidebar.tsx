@@ -1,4 +1,4 @@
-import { ShieldCheckIcon, UsersIcon, HomeIcon } from '@heroicons/react/20/solid';
+import { ShieldCheckIcon, UsersIcon, HomeIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
