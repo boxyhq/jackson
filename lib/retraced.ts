@@ -5,7 +5,7 @@ import { jacksonOptions } from './env';
 
 export const getToken = async (): Promise<AdminToken> => {
   const { data } = await axios.post<{ adminToken: AdminToken }>(
-    `${jacksonOptions.retraced?.apiHost}/admin/v1/user/_login`,
+    `${jacksonOptions.retraced?.host}/admin/v1/user/_login`,
     {
       claims: {
         upstreamToken: 'ADMIN_ROOT_TOKEN',
@@ -14,7 +14,7 @@ export const getToken = async (): Promise<AdminToken> => {
     },
     {
       headers: {
-        Authorization: `token=${process.env.ADMIN_ROOT_TOKEN}`,
+        Authorization: `token=${jacksonOptions.retraced?.adminToken}`,
         'Content-Type': 'application/json',
       },
     }

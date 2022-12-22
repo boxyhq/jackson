@@ -340,8 +340,8 @@ export interface JacksonOption {
   };
   boxyhqLicenseKey?: string;
   retraced?: {
-    apiHost: string;
-    uiHost: string;
+    host?: string;
+    adminToken?: string;
   };
 }
 

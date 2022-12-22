@@ -11,7 +11,7 @@ const ProjectDetails = (props: { project: Project }) => {
   const { project } = props;
   const { environments, tokens } = project;
 
-  const baseUrl = `${jacksonOptions.retraced?.uiHost}/publisher/v1/project/${project.id}`;
+  const baseUrl = `${jacksonOptions.retraced?.host}/publisher/v1/project/${project.id}`;
 
   return (
     <>

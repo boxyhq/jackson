@@ -28,7 +28,7 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
   const { name } = req.body;
 
   const { data } = await axios.post<{ project: Project }>(
-    `${jacksonOptions.retraced?.apiHost}/admin/v1/project`,
+    `${jacksonOptions.retraced?.host}/admin/v1/project`,
     {
       name,
     },
@@ -49,7 +49,7 @@ const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken();
 
   const { data } = await axios.get<{ projects: Project[] }>(
-    `${jacksonOptions.retraced?.apiHost}/admin/v1/projects`,
+    `${jacksonOptions.retraced?.host}/admin/v1/projects`,
     {
       headers: {
         Authorization: `id=${token.id} token=${token.token}`,

@@ -35,7 +35,7 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
     <>
       {viewerToken && (
         <RetracedEventsBrowser
-          host={`${jacksonOptions.retraced?.uiHost}/viewer/v1`}
+          host={`${jacksonOptions.retraced?.host}/viewer/v1`}
           auditLogToken={viewerToken}
           header='Audit Logs'
           customClass={'text-primary dark:text-white'}

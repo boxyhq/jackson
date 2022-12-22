@@ -28,7 +28,7 @@ export default async function handler(req, res) {
   const retraced = new Retraced.Client({
     apiKey: (token as string) || 'dev',
     projectId: (project as string) || 'dev',
-    endpoint: jacksonOptions.retraced?.apiHost,
+    endpoint: jacksonOptions.retraced?.host,
     viewLogAction: 'audit.log.view',
   });
 
@@ -57,14 +57,9 @@ export default async function handler(req, res) {
 
   retraced
     .getViewerToken(team_id, '', true)
-    .then((t) => res.send(JSON.stringify({ token: t, host: `${process.env.RETRACED_HOST}/viewer/v1` })))
+    .then((t) => res.send(JSON.stringify({ token: t, host: `${jacksonOptions.retraced?.host}/viewer/v1` })))
     .catch((e) => {
       console.log(e);
       res.status(500).send({ error: 'An Unexpected Error Occured' });
     });
-
-  // res.status(200).json({
-  //     host: process.env.RETRACED_HOST,
-  //     token: token
-  // });
 }

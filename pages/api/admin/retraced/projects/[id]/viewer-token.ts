@@ -26,7 +26,7 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   const retraced = new Retraced.Client({
     apiKey: token as string,
     projectId: projectId as string,
-    endpoint: jacksonOptions.retraced?.apiHost,
+    endpoint: jacksonOptions.retraced?.host,
     viewLogAction: 'audit.log.view',
   });
   const reqIp = requestIp.getClientIp(req);

@@ -18,8 +18,8 @@ if (process.env.DB_SSL === 'true') {
 
 // Retraced
 const retraced = {
-  apiHost: process.env.RETRACED_HOST || 'http://localhost:3000/auditlog',
-  uiHost: process.env.NEXT_PUBLIC_RETRACED_HOST || 'http://localhost:3000/auditlog',
+  host: process.env.NEXT_PUBLIC_RETRACED_HOST,
+  adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
 };
 
 const db: DatabaseOption = {
