@@ -9,7 +9,7 @@ const Metadata: NextPage<any> = ({ metadata }) => {
 
   return (
     <LicenseRequired>
-      <div className='my-10 mx-5 flex h-screen justify-center'>
+      <div className='my-10 mx-5 flex justify-center'>
         <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
           <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_app_info')}</h2>
           <div className='flex flex-col'>

@@ -70,6 +70,10 @@ module.exports = {
         source: '/admin/directory-sync/setup-link/new',
         destination: '/admin/setup-link/new',
       },
+      {
+        source: '/.well-known',
+        destination: '/well-known',
+      },
     ];
   },
 };
