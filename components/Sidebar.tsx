@@ -1,4 +1,4 @@
-import { SquaresPlusIcon, HomeIcon, LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid';
+import { HomeIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -10,78 +10,90 @@ import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
 
-export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: boolean }) => {
-  const { isOpen, setIsOpen } = props;
-  const { t } = useTranslation('common');
+type SidebarProps = {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+};
 
+type MenuItem = {
+  href: string;
+  text: string;
+  active: boolean;
+  icon?: any;
+  items?: MenuItem[];
+};
+
+export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+  const { t } = useTranslation('common');
   const { asPath } = useRouter();
 
-  const menus = props.hideMenus
-    ? []
-    : [
-        {
-          href: '/admin/dashboard',
-          text: t('dashboard'),
-          icon: HomeIcon,
-          active: asPath.includes('/admin/dashboard'),
-        },
+  const menus = [
+    {
+      href: '/admin/dashboard',
+      text: t('dashboard'),
+      icon: HomeIcon,
+      active: asPath.includes('/admin/dashboard'),
+    },
+    {
+      href: '/admin/sso-connection',
+      text: t('enterprise_sso'),
+      icon: SSOLogo,
+      active: asPath.includes('/admin/sso-connection') || asPath.includes('/admin/federated-saml'),
+      items: [
         {
           href: '/admin/sso-connection',
-          text: t('enterprise_sso'),
-          icon: SSOLogo,
-          active: asPath.includes('/admin/sso-connection'),
-          items: [
-            {
-              href: '/admin/sso-connection',
-              text: t('connections'),
-              icon: ListBulletIcon,
-              active: asPath === '/admin/sso-connection',
-            },
-            {
-              href: '/admin/sso-connection/setup-link',
-              text: t('setup_links'),
-              icon: LinkIcon,
-              active: asPath.includes('/admin/sso-connection/setup-link'),
-            },
-            {
-              href: '/admin/federated-saml',
-              text: t('saml_federation'),
-              icon: SquaresPlusIcon,
-              active: asPath.includes('/admin/federated-saml'),
-            },
-          ],
+          text: t('connections'),
+          active: asPath === '/admin/sso-connection',
         },
+        {
+          href: '/admin/sso-connection/setup-link',
+          text: t('setup_links'),
+          active: asPath.includes('/admin/sso-connection/setup-link'),
+        },
+        {
+          href: '/admin/federated-saml',
+          text: t('saml_federation'),
+          active: asPath.includes('/admin/federated-saml'),
+        },
+      ],
+    },
+    {
+      href: '/admin/directory-sync',
+      text: t('directory_sync'),
+      icon: DSyncLogo,
+      active: asPath.includes('/admin/directory-sync'),
+      items: [
         {
           href: '/admin/directory-sync',
-          text: t('directory_sync'),
-          icon: DSyncLogo,
-          active: asPath.includes('/admin/directory-sync'),
-          items: [
-            {
-              href: '/admin/directory-sync',
-              text: t('connections'),
-              icon: ListBulletIcon,
-              active: asPath === '/admin/directory-sync',
-            },
-            {
-              href: '/admin/directory-sync/setup-link',
-              text: t('setup_links'),
-              icon: LinkIcon,
-              active: asPath.includes('/admin/directory-sync/setup-link'),
-            },
-          ],
+          text: t('connections'),
+          active: asPath === '/admin/directory-sync',
         },
         {
-          href: '/admin/retraced',
-          text: 'Audit Logs',
-          icon: AuditLogsLogo,
-          current: asPath.includes('retraced'),
-          active: asPath.includes('/admin/connection'),
+          href: '/admin/directory-sync/setup-link',
+          text: t('setup_links'),
+          active: asPath.includes('/admin/directory-sync/setup-link'),
         },
-      ];
+      ],
+    },
+    {
+      href: '/admin/retraced',
+      text: 'Audit Logs',
+      icon: AuditLogsLogo,
+      current: asPath.includes('retraced'),
+      active: asPath.includes('/admin/retraced'),
+      items: [
+        {
+          href: '/admin/retraced',
+          text: t('projects'),
+          active: asPath.includes('/admin/retraced'),
+        },
+      ],
+    },
+  ];
 
   return (
     <>
+      {/* Sidebar for mobile */}
       <div
         className={classNames('relative z-40 md:hidden', { hidden: isOpen })}
         role='dialog'
@@ -114,50 +126,16 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                 <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
                 <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ Admin Portal</span>
               </Link>
-              {/* <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
-                <Cog6ToothIcon className='h-6 w-6 flex-shrink-0' aria-hidden='true' />
-              </Link> */}
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
-              <nav className='space-y-1 px-2'>
-                {menus.map((menu, idx) => {
-                  const hasSubMenu = menu.items ? (menu.items.length > 0 ? true : false) : false;
-                  return (
-                    <div key={`a-${idx}`}>
-                      <Link
-                        href={menu.href}
-                        className={classNames(
-                          'group flex items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
-                          menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
-                        )}>
-                        <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                        {menu.text}
-                      </Link>
-                      {hasSubMenu ? (
-                        <nav key={`a-nav-${idx}`} className={`hide space-y-1 px-2`}>
-                          {(menu.items || []).map((subMenu, id) => (
-                            <Link
-                              key={`a-sub-link-${idx}-${id}`}
-                              href={subMenu.href}
-                              className={classNames(
-                                'group flex h-8 items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
-                                subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
-                              )}>
-                              <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                              {subMenu.text}
-                            </Link>
-                          ))}
-                        </nav>
-                      ) : null}
-                    </div>
-                  );
-                })}
-              </nav>
+              <MenuItems menus={menus} />
             </div>
           </div>
           <div className='w-14 flex-shrink-0' aria-hidden='true'></div>
         </div>
       </div>
+
+      {/* Sidebar for desktop */}
       <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
         <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
           <div className='flex flex-shrink-0 items-center px-4'>
@@ -165,48 +143,55 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
               <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
               <span className='ml-4 text-lg font-bold text-gray-900'>BoxyHQ Admin Portal</span>
             </Link>
-            {/* <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
-              <Cog6ToothIcon className='h-6 w-6 flex-shrink-0' aria-hidden='true' />
-            </Link> */}
           </div>
           <div className='mt-5 flex flex-1 flex-col'>
-            <nav className='flex-1 space-y-1 px-2 pb-4' id='menu'>
-              {menus.map((menu, idx) => {
-                const hasSubMenu = menu.items ? (menu.items.length > 0 ? true : false) : false;
-                return (
-                  <div key={`b-${idx}`}>
-                    <Link
-                      href={menu.href}
-                      className={classNames(
-                        'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
-                        menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
-                      )}>
-                      <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                      {menu.text}
-                    </Link>
-                    {hasSubMenu ? (
-                      <nav className='flex-1 space-y-1 px-2 pb-4' id='subMenu'>
-                        {(menu.items || []).map((subMenu, id) => (
-                          <Link
-                            key={`b-sub-link-${idx}-${id}`}
-                            href={subMenu.href}
-                            className={classNames(
-                              'group flex h-8 items-center rounded-md px-2 py-2 text-sm text-gray-900',
-                              subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
-                            )}>
-                            <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-                            {subMenu.text}
-                          </Link>
-                        ))}
-                      </nav>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </nav>
+            <MenuItems menus={menus} />
           </div>
         </div>
       </div>
     </>
+  );
+};
+
+const MenuItems = ({ menus }: { menus: MenuItem[] }) => {
+  return (
+    <nav className='space-y-1'>
+      {menus.map((menu, id) => {
+        return (
+          <div key={id}>
+            <ItemLink key={id} {...menu} />
+            {menu.items && <SubMenuItems items={menu.items} />}
+          </div>
+        );
+      })}
+    </nav>
+  );
+};
+
+const SubMenuItems = ({ items }: { items: MenuItem[] }) => {
+  return (
+    <nav className='flex-1 pl-10'>
+      <div className='mt-1 space-y-1 border-l-2 border-gray-200'>
+        {items.map((item, id) => (
+          <ItemLink key={id} {...item} />
+        ))}
+      </div>
+    </nav>
+  );
+};
+
+const ItemLink = (props: MenuItem) => {
+  const { href, text, active } = props;
+
+  return (
+    <Link
+      href={href}
+      className={classNames(
+        'group mx-2 flex items-center rounded-md py-2 px-2 text-sm text-gray-900',
+        active ? 'bg-gray-100 font-bold' : 'font-medium hover:bg-gray-100 hover:text-gray-900'
+      )}>
+      {props.icon && <props.icon className='mr-2 h-6 w-6 flex-shrink-0' aria-hidden='true' />}
+      {text}
+    </Link>
   );
 };
