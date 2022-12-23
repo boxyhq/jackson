@@ -1,6 +1,7 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
+import { LinkOutline } from '@components/LinkOutline';
 
 const WellKnownURLs = () => {
   const { t } = useTranslation('common');
@@ -88,10 +89,14 @@ const LinkCard = ({
           <p className='text-[15px]'>{description}</p>
         </div>
         <div className='mx-4'>
-          <Link href={href} target='_blank' rel='noreferrer' className='btn-outline btn-xs btn w-32'>
-            <ArrowTopRightOnSquareIcon className='mr-1 h-5 w-5' />
+          <LinkOutline
+            className='w-32'
+            href={href}
+            target='_blank'
+            rel='noreferrer'
+            Icon={ArrowTopRightOnSquareIcon}>
             {buttonText}
-          </Link>
+          </LinkOutline>
         </div>
       </div>
     </div>
