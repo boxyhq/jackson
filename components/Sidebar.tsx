@@ -1,4 +1,4 @@
-import { ShieldCheckIcon, UsersIcon, HomeIcon } from '@heroicons/react/24/outline';
+import { HomeIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -6,6 +6,10 @@ import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 import { useTranslation } from 'next-i18next';
+import SSOLogo from '@components/logo/SSO';
+import DSyncLogo from '@components/logo/DSync';
+// import VaultLogo from '@components/logo/Vault';
+// import AuditLogsLogo from '@components/logo/AuditLogs';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -34,7 +38,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     {
       href: '/admin/sso-connection',
       text: t('enterprise_sso'),
-      icon: ShieldCheckIcon,
+      icon: SSOLogo,
       active: asPath.includes('/admin/sso-connection') || asPath.includes('/admin/federated-saml'),
       items: [
         {
@@ -57,7 +61,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     {
       href: '/admin/directory-sync',
       text: t('directory_sync'),
-      icon: UsersIcon,
+      icon: DSyncLogo,
       active: asPath.includes('/admin/directory-sync'),
       items: [
         {
@@ -148,7 +152,7 @@ const MenuItems = ({ menus }: { menus: MenuItem[] }) => {
                 'group mx-2 flex items-center rounded-md px-2 py-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-gray-900',
                 menu.active ? 'font-bold' : 'font-medium'
               )}>
-              <menu.icon className='mr-2 h-5 w-5 flex-shrink-0' aria-hidden='true' />
+              <menu.icon className='mr-2 h-6 w-6 flex-shrink-0' aria-hidden='true' />
               {menu.text}
             </Link>
             {menu.items && <SubMenuItems items={menu.items} />}
