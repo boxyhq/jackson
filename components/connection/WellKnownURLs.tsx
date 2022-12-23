@@ -2,54 +2,50 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 
-const links = [
-  {
-    title: 'SP Metadata',
-    description:
-      'The metadata file that your customers who use federated management systems like OpenAthens and Shibboleth will need to configure your service.',
-    href: '/.well-known/sp-metadata',
-    buttonText: 'View',
-  },
-  {
-    title: 'SAML Configuration',
-    description:
-      'The configuration setup guide that your customers will need to refer to when setting up SAML application with their Identity Provider.',
-    href: '/.well-known/saml-configuration',
-    buttonText: 'View',
-  },
-  {
-    title: 'OpenID Configuration',
-    description:
-      'Our OpenID configuration URI which your customers will need if they are connecting via OAuth 2.0 or Open ID Connect.',
-    href: '/.well-known/openid-configuration',
-    buttonText: 'View',
-  },
-  {
-    title: 'IdP Metadata',
-    description:
-      'The metadata file that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.',
-    href: '/.well-known/idp-metadata',
-    buttonText: 'View',
-  },
-  {
-    title: 'IdP Configuration',
-    description:
-      'The configuration setup guide that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.',
-    href: '/.well-known/idp-configuration',
-    buttonText: 'View',
-  },
-  {
-    title: 'SAML Public Certificate',
-    description: 'The SAML Public Certificate if you want to enable encryption with your Identity Provider.',
-    href: '/.well-known/saml.cer',
-    buttonText: 'Download',
-  },
-];
-
-type LinkCardProps = typeof links[number];
-
 const WellKnownURLs = () => {
   const { t } = useTranslation('common');
+
+  const viewText = t('view');
+  const downloadText = t('download');
+
+  const links = [
+    {
+      title: 'SP Metadata',
+      description: t('sp_metadata_description'),
+      href: '/.well-known/sp-metadata',
+      buttonText: viewText,
+    },
+    {
+      title: 'SAML Configuration',
+      description: t('sp_config_description'),
+      href: '/.well-known/saml-configuration',
+      buttonText: viewText,
+    },
+    {
+      title: 'SAML Public Certificate',
+      description: t('saml_public_cert_description'),
+      href: '/.well-known/saml.cer',
+      buttonText: downloadText,
+    },
+    {
+      title: 'OpenID Configuration',
+      description: t('oidc_config_description'),
+      href: '/.well-known/openid-configuration',
+      buttonText: viewText,
+    },
+    {
+      title: 'IdP Metadata',
+      description: t('idp_metadata_description'),
+      href: '/.well-known/idp-metadata',
+      buttonText: viewText,
+    },
+    {
+      title: 'IdP Configuration',
+      description: t('idp_config_description'),
+      href: '/.well-known/idp-configuration',
+      buttonText: viewText,
+    },
+  ];
 
   return (
     <>
@@ -73,7 +69,17 @@ const WellKnownURLs = () => {
   );
 };
 
-const LinkCard = ({ title, description, href, buttonText }: LinkCardProps) => {
+const LinkCard = ({
+  title,
+  description,
+  href,
+  buttonText,
+}: {
+  title: string;
+  description: string;
+  href: string;
+  buttonText: string;
+}) => {
   return (
     <div className='space-y-2 rounded-md border p-4 hover:border-gray-400'>
       <div className='flex items-center justify-between'>
