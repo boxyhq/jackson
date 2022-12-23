@@ -21,6 +21,7 @@ const unauthenticatedRoutes = [
   '/oauth/jwks',
   '/idp/select',
   '/error',
+  '/well-known',
 ];
 
 const isUnauthenticatedRoute = (pathname: string) => {
