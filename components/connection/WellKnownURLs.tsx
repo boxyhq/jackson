@@ -46,12 +46,7 @@ const links = [
   },
 ];
 
-type LinkCardProps = {
-  title: string;
-  description: string;
-  href: string;
-  buttonText: string;
-};
+type LinkCardProps = typeof links[number];
 
 const WellKnownURLs = () => {
   const { t } = useTranslation('common');
