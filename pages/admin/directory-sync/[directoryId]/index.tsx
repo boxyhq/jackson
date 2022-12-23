@@ -7,8 +7,8 @@ import useSWR from 'swr';
 import DirectoryInfo from '@components/dsync/DirectoryInfo';
 import { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
-import { Loader } from '@components/Loader';
-import { errorToast } from '@components/Toast';
+import { errorToast } from '@components/Toaster';
+import Loading from '@components/Loading';
 
 const Info: NextPage = () => {
   const router = useRouter();
@@ -21,7 +21,7 @@ const Info: NextPage = () => {
   );
 
   if (!data) {
-    return <Loader />;
+    return <Loading />;
   }
 
   if (error) {

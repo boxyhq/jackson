@@ -1,5 +1,4 @@
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
-
 import jackson from '@lib/jackson';
 import DirectoryList from '@components/dsync/DirectoryList';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -7,9 +6,9 @@ import useSWR from 'swr';
 import { fetcher } from '@lib/ui/utils';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { ApiError, ApiSuccess } from 'types';
-import { Loader } from '@components/Loader';
-import { errorToast } from '@components/Toast';
+import { errorToast } from '@components/Toaster';
 import { useRouter } from 'next/router';
+import Loading from '@components/Loading';
 
 const Index = ({ providers }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
@@ -25,7 +24,7 @@ const Index = ({ providers }: InferGetServerSidePropsType<typeof getServerSidePr
   );
 
   if (!data) {
-    return <Loader />;
+    return <Loading />;
   }
 
   if (error) {
