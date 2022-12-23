@@ -13,6 +13,10 @@ import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 import { useTranslation } from 'next-i18next';
+import SSOLogo from '@components/logo/SSO';
+import DSyncLogo from '@components/logo/DSync';
+import VaultLogo from '@components/logo/Vault';
+import AuditLogsLogo from '@components/logo/AuditLogs';
 
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: boolean }) => {
   const { isOpen, setIsOpen } = props;
@@ -32,7 +36,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
         {
           href: '/admin/sso-connection',
           text: t('enterprise_sso'),
-          icon: ShieldCheckIcon,
+          icon: SSOLogo,
           active: asPath.includes('/admin/sso-connection'),
           items: [
             {
@@ -58,7 +62,7 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
         {
           href: '/admin/directory-sync',
           text: t('directory_sync'),
-          icon: UsersIcon,
+          icon: DSyncLogo,
           active: asPath.includes('/admin/directory-sync'),
           items: [
             {
