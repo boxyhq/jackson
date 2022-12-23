@@ -7,7 +7,7 @@ import useSWR from 'swr';
 import type { Directory } from '@boxyhq/saml-jackson';
 
 import { fetcher } from '@lib/ui/utils';
-import type { ApiError, ApiSuccess } from 'types';
+import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
@@ -76,7 +76,7 @@ const Edit: NextPage = () => {
 
     setLoading(false);
 
-    const response = await rawResponse.json();
+    const response: ApiResponse<Directory> = await rawResponse.json();
 
     if ('error' in response) {
       errorToast(response.error.message);
