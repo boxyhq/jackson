@@ -146,15 +146,7 @@ const MenuItems = ({ menus }: { menus: MenuItem[] }) => {
       {menus.map((menu, id) => {
         return (
           <div key={id}>
-            <Link
-              href={menu.href}
-              className={classNames(
-                'group mx-2 flex items-center rounded-md px-2 py-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-gray-900',
-                menu.active ? 'font-bold' : 'font-medium'
-              )}>
-              <menu.icon className='mr-2 h-6 w-6 flex-shrink-0' aria-hidden='true' />
-              {menu.text}
-            </Link>
+            <ItemLink key={id} {...menu} />
             {menu.items && <SubMenuItems items={menu.items} />}
           </div>
         );
@@ -166,19 +158,27 @@ const MenuItems = ({ menus }: { menus: MenuItem[] }) => {
 const SubMenuItems = ({ items }: { items: MenuItem[] }) => {
   return (
     <nav className='flex-1 pl-10'>
-      <div className='mt-2 space-y-1 border-l-2 border-gray-200'>
+      <div className='mt-1 space-y-1 border-l-2 border-gray-200'>
         {items.map((item, id) => (
-          <Link
-            key={id}
-            href={item.href}
-            className={classNames(
-              'group mx-2 flex items-center rounded-md py-2 px-2 pr-2 text-sm text-gray-900',
-              item.active ? 'bg-gray-100 font-bold' : 'font-medium hover:bg-gray-100 hover:text-gray-900'
-            )}>
-            {item.text}
-          </Link>
+          <ItemLink key={id} {...item} />
         ))}
       </div>
     </nav>
+  );
+};
+
+const ItemLink = (props: MenuItem) => {
+  const { href, text, active } = props;
+
+  return (
+    <Link
+      href={href}
+      className={classNames(
+        'group mx-2 flex items-center rounded-md py-2 px-2 text-sm text-gray-900',
+        active ? 'bg-gray-100 font-bold' : 'font-medium hover:bg-gray-100 hover:text-gray-900'
+      )}>
+      {props.icon && <props.icon className='mr-2 h-6 w-6 flex-shrink-0' aria-hidden='true' />}
+      {text}
+    </Link>
   );
 };
