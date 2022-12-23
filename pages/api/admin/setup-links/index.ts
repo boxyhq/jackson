@@ -3,18 +3,25 @@ import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
+  try {
+    const { method } = req;
 
-  switch (method) {
-    case 'POST':
-      return handlePOST(req, res);
-    case 'GET':
-      return handleGET(req, res);
-    case 'DELETE':
-      return handleDELETE(req, res);
-    default:
-      res.setHeader('Allow', ['GET']);
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+    switch (method) {
+      case 'POST':
+        await handlePOST(req, res);
+        return;
+      case 'GET':
+        await handleGET(req, res);
+        return;
+      case 'DELETE':
+        await handleDELETE(req, res);
+        return;
+      default:
+        res.setHeader('Allow', ['GET']);
+        res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+    }
+  } catch (error: any) {
+    res.status(500).json({ data: null, error: { message: error.message || 'Unknown error' } });
   }
 };
 

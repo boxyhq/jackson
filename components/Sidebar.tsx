@@ -1,10 +1,10 @@
 import {
+  SquaresPlusIcon,
   ShieldCheckIcon,
   UsersIcon,
   HomeIcon,
   LinkIcon,
   ListBulletIcon,
-  Cog6ToothIcon,
 } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,6 +13,10 @@ import { useRouter } from 'next/router';
 
 import Logo from '../public/logo.png';
 import { useTranslation } from 'next-i18next';
+import SSOLogo from '@components/logo/SSO';
+import DSyncLogo from '@components/logo/DSync';
+import VaultLogo from '@components/logo/Vault';
+import AuditLogsLogo from '@components/logo/AuditLogs';
 
 export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: boolean }) => {
   const { isOpen, setIsOpen } = props;
@@ -25,45 +29,51 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
     : [
         {
           href: '/admin/dashboard',
-          text: 'Dashboard',
+          text: t('dashboard'),
           icon: HomeIcon,
           active: asPath.includes('/admin/dashboard'),
         },
         {
           href: '/admin/sso-connection',
-          text: 'Enterprise SSO',
-          icon: ShieldCheckIcon,
+          text: t('enterprise_sso'),
+          icon: SSOLogo,
           active: asPath.includes('/admin/sso-connection'),
           items: [
             {
               href: '/admin/sso-connection',
-              text: 'Connections',
+              text: t('connections'),
               icon: ListBulletIcon,
               active: asPath === '/admin/sso-connection',
             },
             {
               href: '/admin/sso-connection/setup-link',
-              text: 'Setup Link',
+              text: t('setup_links'),
               icon: LinkIcon,
               active: asPath.includes('/admin/sso-connection/setup-link'),
+            },
+            {
+              href: '/admin/federated-saml',
+              text: t('saml_federation'),
+              icon: SquaresPlusIcon,
+              active: asPath.includes('/admin/federated-saml'),
             },
           ],
         },
         {
           href: '/admin/directory-sync',
-          text: 'Directory Sync',
-          icon: UsersIcon,
+          text: t('directory_sync'),
+          icon: DSyncLogo,
           active: asPath.includes('/admin/directory-sync'),
           items: [
             {
               href: '/admin/directory-sync',
-              text: 'Connections',
+              text: t('connections'),
               icon: ListBulletIcon,
               active: asPath === '/admin/directory-sync',
             },
             {
               href: '/admin/directory-sync/setup-link',
-              text: 'Setup Link',
+              text: t('setup_links'),
               icon: LinkIcon,
               active: asPath.includes('/admin/directory-sync/setup-link'),
             },
@@ -105,53 +115,42 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
                 <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
                 <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ Admin Portal</span>
               </Link>
-              <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
+              {/* <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
                 <Cog6ToothIcon className='h-6 w-6 flex-shrink-0' aria-hidden='true' />
-              </Link>
+              </Link> */}
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
               <nav className='space-y-1 px-2'>
                 {menus.map((menu, idx) => {
                   const hasSubMenu = menu.items ? (menu.items.length > 0 ? true : false) : false;
                   return (
-                    <>
+                    <div key={`a-${idx}`}>
                       <Link
-                        key={`a-link-${idx}`}
                         href={menu.href}
                         className={classNames(
                           'group flex items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
                           menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
                         )}>
-                        <menu.icon
-                          key={`a-icon-${idx}`}
-                          className='mr-4 h-6 w-6 flex-shrink-0'
-                          aria-hidden='true'
-                        />
+                        <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                         {menu.text}
                       </Link>
                       {hasSubMenu ? (
                         <nav key={`a-nav-${idx}`} className={`hide space-y-1 px-2`}>
                           {(menu.items || []).map((subMenu, id) => (
                             <Link
-                              key={`a-sub-link-${id}`}
+                              key={`a-sub-link-${idx}-${id}`}
                               href={subMenu.href}
                               className={classNames(
                                 'group flex h-8 items-center rounded-md py-2 px-2 text-base font-medium text-gray-900',
                                 subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
                               )}>
-                              <subMenu.icon
-                                key={`a-sub-icon-${id}`}
-                                className='mr-4 h-6 w-6 flex-shrink-0'
-                                aria-hidden='true'
-                              />
+                              <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                               {subMenu.text}
                             </Link>
                           ))}
                         </nav>
-                      ) : (
-                        ''
-                      )}
-                    </>
+                      ) : null}
+                    </div>
                   );
                 })}
               </nav>
@@ -167,53 +166,42 @@ export const Sidebar = (props: { isOpen: boolean; setIsOpen: any; hideMenus?: bo
               <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
               <span className='ml-4 text-lg font-bold text-gray-900'>BoxyHQ Admin Portal</span>
             </Link>
-            <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
+            {/* <Link key='Settings' href='/admin/settings' className={'flex items-center px-1 py-1'}>
               <Cog6ToothIcon className='h-6 w-6 flex-shrink-0' aria-hidden='true' />
-            </Link>
+            </Link> */}
           </div>
           <div className='mt-5 flex flex-1 flex-col'>
             <nav className='flex-1 space-y-1 px-2 pb-4' id='menu'>
               {menus.map((menu, idx) => {
                 const hasSubMenu = menu.items ? (menu.items.length > 0 ? true : false) : false;
                 return (
-                  <>
+                  <div key={`b-${idx}`}>
                     <Link
-                      key={`b-link-${idx}`}
                       href={menu.href}
                       className={classNames(
                         'group flex items-center rounded-md px-2 py-2 text-sm text-gray-900',
                         menu.active ? 'bg-gray-100 font-bold' : 'font-medium'
                       )}>
-                      <menu.icon
-                        key={`a-icon-${idx}`}
-                        className='mr-4 h-6 w-6 flex-shrink-0'
-                        aria-hidden='true'
-                      />
+                      <menu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                       {menu.text}
                     </Link>
                     {hasSubMenu ? (
-                      <nav key={`b-nav-${idx}`} className='flex-1 space-y-1 px-2 pb-4' id='subMenu'>
+                      <nav className='flex-1 space-y-1 px-2 pb-4' id='subMenu'>
                         {(menu.items || []).map((subMenu, id) => (
                           <Link
-                            key={`a-sub-link-${id}`}
+                            key={`b-sub-link-${idx}-${id}`}
                             href={subMenu.href}
                             className={classNames(
                               'group flex h-8 items-center rounded-md px-2 py-2 text-sm text-gray-900',
                               subMenu.active ? 'bg-gray-300 font-bold' : 'font-medium'
                             )}>
-                            <subMenu.icon
-                              key={`a-sub-icon-${id}`}
-                              className='mr-4 h-6 w-6 flex-shrink-0'
-                              aria-hidden='true'
-                            />
+                            <subMenu.icon className='mr-4 h-6 w-6 flex-shrink-0' aria-hidden='true' />
                             {subMenu.text}
                           </Link>
                         ))}
                       </nav>
-                    ) : (
-                      ''
-                    )}
-                  </>
+                    ) : null}
+                  </div>
                 );
               })}
             </nav>

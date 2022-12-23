@@ -1,15 +1,12 @@
 import { FormEvent, useState } from 'react';
-import Link from 'next/link';
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  ClipboardDocumentListIcon,
-  ArrowLeftIcon,
-} from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
+import { copyToClipboard } from '@lib/ui/utils';
+import { ButtonPrimary } from './ButtonPrimary';
+import { LinkBack } from './LinkBack';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
@@ -30,13 +27,14 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       }),
     });
     if (res.ok) {
-      setLoading(false);
       const json = await res.json();
       setUrl(json.data.url);
       successToast(t('link_generated'));
     } else {
-      errorToast(t('server_error'));
+      const rsp = await res.json();
+      errorToast(rsp?.error?.message || t('server_error'));
     }
+    setLoading(false);
   };
   const regenerateLink = async (event) => {
     event.preventDefault();
@@ -67,10 +65,6 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
       errorToast(t('server_error'));
     }
   };
-  const copyUrl = () => {
-    navigator.clipboard.writeText(url);
-    successToast(t('copied'));
-  };
   const getHandleChange = (event: FormEvent) => {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
     setFormObj((cur) => ({ ...cur, [target.name]: target.value }));
@@ -88,13 +82,12 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
 
   return (
     <>
-      <Link href='' onClick={() => router.back()} className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>Back</span>
-      </Link>
+      <LinkBack href='' onClick={() => router.back()} />
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {`Create Setup Link (${props.service === 'sso' ? 'Enterprise SSO' : 'Directory-Sync'})`}
+        <h2 className='mb-5 font-bold text-gray-700 dark:text-white md:text-xl'>
+          {t('create_setup_link', {
+            service: props.service === 'sso' ? t('enterprise_sso') : t('directory_sync'),
+          })}
         </h2>
         <div>
           <div className='mb-6'>
@@ -135,57 +128,46 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
           </div>
         </div>
         <div className='flex'>
-          <button
-            className={`btn-primary btn mx-2 mt-5 ${loading ? 'loading' : ''}`}
+          <ButtonPrimary
+            loading={loading}
             disabled={!formObj.tenant || !formObj.product || !formObj.type}
             onClick={createLink}>
-            {'Generate'}
-          </button>
+            {t('generate')}
+          </ButtonPrimary>
         </div>
-        <p
-          role='status'
-          className={`mt-4 ml-2 inline-flex items-center ${
-            status === 'SUCCESS' || status === 'ERROR' ? 'opacity-100' : 'opacity-0'
-          } transition-opacity motion-reduce:transition-none`}>
-          {status === 'SUCCESS' && (
-            <span className='inline-flex items-center text-primary'>
-              <CheckCircleIcon aria-hidden className='mr-1 h-5 w-5'></CheckCircleIcon>
-              Link Generated
-            </span>
-          )}
-          {/* TODO: also display error message once we standardise the response format */}
-          {status === 'ERROR' && (
-            <span className='inline-flex items-center text-red-900'>
-              <ExclamationCircleIcon aria-hidden className='mr-1 h-5 w-5'></ExclamationCircleIcon>
-              ERROR
-            </span>
-          )}
-        </p>
         <ConfirmationModal
           title='Delete the setup link'
           description='This action cannot be undone. This will permanently delete the link.'
           visible={delModalVisible}
           onConfirm={regenerateLink}
           onCancel={toggleDelConfirm}
-          actionButtonText={'Regenerate'}
+          actionButtonText={t('regenerate')}
         />
       </div>
       {url && (
         <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-          <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-            {url ? 'Setup Link Info' : `Create Setup Link (${props.service})`}
+          <h2 className='mb-5 font-bold text-gray-700 dark:text-white md:text-xl'>
+            {url
+              ? t('setup_link_info')
+              : t('create_setup_link', {
+                  service: props.service === 'sso' ? t('enterprise_sso') : t('directory_sync'),
+                })}
           </h2>
-          <div className='form-control p-2'>
+          <div className='form-control'>
             <div className='input-group'>
-              <button className='btn-primary btn h-10 p-2 text-white' onClick={copyUrl}>
-                <ClipboardDocumentListIcon className='h-6 w-6' />
-              </button>
+              <ButtonPrimary
+                Icon={ClipboardDocumentIcon}
+                className='p-2'
+                onClick={() => {
+                  copyToClipboard(url);
+                  successToast(t('copied'));
+                }}></ButtonPrimary>
               <input type='text' readOnly value={url} className='input-bordered input h-10 w-full' />
             </div>
           </div>
-          <div className='flex'>
-            <button
-              className={`btn-primary btn mx-2 mt-5 ${loading1 ? 'loading' : ''}`}
+          <div className='mt-5 flex'>
+            <ButtonPrimary
+              loading={loading1}
               disabled={!formObj.tenant || !formObj.product || !formObj.type}
               onClick={
                 url
@@ -194,8 +176,8 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
                     }
                   : createLink
               }>
-              {url ? 'Regenerate Link' : 'Generate'}
-            </button>
+              {url ? t('regenerate') : t('generate')}
+            </ButtonPrimary>
           </div>
         </div>
       )}

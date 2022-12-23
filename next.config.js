@@ -43,8 +43,16 @@ module.exports = {
         destination: '/api/well-known/sp-metadata',
       },
       {
+        source: '/.well-known/idp-metadata',
+        destination: '/api/well-known/idp-metadata',
+      },
+      {
         source: '/.well-known/saml-configuration',
         destination: '/well-known/saml-configuration',
+      },
+      {
+        source: '/.well-known/idp-configuration',
+        destination: '/well-known/idp-configuration',
       },
       {
         source: '/oauth/jwks',

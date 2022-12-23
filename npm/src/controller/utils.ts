@@ -1,14 +1,18 @@
+import crypto from 'crypto';
+import * as jose from 'jose';
+import { Client, TokenSet } from 'openid-client';
+import * as dbutils from '../db/utils';
+
 import type {
   ConnectionType,
   OAuthErrorHandlerParams,
   OIDCSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
+  Profile,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
-import crypto from 'crypto';
-import * as jose from 'jose';
 
 export enum IndexNames {
   EntityID = 'entityID',
@@ -198,6 +202,47 @@ export const extractHostName = (url: string): string | null => {
   }
 };
 
+export const extractOIDCUserProfile = async (tokenSet: TokenSet, oidcClient: Client) => {
+  const idTokenClaims = tokenSet.claims();
+  const userinfo = await oidcClient.userinfo(tokenSet);
+
+  const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
+
+  profile.claims.id = idTokenClaims.sub;
+  profile.claims.email = idTokenClaims.email ?? userinfo.email;
+  profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
+  profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
+  profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
+  profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
+  profile.claims.raw = userinfo;
+
+  return profile;
+};
+
+export const getScopeValues = (scope?: string): string[] => {
+  return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
+};
+
+export const getEncodedTenantProduct = (
+  param: string
+): { tenant: string | null; product: string | null } | null => {
+  try {
+    const sp = new URLSearchParams(param);
+    const tenant = sp.get('tenant');
+    const product = sp.get('product');
+    if (tenant && product) {
+      return {
+        tenant: sp.get('tenant'),
+        product: sp.get('product'),
+      };
+    }
+
+    return null;
+  } catch (err) {
+    return null;
+  }
+};
+
 export const validateTenantAndProduct = (tenant: string, product: string) => {
   if (tenant.indexOf(':') !== -1) {
     throw new JacksonError('tenant cannot contain the character :', 400);
@@ -206,4 +251,8 @@ export const validateTenantAndProduct = (tenant: string, product: string) => {
   if (product.indexOf(':') !== -1) {
     throw new JacksonError('product cannot contain the character :', 400);
   }
+};
+
+export const appID = (tenant: string, product: string) => {
+  return dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
 };

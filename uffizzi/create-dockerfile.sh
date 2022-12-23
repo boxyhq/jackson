@@ -1,0 +1,1 @@
+cat ../Dockerfile Dockerfile.tmpl > Dockerfile

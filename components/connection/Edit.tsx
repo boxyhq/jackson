@@ -1,17 +1,18 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import ConfirmationModal from '@components/ConfirmationModal';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
 import { ApiResponse } from 'types';
-import { errorToast, successToast } from '@components/Toast';
+import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
+import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonDanger } from '@components/ButtonDanger';
 
-const fieldCatalog = [...getCommonFields(), ...EditViewOnlyFields];
+const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
 function getInitialState(connection) {
   const _state = {};
@@ -35,10 +36,10 @@ function getInitialState(connection) {
 
 type EditProps = {
   connection?: Record<string, any>;
-  setup?: Record<string, any>;
+  setupToken?: string;
 };
 
-const Edit = ({ connection, setup }: EditProps) => {
+const Edit = ({ connection, setupToken }: EditProps) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
@@ -53,7 +54,7 @@ const Edit = ({ connection, setup }: EditProps) => {
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
       isEditView: true,
-      setupToken: setup ? setup.token : '',
+      setupToken: setupToken,
       callback: async (res) => {
         const response: ApiResponse = await res.json();
 
@@ -66,7 +67,9 @@ const Edit = ({ connection, setup }: EditProps) => {
           successToast(t('saved'));
           // revalidate on save
           mutate(
-            setup ? `/api/setup/${setup.token}/connections` : `/api/admin/connections/${connectionClientId}`
+            setupToken
+              ? `/api/setup/${setupToken}/connections`
+              : `/api/admin/connections/${connectionClientId}`
           );
         }
       },
@@ -77,8 +80,11 @@ const Edit = ({ connection, setup }: EditProps) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
-    const res = await fetch(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections', {
+    const res = await fetch(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections', {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
     });
 
@@ -92,8 +98,8 @@ const Edit = ({ connection, setup }: EditProps) => {
     }
 
     if (res.ok) {
-      await mutate(setup ? `/api/setup/${setup.token}/connections` : '/api/admin/connections');
-      router.replace(setup ? `/setup/${setup.token}/sso-connection` : '/admin/sso-connection');
+      await mutate(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections');
+      router.replace(setupToken ? `/setup/${setupToken}/sso-connection` : '/admin/sso-connection');
     }
   };
 
@@ -111,12 +117,7 @@ const Edit = ({ connection, setup }: EditProps) => {
 
   return (
     <>
-      <Link
-        href={setup ? `/setup/${setup.token}` : '/admin/sso-connection'}
-        className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}
@@ -127,20 +128,18 @@ const Edit = ({ connection, setup }: EditProps) => {
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-3/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable !== false)
-                  .filter(({ attributes: { hideInSetupView } }) => (setup ? !hideInSetupView : true))
+                  .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
                   .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
               </div>
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-2/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable === false)
-                  .filter(({ attributes: { hideInSetupView } }) => (setup ? !hideInSetupView : true))
+                  .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
                   .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
               </div>
             </div>
             <div className='flex w-full lg:mt-6'>
-              <button type='submit' className='btn-primary btn'>
-                {t('save_changes')}
-              </button>
+              <ButtonPrimary type='submit'>{t('save_changes')}</ButtonPrimary>
             </div>
           </div>
           {connection?.clientID && connection.clientSecret && (
@@ -149,13 +148,9 @@ const Edit = ({ connection, setup }: EditProps) => {
                 <h6 className='mb-1 font-medium'>{t('delete_this_connection')}</h6>
                 <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
               </div>
-              <button
-                type='button'
-                className='btn-error btn'
-                onClick={toggleDelConfirm}
-                data-modal-toggle='popup-modal'>
+              <ButtonDanger type='button' onClick={toggleDelConfirm} data-modal-toggle='popup-modal'>
                 {t('delete')}
-              </button>
+              </ButtonDanger>
             </section>
           )}
         </form>

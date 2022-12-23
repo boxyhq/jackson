@@ -26,6 +26,18 @@ const links = [
       'Our OpenID configuration URI which your customers will need if they are connecting via OAuth 2.0 or Open ID Connect.',
     href: '/.well-known/openid-configuration',
   },
+  {
+    title: 'IdP Metadata',
+    description:
+      'The metadata file that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.',
+    href: '/.well-known/idp-metadata',
+  },
+  {
+    title: 'IdP Configuration',
+    description:
+      'The configuration setup guide that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.',
+    href: '/.well-known/idp-configuration',
+  },
 ];
 
 const WellKnownURLs = ({ className }: { className?: string }) => {
@@ -39,10 +51,12 @@ const WellKnownURLs = ({ className }: { className?: string }) => {
           return (
             <li key={link.href} className='text-sm'>
               <p>{link.description}</p>
-              <Link href={link.href} target='_blank' rel='noreferrer'>
-                <div className='link flex'>
-                  <ArrowRightOnRectangleIcon className='mr-1 h-5 w-5' /> {link.title}
-                </div>
+              <Link
+                href={link.href}
+                target='_blank'
+                rel='noreferrer'
+                className='link flex hover:link-primary'>
+                <ArrowRightOnRectangleIcon className='mr-1 h-5 w-5' aria-hidden /> {link.title}
               </Link>
               <br />
             </li>

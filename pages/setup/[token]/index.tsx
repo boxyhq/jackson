@@ -6,9 +6,10 @@ import { useRouter } from 'next/router';
 const Setup: NextPage = () => {
   const router = useRouter();
   const { token } = router.query;
-  const { data: setup, error } = useSWR<any>(token ? `/api/setup/${token}` : null, fetcher, {
+  const { data, error } = useSWR<any>(token ? `/api/setup/${token}` : null, fetcher, {
     revalidateOnFocus: false,
   });
+  const setup = data?.data;
   if (error) {
     return (
       <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
@@ -18,7 +19,7 @@ const Setup: NextPage = () => {
   } else if (!token || !setup) {
     return null;
   } else {
-    switch (setup.data.service) {
+    switch (setup.service) {
       case 'sso':
         router.replace(`/setup/${token}/sso-connection`);
         return null;

@@ -1,18 +1,17 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
-import Link from 'next/link';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import useSWR from 'swr';
 import type { Directory } from '@boxyhq/saml-jackson';
 
 import { fetcher } from '@lib/ui/utils';
-import { errorToast, successToast } from '@components/Toast';
-import { Loader } from '@components/Loader';
 import type { ApiError, ApiSuccess } from 'types';
+import { errorToast, successToast } from '@components/Toaster';
+import { LinkBack } from '@components/LinkBack';
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import Loading from '@components/Loading';
 
 type FormState = Pick<Directory, 'name' | 'log_webhook_events'> & {
   webhook_url: string;
@@ -54,7 +53,7 @@ const Edit: NextPage = () => {
   }, [data]);
 
   if (!data) {
-    return <Loader />;
+    return <Loading />;
   }
 
   if (error) {
@@ -102,10 +101,7 @@ const Edit: NextPage = () => {
 
   return (
     <div>
-      <Link href='/admin/directory-sync' className='btn-outline btn items-center space-x-2'>
-        <ArrowLeftIcon aria-hidden className='h-4 w-4' />
-        <span>{t('back')}</span>
-      </Link>
+      <LinkBack href='/admin/directory-sync' />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('update_directory')}</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
@@ -162,9 +158,9 @@ const Edit: NextPage = () => {
               </div>
             </div>
             <div>
-              <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
+              <ButtonPrimary type='submit' loading={loading}>
                 {t('save_changes')}
-              </button>
+              </ButtonPrimary>
             </div>
           </div>
         </form>

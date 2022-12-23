@@ -1,4 +1,4 @@
-import { errorToast } from '@components/Toast';
+import { errorToast } from '@components/Toaster';
 import { FormEvent, SetStateAction } from 'react';
 
 export const saveConnection = async ({
@@ -157,7 +157,7 @@ export function renderFieldList(args: {
             id={key}
             type={type}
             placeholder={placeholder}
-            value={value}
+            value={type === 'text' ? value || '' : value}
             required={required}
             disabled={disabled}
             maxLength={maxLength}

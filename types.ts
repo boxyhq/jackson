@@ -1,6 +1,7 @@
 export type ApiSuccess<T> = { data: T };
 
 export interface ApiError extends Error {
+  info?: string;
   status: number;
 }
 

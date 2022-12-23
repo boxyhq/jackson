@@ -1,7 +1,8 @@
 // Maintain /config path for backward compatibility
 
-import jackson, { type GetConfigQuery } from '@lib/jackson';
+import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
+import type { GetConfigQuery } from '@boxyhq/saml-jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
