@@ -6,11 +6,11 @@ import Image from 'next/image';
 import { SessionProvider } from 'next-auth/react';
 import { useState } from 'react';
 
-import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toaster';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import Link from 'next/link';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
@@ -97,7 +97,9 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
             </form>
           </div>
         </div>
-        <WellKnownURLs className='mt-5 border p-5' />
+        <Link href='/.well-known' className='my-3 text-sm underline' target='_blank'>
+          {t('here_are_the_set_of_uris_you_would_need_access_to')}
+        </Link>
       </div>
     </>
   );
