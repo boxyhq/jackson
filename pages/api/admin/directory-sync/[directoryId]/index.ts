@@ -7,9 +7,9 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (method) {
     case 'PUT':
-      return handlePUT(req, res);
+      return await handlePUT(req, res);
     case 'GET':
-      return handleGET(req, res);
+      return await handleGET(req, res);
     default:
       res.setHeader('Allow', 'GET, PUT');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
