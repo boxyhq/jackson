@@ -6,12 +6,18 @@ import { checkSession } from '@lib/middleware';
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
 
-  switch (method) {
-    case 'GET':
-      return handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+  try {
+    switch (method) {
+      case 'GET':
+        return await handleGET(req, res);
+      default:
+        res.setHeader('Allow', 'GET');
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+    }
+  } catch (error: any) {
+    const { message, statusCode = 500 } = error;
+
+    return res.status(statusCode).json({ error: { message } });
   }
 };
 
@@ -19,19 +25,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  const { clientId } = req.query as {
-    clientId: string;
-  };
+  const { clientId } = req.query as { clientId: string };
 
-  try {
-    const connections = await connectionAPIController.getConnections({ clientID: clientId });
+  const connections = await connectionAPIController.getConnections({ clientID: clientId });
 
-    return res.json({ data: connections[0] });
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  return res.json({ data: connections[0] });
 };
 
 export default checkSession(handler);
