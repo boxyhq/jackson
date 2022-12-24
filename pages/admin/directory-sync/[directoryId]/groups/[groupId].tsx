@@ -1,13 +1,49 @@
-import type { NextPage, GetServerSidePropsContext } from 'next';
+import type { NextPage } from 'next';
 import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
+import type { Directory, Group } from '@boxyhq/saml-jackson';
 
-import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import { inferSSRProps } from '@lib/inferSSRProps';
+import EmptyState from '@components/EmptyState';
+import Paginate from '@components/Paginate';
+import { ApiError, ApiSuccess } from 'types';
+import { fetcher } from '@lib/ui/utils';
+import { errorToast } from '@components/Toaster';
+import Loading from '@components/Loading';
 
-const GroupInfo: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, group }) => {
+const GroupInfo: NextPage = () => {
+  const router = useRouter();
+
+  const { directoryId, groupId } = router.query as { directoryId: string; groupId: string };
+
+  // TODO: Move this to a custom hook to avoid code duplication
+  const { data: directoryData, error: directoryError } = useSWR<ApiSuccess<Directory>, ApiError>(
+    `/api/admin/directory-sync/${directoryId}`,
+    fetcher
+  );
+
+  const { data: groupData, error: groupError } = useSWR<ApiSuccess<Group>, ApiError>(
+    `/api/admin/directory-sync/${directoryId}/groups/${groupId}`,
+    fetcher
+  );
+
+  if (!directoryData || !groupData) {
+    return <Loading />;
+  }
+
+  const error = directoryError || groupError;
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
+
+  const directory = directoryData.data;
+  const group = groupData.data;
+
   return (
     <>
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
@@ -21,36 +57,6 @@ const GroupInfo: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directo
       </div>
     </>
   );
-};
-
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { directoryId, groupId } = context.query;
-  const { directorySyncController } = await jackson();
-
-  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
-
-  if (!directory) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const { data: group } = await directorySyncController.groups
-    .with(directory.tenant, directory.product)
-    .get(groupId as string);
-
-  if (!group) {
-    return {
-      notFound: true,
-    };
-  }
-
-  return {
-    props: {
-      directory,
-      group,
-    },
-  };
 };
 
 export default GroupInfo;

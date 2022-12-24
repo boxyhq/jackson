@@ -110,5 +110,6 @@
   "view": "View",
   "view_idp_configuration": "View IdP Configuration",
   "edit": "Edit",
-  "no_users_found": "No users found"
+  "no_users_found": "No users found",
+  "no_groups_found": "No groups found"
 }
