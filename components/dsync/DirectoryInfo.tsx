@@ -1,6 +1,7 @@
-import { Directory } from '@lib/jackson';
+import type { Directory } from '@boxyhq/saml-jackson';
 import DirectoryTab from './DirectoryTab';
 import { useTranslation } from 'next-i18next';
+
 type DirectoryInfoProps = {
   directory: Directory;
   token?: string;

@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import jackson, { GetIDPEntityIDBody } from '@lib/jackson';
+import jackson from '@lib/jackson';
+import type { GetIDPEntityIDBody } from '@boxyhq/saml-jackson';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;

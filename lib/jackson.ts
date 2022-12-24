@@ -109,18 +109,18 @@ export default async function init() {
   };
 }
 
-export type {
-  SAMLSSOConnectionWithEncodedMetadata,
-  SAMLSSOConnectionWithRawMetadata,
-  OIDCSSOConnection,
-  DirectoryType,
-  Directory,
-  User,
-  Group,
-  DirectorySyncEvent,
-  HTTPMethod,
-  DirectorySyncRequest,
-  GetConnectionsQuery,
-  GetIDPEntityIDBody,
-  GetConfigQuery,
-};
+// export type {
+//   SAMLSSOConnectionWithEncodedMetadata,
+//   SAMLSSOConnectionWithRawMetadata,
+//   OIDCSSOConnection,
+//   DirectoryType,
+//   Directory,
+//   User,
+//   Group,
+//   DirectorySyncEvent,
+//   HTTPMethod,
+//   DirectorySyncRequest,
+//   GetConnectionsQuery,
+//   GetIDPEntityIDBody,
+//   GetConfigQuery,
+// };
