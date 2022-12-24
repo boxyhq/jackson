@@ -1,4 +1,5 @@
 import type { Directory } from '@boxyhq/saml-jackson';
+import { LinkBack } from '@components/LinkBack';
 import DirectoryTab from './DirectoryTab';
 
 type DirectoryInfoProps = {
@@ -9,6 +10,7 @@ type DirectoryInfoProps = {
 const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
   return (
     <>
+      <LinkBack />
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='directory' token={token} />

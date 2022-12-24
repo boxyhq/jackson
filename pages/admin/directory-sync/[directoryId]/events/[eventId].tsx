@@ -12,6 +12,7 @@ import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
+import { LinkBack } from '@components/LinkBack';
 
 const EventInfo: NextPage = () => {
   const router = useRouter();
@@ -44,6 +45,7 @@ const EventInfo: NextPage = () => {
 
   return (
     <>
+      <LinkBack />
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='events' />

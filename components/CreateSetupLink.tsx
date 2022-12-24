@@ -82,7 +82,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
 
   return (
     <>
-      <LinkBack href='' onClick={() => router.back()} />
+      <LinkBack />
       <div className='mt-5 min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <h2 className='mb-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_setup_link', {

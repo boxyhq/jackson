@@ -25,7 +25,7 @@ export const LinkBase = ({
     <Link
       href={href}
       onClick={onClick}
-      className={classNames('btn m-2', className)}
+      className={classNames('btn', className)}
       target={target}
       rel={rel}
       {...others}>

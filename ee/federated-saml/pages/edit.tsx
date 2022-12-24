@@ -92,7 +92,7 @@ const UpdateApp: NextPage = () => {
 
   return (
     <LicenseRequired>
-      <LinkBack href='/admin/federated-saml' />
+      <LinkBack />
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
         <div>

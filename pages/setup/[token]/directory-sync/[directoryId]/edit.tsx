@@ -63,7 +63,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
   return (
     <div>
-      <LinkBack href={`/setup/${token}/directory-sync`} />
+      <LinkBack />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>Update Directory</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>

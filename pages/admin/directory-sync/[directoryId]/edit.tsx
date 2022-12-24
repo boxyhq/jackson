@@ -97,7 +97,7 @@ const Edit: NextPage = () => {
 
   return (
     <div>
-      <LinkBack href='/admin/directory-sync' />
+      <LinkBack />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('update_directory')}</h2>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>

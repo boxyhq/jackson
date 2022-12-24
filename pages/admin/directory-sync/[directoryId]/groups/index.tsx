@@ -17,6 +17,7 @@ import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
 import { Pagination, pageLimit } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
+import { LinkBack } from '@components/LinkBack';
 
 const GroupsList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -51,6 +52,7 @@ const GroupsList: NextPage = () => {
 
   return (
     <>
+      <LinkBack />
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='groups' />

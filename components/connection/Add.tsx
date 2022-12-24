@@ -58,7 +58,7 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
 
   return (
     <>
-      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
+      <LinkBack />
       {idpEntityID && setupToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>

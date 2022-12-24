@@ -117,7 +117,7 @@ const Edit = ({ connection, setupToken }: EditProps) => {
 
   return (
     <>
-      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
+      <LinkBack />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}
