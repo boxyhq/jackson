@@ -8,20 +8,23 @@ import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { Pagination } from '@components/Pagination';
+import { Pagination, pageLimit } from '@components/Pagination';
 import { IconButton } from '@components/IconButton';
 
 const LinkList = ({ service }) => {
+  const { t } = useTranslation('common');
   const [queryParam, setQueryParam] = useState('');
+  const [paginate, setPaginate] = useState({ offset: 0 });
+
   useEffect(() => {
     setQueryParam(`?service=${service}`);
   }, [service]);
-  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data, mutate } = useSWR<any>(queryParam ? [`/api/admin/setup-links`, queryParam] : [], fetcher, {
+
+  const { data, mutate } = useSWR(queryParam ? [`/api/admin/setup-links`, queryParam] : [], fetcher, {
     revalidateOnFocus: false,
   });
+
   const links = data?.data;
-  const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
   const [showRegenConfirmModal, setShowRegenConfirmModal] = useState(false);
   const toggleDelConfirmModal = () => setShowDelConfirmModal(!showDelConfirmModal);
@@ -144,22 +147,19 @@ const LinkList = ({ service }) => {
             </table>
           </div>
           <Pagination
-            prevDisabled={paginate.page === 0}
-            nextDisabled={links.length === 0 || links.length < paginate.pageLimit}
-            onPrevClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page - 1) * paginate.pageLimit,
-                page: curState.page - 1,
-              }))
-            }
-            onNextClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page + 1) * paginate.pageLimit,
-                page: curState.page + 1,
-              }))
-            }></Pagination>
+            itemsCount={links.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
         </>
       )}
       <ConfirmationModal
