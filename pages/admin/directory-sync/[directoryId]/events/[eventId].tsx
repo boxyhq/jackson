@@ -3,31 +3,29 @@ import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import useSWR from 'swr';
-import type { Directory, WebhookEventLog } from '@boxyhq/saml-jackson';
+import type { WebhookEventLog } from '@boxyhq/saml-jackson';
 import { useRouter } from 'next/router';
 
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import { ApiError, ApiSuccess } from 'types';
+import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
 const EventInfo: NextPage = () => {
   const router = useRouter();
 
   const { directoryId, eventId } = router.query as { directoryId: string; eventId: string };
 
-  const { data: directoryData, error: directoryError } = useSWR<ApiSuccess<Directory>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}`,
-    fetcher
-  );
+  const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
   const { data: eventsData, error: eventsError } = useSWR<ApiSuccess<WebhookEventLog>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/events/${eventId}`,
     fetcher
   );
 
-  if (!directoryData || !eventsData) {
+  if (isDirectoryLoading || !eventsData) {
     return <Loading />;
   }
 
@@ -38,7 +36,10 @@ const EventInfo: NextPage = () => {
     return null;
   }
 
-  const directory = directoryData.data;
+  if (!directory) {
+    return null;
+  }
+
   const event = eventsData.data;
 
   return (

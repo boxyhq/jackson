@@ -7,15 +7,16 @@ import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import useSWR from 'swr';
-import type { Directory, WebhookEventLog } from '@boxyhq/saml-jackson';
+import type { WebhookEventLog } from '@boxyhq/saml-jackson';
 
 import EmptyState from '@components/EmptyState';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import Badge from '@components/Badge';
-import { ApiError, ApiSuccess } from 'types';
+import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
 const Events: NextPage = () => {
   const { t } = useTranslation('common');
@@ -24,17 +25,14 @@ const Events: NextPage = () => {
 
   const { directoryId } = router.query as { directoryId: string };
 
-  const { data: directoryData, error: directoryError } = useSWR<ApiSuccess<Directory>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}`,
-    fetcher
-  );
+  const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
   const { data: eventsData, error: eventsError } = useSWR<ApiSuccess<WebhookEventLog[]>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/events`,
     fetcher
   );
 
-  if (!directoryData || !eventsData) {
+  if (isDirectoryLoading || !eventsData) {
     return <Loading />;
   }
 
@@ -45,7 +43,10 @@ const Events: NextPage = () => {
     return null;
   }
 
-  const directory = directoryData.data;
+  if (!directory) {
+    return null;
+  }
+
   const events = eventsData.data;
 
   const clearEvents = async () => {

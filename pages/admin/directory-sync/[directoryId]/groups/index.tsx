@@ -6,15 +6,16 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import type { Directory, Group } from '@boxyhq/saml-jackson';
+import type { Group } from '@boxyhq/saml-jackson';
 
 import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import { ApiError, ApiSuccess } from 'types';
+import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
 const GroupsList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -25,18 +26,14 @@ const GroupsList: NextPage = () => {
   const pageOffset = parseInt(offset) || 0;
   const pageLimit = 25;
 
-  // TODO: Move this to a custom hook to avoid code duplication
-  const { data: directoryData, error: directoryError } = useSWR<ApiSuccess<Directory>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}`,
-    fetcher
-  );
+  const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
   const { data: groupsData, error: groupsError } = useSWR<ApiSuccess<Group[]>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/groups?offset=${pageOffset}`,
     fetcher
   );
 
-  if (!directoryData || !groupsData) {
+  if (isDirectoryLoading || !groupsData) {
     return <Loading />;
   }
 
@@ -47,7 +44,10 @@ const GroupsList: NextPage = () => {
     return null;
   }
 
-  const directory = directoryData.data;
+  if (!directory) {
+    return null;
+  }
+
   const groups = groupsData.data;
 
   return (

@@ -4,33 +4,28 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import type { Directory, Group } from '@boxyhq/saml-jackson';
+import type { Group } from '@boxyhq/saml-jackson';
 
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import EmptyState from '@components/EmptyState';
-import Paginate from '@components/Paginate';
-import { ApiError, ApiSuccess } from 'types';
+import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
 const GroupInfo: NextPage = () => {
   const router = useRouter();
 
   const { directoryId, groupId } = router.query as { directoryId: string; groupId: string };
 
-  // TODO: Move this to a custom hook to avoid code duplication
-  const { data: directoryData, error: directoryError } = useSWR<ApiSuccess<Directory>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}`,
-    fetcher
-  );
+  const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
   const { data: groupData, error: groupError } = useSWR<ApiSuccess<Group>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/groups/${groupId}`,
     fetcher
   );
 
-  if (!directoryData || !groupData) {
+  if (isDirectoryLoading || !groupData) {
     return <Loading />;
   }
 
@@ -41,7 +36,10 @@ const GroupInfo: NextPage = () => {
     return null;
   }
 
-  const directory = directoryData.data;
+  if (!directory) {
+    return null;
+  }
+
   const group = groupData.data;
 
   return (

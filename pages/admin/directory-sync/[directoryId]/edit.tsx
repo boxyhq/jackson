@@ -3,15 +3,14 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import useSWR from 'swr';
 import type { Directory } from '@boxyhq/saml-jackson';
 
-import { fetcher } from '@lib/ui/utils';
-import type { ApiError, ApiResponse, ApiSuccess } from 'types';
+import type { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
 type FormState = Pick<Directory, 'name' | 'log_webhook_events'> & {
   webhook_url: string;
@@ -34,14 +33,11 @@ const Edit: NextPage = () => {
 
   const { directoryId } = router.query as { directoryId: string };
 
-  const { data, error } = useSWR<ApiSuccess<Directory>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}`,
-    fetcher
-  );
+  const { directory: data, isLoading, error } = useDirectory(directoryId);
 
   React.useEffect(() => {
     if (data) {
-      const directory = data.data;
+      const directory = data;
 
       setDirectory({
         name: directory.name,
@@ -52,7 +48,7 @@ const Edit: NextPage = () => {
     }
   }, [data]);
 
-  if (!data) {
+  if (isLoading) {
     return <Loading />;
   }
 

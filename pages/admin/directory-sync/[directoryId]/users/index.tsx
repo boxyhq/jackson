@@ -6,16 +6,17 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import type { Directory, User } from '@boxyhq/saml-jackson';
+import type { User } from '@boxyhq/saml-jackson';
 
 import EmptyState from '@components/EmptyState';
 import Paginate from '@components/Paginate';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import Badge from '@components/Badge';
-import { ApiError, ApiSuccess } from 'types';
+import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
 const UsersList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -26,18 +27,14 @@ const UsersList: NextPage = () => {
   const pageOffset = parseInt(offset) || 0;
   const pageLimit = 25;
 
-  // TODO: Move this to a custom hook to avoid code duplication
-  const { data: directoryData, error: directoryError } = useSWR<ApiSuccess<Directory>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}`,
-    fetcher
-  );
+  const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
   const { data: usersData, error: usersError } = useSWR<ApiSuccess<User[]>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/users?offset=${pageOffset}`,
     fetcher
   );
 
-  if (!directoryData || !usersData) {
+  if (isDirectoryLoading || !usersData) {
     return <Loading />;
   }
 
@@ -48,7 +45,10 @@ const UsersList: NextPage = () => {
     return null;
   }
 
-  const directory = directoryData.data;
+  if (!directory) {
+    return null;
+  }
+
   const users = usersData.data;
 
   return (
