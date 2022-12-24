@@ -3,24 +3,17 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import jackson from '@lib/jackson';
 import DirectoryList from '@components/dsync/DirectoryList';
+import { useState } from 'react';
 
-const Index = ({
-  directories,
-  pageOffset,
-  pageLimit,
-  providers,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Index = ({ directories }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
-  const { token } = router.query;
-  return token ? (
-    <DirectoryList
-      directories={directories}
-      pageOffset={pageOffset}
-      pageLimit={pageLimit}
-      providers={providers}
-      token={token as string}
-    />
-  ) : null;
+  const [paginate, setPaginate] = useState({ offset: 0 });
+
+  const { token } = router.query as { token: string };
+
+  return (
+    <DirectoryList directories={directories} token={token} paginate={paginate} setPaginate={setPaginate} />
+  );
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {

@@ -4,7 +4,12 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import useSWR from 'swr';
 import { fetcher } from '@lib/ui/utils';
 import { useState } from 'react';
+import { pageLimit } from '@components/Pagination';
+import type { ApiError, ApiSuccess } from 'types';
+import { errorToast } from '@components/Toaster';
+import Loading from '@components/Loading';
 
+// TODO: Use the Connection type from @boxyhq/saml-jackson
 type Connection = {
   name: string;
   tenant: string;
@@ -15,22 +20,26 @@ type Connection = {
 };
 
 const Connections: NextPage = () => {
-  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
+  const [paginate, setPaginate] = useState({ offset: 0 });
 
-  const { data } = useSWR<any>(
-    [`/api/admin/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
+  const { data, error } = useSWR<ApiSuccess<Connection[]>, ApiError>(
+    [`/api/admin/connections`, `?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }
   );
 
-  const connections = data?.data;
-  if (!connections) {
+  if (!data) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
     return null;
   }
 
-  return (
-    <ConnectionList connections={connections as Connection[]} paginate={paginate} setPaginate={setPaginate} />
-  );
+  const connections = data.data || [];
+
+  return <ConnectionList connections={connections} paginate={paginate} setPaginate={setPaginate} />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
