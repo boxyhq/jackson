@@ -5,10 +5,11 @@ import { useRouter } from 'next/router';
 import { copyToClipboard } from '@lib/ui/utils';
 import { successToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { Pagination } from '@components/Pagination';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { IconButton } from '@components/IconButton';
+import { pageLimit, Pagination } from '@components/Pagination';
 
+// TODO: Use the Connection type from @boxyhq/saml-jackson
 type Connection = {
   name: string;
   tenant: string;
@@ -21,9 +22,11 @@ type Connection = {
 type ConnectionListProps = {
   setupToken?: string;
   connections: Connection[];
-  paginate: any;
-  setPaginate: any;
   idpEntityID?: string;
+  paginate: {
+    offset: number;
+  };
+  setPaginate: (paginate: { offset: number }) => void;
 };
 
 const Connections = ({
@@ -44,6 +47,7 @@ const Connections = ({
     router.replace(`/setup/${setupToken}/sso-connection/new`);
     return null;
   }
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
@@ -82,7 +86,7 @@ const Connections = ({
           </div>
         </div>
       )}
-      {connections.length === 0 ? (
+      {connections.length === 0 && paginate.offset === 0 ? (
         <EmptyState
           title={t('no_connections_found')}
           href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
@@ -166,22 +170,19 @@ const Connections = ({
             </table>
           </div>
           <Pagination
-            prevDisabled={paginate.page === 0}
-            nextDisabled={connections.length === 0 || connections.length < paginate.pageLimit}
-            onPrevClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page - 1) * paginate.pageLimit,
-                page: curState.page - 1,
-              }))
-            }
-            onNextClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page + 1) * paginate.pageLimit,
-                page: curState.page + 1,
-              }))
-            }></Pagination>
+            itemsCount={connections.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
         </>
       )}
     </div>
