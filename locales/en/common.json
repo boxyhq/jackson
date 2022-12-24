@@ -109,5 +109,6 @@
   "new_saml_federation_app": "New App",
   "view": "View",
   "view_idp_configuration": "View IdP Configuration",
-  "edit": "Edit"
+  "edit": "Edit",
+  "no_users_found": "No users found"
 }
