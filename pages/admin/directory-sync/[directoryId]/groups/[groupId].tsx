@@ -46,7 +46,7 @@ const GroupInfo: NextPage = () => {
   return (
     <>
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
-      <div className='w-full md:w-3/4'>
+      <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='groups' />
         <div className='my-3 rounded border text-sm'>
           <SyntaxHighlighter language='json' style={coy}>

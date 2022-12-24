@@ -1,6 +1,5 @@
 import type { Directory } from '@boxyhq/saml-jackson';
 import DirectoryTab from './DirectoryTab';
-import { useTranslation } from 'next-i18next';
 
 type DirectoryInfoProps = {
   directory: Directory;
@@ -8,11 +7,10 @@ type DirectoryInfoProps = {
 };
 
 const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
-  const { t } = useTranslation('common');
   return (
     <>
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
-      <div className='w-full md:w-3/4'>
+      <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='directory' token={token} />
         <div className='my-3 rounded border'>
           <dl>

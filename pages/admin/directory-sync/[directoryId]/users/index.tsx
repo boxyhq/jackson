@@ -53,7 +53,7 @@ const UsersList: NextPage = () => {
   return (
     <>
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
-      <div className='w-full md:w-3/4'>
+      <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='users' />
         {users.length === 0 && paginate.offset === 0 ? (
           <EmptyState title={t('no_users_found')} />

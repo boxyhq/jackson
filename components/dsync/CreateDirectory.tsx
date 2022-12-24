@@ -76,10 +76,10 @@ const CreateDirectory = ({ token }: CreateDirectoryProps) => {
     <div>
       <LinkBack href='/admin/directory-sync' />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('new_directory')}</h2>
-      <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
+      <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
-            <div className='form-control w-full'>
+            <div className='form-control w-full lg:w-1/2'>
               <label className='label'>
                 <span className='label-text'>{t('directory_name')}</span>
               </label>
@@ -91,7 +91,7 @@ const CreateDirectory = ({ token }: CreateDirectoryProps) => {
                 onChange={onChange}
               />
             </div>
-            <div className='form-control w-full'>
+            <div className='form-control w-full lg:w-1/2'>
               <label className='label'>
                 <span className='label-text'>{t('directory_provider')}</span>
               </label>
@@ -108,7 +108,7 @@ const CreateDirectory = ({ token }: CreateDirectoryProps) => {
             </div>
             {!token && (
               <>
-                <div className='form-control w-full'>
+                <div className='form-control w-full lg:w-1/2'>
                   <label className='label'>
                     <span className='label-text'>{t('tenant')}</span>
                   </label>
@@ -120,7 +120,7 @@ const CreateDirectory = ({ token }: CreateDirectoryProps) => {
                     onChange={onChange}
                   />
                 </div>
-                <div className='form-control w-full'>
+                <div className='form-control w-full lg:w-1/2'>
                   <label className='label'>
                     <span className='label-text'>{t('product')}</span>
                   </label>
