@@ -1,7 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
 import { copyToClipboard } from '@lib/ui/utils';
@@ -10,9 +9,7 @@ import { LinkBack } from './LinkBack';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
-  const router = useRouter();
-  const createLink = async (event) => {
-    event.preventDefault();
+  const createLink = async () => {
     setLoading(true);
     const { tenant, product, type } = formObj;
     const res = await fetch('/api/admin/setup-links', {
@@ -36,8 +33,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
     }
     setLoading(false);
   };
-  const regenerateLink = async (event) => {
-    event.preventDefault();
+  const regenerateLink = async () => {
     setLoading1(true);
     setDelModalVisible(!delModalVisible);
     const { tenant, product, type } = formObj;
