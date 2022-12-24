@@ -1,14 +1,18 @@
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import type { NextPage } from 'next';
-
+import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
 import LicenseRequired from '@components/LicenseRequired';
+import { Toaster } from '@components/Toaster';
+import { InputWithCopyButton } from '@components/InputWithCopyButton';
 
-const Metadata: NextPage<any> = ({ metadata }) => {
+type Metadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
+
+const Metadata = ({ metadata }: { metadata: Metadata }) => {
   const { t } = useTranslation('common');
 
   return (
     <LicenseRequired>
+      <Toaster />
       <div className='my-10 mx-5 flex justify-center'>
         <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
           <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_app_info')}</h2>
@@ -48,23 +52,13 @@ const Metadata: NextPage<any> = ({ metadata }) => {
                 <label className='label'>
                   <span className='label-text font-bold'>{t('sso_url')}</span>
                 </label>
-                <input
-                  type='text'
-                  className='input-bordered input w-full'
-                  defaultValue={metadata.ssoUrl}
-                  readOnly
-                />
+                <InputWithCopyButton value={metadata.ssoUrl} />
               </div>
               <div className='form-control w-full'>
                 <label className='label'>
                   <span className='label-text font-bold'>{t('entity_id')}</span>
                 </label>
-                <input
-                  type='text'
-                  className='input-bordered input w-full'
-                  defaultValue={metadata.entityId}
-                  readOnly
-                />
+                <InputWithCopyButton value={metadata.entityId} />
               </div>
               <div className='form-control w-full'>
                 <label className='label'>

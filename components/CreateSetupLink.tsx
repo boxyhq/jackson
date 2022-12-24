@@ -1,12 +1,11 @@
 import { FormEvent, useState } from 'react';
-import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
-import { copyToClipboard } from '@lib/ui/utils';
 import { ButtonPrimary } from './ButtonPrimary';
 import { LinkBack } from './LinkBack';
+import { InputWithCopyButton } from './InputWithCopyButton';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
@@ -154,16 +153,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
                 })}
           </h2>
           <div className='form-control'>
-            <div className='input-group'>
-              <ButtonPrimary
-                Icon={ClipboardDocumentIcon}
-                className='p-2'
-                onClick={() => {
-                  copyToClipboard(url);
-                  successToast(t('copied'));
-                }}></ButtonPrimary>
-              <input type='text' readOnly value={url} className='input-bordered input h-10 w-full' />
-            </div>
+            <InputWithCopyButton value={url} />
           </div>
           <div className='mt-5 flex'>
             <ButtonPrimary
