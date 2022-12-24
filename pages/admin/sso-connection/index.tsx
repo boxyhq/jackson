@@ -8,21 +8,12 @@ import type { ApiError, ApiSuccess } from 'types';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import usePaginate from '@lib/ui/hooks/usePaginate';
-
-// TODO: Use the Connection type from @boxyhq/saml-jackson
-type Connection = {
-  name: string;
-  tenant: string;
-  product: string;
-  clientID: string;
-  idpMetadata?: any;
-  oidcProvider?: any;
-};
+import type { SAMLSSORecord, OIDCSSORecord } from '@boxyhq/saml-jackson';
 
 const Connections: NextPage = () => {
   const { paginate, setPaginate } = usePaginate();
 
-  const { data, error } = useSWR<ApiSuccess<Connection[]>, ApiError>(
+  const { data, error } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
     [`/api/admin/connections`, `?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`],
     fetcher,
     { revalidateOnFocus: false }

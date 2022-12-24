@@ -8,20 +8,11 @@ import { LinkPrimary } from '@components/LinkPrimary';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { IconButton } from '@components/IconButton';
 import { pageLimit, Pagination } from '@components/Pagination';
-
-// TODO: Use the Connection type from @boxyhq/saml-jackson
-type Connection = {
-  name: string;
-  tenant: string;
-  product: string;
-  clientID: string;
-  idpMetadata?: any;
-  oidcProvider?: any;
-};
+import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 
 type ConnectionListProps = {
+  connections: (SAMLSSORecord | OIDCSSORecord)[];
   setupToken?: string;
-  connections: Connection[];
   idpEntityID?: string;
   paginate: {
     offset: number;
@@ -120,10 +111,9 @@ const Connections = ({
               </thead>
               <tbody>
                 {connections.map((connection) => {
-                  const connectionIsSAML =
-                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
-                  const connectionIsOIDC =
-                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
+                  const connectionIsSAML = 'idpMetadata' in connection;
+                  const connectionIsOIDC = 'oidcProvider' in connection;
+
                   return (
                     <tr
                       key={connection.clientID}
