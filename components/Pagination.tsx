@@ -10,7 +10,7 @@ type PaginationProps = {
 };
 
 // TODO: Where should this live?
-export const pageLimit = 20;
+export const pageLimit = 2;
 
 export const Pagination = ({ itemsCount, offset, onPrevClick, onNextClick }: PaginationProps) => {
   const { t } = useTranslation('common');

@@ -10,11 +10,12 @@ import { deleteLink, regenerateLink } from '@components/connection/utils';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { Pagination, pageLimit } from '@components/Pagination';
 import { IconButton } from '@components/IconButton';
+import usePaginate from '@lib/ui/hooks/usePaginate';
 
 const LinkList = ({ service }) => {
   const { t } = useTranslation('common');
   const [queryParam, setQueryParam] = useState('');
-  const [paginate, setPaginate] = useState({ offset: 0 });
+  const { paginate, setPaginate } = usePaginate();
 
   useEffect(() => {
     setQueryParam(`?service=${service}`);

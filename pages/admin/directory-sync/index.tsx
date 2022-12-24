@@ -2,7 +2,6 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import useSWR from 'swr';
 import type { Directory } from '@boxyhq/saml-jackson';
-import { useState } from 'react';
 
 import { fetcher } from '@lib/ui/utils';
 import type { ApiError, ApiSuccess } from 'types';
@@ -10,9 +9,10 @@ import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import DirectoryList from '@components/dsync/DirectoryList';
 import { pageLimit } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
 
 const Index: NextPage = () => {
-  const [paginate, setPaginate] = useState({ offset: 0 });
+  const { paginate, setPaginate } = usePaginate();
 
   const { data, error } = useSWR<ApiSuccess<Directory[]>, ApiError>(
     `/api/admin/directory-sync?offset=${paginate.offset}&limit=${pageLimit}`,

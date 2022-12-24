@@ -3,11 +3,11 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import jackson from '@lib/jackson';
 import DirectoryList from '@components/dsync/DirectoryList';
-import { useState } from 'react';
+import usePaginate from '@lib/ui/hooks/usePaginate';
 
 const Index = ({ directories }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
-  const [paginate, setPaginate] = useState({ offset: 0 });
+  const { paginate, setPaginate } = usePaginate();
 
   const { token } = router.query as { token: string };
 

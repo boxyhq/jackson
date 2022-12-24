@@ -7,7 +7,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import type { Group } from '@boxyhq/saml-jackson';
-import { useState } from 'react';
 
 import EmptyState from '@components/EmptyState';
 import DirectoryTab from '@components/dsync/DirectoryTab';
@@ -17,12 +16,12 @@ import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
 import { Pagination, pageLimit } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
 
 const GroupsList: NextPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
-
-  const [paginate, setPaginate] = useState({ offset: 0 });
+  const { paginate, setPaginate } = usePaginate();
 
   const { directoryId } = router.query as { directoryId: string };
 
