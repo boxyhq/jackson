@@ -7,13 +7,13 @@ import { retracedOptions } from '@lib/env';
 import CodeSnippet from '@components/retraced/CodeSnippet';
 import { IconButton } from '@components/IconButton';
 import { useState } from 'react';
+import { Select } from 'react-daisyui';
 
 const ProjectDetails = (props: { project: Project }) => {
   const { project } = props;
   const { environments, tokens } = project;
 
-  const [environment, setEnvironment] = useState(environments[0].name);
-  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const baseUrl = `${retracedOptions?.host}/publisher/v1/project/${project.id}`;
 
@@ -23,19 +23,17 @@ const ProjectDetails = (props: { project: Project }) => {
         <label className='label pl-0'>
           <span className='label-text'>Environment</span>
         </label>
-        <select
-          value={environment}
-          className='select-bordered select'
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-            setEnvironment(e.target.value);
-            setSelectedToken(tokens[e.target.selectedIndex]);
+        <Select
+          value={selectedIndex}
+          onChange={(idx) => {
+            setSelectedIndex(idx);
           }}>
           {environments.map((env, i) => (
-            <option key={env.id} value={env.name}>
+            <option key={env.id} value={i}>
               {env.name}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className='grid grid-cols-1 gap-3 border p-3 md:grid-cols-2'>
@@ -44,25 +42,30 @@ const ProjectDetails = (props: { project: Project }) => {
             <span className='label-text'>Project ID</span>
             <ClipboardButton text={project.id} />
           </label>
-          <input type='text' className='input-bordered input w-full' value={project.id} />
+          <input type='text' className='input-bordered input w-full' value={project.id} readOnly />
         </div>
         <div className='form-control w-full'>
           <label className='label pl-0 font-semibold'>
             <span className='label-text'>Publisher API Base URL</span>
             <ClipboardButton text={baseUrl} />
           </label>
-          <input type='text' className='input-bordered input w-full' value={baseUrl} />
+          <input type='text' className='input-bordered input w-full' value={baseUrl} readOnly />
         </div>
         <div className='form-control w-full'>
           <label className='label pl-0 font-semibold'>
-            <span className='label-text'>{environment} Token</span>
-            <ClipboardButton text={selectedToken.token} />
+            <span className='label-text'>{environments[selectedIndex].name} Token</span>
+            <ClipboardButton text={tokens[selectedIndex].token} />
           </label>
-          <input type='text' className='input-bordered input w-full' value={selectedToken.token} />
+          <input
+            type='text'
+            className='input-bordered input w-full'
+            value={tokens[selectedIndex].token}
+            readOnly
+          />
         </div>
       </div>
       <div className='mt-5 border p-3'>
-        <CodeSnippet token={selectedToken.token} baseUrl={baseUrl} />
+        <CodeSnippet token={tokens[selectedIndex].token} baseUrl={baseUrl} />
       </div>
     </>
   );
