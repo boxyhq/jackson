@@ -31,15 +31,3 @@ export const InputWithCopyButton = ({ value, label }: { value: string; label: st
     </>
   );
 };
-
-// export const TextareaWithCopyButton = ({ value, label }: { value: string; label: string }) => {
-//   return (
-//     <>
-//       <div className='flex justify-between'>
-//         <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>{label}</label>
-//         <CopyToClipboardButton text={value} />
-//       </div>
-//       <input type='text' defaultValue={value} readOnly className='input-bordered input w-full' />
-//     </>
-//   );
-// };
