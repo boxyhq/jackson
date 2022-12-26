@@ -58,7 +58,7 @@
     "daisyui": "2.45.0",
     "micromatch": "4.0.5",
     "next": "13.0.7",
-    "next-auth": "4.18.6",
+    "next-auth": "4.18.7",
     "next-i18next": "13.0.2",
     "next-mdx-remote": "4.2.0",
     "node-fetch": "3.3.0",
