@@ -2,6 +2,7 @@ import Adapter from '@lib/nextAuthAdapter';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import { validateEmailWithACL } from '@lib/utils';
+import { sessionName } from './constants';
 
 export default NextAuth({
   theme: {
@@ -29,7 +30,7 @@ export default NextAuth({
   },
   cookies: {
     sessionToken: {
-      name: `next-auth.saml-jackson`,
+      name: sessionName,
       options: {
         httpOnly: true,
         sameSite: 'lax',
