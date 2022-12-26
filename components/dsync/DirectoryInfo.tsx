@@ -1,6 +1,7 @@
 import { Directory } from '@lib/jackson';
 import DirectoryTab from './DirectoryTab';
 import { useTranslation } from 'next-i18next';
+import { InputWithCopyButton } from '@components/InputWithCopyButton';
 type DirectoryInfoProps = {
   directory: Directory;
   token?: string;
@@ -31,14 +32,6 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
                 </div>
               </>
             )}
-            <div className='border-b bg-gray-100 px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='pt-2 text-sm font-medium text-gray-500'>SCIM Endpoint</dt>
-              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.scim.endpoint}</dd>
-            </div>
-            <div className='border-b bg-gray-100 px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='pt-2 text-sm font-medium text-gray-500'>SCIM Token</dt>
-              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.scim.secret}</dd>
-            </div>
             {directory.webhook.endpoint && directory.webhook.secret && (
               <>
                 <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
@@ -47,14 +40,26 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
                     {directory.webhook.endpoint}
                   </dd>
                 </div>
-                <div className='px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='pt-2 text-sm font-medium text-gray-500'>Webhook Secret</dt>
+                <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>Webhook Secret</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {directory.webhook.secret}
                   </dd>
                 </div>
               </>
             )}
+            <div className='flex items-center border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+              <dt className='text-sm font-medium text-gray-500'>SCIM Endpoint</dt>
+              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                <InputWithCopyButton value={directory.scim.endpoint as string} />
+              </dd>
+            </div>
+            <div className='flex items-center px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+              <dt className='text-sm font-medium text-gray-500'>SCIM Token</dt>
+              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                <InputWithCopyButton value={directory.scim.secret} />
+              </dd>
+            </div>
           </dl>
         </div>
       </div>
