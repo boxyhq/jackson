@@ -1,6 +1,8 @@
 import Chance from 'chance';
 import * as Retraced from '@retraced-hq/retraced';
 import { retracedOptions } from '@lib/env';
+import { checkSession } from '@lib/middleware';
+
 const chance = new Chance();
 
 const actions = [
@@ -14,7 +16,7 @@ const actions = [
 
 const ips = ['192.168.1.1', '200.168.1.10', '12.18.12.13', '92.68.51.21'];
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const actor_id = chance.guid();
   const actor_name = chance.name();
 
@@ -63,3 +65,5 @@ export default async function handler(req, res) {
       res.status(500).send({ error: 'An Unexpected Error Occured' });
     });
 }
+
+export default checkSession(handler);

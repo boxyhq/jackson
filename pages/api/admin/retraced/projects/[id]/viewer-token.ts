@@ -3,8 +3,9 @@ import * as Retraced from '@retraced-hq/retraced';
 import requestIp from 'request-ip';
 
 import { retracedOptions } from '@lib/env';
+import { checkSession } from '@lib/middleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
   switch (method) {
@@ -57,3 +58,5 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
     error: null,
   });
 };
+
+export default checkSession(handler);

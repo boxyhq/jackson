@@ -4,13 +4,14 @@ import axios from 'axios';
 import type { Project } from 'types/retraced';
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
+import { checkSession } from '@lib/middleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
   switch (method) {
     case 'GET':
-      return getProjects(res);
+      return getProjects(req, res);
     case 'POST':
       return createProject(req, res);
     default:
@@ -23,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
-  const token = await getToken();
+  const token = await getToken(req);
 
   const { name } = req.body;
 
@@ -45,8 +46,8 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-const getProjects = async (res: NextApiResponse) => {
-  const token = await getToken();
+const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
+  const token = await getToken(req);
 
   const { data } = await axios.get<{ projects: Project[] }>(`${retracedOptions?.host}/admin/v1/projects`, {
     headers: {
@@ -59,3 +60,5 @@ const getProjects = async (res: NextApiResponse) => {
     error: null,
   });
 };
+
+export default checkSession(handler);

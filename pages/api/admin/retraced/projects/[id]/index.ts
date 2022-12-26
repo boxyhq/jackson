@@ -4,8 +4,9 @@ import axios from 'axios';
 import type { Project } from 'types/retraced';
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
+import { checkSession } from '@lib/middleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
   switch (method) {
@@ -21,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
-  const token = await getToken();
+  const token = await getToken(req);
 
   const { id } = req.query;
 
@@ -36,3 +37,5 @@ const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
     error: null,
   });
 };
+
+export default checkSession(handler);
