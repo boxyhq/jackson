@@ -2,7 +2,7 @@ import Adapter from '@lib/nextAuthAdapter';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import { validateEmailWithACL } from '@lib/utils';
-import { sessionName } from './constants';
+import { sessionName } from '@lib/constants';
 
 export default NextAuth({
   theme: {
