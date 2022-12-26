@@ -153,7 +153,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
                 })}
           </h2>
           <div className='form-control'>
-            <InputWithCopyButton value={url} label='Setup Link URL' />
+            <InputWithCopyButton text={url} label='Setup Link URL' />
           </div>
           <div className='mt-5 flex'>
             <ButtonPrimary

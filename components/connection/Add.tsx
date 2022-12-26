@@ -61,7 +61,7 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
       {idpEntityID && setupToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>
-            <InputWithCopyButton value={idpEntityID} label={t('idp_entity_id')} />
+            <InputWithCopyButton text={idpEntityID} label={t('idp_entity_id')} />
           </div>
         </div>
       )}

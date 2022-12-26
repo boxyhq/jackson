@@ -53,10 +53,10 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
         </div>
         <div className='mt-4 space-y-4 rounded border p-6'>
           <div className='form-control'>
-            <InputWithCopyButton value={directory.scim.endpoint as string} label='SCIM Endpoint' />
+            <InputWithCopyButton text={directory.scim.endpoint as string} label='SCIM Endpoint' />
           </div>
           <div className='form-control'>
-            <InputWithCopyButton value={directory.scim.secret} label='SCIM Token' />
+            <InputWithCopyButton text={directory.scim.secret} label='SCIM Token' />
           </div>
         </div>
       </div>

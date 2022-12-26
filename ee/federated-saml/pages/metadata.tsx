@@ -49,10 +49,10 @@ const Metadata = ({ metadata }: { metadata: Metadata }) => {
             <div className='divider'>OR</div>
             <div className='space-y-6'>
               <div className='form-control w-full'>
-                <InputWithCopyButton value={metadata.ssoUrl} label={t('sso_url')} />
+                <InputWithCopyButton text={metadata.ssoUrl} label={t('sso_url')} />
               </div>
               <div className='form-control w-full'>
-                <InputWithCopyButton value={metadata.entityId} label={t('entity_id')} />
+                <InputWithCopyButton text={metadata.entityId} label={t('entity_id')} />
               </div>
               <div className='form-control w-full'>
                 <label className='label'>

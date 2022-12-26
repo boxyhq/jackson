@@ -20,14 +20,14 @@ export const CopyToClipboardButton = ({ text }: { text: string }) => {
   );
 };
 
-export const InputWithCopyButton = ({ value, label }: { value: string; label: string }) => {
+export const InputWithCopyButton = ({ text, label }: { text: string; label: string }) => {
   return (
     <>
       <div className='flex justify-between'>
         <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>{label}</label>
-        <CopyToClipboardButton text={value} />
+        <CopyToClipboardButton text={text} />
       </div>
-      <input type='text' defaultValue={value} readOnly className='input-bordered input w-full' />
+      <input type='text' defaultValue={text} readOnly className='input-bordered input w-full' />
     </>
   );
 };
