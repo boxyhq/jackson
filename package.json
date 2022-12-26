@@ -68,7 +68,7 @@
     "react-daisyui": "2.5.0",
     "react-dom": "18.2.0",
     "react-syntax-highlighter": "15.5.0",
-    "sharp": "0.31.2",
+    "sharp": "0.31.3",
     "swr": "1.3.0"
   },
   "devDependencies": {
