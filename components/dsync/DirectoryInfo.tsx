@@ -18,17 +18,17 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
         <div className='my-3 rounded border'>
           <dl>
             <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='text-sm font-medium text-gray-500'>Directory ID</dt>
+              <dt className='text-sm font-medium text-gray-500'>{t('directory_id')}</dt>
               <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.id}</dd>
             </div>
             {!token && (
               <>
                 <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>Tenant</dt>
+                  <dt className='text-sm font-medium text-gray-500'>{t('tenant')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.tenant}</dd>
                 </div>
                 <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>Product</dt>
+                  <dt className='text-sm font-medium text-gray-500'>{t('product')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.product}</dd>
                 </div>
               </>
@@ -36,13 +36,13 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
             {directory.webhook.endpoint && directory.webhook.secret && (
               <>
                 <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>Webhook Endpoint</dt>
+                  <dt className='text-sm font-medium text-gray-500'>{t('webhook_endpoint')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {directory.webhook.endpoint}
                   </dd>
                 </div>
                 <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>Webhook Secret</dt>
+                  <dt className='text-sm font-medium text-gray-500'>{t('webhook_secret')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {directory.webhook.secret}
                   </dd>
