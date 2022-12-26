@@ -8,7 +8,7 @@ import { errorToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
-import { InputWithCopyButton } from '@components/InputWithCopyButton';
+import { InputWithCopyButton } from '@components/ClipboardButton';
 
 const fieldCatalog = [...getCommonFields()];
 
@@ -61,10 +61,7 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
       {idpEntityID && setupToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>
-            <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
-              {t('idp_entity_id')}
-            </label>
-            <InputWithCopyButton value={idpEntityID} />
+            <InputWithCopyButton value={idpEntityID} label={t('idp_entity_id')} />
           </div>
         </div>
       )}

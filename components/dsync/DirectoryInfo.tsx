@@ -1,7 +1,7 @@
 import { Directory } from '@lib/jackson';
 import DirectoryTab from './DirectoryTab';
 import { useTranslation } from 'next-i18next';
-import { InputWithCopyButton } from '@components/InputWithCopyButton';
+import { InputWithCopyButton } from '@components/ClipboardButton';
 type DirectoryInfoProps = {
   directory: Directory;
   token?: string;
@@ -9,6 +9,7 @@ type DirectoryInfoProps = {
 
 const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
   const { t } = useTranslation('common');
+
   return (
     <>
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
@@ -40,7 +41,7 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
                     {directory.webhook.endpoint}
                   </dd>
                 </div>
-                <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
                   <dt className='text-sm font-medium text-gray-500'>Webhook Secret</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {directory.webhook.secret}
@@ -48,19 +49,15 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
                 </div>
               </>
             )}
-            <div className='flex items-center border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='text-sm font-medium text-gray-500'>SCIM Endpoint</dt>
-              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                <InputWithCopyButton value={directory.scim.endpoint as string} />
-              </dd>
-            </div>
-            <div className='flex items-center px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='text-sm font-medium text-gray-500'>SCIM Token</dt>
-              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                <InputWithCopyButton value={directory.scim.secret} />
-              </dd>
-            </div>
           </dl>
+        </div>
+        <div className='mt-4 space-y-4 rounded border p-6'>
+          <div className='form-control'>
+            <InputWithCopyButton value={directory.scim.endpoint as string} label='SCIM Endpoint' />
+          </div>
+          <div className='form-control'>
+            <InputWithCopyButton value={directory.scim.secret} label='SCIM Token' />
+          </div>
         </div>
       </div>
     </>

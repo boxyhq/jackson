@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { Pagination } from '@components/Pagination';
 import { IconButton } from '@components/IconButton';
-import { InputWithCopyButton } from '@components/InputWithCopyButton';
+import { InputWithCopyButton } from '@components/ClipboardButton';
 
 type Connection = {
   name: string;
@@ -66,10 +66,7 @@ const Connections = ({
       {idpEntityID && setupToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>
-            <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
-              {t('idp_entity_id')}
-            </label>
-            <InputWithCopyButton value={idpEntityID} />
+            <InputWithCopyButton value={idpEntityID} label={t('idp_entity_id')} />
           </div>
         </div>
       )}

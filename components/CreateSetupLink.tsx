@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
 import { ButtonPrimary } from './ButtonPrimary';
 import { LinkBack } from './LinkBack';
-import { InputWithCopyButton } from './InputWithCopyButton';
+import { InputWithCopyButton } from './ClipboardButton';
 
 const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
   const { t } = useTranslation('common');
@@ -153,7 +153,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
                 })}
           </h2>
           <div className='form-control'>
-            <InputWithCopyButton value={url} />
+            <InputWithCopyButton value={url} label='Setup Link URL' />
           </div>
           <div className='mt-5 flex'>
             <ButtonPrimary

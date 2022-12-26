@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
 import LicenseRequired from '@components/LicenseRequired';
 import { Toaster } from '@components/Toaster';
-import { InputWithCopyButton } from '@components/InputWithCopyButton';
+import { InputWithCopyButton, CopyToClipboardButton } from '@components/ClipboardButton';
 
 type Metadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
 
@@ -49,28 +49,23 @@ const Metadata = ({ metadata }: { metadata: Metadata }) => {
             <div className='divider'>OR</div>
             <div className='space-y-6'>
               <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text font-bold'>{t('sso_url')}</span>
-                </label>
-                <InputWithCopyButton value={metadata.ssoUrl} />
+                <InputWithCopyButton value={metadata.ssoUrl} label={t('sso_url')} />
               </div>
               <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text font-bold'>{t('entity_id')}</span>
-                </label>
-                <InputWithCopyButton value={metadata.entityId} />
+                <InputWithCopyButton value={metadata.entityId} label={t('entity_id')} />
               </div>
               <div className='form-control w-full'>
                 <label className='label'>
                   <div className='flex w-full items-center justify-between'>
                     <span className='label-text font-bold'>{t('x509_certificate')}</span>
-                    <span>
+                    <span className='flex gap-2'>
                       <a
                         href='/.well-known/saml.cer'
                         target='_blank'
                         className='label-text font-bold text-gray-500'>
                         {t('download')}
                       </a>
+                      <CopyToClipboardButton text={metadata.x509cert.trim()} />
                     </span>
                   </div>
                 </label>
