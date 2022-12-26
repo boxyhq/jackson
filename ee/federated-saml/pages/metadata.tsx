@@ -4,6 +4,7 @@ import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
 import LicenseRequired from '@components/LicenseRequired';
 import { Toaster } from '@components/Toaster';
 import { InputWithCopyButton, CopyToClipboardButton } from '@components/ClipboardButton';
+import { LinkOutline } from '@components/LinkOutline';
 
 type Metadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
 
@@ -20,9 +21,7 @@ const Metadata = ({ metadata }: { metadata: Metadata }) => {
             <div className='space-y-3'>
               <p className='text-sm leading-6 text-gray-800'>{t('saml_federation_app_info_details')}</p>
               <div className='flex flex-row gap-5'>
-                <Link
-                  href={`/.well-known/idp-metadata?download=true`}
-                  className='btn-outline btn-secondary btn'>
+                <LinkOutline href={`/.well-known/idp-metadata?download=true`}>
                   <svg
                     className='mr-1 inline-block h-6 w-6'
                     fill='none'
@@ -37,13 +36,10 @@ const Metadata = ({ metadata }: { metadata: Metadata }) => {
                     />
                   </svg>
                   {t('download_metadata')}
-                </Link>
-                <Link
-                  href={`/.well-known/idp-metadata`}
-                  className='btn-outline btn-secondary btn'
-                  target='_blank'>
+                </LinkOutline>
+                <LinkOutline href={`/.well-known/idp-metadata`} target='_blank'>
                   {t('metadata_url')}
-                </Link>
+                </LinkOutline>
               </div>
             </div>
             <div className='divider'>OR</div>
@@ -59,12 +55,12 @@ const Metadata = ({ metadata }: { metadata: Metadata }) => {
                   <div className='flex w-full items-center justify-between'>
                     <span className='label-text font-bold'>{t('x509_certificate')}</span>
                     <span className='flex gap-2'>
-                      <a
+                      <Link
                         href='/.well-known/saml.cer'
                         target='_blank'
-                        className='label-text font-bold text-gray-500'>
+                        className='label-text font-bold text-gray-500 hover:link-primary'>
                         {t('download')}
-                      </a>
+                      </Link>
                       <CopyToClipboardButton text={metadata.x509cert.trim()} />
                     </span>
                   </div>
