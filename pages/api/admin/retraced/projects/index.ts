@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case 'GET':
-      return getProjects(req, res);
+      return getProjects(res);
     case 'POST':
       return createProject(req, res);
     default:
@@ -45,12 +45,12 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
+const getProjects = async (res: NextApiResponse) => {
   const token = await getToken();
 
   const { data } = await axios.get<{ projects: Project[] }>(`${retracedOptions?.host}/admin/v1/projects`, {
     headers: {
-      Authorization: `id=${token.id} token=${token.token}`,
+      Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
     },
   });
 

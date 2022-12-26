@@ -6,47 +6,63 @@ import type { Project } from 'types/retraced';
 import { retracedOptions } from '@lib/env';
 import CodeSnippet from '@components/retraced/CodeSnippet';
 import { IconButton } from '@components/IconButton';
+import { useState } from 'react';
 
 const ProjectDetails = (props: { project: Project }) => {
   const { project } = props;
   const { environments, tokens } = project;
 
+  const [environment, setEnvironment] = useState(environments[0].name);
+  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+
   const baseUrl = `${retracedOptions?.host}/publisher/v1/project/${project.id}`;
 
   return (
     <>
+      <div className='form-control mb-5 max-w-xs'>
+        <label className='label pl-0'>
+          <span className='label-text'>Environment</span>
+        </label>
+        <select
+          value={environment}
+          className='select-bordered select'
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+            setEnvironment(e.target.value);
+            setSelectedToken(tokens[e.target.selectedIndex]);
+          }}>
+          {environments.map((env, i) => (
+            <option key={env.id} value={env.name}>
+              {env.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className='grid grid-cols-1 gap-3 border p-3 md:grid-cols-2'>
         <div className='form-control w-full'>
           <label className='label pl-0 font-semibold'>
             <span className='label-text'>Project ID</span>
             <ClipboardButton text={project.id} />
           </label>
-          <input type='text' className='input-bordered input w-full' defaultValue={project.id} />
+          <input type='text' className='input-bordered input w-full' value={project.id} />
         </div>
         <div className='form-control w-full'>
           <label className='label pl-0 font-semibold'>
             <span className='label-text'>Publisher API Base URL</span>
             <ClipboardButton text={baseUrl} />
           </label>
-          <input type='text' className='input-bordered input w-full' defaultValue={baseUrl} />
+          <input type='text' className='input-bordered input w-full' value={baseUrl} />
         </div>
         <div className='form-control w-full'>
           <label className='label pl-0 font-semibold'>
-            <span className='label-text'>{environments[0].name} Token</span>
-            <ClipboardButton text={tokens[0].token} />
+            <span className='label-text'>{environment} Token</span>
+            <ClipboardButton text={selectedToken.token} />
           </label>
-          <input type='text' className='input-bordered input w-full' defaultValue={tokens[0].token} />
-        </div>
-        <div className='form-control w-full'>
-          <label className='label pl-0 font-semibold'>
-            <span className='label-text'>{environments[1].name} Token</span>
-            <ClipboardButton text={tokens[1].token} />
-          </label>
-          <input type='text' className='input-bordered input w-full' defaultValue={tokens[1].token} />
+          <input type='text' className='input-bordered input w-full' value={selectedToken.token} />
         </div>
       </div>
       <div className='mt-5 border p-3'>
-        <CodeSnippet token={project.tokens[1].token} baseUrl={baseUrl} />
+        <CodeSnippet token={selectedToken.token} baseUrl={baseUrl} />
       </div>
     </>
   );

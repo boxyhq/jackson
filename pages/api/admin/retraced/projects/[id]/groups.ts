@@ -28,7 +28,7 @@ const getGroups = async (req: NextApiRequest, res: NextApiResponse) => {
     `${retracedOptions?.host}/admin/v1/project/${projectId}/groups?environment_id=${environmentId}`,
     {
       headers: {
-        Authorization: `id=${token.id} token=${token.token}`,
+        Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
       },
       data: {
         query: {

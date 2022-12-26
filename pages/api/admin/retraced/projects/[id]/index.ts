@@ -27,7 +27,7 @@ const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { data } = await axios.get<{ project: Project }>(`${retracedOptions?.host}/admin/v1/project/${id}`, {
     headers: {
-      Authorization: `id=${token.id} token=${token.token}`,
+      Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
     },
   });
 

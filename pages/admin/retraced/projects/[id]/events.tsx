@@ -56,7 +56,7 @@ const Events: NextPage = () => {
       <div className='flex space-x-2'>
         <div className='form-control max-w-xs'>
           <label className='label pl-0'>
-            <span className='label-text'>Environments</span>
+            <span className='label-text'>Environment</span>
           </label>
           <select
             className='select-bordered select'
@@ -71,7 +71,7 @@ const Events: NextPage = () => {
             ))}
           </select>
         </div>
-        <div className='form-control w-full max-w-xs'>
+        <div className='form-control max-w-xs'>
           <label className='label pl-0'>
             <span className='label-text'>Tenants</span>
           </label>
