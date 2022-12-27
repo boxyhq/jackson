@@ -8,14 +8,15 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (method) {
     case 'POST':
-      return handlePOST(req, res);
+      return await handlePOST(req, res);
+    case 'GET':
+      return await handleGET(req, res);
     default:
-      res.setHeader('Allow', 'POST');
+      res.setHeader('Allow', 'POST, GET');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 };
 
-// Create a new configuration
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
@@ -32,6 +33,25 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (data) {
     return res.status(201).json({ data });
+  }
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+};
+
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { directorySyncController } = await jackson();
+
+  const { offset, limit } = req.query as { offset: string; limit: string };
+
+  const pageOffset = parseInt(offset);
+  const pageLimit = parseInt(limit);
+
+  const { data, error } = await directorySyncController.directories.list({ pageOffset, pageLimit });
+
+  if (data) {
+    return res.status(200).json({ data });
   }
 
   if (error) {

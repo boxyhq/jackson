@@ -3,25 +3,56 @@ import React from 'react';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
-import jackson from '@lib/jackson';
-import EmptyState from '@components/EmptyState';
-import DirectoryTab from '@components/dsync/DirectoryTab';
-import { inferSSRProps } from '@lib/inferSSRProps';
-import Badge from '@components/Badge';
 import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import useSWR from 'swr';
+import type { WebhookEventLog } from '@boxyhq/saml-jackson';
 
-const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, events }) => {
+import EmptyState from '@components/EmptyState';
+import DirectoryTab from '@components/dsync/DirectoryTab';
+import Badge from '@components/Badge';
+import type { ApiError, ApiSuccess } from 'types';
+import { fetcher } from '@lib/ui/utils';
+import { errorToast } from '@components/Toaster';
+import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
+
+const Events: NextPage = () => {
   const { t } = useTranslation('common');
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
 
+  const { directoryId } = router.query as { directoryId: string };
+
+  const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
+
+  const { data: eventsData, error: eventsError } = useSWR<ApiSuccess<WebhookEventLog[]>, ApiError>(
+    `/api/admin/directory-sync/${directoryId}/events`,
+    fetcher
+  );
+
+  if (isDirectoryLoading || !eventsData) {
+    return <Loading />;
+  }
+
+  const error = directoryError || eventsError;
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
+
+  if (!directory) {
+    return null;
+  }
+
+  const events = eventsData.data;
+
   const clearEvents = async () => {
     setLoading(true);
 
-    await fetch(`/api/admin/directory-sync/${directory.id}/events`, {
+    await fetch(`/api/admin/directory-sync/${directoryId}/events`, {
       method: 'DELETE',
     });
 
@@ -78,7 +109,7 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
                           )}
                         </td>
                         <td className='px-6 py-3'>
-                          <Link href={`/admin/directory-sync/${directory.id}/events/${event.id}`}>
+                          <Link href={`/admin/directory-sync/${directoryId}/events/${event.id}`}>
                             <EyeIcon className='h-5 w-5' />
                           </Link>
                         </td>
@@ -96,24 +127,10 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { directoryId } = context.query;
-  const { directorySyncController } = await jackson();
   const { locale }: GetServerSidePropsContext = context;
-
-  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
-
-  if (!directory) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll();
 
   return {
     props: {
-      directory,
-      events,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
