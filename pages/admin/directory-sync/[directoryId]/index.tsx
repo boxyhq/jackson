@@ -1,33 +1,40 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
-import React from 'react';
-import jackson from '@lib/jackson';
-import { inferSSRProps } from '@lib/inferSSRProps';
-import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useRouter } from 'next/router';
 
 import DirectoryInfo from '@components/dsync/DirectoryInfo';
+import { errorToast } from '@components/Toaster';
+import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
-const Info: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory }) => {
-  const { t } = useTranslation('common');
+const Info: NextPage = () => {
+  const router = useRouter();
+
+  const { directoryId } = router.query as { directoryId: string };
+
+  const { directory, isLoading, error } = useDirectory(directoryId);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
+
+  if (!directory) {
+    return null;
+  }
+
   return <DirectoryInfo directory={directory} />;
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { directoryId } = context.query;
-  const { directorySyncController } = await jackson();
   const { locale }: GetServerSidePropsContext = context;
-
-  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
-
-  if (!directory) {
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
-      directory,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };

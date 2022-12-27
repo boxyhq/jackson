@@ -1,35 +1,68 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
-import React from 'react';
 import { useRouter } from 'next/router';
-
-import jackson from '@lib/jackson';
-import { inferSSRProps } from '@lib/inferSSRProps';
+import React from 'react';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import type { Directory } from '@boxyhq/saml-jackson';
+
+import type { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
-const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
-  directory: { id, name, log_webhook_events, webhook },
-}) => {
+type FormState = Pick<Directory, 'name' | 'log_webhook_events'> & {
+  webhook_url: string;
+  webhook_secret: string;
+};
+
+const defaultFormState: FormState = {
+  name: '',
+  webhook_url: '',
+  webhook_secret: '',
+  log_webhook_events: false,
+};
+
+const Edit: NextPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const [directory, setDirectory] = React.useState({
-    name,
-    log_webhook_events,
-    webhook_url: webhook.endpoint,
-    webhook_secret: webhook.secret,
-  });
 
+  const [directory, setDirectory] = React.useState<FormState>(defaultFormState);
   const [loading, setLoading] = React.useState(false);
+
+  const { directoryId } = router.query as { directoryId: string };
+
+  const { directory: data, isLoading, error } = useDirectory(directoryId);
+
+  React.useEffect(() => {
+    if (data) {
+      const directory = data;
+
+      setDirectory({
+        name: directory.name,
+        webhook_url: directory.webhook.endpoint,
+        webhook_secret: directory.webhook.secret,
+        log_webhook_events: directory.log_webhook_events,
+      });
+    }
+  }, [data]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     setLoading(true);
 
-    const rawResponse = await fetch(`/api/admin/directory-sync/${id}`, {
+    const rawResponse = await fetch(`/api/admin/directory-sync/${directoryId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +72,7 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 
     setLoading(false);
 
-    const response = await rawResponse.json();
+    const response: ApiResponse<Directory> = await rawResponse.json();
 
     if ('error' in response) {
       errorToast(response.error.message);
@@ -133,21 +166,10 @@ const Edit: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { directoryId } = context.query;
-  const { directorySyncController } = await jackson();
   const { locale }: GetServerSidePropsContext = context;
-
-  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
-
-  if (!directory) {
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
-      directory,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
