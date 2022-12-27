@@ -8,8 +8,12 @@ import CodeSnippet from '@components/retraced/CodeSnippet';
 import { IconButton } from '@components/IconButton';
 import { useState } from 'react';
 import { Select } from 'react-daisyui';
+import { InputWithCopyButton } from '@components/ClipboardButton';
+import { useTranslation } from 'next-i18next';
 
 const ProjectDetails = (props: { project: Project }) => {
+  const { t } = useTranslation('common');
+
   const { project } = props;
   const { environments, tokens } = project;
 
@@ -38,29 +42,15 @@ const ProjectDetails = (props: { project: Project }) => {
 
       <div className='grid grid-cols-1 gap-3 border p-3 md:grid-cols-2'>
         <div className='form-control w-full'>
-          <label className='label pl-0 font-semibold'>
-            <span className='label-text'>Project ID</span>
-            <ClipboardButton text={project.id} />
-          </label>
-          <input type='text' className='input-bordered input w-full' value={project.id} readOnly />
+          <InputWithCopyButton text={project.id} label={t('project_id')} />
         </div>
         <div className='form-control w-full'>
-          <label className='label pl-0 font-semibold'>
-            <span className='label-text'>Publisher API Base URL</span>
-            <ClipboardButton text={baseUrl} />
-          </label>
-          <input type='text' className='input-bordered input w-full' value={baseUrl} readOnly />
+          <InputWithCopyButton text={baseUrl} label={t('publisher_api_base_url')} />
         </div>
         <div className='form-control w-full'>
-          <label className='label pl-0 font-semibold'>
-            <span className='label-text'>{environments[selectedIndex].name} Token</span>
-            <ClipboardButton text={tokens[selectedIndex].token} />
-          </label>
-          <input
-            type='text'
-            className='input-bordered input w-full'
-            value={tokens[selectedIndex].token}
-            readOnly
+          <InputWithCopyButton
+            text={tokens[selectedIndex].token}
+            label={environments[selectedIndex].name + ' Token'}
           />
         </div>
       </div>
@@ -68,20 +58,6 @@ const ProjectDetails = (props: { project: Project }) => {
         <CodeSnippet token={tokens[selectedIndex].token} baseUrl={baseUrl} />
       </div>
     </>
-  );
-};
-
-const ClipboardButton = ({ text }: { text: string }) => {
-  return (
-    <IconButton
-      tooltip='Copy'
-      Icon={ClipboardDocumentIcon}
-      className='hover:text-green-400'
-      onClick={() => {
-        copyToClipboard(text);
-        successToast('Copied');
-      }}
-    />
   );
 };
 

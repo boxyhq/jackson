@@ -120,5 +120,7 @@
   "configuration": "Configuration",
   "view_events": "View Events",
   "new_project": "New Project",
-  "projects": "Projects"
+  "projects": "Projects",
+  "project_id": "Project ID",
+  "publisher_api_base_url": "Publisher API Base URL"
 }
