@@ -5,7 +5,7 @@ import { LinkOutline } from './LinkOutline';
 export const LinkBack = ({ href, onClick }: { href: string; onClick?: any }) => {
   const { t } = useTranslation('common');
   return (
-    <LinkOutline href={href} onClick={onClick} Icon={ArrowLeftIcon}>
+    <LinkOutline href={href} onClick={onClick} Icon={ArrowLeftIcon} style={{ marginLeft: 0 }}>
       {t('back')}
     </LinkOutline>
   );

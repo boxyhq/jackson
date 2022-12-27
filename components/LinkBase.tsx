@@ -9,6 +9,7 @@ export type LinkProps = {
   target?: string;
   rel?: string;
   className?: string;
+  style?: any;
 };
 
 export const LinkBase = ({
@@ -19,6 +20,7 @@ export const LinkBase = ({
   target,
   rel,
   Icon = null,
+  style,
   ...others
 }: LinkProps) => {
   return (
@@ -28,6 +30,7 @@ export const LinkBase = ({
       className={classNames('btn m-2', className)}
       target={target}
       rel={rel}
+      style={style}
       {...others}>
       {Icon && <Icon className='mr-1 h-4 w-4' aria-hidden />}
       {children}
