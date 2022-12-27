@@ -1,34 +1,15 @@
 import Link from 'next/link';
 import classNames from 'classnames';
+import type { LinkProps } from 'react-daisyui';
 
-export type LinkProps = {
+export interface LinkBaseProps extends LinkProps {
   href: string;
-  children: any;
   Icon?: any;
-  onClick?: any;
-  target?: string;
-  rel?: string;
-  className?: string;
-};
+}
 
-export const LinkBase = ({
-  href,
-  onClick,
-  className = '',
-  children,
-  target,
-  rel,
-  Icon = null,
-  ...others
-}: LinkProps) => {
+export const LinkBase = ({ children, href, className, Icon, ...others }: LinkBaseProps) => {
   return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={classNames('btn m-2', className)}
-      target={target}
-      rel={rel}
-      {...others}>
+    <Link href={href} className={classNames('btn', className)} {...others}>
       {Icon && <Icon className='mr-1 h-4 w-4' aria-hidden />}
       {children}
     </Link>
