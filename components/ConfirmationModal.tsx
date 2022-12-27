@@ -7,8 +7,8 @@ const ConfirmationModal = (props: {
   visible: boolean;
   title: string;
   description: string;
-  onConfirm: any;
-  onCancel: any;
+  onConfirm: () => void | Promise<void>;
+  onCancel: () => void;
   actionButtonText?: string;
 }) => {
   const { visible, title, description, onConfirm, onCancel, actionButtonText } = props;
