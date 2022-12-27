@@ -7,7 +7,7 @@ export function getErrorCookie() {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-export function copyToClipboard(text) {
+export function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
 

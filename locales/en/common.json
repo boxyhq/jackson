@@ -115,5 +115,6 @@
   "saml_public_cert_description": "The SAML Public Certificate if you want to enable encryption with your Identity Provider.",
   "oidc_config_description": "Our OpenID configuration URI which your customers will need if they are connecting via OAuth 2.0 or Open ID Connect.",
   "idp_metadata_description": "The metadata file that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.",
-  "idp_config_description": "The configuration setup guide that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application."
+  "idp_config_description": "The configuration setup guide that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.",
+  "setup_link_url": "Setup Link URL"
 }
