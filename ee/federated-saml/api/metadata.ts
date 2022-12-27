@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'GET':
       return handleGET(req, res);
     default:
-      res.setHeader('Allow', ['GET']);
+      res.setHeader('Allow', 'GET');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 }
