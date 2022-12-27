@@ -19,6 +19,8 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
   const { t } = useTranslation('common');
   const router = useRouter();
 
+  const displayTenantProduct = token ? false : true;
+
   return (
     <>
       <div className='mb-5 flex items-center justify-between'>
@@ -36,9 +38,9 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
           )}
         </div>
       </div>
-      {directories?.length === 0 && pageOffset === 0 ? (
+      {directories.length === 0 && pageOffset === 0 ? (
         <EmptyState
-          title='No directories found'
+          title={t('no_directories_found')}
           href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}
         />
       ) : (
@@ -49,7 +51,7 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
                 <th scope='col' className='px-6 py-3'>
                   {t('name')}
                 </th>
-                {!token && (
+                {displayTenantProduct && (
                   <>
                     <th scope='col' className='px-6 py-3'>
                       {t('tenant')}
@@ -77,7 +79,7 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                         {directory.name}
                       </td>
-                      {!token && (
+                      {displayTenantProduct && (
                         <>
                           <td className='px-6'>{directory.tenant}</td>
                           <td className='px-6'>{directory.product}</td>
