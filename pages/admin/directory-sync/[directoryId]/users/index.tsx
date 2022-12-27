@@ -9,7 +9,6 @@ import useSWR from 'swr';
 import type { User } from '@boxyhq/saml-jackson';
 
 import EmptyState from '@components/EmptyState';
-import Paginate from '@components/Paginate';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import Badge from '@components/Badge';
 import type { ApiError, ApiSuccess } from 'types';
@@ -108,12 +107,6 @@ const UsersList: NextPage = () => {
                 })}
               </tbody>
             </table>
-            <Paginate
-              pageOffset={pageOffset}
-              pageLimit={pageLimit}
-              itemsCount={users ? users.length : 0}
-              path={`/admin/directory-sync/${directory.id}/users?`}
-            />
           </div>
         )}
       </div>

@@ -9,7 +9,6 @@ import useSWR from 'swr';
 import type { Group } from '@boxyhq/saml-jackson';
 
 import EmptyState from '@components/EmptyState';
-import Paginate from '@components/Paginate';
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
@@ -89,12 +88,6 @@ const GroupsList: NextPage = () => {
                 })}
               </tbody>
             </table>
-            <Paginate
-              pageOffset={pageOffset}
-              pageLimit={pageLimit}
-              itemsCount={groups ? groups.length : 0}
-              path={`/admin/directory-sync/${directory.id}/groups?`}
-            />
           </div>
         )}
       </div>

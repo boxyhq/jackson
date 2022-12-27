@@ -1,5 +1,4 @@
 import EmptyState from '@components/EmptyState';
-import Paginate from '@components/Paginate';
 import { CircleStackIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Directory } from '@lib/jackson';
 import { useTranslation } from 'next-i18next';
@@ -119,12 +118,6 @@ const DirectoryList = ({ directories, pageOffset, pageLimit, providers, token }:
                 })}
             </tbody>
           </table>
-          <Paginate
-            pageOffset={pageOffset}
-            pageLimit={pageLimit}
-            itemsCount={directories ? directories.length : 0}
-            path={token ? `/setup/${token}/directory-sync?` : `/admin/directory-sync?`}
-          />
         </div>
       )}
     </>
