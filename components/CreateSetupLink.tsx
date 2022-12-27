@@ -35,8 +35,7 @@ const CreateSetupLink = (props: { service: 'sso' | 'dsync' }) => {
     }
     setLoading(false);
   };
-  const regenerateLink = async (event) => {
-    event.preventDefault();
+  const regenerateLink = async () => {
     setLoading1(true);
     setDelModalVisible(!delModalVisible);
     const { tenant, product, type } = formObj;

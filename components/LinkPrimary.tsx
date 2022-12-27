@@ -1,9 +1,9 @@
-import type { LinkProps } from './LinkBase';
-import { LinkBase } from './LinkBase';
+import classNames from 'classnames';
+import { LinkBase, type LinkBaseProps } from './LinkBase';
 
-export const LinkPrimary = ({ href, onClick, children, Icon = null, ...others }: LinkProps) => {
+export const LinkPrimary = ({ children, className, ...others }: LinkBaseProps) => {
   return (
-    <LinkBase href={href} onClick={onClick} className='btn-primary' Icon={Icon} {...others}>
+    <LinkBase className={classNames('btn-primary', className)} {...others}>
       {children}
     </LinkBase>
   );
