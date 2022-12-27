@@ -9,7 +9,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'DELETE':
       return handleDELETE(req, res);
     default:
-      res.setHeader('Allow', ['DELETE']);
+      res.setHeader('Allow', 'DELETE');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 };
