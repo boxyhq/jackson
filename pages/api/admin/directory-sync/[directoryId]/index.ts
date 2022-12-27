@@ -9,7 +9,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'PUT':
       return handlePUT(req, res);
     default:
-      res.setHeader('Allow', ['PUT']);
+      res.setHeader('Allow', 'PUT');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 };

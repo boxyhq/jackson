@@ -26,7 +26,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'DELETE':
       return handleDELETE(req, res);
     default:
-      res.setHeader('Allow', ['GET, PUT, DELETE']);
+      res.setHeader('Allow', 'GET, PUT, DELETE');
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
 };
