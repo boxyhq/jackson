@@ -117,5 +117,6 @@
   "idp_metadata_description": "The metadata file that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.",
   "idp_config_description": "The configuration setup guide that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.",
   "no_users_found": "No users found",
-  "no_groups_found": "No groups found"
+  "no_groups_found": "No groups found",
+  "setup_link_url": "Setup Link URL"
 }

@@ -1,13 +1,11 @@
-import { ClipboardDocumentIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { copyToClipboard } from '@lib/ui/utils';
-import { successToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { Pagination } from '@components/Pagination';
-import { ButtonPrimary } from '@components/ButtonPrimary';
 import { IconButton } from '@components/IconButton';
+import { InputWithCopyButton } from '@components/ClipboardButton';
 
 type Connection = {
   name: string;
@@ -68,17 +66,7 @@ const Connections = ({
       {idpEntityID && setupToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>
-            <div className='input-group'>
-              <div className='pt-2 pr-2'>{t('idp_entity_id')}:</div>
-              <ButtonPrimary
-                Icon={ClipboardDocumentIcon}
-                className='p-2'
-                onClick={() => {
-                  copyToClipboard(idpEntityID);
-                  successToast(t('copied'));
-                }}></ButtonPrimary>
-              <input type='text' readOnly value={idpEntityID} className='input-bordered input h-10 w-4/5' />
-            </div>
+            <InputWithCopyButton text={idpEntityID} label={t('idp_entity_id')} />
           </div>
         </div>
       )}
