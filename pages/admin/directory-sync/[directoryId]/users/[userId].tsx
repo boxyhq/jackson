@@ -1,13 +1,47 @@
-import type { NextPage, GetServerSidePropsContext } from 'next';
+import type { NextPage } from 'next';
 import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
+import type { User } from '@boxyhq/saml-jackson';
 
-import jackson from '@lib/jackson';
 import DirectoryTab from '@components/dsync/DirectoryTab';
-import { inferSSRProps } from '@lib/inferSSRProps';
+import type { ApiError, ApiSuccess } from 'types';
+import { fetcher } from '@lib/ui/utils';
+import { errorToast } from '@components/Toaster';
+import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
 
-const UserInfo: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, user }) => {
+const UserInfo: NextPage = () => {
+  const router = useRouter();
+
+  const { directoryId, userId } = router.query as { directoryId: string; userId: string };
+
+  const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
+
+  const { data: userData, error: userError } = useSWR<ApiSuccess<User>, ApiError>(
+    `/api/admin/directory-sync/${directoryId}/users/${userId}`,
+    fetcher
+  );
+
+  if (isDirectoryLoading || !userData) {
+    return <Loading />;
+  }
+
+  const error = directoryError || userError;
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
+
+  if (!directory) {
+    return null;
+  }
+
+  const user = userData.data;
+
   return (
     <>
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
@@ -21,36 +55,6 @@ const UserInfo: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ director
       </div>
     </>
   );
-};
-
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { directoryId, userId } = context.query;
-  const { directorySyncController } = await jackson();
-
-  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
-
-  if (!directory) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const { data: user } = await directorySyncController.users
-    .with(directory.tenant, directory.product)
-    .get(userId as string);
-
-  if (!user) {
-    return {
-      notFound: true,
-    };
-  }
-
-  return {
-    props: {
-      directory,
-      user,
-    },
-  };
 };
 
 export default UserInfo;

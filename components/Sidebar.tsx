@@ -43,7 +43,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         {
           href: '/admin/sso-connection',
           text: t('connections'),
-          active: asPath === '/admin/sso-connection',
+          active: asPath.includes('/admin/sso-connection'),
         },
         {
           href: '/admin/sso-connection/setup-link',
@@ -66,7 +66,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         {
           href: '/admin/directory-sync',
           text: t('connections'),
-          active: asPath === '/admin/directory-sync',
+          active: asPath.includes('/admin/directory-sync'),
         },
         {
           href: '/admin/directory-sync/setup-link',
