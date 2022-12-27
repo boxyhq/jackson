@@ -1,6 +1,5 @@
 import classNames from 'classnames';
-import { LinkBase } from './LinkBase';
-import type { LinkBaseProps } from './LinkBase';
+import { LinkBase, type LinkBaseProps } from './LinkBase';
 
 export const LinkPrimary = ({ children, className, ...others }: LinkBaseProps) => {
   return (

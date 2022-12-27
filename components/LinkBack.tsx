@@ -1,21 +1,12 @@
 import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon';
 import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
-import { ButtonOutline } from './ButtonOutline';
+import { LinkOutline } from './LinkOutline';
 
-export const LinkBack = () => {
+export const LinkBack = ({ href, onClick }: { href: string; onClick?: any }) => {
   const { t } = useTranslation('common');
-  const router = useRouter();
-
   return (
-    <div className='mb-4 flex'>
-      <ButtonOutline
-        onClick={() => {
-          router.back();
-        }}
-        Icon={ArrowLeftIcon}>
-        {t('back')}
-      </ButtonOutline>
-    </div>
+    <LinkOutline href={href} onClick={onClick} Icon={ArrowLeftIcon}>
+      {t('back')}
+    </LinkOutline>
   );
 };

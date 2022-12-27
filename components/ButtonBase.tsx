@@ -1,6 +1,5 @@
-import { Button } from 'react-daisyui';
 import classNames from 'classnames';
-import type { ButtonProps } from 'react-daisyui';
+import { Button, type ButtonProps } from 'react-daisyui';
 
 export interface ButtonBaseProps extends ButtonProps {
   Icon?: any;

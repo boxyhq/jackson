@@ -1,5 +1,4 @@
-import type { ButtonBaseProps } from './ButtonBase';
-import { ButtonBase } from './ButtonBase';
+import { ButtonBase, type ButtonBaseProps } from './ButtonBase';
 
 export const ButtonPrimary = ({ children, ...other }: ButtonBaseProps) => {
   return (
