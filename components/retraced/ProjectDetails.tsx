@@ -1,11 +1,6 @@
-import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
-import { successToast } from '@components/Toaster';
-import { copyToClipboard } from '@lib/ui/utils';
-
 import type { Project } from 'types/retraced';
 import { retracedOptions } from '@lib/env';
 import CodeSnippet from '@components/retraced/CodeSnippet';
-import { IconButton } from '@components/IconButton';
 import { useState } from 'react';
 import { Select } from 'react-daisyui';
 import { InputWithCopyButton } from '@components/ClipboardButton';

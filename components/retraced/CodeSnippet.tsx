@@ -1,21 +1,13 @@
+import { CopyToClipboardButton } from '@components/ClipboardButton';
+import { useTranslation } from 'next-i18next';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => {
-  return (
-    <>
-      <div className='text-sm'>
-        <div className='mb-5'>
-          <p className='text-sm font-bold'>Send your event to the following URL</p>
-          <SyntaxHighlighter language='bash' style={materialOceanic} customStyle={{ borderRadius: '0.5em' }}>
-            {`${baseUrl}/event`}
-          </SyntaxHighlighter>
-        </div>
+  const { t } = useTranslation('common');
 
-        <div>
-          <p className='text-sm font-bold'>CURL Request</p>
-          <SyntaxHighlighter language='bash' style={materialOceanic} customStyle={{ borderRadius: '0.5em' }}>
-            {`curl -X POST -H "Content-Type: application/json" -H "Authorization: token=${token}" -d '{
+  const eventURL = `${baseUrl}/event`;
+  const curlRequest = `curl -X POST -H "Content-Type: application/json" -H "Authorization: token=${token}" -d '{
   "action": "some.record.created",
   "teamId": "boxyhq",
   "group": {
@@ -34,7 +26,34 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
     "name": "tasks",
     "type": "Tasks"
   }
-}' ${baseUrl}/event`}
+}' ${eventURL}`;
+
+  return (
+    <>
+      <div className='text-sm'>
+        <div className='mb-5'>
+          <div className='flex justify-between'>
+            <label className='mb-2 block text-sm font-bold text-gray-900 dark:text-gray-300'>
+              {t('send_event_to_url')}
+            </label>
+            <CopyToClipboardButton text={eventURL} />
+          </div>
+
+          <SyntaxHighlighter language='bash' style={materialOceanic} customStyle={{ borderRadius: '0.5em' }}>
+            {eventURL}
+          </SyntaxHighlighter>
+        </div>
+
+        <div>
+          <div className='flex justify-between'>
+            <label className='mb-2 block text-sm font-bold text-gray-900 dark:text-gray-300'>
+              {t('curl_request')}
+            </label>
+            <CopyToClipboardButton text={curlRequest} />
+          </div>
+
+          <SyntaxHighlighter language='bash' style={materialOceanic} customStyle={{ borderRadius: '0.5em' }}>
+            {curlRequest}
           </SyntaxHighlighter>
         </div>
       </div>

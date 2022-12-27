@@ -122,5 +122,7 @@
   "new_project": "New Project",
   "projects": "Projects",
   "project_id": "Project ID",
-  "publisher_api_base_url": "Publisher API Base URL"
+  "publisher_api_base_url": "Publisher API Base URL",
+  "send_event_to_url": "Send your event to the following URL",
+  "curl_request": "cURL Request"
 }
