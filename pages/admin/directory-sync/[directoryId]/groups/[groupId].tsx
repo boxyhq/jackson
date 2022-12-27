@@ -12,6 +12,7 @@ import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
+import { LinkBack } from '@components/LinkBack';
 
 const GroupInfo: NextPage = () => {
   const router = useRouter();
@@ -44,6 +45,7 @@ const GroupInfo: NextPage = () => {
 
   return (
     <>
+      <LinkBack href={`/admin/directory-sync/${directory.id}/groups`} />
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
         <DirectoryTab directory={directory} activeTab='groups' />

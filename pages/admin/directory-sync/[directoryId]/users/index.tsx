@@ -17,6 +17,7 @@ import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
+import { LinkBack } from '@components/LinkBack';
 
 const UsersList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -53,7 +54,8 @@ const UsersList: NextPage = () => {
 
   return (
     <>
-      <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
+      <LinkBack href='/admin/directory-sync' />
+      <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
         <DirectoryTab directory={directory} activeTab='users' />
         {users.length === 0 && pageOffset === 0 ? (
