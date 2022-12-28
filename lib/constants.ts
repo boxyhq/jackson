@@ -1,3 +1,1 @@
-const sessionName = 'next-auth.saml-jackson';
-
-export { sessionName };
+export const sessionName = 'next-auth.saml-jackson';

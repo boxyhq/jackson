@@ -31,8 +31,14 @@ export class WebhookEventsLogger extends Base implements IWebhookEventsLogger {
     return await this.store('logs').get(id);
   }
 
-  public async getAll(): Promise<WebhookEventLog[]> {
-    return (await this.store('logs').getAll()) as WebhookEventLog[];
+  public async getAll({
+    pageOffset,
+    pageLimit,
+  }: {
+    pageOffset?: number;
+    pageLimit?: number;
+  }): Promise<WebhookEventLog[]> {
+    return (await this.store('logs').getAll(pageOffset, pageLimit)) as WebhookEventLog[];
   }
 
   public async delete(id: string) {
@@ -40,7 +46,7 @@ export class WebhookEventsLogger extends Base implements IWebhookEventsLogger {
   }
 
   public async clear() {
-    const events = await this.getAll();
+    const events = await this.getAll({});
 
     await Promise.all(
       events.map(async (event) => {
