@@ -1,10 +1,11 @@
-import type { NextPage } from 'next';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import useSWR from 'swr';
 import type { WebhookEventLog } from '@boxyhq/saml-jackson';
 import { useRouter } from 'next/router';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import type { ApiError, ApiSuccess } from 'types';
@@ -57,6 +58,16 @@ const EventInfo: NextPage = () => {
       </div>
     </>
   );
+};
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { locale }: GetServerSidePropsContext = context;
+
+  return {
+    props: {
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
+  };
 };
 
 export default EventInfo;

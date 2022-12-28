@@ -54,7 +54,7 @@ const UsersList: NextPage = () => {
   return (
     <>
       <LinkBack href='/admin/directory-sync' />
-      <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
+      <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='users' />
         {users.length === 0 && paginate.offset === 0 ? (

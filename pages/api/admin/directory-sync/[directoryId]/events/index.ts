@@ -35,7 +35,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll();
+  const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll({
+    pageOffset,
+    pageLimit,
+  });
 
   return res.status(200).json({ data: events });
 };

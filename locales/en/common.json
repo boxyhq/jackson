@@ -119,5 +119,6 @@
   "no_users_found": "No users found",
   "no_groups_found": "No groups found",
   "setup_link_url": "Setup Link URL",
-  "no_directories_found": "No directories found"
+  "no_directories_found": "No directories found",
+  "no_webhook_events_found": "No webhook events found"
 }
