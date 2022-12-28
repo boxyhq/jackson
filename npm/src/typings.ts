@@ -710,3 +710,5 @@ export interface ISetupLinkController {
   getByToken(token): Promise<ApiResponse<SetupLink>>;
   remove(key: string): Promise<ApiResponse<boolean>>;
 }
+
+export type SetupLinkService = 'sso' | 'dsync';
