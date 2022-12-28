@@ -119,8 +119,8 @@ export class App {
     pageOffset,
     pageLimit,
   }: {
-    pageOffset: number;
-    pageLimit: number;
+    pageOffset?: number;
+    pageLimit?: number;
   }): Promise<SAMLFederationApp[]> {
     const apps = (await this.store.getAll(pageOffset, pageLimit)) as SAMLFederationApp[];
 
