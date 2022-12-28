@@ -1,21 +1,18 @@
-import type { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetStaticPropsContext } from 'next';
 import React from 'react';
 import CreateDirectory from '@components/dsync/CreateDirectory';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-import jackson from '@lib/jackson';
-
-const New: NextPage<{ providers: any }> = ({ providers }) => {
-  return <CreateDirectory providers={providers} />;
+const New: NextPage = () => {
+  return <CreateDirectory />;
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const { directorySyncController } = await jackson();
+export const getStaticProps = async (context: GetStaticPropsContext) => {
+  const { locale } = context;
 
   return {
     props: {
-      providers: directorySyncController.providers(),
-      ...(await serverSideTranslations(locale ?? '', ['common'])),
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };

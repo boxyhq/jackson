@@ -4,7 +4,7 @@ import { signOut } from 'next-auth/react';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import { PowerIcon } from '@heroicons/react/20/solid';
+import PowerIcon from '@heroicons/react/20/solid/PowerIcon';
 
 export const Navbar = ({ session }: { session: Session | null }) => {
   const [isOpen, setIsOpen] = React.useState(false);

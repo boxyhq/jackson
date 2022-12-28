@@ -1,10 +1,11 @@
-import type { NextPage } from 'next';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import type { User } from '@boxyhq/saml-jackson';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import DirectoryTab from '@components/dsync/DirectoryTab';
 import type { ApiError, ApiSuccess } from 'types';
@@ -12,6 +13,7 @@ import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
+import { LinkBack } from '@components/LinkBack';
 
 const UserInfo: NextPage = () => {
   const router = useRouter();
@@ -44,7 +46,8 @@ const UserInfo: NextPage = () => {
 
   return (
     <>
-      <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
+      <LinkBack href={`/admin/directory-sync/${directory.id}/users`} />
+      <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
         <DirectoryTab directory={directory} activeTab='users' />
         <div className='my-3 rounded border text-sm'>
@@ -55,6 +58,16 @@ const UserInfo: NextPage = () => {
       </div>
     </>
   );
+};
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
+  };
 };
 
 export default UserInfo;

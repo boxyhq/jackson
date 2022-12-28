@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Directory } from '@boxyhq/saml-jackson';
 import classNames from 'classnames';
 
-const DirectoryTab = (props: { directory: Directory; activeTab: string; token?: any }) => {
+const DirectoryTab = (props: { directory: Directory; activeTab: string; token?: string }) => {
   const { directory, activeTab, token } = props;
 
   const menus = token
