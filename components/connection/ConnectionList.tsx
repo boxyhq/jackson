@@ -1,4 +1,6 @@
-import { LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
+import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
+import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';

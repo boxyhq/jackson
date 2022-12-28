@@ -1,4 +1,7 @@
-import { ClipboardDocumentIcon, PlusIcon, ArrowPathIcon, TrashIcon } from '@heroicons/react/24/outline';
+import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
+import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
+import ArrowPathIcon from '@heroicons/react/24/outline/ArrowPathIcon';
+import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';

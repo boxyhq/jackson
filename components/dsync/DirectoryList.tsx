@@ -1,5 +1,8 @@
 import EmptyState from '@components/EmptyState';
-import { CircleStackIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import CircleStackIcon from '@heroicons/react/24/outline/CircleStackIcon';
+import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
+import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
+import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { useTranslation } from 'next-i18next';
 import { LinkPrimary } from '@components/LinkPrimary';
