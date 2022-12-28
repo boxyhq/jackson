@@ -76,7 +76,7 @@ const LinkList = ({ service }) => {
           <div className='rounder border'>
             <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr>
+                <tr className='hover:bg-gray-50'>
                   <th scope='col' className='px-6 py-3'>
                     {t('tenant')}
                   </th>
@@ -96,7 +96,7 @@ const LinkList = ({ service }) => {
                   return (
                     <tr
                       key={link.setupID}
-                      className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
+                      className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
                       <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
                         {link.tenant}
                       </td>

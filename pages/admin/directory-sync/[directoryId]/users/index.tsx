@@ -64,7 +64,7 @@ const UsersList: NextPage = () => {
             <div className='my-3 rounded border'>
               <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
                 <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                  <tr>
+                  <tr className='hover:bg-gray-50'>
                     <th scope='col' className='px-6 py-3'>
                       {t('first_name')}
                     </th>
