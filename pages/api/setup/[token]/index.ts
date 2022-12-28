@@ -4,37 +4,38 @@ import jackson from '@lib/jackson';
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
 
-  switch (method) {
-    case 'GET':
-      return handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+  try {
+    switch (method) {
+      case 'GET':
+        return await handleGET(req, res);
+      default:
+        res.setHeader('Allow', 'GET');
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+    }
+  } catch (error: any) {
+    const { message, statusCode = 500 } = error;
+
+    return res.status(statusCode).json({ error: { message } });
   }
 };
 
+// Get a setup link by token
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
-  const token = req.query.token;
-  if (!token) {
-    return res.status(404).json({
-      data: undefined,
-      error: {
-        message: 'Setup link is invalid',
-        code: 404,
-      },
-    });
-  } else {
-    const { data, error } = await setupLinkController.getByToken(req.query.token);
-    return res.status(error ? error.code : 200).json({
-      data: {
-        ...data,
-        tenant: undefined,
-        product: undefined,
-      },
-      error,
-    });
-  }
+
+  const { token } = req.query as { token: string };
+
+  const setupLink = await setupLinkController.getByToken(token);
+
+  console.log(setupLink);
+
+  return res.json({
+    data: {
+      ...setupLink,
+      tenant: undefined,
+      product: undefined,
+    },
+  });
 };
 
 export default handler;

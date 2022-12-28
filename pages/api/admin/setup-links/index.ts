@@ -3,25 +3,24 @@ import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  try {
-    const { method } = req;
+  const { method } = req;
 
+  try {
     switch (method) {
       case 'POST':
-        await handlePOST(req, res);
-        return;
+        return await handlePOST(req, res);
       case 'GET':
-        await handleGET(req, res);
-        return;
+        return await handleGET(req, res);
       case 'DELETE':
-        await handleDELETE(req, res);
-        return;
+        return await handleDELETE(req, res);
       default:
         res.setHeader('Allow', 'POST, GET, DELETE');
-        res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
     }
   } catch (error: any) {
-    res.status(500).json({ data: null, error: { message: error.message || 'Unknown error' } });
+    const { message, statusCode = 500 } = error;
+
+    return res.status(statusCode).json({ error: { message } });
   }
 };
 
@@ -29,47 +28,54 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { tenant, product, type: service, regenerate } = req.body;
+  const { tenant, product, service, regenerate } = req.body;
 
-  const { data, error } = await setupLinkController.create({
+  const setupLink = await setupLinkController.create({
     tenant,
     product,
     service,
     regenerate,
   });
 
-  return res.status(error ? error.code : 201).json({ data, error });
+  return res.status(201).json({ data: setupLink });
 };
 
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { setupID } = req.query;
+  const { setupID } = req.query as { setupID: string };
 
-  const { data, error } = await setupLinkController.remove(setupID as string);
+  await setupLinkController.remove(setupID);
 
-  return res.status(error ? error.code : 200).json({ data, error });
+  return res.json({ data: {} });
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
-  const token = req.query.token;
-  const service = req.query.service;
-  if (token) {
-    const { data, error } = await setupLinkController.getByToken(req.query.token);
 
-    return res.status(error ? error.code : 200).json({ data, error });
-  } else if (service) {
-    const { data, error } = await setupLinkController.getByService(req.query.service);
-    return res.status(error ? error.code : 200).json({ data, error });
-  } else {
+  const { token, service } = req.query as { token: string; service: string };
+
+  if (!token && !service) {
     return res.status(404).json({
-      data: undefined,
       error: {
         message: 'Setup link is invalid',
         code: 404,
       },
     });
+  }
+
+  // Get a setup link by token
+  if (token) {
+    const setupLink = await setupLinkController.getByToken(token);
+
+    return res.json({ data: setupLink });
+  }
+
+  // Get a setup link by service
+  if (service) {
+    const setupLink = await setupLinkController.getByService(service);
+
+    return res.json({ data: setupLink });
   }
 };
 

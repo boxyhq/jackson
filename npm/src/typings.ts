@@ -681,7 +681,7 @@ export interface WebhookEventLog extends DirectorySyncEvent {
 export type SetupLinkCreatePayload = {
   tenant: string;
   product: string;
-  service: 'sso' | 'dsync';
+  service: SetupLinkService;
   regenerate?: boolean;
 };
 
@@ -694,7 +694,7 @@ export type SetupLink = {
   tenant: string;
   product: string;
   url: string;
-  service: string;
+  service: SetupLinkService;
   validTill: number;
 };
 
@@ -702,13 +702,5 @@ export type ApiResponse<T> = {
   data: T | null;
   error: ApiError | null;
 };
-
-export interface ISetupLinkController {
-  create(body: SetupLinkCreatePayload): Promise<ApiResponse<SetupLink>>;
-  getAll(): Promise<ApiResponse<SetupLink[]>>;
-  getByService(service): Promise<ApiResponse<SetupLink[]>>;
-  getByToken(token): Promise<ApiResponse<SetupLink>>;
-  remove(key: string): Promise<ApiResponse<boolean>>;
-}
 
 export type SetupLinkService = 'sso' | 'dsync';
