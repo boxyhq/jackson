@@ -50,7 +50,7 @@ const Events: NextPage = () => {
   return (
     <div>
       <LinkBack href='/admin/retraced/projects' />
-      <div className='mb-5 flex items-center justify-between'>
+      <div className='mb-2 mt-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{project?.name}</h2>
       </div>
       <div className='flex space-x-2'>

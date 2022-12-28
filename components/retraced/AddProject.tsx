@@ -57,7 +57,7 @@ const AddProject = () => {
   return (
     <>
       <LinkBack href='/admin/retraced/projects' />
-      <div>
+      <div className='mt-5'>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>Create Project</h2>
         <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
           <form onSubmit={createProject}>
