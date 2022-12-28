@@ -5,9 +5,8 @@ import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { IconButton } from '@components/IconButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
-import { Pagination } from '@components/Pagination';
+import { Pagination, pageLimit } from '@components/Pagination';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
-import { pageLimit } from '@components/Pagination';
 
 type ConnectionListProps = {
   connections: (SAMLSSORecord | OIDCSSORecord)[];
