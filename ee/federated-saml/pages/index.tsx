@@ -1,7 +1,6 @@
 import type { NextPage } from 'next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import useSWR from 'swr';
-import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 
 import type { ApiError, ApiSuccess } from 'types';
@@ -11,9 +10,13 @@ import EmptyState from '@components/EmptyState';
 import LicenseRequired from '@components/LicenseRequired';
 import { errorToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { PlusIcon } from '@heroicons/react/24/outline';
 import { pageLimit, Pagination } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
+import { LinkOutline } from '@components/LinkOutline';
+import { IconButton } from '@components/IconButton';
+import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
+import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
+import router from 'next/router';
 
 const AppsList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -40,9 +43,14 @@ const AppsList: NextPage = () => {
     <LicenseRequired>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('saml_federation_apps')}</h2>
-        <LinkPrimary Icon={PlusIcon} href='/admin/federated-saml/new'>
-          {t('new_saml_federation_app')}
-        </LinkPrimary>
+        <div className='flex'>
+          <LinkPrimary className='m-2' Icon={PlusIcon} href='/admin/federated-saml/new'>
+            {t('new_saml_federation_app')}
+          </LinkPrimary>
+          <LinkOutline href={'/.well-known/idp-configuration'} target='_blank' className='m-2'>
+            {t('view_idp_configuration')}
+          </LinkOutline>
+        </div>
       </div>
       {noApps ? (
         <>
@@ -64,7 +72,7 @@ const AppsList: NextPage = () => {
                     {t('product')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
-                    {t('metadata')}
+                    {t('actions')}
                   </th>
                 </tr>
               </thead>
@@ -75,22 +83,20 @@ const AppsList: NextPage = () => {
                       <tr
                         key={app.id}
                         className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                        <td className='px-6 py-3'>
-                          <Link
-                            href={`/admin/federated-saml/${app.id}/edit`}
-                            className='link-primary link underline-offset-4'>
-                            {app.name}
-                          </Link>
-                        </td>
+                        <td className='px-6 py-3'>{app.name}</td>
                         <td className='px-6 py-3'>{app.tenant}</td>
                         <td className='px-6'>{app.product}</td>
                         <td className='px-6'>
-                          <Link
-                            href={`/.well-known/idp-configuration`}
-                            target='_blank'
-                            className='link underline-offset-4 hover:link-primary'>
-                            {t('view')}
-                          </Link>
+                          <span className='inline-flex items-baseline'>
+                            <IconButton
+                              tooltip={t('edit')}
+                              Icon={PencilIcon}
+                              className='hover:text-green-200'
+                              onClick={() => {
+                                router.push(`/admin/federated-saml/${app.id}/edit`);
+                              }}
+                            />
+                          </span>
                         </td>
                       </tr>
                     );
