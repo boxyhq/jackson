@@ -14,6 +14,7 @@ import { LinkPrimary } from '@components/LinkPrimary';
 import { IconButton } from '@components/IconButton';
 import { Pagination, pageLimit } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
+import Loading from '@components/Loading';
 
 const LinkList = ({ service }) => {
   const { paginate, setPaginate } = usePaginate();
@@ -46,7 +47,7 @@ const LinkList = ({ service }) => {
   };
 
   if (!links) {
-    return null;
+    return <Loading />;
   }
   return (
     <div>

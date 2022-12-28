@@ -10,16 +10,12 @@ const SetupLinks: NextPage = () => {
     : router.asPath.includes('directory-sync')
     ? 'dsync'
     : '';
-  
-  if (!service) {
+
+  if (service.length === 0) {
     return null;
   }
 
-  return (
-    <LinkList
-      service={service}
-    />
-  );
+  return <LinkList service={service} />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
