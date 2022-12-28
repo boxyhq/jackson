@@ -1,49 +1,59 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import jackson, { GetConnectionsQuery } from '@lib/jackson';
+import jackson from '@lib/jackson';
 import { strategyChecker } from '@lib/utils';
+import type { SetupLink } from '@boxyhq/saml-jackson';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
   const { setupLinkController } = await jackson();
-  const token = req.query.token;
-  const { data: setup, error: err } = await setupLinkController.getByToken(token);
-  if (err || !setup) {
-    res.status(err ? err.code : 401).json({ err });
-  } else {
+
+  const { method } = req;
+  const { token } = req.query as { token: string };
+
+  try {
+    const setupLink = await setupLinkController.getByToken(token);
+
     switch (method) {
       case 'GET':
-        return handleGET(res, setup);
+        return await handleGET(req, res, setupLink);
       case 'POST':
-        return handlePOST(req, res, setup);
+        return await handlePOST(req, res, setupLink);
       case 'PATCH':
-        return handlePATCH(req, res, setup);
+        return await handlePATCH(req, res, setupLink);
       case 'DELETE':
-        return handleDELETE(req, res, setup);
+        return await handleDELETE(req, res, setupLink);
       default:
         res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
-        res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
     }
+  } catch (error: any) {
+    const { message, statusCode = 500 } = error;
+
+    return res.status(statusCode).json({ error: { message } });
   }
 };
 
-const handleGET = async (res: NextApiResponse, setup: any) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { connectionAPIController } = await jackson();
-  return res.json({
-    data: await connectionAPIController.getConnections({
-      tenant: setup.tenant,
-      product: setup.product,
-    } as GetConnectionsQuery),
+
+  const connections = await connectionAPIController.getConnections({
+    tenant: setupLink.tenant,
+    product: setupLink.product,
   });
+
+  return res.json({ data: connections });
 };
 
-const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setup: any) => {
+const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { connectionAPIController } = await jackson();
+
   const body = {
     ...req.body,
-    tenant: setup?.tenant,
-    product: setup?.product,
+    tenant: setupLink.tenant,
+    product: setupLink.product,
   };
+
   const { isSAML, isOIDC } = strategyChecker(req);
+
   if (isSAML) {
     return res.status(201).json({ data: await connectionAPIController.createSAMLConnection(body) });
   } else if (isOIDC) {
@@ -53,29 +63,35 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setup: any)
   }
 };
 
-const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setup: any) => {
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { connectionAPIController } = await jackson();
+
   const body = {
     ...req.body,
-    tenant: setup?.tenant,
-    product: setup?.product,
+    tenant: setupLink.tenant,
+    product: setupLink.product,
   };
-  await await connectionAPIController.deleteConnections(body);
-  res.status(200).json({ data: null });
+
+  await connectionAPIController.deleteConnections(body);
+
+  return res.json({ data: null });
 };
 
-const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setup: any) => {
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { connectionAPIController } = await jackson();
+
   const body = {
     ...req.body,
-    tenant: setup?.tenant,
-    product: setup?.product,
+    tenant: setupLink.tenant,
+    product: setupLink.product,
   };
+
   const { isSAML, isOIDC } = strategyChecker(req);
+
   if (isSAML) {
-    res.status(200).json({ data: await connectionAPIController.updateSAMLConnection(body) });
+    res.json({ data: await connectionAPIController.updateSAMLConnection(body) });
   } else if (isOIDC) {
-    res.status(200).json({ data: await connectionAPIController.updateOIDCConnection(body) });
+    res.json({ data: await connectionAPIController.updateOIDCConnection(body) });
   } else {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }

@@ -1,4 +1,4 @@
-import { Directory } from '@lib/jackson';
+import { Directory } from '@boxyhq/saml-jackson';
 import DirectoryTab from './DirectoryTab';
 import { useTranslation } from 'next-i18next';
 import { InputWithCopyButton } from '@components/ClipboardButton';
