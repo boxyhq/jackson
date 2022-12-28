@@ -1,6 +1,6 @@
 import type { Storable, DatabaseStore } from '../typings';
 import { storeNamespacePrefix } from '../controller/utils';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export class Base {
   protected db: DatabaseStore;
@@ -43,6 +43,6 @@ export class Base {
   }
 
   createId(): string {
-    return uuidv4();
+    return randomUUID();
   }
 }

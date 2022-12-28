@@ -612,7 +612,7 @@ export interface IDirectoryGroups {
 
 export interface IWebhookEventsLogger extends Base {
   log(directory: Directory, event: DirectorySyncEvent): Promise<WebhookEventLog>;
-  getAll(): Promise<WebhookEventLog[]>;
+  getAll({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }): Promise<WebhookEventLog[]>;
   get(id: string): Promise<WebhookEventLog>;
   clear(): Promise<void>;
   delete(id: string): Promise<void>;
