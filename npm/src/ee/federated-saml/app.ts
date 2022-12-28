@@ -115,8 +115,14 @@ export class App {
   }
 
   // Get all apps
-  public async getAll(): Promise<SAMLFederationApp[]> {
-    const apps = (await this.store.getAll()) as SAMLFederationApp[];
+  public async getAll({
+    pageOffset,
+    pageLimit,
+  }: {
+    pageOffset: number;
+    pageLimit: number;
+  }): Promise<SAMLFederationApp[]> {
+    const apps = (await this.store.getAll(pageOffset, pageLimit)) as SAMLFederationApp[];
 
     return apps.map((app) => ({ ...app }));
   }
