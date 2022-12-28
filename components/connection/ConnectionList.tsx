@@ -3,28 +3,23 @@ import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { Pagination } from '@components/Pagination';
 import { IconButton } from '@components/IconButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
-
-type Connection = {
-  name: string;
-  tenant: string;
-  product: string;
-  clientID: string;
-  idpMetadata?: any;
-  oidcProvider?: any;
-};
+import { Pagination } from '@components/Pagination';
+import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import { pageLimit } from '@components/Pagination';
 
 type ConnectionListProps = {
+  connections: (SAMLSSORecord | OIDCSSORecord)[];
   setupToken?: string;
-  connections: Connection[];
-  paginate: any;
-  setPaginate: any;
   idpEntityID?: string;
+  paginate: {
+    offset: number;
+  };
+  setPaginate: (paginate: { offset: number }) => void;
 };
 
-const Connections = ({
+const ConnectionList = ({
   paginate,
   setPaginate,
   connections,
@@ -42,6 +37,9 @@ const Connections = ({
     router.replace(`/setup/${setupToken}/sso-connection/new`);
     return null;
   }
+
+  const displayTenantProduct = setupToken ? false : true;
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
@@ -70,7 +68,7 @@ const Connections = ({
           </div>
         </div>
       )}
-      {connections.length === 0 ? (
+      {connections.length === 0 && paginate.offset === 0 ? (
         <EmptyState
           title={t('no_connections_found')}
           href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
@@ -84,7 +82,7 @@ const Connections = ({
                   <th scope='col' className='px-6 py-3'>
                     {t('name')}
                   </th>
-                  {!setupToken && (
+                  {displayTenantProduct && (
                     <>
                       <th scope='col' className='px-6 py-3'>
                         {t('tenant')}
@@ -104,10 +102,9 @@ const Connections = ({
               </thead>
               <tbody>
                 {connections.map((connection) => {
-                  const connectionIsSAML =
-                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
-                  const connectionIsOIDC =
-                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
+                  const connectionIsSAML = 'idpMetadata' in connection;
+                  const connectionIsOIDC = 'oidcProvider' in connection;
+
                   return (
                     <tr
                       key={connection.clientID}
@@ -118,7 +115,7 @@ const Connections = ({
                             ? connection.idpMetadata?.provider
                             : connection.oidcProvider?.provider)}
                       </td>
-                      {!setupToken && (
+                      {displayTenantProduct && (
                         <>
                           <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
                             {connection.tenant}
@@ -154,26 +151,23 @@ const Connections = ({
             </table>
           </div>
           <Pagination
-            prevDisabled={paginate.page === 0}
-            nextDisabled={connections.length === 0 || connections.length < paginate.pageLimit}
-            onPrevClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page - 1) * paginate.pageLimit,
-                page: curState.page - 1,
-              }))
-            }
-            onNextClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page + 1) * paginate.pageLimit,
-                page: curState.page + 1,
-              }))
-            }></Pagination>
+            itemsCount={connections.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
         </>
       )}
     </div>
   );
 };
 
-export default Connections;
+export default ConnectionList;

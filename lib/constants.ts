@@ -1,3 +1,4 @@
-const sessionName = 'next-auth.saml-jackson';
+export const sessionName = 'next-auth.saml-jackson';
 
-export { sessionName };
+// Default limit for paginated queries
+export const perPage = 2;
