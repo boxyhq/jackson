@@ -1,22 +1,23 @@
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';
 
 type CreateDirectoryProps = {
-  providers: any;
   token?: string;
 };
 
-const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
+const CreateDirectory = ({ token }: CreateDirectoryProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const [loading, setLoading] = React.useState(false);
-  const [directory, setDirectory] = React.useState({
+  const { providers } = useDirectoryProviders();
+  const [loading, setLoading] = useState(false);
+  const [directory, setDirectory] = useState({
     name: '',
     tenant: '',
     product: '',
@@ -96,13 +97,14 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
                 <span className='label-text'>{t('directory_provider')}</span>
               </label>
               <select className='select-bordered select w-full' id='type' onChange={onChange} required>
-                {Object.keys(providers).map((key) => {
-                  return (
-                    <option key={key} value={key}>
-                      {providers[key]}
-                    </option>
-                  );
-                })}
+                {providers &&
+                  Object.keys(providers).map((key) => {
+                    return (
+                      <option key={key} value={key}>
+                        {providers[key]}
+                      </option>
+                    );
+                  })}
               </select>
             </div>
             {!token && (

@@ -146,7 +146,7 @@ const Events: NextPage = () => {
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { locale }: GetServerSidePropsContext = context;
+  const { locale } = context;
 
   return {
     props: {

@@ -9,7 +9,7 @@ type PaginationProps = {
   onNextClick: () => void;
 };
 
-export const pageLimit = 3;
+export const pageLimit = 15;
 
 export const Pagination = ({ itemsCount, offset, onPrevClick, onNextClick }: PaginationProps) => {
   const { t } = useTranslation('common');

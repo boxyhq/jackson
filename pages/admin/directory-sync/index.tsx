@@ -1,4 +1,4 @@
-import type { GetServerSidePropsContext, NextPage } from 'next';
+import type { GetStaticPropsContext, NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import useSWR from 'swr';
 import type { Directory } from '@boxyhq/saml-jackson';
@@ -32,8 +32,8 @@ const Index: NextPage = () => {
   return <DirectoryList directories={directories} paginate={paginate} setPaginate={setPaginate} />;
 };
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { locale }: GetServerSidePropsContext = context;
+export const getStaticProps = async (context: GetStaticPropsContext) => {
+  const { locale } = context;
 
   return {
     props: {
