@@ -53,7 +53,7 @@ const UsersList: NextPage = () => {
 
   return (
     <>
-      <LinkBack />
+      <LinkBack href='/admin/directory-sync' />
       <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='users' />
