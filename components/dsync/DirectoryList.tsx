@@ -27,7 +27,7 @@ const DirectoryList = ({ directories, token, paginate, setPaginate }: DirectoryL
     <>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
-        <div>
+        <div className='flex gap-2'>
           <LinkPrimary
             Icon={PlusIcon}
             href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}>
