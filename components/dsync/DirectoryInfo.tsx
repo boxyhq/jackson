@@ -23,18 +23,18 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
       <div className='w-full md:w-3/4'>
         <DirectoryTab directory={directory} activeTab='directory' token={token} />
         <div className='my-3 rounded border'>
-          <dl>
-            <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+          <dl className='divide-y'>
+            <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
               <dt className='text-sm font-medium text-gray-500'>{t('directory_id')}</dt>
               <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.id}</dd>
             </div>
             {displayTenantProduct && (
               <>
-                <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
                   <dt className='text-sm font-medium text-gray-500'>{t('tenant')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.tenant}</dd>
                 </div>
-                <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
                   <dt className='text-sm font-medium text-gray-500'>{t('product')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.product}</dd>
                 </div>
@@ -42,7 +42,7 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
             )}
             {displayWebhook && (
               <>
-                <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
                   <dt className='text-sm font-medium text-gray-500'>{t('webhook_endpoint')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {directory.webhook.endpoint}

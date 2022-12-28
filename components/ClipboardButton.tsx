@@ -27,7 +27,13 @@ export const InputWithCopyButton = ({ text, label }: { text: string; label: stri
         <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>{label}</label>
         <CopyToClipboardButton text={text} />
       </div>
-      <input type='text' defaultValue={text} key={text} readOnly className='input-bordered input w-full' />
+      <input
+        type='text'
+        defaultValue={text}
+        key={text}
+        readOnly
+        className='input-bordered input w-full text-sm'
+      />
     </>
   );
 };

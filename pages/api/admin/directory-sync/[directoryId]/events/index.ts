@@ -20,7 +20,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { directoryId } = req.query as { directoryId: string };
+  const { directoryId, offset, limit } = req.query as { directoryId: string; offset: string; limit: string };
 
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
@@ -31,6 +31,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!directory) {
     return res.status(404).json({ error: { message: 'Directory not found.' } });
   }
+
+  const pageOffset = parseInt(offset);
+  const pageLimit = parseInt(limit);
 
   const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll();
 

@@ -18,7 +18,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { directoryId, offset } = req.query as { directoryId: string; offset: string };
+  const { directoryId, offset, limit } = req.query as { directoryId: string; offset: string; limit: string };
 
   const { data: directory } = await directorySyncController.directories.get(directoryId);
 
@@ -27,7 +27,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const pageOffset = parseInt(offset);
-  const pageLimit = 25;
+  const pageLimit = parseInt(limit);
 
   const { data: users, error } = await directorySyncController.users
     .with(directory.tenant, directory.product)

@@ -16,21 +16,21 @@ import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
+import { Pagination, pageLimit } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkBack } from '@components/LinkBack';
 
 const UsersList: NextPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
+  const { paginate, setPaginate } = usePaginate();
 
-  const { directoryId, offset } = router.query as { directoryId: string; offset: string };
-
-  const pageOffset = parseInt(offset) || 0;
-  const pageLimit = 25;
+  const { directoryId } = router.query as { directoryId: string };
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
   const { data: usersData, error: usersError } = useSWR<ApiSuccess<User[]>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}/users?offset=${pageOffset}`,
+    `/api/admin/directory-sync/${directoryId}/users?offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher
   );
 
@@ -53,61 +53,77 @@ const UsersList: NextPage = () => {
 
   return (
     <>
-      <LinkBack href='/admin/directory-sync' />
-      <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
-      <div className='w-full md:w-3/4'>
+      <LinkBack />
+      <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
+      <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='users' />
-        {users.length === 0 && pageOffset === 0 ? (
+        {users.length === 0 && paginate.offset === 0 ? (
           <EmptyState title={t('no_users_found')} />
         ) : (
-          <div className='my-3 rounded border'>
-            <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
-              <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('first_name')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('last_name')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('email')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('status')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => {
-                  return (
-                    <tr
-                      key={user.id}
-                      className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
-                      <td className='px-6 py-3'>{user.first_name}</td>
-                      <td className='px-6 py-3'>{user.last_name}</td>
-                      <td className='px-6 py-3'>{user.email}</td>
-                      <td className='px-6 py-3'>
-                        {user.active ? (
-                          <Badge vairant='success'>{t('active')}</Badge>
-                        ) : (
-                          <Badge vairant='warning'>{t('suspended')}</Badge>
-                        )}
-                      </td>
-                      <td className='px-6 py-3'>
-                        <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
-                          <EyeIcon className='h-5 w-5' />
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className='my-3 rounded border'>
+              <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
+                <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
+                  <tr>
+                    <th scope='col' className='px-6 py-3'>
+                      {t('first_name')}
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      {t('last_name')}
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      {t('email')}
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      {t('status')}
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      {t('actions')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => {
+                    return (
+                      <tr
+                        key={user.id}
+                        className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
+                        <td className='px-6 py-3'>{user.first_name}</td>
+                        <td className='px-6 py-3'>{user.last_name}</td>
+                        <td className='px-6 py-3'>{user.email}</td>
+                        <td className='px-6 py-3'>
+                          {user.active ? (
+                            <Badge vairant='success'>{t('active')}</Badge>
+                          ) : (
+                            <Badge vairant='warning'>{t('suspended')}</Badge>
+                          )}
+                        </td>
+                        <td className='px-6 py-3'>
+                          <Link href={`/admin/directory-sync/${directory.id}/users/${user.id}`}>
+                            <EyeIcon className='h-5 w-5' />
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <Pagination
+              itemsCount={users.length}
+              offset={paginate.offset}
+              onPrevClick={() => {
+                setPaginate({
+                  offset: paginate.offset - pageLimit,
+                });
+              }}
+              onNextClick={() => {
+                setPaginate({
+                  offset: paginate.offset + pageLimit,
+                });
+              }}
+            />
+          </>
         )}
       </div>
     </>
