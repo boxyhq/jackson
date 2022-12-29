@@ -7,7 +7,7 @@ const sentKey = 'lastSent';
 
 export class AnalyticsController {
   analyticsStore: Storable;
-  client: any;
+  client: Mixpanel.Mixpanel;
   anonymousId: string;
 
   constructor({ analyticsStore }) {
@@ -38,11 +38,22 @@ export class AnalyticsController {
 
   async send() {
     try {
-      await this.client.track(idKey, {
-        distinct_id: this.anonymousId,
-      });
+      this.client.track(
+        idKey,
+        {
+          distinct_id: this.anonymousId,
+        },
+        (err: Error | undefined) => {
+          if (err) {
+            setTimeout(() => {
+              this.send();
+            }, 1000 * 60 * 60);
+            return;
+          }
 
-      await this.analyticsStore.put(sentKey, new Date().toISOString());
+          this.analyticsStore.put(sentKey, new Date().toISOString());
+        }
+      );
     } catch (err) {
       console.error('Error sending analytics', err);
     }
