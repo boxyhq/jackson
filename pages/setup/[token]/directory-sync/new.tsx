@@ -4,7 +4,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import CreateDirectory from '@components/dsync/CreateDirectory';
 
-const CreateDirectoryPage: NextPage = () => {
+const DirectoryCreatePage: NextPage = () => {
   const router = useRouter();
 
   const { token } = router.query as { token: string };
@@ -20,4 +20,4 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   };
 };
 
-export default CreateDirectoryPage;
+export default DirectoryCreatePage;

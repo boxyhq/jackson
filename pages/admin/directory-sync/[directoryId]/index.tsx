@@ -3,7 +3,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import DirectoryInfo from '@components/dsync/DirectoryInfo';
 
-const Info: NextPage = () => {
+const DirectoryInfoPage: NextPage = () => {
   const router = useRouter();
 
   const { directoryId } = router.query as { directoryId: string };
@@ -21,4 +21,4 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   };
 };
 
-export default Info;
+export default DirectoryInfoPage;

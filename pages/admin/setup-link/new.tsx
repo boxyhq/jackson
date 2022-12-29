@@ -9,7 +9,7 @@ const serviceMaps = {
   'directory-sync': 'dsync',
 };
 
-const NewSetupLinkPage: NextPage = () => {
+const SetupLinkCreatePage: NextPage = () => {
   const router = useRouter();
 
   // Extract the service name from the path
@@ -32,4 +32,4 @@ export async function getServerSideProps({ locale }: GetServerSidePropsContext) 
   };
 }
 
-export default NewSetupLinkPage;
+export default SetupLinkCreatePage;
