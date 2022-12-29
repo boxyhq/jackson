@@ -31,7 +31,7 @@ const ConnectionEditPage: NextPage = () => {
 
   const connection = data.data;
 
-  return <EditConnection connection={connection} setupToken={token} />;
+  return <EditConnection connection={connection} setupLinkToken={token} />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {

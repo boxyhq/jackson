@@ -49,7 +49,7 @@ const CreateConnection = ({
       formObj: formObj,
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
-      setupToken: setupLinkToken,
+      setupLinkToken,
       callback: async (rawResponse) => {
         setLoading(false);
 

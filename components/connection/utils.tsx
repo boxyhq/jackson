@@ -6,14 +6,14 @@ export const saveConnection = async ({
   isEditView,
   connectionIsSAML,
   connectionIsOIDC,
-  setupToken,
+  setupLinkToken,
   callback,
 }: {
   formObj: Record<string, string>;
   isEditView?: boolean;
   connectionIsSAML: boolean;
   connectionIsOIDC: boolean;
-  setupToken?: string;
+  setupLinkToken?: string;
   callback: (res: Response) => void;
 }) => {
   const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
@@ -26,21 +26,24 @@ export const saveConnection = async ({
   const encodedRawMetadata = btoa(rawMetadata || '');
   const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-  const res = await fetch(setupToken ? `/api/setup/${setupToken}/sso-connection` : '/api/admin/connections', {
-    method: isEditView ? 'PATCH' : 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...rest,
-      encodedRawMetadata: connectionIsSAML ? encodedRawMetadata : undefined,
-      oidcDiscoveryUrl: connectionIsOIDC ? oidcDiscoveryUrl : undefined,
-      oidcClientId: connectionIsOIDC ? oidcClientId : undefined,
-      oidcClientSecret: connectionIsOIDC ? oidcClientSecret : undefined,
-      redirectUrl: JSON.stringify(redirectUrlList),
-      metadataUrl: connectionIsSAML ? metadataUrl : undefined,
-    }),
-  });
+  const res = await fetch(
+    setupLinkToken ? `/api/setup/${setupLinkToken}/sso-connection` : '/api/admin/connections',
+    {
+      method: isEditView ? 'PATCH' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...rest,
+        encodedRawMetadata: connectionIsSAML ? encodedRawMetadata : undefined,
+        oidcDiscoveryUrl: connectionIsOIDC ? oidcDiscoveryUrl : undefined,
+        oidcClientId: connectionIsOIDC ? oidcClientId : undefined,
+        oidcClientSecret: connectionIsOIDC ? oidcClientSecret : undefined,
+        redirectUrl: JSON.stringify(redirectUrlList),
+        metadataUrl: connectionIsSAML ? metadataUrl : undefined,
+      }),
+    }
+  );
   callback(res);
 };
 export function fieldCatalogFilterByConnection(connection) {
