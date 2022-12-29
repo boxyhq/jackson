@@ -56,6 +56,11 @@ const jacksonOptions: JacksonOption = {
   },
   boxyhqLicenseKey: process.env.BOXYHQ_LICENSE_KEY,
   retraced,
+  noAnalytics:
+    process.env.DO_NOT_TRACK === '1' ||
+    process.env.DO_NOT_TRACK === 'true' ||
+    process.env.BOXYHQ_NO_ANALYTICS === '1' ||
+    process.env.BOXYHQ_NO_ANALYTICS === 'true',
 };
 
 export { retraced as retracedOptions };

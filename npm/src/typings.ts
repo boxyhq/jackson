@@ -343,6 +343,7 @@ export interface JacksonOption {
     host?: string;
     adminToken?: string;
   };
+  noAnalytics?: boolean;
 }
 
 export interface SLORequestParams {
