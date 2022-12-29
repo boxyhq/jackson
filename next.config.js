@@ -4,9 +4,6 @@ const { i18n } = require('./next-i18next.config');
 
 module.exports = {
   productionBrowserSourceMaps: true,
-  experimental: {
-    enableUndici: true,
-  },
   reactStrictMode: true,
   i18n,
   output: 'standalone',
