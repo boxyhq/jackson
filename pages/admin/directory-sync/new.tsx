@@ -3,7 +3,7 @@ import React from 'react';
 import CreateDirectory from '@components/dsync/CreateDirectory';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const New: NextPage = () => {
+const DirectoryCreatePage: NextPage = () => {
   return <CreateDirectory />;
 };
 
@@ -17,4 +17,4 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   };
 };
 
-export default New;
+export default DirectoryCreatePage;

@@ -3,8 +3,10 @@ import type { DirectorySyncProviders } from '@boxyhq/saml-jackson';
 import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 
-const useDirectoryProviders = () => {
-  const url = '/api/admin/directory-sync/providers';
+const useDirectoryProviders = (setupLinkToken?: string) => {
+  const url = setupLinkToken
+    ? `/api/setup/${setupLinkToken}/directory-sync/providers`
+    : '/api/admin/directory-sync/providers';
 
   const { data, error } = useSWR<ApiSuccess<DirectorySyncProviders>, ApiError>(url, fetcher);
 

@@ -8,51 +8,64 @@ import { LinkPrimary } from '@components/LinkPrimary';
 import { IconButton } from '@components/IconButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import { Pagination, pageLimit } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
-
-type ConnectionListProps = {
-  connections: (SAMLSSORecord | OIDCSSORecord)[];
-  setupToken?: string;
-  idpEntityID?: string;
-  paginate: {
-    offset: number;
-  };
-  setPaginate: (paginate: { offset: number }) => void;
-};
+import useSWR from 'swr';
+import { fetcher } from '@lib/ui/utils';
+import Loading from '@components/Loading';
+import { errorToast } from '@components/Toaster';
+import type { ApiError, ApiSuccess } from 'types';
 
 const ConnectionList = ({
-  paginate,
-  setPaginate,
-  connections,
-  setupToken,
+  setupLinkToken,
   idpEntityID,
-}: ConnectionListProps) => {
+}: {
+  setupLinkToken?: string;
+  idpEntityID?: string;
+}) => {
   const { t } = useTranslation('common');
+  const { paginate, setPaginate } = usePaginate();
   const router = useRouter();
 
-  if (!connections) {
+  const displayTenantProduct = setupLinkToken ? false : true;
+  const getConnectionsUrl = setupLinkToken
+    ? `/api/setup/${setupLinkToken}/sso-connection`
+    : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
+  const createConnectionUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}/sso-connection/new`
+    : '/admin/sso-connection/new';
+
+  const { data, error } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
+    getConnectionsUrl,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+
+  if (!data) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
     return null;
   }
 
-  if (connections.length === 0 && setupToken) {
-    router.replace(`/setup/${setupToken}/sso-connection/new`);
+  const connections = data.data || [];
+
+  if (connections && setupLinkToken && connections.length === 0) {
+    router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
     return null;
   }
-
-  const displayTenantProduct = setupToken ? false : true;
 
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
         <div className='flex gap-2'>
-          <LinkPrimary
-            Icon={PlusIcon}
-            href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
-            data-test-id='create-connection'>
+          <LinkPrimary Icon={PlusIcon} href={createConnectionUrl} data-test-id='create-connection'>
             {t('new_connection')}
           </LinkPrimary>
-          {!setupToken && (
+          {!setupLinkToken && (
             <LinkPrimary
               Icon={LinkIcon}
               href='/admin/sso-connection/setup-link/new'
@@ -62,7 +75,7 @@ const ConnectionList = ({
           )}
         </div>
       </div>
-      {idpEntityID && setupToken && (
+      {idpEntityID && setupLinkToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>
             <InputWithCopyButton text={idpEntityID} label={t('idp_entity_id')} />
@@ -70,10 +83,7 @@ const ConnectionList = ({
         </div>
       )}
       {connections.length === 0 && paginate.offset === 0 ? (
-        <EmptyState
-          title={t('no_connections_found')}
-          href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
-        />
+        <EmptyState title={t('no_connections_found')} href={createConnectionUrl} />
       ) : (
         <>
           <div className='rounder border'>
@@ -137,8 +147,8 @@ const ConnectionList = ({
                             className='hover:text-green-200'
                             onClick={() => {
                               router.push(
-                                setupToken
-                                  ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
+                                setupLinkToken
+                                  ? `/setup/${setupLinkToken}/sso-connection/edit/${connection.clientID}`
                                   : `/admin/sso-connection/edit/${connection.clientID}`
                               );
                             }}
