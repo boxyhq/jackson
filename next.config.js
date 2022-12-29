@@ -60,7 +60,11 @@ module.exports = {
       },
       {
         source: '/admin/directory-sync/setup-link',
-        destination: '/admin/sso-connection/setup-link',
+        destination: '/admin/setup-link',
+      },
+      {
+        source: '/admin/sso-connection/setup-link',
+        destination: '/admin/setup-link',
       },
       {
         source: '/admin/sso-connection/setup-link/new',

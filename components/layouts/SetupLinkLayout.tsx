@@ -8,7 +8,7 @@ import InvalidSetupLinkAlert from '@components/setup-link/InvalidSetupLinkAlert'
 import Loading from '@components/Loading';
 import useSetupLink from '@lib/ui/hooks/useSetupLink';
 
-export const SetupLayout = ({ children }: { children: React.ReactNode }) => {
+export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   const { token } = router.query as { token: string };

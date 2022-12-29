@@ -5,76 +5,99 @@ import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { successToast } from '@components/Toaster';
 import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
-import { deleteLink, regenerateLink } from '@components/connection/utils';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { IconButton } from '@components/IconButton';
 import { Pagination, pageLimit } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import Loading from '@components/Loading';
+import type { SetupLinkService, SetupLink } from '@boxyhq/saml-jackson';
+import type { ApiError, ApiSuccess } from 'types';
 
-const SetupLinkList = ({ service }) => {
+const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
   const { paginate, setPaginate } = usePaginate();
-  const [queryParam, setQueryParam] = useState('');
-  useEffect(() => {
-    setQueryParam(`?service=${service}`);
-  }, [service]);
-  // const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data, mutate } = useSWR<any>(queryParam ? [`/api/admin/setup-links`, queryParam] : [], fetcher, {
-    revalidateOnFocus: false,
-  });
-  const links = data?.data;
   const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
   const [showRegenConfirmModal, setShowRegenConfirmModal] = useState(false);
-  const toggleDelConfirmModal = () => setShowDelConfirmModal(!showDelConfirmModal);
-  const toggleRegenConfirmModal = () => setShowRegenConfirmModal(!showRegenConfirmModal);
-  const [actionId, setActionId] = useState(0);
-  const invokeRegenerate = async () => {
-    await regenerateLink(links[actionId], service);
-    toggleRegenConfirmModal();
+  const [selectedSetupLink, setSelectedSetupLink] = useState<SetupLink | null>(null);
+
+  const { data, error, mutate } = useSWR<ApiSuccess<SetupLink[]>, ApiError>(
+    `/api/admin/setup-links?service=${service}&offset=${paginate.offset}&limit=${pageLimit}`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
+
+  if (!data && !error) {
+    return <Loading />;
+  }
+
+  const setupLinks = data?.data || [];
+
+  // Regenerate a setup link
+  const regenerateSetupLink = async () => {
+    if (!selectedSetupLink) return;
+
+    await fetch('/api/admin/setup-links', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tenant: selectedSetupLink.tenant,
+        product: selectedSetupLink.product,
+        service: selectedSetupLink.service,
+        regenerate: true,
+      }),
+    });
+
     await mutate();
+    setSelectedSetupLink(null);
+    setShowRegenConfirmModal(false);
     successToast(t('link_regenerated'));
   };
-  const invokeDelete = async () => {
-    await deleteLink(links[actionId].setupID);
-    toggleDelConfirmModal();
+
+  // Delete a setup link
+  const deleteSetupLink = async () => {
+    if (!selectedSetupLink) return;
+
+    await fetch(`/api/admin/setup-links?setupID=${selectedSetupLink.setupID}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
     await mutate();
+    setSelectedSetupLink(null);
+    setShowDelConfirmModal(false);
     successToast(t('deleted'));
   };
 
-  if (!links) {
-    return <Loading />;
-  }
+  const createSetupLinkUrl =
+    service === 'sso' ? '/admin/sso-connection/setup-link/new' : '/admin/directory-sync/setup-link/new';
+  const title = service === 'sso' ? t('enterprise_sso') : t('directory_sync');
+  const description = service === 'sso' ? t('setup_link_sso_description') : t('setup_link_dsync_description');
+
   return (
     <div>
       <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>
-        {t('setup_links') + ' (' + (service === 'sso' ? t('enterprise_sso') : t('directory_sync')) + ')'}
+        {t('setup_links') + ' (' + title + ')'}
       </h2>
-
       <div className='mb-5 flex items-center justify-between'>
-        <h3>{service === 'sso' ? t('setup_link_sso_description') : t('setup_link_dsync_description')}</h3>
+        <h3>{description}</h3>
         <div>
-          <LinkPrimary
-            Icon={PlusIcon}
-            href={`/admin/${
-              service === 'sso' ? 'sso-connection' : service === 'dsync' ? 'directory-sync' : ''
-            }/setup-link/new`}
-            data-test-id='create-setup-link'>
+          <LinkPrimary Icon={PlusIcon} href={createSetupLinkUrl} data-test-id='create-setup-link'>
             {t('new_setup_link')}
           </LinkPrimary>
         </div>
       </div>
-      {links.length === 0 ? (
-        <EmptyState
-          title={t('no_setup_links_found')}
-          href={`/admin/${
-            service === 'sso' ? 'sso-connection' : service === 'dsync' ? 'directory-sync' : ''
-          }/setup-link/new`}
-        />
+      {setupLinks.length === 0 ? (
+        <EmptyState title={t('no_setup_links_found')} href={createSetupLinkUrl} />
       ) : (
         <>
           <div className='rounder border'>
@@ -96,20 +119,20 @@ const SetupLinkList = ({ service }) => {
                 </tr>
               </thead>
               <tbody>
-                {links.map((link, idx) => {
+                {setupLinks.map((setupLink) => {
                   return (
                     <tr
-                      key={link.setupID}
+                      key={setupLink.setupID}
                       className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
                       <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                        {link.tenant}
+                        {setupLink.tenant}
                       </td>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {link.product}
+                        {setupLink.product}
                       </td>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        <p className={new Date(link.validTill) < new Date() ? `text-red-400` : ``}>
-                          {new Date(link.validTill).toString()}
+                        <p className={new Date(setupLink.validTill) < new Date() ? `text-red-400` : ``}>
+                          {new Date(setupLink.validTill).toString()}
                         </p>
                       </td>
                       <td className='px-6 py-3'>
@@ -119,7 +142,7 @@ const SetupLinkList = ({ service }) => {
                             Icon={ClipboardDocumentIcon}
                             className='mr-3 hover:text-green-200'
                             onClick={() => {
-                              copyToClipboard(link.url);
+                              copyToClipboard(setupLink.url);
                               successToast(t('copied'));
                             }}
                           />
@@ -128,8 +151,8 @@ const SetupLinkList = ({ service }) => {
                             Icon={ArrowPathIcon}
                             className='mr-3 hover:text-green-200'
                             onClick={() => {
-                              setActionId(idx);
-                              toggleRegenConfirmModal();
+                              setSelectedSetupLink(setupLink);
+                              setShowRegenConfirmModal(true);
                             }}
                           />
                           <IconButton
@@ -137,8 +160,8 @@ const SetupLinkList = ({ service }) => {
                             Icon={TrashIcon}
                             className='mr-3 hover:text-red-900'
                             onClick={() => {
-                              setActionId(idx);
-                              toggleDelConfirmModal();
+                              setSelectedSetupLink(setupLink);
+                              setShowDelConfirmModal(true);
                             }}
                           />
                         </span>
@@ -150,7 +173,7 @@ const SetupLinkList = ({ service }) => {
             </table>
           </div>
           <Pagination
-            itemsCount={links.length}
+            itemsCount={setupLinks.length}
             offset={paginate.offset}
             onPrevClick={() => {
               setPaginate({
@@ -166,19 +189,23 @@ const SetupLinkList = ({ service }) => {
         </>
       )}
       <ConfirmationModal
-        title='Regenerate this setup link?'
-        description='This action cannot be undone. This will permanently delete the old setup link.'
+        title={t('regenerate_setup_link')}
+        description={t('regenerate_setup_link_description')}
         visible={showRegenConfirmModal}
-        onConfirm={invokeRegenerate}
+        onConfirm={regenerateSetupLink}
+        onCancel={() => {
+          setShowRegenConfirmModal(false);
+        }}
         actionButtonText={t('regenerate')}
-        onCancel={toggleRegenConfirmModal}
       />
       <ConfirmationModal
-        title='Delete this setup link?'
-        description='This action cannot be undone. This will permanently delete the setup link.'
+        title={t('delete_setup_link')}
+        description={t('delete_setup_link_description')}
         visible={showDelConfirmModal}
-        onConfirm={invokeDelete}
-        onCancel={toggleDelConfirmModal}
+        onConfirm={deleteSetupLink}
+        onCancel={() => {
+          setShowDelConfirmModal(false);
+        }}
       />
     </div>
   );

@@ -2,6 +2,7 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 import SetupLinkList from '@components/setup-link/SetupLinkList';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
+import type { SetupLinkService } from '@boxyhq/saml-jackson';
 
 const SetupLinksIndexPage: NextPage = () => {
   const router = useRouter();
@@ -15,7 +16,7 @@ const SetupLinksIndexPage: NextPage = () => {
     return null;
   }
 
-  return <SetupLinkList service={service} />;
+  return <SetupLinkList service={service as SetupLinkService} />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
