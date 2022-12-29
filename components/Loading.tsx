@@ -13,7 +13,7 @@ const Spinner = () => {
   return (
     <svg
       aria-hidden='true'
-      className='mr-2 h-10 w-10 animate-spin fill-primary text-gray-200'
+      className='h-10 w-10 animate-spin fill-primary text-gray-200'
       viewBox='0 0 100 101'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'>
