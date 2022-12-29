@@ -73,8 +73,6 @@ export class SetupLinkController {
       throw new JacksonError('Setup link is not found', 404);
     }
 
-    // throw new JacksonError('Setup link is expired', 401);
-
     if (this.isExpired(setupLink[0])) {
       throw new JacksonError('Setup link is expired', 401);
     }
