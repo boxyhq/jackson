@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { GetIDPEntityIDBody } from '@boxyhq/saml-jackson';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -10,17 +9,19 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return handleGET(req, res);
     default:
       res.setHeader('Allow', 'GET');
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
-  const idpEntityID = await connectionAPIController.getIDPEntityID({
+
+  const idpEntityID = connectionAPIController.getIDPEntityID({
     tenant: req.body.tenant,
     product: req.body.product,
-  } as GetIDPEntityIDBody);
-  return res.json({ data: idpEntityID, error: null });
+  });
+
+  return res.json({ data: { idpEntityID } });
 };
 
 export default handler;

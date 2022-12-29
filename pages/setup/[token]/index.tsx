@@ -7,7 +7,7 @@ import type { SetupLink } from '@boxyhq/saml-jackson';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
 
-const SetupPage: NextPage = () => {
+const SetupLinksIndexPage: NextPage = () => {
   const router = useRouter();
 
   const { token } = router.query as { token: string };
@@ -45,4 +45,4 @@ const SetupPage: NextPage = () => {
   return null;
 };
 
-export default SetupPage;
+export default SetupLinksIndexPage;

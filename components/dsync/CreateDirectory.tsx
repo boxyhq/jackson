@@ -8,14 +8,10 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';
 
-type CreateDirectoryProps = {
-  token?: string;
-};
-
-const CreateDirectory = ({ token }: CreateDirectoryProps) => {
+const CreateDirectory = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const { providers } = useDirectoryProviders(token);
+  const { providers } = useDirectoryProviders(setupLinkToken);
   const [loading, setLoading] = useState(false);
   const [directory, setDirectory] = useState({
     name: '',
@@ -32,7 +28,7 @@ const CreateDirectory = ({ token }: CreateDirectoryProps) => {
     setLoading(true);
 
     const rawResponse = await fetch(
-      token ? `/api/setup/${token}/directory-sync` : '/api/admin/directory-sync',
+      setupLinkToken ? `/api/setup/${setupLinkToken}/directory-sync` : '/api/admin/directory-sync',
       {
         method: 'POST',
         headers: {
@@ -53,8 +49,8 @@ const CreateDirectory = ({ token }: CreateDirectoryProps) => {
 
     if (rawResponse.ok) {
       router.replace(
-        token
-          ? `/setup/${token}/directory-sync/${response.data.id}`
+        setupLinkToken
+          ? `/setup/${setupLinkToken}/directory-sync/${response.data.id}`
           : `/admin/directory-sync/${response.data.id}`
       );
       successToast(t('directory_created_successfully'));
@@ -71,7 +67,7 @@ const CreateDirectory = ({ token }: CreateDirectoryProps) => {
     });
   };
 
-  const backUrl = token ? `/setup/${token}/directory-sync` : '/admin/directory-sync';
+  const backUrl = setupLinkToken ? `/setup/${setupLinkToken}/directory-sync` : '/admin/directory-sync';
 
   return (
     <div>
@@ -107,7 +103,7 @@ const CreateDirectory = ({ token }: CreateDirectoryProps) => {
                   })}
               </select>
             </div>
-            {!token && (
+            {!setupLinkToken && (
               <>
                 <div className='form-control w-full'>
                   <label className='label'>

@@ -33,7 +33,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
     product: setupLink.product,
   });
 
-  return res.json({ data: idpEntityID });
+  return res.json({ data: { idpEntityID } });
 };
 
 export default handler;
