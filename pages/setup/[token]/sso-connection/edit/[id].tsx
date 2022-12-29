@@ -3,42 +3,36 @@ import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { fetcher } from '@lib/ui/utils';
-import Edit from '@components/connection/Edit';
+import EditConnection from '@components/connection/EditConnection';
+import Loading from '@components/Loading';
+import { errorToast } from '@components/Toaster';
 
-const EditConnection: NextPage = () => {
+const ConnectionEditPage: NextPage = () => {
   const router = useRouter();
 
-  const { id, token } = router.query;
-  const { data } = useSWR<any>(token ? `/api/setup/${token}` : null, fetcher, {
-    revalidateOnFocus: false,
-  });
-  const setup = data?.data;
+  const { id, token } = router.query as { id: string; token: string };
 
-  const { data: connectionData, error } = useSWR(
-    token ? (id ? `/api/setup/${token}/connections/${id}` : null) : null,
+  const { data, error } = useSWR(
+    token ? (id ? `/api/setup/${token}/sso-connection/${id}` : null) : null,
     fetcher,
     {
       revalidateOnFocus: false,
     }
   );
 
-  const connection = connectionData?.data;
-  if (error) {
-    return (
-      <div className='rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700'>
-        {error.info ? JSON.stringify(error.info) : error.status}
-      </div>
-    );
+  if (!data && !error) {
+    return <Loading />;
   }
 
-  if (!token || !setup || !connection) {
+  if (error) {
+    errorToast(error.message);
     return null;
   }
 
-  return <Edit connection={connection} setupToken={token as string} />;
-};
+  const connection = data.data;
 
-export default EditConnection;
+  return <EditConnection connection={connection} setupToken={token} />;
+};
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
   return {
@@ -54,3 +48,5 @@ export async function getStaticPaths() {
     fallback: 'blocking',
   };
 }
+
+export default ConnectionEditPage;

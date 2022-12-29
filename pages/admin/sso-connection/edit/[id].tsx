@@ -3,14 +3,14 @@ import useSWR from 'swr';
 import { useRouter } from 'next/router';
 
 import { fetcher } from '@lib/ui/utils';
-import Edit from '@components/connection/Edit';
+import EditConnection from '@components/connection/EditConnection';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { ApiError, ApiSuccess } from 'types';
 import Loading from '@components/Loading';
 import { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import { errorToast } from '@components/Toaster';
 
-const EditConnection: NextPage = () => {
+const ConnectionEditPage: NextPage = () => {
   const router = useRouter();
 
   const { id } = router.query as { id: string };
@@ -32,7 +32,7 @@ const EditConnection: NextPage = () => {
     return null;
   }
 
-  return <Edit connection={data?.data} />;
+  return <EditConnection connection={data?.data} />;
 };
 
 export async function getServerSideProps({ locale }: GetServerSidePropsContext) {
@@ -43,4 +43,4 @@ export async function getServerSideProps({ locale }: GetServerSidePropsContext) 
   };
 }
 
-export default EditConnection;
+export default ConnectionEditPage;

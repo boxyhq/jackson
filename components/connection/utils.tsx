@@ -26,7 +26,7 @@ export const saveConnection = async ({
   const encodedRawMetadata = btoa(rawMetadata || '');
   const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
 
-  const res = await fetch(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections', {
+  const res = await fetch(setupToken ? `/api/setup/${setupToken}/sso-connection` : '/api/admin/connections', {
     method: isEditView ? 'PATCH' : 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -39,7 +39,7 @@ type EditProps = {
   setupToken?: string;
 };
 
-const Edit = ({ connection, setupToken }: EditProps) => {
+const EditConnection = ({ connection, setupToken }: EditProps) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
@@ -165,4 +165,4 @@ const Edit = ({ connection, setupToken }: EditProps) => {
   );
 };
 
-export default Edit;
+export default EditConnection;
