@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSidePropsContext, GetStaticPaths } from 'next';
+import type { NextPage, GetServerSidePropsContext } from 'next';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -48,9 +48,9 @@ export async function getStaticProps({ locale }: GetServerSidePropsContext) {
   };
 }
 
-export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+export async function getStaticPaths() {
   return {
     paths: [],
     fallback: 'blocking',
   };
-};
+}

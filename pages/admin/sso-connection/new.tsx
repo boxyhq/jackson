@@ -1,9 +1,9 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
-import Add from '@components/connection/Add';
+import CreateConnection from '@components/connection/CreateConnection';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const NewConnection: NextPage = () => {
-  return <Add />;
+  return <CreateConnection />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
