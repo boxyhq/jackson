@@ -1,27 +1,40 @@
-import { Directory } from '@boxyhq/saml-jackson';
 import DirectoryTab from './DirectoryTab';
 import { useTranslation } from 'next-i18next';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import { LinkBack } from '@components/LinkBack';
+import React from 'react';
+import useDirectory from '@lib/ui/hooks/useDirectory';
+import Loading from '@components/Loading';
+import { errorToast } from '@components/Toaster';
 
-type DirectoryInfoProps = {
-  directory: Directory;
-  token?: string;
-};
-
-const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
+const DirectoryInfo = ({ directoryId, setupLinkToken }: { directoryId: string; setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
 
+  const { directory, isLoading, error } = useDirectory(directoryId, setupLinkToken);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
+
+  if (!directory) {
+    return null;
+  }
+
   const displayWebhook = directory.webhook.endpoint && directory.webhook.secret;
-  const displayTenantProduct = token ? false : true;
-  const backUrl = token ? `/setup/${token}/directory-sync` : '/admin/directory-sync';
+  const displayTenantProduct = setupLinkToken ? false : true;
+  const backUrl = setupLinkToken ? `/setup/${setupLinkToken}/directory-sync` : '/admin/directory-sync';
 
   return (
     <>
       <LinkBack href={backUrl} />
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
-        <DirectoryTab directory={directory} activeTab='directory' token={token} />
+        <DirectoryTab directory={directory} activeTab='directory' token={setupLinkToken} />
         <div className='my-3 rounded border'>
           <dl className='divide-y'>
             <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
