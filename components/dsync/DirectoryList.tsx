@@ -24,7 +24,7 @@ const DirectoryList = ({ directories, token, paginate, setPaginate }: DirectoryL
   const { t } = useTranslation('common');
   const router = useRouter();
 
-  const { providers } = useDirectoryProviders();
+  const { providers } = useDirectoryProviders(token);
 
   return (
     <>

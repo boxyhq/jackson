@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 
-export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
 
   try {
@@ -26,8 +26,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.query as { token: string };
 
   const setupLink = await setupLinkController.getByToken(token);
-
-  console.log(setupLink);
 
   return res.json({
     data: {

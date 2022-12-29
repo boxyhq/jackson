@@ -15,7 +15,7 @@ type CreateDirectoryProps = {
 const CreateDirectory = ({ token }: CreateDirectoryProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const { providers } = useDirectoryProviders();
+  const { providers } = useDirectoryProviders(token);
   const [loading, setLoading] = useState(false);
   const [directory, setDirectory] = useState({
     name: '',

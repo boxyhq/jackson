@@ -3,7 +3,7 @@ import jackson from '@lib/jackson';
 import { strategyChecker } from '@lib/utils';
 import type { SetupLink } from '@boxyhq/saml-jackson';
 
-export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
   const { method } = req;
