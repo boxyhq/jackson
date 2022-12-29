@@ -11,6 +11,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toaster';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import Link from 'next/link';
+import Loading from '@components/Loading';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
@@ -21,7 +22,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
   const [email, setEmail] = useState('');
 
   if (status === 'loading') {
-    return null;
+    return <Loading />;
   }
 
   if (status === 'authenticated') {

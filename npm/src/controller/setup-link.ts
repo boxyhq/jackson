@@ -1,22 +1,35 @@
-import { ApiResponse, ISetupLinkController, SetupLink, SetupLinkCreatePayload, Storable } from '../typings';
+import { SetupLink, SetupLinkCreatePayload, Storable } from '../typings';
 import * as dbutils from '../db/utils';
 import { IndexNames, validateTenantAndProduct } from './utils';
 import crypto from 'crypto';
+import { JacksonError } from './error';
 
-export class SetupLinkController implements ISetupLinkController {
+export class SetupLinkController {
   setupLinkStore: Storable;
 
   constructor({ setupLinkStore }) {
     this.setupLinkStore = setupLinkStore;
   }
-  async create(body: SetupLinkCreatePayload): Promise<ApiResponse<SetupLink>> {
+
+  // Create a new setup link
+  async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
     const { tenant, product, service, regenerate } = body;
 
     validateTenantAndProduct(tenant, product);
 
     const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
     const token = crypto.randomBytes(24).toString('hex');
-    const val = {
+
+    const existing: SetupLink[] = await this.setupLinkStore.getByIndex({
+      name: IndexNames.TenantProductService,
+      value: dbutils.keyFromParts(tenant, product, service),
+    });
+
+    if (existing.length > 0 && !regenerate && !this.isExpired(existing[0])) {
+      return existing[0];
+    }
+
+    const setupLink = {
       setupID,
       tenant,
       product,
@@ -24,91 +37,76 @@ export class SetupLinkController implements ISetupLinkController {
       validTill: +new Date(new Date().setDate(new Date().getDate() + 3)),
       url: `${process.env.NEXTAUTH_URL}/setup/${token}`,
     };
-    const existing = await this.setupLinkStore.getByIndex({
-      name: IndexNames.TenantProductService,
-      value: dbutils.keyFromParts(tenant, product, service),
-    });
-    if (existing.length > 0 && !regenerate && existing[0].validTill > +new Date()) {
-      return { data: existing[0], error: null };
-    } else {
-      await this.setupLinkStore.put(
-        setupID,
-        val,
-        {
-          name: IndexNames.SetupToken,
-          value: token,
-        },
-        {
-          name: IndexNames.TenantProductService,
-          value: dbutils.keyFromParts(tenant, product, service),
-        },
-        {
-          name: IndexNames.Service,
-          value: service,
-        }
-      );
-      return { data: val, error: null };
-    }
-  }
-  async getByToken(token: string): Promise<ApiResponse<SetupLink>> {
-    if (!token) {
-      return {
-        data: null,
-        error: {
-          message: 'Invalid setup token',
-          code: 404,
-        },
-      };
-    } else {
-      const val = await this.setupLinkStore.getByIndex({
+
+    await this.setupLinkStore.put(
+      setupID,
+      setupLink,
+      {
         name: IndexNames.SetupToken,
         value: token,
-      });
-      if (val.length === 0) {
-        return {
-          data: null,
-          error: {
-            message: 'Link not found!',
-            code: 404,
-          },
-        };
-      } else if (val.validTill < new Date()) {
-        return {
-          data: null,
-          error: {
-            message: 'Link is expired!',
-            code: 401,
-          },
-        };
-      } else {
-        return { data: val[0], error: null };
+      },
+      {
+        name: IndexNames.TenantProductService,
+        value: dbutils.keyFromParts(tenant, product, service),
+      },
+      {
+        name: IndexNames.Service,
+        value: service,
       }
-    }
+    );
+
+    return setupLink;
   }
-  async getByService(service: string): Promise<ApiResponse<SetupLink[]>> {
-    if (!service) {
-      return { data: [], error: null };
+
+  // Get a setup link by token
+  async getByToken(token: string): Promise<SetupLink> {
+    if (!token) {
+      throw new JacksonError('Missing setup link token', 400);
     }
-    const val = await this.setupLinkStore.getByIndex({
+
+    const setupLink: SetupLink[] = await this.setupLinkStore.getByIndex({
+      name: IndexNames.SetupToken,
+      value: token,
+    });
+
+    if (!setupLink) {
+      throw new JacksonError('Setup link not found', 404);
+    }
+
+    if (this.isExpired(setupLink[0])) {
+      throw new JacksonError('Setup link is expired', 401);
+    }
+
+    return setupLink[0];
+  }
+
+  // Get setup links by service
+  async getByService(service: string): Promise<SetupLink[]> {
+    if (!service) {
+      throw new JacksonError('Missing service name', 400);
+    }
+
+    const setupLink = await this.setupLinkStore.getByIndex({
       name: IndexNames.Service,
       value: service,
     });
-    return { data: val, error: null };
+
+    return setupLink;
   }
-  async remove(key: string): Promise<ApiResponse<boolean>> {
+
+  // Remove a setup link
+  async remove(key: string): Promise<boolean> {
     if (!key) {
-      return {
-        data: false,
-        error: {
-          message: 'Invalid setup key sent!',
-          code: 400,
-        },
-      };
+      throw new JacksonError('Missing setup link key', 400);
     }
+
     await this.setupLinkStore.delete(key);
-    return { data: true, error: null };
+
+    return true;
   }
-  getAll(): Promise<ApiResponse<SetupLink[]>> {
-    throw new Error('Method not implemented.');
+
+  // Check if a setup link is expired or not
+  isExpired(setupLink: SetupLink): boolean {
+    return setupLink.validTill < +new Date();
   }
 }

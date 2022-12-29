@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { Sidebar } from '@components/Sidebar';
 import { Navbar } from '@components/Navbar';
 import { useTranslation } from 'next-i18next';
+import Loading from '@components/Loading';
 
 export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation('common');
@@ -13,7 +14,7 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   if (status === 'loading') {
-    return null;
+    return <Loading />;
   }
 
   return (
