@@ -161,3 +161,4 @@ export default controllers;
 export * from './typings';
 export * from './ee/federated-saml/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
+export type ISetupLinkController = InstanceType<typeof SetupLinkController>;

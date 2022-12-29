@@ -1,4 +1,7 @@
-import { ClipboardDocumentIcon, PlusIcon, ArrowPathIcon, TrashIcon } from '@heroicons/react/24/outline';
+import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
+import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
+import ArrowPathIcon from '@heroicons/react/24/outline/ArrowPathIcon';
+import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
@@ -8,15 +11,18 @@ import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { deleteLink, regenerateLink } from '@components/connection/utils';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { Pagination } from '@components/Pagination';
 import { IconButton } from '@components/IconButton';
+import { Pagination, pageLimit } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
+import Loading from '@components/Loading';
 
 const LinkList = ({ service }) => {
+  const { paginate, setPaginate } = usePaginate();
   const [queryParam, setQueryParam] = useState('');
   useEffect(() => {
     setQueryParam(`?service=${service}`);
   }, [service]);
-  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
+  // const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
   const { data, mutate } = useSWR<any>(queryParam ? [`/api/admin/setup-links`, queryParam] : [], fetcher, {
     revalidateOnFocus: false,
   });
@@ -41,7 +47,7 @@ const LinkList = ({ service }) => {
   };
 
   if (!links) {
-    return null;
+    return <Loading />;
   }
   return (
     <div>
@@ -74,7 +80,7 @@ const LinkList = ({ service }) => {
           <div className='rounder border'>
             <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr>
+                <tr className='hover:bg-gray-50'>
                   <th scope='col' className='px-6 py-3'>
                     {t('tenant')}
                   </th>
@@ -94,7 +100,7 @@ const LinkList = ({ service }) => {
                   return (
                     <tr
                       key={link.setupID}
-                      className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
+                      className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
                       <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
                         {link.tenant}
                       </td>
@@ -144,22 +150,19 @@ const LinkList = ({ service }) => {
             </table>
           </div>
           <Pagination
-            prevDisabled={paginate.page === 0}
-            nextDisabled={links.length === 0 || links.length < paginate.pageLimit}
-            onPrevClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page - 1) * paginate.pageLimit,
-                page: curState.page - 1,
-              }))
-            }
-            onNextClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page + 1) * paginate.pageLimit,
-                page: curState.page + 1,
-              }))
-            }></Pagination>
+            itemsCount={links.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
         </>
       )}
       <ConfirmationModal

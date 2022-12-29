@@ -36,10 +36,10 @@ function getInitialState(connection) {
 
 type EditProps = {
   connection?: Record<string, any>;
-  setupToken?: string;
+  setupLinkToken?: string;
 };
 
-const Edit = ({ connection, setupToken }: EditProps) => {
+const EditConnection = ({ connection, setupLinkToken }: EditProps) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
@@ -54,7 +54,7 @@ const Edit = ({ connection, setupToken }: EditProps) => {
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
       isEditView: true,
-      setupToken: setupToken,
+      setupLinkToken,
       callback: async (res) => {
         const response: ApiResponse = await res.json();
 
@@ -67,8 +67,8 @@ const Edit = ({ connection, setupToken }: EditProps) => {
           successToast(t('saved'));
           // revalidate on save
           mutate(
-            setupToken
-              ? `/api/setup/${setupToken}/connections`
+            setupLinkToken
+              ? `/api/setup/${setupLinkToken}/connections`
               : `/api/admin/connections/${connectionClientId}`
           );
         }
@@ -80,13 +80,16 @@ const Edit = ({ connection, setupToken }: EditProps) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
-    const res = await fetch(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
-    });
+    const res = await fetch(
+      setupLinkToken ? `/api/setup/${setupLinkToken}/connections` : '/api/admin/connections',
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
+      }
+    );
 
     const response: ApiResponse = await res.json();
 
@@ -98,8 +101,8 @@ const Edit = ({ connection, setupToken }: EditProps) => {
     }
 
     if (res.ok) {
-      await mutate(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections');
-      router.replace(setupToken ? `/setup/${setupToken}/sso-connection` : '/admin/sso-connection');
+      await mutate(setupLinkToken ? `/api/setup/${setupLinkToken}/connections` : '/api/admin/connections');
+      router.replace(setupLinkToken ? `/setup/${setupLinkToken}/sso-connection` : '/admin/sso-connection');
     }
   };
 
@@ -117,7 +120,7 @@ const Edit = ({ connection, setupToken }: EditProps) => {
 
   return (
     <>
-      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
+      <LinkBack href={setupLinkToken ? `/setup/${setupLinkToken}` : '/admin/sso-connection'} />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}
@@ -128,13 +131,13 @@ const Edit = ({ connection, setupToken }: EditProps) => {
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-3/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable !== false)
-                  .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
+                  .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
                   .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
               </div>
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-2/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable === false)
-                  .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
+                  .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
                   .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
               </div>
             </div>
@@ -165,4 +168,4 @@ const Edit = ({ connection, setupToken }: EditProps) => {
   );
 };
 
-export default Edit;
+export default EditConnection;

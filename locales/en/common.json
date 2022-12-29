@@ -118,5 +118,7 @@
   "idp_config_description": "The configuration setup guide that your customers who use our SAML federation feature will need to set up SAML SP configuration on their application.",
   "no_users_found": "No users found",
   "no_groups_found": "No groups found",
-  "setup_link_url": "Setup Link URL"
+  "setup_link_url": "Setup Link URL",
+  "no_directories_found": "No directories found",
+  "no_webhook_events_found": "No webhook events found"
 }

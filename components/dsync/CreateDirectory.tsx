@@ -1,22 +1,19 @@
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';
 
-type CreateDirectoryProps = {
-  providers: any;
-  token?: string;
-};
-
-const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
+const CreateDirectory = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const [loading, setLoading] = React.useState(false);
-  const [directory, setDirectory] = React.useState({
+  const { providers } = useDirectoryProviders(setupLinkToken);
+  const [loading, setLoading] = useState(false);
+  const [directory, setDirectory] = useState({
     name: '',
     tenant: '',
     product: '',
@@ -31,7 +28,7 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
     setLoading(true);
 
     const rawResponse = await fetch(
-      token ? `/api/setup/${token}/directory-sync` : '/api/admin/directory-sync',
+      setupLinkToken ? `/api/setup/${setupLinkToken}/directory-sync` : '/api/admin/directory-sync',
       {
         method: 'POST',
         headers: {
@@ -52,8 +49,8 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
 
     if (rawResponse.ok) {
       router.replace(
-        token
-          ? `/setup/${token}/directory-sync/${response.data.id}`
+        setupLinkToken
+          ? `/setup/${setupLinkToken}/directory-sync/${response.data.id}`
           : `/admin/directory-sync/${response.data.id}`
       );
       successToast(t('directory_created_successfully'));
@@ -70,9 +67,11 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
     });
   };
 
+  const backUrl = setupLinkToken ? `/setup/${setupLinkToken}/directory-sync` : '/admin/directory-sync';
+
   return (
     <div>
-      <LinkBack href='/admin/directory-sync' />
+      <LinkBack href={backUrl} />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('new_directory')}</h2>
       <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
         <form onSubmit={onSubmit}>
@@ -94,16 +93,17 @@ const CreateDirectory = ({ providers, token }: CreateDirectoryProps) => {
                 <span className='label-text'>{t('directory_provider')}</span>
               </label>
               <select className='select-bordered select w-full' id='type' onChange={onChange} required>
-                {Object.keys(providers).map((key) => {
-                  return (
-                    <option key={key} value={key}>
-                      {providers[key]}
-                    </option>
-                  );
-                })}
+                {providers &&
+                  Object.keys(providers).map((key) => {
+                    return (
+                      <option key={key} value={key}>
+                        {providers[key]}
+                      </option>
+                    );
+                  })}
               </select>
             </div>
-            {!token && (
+            {!setupLinkToken && (
               <>
                 <div className='form-control w-full'>
                   <label className='label'>

@@ -1,6 +1,6 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import classNames from 'classnames';
@@ -17,18 +17,22 @@ import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
+import { LinkBack } from '@components/LinkBack';
+import { Pagination, pageLimit } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
 
 const Events: NextPage = () => {
   const { t } = useTranslation('common');
-  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
+  const { paginate, setPaginate } = usePaginate();
+  const [loading, setLoading] = React.useState(false);
 
   const { directoryId } = router.query as { directoryId: string };
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
   const { data: eventsData, error: eventsError } = useSWR<ApiSuccess<WebhookEventLog[]>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}/events`,
+    `/api/admin/directory-sync/${directoryId}/events?offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher
   );
 
@@ -63,11 +67,12 @@ const Events: NextPage = () => {
 
   return (
     <>
-      <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
+      <LinkBack href='/admin/directory-sync' />
+      <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
         <DirectoryTab directory={directory} activeTab='events' />
-        {events.length === 0 ? (
-          <EmptyState title='No webhook events found' />
+        {events.length === 0 && paginate.offset === 0 ? (
+          <EmptyState title={t('no_webhook_events_found')} />
         ) : (
           <>
             <div className='my-3 flex justify-end'>
@@ -80,7 +85,7 @@ const Events: NextPage = () => {
             <div className='rounded border'>
               <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
                 <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                  <tr>
+                  <tr className='hover:bg-gray-50'>
                     <th scope='col' className='px-6 py-3'>
                       {t('event_type')}
                     </th>
@@ -119,6 +124,20 @@ const Events: NextPage = () => {
                 </tbody>
               </table>
             </div>
+            <Pagination
+              itemsCount={events.length}
+              offset={paginate.offset}
+              onPrevClick={() => {
+                setPaginate({
+                  offset: paginate.offset - pageLimit,
+                });
+              }}
+              onNextClick={() => {
+                setPaginate({
+                  offset: paginate.offset + pageLimit,
+                });
+              }}
+            />
           </>
         )}
       </div>
@@ -127,7 +146,7 @@ const Events: NextPage = () => {
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { locale }: GetServerSidePropsContext = context;
+  const { locale } = context;
 
   return {
     props: {

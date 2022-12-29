@@ -14,26 +14,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
+// Get the directory providers
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { directoryId, eventId } = req.query as { directoryId: string; eventId: string };
+  const providers = directorySyncController.providers();
 
-  const { data: directory, error } = await directorySyncController.directories.get(directoryId);
-
-  if (error) {
-    return res.status(400).json({ error });
-  }
-
-  if (!directory) {
-    return res.status(404).json({ error: { message: 'Directory not found.' } });
-  }
-
-  const event = await directorySyncController.webhookLogs
-    .with(directory.tenant, directory.product)
-    .get(eventId);
-
-  return res.status(200).json({ data: event });
+  return res.json({ data: providers });
 };
 
 export default checkSession(handler);

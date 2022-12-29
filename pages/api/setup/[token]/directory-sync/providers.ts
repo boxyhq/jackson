@@ -6,22 +6,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (method) {
     case 'GET':
-      return handleGET(req, res);
+      return await handleGET(req, res);
     default:
       res.setHeader('Allow', 'GET');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 };
 
+// Get the directory providers
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { connectionAPIController } = await jackson();
+  const { directorySyncController } = await jackson();
 
-  const idpEntityID = connectionAPIController.getIDPEntityID({
-    tenant: req.body.tenant,
-    product: req.body.product,
-  });
+  const providers = directorySyncController.providers();
 
-  return res.json({ data: { idpEntityID } });
+  return res.json({ data: providers });
 };
 
 export default handler;

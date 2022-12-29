@@ -12,41 +12,57 @@ import { InputWithCopyButton } from '@components/ClipboardButton';
 
 const fieldCatalog = [...getCommonFields()];
 
-type AddProps = {
-  setupToken?: string;
+const CreateConnection = ({
+  setupLinkToken,
+  idpEntityID,
+}: {
+  setupLinkToken?: string;
   idpEntityID?: string;
-};
-
-const Add = ({ setupToken, idpEntityID }: AddProps) => {
+}) => {
   const { t } = useTranslation('common');
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   // STATE: New connection type
   const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
+
   const handleNewConnectionTypeChange = (event) => {
     setNewConnectionType(event.target.value);
   };
 
   const connectionIsSAML = newConnectionType === 'saml';
   const connectionIsOIDC = newConnectionType === 'oidc';
+
+  const backUrl = setupLinkToken ? `/setup/${setupLinkToken}` : '/admin/sso-connection';
+  const redirectUrl = setupLinkToken ? `/setup/${setupLinkToken}/sso-connection` : '/admin/sso-connection';
+  const mutationUrl = setupLinkToken
+    ? `/api/setup/${setupLinkToken}/sso-connection`
+    : '/api/admin/connections';
+
   // FORM LOGIC: SUBMIT
-  const save = async (event) => {
+  const save = async (event: React.FormEvent) => {
     event.preventDefault();
-    saveConnection({
+
+    setLoading(true);
+
+    await saveConnection({
       formObj: formObj,
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
-      setupToken,
-      callback: async (res) => {
-        const response: ApiResponse = await res.json();
+      setupLinkToken,
+      callback: async (rawResponse) => {
+        setLoading(false);
+
+        const response: ApiResponse = await rawResponse.json();
 
         if ('error' in response) {
           errorToast(response.error.message);
           return;
         }
 
-        if (res.ok) {
-          await mutate(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections');
-          router.replace(setupToken ? `/setup/${setupToken}/sso-connection` : '/admin/sso-connection');
+        if (rawResponse.ok) {
+          await mutate(mutationUrl);
+          router.replace(redirectUrl);
         }
       },
     });
@@ -57,8 +73,8 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
 
   return (
     <>
-      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
-      {idpEntityID && setupToken && (
+      <LinkBack href={backUrl} />
+      {idpEntityID && setupLinkToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>
             <InputWithCopyButton text={idpEntityID} label={t('idp_entity_id')} />
@@ -80,7 +96,8 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
                 className='peer sr-only'
                 checked={newConnectionType === 'saml'}
                 onChange={handleNewConnectionTypeChange}
-                id='saml-conn'></input>
+                id='saml-conn'
+              />
               <label
                 htmlFor='saml-conn'
                 className='cursor-pointer rounded-md border-2 border-solid py-3 px-8 font-semibold hover:shadow-md peer-checked:border-secondary-focus peer-checked:bg-secondary peer-checked:text-white'>
@@ -95,7 +112,8 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
                 className='peer sr-only'
                 checked={newConnectionType === 'oidc'}
                 onChange={handleNewConnectionTypeChange}
-                id='oidc-conn'></input>
+                id='oidc-conn'
+              />
               <label
                 htmlFor='oidc-conn'
                 className='cursor-pointer rounded-md border-2 border-solid px-8 py-3 font-semibold hover:shadow-md peer-checked:bg-secondary peer-checked:text-white'>
@@ -108,10 +126,10 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
           <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
             {fieldCatalog
               .filter(fieldCatalogFilterByConnection(newConnectionType))
-              .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
+              .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
               .map(renderFieldList({ formObj, setFormObj }))}
             <div className='flex'>
-              <ButtonPrimary type='submit'>{t('save_changes')}</ButtonPrimary>
+              <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
             </div>
           </div>
         </form>
@@ -120,4 +138,4 @@ const Add = ({ setupToken, idpEntityID }: AddProps) => {
   );
 };
 
-export default Add;
+export default CreateConnection;

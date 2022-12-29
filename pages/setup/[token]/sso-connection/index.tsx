@@ -1,37 +1,17 @@
-import type { GetServerSidePropsContext, NextPage, GetStaticPaths } from 'next';
+import type { GetServerSidePropsContext, NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ConnectionList from '@components/connection/ConnectionList';
 import { useRouter } from 'next/router';
-import { fetcher } from '@lib/ui/utils';
-import { useState } from 'react';
-import useSWR from 'swr';
+import useIdpEntityID from '@lib/ui/hooks/useIdpEntityID';
 
-const Connections: NextPage = () => {
+const ConnectionsIndexPage: NextPage = () => {
   const router = useRouter();
-  const { token } = router.query;
-  const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
-  const { data, error, isValidating } = useSWR<any>(
-    [`/api/setup/${token}/connections`, `?pageOffset=${paginate.pageOffset}&pageLimit=${paginate.pageLimit}`],
-    fetcher,
-    { revalidateOnFocus: false }
-  );
-  const connections = data?.data;
-  const { data: idpEntityIDData } = useSWR<any>(
-    token ? `/api/setup/${token}/connections/idp-entityid` : null,
-    fetcher,
-    { revalidateOnFocus: false }
-  );
 
-  const idpEntityID = idpEntityIDData?.data;
-  return token && connections && !error && !isValidating ? (
-    <ConnectionList
-      setupToken={token as string}
-      paginate={paginate}
-      setPaginate={setPaginate}
-      connections={connections}
-      idpEntityID={idpEntityID}
-    />
-  ) : null;
+  const { token } = router.query as { token: string };
+
+  const { idpEntityID } = useIdpEntityID(token);
+
+  return <ConnectionList setupLinkToken={token} idpEntityID={idpEntityID} />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
@@ -42,11 +22,11 @@ export async function getStaticProps({ locale }: GetServerSidePropsContext) {
   };
 }
 
-export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+export async function getStaticPaths() {
   return {
-    paths: [], //indicates that no page needs be created at build time
-    fallback: 'blocking', //indicates the type of fallback
+    paths: [],
+    fallback: 'blocking',
   };
-};
+}
 
-export default Connections;
+export default ConnectionsIndexPage;

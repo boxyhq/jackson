@@ -1,5 +1,4 @@
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
-import Link from 'next/link';
+import ArrowTopRightOnSquareIcon from '@heroicons/react/20/solid/ArrowTopRightOnSquareIcon';
 import { useTranslation } from 'next-i18next';
 import { LinkOutline } from '@components/LinkOutline';
 

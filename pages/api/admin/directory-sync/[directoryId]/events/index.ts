@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
 
-export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
 
   switch (method) {
@@ -20,7 +20,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { directoryId } = req.query as { directoryId: string };
+  const { directoryId, offset, limit } = req.query as { directoryId: string; offset: string; limit: string };
 
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
@@ -32,7 +32,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(404).json({ error: { message: 'Directory not found.' } });
   }
 
-  const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll();
+  const pageOffset = parseInt(offset);
+  const pageLimit = parseInt(limit);
+
+  const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll({
+    pageOffset,
+    pageLimit,
+  });
 
   return res.status(200).json({ data: events });
 };

@@ -1,7 +1,6 @@
 import type { NextPage } from 'next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
@@ -15,6 +14,7 @@ import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
+import { LinkOutline } from '@components/LinkOutline';
 
 const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
@@ -96,9 +96,9 @@ const UpdateApp: NextPage = () => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
         <div>
-          <Link href={'/.well-known/idp-configuration'} target='_blank' className='btn-secondary btn m-2'>
+          <LinkOutline href={'/.well-known/idp-configuration'} target='_blank' className='m-2'>
             {t('view_idp_configuration')}
-          </Link>
+          </LinkOutline>
         </div>
       </div>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
