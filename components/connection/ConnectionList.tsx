@@ -41,7 +41,7 @@ const ConnectionList = ({
     { revalidateOnFocus: false }
   );
 
-  if (!data) {
+  if (!data && !error) {
     return <Loading />;
   }
 
@@ -50,7 +50,7 @@ const ConnectionList = ({
     return null;
   }
 
-  const connections = data.data || [];
+  const connections = data?.data || [];
 
   if (connections && setupLinkToken && connections.length === 0) {
     router.replace(`/setup/${setupLinkToken}/sso-connection/new`);

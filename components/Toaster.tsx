@@ -21,10 +21,8 @@ export const Toaster = () => {
           if (!toast) return null;
 
           return (
-            <Alert key={`toast-${index}`} status={toast.status}>
-              <div className='w-full flex-row justify-between gap-2'>
-                <h3>{toast.text}</h3>
-              </div>
+            <Alert key={`toast-${index}`} status={toast.status} className='rounded py-3'>
+              <h3>{toast.text}</h3>
               <Button
                 color='ghost'
                 onClick={() =>

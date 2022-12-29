@@ -1,9 +1,9 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
-import LinkList from '@components/setup-link/LinkList';
+import SetupLinkList from '@components/setup-link/SetupLinkList';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 
-const SetupLinks: NextPage = () => {
+const SetupLinksIndexPage: NextPage = () => {
   const router = useRouter();
   const service = router.asPath.includes('sso-connection')
     ? 'sso'
@@ -15,7 +15,7 @@ const SetupLinks: NextPage = () => {
     return null;
   }
 
-  return <LinkList service={service} />;
+  return <SetupLinkList service={service} />;
 };
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
@@ -26,4 +26,4 @@ export async function getStaticProps({ locale }: GetServerSidePropsContext) {
   };
 }
 
-export default SetupLinks;
+export default SetupLinksIndexPage;

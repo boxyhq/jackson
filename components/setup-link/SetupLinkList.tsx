@@ -16,7 +16,7 @@ import { Pagination, pageLimit } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import Loading from '@components/Loading';
 
-const LinkList = ({ service }) => {
+const SetupLinkList = ({ service }) => {
   const { paginate, setPaginate } = usePaginate();
   const [queryParam, setQueryParam] = useState('');
   useEffect(() => {
@@ -171,15 +171,17 @@ const LinkList = ({ service }) => {
         visible={showRegenConfirmModal}
         onConfirm={invokeRegenerate}
         actionButtonText={t('regenerate')}
-        onCancel={toggleRegenConfirmModal}></ConfirmationModal>
+        onCancel={toggleRegenConfirmModal}
+      />
       <ConfirmationModal
         title='Delete this setup link?'
         description='This action cannot be undone. This will permanently delete the setup link.'
         visible={showDelConfirmModal}
         onConfirm={invokeDelete}
-        onCancel={toggleDelConfirmModal}></ConfirmationModal>
+        onCancel={toggleDelConfirmModal}
+      />
     </div>
   );
 };
 
-export default LinkList;
+export default SetupLinkList;
