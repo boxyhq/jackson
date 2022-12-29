@@ -10,44 +10,61 @@ import { IconButton } from '@components/IconButton';
 import { useRouter } from 'next/router';
 import { pageLimit, Pagination } from '@components/Pagination';
 import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';
+import useSWR from 'swr';
+import type { ApiError, ApiSuccess } from 'types';
+import usePaginate from '@lib/ui/hooks/usePaginate';
+import { fetcher } from '@lib/ui/utils';
+import Loading from '@components/Loading';
+import { errorToast } from '@components/Toaster';
 
-type DirectoryListProps = {
-  directories: Directory[];
-  token?: string;
-  paginate: {
-    offset: number;
-  };
-  setPaginate: (paginate: { offset: number }) => void;
-};
-
-const DirectoryList = ({ directories, token, paginate, setPaginate }: DirectoryListProps) => {
+const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
+  const { paginate, setPaginate } = usePaginate();
   const router = useRouter();
 
-  const { providers } = useDirectoryProviders(token);
+  const displayTenantProduct = setupLinkToken ? false : true;
+  const getDirectoriesUrl = setupLinkToken
+    ? `/api/setup/${setupLinkToken}/directory-sync`
+    : '/api/admin/directory-sync';
+  const createDirectoryUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}/directory-sync/new`
+    : '/admin/directory-sync/new';
+
+  const { providers, isLoading: isLoadingProviders } = useDirectoryProviders(setupLinkToken);
+
+  const { data, error } = useSWR<ApiSuccess<Directory[]>, ApiError>(
+    `${getDirectoriesUrl}?offset=${paginate.offset}&limit=${pageLimit}`,
+    fetcher
+  );
+
+  if (!data || isLoadingProviders) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
+
+  const directories = data.data || [];
 
   return (
     <>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
         <div className='flex gap-2'>
-          <LinkPrimary
-            Icon={PlusIcon}
-            href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}>
+          <LinkPrimary Icon={PlusIcon} href={createDirectoryUrl}>
             {t('new_directory')}
           </LinkPrimary>
-          {!token && (
-            <LinkPrimary Icon={LinkIcon} href={`/admin/directory-sync/setup-link/new`}>
+          {!setupLinkToken && (
+            <LinkPrimary Icon={LinkIcon} href='/admin/directory-sync/setup-link/new'>
               {t('new_setup_link')}
             </LinkPrimary>
           )}
         </div>
       </div>
-      {directories?.length === 0 && paginate.offset === 0 ? (
-        <EmptyState
-          title={t('no_directories_found')}
-          href={token ? `/setup/${token}/directory-sync/new` : '/admin/directory-sync/new'}
-        />
+      {directories.length === 0 && paginate.offset === 0 ? (
+        <EmptyState title={t('no_directories_found')} href={createDirectoryUrl} />
       ) : (
         <>
           <div className='rounder border'>
@@ -57,7 +74,7 @@ const DirectoryList = ({ directories, token, paginate, setPaginate }: DirectoryL
                   <th scope='col' className='px-6 py-3'>
                     {t('name')}
                   </th>
-                  {!token && (
+                  {displayTenantProduct && (
                     <>
                       <th scope='col' className='px-6 py-3'>
                         {t('tenant')}
@@ -85,7 +102,7 @@ const DirectoryList = ({ directories, token, paginate, setPaginate }: DirectoryL
                         <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                           {directory.name}
                         </td>
-                        {!token && (
+                        {displayTenantProduct && (
                           <>
                             <td className='px-6'>{directory.tenant}</td>
                             <td className='px-6'>{directory.product}</td>
@@ -100,8 +117,8 @@ const DirectoryList = ({ directories, token, paginate, setPaginate }: DirectoryL
                               className='mr-3 hover:text-green-200'
                               onClick={() => {
                                 router.push(
-                                  token
-                                    ? `/setup/${token}/directory-sync/${directory.id}`
+                                  setupLinkToken
+                                    ? `/setup/${setupLinkToken}/directory-sync/${directory.id}`
                                     : `/admin/directory-sync/${directory.id}`
                                 );
                               }}
@@ -112,8 +129,8 @@ const DirectoryList = ({ directories, token, paginate, setPaginate }: DirectoryL
                               className='hover:text-green-200'
                               onClick={() => {
                                 router.push(
-                                  token
-                                    ? `/setup/${token}/directory-sync/${directory.id}/edit`
+                                  setupLinkToken
+                                    ? `/setup/${setupLinkToken}/directory-sync/${directory.id}/edit`
                                     : `/admin/directory-sync/${directory.id}/edit`
                                 );
                               }}
