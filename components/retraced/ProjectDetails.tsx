@@ -24,8 +24,8 @@ const ProjectDetails = (props: { project: Project }) => {
         </label>
         <Select
           value={selectedIndex}
-          onChange={(idx) => {
-            setSelectedIndex(idx);
+          onChange={(event) => {
+            setSelectedIndex(Number(event.target.value));
           }}>
           {environments.map((env, i) => (
             <option key={env.id} value={i}>

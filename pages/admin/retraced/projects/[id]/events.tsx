@@ -62,8 +62,8 @@ const Events: NextPage = () => {
           {project ? (
             <Select
               value={environment}
-              onChange={(env) => {
-                setEnvironment(env);
+              onChange={(event) => {
+                setEnvironment(event.target.value);
                 setGroup('');
               }}>
               {project!.environments.map((environment) => (
@@ -81,8 +81,8 @@ const Events: NextPage = () => {
           {groups ? (
             <Select
               value={group}
-              onChange={(group) => {
-                setGroup(group);
+              onChange={(event) => {
+                setGroup(event.target.value);
               }}>
               {groups!.map((group) => (
                 <option key={group.group_id} value={group.group_id}>
