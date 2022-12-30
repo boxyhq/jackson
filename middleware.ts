@@ -23,10 +23,12 @@ export async function middleware(req: NextRequest) {
   if (pathname.startsWith('/api/setup')) {
     const setupLinkToken = pathname.split('/')[3];
 
-    const response = await fetch(`${process.env.EXTERNAL_URL}/api/setup/${setupLinkToken}`);
+    if (setupLinkToken) {
+      const response = await fetch(`${process.env.EXTERNAL_URL}/api/setup/${setupLinkToken}`);
 
-    if (!response.ok) {
-      return unAuthorizedResponse();
+      if (!response.ok) {
+        return unAuthorizedResponse();
+      }
     }
   }
 
