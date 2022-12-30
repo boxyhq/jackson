@@ -137,7 +137,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
                           <IconButton
                             tooltip={t('copy')}
                             Icon={ClipboardDocumentIcon}
-                            className='mr-3 hover:text-green-200'
+                            className='mr-3 hover:text-green-400'
                             onClick={() => {
                               copyToClipboard(setupLink.url);
                               successToast(t('copied'));
@@ -146,7 +146,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
                           <IconButton
                             tooltip={t('regenerate')}
                             Icon={ArrowPathIcon}
-                            className='mr-3 hover:text-green-200'
+                            className='mr-3 hover:text-green-400'
                             onClick={() => {
                               setSelectedSetupLink(setupLink);
                               setShowRegenConfirmModal(true);

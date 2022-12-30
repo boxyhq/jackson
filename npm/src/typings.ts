@@ -339,6 +339,7 @@ export interface JacksonOption {
     privateKey: string;
   };
   boxyhqLicenseKey?: string;
+  noAnalytics?: boolean;
 }
 
 export interface SLORequestParams {
