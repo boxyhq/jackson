@@ -7,8 +7,6 @@ import { sessionName } from '@lib/constants';
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  console.log('middleware', pathname);
-
   // Validate API routes `/api/admin/*`
   if (pathname.startsWith('/api/admin')) {
     const adminToken = await getToken({
