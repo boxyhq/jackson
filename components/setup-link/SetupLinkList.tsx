@@ -42,22 +42,19 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
   const regenerateSetupLink = async () => {
     if (!selectedSetupLink) return;
 
+    const { tenant, product, service } = selectedSetupLink;
+
     await fetch('/api/admin/setup-links', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        tenant: selectedSetupLink.tenant,
-        product: selectedSetupLink.product,
-        service: selectedSetupLink.service,
-        regenerate: true,
-      }),
+      body: JSON.stringify({ tenant, product, service, regenerate: true }),
     });
 
-    await mutate();
     setSelectedSetupLink(null);
     setShowRegenConfirmModal(false);
+    await mutate();
     successToast(t('link_regenerated'));
   };
 
@@ -72,9 +69,9 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
       },
     });
 
-    await mutate();
     setSelectedSetupLink(null);
     setShowDelConfirmModal(false);
+    await mutate();
     successToast(t('deleted'));
   };
 
