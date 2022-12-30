@@ -18,7 +18,9 @@ export const SetupLinkInfo = ({ setupLink, visible, onClose }: SetupLinkInfoProp
   }
 
   return (
-    <Modal visible={visible} title={`Setup link info for the tenant ${setupLink.tenant}`}>
+    <Modal
+      visible={visible}
+      title={`Setup link info: tenant '${setupLink.tenant}', product '${setupLink.product}'`}>
       <div className='mt-2 flex flex-col gap-3'>
         <div>
           <InputWithCopyButton
