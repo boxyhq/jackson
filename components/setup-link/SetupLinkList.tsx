@@ -152,7 +152,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
                         {setupLink.product}
                       </td>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        <p className={new Date(setupLink.validTill) < new Date() ? `text-red-400` : ``}>
+                        <p className={new Date(setupLink.validTill) < new Date() ? 'text-red-400' : ''}>
                           {new Date(setupLink.validTill).toString()}
                         </p>
                       </td>
