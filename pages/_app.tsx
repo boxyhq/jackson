@@ -9,7 +9,7 @@ import { ReactElement, ReactNode } from 'react';
 import micromatch from 'micromatch';
 import nextI18NextConfig from '../next-i18next.config.js';
 
-import { AccountLayout, SetupLayout } from '@components/layouts';
+import { AccountLayout, SetupLinkLayout } from '@components/layouts';
 
 import '../styles/globals.css';
 
@@ -47,10 +47,10 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   if (pathname.startsWith('/setup/')) {
     return (
-      <SetupLayout>
+      <SetupLinkLayout>
         <Component {...props} />
         <Toaster />
-      </SetupLayout>
+      </SetupLinkLayout>
     );
   }
 

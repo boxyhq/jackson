@@ -23,6 +23,12 @@ a {
   box-sizing: border-box;
 }
 
+@layer base {
+  input {
+    @apply rounded !important;
+  }
+}
+
 @layer components {
   #__next {
     @apply h-full;

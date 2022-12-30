@@ -1,2 +1,2 @@
 export { AccountLayout } from './AccountLayout';
-export { SetupLayout } from './SetupLayout';
+export { SetupLinkLayout } from './SetupLinkLayout';
