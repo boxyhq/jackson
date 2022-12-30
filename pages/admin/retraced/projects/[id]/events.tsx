@@ -7,6 +7,7 @@ import { useProject, useGroups } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
 import ErrorMessage from '@components/Error';
 import { LinkBack } from '@components/LinkBack';
+import { Select } from 'react-daisyui';
 
 const LogsViewer = dynamic(() => import('@components/retraced/LogsViewer'), {
   ssr: false,
@@ -58,35 +59,38 @@ const Events: NextPage = () => {
           <label className='label pl-0'>
             <span className='label-text'>Environment</span>
           </label>
-          <select
-            className='select-bordered select'
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-              setEnvironment(e.target.value);
-              setGroup('');
-            }}>
-            {project?.environments.map((environment) => (
-              <option key={environment.id} value={environment.id}>
-                {environment.name}
-              </option>
-            ))}
-          </select>
+          {project ? (
+            <Select
+              value={environment}
+              onChange={(env) => {
+                setEnvironment(env);
+                setGroup('');
+              }}>
+              {project!.environments.map((environment) => (
+                <option key={environment.id} value={environment.id}>
+                  {environment.name}
+                </option>
+              ))}
+            </Select>
+          ) : null}
         </div>
         <div className='form-control max-w-xs'>
           <label className='label pl-0'>
             <span className='label-text'>Tenants</span>
           </label>
-          <select
-            className='select-bordered select'
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-              setGroup(e.target.value);
-            }}>
-            {groups &&
-              groups.map((group) => (
+          {groups ? (
+            <Select
+              value={group}
+              onChange={(group) => {
+                setGroup(group);
+              }}>
+              {groups!.map((group) => (
                 <option key={group.group_id} value={group.group_id}>
                   {group.name ? group.name : group.group_id}
                 </option>
               ))}
-          </select>
+            </Select>
+          ) : null}
         </div>
       </div>
       <div className='flex'>
