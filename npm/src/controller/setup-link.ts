@@ -29,6 +29,11 @@ export class SetupLinkController {
       return existing[0];
     }
 
+    // Remove the existing setup link if regenerate is true
+    if (regenerate) {
+      await this.setupLinkStore.delete(existing[0].setupID);
+    }
+
     const setupLink = {
       setupID,
       tenant,
@@ -69,8 +74,8 @@ export class SetupLinkController {
       value: token,
     });
 
-    if (!setupLink) {
-      throw new JacksonError('Setup link not found', 404);
+    if (!setupLink || setupLink.length === 0) {
+      throw new JacksonError('Setup link is not found', 404);
     }
 
     if (this.isExpired(setupLink[0])) {
