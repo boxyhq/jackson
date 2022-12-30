@@ -686,10 +686,6 @@ export type SetupLinkCreatePayload = {
   regenerate?: boolean;
 };
 
-export type SetupLinkRegeneratePayload = {
-  reference: string;
-};
-
 export type SetupLink = {
   setupID: string;
   tenant: string;
