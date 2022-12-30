@@ -1,4 +1,5 @@
 import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import ArrowPathIcon from '@heroicons/react/24/outline/ArrowPathIcon';
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
@@ -29,6 +30,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
   useEffect(() => {
     // Reset selected setup link when service changes
     setSelectedSetupLink(null);
+    setShowSetupLinkModal(false);
   }, [service]);
 
   const { data, error, mutate } = useSWR<ApiSuccess<SetupLink[]>, ApiError>(
@@ -69,8 +71,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
     if ('data' in response) {
       setShowRegenConfirmModal(false);
       await mutate();
-      setSelectedSetupLink(response.data);
-      setShowSetupLinkModal(true);
+      showSetupLinkInfo(response.data);
       successToast(t('link_regenerated'));
     }
   };
@@ -90,6 +91,12 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
     setShowDelConfirmModal(false);
     await mutate();
     successToast(t('deleted'));
+  };
+
+  // Display setup link info
+  const showSetupLinkInfo = (setupLink: SetupLink) => {
+    setSelectedSetupLink(setupLink);
+    setShowSetupLinkModal(true);
   };
 
   const createSetupLinkUrl =
@@ -161,6 +168,14 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
                             }}
                           />
                           <IconButton
+                            tooltip={t('view')}
+                            Icon={EyeIcon}
+                            className='hover:text-green-400'
+                            onClick={() => {
+                              showSetupLinkInfo(setupLink);
+                            }}
+                          />
+                          <IconButton
                             tooltip={t('regenerate')}
                             Icon={ArrowPathIcon}
                             className='hover:text-green-400'
@@ -222,7 +237,14 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
           setShowDelConfirmModal(false);
         }}
       />
-      {selectedSetupLink && <SetupLinkInfo setupLink={selectedSetupLink} visible={showSetupLinkModal} />}
+      <SetupLinkInfo
+        setupLink={selectedSetupLink}
+        visible={showSetupLinkModal}
+        onClose={() => {
+          setShowSetupLinkModal(false);
+          setSelectedSetupLink(null);
+        }}
+      />
     </div>
   );
 };

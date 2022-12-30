@@ -1,20 +1,24 @@
 import { useTranslation } from 'next-i18next';
-import { useState, useEffect } from 'react';
 import { SetupLink } from '@boxyhq/saml-jackson';
 import Modal from '@components/Modal';
 import { ButtonOutline } from '@components/ButtonOutline';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 
-export const SetupLinkInfo = ({ setupLink, visible }: { setupLink: SetupLink; visible: boolean }) => {
-  const { t } = useTranslation();
-  const [visibleModal, setVisibleModal] = useState(visible);
+type SetupLinkInfoProps = {
+  setupLink: SetupLink | null;
+  visible: boolean;
+  onClose: () => void;
+};
 
-  useEffect(() => {
-    setVisibleModal(visible);
-  }, [visible]);
+export const SetupLinkInfo = ({ setupLink, visible, onClose }: SetupLinkInfoProps) => {
+  const { t } = useTranslation();
+
+  if (!setupLink) {
+    return null;
+  }
 
   return (
-    <Modal visible={visibleModal} title={`Setup link info for the tenant ${setupLink.tenant}`}>
+    <Modal visible={visible} title={`Setup link info for the tenant ${setupLink.tenant}`}>
       <div className='mt-2 flex flex-col gap-3'>
         <div>
           <InputWithCopyButton
@@ -28,12 +32,7 @@ export const SetupLinkInfo = ({ setupLink, visible }: { setupLink: SetupLink; vi
         </p>
       </div>
       <div className='modal-action'>
-        <ButtonOutline
-          onClick={() => {
-            setVisibleModal(false);
-          }}>
-          {t('close')}
-        </ButtonOutline>
+        <ButtonOutline onClick={onClose}>{t('close')}</ButtonOutline>
       </div>
     </Modal>
   );
