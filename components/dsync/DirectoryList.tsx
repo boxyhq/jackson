@@ -1,5 +1,5 @@
 import EmptyState from '@components/EmptyState';
-import CircleStackIcon from '@heroicons/react/24/outline/CircleStackIcon';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
@@ -113,7 +113,7 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                           <span className='inline-flex items-baseline'>
                             <IconButton
                               tooltip={t('view')}
-                              Icon={CircleStackIcon}
+                              Icon={EyeIcon}
                               className='mr-3 hover:text-green-400'
                               onClick={() => {
                                 router.push(

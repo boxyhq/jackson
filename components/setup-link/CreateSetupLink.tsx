@@ -139,10 +139,9 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
             </ButtonPrimary>
           </div>
         </form>
-
         <ConfirmationModal
-          title='Delete the setup link'
-          description='This action cannot be undone. This will permanently delete the link.'
+          title={t('regenerate_setup_link')}
+          description={t('regenerate_setup_link_description')}
           visible={delModalVisible}
           onConfirm={regenerateSetupLink}
           onCancel={toggleDelConfirm}

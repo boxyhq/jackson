@@ -34,7 +34,7 @@ const DirectoryInfo = ({ directoryId, setupLinkToken }: { directoryId: string; s
       <LinkBack href={backUrl} />
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
-        <DirectoryTab directory={directory} activeTab='directory' token={setupLinkToken} />
+        <DirectoryTab directory={directory} activeTab='directory' setupLinkToken={setupLinkToken} />
         <div className='my-3 rounded border'>
           <dl className='divide-y'>
             <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>

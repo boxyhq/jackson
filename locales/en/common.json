@@ -120,5 +120,10 @@
   "no_groups_found": "No groups found",
   "setup_link_url": "Setup Link URL",
   "no_directories_found": "No directories found",
-  "no_webhook_events_found": "No webhook events found"
+  "no_webhook_events_found": "No webhook events found",
+  "regenerate_setup_link": "Regenerate this setup link?",
+  "regenerate_setup_link_description": "This action cannot be undone. This will permanently delete the old setup link.",
+  "delete_setup_link": "Delete this setup link?",
+  "delete_setup_link_description": "This action cannot be undone. This will permanently delete the setup link.",
+  "close": "Close"
 }
