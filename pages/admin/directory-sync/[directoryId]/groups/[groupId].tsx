@@ -1,7 +1,7 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
-import { coy } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import type { Group } from '@boxyhq/saml-jackson';
@@ -51,7 +51,7 @@ const GroupInfo: NextPage = () => {
       <div className='w-full md:w-3/4'>
         <DirectoryTab directory={directory} activeTab='groups' />
         <div className='my-3 rounded border text-sm'>
-          <SyntaxHighlighter language='json' style={coy}>
+          <SyntaxHighlighter language='json' style={materialOceanic}>
             {JSON.stringify(group, null, 3)}
           </SyntaxHighlighter>
         </div>

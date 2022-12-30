@@ -690,10 +690,6 @@ export type SetupLinkCreatePayload = {
   regenerate?: boolean;
 };
 
-export type SetupLinkRegeneratePayload = {
-  reference: string;
-};
-
 export type SetupLink = {
   setupID: string;
   tenant: string;
@@ -701,11 +697,6 @@ export type SetupLink = {
   url: string;
   service: SetupLinkService;
   validTill: number;
-};
-
-export type ApiResponse<T> = {
-  data: T | null;
-  error: ApiError | null;
 };
 
 export type SetupLinkService = 'sso' | 'dsync';

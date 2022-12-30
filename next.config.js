@@ -4,9 +4,6 @@ const { i18n } = require('./next-i18next.config');
 
 module.exports = {
   productionBrowserSourceMaps: true,
-  experimental: {
-    enableUndici: true,
-  },
   reactStrictMode: true,
   i18n,
   output: 'standalone',
@@ -60,7 +57,11 @@ module.exports = {
       },
       {
         source: '/admin/directory-sync/setup-link',
-        destination: '/admin/sso-connection/setup-link',
+        destination: '/admin/setup-link',
+      },
+      {
+        source: '/admin/sso-connection/setup-link',
+        destination: '/admin/setup-link',
       },
       {
         source: '/admin/sso-connection/setup-link/new',

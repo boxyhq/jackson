@@ -55,13 +55,19 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { directorySyncController } = await jackson();
 
-  const { data, error } = await directorySyncController.directories.getByTenantAndProduct(
-    setupLink.tenant,
-    setupLink.product
-  );
+  const { offset, limit } = req.query as { offset: string; limit: string };
+
+  const pageOffset = parseInt(offset);
+  const pageLimit = parseInt(limit);
+
+  const { data, error } = await directorySyncController.directories.list({ pageOffset, pageLimit });
 
   if (data) {
-    return res.status(200).json({ data: [data] });
+    const filteredData = data.filter(
+      (directory) => directory.tenant === setupLink.tenant && directory.product === setupLink.product
+    );
+
+    return res.status(200).json({ data: filteredData });
   }
 
   if (error) {
