@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { validateApiKey, extractAuthToken } from '@lib/auth';
 import { getToken } from 'next-auth/jwt';
 import { sessionName } from '@lib/constants';
-// import jackson from '@lib/jackson';
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -21,18 +20,17 @@ export async function middleware(req: NextRequest) {
   }
 
   // Validate API routes `/api/setup/*`
-  // if (pathname.startsWith('/api/setup')) {
-  //   // const { setupLinkController } = await jackson();
+  if (pathname.startsWith('/api/setup')) {
+    const setupLinkToken = pathname.split('/')[3];
 
-  //   const setupLinkToken = pathname.split('/')[3];
+    const response = await fetch(`${process.env.EXTERNAL_URL}/api/setup/${setupLinkToken}`);
 
-  //   // const setupLink = await setupLinkController.getByToken(setupLinkToken);
+    if (!response.ok) {
+      return unAuthorizedResponse();
+    }
+  }
 
-  //   // if (!setupLink) {
-  //   //   return unAuthorizedResponse();
-  //   // }
-  // }
-
+  // Validate API routes `/api/v1/*`
   if (pathname.startsWith('/api/v1')) {
     if (!validateApiKey(extractAuthToken(req))) {
       return unAuthorizedResponse();
