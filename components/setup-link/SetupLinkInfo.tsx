@@ -30,9 +30,9 @@ export const SetupLinkInfo = ({ setupLink, visible, onClose }: SetupLinkInfoProp
         </div>
         <p className='text-sm'>
           This link is valid till{' '}
-          <p className={new Date(setupLink.validTill) < new Date() ? 'text-red-400' : ''}>
+          <span className={new Date(setupLink.validTill) < new Date() ? 'text-red-400' : ''}>
             {new Date(setupLink.validTill).toString()}
-          </p>
+          </span>
         </p>
       </div>
       <div className='modal-action'>
