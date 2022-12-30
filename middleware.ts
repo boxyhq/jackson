@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { validateApiKey, extractAuthToken } from '@lib/auth';
 import { getToken } from 'next-auth/jwt';
 import { sessionName } from '@lib/constants';
+import type { ApiResponse } from 'types';
+import type { SetupLink } from '@boxyhq/saml-jackson';
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -15,7 +17,7 @@ export async function middleware(req: NextRequest) {
     });
 
     if (!adminToken) {
-      return unAuthorizedResponse();
+      return unAuthorizedResponse({ message: 'Unauthorized' });
     }
   }
 
@@ -24,10 +26,12 @@ export async function middleware(req: NextRequest) {
     const setupLinkToken = pathname.split('/')[3];
 
     if (setupLinkToken) {
-      const response = await fetch(`${process.env.EXTERNAL_URL}/api/setup/${setupLinkToken}`);
+      const rawResponse = await fetch(`${process.env.EXTERNAL_URL}/api/setup/${setupLinkToken}`);
 
-      if (!response.ok) {
-        return unAuthorizedResponse();
+      const response: ApiResponse<SetupLink> = await rawResponse.json();
+
+      if (!rawResponse.ok && 'error' in response) {
+        return unAuthorizedResponse({ message: response.error.message });
       }
     }
   }
@@ -35,7 +39,7 @@ export async function middleware(req: NextRequest) {
   // Validate API routes `/api/v1/*`
   if (pathname.startsWith('/api/v1')) {
     if (!validateApiKey(extractAuthToken(req))) {
-      return unAuthorizedResponse();
+      return unAuthorizedResponse({ message: 'Invalid API key' });
     }
   }
 
@@ -43,8 +47,8 @@ export async function middleware(req: NextRequest) {
 }
 
 // Send 401 response for unauthenticated requests
-const unAuthorizedResponse = async () => {
-  const response = JSON.stringify({ error: { message: 'Unauthorized' } });
+const unAuthorizedResponse = async (error: { message: string }) => {
+  const response = JSON.stringify({ error });
 
   return new NextResponse(response, {
     status: 401,
