@@ -5,8 +5,8 @@ import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
-import { useState } from 'react';
-import { successToast } from '@components/Toaster';
+import { useState, useEffect } from 'react';
+import { errorToast, successToast } from '@components/Toaster';
 import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { LinkPrimary } from '@components/LinkPrimary';
@@ -15,14 +15,21 @@ import { Pagination, pageLimit } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import Loading from '@components/Loading';
 import type { SetupLinkService, SetupLink } from '@boxyhq/saml-jackson';
-import type { ApiError, ApiSuccess } from 'types';
+import type { ApiError, ApiResponse, ApiSuccess } from 'types';
+import { SetupLinkInfo } from './SetupLinkInfo';
 
 const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
   const { paginate, setPaginate } = usePaginate();
   const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
   const [showRegenConfirmModal, setShowRegenConfirmModal] = useState(false);
+  const [showSetupLinkModal, setShowSetupLinkModal] = useState(false);
   const [selectedSetupLink, setSelectedSetupLink] = useState<SetupLink | null>(null);
+
+  useEffect(() => {
+    // Reset selected setup link when service changes
+    setSelectedSetupLink(null);
+  }, [service]);
 
   const { data, error, mutate } = useSWR<ApiSuccess<SetupLink[]>, ApiError>(
     `/api/admin/setup-links?service=${service}&offset=${paginate.offset}&limit=${pageLimit}`,
@@ -44,7 +51,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
 
     const { tenant, product, service } = selectedSetupLink;
 
-    await fetch('/api/admin/setup-links', {
+    const rawResponse = await fetch('/api/admin/setup-links', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,10 +59,20 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
       body: JSON.stringify({ tenant, product, service, regenerate: true }),
     });
 
-    setSelectedSetupLink(null);
-    setShowRegenConfirmModal(false);
-    await mutate();
-    successToast(t('link_regenerated'));
+    const response: ApiResponse<SetupLink> = await rawResponse.json();
+
+    if ('error' in response) {
+      errorToast(response.error.message);
+      return;
+    }
+
+    if ('data' in response) {
+      setShowRegenConfirmModal(false);
+      await mutate();
+      setSelectedSetupLink(response.data);
+      setShowSetupLinkModal(true);
+      successToast(t('link_regenerated'));
+    }
   };
 
   // Delete a setup link
@@ -133,11 +150,11 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
                         </p>
                       </td>
                       <td className='px-6 py-3'>
-                        <span className='inline-flex items-baseline'>
+                        <span className='flex gap-3'>
                           <IconButton
                             tooltip={t('copy')}
                             Icon={ClipboardDocumentIcon}
-                            className='mr-3 hover:text-green-400'
+                            className='hover:text-green-400'
                             onClick={() => {
                               copyToClipboard(setupLink.url);
                               successToast(t('copied'));
@@ -146,16 +163,17 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
                           <IconButton
                             tooltip={t('regenerate')}
                             Icon={ArrowPathIcon}
-                            className='mr-3 hover:text-green-400'
+                            className='hover:text-green-400'
                             onClick={() => {
                               setSelectedSetupLink(setupLink);
                               setShowRegenConfirmModal(true);
+                              setShowSetupLinkModal(false);
                             }}
                           />
                           <IconButton
                             tooltip={t('delete')}
                             Icon={TrashIcon}
-                            className='mr-3 hover:text-red-900'
+                            className='hover:text-red-900'
                             onClick={() => {
                               setSelectedSetupLink(setupLink);
                               setShowDelConfirmModal(true);
@@ -204,6 +222,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
           setShowDelConfirmModal(false);
         }}
       />
+      {selectedSetupLink && <SetupLinkInfo setupLink={selectedSetupLink} visible={showSetupLinkModal} />}
     </div>
   );
 };

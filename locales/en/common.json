@@ -124,5 +124,6 @@
   "regenerate_setup_link": "Regenerate this setup link?",
   "regenerate_setup_link_description": "This action cannot be undone. This will permanently delete the old setup link.",
   "delete_setup_link": "Delete this setup link?",
-  "delete_setup_link_description": "This action cannot be undone. This will permanently delete the setup link."
+  "delete_setup_link_description": "This action cannot be undone. This will permanently delete the setup link.",
+  "close": "Close"
 }
