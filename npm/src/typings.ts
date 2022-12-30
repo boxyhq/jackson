@@ -695,9 +695,4 @@ export type SetupLink = {
   validTill: number;
 };
 
-export type ApiResponse<T> = {
-  data: T | null;
-  error: ApiError | null;
-};
-
 export type SetupLinkService = 'sso' | 'dsync';
