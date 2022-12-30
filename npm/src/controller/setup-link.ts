@@ -29,6 +29,11 @@ export class SetupLinkController {
       return existing[0];
     }
 
+    // Remove the existing setup link if regenerate is true
+    if (regenerate) {
+      await this.setupLinkStore.delete(existing[0].setupID);
+    }
+
     const setupLink = {
       setupID,
       tenant,
