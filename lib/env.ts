@@ -16,6 +16,12 @@ if (process.env.DB_SSL === 'true') {
   };
 }
 
+// Retraced
+const retraced = {
+  host: process.env.NEXT_PUBLIC_RETRACED_HOST,
+  adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
+};
+
 const db: DatabaseOption = {
   engine: process.env.DB_ENGINE ? <DatabaseEngine>process.env.DB_ENGINE : undefined,
   url: process.env.DB_URL || process.env.DATABASE_URL,
@@ -49,6 +55,7 @@ const jacksonOptions: JacksonOption = {
     privateKey: process.env.PRIVATE_KEY || '',
   },
   boxyhqLicenseKey: process.env.BOXYHQ_LICENSE_KEY,
+  retraced,
   noAnalytics:
     process.env.DO_NOT_TRACK === '1' ||
     process.env.DO_NOT_TRACK === 'true' ||
@@ -56,5 +63,6 @@ const jacksonOptions: JacksonOption = {
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
 };
 
+export { retraced as retracedOptions };
 export { apiKeys };
 export { jacksonOptions };
