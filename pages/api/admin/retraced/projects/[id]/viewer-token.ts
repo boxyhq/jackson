@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import * as Retraced from '@retraced-hq/retraced';
-import requestIp from 'request-ip';
 
 import { retracedOptions } from '@lib/env';
 import { checkSession } from '@lib/middleware';
@@ -30,26 +29,8 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
     endpoint: retracedOptions?.host,
     viewLogAction: 'audit.log.view',
   });
-  const reqIp = requestIp.getClientIp(req);
-  const ip = reqIp == '::1' ? '127.0.0.1' : reqIp;
 
-  retraced.reportEvent({
-    crud: 'r',
-    action: 'audit.log.view',
-    description: 'Admin UI accessed the audit logs.',
-    created: new Date(),
-    actor: {
-      id: 'Admin-UI',
-      name: 'Admin-UI',
-    },
-    group: {
-      id: groupId as string,
-      name: groupId as string,
-    },
-    sourceIp: ip,
-  });
-
-  const viewerToken = await retraced.getViewerToken(groupId as string, 'Admin-UI', true);
+  const viewerToken = await retraced.getViewerToken(groupId as string, 'Admin-Portal', true);
 
   return res.status(200).json({
     data: {
