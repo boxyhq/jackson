@@ -3,34 +3,58 @@ import { NextResponse } from 'next/server';
 import { validateApiKey, extractAuthToken } from '@lib/auth';
 import { getToken } from 'next-auth/jwt';
 import { sessionName } from '@lib/constants';
+import micromatch from 'micromatch';
+
+// Add API routes that don't require authentication
+const unAuthenticatedApiRoutes = [
+  '/api/health',
+  '/api/hello',
+  '/api/auth/**',
+  '/api/federated-saml/**',
+  '/api/logout/**',
+  '/api/oauth/**',
+  '/api/scim/v2.0/**',
+  '/api/well-known/**',
+  '/api/setup/**',
+];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Validate API routes `/api/admin/*`
-  if (pathname.startsWith('/api/admin')) {
+  // Bypass routes that don't require authentication
+  if (micromatch.isMatch(pathname, unAuthenticatedApiRoutes)) {
+    return NextResponse.next();
+  }
+
+  // Validate API routes `/api/admin/**`
+  if (micromatch.isMatch(pathname, '/api/admin/**')) {
     const adminToken = await getToken({
       req,
       cookieName: sessionName,
     });
 
     if (!adminToken) {
-      return unAuthorizedResponse({ message: 'Unauthorized' });
+      return sendUnAuthorizedResponse({ message: 'Unauthorized' });
     }
+
+    return NextResponse.next();
   }
 
-  // Validate API routes `/api/v1/*`
-  if (pathname.startsWith('/api/v1')) {
+  // Validate API routes `/api/v1/**`
+  if (micromatch.isMatch(pathname, '/api/v1/**')) {
     if (!validateApiKey(extractAuthToken(req))) {
-      return unAuthorizedResponse({ message: 'Unauthorized' });
+      return sendUnAuthorizedResponse({ message: 'Unauthorized' });
     }
+
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  // By default, deny access to all other routes
+  return sendUnAuthorizedResponse({ message: 'Unauthorized' });
 }
 
 // Send 401 response for unauthenticated requests
-const unAuthorizedResponse = async (error: { message: string }) => {
+const sendUnAuthorizedResponse = async (error: { message: string }) => {
   const response = JSON.stringify({ error });
 
   return new NextResponse(response, {
@@ -39,7 +63,10 @@ const unAuthorizedResponse = async (error: { message: string }) => {
   });
 };
 
-// Limit the middleware to specific routes
+// Limit the middleware to specific '/api/*' routes
 export const config = {
-  matcher: ['/api/admin/:path*', '/api/v1/:path*'],
+  matcher: ['/api/:path*'],
 };
+
+// Q: Write a commit message
+// A: Updates to API authentication middleware
