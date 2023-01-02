@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
   // Validate API routes `/api/v1/*`
   if (pathname.startsWith('/api/v1')) {
     if (!validateApiKey(extractAuthToken(req))) {
-      return unAuthorizedResponse({ message: 'Invalid API key' });
+      return unAuthorizedResponse({ message: 'Unauthorized' });
     }
   }
 
@@ -39,7 +39,7 @@ const unAuthorizedResponse = async (error: { message: string }) => {
   });
 };
 
-// Limit the middleware to paths
+// Limit the middleware to specific routes
 export const config = {
   matcher: ['/api/admin/:path*', '/api/v1/:path*'],
 };
