@@ -67,6 +67,3 @@ const sendUnAuthorizedResponse = async (error: { message: string }) => {
 export const config = {
   matcher: ['/api/:path*'],
 };
-
-// Q: Write a commit message
-// A: Updates to API authentication middleware
