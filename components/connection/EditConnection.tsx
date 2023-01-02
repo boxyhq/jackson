@@ -81,7 +81,7 @@ const EditConnection = ({ connection, setupLinkToken }: EditProps) => {
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
     const res = await fetch(
-      setupLinkToken ? `/api/setup/${setupLinkToken}/connections` : '/api/admin/connections',
+      setupLinkToken ? `/api/setup/${setupLinkToken}/sso-connection` : '/api/admin/connections',
       {
         method: 'DELETE',
         headers: {
