@@ -12,6 +12,7 @@ import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
 import { SPSAMLConfig } from './controller/sp-config';
 import { SetupLinkController } from './controller/setup-link';
+import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
@@ -83,8 +84,17 @@ export const controllers = async (
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
-  const setupLinkController = new SetupLinkController({ setupLinkStore });
   await healthCheckController.init();
+  const setupLinkController = new SetupLinkController({ setupLinkStore });
+
+  if (!opts.noAnalytics) {
+    console.info(
+      'Anonymous analytics enabled. You can disable this by setting the DO_NOT_TRACK=1 or BOXYHQ_NO_ANALYTICS=1 environment variables'
+    );
+    const analyticsStore = db.store('_analytics:events');
+    const analyticsController = new AnalyticsController({ analyticsStore });
+    await analyticsController.init();
+  }
 
   // Create default certificate if it doesn't exist.
   await x509.init(certificateStore, opts);
@@ -151,3 +161,4 @@ export default controllers;
 export * from './typings';
 export * from './ee/federated-saml/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
+export type ISetupLinkController = InstanceType<typeof SetupLinkController>;

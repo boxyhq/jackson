@@ -1,25 +1,28 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 
-const Modal = (props: {
+type ModalProps = {
   visible: boolean;
   title: string;
-  description: string;
+  description?: string;
   children?: React.ReactNode;
-}) => {
-  const { visible, title, description, children } = props;
+};
 
-  const [open, setOpen] = React.useState(visible ? visible : false);
+const Modal = ({ visible, title, description, children }: ModalProps) => {
+  const [open, setOpen] = useState(visible ? visible : false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setOpen(visible);
   }, [visible]);
 
   return (
     <div className={`modal ${open ? 'modal-open' : ''}`}>
       <div className='modal-box'>
-        <h3 className='text-lg font-bold'>{title}</h3>
-        <p className='py-4'>{description}</p>
-        <div>{children}</div>
+        <div className='flex flex-col gap-2'>
+          <h3 className='text-lg font-bold'>{title}</h3>
+          {description && <p className='text-sm'>{description}</p>}
+          <div>{children}</div>
+        </div>
       </div>
     </div>
   );

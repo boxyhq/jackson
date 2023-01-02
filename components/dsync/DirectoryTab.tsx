@@ -2,46 +2,42 @@ import Link from 'next/link';
 import type { Directory } from '@boxyhq/saml-jackson';
 import classNames from 'classnames';
 
-const DirectoryTab = (props: { directory: Directory; activeTab: string; token?: any }) => {
-  const { directory, activeTab, token } = props;
-
-  const menus = token
+const DirectoryTab = ({
+  directory,
+  activeTab,
+  setupLinkToken,
+}: {
+  directory: Directory;
+  activeTab: string;
+  setupLinkToken?: string;
+}) => {
+  const menus = setupLinkToken
     ? [
         {
           name: 'Directory',
-          href: token
-            ? `/setup/${token}/directory-sync/${directory.id}`
-            : `/admin/directory-sync/${directory.id}`,
+          href: `/setup/${setupLinkToken}/directory-sync/${directory.id}`,
           active: activeTab === 'directory',
         },
       ]
     : [
         {
           name: 'Directory',
-          href: token
-            ? `/setup/${token}/directory-sync/${directory.id}`
-            : `/admin/directory-sync/${directory.id}`,
+          href: `/admin/directory-sync/${directory.id}`,
           active: activeTab === 'directory',
         },
         {
           name: 'Users',
-          href: token
-            ? `/setup/${token}/directory-sync/${directory.id}/users`
-            : `/admin/directory-sync/${directory.id}/users`,
+          href: `/admin/directory-sync/${directory.id}/users`,
           active: activeTab === 'users',
         },
         {
           name: 'Groups',
-          href: token
-            ? `/setup/${token}/directory-sync/${directory.id}/groups`
-            : `/admin/directory-sync/${directory.id}/groups`,
+          href: `/admin/directory-sync/${directory.id}/groups`,
           active: activeTab === 'groups',
         },
         {
           name: 'Webhook Events',
-          href: token
-            ? `/setup/${token}/directory-sync/${directory.id}/events`
-            : `/admin/directory-sync/${directory.id}/events`,
+          href: `/admin/directory-sync/${directory.id}/events`,
           active: activeTab === 'events',
         },
       ];

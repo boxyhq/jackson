@@ -1,27 +1,62 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
-import jackson from '@lib/jackson';
-import EmptyState from '@components/EmptyState';
-import DirectoryTab from '@components/dsync/DirectoryTab';
-import { inferSSRProps } from '@lib/inferSSRProps';
-import Badge from '@components/Badge';
 import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import useSWR from 'swr';
+import type { WebhookEventLog } from '@boxyhq/saml-jackson';
 
-const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory, events }) => {
+import EmptyState from '@components/EmptyState';
+import DirectoryTab from '@components/dsync/DirectoryTab';
+import Badge from '@components/Badge';
+import type { ApiError, ApiSuccess } from 'types';
+import { fetcher } from '@lib/ui/utils';
+import { errorToast } from '@components/Toaster';
+import Loading from '@components/Loading';
+import useDirectory from '@lib/ui/hooks/useDirectory';
+import { LinkBack } from '@components/LinkBack';
+import { Pagination, pageLimit } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
+
+const Events: NextPage = () => {
   const { t } = useTranslation('common');
-  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
+  const { paginate, setPaginate } = usePaginate();
+  const [loading, setLoading] = React.useState(false);
+
+  const { directoryId } = router.query as { directoryId: string };
+
+  const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
+
+  const { data: eventsData, error: eventsError } = useSWR<ApiSuccess<WebhookEventLog[]>, ApiError>(
+    `/api/admin/directory-sync/${directoryId}/events?offset=${paginate.offset}&limit=${pageLimit}`,
+    fetcher
+  );
+
+  if (isDirectoryLoading || !eventsData) {
+    return <Loading />;
+  }
+
+  const error = directoryError || eventsError;
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
+
+  if (!directory) {
+    return null;
+  }
+
+  const events = eventsData.data;
 
   const clearEvents = async () => {
     setLoading(true);
 
-    await fetch(`/api/admin/directory-sync/${directory.id}/events`, {
+    await fetch(`/api/admin/directory-sync/${directoryId}/events`, {
       method: 'DELETE',
     });
 
@@ -32,11 +67,12 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
 
   return (
     <>
-      <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
+      <LinkBack href='/admin/directory-sync' />
+      <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
         <DirectoryTab directory={directory} activeTab='events' />
-        {events.length === 0 ? (
-          <EmptyState title='No webhook events found' />
+        {events.length === 0 && paginate.offset === 0 ? (
+          <EmptyState title={t('no_webhook_events_found')} />
         ) : (
           <>
             <div className='my-3 flex justify-end'>
@@ -49,7 +85,7 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
             <div className='rounded border'>
               <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
                 <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                  <tr>
+                  <tr className='hover:bg-gray-50'>
                     <th scope='col' className='px-6 py-3'>
                       {t('event_type')}
                     </th>
@@ -78,7 +114,7 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
                           )}
                         </td>
                         <td className='px-6 py-3'>
-                          <Link href={`/admin/directory-sync/${directory.id}/events/${event.id}`}>
+                          <Link href={`/admin/directory-sync/${directoryId}/events/${event.id}`}>
                             <EyeIcon className='h-5 w-5' />
                           </Link>
                         </td>
@@ -88,6 +124,20 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
                 </tbody>
               </table>
             </div>
+            <Pagination
+              itemsCount={events.length}
+              offset={paginate.offset}
+              onPrevClick={() => {
+                setPaginate({
+                  offset: paginate.offset - pageLimit,
+                });
+              }}
+              onNextClick={() => {
+                setPaginate({
+                  offset: paginate.offset + pageLimit,
+                });
+              }}
+            />
           </>
         )}
       </div>
@@ -96,24 +146,10 @@ const Events: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ directory,
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { directoryId } = context.query;
-  const { directorySyncController } = await jackson();
-  const { locale }: GetServerSidePropsContext = context;
-
-  const { data: directory } = await directorySyncController.directories.get(directoryId as string);
-
-  if (!directory) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll();
+  const { locale } = context;
 
   return {
     props: {
-      directory,
-      events,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };

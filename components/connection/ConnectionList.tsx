@@ -1,61 +1,71 @@
-import { ClipboardDocumentIcon, LinkIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
+import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
+import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { copyToClipboard } from '@lib/ui/utils';
-import { successToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { Pagination } from '@components/Pagination';
-import { ButtonPrimary } from '@components/ButtonPrimary';
 import { IconButton } from '@components/IconButton';
+import { InputWithCopyButton } from '@components/ClipboardButton';
+import { Pagination, pageLimit } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
+import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import useSWR from 'swr';
+import { fetcher } from '@lib/ui/utils';
+import Loading from '@components/Loading';
+import { errorToast } from '@components/Toaster';
+import type { ApiError, ApiSuccess } from 'types';
 
-type Connection = {
-  name: string;
-  tenant: string;
-  product: string;
-  clientID: string;
-  idpMetadata?: any;
-  oidcProvider?: any;
-};
-
-type ConnectionListProps = {
-  setupToken?: string;
-  connections: Connection[];
-  paginate: any;
-  setPaginate: any;
-  idpEntityID?: string;
-};
-
-const Connections = ({
-  paginate,
-  setPaginate,
-  connections,
-  setupToken,
+const ConnectionList = ({
+  setupLinkToken,
   idpEntityID,
-}: ConnectionListProps) => {
+}: {
+  setupLinkToken?: string;
+  idpEntityID?: string;
+}) => {
   const { t } = useTranslation('common');
+  const { paginate, setPaginate } = usePaginate();
   const router = useRouter();
 
-  if (!connections) {
+  const displayTenantProduct = setupLinkToken ? false : true;
+  const getConnectionsUrl = setupLinkToken
+    ? `/api/setup/${setupLinkToken}/sso-connection`
+    : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
+  const createConnectionUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}/sso-connection/new`
+    : '/admin/sso-connection/new';
+
+  const { data, error } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
+    getConnectionsUrl,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+
+  if (!data && !error) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
     return null;
   }
 
-  if (connections.length === 0 && setupToken) {
-    router.replace(`/setup/${setupToken}/sso-connection/new`);
+  const connections = data?.data || [];
+
+  if (connections && setupLinkToken && connections.length === 0) {
+    router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
     return null;
   }
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
-        <div>
-          <LinkPrimary
-            Icon={PlusIcon}
-            href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
-            data-test-id='create-connection'>
+        <div className='flex gap-2'>
+          <LinkPrimary Icon={PlusIcon} href={createConnectionUrl} data-test-id='create-connection'>
             {t('new_connection')}
           </LinkPrimary>
-          {!setupToken && (
+          {!setupLinkToken && (
             <LinkPrimary
               Icon={LinkIcon}
               href='/admin/sso-connection/setup-link/new'
@@ -65,38 +75,25 @@ const Connections = ({
           )}
         </div>
       </div>
-      {idpEntityID && setupToken && (
+      {idpEntityID && setupLinkToken && (
         <div className='mb-5 mt-5 items-center justify-between'>
           <div className='form-control'>
-            <div className='input-group'>
-              <div className='pt-2 pr-2'>{t('idp_entity_id')}:</div>
-              <ButtonPrimary
-                Icon={ClipboardDocumentIcon}
-                className='p-2'
-                onClick={() => {
-                  copyToClipboard(idpEntityID);
-                  successToast(t('copied'));
-                }}></ButtonPrimary>
-              <input type='text' readOnly value={idpEntityID} className='input-bordered input h-10 w-4/5' />
-            </div>
+            <InputWithCopyButton text={idpEntityID} label={t('idp_entity_id')} />
           </div>
         </div>
       )}
-      {connections.length === 0 ? (
-        <EmptyState
-          title={t('no_connections_found')}
-          href={setupToken ? `/setup/${setupToken}/sso-connection/new` : `/admin/sso-connection/new`}
-        />
+      {connections.length === 0 && paginate.offset === 0 ? (
+        <EmptyState title={t('no_connections_found')} href={createConnectionUrl} />
       ) : (
         <>
           <div className='rounder border'>
             <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr>
+                <tr className='hover:bg-gray-50'>
                   <th scope='col' className='px-6 py-3'>
                     {t('name')}
                   </th>
-                  {!setupToken && (
+                  {displayTenantProduct && (
                     <>
                       <th scope='col' className='px-6 py-3'>
                         {t('tenant')}
@@ -116,21 +113,20 @@ const Connections = ({
               </thead>
               <tbody>
                 {connections.map((connection) => {
-                  const connectionIsSAML =
-                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
-                  const connectionIsOIDC =
-                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
+                  const connectionIsSAML = 'idpMetadata' in connection;
+                  const connectionIsOIDC = 'oidcProvider' in connection;
+
                   return (
                     <tr
                       key={connection.clientID}
-                      className='border-b bg-white last:border-b-0 dark:border-gray-700 dark:bg-gray-800'>
+                      className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                         {connection.name ||
                           (connectionIsSAML
                             ? connection.idpMetadata?.provider
                             : connection.oidcProvider?.provider)}
                       </td>
-                      {!setupToken && (
+                      {displayTenantProduct && (
                         <>
                           <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
                             {connection.tenant}
@@ -148,11 +144,11 @@ const Connections = ({
                           <IconButton
                             tooltip={t('edit')}
                             Icon={PencilIcon}
-                            className='hover:text-green-200'
+                            className='hover:text-green-400'
                             onClick={() => {
                               router.push(
-                                setupToken
-                                  ? `/setup/${setupToken}/sso-connection/edit/${connection.clientID}`
+                                setupLinkToken
+                                  ? `/setup/${setupLinkToken}/sso-connection/edit/${connection.clientID}`
                                   : `/admin/sso-connection/edit/${connection.clientID}`
                               );
                             }}
@@ -166,26 +162,23 @@ const Connections = ({
             </table>
           </div>
           <Pagination
-            prevDisabled={paginate.page === 0}
-            nextDisabled={connections.length === 0 || connections.length < paginate.pageLimit}
-            onPrevClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page - 1) * paginate.pageLimit,
-                page: curState.page - 1,
-              }))
-            }
-            onNextClick={() =>
-              setPaginate((curState) => ({
-                ...curState,
-                pageOffset: (curState.page + 1) * paginate.pageLimit,
-                page: curState.page + 1,
-              }))
-            }></Pagination>
+            itemsCount={connections.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
         </>
       )}
     </div>
   );
 };
 
-export default Connections;
+export default ConnectionList;
