@@ -1,4 +1,3 @@
-import axios from 'axios';
 import useSWR from 'swr';
 
 import type { ApiError, ApiSuccess } from 'types';
@@ -6,7 +5,7 @@ import type { Project, Group } from 'types/retraced';
 import { fetcher } from '@lib/ui/utils';
 
 export const useProject = (projectId: string) => {
-  const { data, error } = useSWR<ApiSuccess<{ project: Project }>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<{ project: Project }>, ApiError>(
     `/api/admin/retraced/projects/${projectId}`,
     fetcher,
     {
@@ -16,26 +15,26 @@ export const useProject = (projectId: string) => {
 
   return {
     project: data?.data.project,
-    isLoading: !error && !data,
+    isLoading,
     isError: error,
   };
 };
 
 export const useProjects = () => {
-  const { data, error } = useSWR<ApiSuccess<{ projects: Project[] }>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<{ projects: Project[] }>, ApiError>(
     '/api/admin/retraced/projects',
     fetcher
   );
 
   return {
     projects: data?.data?.projects,
-    isLoading: !error && !data,
+    isLoading,
     isError: error,
   };
 };
 
 export const useGroups = (projectId: string, environmentId: string) => {
-  const { data, error } = useSWR<ApiSuccess<{ groups: Group[] }>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<{ groups: Group[] }>, ApiError>(
     environmentId ? `/api/admin/retraced/projects/${projectId}/groups?environmentId=${environmentId}` : null,
     fetcher,
     {
@@ -45,7 +44,7 @@ export const useGroups = (projectId: string, environmentId: string) => {
 
   return {
     groups: data?.data?.groups,
-    isLoading: !error && !data,
+    isLoading,
     isError: error,
   };
 };

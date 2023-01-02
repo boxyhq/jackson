@@ -28,12 +28,16 @@ const GroupsList: NextPage = () => {
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
-  const { data: groupsData, error: groupsError } = useSWR<ApiSuccess<Group[]>, ApiError>(
+  const {
+    data: groupsData,
+    error: groupsError,
+    isLoading,
+  } = useSWR<ApiSuccess<Group[]>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/groups?offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher
   );
 
-  if (isDirectoryLoading || !groupsData) {
+  if (isDirectoryLoading || isLoading) {
     return <Loading />;
   }
 
@@ -48,7 +52,7 @@ const GroupsList: NextPage = () => {
     return null;
   }
 
-  const groups = groupsData.data;
+  const groups = groupsData?.data || [];
 
   return (
     <>
