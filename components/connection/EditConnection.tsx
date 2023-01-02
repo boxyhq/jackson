@@ -68,7 +68,7 @@ const EditConnection = ({ connection, setupLinkToken }: EditProps) => {
           // revalidate on save
           mutate(
             setupLinkToken
-              ? `/api/setup/${setupLinkToken}/connections`
+              ? `/api/setup/${setupLinkToken}/sso-connection`
               : `/api/admin/connections/${connectionClientId}`
           );
         }
