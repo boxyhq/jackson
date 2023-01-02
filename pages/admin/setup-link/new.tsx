@@ -1,21 +1,27 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
 import { useRouter } from 'next/router';
-import CreateSetupLink from '@components/CreateSetupLink';
+import CreateSetupLink from '@components/setup-link/CreateSetupLink';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import type { SetupLinkService } from '@boxyhq/saml-jackson';
 
-type Service = 'sso' | 'dsync';
+const serviceMaps = {
+  'sso-connection': 'sso',
+  'directory-sync': 'dsync',
+};
 
-const SetupLink: NextPage = () => {
+const SetupLinkCreatePage: NextPage = () => {
   const router = useRouter();
-  const service = router.asPath.includes('sso-connection')
-    ? 'sso'
-    : router.asPath.includes('directory-sync')
-    ? 'dsync'
-    : '';
+
+  // Extract the service name from the path
+  const serviceName = router.asPath.split('/')[2];
+
+  const service = serviceMaps[serviceName] as SetupLinkService;
+
   if (!service) {
     return null;
   }
-  return <CreateSetupLink service={service as Service} />;
+
+  return <CreateSetupLink service={service} />;
 };
 
 export async function getServerSideProps({ locale }: GetServerSidePropsContext) {
@@ -26,4 +32,4 @@ export async function getServerSideProps({ locale }: GetServerSidePropsContext) 
   };
 }
 
-export default SetupLink;
+export default SetupLinkCreatePage;

@@ -1,24 +1,27 @@
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import type { NextPage } from 'next';
-
+import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
 import LicenseRequired from '@components/LicenseRequired';
+import { Toaster } from '@components/Toaster';
+import { InputWithCopyButton, CopyToClipboardButton } from '@components/ClipboardButton';
+import { LinkOutline } from '@components/LinkOutline';
 
-const Metadata: NextPage<any> = ({ metadata }) => {
+type Metadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
+
+const Metadata = ({ metadata }: { metadata: Metadata }) => {
   const { t } = useTranslation('common');
 
   return (
     <LicenseRequired>
-      <div className='my-10 mx-5 flex h-screen justify-center'>
+      <Toaster />
+      <div className='my-10 mx-5 flex justify-center'>
         <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
           <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_app_info')}</h2>
           <div className='flex flex-col'>
             <div className='space-y-3'>
               <p className='text-sm leading-6 text-gray-800'>{t('saml_federation_app_info_details')}</p>
               <div className='flex flex-row gap-5'>
-                <Link
-                  href={`/.well-known/idp-metadata?download=true`}
-                  className='btn-outline btn-secondary btn'>
+                <LinkOutline href={`/.well-known/idp-metadata?download=true`}>
                   <svg
                     className='mr-1 inline-block h-6 w-6'
                     fill='none'
@@ -33,50 +36,32 @@ const Metadata: NextPage<any> = ({ metadata }) => {
                     />
                   </svg>
                   {t('download_metadata')}
-                </Link>
-                <Link
-                  href={`/.well-known/idp-metadata`}
-                  className='btn-outline btn-secondary btn'
-                  target='_blank'>
+                </LinkOutline>
+                <LinkOutline href={`/.well-known/idp-metadata`} target='_blank'>
                   {t('metadata_url')}
-                </Link>
+                </LinkOutline>
               </div>
             </div>
             <div className='divider'>OR</div>
             <div className='space-y-6'>
               <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text font-bold'>{t('sso_url')}</span>
-                </label>
-                <input
-                  type='text'
-                  className='input-bordered input w-full'
-                  defaultValue={metadata.ssoUrl}
-                  readOnly
-                />
+                <InputWithCopyButton text={metadata.ssoUrl} label={t('sso_url')} />
               </div>
               <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text font-bold'>{t('entity_id')}</span>
-                </label>
-                <input
-                  type='text'
-                  className='input-bordered input w-full'
-                  defaultValue={metadata.entityId}
-                  readOnly
-                />
+                <InputWithCopyButton text={metadata.entityId} label={t('entity_id')} />
               </div>
               <div className='form-control w-full'>
                 <label className='label'>
                   <div className='flex w-full items-center justify-between'>
                     <span className='label-text font-bold'>{t('x509_certificate')}</span>
-                    <span>
-                      <a
+                    <span className='flex gap-2'>
+                      <Link
                         href='/.well-known/saml.cer'
                         target='_blank'
-                        className='label-text font-bold text-gray-500'>
+                        className='label-text font-bold text-gray-500 hover:link-primary'>
                         {t('download')}
-                      </a>
+                      </Link>
+                      <CopyToClipboardButton text={metadata.x509cert.trim()} />
                     </span>
                   </div>
                 </label>

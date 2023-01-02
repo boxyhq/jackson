@@ -1,28 +1,36 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 
-export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
-  const token = req.query.token;
-  const { data: setup, error: err } = await setupLinkController.getByToken(token);
-  if (err || !setup) {
-    res.status(err ? err.code : 401).json({ err });
-  } else {
+
+  const { method } = req;
+  const { token } = req.query as { token: string };
+
+  try {
+    await setupLinkController.getByToken(token);
+
     switch (method) {
       case 'PUT':
-        return handlePUT(req, res);
+        return await handlePUT(req, res);
+      case 'GET':
+        return await handleGET(req, res);
       default:
-        res.setHeader('Allow', ['PUT']);
-        res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+        res.setHeader('Allow', 'PUT, GET');
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
     }
+  } catch (error: any) {
+    const { message, statusCode = 500 } = error;
+
+    return res.status(statusCode).json({ error: { message } });
   }
 };
 
 // Update a directory configuration
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { directoryId } = req.query;
   const { directorySyncController } = await jackson();
+
+  const { directoryId } = req.query as { directoryId: string };
 
   const { name, webhook_url, webhook_secret, log_webhook_events } = req.body;
 
@@ -35,7 +43,30 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  return res.status(error ? error.code : 201).json({ data, error });
+  if (data) {
+    return res.status(201).json({ data });
+  }
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+};
+
+// Get a directory configuration
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { directorySyncController } = await jackson();
+
+  const { directoryId } = req.query as { directoryId: string };
+
+  const { data, error } = await directorySyncController.directories.get(directoryId);
+
+  if (data) {
+    return res.json({ data });
+  }
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
 };
 
 export default handler;

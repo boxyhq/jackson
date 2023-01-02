@@ -1,35 +1,42 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { DirectoryType } from '@lib/jackson';
+import type { DirectoryType, SetupLink } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
 
-export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
-  const token = req.query.token;
-  const { data: setup, error: err } = await setupLinkController.getByToken(token);
-  if (err || !setup) {
-    res.status(err ? err.code : 401).json({ err });
-  } else {
+
+  const { method } = req;
+  const { token } = req.query as { token: string };
+
+  try {
+    const setupLink = await setupLinkController.getByToken(token);
+
     switch (method) {
       case 'POST':
-        return handlePOST(req, res, setup);
+        return await handlePOST(req, res, setupLink);
+      case 'GET':
+        return await handleGET(req, res, setupLink);
       default:
-        res.setHeader('Allow', ['POST']);
-        res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+        res.setHeader('Allow', 'PUT');
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
     }
+  } catch (error: any) {
+    const { message, statusCode = 500 } = error;
+
+    return res.status(statusCode).json({ error: { message } });
   }
 };
 
 // Create a new configuration
-const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setup: any) => {
+const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { directorySyncController } = await jackson();
 
   const { name, type, webhook_url, webhook_secret } = req.body;
 
   const { data, error } = await directorySyncController.directories.create({
     name,
-    tenant: setup.tenant,
-    product: setup.product,
+    tenant: setupLink.tenant,
+    product: setupLink.product,
     type: type as DirectoryType,
     webhook_url,
     webhook_secret,
@@ -37,6 +44,30 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setup: any)
 
   if (data) {
     return res.status(201).json({ data });
+  }
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+};
+
+// Get all configurations
+const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
+  const { directorySyncController } = await jackson();
+
+  const { offset, limit } = req.query as { offset: string; limit: string };
+
+  const pageOffset = parseInt(offset);
+  const pageLimit = parseInt(limit);
+
+  const { data, error } = await directorySyncController.directories.list({ pageOffset, pageLimit });
+
+  if (data) {
+    const filteredData = data.filter(
+      (directory) => directory.tenant === setupLink.tenant && directory.product === setupLink.product
+    );
+
+    return res.status(200).json({ data: filteredData });
   }
 
   if (error) {

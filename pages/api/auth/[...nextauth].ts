@@ -4,6 +4,7 @@ import EmailProvider from 'next-auth/providers/email';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { validateEmailWithACL } from '@lib/utils';
 import { jacksonOptions as env } from '@lib/env';
+import { sessionName } from '@lib/constants';
 
 export default NextAuth({
   theme: {
@@ -41,7 +42,7 @@ export default NextAuth({
   },
   cookies: {
     sessionToken: {
-      name: `next-auth.saml-jackson`,
+      name: sessionName,
       options: {
         httpOnly: true,
         sameSite: 'lax',

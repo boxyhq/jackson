@@ -1,6 +1,7 @@
 import Cors from 'cors';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
+import { getToken } from 'next-auth/jwt';
+import { sessionName } from './constants';
 
 // Initializing the cors middleware
 const corsFunction = Cors({
@@ -26,8 +27,12 @@ export async function cors(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export const checkSession = (handler) => async (req: NextApiRequest, res: NextApiResponse) => {
-  const session = await getSession({ req });
-  if (session) {
+  const token = await getToken({
+    req,
+    cookieName: sessionName,
+  });
+
+  if (token) {
     // Signed in
     return handler(req, res);
   } else {

@@ -5,7 +5,7 @@ import { checkSession } from '@lib/middleware';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { strings } from '@lib/strings';
 
-export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { checkLicense } = await jackson();
 
   if (!(await checkLicense())) {
@@ -26,7 +26,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'DELETE':
       return handleDELETE(req, res);
     default:
-      res.setHeader('Allow', ['GET, PUT, DELETE']);
+      res.setHeader('Allow', 'GET, PUT, DELETE');
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
   }
 };

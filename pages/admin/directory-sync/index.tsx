@@ -1,43 +1,19 @@
-import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
-
-import jackson from '@lib/jackson';
-import DirectoryList from '@components/dsync/DirectoryList';
+import type { GetStaticPropsContext, NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import DirectoryList from '@components/dsync/DirectoryList';
 
-const Index = ({
-  directories,
-  pageOffset,
-  pageLimit,
-  providers,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  return (
-    <DirectoryList
-      directories={directories || []}
-      pageOffset={pageOffset}
-      pageLimit={pageLimit}
-      providers={providers}
-    />
-  );
+const DirectoryIndexPage: NextPage = () => {
+  return <DirectoryList />;
 };
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { offset = 0 } = context.query;
-  const { directorySyncController } = await jackson();
-  const { locale }: GetServerSidePropsContext = context;
-
-  const pageOffset = parseInt(offset as string);
-  const pageLimit = 25;
-  const { data: directories } = await directorySyncController.directories.list({ pageOffset, pageLimit });
+export const getStaticProps = async (context: GetStaticPropsContext) => {
+  const { locale } = context;
 
   return {
     props: {
-      providers: directorySyncController.providers(),
-      directories,
-      pageOffset,
-      pageLimit,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
 };
 
-export default Index;
+export default DirectoryIndexPage;

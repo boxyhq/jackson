@@ -1,54 +1,68 @@
-import { Directory } from '@lib/jackson';
 import DirectoryTab from './DirectoryTab';
 import { useTranslation } from 'next-i18next';
-type DirectoryInfoProps = {
-  directory: Directory;
-  token?: string;
-};
+import { InputWithCopyButton } from '@components/ClipboardButton';
+import { LinkBack } from '@components/LinkBack';
+import React from 'react';
+import useDirectory from '@lib/ui/hooks/useDirectory';
+import Loading from '@components/Loading';
+import { errorToast } from '@components/Toaster';
 
-const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
+const DirectoryInfo = ({ directoryId, setupLinkToken }: { directoryId: string; setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
+
+  const { directory, isLoading, error } = useDirectory(directoryId, setupLinkToken);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
+    return null;
+  }
+
+  if (!directory) {
+    return null;
+  }
+
+  const displayWebhook = directory.webhook.endpoint && directory.webhook.secret;
+  const displayTenantProduct = setupLinkToken ? false : true;
+  const backUrl = setupLinkToken ? `/setup/${setupLinkToken}/directory-sync` : '/admin/directory-sync';
+
   return (
     <>
-      <h2 className='font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
+      <LinkBack href={backUrl} />
+      <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
-        <DirectoryTab directory={directory} activeTab='directory' token={token} />
+        <DirectoryTab directory={directory} activeTab='directory' setupLinkToken={setupLinkToken} />
         <div className='my-3 rounded border'>
-          <dl>
-            <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='text-sm font-medium text-gray-500'>Directory ID</dt>
+          <dl className='divide-y'>
+            <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+              <dt className='text-sm font-medium text-gray-500'>{t('directory_id')}</dt>
               <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.id}</dd>
             </div>
-            {!token && (
+            {displayTenantProduct && (
               <>
-                <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>Tenant</dt>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>{t('tenant')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.tenant}</dd>
                 </div>
-                <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>Product</dt>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>{t('product')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.product}</dd>
                 </div>
               </>
             )}
-            <div className='border-b bg-gray-100 px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='pt-2 text-sm font-medium text-gray-500'>SCIM Endpoint</dt>
-              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.scim.endpoint}</dd>
-            </div>
-            <div className='border-b bg-gray-100 px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='pt-2 text-sm font-medium text-gray-500'>SCIM Token</dt>
-              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.scim.secret}</dd>
-            </div>
-            {directory.webhook.endpoint && directory.webhook.secret && (
+            {displayWebhook && (
               <>
-                <div className='border-b px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>Webhook Endpoint</dt>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>{t('webhook_endpoint')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {directory.webhook.endpoint}
                   </dd>
                 </div>
-                <div className='px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='pt-2 text-sm font-medium text-gray-500'>Webhook Secret</dt>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>{t('webhook_secret')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {directory.webhook.secret}
                   </dd>
@@ -56,6 +70,14 @@ const DirectoryInfo = ({ directory, token }: DirectoryInfoProps) => {
               </>
             )}
           </dl>
+        </div>
+        <div className='mt-4 space-y-4 rounded border p-6'>
+          <div className='form-control'>
+            <InputWithCopyButton text={directory.scim.endpoint as string} label={t('scim_endpoint')} />
+          </div>
+          <div className='form-control'>
+            <InputWithCopyButton text={directory.scim.secret} label={t('scim_token')} />
+          </div>
         </div>
       </div>
     </>

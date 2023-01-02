@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
 
 import ConfirmationModal from '@components/ConfirmationModal';
@@ -14,7 +14,7 @@ import { ButtonDanger } from '@components/ButtonDanger';
 
 const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
 
-function getInitialState(fieldCatalog, connection) {
+function getInitialState(connection) {
   const _state = {};
 
   fieldCatalog.forEach(({ key, attributes }) => {
@@ -36,11 +36,10 @@ function getInitialState(fieldCatalog, connection) {
 
 type EditProps = {
   connection?: Record<string, any>;
-  setupToken?: string;
-  selfSSOSetup?: boolean;
+  setupLinkToken?: string;
 };
 
-const Edit = ({ connection, setupToken, selfSSOSetup = false }: EditProps) => {
+const EditConnection = ({ connection, setupLinkToken }: EditProps) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
@@ -55,7 +54,7 @@ const Edit = ({ connection, setupToken, selfSSOSetup = false }: EditProps) => {
       connectionIsSAML: connectionIsSAML,
       connectionIsOIDC: connectionIsOIDC,
       isEditView: true,
-      setupToken: setupToken,
+      setupLinkToken,
       callback: async (res) => {
         const response: ApiResponse = await res.json();
 
@@ -68,8 +67,8 @@ const Edit = ({ connection, setupToken, selfSSOSetup = false }: EditProps) => {
           successToast(t('saved'));
           // revalidate on save
           mutate(
-            setupToken
-              ? `/api/setup/${setupToken}/connections`
+            setupLinkToken
+              ? `/api/setup/${setupLinkToken}/connections`
               : `/api/admin/connections/${connectionClientId}`
           );
         }
@@ -81,13 +80,16 @@ const Edit = ({ connection, setupToken, selfSSOSetup = false }: EditProps) => {
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
-    const res = await fetch(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
-    });
+    const res = await fetch(
+      setupLinkToken ? `/api/setup/${setupLinkToken}/connections` : '/api/admin/connections',
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
+      }
+    );
 
     const response: ApiResponse = await res.json();
 
@@ -99,28 +101,18 @@ const Edit = ({ connection, setupToken, selfSSOSetup = false }: EditProps) => {
     }
 
     if (res.ok) {
-      if (!selfSSOSetup) {
-        await mutate(setupToken ? `/api/setup/${setupToken}/connections` : '/api/admin/connections');
-      }
-      router.replace(
-        setupToken
-          ? `/setup/${setupToken}/sso-connection`
-          : selfSSOSetup
-          ? '/admin/settings/sso-connection'
-          : '/admin/sso-connection'
-      );
+      await mutate(setupLinkToken ? `/api/setup/${setupLinkToken}/connections` : '/api/admin/connections');
+      router.replace(setupLinkToken ? `/setup/${setupLinkToken}/sso-connection` : '/admin/sso-connection');
     }
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(() =>
-    getInitialState(fieldCatalog, connection)
-  );
+  const [formObj, setFormObj] = useState<Record<string, string>>(() => getInitialState(connection));
   // Resync form state on save
   useEffect(() => {
-    const _state = getInitialState(fieldCatalog, connection);
+    const _state = getInitialState(connection);
     setFormObj(_state);
-  }, [connection, fieldCatalog]);
+  }, [connection]);
 
   const filteredFieldsByConnection = fieldCatalog.filter(
     fieldCatalogFilterByConnection(connectionIsSAML ? 'saml' : connectionIsOIDC ? 'oidc' : null)
@@ -128,7 +120,7 @@ const Edit = ({ connection, setupToken, selfSSOSetup = false }: EditProps) => {
 
   return (
     <>
-      <LinkBack href={setupToken ? `/setup/${setupToken}` : '/admin/sso-connection'} />
+      <LinkBack href={setupLinkToken ? `/setup/${setupLinkToken}` : '/admin/sso-connection'} />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}
@@ -139,13 +131,13 @@ const Edit = ({ connection, setupToken, selfSSOSetup = false }: EditProps) => {
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-3/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable !== false)
-                  .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
+                  .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
                   .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
               </div>
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-2/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable === false)
-                  .filter(({ attributes: { hideInSetupView } }) => (setupToken ? !hideInSetupView : true))
+                  .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
                   .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
               </div>
             </div>
@@ -176,4 +168,4 @@ const Edit = ({ connection, setupToken, selfSSOSetup = false }: EditProps) => {
   );
 };
 
-export default Edit;
+export default EditConnection;

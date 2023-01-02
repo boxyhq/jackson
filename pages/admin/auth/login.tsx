@@ -1,13 +1,14 @@
 import { useState, type ReactElement } from 'react';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import { useSession, getCsrfToken, signIn, SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import Image from 'next/image';
+import { useSession, getCsrfToken, signIn, SessionProvider } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { errorToast, successToast } from '@components/Toaster';
 import { ButtonPrimary } from '@components/ButtonPrimary';
+import Loading from '@components/Loading';
 import { Login as SSOLogin } from '@boxyhq/react-ui';
 
 const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
@@ -19,7 +20,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
   const [email, setEmail] = useState('');
 
   if (status === 'loading') {
-    return null;
+    return <Loading />;
   }
 
   if (status === 'authenticated') {
@@ -109,7 +110,9 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
             />
           </div>
         </div>
-        <WellKnownURLs className='mt-5 border p-5' />
+        <Link href='/.well-known' className='my-3 text-sm underline' target='_blank'>
+          {t('here_are_the_set_of_uris_you_would_need_access_to')}
+        </Link>
       </div>
     </>
   );
