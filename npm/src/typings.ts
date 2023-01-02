@@ -339,6 +339,10 @@ export interface JacksonOption {
     privateKey: string;
   };
   boxyhqLicenseKey?: string;
+  retraced?: {
+    host?: string;
+    adminToken?: string;
+  };
   noAnalytics?: boolean;
 }
 

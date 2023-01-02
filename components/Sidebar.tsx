@@ -8,8 +8,7 @@ import Logo from '../public/logo.png';
 import { useTranslation } from 'next-i18next';
 import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
-// import VaultLogo from '@components/logo/Vault';
-// import AuditLogsLogo from '@components/logo/AuditLogs';
+import AuditLogsLogo from '@components/logo/AuditLogs';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -75,6 +74,20 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           href: '/admin/directory-sync/setup-link',
           text: t('setup_links'),
           active: asPath.includes('/admin/directory-sync/setup-link'),
+        },
+      ],
+    },
+    {
+      href: '/admin/retraced',
+      text: 'Audit Logs',
+      icon: AuditLogsLogo,
+      current: asPath.includes('retraced'),
+      active: asPath.includes('/admin/retraced'),
+      items: [
+        {
+          href: '/admin/retraced',
+          text: t('projects'),
+          active: asPath.includes('/admin/retraced'),
         },
       ],
     },
