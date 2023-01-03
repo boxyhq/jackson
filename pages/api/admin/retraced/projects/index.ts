@@ -34,7 +34,7 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
     },
     {
       headers: {
-        Authorization: `id=${token.id} token=${token.token}`,
+        Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
       },
     }
   );
