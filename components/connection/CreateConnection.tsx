@@ -5,7 +5,7 @@ import {
   fieldCatalogFilterByConnection,
   renderFieldList,
   useFieldCatalog,
-  type AdminSSODefaults,
+  type AdminPortalSSODefaults,
 } from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
@@ -19,12 +19,12 @@ const CreateConnection = ({
   setupLinkToken,
   idpEntityID,
   isSettingsView = false,
-  adminSSODefaults,
+  adminPortalSSODefaults,
 }: {
   setupLinkToken?: string;
   idpEntityID?: string;
   isSettingsView?: boolean;
-  adminSSODefaults?: AdminSSODefaults;
+  adminPortalSSODefaults?: AdminPortalSSODefaults;
 }) => {
   const fieldCatalog = useFieldCatalog({ isSettingsView });
   const { t } = useTranslation('common');
@@ -78,7 +78,7 @@ const CreateConnection = ({
 
   // STATE: FORM
   const [formObj, setFormObj] = useState<Record<string, string>>(
-    isSettingsView ? { ...adminSSODefaults } : {}
+    isSettingsView ? { ...adminPortalSSODefaults } : {}
   );
 
   return (

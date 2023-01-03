@@ -96,7 +96,7 @@ export const useFieldCatalog = ({
   return fieldCatalog;
 };
 
-export type AdminSSODefaults = {
+export type AdminPortalSSODefaults = {
   tenant: string;
   product: string;
   redirectUrl: string;
