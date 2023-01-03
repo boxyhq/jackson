@@ -4,7 +4,6 @@ import axios from 'axios';
 import type { Project } from 'types/retraced';
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
-import { checkSession } from '@lib/middleware';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -15,7 +14,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     case 'POST':
       return createProject(req, res);
     default:
-      res.setHeader('Allow', ['GET', 'POST']);
+      res.setHeader('Allow', 'GET, POST');
       res.status(405).json({
         data: null,
         error: { message: `Method ${method} Not Allowed` },
@@ -61,4 +60,4 @@ const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-export default checkSession(handler);
+export default handler;

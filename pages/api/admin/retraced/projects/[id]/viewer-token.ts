@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import * as Retraced from '@retraced-hq/retraced';
 
 import { retracedOptions } from '@lib/env';
-import { checkSession } from '@lib/middleware';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -11,7 +10,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     case 'GET':
       return getViewerToken(req, res);
     default:
-      res.setHeader('Allow', ['GET']);
+      res.setHeader('Allow', 'GET');
       res.status(405).json({
         data: null,
         error: { message: `Method ${method} Not Allowed` },
@@ -40,4 +39,4 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-export default checkSession(handler);
+export default handler;
