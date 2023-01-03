@@ -369,3 +369,4 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     with:
       npmversion: needs.ci.outputs.NPM_VERSION
+      publishtag: needs.ci.outputs.PUBLISH_TAG

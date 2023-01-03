@@ -5,6 +5,9 @@ on:
       npmversion:
         required: true
         type: string
+      publishtag:
+        required: true
+        type: string
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,6 +25,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm run build
-      - run: npm publish --access public
+      - run: |
+          npm install -g json
+          PKG_VERSION=${{ inputs.npmversion }}
+          json -I -f package.json -e "this.version=\"${PKG_VERSION}\""
+
+          npm publish --tag ${{ inputs.publishtag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
