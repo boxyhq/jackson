@@ -365,7 +365,6 @@ jobs:
   publish_sdk:
     needs: [ci, build]
     name: Publish SDK for React
-    if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
     uses: ./.github/workflows/sdk.yml
     with:
       npmversion: needs.ci.outputs.NPM_VERSION
