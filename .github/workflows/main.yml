@@ -23,6 +23,9 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    outputs:
+      NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
+      PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
     env:
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       NEXTAUTH_URL: http://localhost:5225
@@ -117,7 +120,8 @@ jobs:
         run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
       - run: npm run test
         working-directory: ./npm
-      - run: |
+      - id: version
+        run: |
           npm install --legacy-peer-deps
           npm run build
           npm install -g json
@@ -134,43 +138,21 @@ jobs:
             JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
 
-          echo ${JACKSON_VERSION} > npmversion.txt
-          echo ${publishTag} > publishTag.txt
+          echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
+          echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
 
-          echo $(cat npmversion.txt)
-          echo $(cat publishTag.txt)
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Upload saml-jackson npm version
-        uses: actions/upload-artifact@v3
-        with:
-          name: npmversion
-          path: ./npm/npmversion.txt
-      - name: Upload saml-jackson publish tag
-        uses: actions/upload-artifact@v3
-        with:
-          name: publishTag
-          path: ./npm/publishTag.txt
 
   build:
     needs: ci
     runs-on: ubuntu-latest
-
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v3
 
-      - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v3
-        with:
-          name: npmversion
-
-      - name: Get saml-jackson npm version
-        id: npmversion
-        run: echo "{npmversion}={$(cat npmversion.txt)}" >> $GITHUB_OUTPUT
-
-      - run: echo ${{ steps.npmversion.outputs.npmversion }}
+      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Get short SHA
         id: slug
@@ -199,7 +181,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
+          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -317,13 +299,6 @@ jobs:
           rm results.sarif || true
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
-      - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v3
-        with:
-          name: npmversion
-      - name: Get saml-jackson npm version
-        id: _npmversion
-        run: echo "{npmversion}={$(cat npmversion.txt)}"
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         if: github.ref == 'refs/heads/release'
         run: |
@@ -332,24 +307,24 @@ jobs:
           curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
           mkdir oras_install
           tar -xvf "${ORAS_FILENAME}" -C oras_install
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd _docker
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd ..
           cd npm
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd ..
 
       - name: Sign the sbom images
         if: github.ref == 'refs/heads/release'
         run: |
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }} || true
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
   publish:
-    needs: build
+    needs: [ci, build]
     runs-on: ubuntu-latest
 
     strategy:
@@ -359,23 +334,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v3
-        with:
-          name: npmversion
-      - name: Get saml-jackson npm version
-        id: npmversion
-        run: echo "{npmversion}={$(cat npmversion.txt)}" >> $GITHUB_OUTPUT
-      - run: echo ${{ steps.npmversion.outputs.npmversion }}
-
-      - name: Download saml-jackson publish tag
-        uses: actions/download-artifact@v3
-        with:
-          name: publishTag
-      - name: Get saml-jackson npm version
-        id: publishTag
-        run: echo "{publishTag}={$(cat publishTag.txt)}" >> $GITHUB_OUTPUT
-      - run: echo ${{ steps.publishTag.outputs.publishTag }}
+      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
+      - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -392,12 +352,12 @@ jobs:
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
-          JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
+          JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
           json -I -f package.json -e "this.main=\"dist/index.js\""
           json -I -f package.json -e "this.types=\"dist/index.d.ts\""
           json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
-          npm publish --tag ${{ steps.publishTag.outputs.publishTag }} --access public
+          npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
