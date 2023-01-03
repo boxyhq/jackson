@@ -10,8 +10,9 @@ import { errorToast, successToast } from '@components/Toaster';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import Loading from '@components/Loading';
 import { Login as SSOLogin } from '@boxyhq/react-ui';
+import { adminPortalSSODefaults } from '@lib/env';
 
-const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { status } = useSession();
@@ -100,7 +101,7 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
             </form>
             <SSOLogin
               buttonText={t('login_with_sso')}
-              ssoIdentifier={`tenant=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT}&product=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT}`}
+              ssoIdentifier={`tenant=${tenant}&product=${product}`}
               onSubmit={onSSOSubmit}
               classNames={{
                 container: 'mt-2',
@@ -124,9 +125,12 @@ Login.getLayout = function getLayout(page: ReactElement) {
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { locale }: GetServerSidePropsContext = context;
+  const { tenant, product } = adminPortalSSODefaults;
   return {
     props: {
       csrfToken: await getCsrfToken(context),
+      tenant,
+      product,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
