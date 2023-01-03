@@ -1,7 +1,12 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { getCommonFields } from './fieldCatalog';
-import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
+import {
+  saveConnection,
+  fieldCatalogFilterByConnection,
+  renderFieldList,
+  useFieldCatalog,
+  type AdminSSODefaults,
+} from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
 import { errorToast } from '@components/Toaster';
@@ -10,15 +15,18 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 
-const fieldCatalog = [...getCommonFields()];
-
 const CreateConnection = ({
   setupLinkToken,
   idpEntityID,
+  isSettingsView = false,
+  adminSSODefaults,
 }: {
   setupLinkToken?: string;
   idpEntityID?: string;
+  isSettingsView?: boolean;
+  adminSSODefaults?: AdminSSODefaults;
 }) => {
+  const fieldCatalog = useFieldCatalog({ isSettingsView });
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -69,7 +77,9 @@ const CreateConnection = ({
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>({});
+  const [formObj, setFormObj] = useState<Record<string, string>>(
+    isSettingsView ? { ...adminSSODefaults } : {}
+  );
 
   return (
     <>

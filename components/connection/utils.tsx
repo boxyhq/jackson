@@ -1,5 +1,6 @@
 import { errorToast } from '@components/Toaster';
-import { FormEvent, SetStateAction } from 'react';
+import { FormEvent, SetStateAction, useMemo } from 'react';
+import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 
 export const saveConnection = async ({
   formObj,
@@ -46,6 +47,7 @@ export const saveConnection = async ({
   );
   callback(res);
 };
+
 export function fieldCatalogFilterByConnection(connection) {
   return ({ attributes }) =>
     attributes.connection && connection !== null ? attributes.connection === connection : true;
@@ -78,11 +80,33 @@ type FieldCatalog = {
   };
 };
 
+export const useFieldCatalog = ({
+  isEditView,
+  isSettingsView,
+}: {
+  isEditView?: boolean;
+  isSettingsView?: boolean;
+}) => {
+  const fieldCatalog = useMemo(() => {
+    if (isEditView) {
+      return [...getCommonFields({ isEditView: true, isSettingsView }), ...EditViewOnlyFields];
+    }
+    return [...getCommonFields({ isSettingsView })];
+  }, [isEditView, isSettingsView]);
+  return fieldCatalog;
+};
+
+export type AdminSSODefaults = {
+  tenant: string;
+  product: string;
+  redirectUrl: string;
+  defaultRedirectUrl: string;
+};
+
 export function renderFieldList(args: {
   isEditView?: boolean;
   formObj: Record<string, string>;
   setFormObj: (value: SetStateAction<Record<string, string>>) => void;
-  selfSSOSetup?: boolean;
 }) {
   const FieldList = ({
     key,
