@@ -41,7 +41,11 @@ const CreateConnection = ({
   const connectionIsSAML = newConnectionType === 'saml';
   const connectionIsOIDC = newConnectionType === 'oidc';
 
-  const backUrl = setupLinkToken ? `/setup/${setupLinkToken}` : '/admin/sso-connection';
+  const backUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}`
+    : isSettingsView
+    ? '/admin/settings/sso-connection'
+    : '/admin/sso-connection';
   const redirectUrl = setupLinkToken ? `/setup/${setupLinkToken}/sso-connection` : '/admin/sso-connection';
   const mutationUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`

@@ -120,9 +120,15 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
     fieldCatalogFilterByConnection(connectionIsSAML ? 'saml' : connectionIsOIDC ? 'oidc' : null)
   );
 
+  const backUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}`
+    : isSettingsView
+    ? '/admin/settings/sso-connection'
+    : '/admin/sso-connection';
+
   return (
     <>
-      <LinkBack href={setupLinkToken ? `/setup/${setupLinkToken}` : '/admin/sso-connection'} />
+      <LinkBack href={backUrl} />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}
