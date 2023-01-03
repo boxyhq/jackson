@@ -168,13 +168,13 @@ jobs:
 
       - name: Get saml-jackson npm version
         id: npmversion
-        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
+        run: echo "{npmversion}={$(cat npmversion.txt)}" >> $GITHUB_OUTPUT
 
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
       - name: Get short SHA
         id: slug
-        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
+        run: echo "{sha7}={$(echo ${GITHUB_SHA} | cut -c1-7)}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         id: buildx
@@ -323,7 +323,7 @@ jobs:
           name: npmversion
       - name: Get saml-jackson npm version
         id: _npmversion
-        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
+        run: echo "{npmversion}={$(cat npmversion.txt)}"
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         if: github.ref == 'refs/heads/release'
         run: |
@@ -365,7 +365,7 @@ jobs:
           name: npmversion
       - name: Get saml-jackson npm version
         id: npmversion
-        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
+        run: echo "{npmversion}={$(cat npmversion.txt)}" >> $GITHUB_OUTPUT
       - run: echo ${{ steps.npmversion.outputs.npmversion }}
 
       - name: Download saml-jackson publish tag
@@ -374,7 +374,7 @@ jobs:
           name: publishTag
       - name: Get saml-jackson npm version
         id: publishTag
-        run: echo "::set-output name=publishTag::$(cat publishTag.txt)"
+        run: echo "{publishTag}={$(cat publishTag.txt)}" >> $GITHUB_OUTPUT
       - run: echo ${{ steps.publishTag.outputs.publishTag }}
 
       - name: Use Node.js ${{ matrix.node-version }}
