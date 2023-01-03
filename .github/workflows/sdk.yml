@@ -1,11 +1,10 @@
 name: Publish React component SDK to npmjs
 on:
-  push:
-    branches:
-      - '702-react-sdk-login'
-  # release:
-  #   types: [created]
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      npmversion:
+        required: true
+        type: string
 jobs:
   build:
     runs-on: ubuntu-latest
