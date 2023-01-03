@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { strategyChecker } from '@lib/utils';
 import { checkSession } from '@lib/middleware';
+import { adminPortalSSODefaults } from '@lib/env';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -32,9 +33,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   };
 
   const connections = (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0))).filter(
-    (conn) =>
-      conn.tenant !== process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT &&
-      conn.product !== process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT
+    (conn) => conn.tenant !== adminPortalSSODefaults.tenant && conn.product !== adminPortalSSODefaults.product
   );
 
   return res.json({ data: connections });
