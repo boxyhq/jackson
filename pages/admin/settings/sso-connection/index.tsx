@@ -21,11 +21,9 @@ const SSOSelfConection: NextPage = () => {
   const { t } = useTranslation('common');
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
 
-  const { data: connections } = useSWR<Connection[]>(
-    [`/api/admin/connections/system`],
-    fetcher,
-    { revalidateOnFocus: false }
-  );
+  const { data: connections } = useSWR<Connection[]>([`/api/admin/connections/system`], fetcher, {
+    revalidateOnFocus: false,
+  });
 
   if (!connections) {
     return null;
@@ -34,7 +32,7 @@ const SSOSelfConection: NextPage = () => {
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('admin_portal_sso')}</h2>
         <Link
           href={`/admin/settings/sso-connection/new`}
           className='btn-primary btn'

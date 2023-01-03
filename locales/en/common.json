@@ -112,6 +112,7 @@
   "view_idp_configuration": "View IdP Configuration",
   "edit": "Edit",
   "settings": "Settings",
+  "admin_portal_sso": "SSO for Admin Portal",
   "sp_metadata_description": "The metadata file that your customers who use federated management systems like OpenAthens and Shibboleth will need to configure your service.",
   "sp_config_description": "The configuration setup guide that your customers will need to refer to when setting up SAML application with their Identity Provider.",
   "saml_public_cert_description": "The SAML Public Certificate if you want to enable encryption with your Identity Provider.",
