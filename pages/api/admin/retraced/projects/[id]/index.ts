@@ -26,11 +26,14 @@ const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query;
 
-  const { data } = await axios.get<{ project: Project }>(`${retracedOptions?.host}/admin/v1/project/${id}`, {
-    headers: {
-      Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
-    },
-  });
+  const { data } = await axios.get<{ project: Project }>(
+    `${retracedOptions?.hostUrl}/admin/v1/project/${id}`,
+    {
+      headers: {
+        Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
+      },
+    }
+  );
 
   return res.status(201).json({
     data,
