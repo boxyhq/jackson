@@ -53,6 +53,8 @@ const CreateConnection = ({
     : '/admin/sso-connection';
   const mutationUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
+    : isSettingsView
+    ? '/api/admin/settings/sso'
     : '/api/admin/connections';
 
   // FORM LOGIC: SUBMIT

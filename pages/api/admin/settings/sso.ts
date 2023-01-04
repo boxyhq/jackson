@@ -15,7 +15,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-// Create a new configuration
+// Get the admin portal sso connections
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
   const { tenant, product } = adminPortalSSODefaults;
@@ -25,7 +25,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     product,
   });
 
-  return res.json(systemConnections);
+  return res.json({ data: systemConnections });
 };
 
 export default checkSession(handler);
