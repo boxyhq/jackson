@@ -46,7 +46,11 @@ const CreateConnection = ({
     : isSettingsView
     ? '/admin/settings/sso-connection'
     : '/admin/sso-connection';
-  const redirectUrl = setupLinkToken ? `/setup/${setupLinkToken}/sso-connection` : '/admin/sso-connection';
+  const redirectUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}/sso-connection`
+    : isSettingsView
+    ? '/admin/settings/sso-connection'
+    : '/admin/sso-connection';
   const mutationUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : '/api/admin/connections';
