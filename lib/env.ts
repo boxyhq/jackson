@@ -18,7 +18,7 @@ if (process.env.DB_SSL === 'true') {
 
 // Retraced
 const retraced = {
-  host: process.env.NEXT_PUBLIC_RETRACED_HOST,
+  host: process.env.RETRACED_HOST,
   adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
 };
 
