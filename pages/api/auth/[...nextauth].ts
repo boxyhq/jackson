@@ -14,7 +14,7 @@ export default NextAuth({
     BoxyHQSAMLProvider({
       authorization: { params: { scope: '' } },
       issuer: env.externalUrl,
-      clientId: `tenant=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT}&product=${process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT}`,
+      clientId: 'dummy',
       clientSecret: 'dummy',
       httpOptions: {
         timeout: 30000,
