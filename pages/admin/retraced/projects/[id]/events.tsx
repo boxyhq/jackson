@@ -76,7 +76,7 @@ const Events: NextPage = () => {
         </div>
         <div className='form-control max-w-xs'>
           <label className='label pl-0'>
-            <span className='label-text'>Tenants</span>
+            <span className='label-text'>Tenant</span>
           </label>
           {groups ? (
             <Select

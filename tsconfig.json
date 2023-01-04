@@ -2,7 +2,6 @@
   "compilerOptions": {
     "sourceMap": true,
     "target": "es5",
-    "sourceMap": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
