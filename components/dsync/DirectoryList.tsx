@@ -142,7 +142,7 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                       </tr>
                     );
                   })}
-                {noMoreResults && <NoMoreResults colSpan={displayTenantProduct ? 5 : 4} />}
+                {noMoreResults && <NoMoreResults colSpan={displayTenantProduct ? 5 : 3} />}
               </tbody>
             </table>
           </div>
