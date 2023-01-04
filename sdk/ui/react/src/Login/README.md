@@ -12,8 +12,9 @@ npm install @boxyhq/react-ui
 import { Login } from '@boxyhq/react-ui';
 
 // Inside render
-// onSubmit - Use the ssoIdentifier to resolve the SSO connection for Jackson SSO service
-<Login onSubmit={async function(ssoIdentifier) {}}
+<Login onSubmit={async function(ssoIdentifier) {
+  // Use the ssoIdentifier to resolve the SSO connection for the SSO service
+}}
   inputLabel='Tenant'
   buttonText='Sign-in with SSO'
   styles={{
