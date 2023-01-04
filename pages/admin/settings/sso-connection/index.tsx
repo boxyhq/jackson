@@ -7,27 +7,33 @@ import { fetcher } from '@lib/ui/utils';
 import EmptyState from '@components/EmptyState';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Loading from '@components/Loading';
+import { errorToast } from '@components/Toaster';
+import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { ApiSuccess, ApiError } from 'types';
 
-type Connection = {
-  name: string;
-  tenant: string;
-  product: string;
-  clientID: string;
-  idpMetadata?: any;
-  oidcProvider?: any;
-};
-
-const SSOSelfConection: NextPage = () => {
+const ConnectionsIndexPageForSettings: NextPage = () => {
   const { t } = useTranslation('common');
   const [paginate, setPaginate] = useState({ pageOffset: 0, pageLimit: 20, page: 0 });
 
-  const { data: connections } = useSWR<Connection[]>([`/api/admin/connections/system`], fetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data, isLoading, error } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
+    `/api/admin/settings/sso`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
-  if (!connections) {
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
     return null;
   }
+
+  const connections = data?.data || [];
 
   return (
     <div>
@@ -64,10 +70,8 @@ const SSOSelfConection: NextPage = () => {
               </thead>
               <tbody>
                 {connections.map((connection) => {
-                  const connectionIsSAML =
-                    connection.idpMetadata && typeof connection.idpMetadata === 'object';
-                  const connectionIsOIDC =
-                    connection.oidcProvider && typeof connection.oidcProvider === 'object';
+                  const connectionIsSAML = 'idpMetadata' in connection;
+                  const connectionIsOIDC = 'oidcProvider' in connection;
                   return (
                     <tr
                       key={connection.clientID}
@@ -132,7 +136,7 @@ const SSOSelfConection: NextPage = () => {
   );
 };
 
-export default SSOSelfConection;
+export default ConnectionsIndexPageForSettings;
 
 export async function getStaticProps({ locale }: GetServerSidePropsContext) {
   return {
