@@ -23,6 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id: projectId, groupId, token } = req.query;
 
+  // TODO: Move to global
   const retraced = new Retraced.Client({
     apiKey: token as string,
     projectId: projectId as string,
