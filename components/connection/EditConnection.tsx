@@ -101,8 +101,20 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
     }
 
     if (res.ok) {
-      await mutate(setupLinkToken ? `/api/setup/${setupLinkToken}/connections` : '/api/admin/connections');
-      router.replace(setupLinkToken ? `/setup/${setupLinkToken}/sso-connection` : '/admin/sso-connection');
+      await mutate(
+        setupLinkToken
+          ? `/api/setup/${setupLinkToken}/connections`
+          : isSettingsView
+          ? `/api/admin/connections/system`
+          : '/api/admin/connections'
+      );
+      router.replace(
+        setupLinkToken
+          ? `/setup/${setupLinkToken}/sso-connection`
+          : isSettingsView
+          ? '/admin/settings/sso-connection'
+          : '/admin/sso-connection'
+      );
     }
   };
 
