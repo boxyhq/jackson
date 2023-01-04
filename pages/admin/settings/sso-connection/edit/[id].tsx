@@ -15,7 +15,7 @@ const EditSSOConnection: NextPage = () => {
 
   const { id } = router.query as { id: string };
 
-  const { data, error } = useSWR<ApiSuccess<SAMLSSORecord | OIDCSSORecord>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLSSORecord | OIDCSSORecord>, ApiError>(
     id ? `/api/admin/connections/${id}` : null,
     fetcher,
     {
@@ -23,7 +23,7 @@ const EditSSOConnection: NextPage = () => {
     }
   );
 
-  if (!data && !error) {
+  if (isLoading) {
     return <Loading />;
   }
 
