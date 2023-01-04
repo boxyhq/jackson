@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { checkSession } from '@lib/middleware';
+import { adminPortalSSODefaults } from '@lib/env';
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -17,10 +18,11 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 // Create a new configuration
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
+  const { tenant, product } = adminPortalSSODefaults;
 
   const systemConnections = await connectionAPIController.getConnections({
-    tenant: process.env.NEXT_PUBLIC_ADMIN_PORTAL_TENANT || '_jackson_boxyhq',
-    product: process.env.NEXT_PUBLIC_ADMIN_PORTAL_PRODUCT || '_jackson_admin_portal',
+    tenant,
+    product,
   });
 
   return res.json(systemConnections);
