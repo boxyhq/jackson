@@ -17,7 +17,6 @@ export default createTheme({
       activeIfMatch: {
         // match all first-level paths
         path: '/:foo',
-        exact: true,
       },
     },
     {
