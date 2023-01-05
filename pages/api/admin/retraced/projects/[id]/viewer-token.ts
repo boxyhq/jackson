@@ -27,7 +27,7 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   const retraced = new Retraced.Client({
     apiKey: token as string,
     projectId: projectId as string,
-    endpoint: retracedOptions?.host,
+    endpoint: retracedOptions?.hostUrl,
     viewLogAction: 'audit.log.view',
   });
 

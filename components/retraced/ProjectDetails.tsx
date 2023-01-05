@@ -1,20 +1,19 @@
 import type { Project } from 'types/retraced';
-import { retracedOptions } from '@lib/env';
 import CodeSnippet from '@components/retraced/CodeSnippet';
 import { useState } from 'react';
 import { Select } from 'react-daisyui';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import { useTranslation } from 'next-i18next';
 
-const ProjectDetails = (props: { project: Project }) => {
+const ProjectDetails = (props: { project: Project; host?: string }) => {
   const { t } = useTranslation('common');
 
-  const { project } = props;
+  const { project, host } = props;
   const { environments, tokens } = project;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const baseUrl = `${retracedOptions?.host}/publisher/v1/project/${project.id}`;
+  const baseUrl = `${host!}/publisher/v1/project/${project.id}`;
 
   return (
     <>
