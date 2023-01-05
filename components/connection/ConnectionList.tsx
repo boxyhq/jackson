@@ -33,7 +33,7 @@ const ConnectionList = ({
   const getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
-    ? `/api/admin/settings/sso`
+    ? `/api/admin/settings/sso?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`
     : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`

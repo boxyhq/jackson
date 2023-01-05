@@ -17,13 +17,17 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Get the admin portal sso connections
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { connectionAPIController } = await jackson();
+  const { adminController } = await jackson();
   const { tenant, product } = adminPortalSSODefaults;
 
-  const systemConnections = await connectionAPIController.getConnections({
-    tenant,
-    product,
-  });
+  const { pageOffset, pageLimit } = req.query as {
+    pageOffset: string;
+    pageLimit: string;
+  };
+
+  const systemConnections = (
+    await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0))
+  ).filter((conn) => conn.tenant === tenant && conn.product === product);
 
   return res.json({ data: systemConnections });
 };
