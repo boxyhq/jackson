@@ -12,7 +12,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     case 'GET':
       return getGroups(req, res);
     default:
-      res.setHeader('Allow', ['GET']);
+      res.setHeader('Allow', 'GET');
       res.status(405).json({
         data: null,
         error: { message: `Method ${method} Not Allowed` },
@@ -26,7 +26,7 @@ const getGroups = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id: projectId, environmentId } = req.query;
 
   const { data } = await axios.get(
-    `${retracedOptions?.host}/admin/v1/project/${projectId}/groups?environment_id=${environmentId}`,
+    `${retracedOptions?.hostUrl}/admin/v1/project/${projectId}/groups?environment_id=${environmentId}`,
     {
       headers: {
         Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,

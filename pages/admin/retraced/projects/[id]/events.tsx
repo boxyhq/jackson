@@ -8,12 +8,17 @@ import Loading from '@components/Loading';
 import ErrorMessage from '@components/Error';
 import { LinkBack } from '@components/LinkBack';
 import { Select } from 'react-daisyui';
+import { retracedOptions } from '@lib/env';
 
 const LogsViewer = dynamic(() => import('@components/retraced/LogsViewer'), {
   ssr: false,
 });
 
-const Events: NextPage = () => {
+export interface Props {
+  host?: string;
+}
+
+const Events: NextPage<Props> = ({ host }: Props) => {
   const router = useRouter();
 
   const [environment, setEnvironment] = useState('');
@@ -94,7 +99,9 @@ const Events: NextPage = () => {
         </div>
       </div>
       <div className='flex'>
-        {displayLogsViewer && <LogsViewer project={project} environmentId={environment} groupId={group} />}
+        {displayLogsViewer && (
+          <LogsViewer project={project} environmentId={environment} groupId={group} host={host!} />
+        )}
       </div>
     </div>
   );
@@ -104,6 +111,7 @@ export async function getServerSideProps({ locale }) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
+      host: retracedOptions.externalUrl,
     },
   };
 }

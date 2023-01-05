@@ -107,7 +107,3 @@ span.react-datepicker__navigation-icon {
   margin: 0.4rem !important;
   text-align: center !important;
 }
-
-.ReactModalPortal {
-  z-index: 10000;
-}

@@ -12,7 +12,7 @@ const ConnectionEditPage: NextPage = () => {
 
   const { id, token } = router.query as { id: string; token: string };
 
-  const { data, error } = useSWR(
+  const { data, error, isLoading } = useSWR(
     token ? (id ? `/api/setup/${token}/sso-connection/${id}` : null) : null,
     fetcher,
     {
@@ -20,7 +20,7 @@ const ConnectionEditPage: NextPage = () => {
     }
   );
 
-  if (!data && !error) {
+  if (isLoading) {
     return <Loading />;
   }
 

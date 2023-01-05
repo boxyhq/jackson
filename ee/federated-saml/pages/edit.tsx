@@ -31,7 +31,7 @@ const UpdateApp: NextPage = () => {
 
   const { id } = router.query as { id: string };
 
-  const { data, error } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
     `/api/admin/federated-saml/${id}`,
     fetcher,
     {
@@ -50,7 +50,7 @@ const UpdateApp: NextPage = () => {
     return null;
   }
 
-  if (!data) {
+  if (isLoading) {
     return <Loading />;
   }
 
