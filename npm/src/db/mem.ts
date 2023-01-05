@@ -87,12 +87,30 @@ class Mem implements DatabaseDriver {
     return returnValue || [];
   }
 
-  async getByIndex(namespace: string, idx: Index): Promise<any> {
-    const dbKeys = await this.indexes[dbutils.keyForIndex(namespace, idx)];
+  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
 
+    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    let count = 0;
+
+    take += skip;
+    const dbKeys = Array.from((await this.indexes[dbutils.keyForIndex(namespace, idx)]) || []) as string[];
+    const iterator: IterableIterator<string> = dbKeys.reverse().values();
     const ret: string[] = [];
-    for (const dbKey of dbKeys || []) {
-      ret.push(await this.get(namespace, dbKey));
+    for (const dbKey of iterator || []) {
+      if (offsetAndLimitValueCheck) {
+        ret.push(await this.get(namespace, dbKey));
+      } else {
+        if (count >= take) {
+          break;
+        }
+        if (count >= skip) {
+          ret.push(await this.get(namespace, dbKey));
+        }
+
+        count++;
+      }
     }
 
     return ret;

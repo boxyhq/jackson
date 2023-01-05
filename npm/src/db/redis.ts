@@ -69,12 +69,27 @@ class Redis implements DatabaseDriver {
     return returnValue || [];
   }
 
-  async getByIndex(namespace: string, idx: Index): Promise<any> {
+  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
+    let count = 0;
+    take += skip;
     const idxKey = dbutils.keyForIndex(namespace, idx);
     const dbKeys = await this.client.sMembers(dbutils.keyFromParts(dbutils.indexPrefix, idxKey));
     const ret: string[] = [];
     for (const dbKey of dbKeys || []) {
-      ret.push(await this.get(namespace, dbKey));
+      if (offsetAndLimitValueCheck) {
+        ret.push(await this.get(namespace, dbKey));
+      } else {
+        if (count >= skip) {
+          ret.push(await this.get(namespace, dbKey));
+        }
+        if (count >= take) {
+          break;
+        }
+        count++;
+      }
     }
 
     return ret;

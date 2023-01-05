@@ -140,27 +140,55 @@ class Sql implements DatabaseDriver {
     return JSON.parse(JSON.stringify(response)) || [];
   }
 
-  async getByIndex(namespace: string, idx: Index): Promise<any> {
-    const res = await this.indexRepository.findBy({
+  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
+
+    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    let count = 0;
+
+    take += skip;
+    let res = await this.indexRepository.findBy({
       key: dbutils.keyForIndex(namespace, idx),
     });
 
     const ret: Encrypted[] = [];
-
+    res = res.reverse();
     if (res) {
       for (const r of res) {
-        let value = r.store;
-        if (this.options.engine === 'planetscale') {
-          value = await this.storeRepository.findOneBy({
-            key: r.storeKey,
-          });
-        }
+        if (offsetAndLimitValueCheck) {
+          let value = r.store;
+          if (this.options.engine === 'planetscale') {
+            value = await this.storeRepository.findOneBy({
+              key: r.storeKey,
+            });
+          }
 
-        ret.push({
-          value: value.value,
-          iv: value.iv,
-          tag: value.tag,
-        });
+          ret.push({
+            value: value.value,
+            iv: value.iv,
+            tag: value.tag,
+          });
+        } else {
+          if (count >= take) {
+            break;
+          }
+          if (count >= skip) {
+            let value = r.store;
+            if (this.options.engine === 'planetscale') {
+              value = await this.storeRepository.findOneBy({
+                key: r.storeKey,
+              });
+            }
+
+            ret.push({
+              value: value.value,
+              iv: value.iv,
+              tag: value.tag,
+            });
+          }
+          count++;
+        }
       }
     }
 
