@@ -75,24 +75,44 @@ class Redis implements DatabaseDriver {
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
     let count = 0;
     take += skip;
+    const returnValue: string[] = [];
+    const keyArray: string[] = [];
     const idxKey = dbutils.keyForIndex(namespace, idx);
     const dbKeys = await this.client.sMembers(dbutils.keyFromParts(dbutils.indexPrefix, idxKey));
-    const ret: string[] = [];
-    for (const dbKey of dbKeys || []) {
-      if (offsetAndLimitValueCheck) {
-        ret.push(await this.get(namespace, dbKey));
-      } else {
-        if (count >= skip) {
+    if (!offsetAndLimitValueCheck) {
+      for await (const { _, value } of this.client.zScanIterator(
+        dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
+        count + 1
+      )) {
+        if (dbKeys.indexOf(value) !== -1) {
+          if (count >= take) {
+            break;
+          }
+          if (count >= skip) {
+            keyArray.push(dbutils.keyFromParts(namespace, value));
+          }
+          count++;
+        }
+      }
+      if (keyArray.length > 0) {
+        const value = await this.client.MGET(keyArray);
+        for (let i = 0; i < value.length; i++) {
+          const valueObject = JSON.parse(value[i].toString());
+          if (valueObject !== null && valueObject !== '') {
+            returnValue.push(valueObject);
+          }
+        }
+      }
+      return returnValue || [];
+    } else {
+      const ret: string[] = [];
+      for (const dbKey of dbKeys || []) {
+        if (offsetAndLimitValueCheck) {
           ret.push(await this.get(namespace, dbKey));
         }
-        if (count >= take) {
-          break;
-        }
-        count++;
       }
+      return ret;
     }
-
-    return ret;
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
