@@ -32,12 +32,12 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
 
   const { providers, isLoading: isLoadingProviders } = useDirectoryProviders(setupLinkToken);
 
-  const { data, error } = useSWR<ApiSuccess<Directory[]>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<Directory[]>, ApiError>(
     `${getDirectoriesUrl}?offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher
   );
 
-  if (!data || isLoadingProviders) {
+  if (isLoading || isLoadingProviders) {
     return <Loading />;
   }
 
@@ -46,7 +46,7 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
     return null;
   }
 
-  const directories = data.data || [];
+  const directories = data?.data || [];
   const noDirectories = directories.length === 0 && paginate.offset === 0;
   const noMoreResults = paginate.offset > 0 && directories.length === 0;
 

@@ -12,7 +12,7 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
 
   const token = project.tokens.filter((token) => token.environment_id === environmentId)[0];
 
-  const { data, error } = useSWR<ApiSuccess<{ viewerToken: string }>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<{ viewerToken: string }>, ApiError>(
     `/api/admin/retraced/projects/${project.id}/viewer-token?groupId=${groupId}&token=${token.token}`,
     fetcher,
     {
@@ -20,7 +20,7 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
     }
   );
 
-  if (!data && !error) {
+  if (isLoading) {
     return <Loading />;
   }
 

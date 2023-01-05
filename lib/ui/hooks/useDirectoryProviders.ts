@@ -8,11 +8,11 @@ const useDirectoryProviders = (setupLinkToken?: string) => {
     ? `/api/setup/${setupLinkToken}/directory-sync/providers`
     : '/api/admin/directory-sync/providers';
 
-  const { data, error } = useSWR<ApiSuccess<DirectorySyncProviders>, ApiError>(url, fetcher);
+  const { data, error, isLoading } = useSWR<ApiSuccess<DirectorySyncProviders>, ApiError>(url, fetcher);
 
   return {
     providers: data?.data,
-    isLoading: !data && !error,
+    isLoading,
     error,
   };
 };

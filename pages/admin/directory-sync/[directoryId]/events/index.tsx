@@ -31,12 +31,16 @@ const Events: NextPage = () => {
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
-  const { data: eventsData, error: eventsError } = useSWR<ApiSuccess<WebhookEventLog[]>, ApiError>(
+  const {
+    data: eventsData,
+    error: eventsError,
+    isLoading,
+  } = useSWR<ApiSuccess<WebhookEventLog[]>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/events?offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher
   );
 
-  if (isDirectoryLoading || !eventsData) {
+  if (isDirectoryLoading || isLoading) {
     return <Loading />;
   }
 
@@ -63,7 +67,7 @@ const Events: NextPage = () => {
     router.reload();
   };
 
-  const events = eventsData.data;
+  const events = eventsData?.data || [];
   const noEvents = events.length === 0 && paginate.offset === 0;
   const noMoreResults = paginate.offset > 0 && events.length === 0;
 

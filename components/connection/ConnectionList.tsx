@@ -35,13 +35,13 @@ const ConnectionList = ({
     ? `/setup/${setupLinkToken}/sso-connection/new`
     : '/admin/sso-connection/new';
 
-  const { data, error } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
     getConnectionsUrl,
     fetcher,
     { revalidateOnFocus: false }
   );
 
-  if (!data && !error) {
+  if (isLoading) {
     return <Loading />;
   }
 

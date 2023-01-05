@@ -33,7 +33,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
     setShowSetupLinkModal(false);
   }, [service]);
 
-  const { data, error, mutate } = useSWR<ApiSuccess<SetupLink[]>, ApiError>(
+  const { data, error, mutate, isLoading } = useSWR<ApiSuccess<SetupLink[]>, ApiError>(
     `/api/admin/setup-links?service=${service}&offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher,
     {
@@ -41,8 +41,13 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
     }
   );
 
-  if (!data && !error) {
+  if (isLoading) {
     return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
+    return null;
   }
 
   // Regenerate a setup link

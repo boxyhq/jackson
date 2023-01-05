@@ -13,7 +13,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     case 'GET':
       return getProject(req, res);
     default:
-      res.setHeader('Allow', ['GET']);
+      res.setHeader('Allow', 'GET');
       res.status(405).json({
         data: null,
         error: { message: `Method ${method} Not Allowed` },

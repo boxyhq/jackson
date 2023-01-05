@@ -29,12 +29,16 @@ const UsersList: NextPage = () => {
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
-  const { data: usersData, error: usersError } = useSWR<ApiSuccess<User[]>, ApiError>(
+  const {
+    data: usersData,
+    error: usersError,
+    isLoading,
+  } = useSWR<ApiSuccess<User[]>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/users?offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher
   );
 
-  if (isDirectoryLoading || !usersData) {
+  if (isDirectoryLoading || isLoading) {
     return <Loading />;
   }
 
@@ -49,7 +53,7 @@ const UsersList: NextPage = () => {
     return null;
   }
 
-  const users = usersData.data;
+  const users = usersData?.data || [];
   const noUsers = users.length === 0 && paginate.offset === 0;
   const noMoreResults = users.length === 0 && paginate.offset > 0;
 

@@ -22,12 +22,13 @@ const UserInfo: NextPage = () => {
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
-  const { data: userData, error: userError } = useSWR<ApiSuccess<User>, ApiError>(
-    `/api/admin/directory-sync/${directoryId}/users/${userId}`,
-    fetcher
-  );
+  const {
+    data: userData,
+    error: userError,
+    isLoading,
+  } = useSWR<ApiSuccess<User>, ApiError>(`/api/admin/directory-sync/${directoryId}/users/${userId}`, fetcher);
 
-  if (isDirectoryLoading || !userData) {
+  if (isDirectoryLoading || isLoading) {
     return <Loading />;
   }
 
@@ -42,7 +43,7 @@ const UserInfo: NextPage = () => {
     return null;
   }
 
-  const user = userData.data;
+  const user = userData?.data;
 
   return (
     <>
