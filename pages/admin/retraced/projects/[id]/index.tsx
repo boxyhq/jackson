@@ -6,8 +6,13 @@ import { useProject } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
 import ErrorMessage from '@components/Error';
 import { LinkBack } from '@components/LinkBack';
+import { retracedOptions } from '@lib/env';
 
-const ProjectInfo: NextPage = () => {
+export interface Props {
+  host?: string;
+}
+
+const ProjectInfo: NextPage<Props> = ({ host }: Props) => {
   const router = useRouter();
 
   const { id: projectId } = router.query;
@@ -28,7 +33,7 @@ const ProjectInfo: NextPage = () => {
       <div className='mb-2 mt-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{project?.name}</h2>
       </div>
-      {project && <ProjectDetails project={project} />}
+      {project && <ProjectDetails project={project} host={host!} />}
     </div>
   );
 };
@@ -37,6 +42,7 @@ export async function getServerSideProps({ locale }) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
+      host: retracedOptions?.externalUrl,
     },
   };
 }

@@ -11,9 +11,9 @@ type Props = {
 const LicenseRequired = (props: Props) => {
   const { children } = props;
 
-  const { data, error } = useSWR<{ data: { status: boolean } }>('/api/admin/license', fetcher);
+  const { data, isLoading } = useSWR<{ data: { status: boolean } }>('/api/admin/license', fetcher);
 
-  if (!data && !error) {
+  if (isLoading) {
     return <Loading />;
   }
 
