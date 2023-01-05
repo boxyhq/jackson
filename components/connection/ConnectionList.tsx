@@ -19,9 +19,11 @@ import type { ApiError, ApiSuccess } from 'types';
 const ConnectionList = ({
   setupLinkToken,
   idpEntityID,
+  isSettingsView = false,
 }: {
   setupLinkToken?: string;
   idpEntityID?: string;
+  isSettingsView?: boolean;
 }) => {
   const { t } = useTranslation('common');
   const { paginate, setPaginate } = usePaginate();
@@ -30,9 +32,13 @@ const ConnectionList = ({
   const displayTenantProduct = setupLinkToken ? false : true;
   const getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
+    : isSettingsView
+    ? `/api/admin/settings/sso`
     : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`
+    : isSettingsView
+    ? `/admin/settings/sso-connection/new`
     : '/admin/sso-connection/new';
 
   const { data, error, isLoading } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
@@ -62,12 +68,14 @@ const ConnectionList = ({
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('enterprise_sso')}</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>
+          {t(isSettingsView ? 'admin_portal_sso' : 'enterprise_sso')}
+        </h2>
         <div className='flex gap-2'>
           <LinkPrimary Icon={PlusIcon} href={createConnectionUrl} data-test-id='create-connection'>
             {t('new_connection')}
           </LinkPrimary>
-          {!setupLinkToken && (
+          {!setupLinkToken && !isSettingsView && (
             <LinkPrimary
               Icon={LinkIcon}
               href='/admin/sso-connection/setup-link/new'
@@ -151,6 +159,8 @@ const ConnectionList = ({
                               router.push(
                                 setupLinkToken
                                   ? `/setup/${setupLinkToken}/sso-connection/edit/${connection.clientID}`
+                                  : isSettingsView
+                                  ? `/admin/settings/sso-connection/edit/${connection.clientID}`
                                   : `/admin/sso-connection/edit/${connection.clientID}`
                               );
                             }}
