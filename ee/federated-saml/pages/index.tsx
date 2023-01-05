@@ -10,7 +10,7 @@ import EmptyState from '@components/EmptyState';
 import LicenseRequired from '@components/LicenseRequired';
 import { errorToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { pageLimit, Pagination } from '@components/Pagination';
+import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkOutline } from '@components/LinkOutline';
 import { IconButton } from '@components/IconButton';
@@ -37,7 +37,8 @@ const AppsList: NextPage = () => {
   }
 
   const apps = data?.data || [];
-  const noApps = apps && apps.length === 0 && paginate.offset === 0;
+  const noApps = apps.length === 0 && paginate.offset === 0;
+  const noMoreResults = apps.length === 0 && paginate.offset > 0;
 
   return (
     <LicenseRequired>
@@ -101,6 +102,7 @@ const AppsList: NextPage = () => {
                       </tr>
                     );
                   })}
+                {noMoreResults && <NoMoreResults colSpan={4} />}
               </tbody>
             </table>
           </div>

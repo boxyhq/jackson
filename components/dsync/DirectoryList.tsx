@@ -8,7 +8,7 @@ import { useTranslation } from 'next-i18next';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { IconButton } from '@components/IconButton';
 import { useRouter } from 'next/router';
-import { pageLimit, Pagination } from '@components/Pagination';
+import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
 import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';
 import useSWR from 'swr';
 import type { ApiError, ApiSuccess } from 'types';
@@ -47,6 +47,8 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   }
 
   const directories = data?.data || [];
+  const noDirectories = directories.length === 0 && paginate.offset === 0;
+  const noMoreResults = paginate.offset > 0 && directories.length === 0;
 
   return (
     <>
@@ -63,7 +65,7 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
           )}
         </div>
       </div>
-      {directories.length === 0 && paginate.offset === 0 ? (
+      {noDirectories ? (
         <EmptyState title={t('no_directories_found')} href={createDirectoryUrl} />
       ) : (
         <>
@@ -140,6 +142,7 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                       </tr>
                     );
                   })}
+                {noMoreResults && <NoMoreResults colSpan={displayTenantProduct ? 5 : 3} />}
               </tbody>
             </table>
           </div>

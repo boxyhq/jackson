@@ -6,17 +6,21 @@ import { retracedOptions } from '@lib/env';
 import Loading from '@components/Loading';
 import EmptyState from '@components/EmptyState';
 
-const Retraced: NextPage = () => {
+export interface Props {
+  host?: string;
+}
+
+const Retraced: NextPage<Props> = ({ host }: Props) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!retracedOptions?.host) {
+    if (!host) {
       return;
     }
     router.push('/admin/retraced/projects');
   }, [router]);
 
-  if (!retracedOptions?.host) {
+  if (!host) {
     return (
       <EmptyState
         title='This feature has not been enabled.'
@@ -32,6 +36,7 @@ export async function getServerSideProps({ locale }) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
+      host: retracedOptions.externalUrl,
     },
   };
 }

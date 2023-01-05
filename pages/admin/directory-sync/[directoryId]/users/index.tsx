@@ -16,7 +16,7 @@ import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
-import { Pagination, pageLimit } from '@components/Pagination';
+import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkBack } from '@components/LinkBack';
 
@@ -54,6 +54,8 @@ const UsersList: NextPage = () => {
   }
 
   const users = usersData?.data || [];
+  const noUsers = users.length === 0 && paginate.offset === 0;
+  const noMoreResults = users.length === 0 && paginate.offset > 0;
 
   return (
     <>
@@ -61,7 +63,7 @@ const UsersList: NextPage = () => {
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='users' />
-        {users.length === 0 && paginate.offset === 0 ? (
+        {noUsers ? (
           <EmptyState title={t('no_users_found')} />
         ) : (
           <>
@@ -110,6 +112,7 @@ const UsersList: NextPage = () => {
                       </tr>
                     );
                   })}
+                  {noMoreResults && <NoMoreResults colSpan={5} />}
                 </tbody>
               </table>
             </div>

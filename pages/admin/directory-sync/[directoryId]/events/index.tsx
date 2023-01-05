@@ -18,7 +18,7 @@ import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
 import { LinkBack } from '@components/LinkBack';
-import { Pagination, pageLimit } from '@components/Pagination';
+import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 
 const Events: NextPage = () => {
@@ -55,8 +55,6 @@ const Events: NextPage = () => {
     return null;
   }
 
-  const events = eventsData?.data || [];
-
   const clearEvents = async () => {
     setLoading(true);
 
@@ -69,13 +67,17 @@ const Events: NextPage = () => {
     router.reload();
   };
 
+  const events = eventsData?.data || [];
+  const noEvents = events.length === 0 && paginate.offset === 0;
+  const noMoreResults = paginate.offset > 0 && events.length === 0;
+
   return (
     <>
       <LinkBack href='/admin/directory-sync' />
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full md:w-3/4'>
         <DirectoryTab directory={directory} activeTab='events' />
-        {events.length === 0 && paginate.offset === 0 ? (
+        {noEvents ? (
           <EmptyState title={t('no_webhook_events_found')} />
         ) : (
           <>
@@ -125,6 +127,7 @@ const Events: NextPage = () => {
                       </tr>
                     );
                   })}
+                  {noMoreResults && <NoMoreResults colSpan={4} />}
                 </tbody>
               </table>
             </div>

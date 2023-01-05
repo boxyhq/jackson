@@ -12,7 +12,7 @@ import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { IconButton } from '@components/IconButton';
-import { Pagination, pageLimit } from '@components/Pagination';
+import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import Loading from '@components/Loading';
 import type { SetupLinkService, SetupLink } from '@boxyhq/saml-jackson';
@@ -49,8 +49,6 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
     errorToast(error.message);
     return null;
   }
-
-  const setupLinks = data?.data || [];
 
   // Regenerate a setup link
   const regenerateSetupLink = async () => {
@@ -109,6 +107,10 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
   const title = service === 'sso' ? t('enterprise_sso') : t('directory_sync');
   const description = service === 'sso' ? t('setup_link_sso_description') : t('setup_link_dsync_description');
 
+  const setupLinks = data?.data || [];
+  const noSetupLinks = setupLinks.length === 0 && paginate.offset === 0;
+  const noMoreResults = setupLinks.length === 0 && paginate.offset > 0;
+
   return (
     <div>
       <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>
@@ -122,7 +124,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
           </LinkPrimary>
         </div>
       </div>
-      {setupLinks.length === 0 ? (
+      {noSetupLinks ? (
         <EmptyState title={t('no_setup_links_found')} href={createSetupLinkUrl} />
       ) : (
         <>
@@ -204,6 +206,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
                     </tr>
                   );
                 })}
+                {noMoreResults && <NoMoreResults colSpan={4} />}
               </tbody>
             </table>
           </div>
