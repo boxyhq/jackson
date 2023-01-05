@@ -15,7 +15,7 @@ import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
-import { Pagination, pageLimit } from '@components/Pagination';
+import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkBack } from '@components/LinkBack';
 
@@ -28,12 +28,16 @@ const GroupsList: NextPage = () => {
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
-  const { data: groupsData, error: groupsError } = useSWR<ApiSuccess<Group[]>, ApiError>(
+  const {
+    data: groupsData,
+    error: groupsError,
+    isLoading,
+  } = useSWR<ApiSuccess<Group[]>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/groups?offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher
   );
 
-  if (isDirectoryLoading || !groupsData) {
+  if (isDirectoryLoading || isLoading) {
     return <Loading />;
   }
 
@@ -48,7 +52,9 @@ const GroupsList: NextPage = () => {
     return null;
   }
 
-  const groups = groupsData.data;
+  const groups = groupsData?.data || [];
+  const noGroups = groups.length === 0 && paginate.offset === 0;
+  const noMoreResults = groups.length === 0 && paginate.offset > 0;
 
   return (
     <>
@@ -56,7 +62,7 @@ const GroupsList: NextPage = () => {
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
       <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='groups' />
-        {groups.length === 0 && paginate.offset === 0 ? (
+        {noGroups ? (
           <EmptyState title={t('no_groups_found')} />
         ) : (
           <>
@@ -87,6 +93,7 @@ const GroupsList: NextPage = () => {
                       </tr>
                     );
                   })}
+                  {noMoreResults && <NoMoreResults colSpan={2} />}
                 </tbody>
               </table>
             </div>

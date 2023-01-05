@@ -11,7 +11,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     case 'GET':
       return getViewerToken(req, res);
     default:
-      res.setHeader('Allow', ['GET']);
+      res.setHeader('Allow', 'GET');
       res.status(405).json({
         data: null,
         error: { message: `Method ${method} Not Allowed` },
@@ -27,7 +27,7 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   const retraced = new Retraced.Client({
     apiKey: token as string,
     projectId: projectId as string,
-    endpoint: retracedOptions?.host,
+    endpoint: retracedOptions?.hostUrl,
     viewLogAction: 'audit.log.view',
   });
 
