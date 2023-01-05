@@ -49,11 +49,19 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
 const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken(req);
 
-  const { data } = await axios.get<{ projects: Project[] }>(`${retracedOptions?.hostUrl}/admin/v1/projects`, {
-    headers: {
-      Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
-    },
-  });
+  const { offset, limit } = req.query as {
+    offset: string;
+    limit: string;
+  };
+
+  const { data } = await axios.get<{ projects: Project[] }>(
+    `${retracedOptions?.hostUrl}/admin/v1/projects?offset=${+(offset || 0)}&limit=${+(limit || 0)}`,
+    {
+      headers: {
+        Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
+      },
+    }
+  );
 
   return res.status(200).json({
     data,

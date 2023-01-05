@@ -45,6 +45,7 @@
   "connections": "Connections",
   "new_connection": "New Connection",
   "no_connections_found": "No connections found.",
+  "no_projects_found": "No projects found.",
   "no_setup_links_found": "No setup links found.",
   "oidc": "OIDC",
   "open_menu": "Open menu",

@@ -8,12 +8,14 @@ import ErrorMessage from '@components/Error';
 import { IconButton } from '@components/IconButton';
 import { useTranslation } from 'next-i18next';
 import router from 'next/router';
+import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
+import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkPrimary } from '@components/LinkPrimary';
 
 const ProjectList: NextPage = () => {
   const { t } = useTranslation('common');
-
-  const { projects, isError, isLoading } = useProjects();
+  const { paginate, setPaginate } = usePaginate();
+  const { projects, isError, isLoading } = useProjects(paginate, pageLimit);
 
   if (isLoading) {
     return <Loading />;
@@ -23,6 +25,9 @@ const ProjectList: NextPage = () => {
     return <ErrorMessage />;
   }
 
+  const noProjects = projects.length === 0 && paginate.offset === 0;
+  const noMoreResults = projects.length === 0 && paginate.offset > 0;
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
@@ -31,8 +36,8 @@ const ProjectList: NextPage = () => {
           {t('new_project')}
         </LinkPrimary>
       </div>
-      {projects?.length === 0 ? (
-        <EmptyState title='No projects found.' href='/admin/retraced/projects/new' />
+      {noProjects ? (
+        <EmptyState title={t('no_projects_found')} href='/admin/retraced/projects/new' />
       ) : (
         <>
           <div className='rounder border'>
@@ -87,9 +92,24 @@ const ProjectList: NextPage = () => {
                     </td>
                   </tr>
                 ))}
+                {noMoreResults && <NoMoreResults colSpan={5} />}
               </tbody>
             </table>
           </div>
+          <Pagination
+            itemsCount={projects.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
         </>
       )}
     </div>
