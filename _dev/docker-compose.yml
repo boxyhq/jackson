@@ -35,15 +35,6 @@ services:
     environment:
       MARIADB_DATABASE: mysql
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
-  jackson:
-    build: .
-    ports:
-      - "5225:5225"
-    environment:
-      -  SAML_AUDIENCE=https://saml.boxyhq.com
-      -  JACKSON_API_KEYS="secret"
-      -  DB_TYPE=mysql
-      -  DB_URL=mysql://root:mysql@mysql:3306/mysql
   mssql:
     image: mcr.microsoft.com/azure-sql-edge:1.0.6
     ports:

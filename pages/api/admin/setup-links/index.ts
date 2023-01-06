@@ -58,7 +58,12 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { token, service } = req.query as { token: string; service: string };
+  const { offset, limit, token, service } = req.query as {
+    offset: string;
+    limit: string;
+    token: string;
+    service: string;
+  };
 
   if (!token && !service) {
     return res.status(404).json({
@@ -78,9 +83,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Get a setup link by service
   if (service) {
-    const setupLink = await setupLinkController.getByService(service);
+    const setupLinks = await setupLinkController.getByService(service, +(offset || 0), +(limit || 0));
 
-    return res.json({ data: setupLink });
+    return res.json({ data: setupLinks });
   }
 };
 

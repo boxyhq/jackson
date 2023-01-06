@@ -35,6 +35,7 @@ const databaseOptions = <JacksonOption>{
     jwsAlg: 'RS256',
   },
   boxyhqLicenseKey: 'dummy-license',
+  noAnalytics: true,
 };
 
 export { addSSOConnections, databaseOptions };

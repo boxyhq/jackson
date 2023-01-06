@@ -95,17 +95,21 @@ export class SetupLinkController {
   }
 
   // Get setup links by service
-  async getByService(service: string): Promise<SetupLink[]> {
+  async getByService(service: string, pageOffset?: number, pageLimit?: number): Promise<SetupLink[]> {
     if (!service) {
       throw new JacksonError('Missing service name', 400);
     }
 
-    const setupLink = await this.setupLinkStore.getByIndex({
-      name: IndexNames.Service,
-      value: service,
-    });
+    const setupLinks = await this.setupLinkStore.getByIndex(
+      {
+        name: IndexNames.Service,
+        value: service,
+      },
+      pageOffset,
+      pageLimit
+    );
 
-    return setupLink;
+    return setupLinks;
   }
 
   // Remove a setup link
