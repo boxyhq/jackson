@@ -45,7 +45,7 @@ import {
   token_req_dummy_client_id_idp_saml_login_wrong_secretverifier,
   token_req_encoded_client_id_idp_saml_login_wrong_secretverifier,
 } from './fixture';
-import { addSSOConnections, databaseOptions } from '../utils';
+import { addSSOConnections, jacksonOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
@@ -63,10 +63,10 @@ let connections: Array<any> = [];
 tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
 
-  const controller = await (await import('../../src/index')).default(databaseOptions);
+  const controller = await (await import('../../src/index')).default(jacksonOptions);
   const idpFlowEnabledController = await (
     await import('../../src/index')
-  ).default({ ...databaseOptions, idpEnabled: true });
+  ).default({ ...jacksonOptions, idpEnabled: true });
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
@@ -605,9 +605,9 @@ tap.test('token()', async (t) => {
         if (tokenRes.id_token) {
           const claims = jose.decodeJwt(tokenRes.id_token);
           const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
-          t.match(protectedHeader.alg, databaseOptions.openid?.jwsAlg);
+          t.match(protectedHeader.alg, jacksonOptions.openid?.jwsAlg);
           t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
-          t.match(claims.iss, databaseOptions.samlAudience);
+          t.match(claims.iss, jacksonOptions.samlAudience);
         }
         t.match(tokenRes.access_token, token);
         t.match(tokenRes.token_type, 'bearer');

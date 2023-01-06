@@ -4,7 +4,7 @@ import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
 import { IConnectionAPIController, OIDCSSOConnection, OIDCSSORecord } from '../../src/typings';
 import { oidc_connection } from './fixture';
-import { databaseOptions } from '../utils';
+import { jacksonOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 
@@ -12,7 +12,7 @@ const CLIENT_ID_OIDC = '85edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
 
 tap.before(async () => {
-  const controller = await controllers(databaseOptions);
+  const controller = await controllers(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
 });
@@ -44,7 +44,7 @@ tap.test('controller/api', async (t) => {
       }
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      connectionAPIController.opts.oidcPath = databaseOptions.oidcPath;
+      connectionAPIController.opts.oidcPath = jacksonOptions.oidcPath;
     });
 
     t.test('when required fields are missing or invalid', async (t) => {
@@ -233,7 +233,7 @@ tap.test('controller/api', async (t) => {
       }
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      connectionAPIController.opts.oidcPath = databaseOptions.oidcPath;
+      connectionAPIController.opts.oidcPath = jacksonOptions.oidcPath;
     });
 
     t.test('When clientID is missing', async (t) => {

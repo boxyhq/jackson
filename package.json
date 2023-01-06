@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -52,8 +52,8 @@
     "@opentelemetry/resources": "1.8.0",
     "@opentelemetry/sdk-metrics": "1.8.0",
     "@opentelemetry/semantic-conventions": "1.8.0",
-    "@retraced-hq/logs-viewer": "2.4.1",
-    "@retraced-hq/retraced": "0.5.0",
+    "@retracedhq/logs-viewer": "2.4.2",
+    "@retracedhq/retraced": "0.5.1",
     "@tailwindcss/typography": "0.5.8",
     "axios": "1.2.2",
     "classnames": "2.3.2",

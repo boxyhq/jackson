@@ -3,14 +3,14 @@ import tap from 'tap';
 import users from './data/users';
 import requests from './data/user-requests';
 import { getFakeDirectory } from './data/directories';
-import { databaseOptions } from '../utils';
+import { jacksonOptions } from '../utils';
 
 let directorySync: IDirectorySyncController;
 let directory: Directory;
 const fakeDirectory = getFakeDirectory();
 
 tap.before(async () => {
-  const jackson = await (await import('../../src/index')).default(databaseOptions);
+  const jackson = await (await import('../../src/index')).default(jacksonOptions);
 
   directorySync = jackson.directorySyncController;
 
