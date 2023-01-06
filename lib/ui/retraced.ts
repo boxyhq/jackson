@@ -20,9 +20,9 @@ export const useProject = (projectId: string) => {
   };
 };
 
-export const useProjects = (paginate: any, pageLimit: number) => {
+export const useProjects = (offset: number, limit: number) => {
   const { data, error, isLoading } = useSWR<ApiSuccess<{ projects: Project[] }>, ApiError>(
-    `/api/admin/retraced/projects?offset=${paginate.offset}&limit=${pageLimit}`,
+    `/api/admin/retraced/projects?offset=${offset}&limit=${limit}`,
     fetcher
   );
 

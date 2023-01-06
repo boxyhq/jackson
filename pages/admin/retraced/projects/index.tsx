@@ -15,7 +15,7 @@ import { LinkPrimary } from '@components/LinkPrimary';
 const ProjectList: NextPage = () => {
   const { t } = useTranslation('common');
   const { paginate, setPaginate } = usePaginate();
-  const { projects, isError, isLoading } = useProjects(paginate, pageLimit);
+  const { projects, isError, isLoading } = useProjects(paginate.offset, pageLimit);
 
   if (isLoading) {
     return <Loading />;
@@ -92,7 +92,7 @@ const ProjectList: NextPage = () => {
                     </td>
                   </tr>
                 ))}
-                {noMoreResults && <NoMoreResults colSpan={5} />}
+                {noMoreResults && <NoMoreResults colSpan={4} />}
               </tbody>
             </table>
           </div>
