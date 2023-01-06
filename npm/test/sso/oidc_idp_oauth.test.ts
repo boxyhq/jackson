@@ -4,7 +4,7 @@ import { generators, Issuer } from 'openid-client';
 import { IConnectionAPIController, IOAuthController, OAuthReq } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../../src/controller/error';
-import { addSSOConnections, databaseOptions } from '../utils';
+import { addSSOConnections, jacksonOptions } from '../utils';
 import path from 'path';
 
 let connectionAPIController: IConnectionAPIController;
@@ -13,7 +13,7 @@ let oauthController: IOAuthController;
 const metadataPath = path.join(__dirname, '/data/metadata');
 
 tap.before(async () => {
-  const controller = await (await import('../../src/index')).default(databaseOptions);
+  const controller = await (await import('../../src/index')).default(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
@@ -68,7 +68,7 @@ tap.test('[OIDCProvider]', async (t) => {
     // Restore
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    oauthController.opts.oidcPath = databaseOptions.oidcPath;
+    oauthController.opts.oidcPath = jacksonOptions.oidcPath;
   });
 
   t.test('[oidcAuthzResponse] Should throw an error if `state` is missing', async (t) => {
@@ -174,7 +174,7 @@ tap.test('[OIDCProvider]', async (t) => {
       });
       t.ok(
         fakeCb.calledWithMatch(
-          databaseOptions.externalUrl + databaseOptions.oidcPath,
+          jacksonOptions.externalUrl + jacksonOptions.oidcPath,
           { code: oidc_response.code },
           { code_verifier: context.codeVerifier }
         )
