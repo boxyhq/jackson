@@ -145,50 +145,35 @@ class Sql implements DatabaseDriver {
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
 
     let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
-    let count = 0;
 
     take += skip;
-    let res = await this.indexRepository.findBy({
-      key: dbutils.keyForIndex(namespace, idx),
-    });
-
+    const res = offsetAndLimitValueCheck
+      ? await this.indexRepository.findBy({
+          key: dbutils.keyForIndex(namespace, idx),
+        })
+      : await this.indexRepository.find({
+          where: { key: dbutils.keyForIndex(namespace, idx) },
+          take,
+          skip,
+          order: {
+            ['id']: 'DESC',
+          },
+        });
     const ret: Encrypted[] = [];
-    res = res.reverse();
     if (res) {
       for (const r of res) {
-        if (offsetAndLimitValueCheck) {
-          let value = r.store;
-          if (this.options.engine === 'planetscale') {
-            value = await this.storeRepository.findOneBy({
-              key: r.storeKey,
-            });
-          }
-
-          ret.push({
-            value: value.value,
-            iv: value.iv,
-            tag: value.tag,
+        let value = r.store;
+        if (this.options.engine === 'planetscale') {
+          value = await this.storeRepository.findOneBy({
+            key: r.storeKey,
           });
-        } else {
-          if (count >= take) {
-            break;
-          }
-          if (count >= skip) {
-            let value = r.store;
-            if (this.options.engine === 'planetscale') {
-              value = await this.storeRepository.findOneBy({
-                key: r.storeKey,
-              });
-            }
-
-            ret.push({
-              value: value.value,
-              iv: value.iv,
-              tag: value.tag,
-            });
-          }
-          count++;
         }
+
+        ret.push({
+          value: value.value,
+          iv: value.iv,
+          tag: value.tag,
+        });
       }
     }
 
