@@ -48,8 +48,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
 
   const body = {
     ...req.body,
-    tenant: setupLink.tenant,
-    product: setupLink.product,
+    ...setupLink,
   };
 
   const { isSAML, isOIDC } = strategyChecker(req);
@@ -82,8 +81,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink:
 
   const body = {
     ...req.body,
-    tenant: setupLink.tenant,
-    product: setupLink.product,
+    ...setupLink,
   };
 
   const { isSAML, isOIDC } = strategyChecker(req);

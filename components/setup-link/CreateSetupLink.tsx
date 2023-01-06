@@ -148,7 +148,6 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
                     value={formObj['name']}
                     onChange={handleChange}
                     className='input-bordered input w-full'
-                    required
                   />
                 </div>
                 <div className='mb-6'>
@@ -165,7 +164,6 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
                     value={formObj['description']}
                     onChange={handleChange}
                     className='input-bordered input w-full'
-                    required
                   />
                 </div>
                 <div className='mb-6'>
@@ -177,7 +175,7 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
                   <input
                     id='defaultRedirectUrl'
                     name='defaultRedirectUrl'
-                    type='text'
+                    type='url'
                     placeholder='http://localhost:3366/login/saml'
                     value={formObj['defaultRedirectUrl']}
                     onChange={handleChange}
@@ -196,7 +194,7 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
                     name='redirectUrl'
                     placeholder={'Allowed redirect URLs (newline separated)'}
                     value={formObj['redirectUrl']}
-                    required={true}
+                    required
                     onChange={handleChange}
                     className={`whitespace-pre} textarea-bordered textarea h-24 w-full`}
                     rows={3}
