@@ -23,168 +23,153 @@ const expectedConnection = {
   },
 };
 
-test('should be able to create a SSO Connection', async ({ request }) => {
+test.describe('SAML SSO Connection', () => {
   const { tenant, product, defaultRedirectUrl, redirectUrl, name, description } = expectedConnection;
 
-  const response = await createConnection(request, {
-    tenant,
-    product,
-    name,
-    description,
-    defaultRedirectUrl,
-    redirectUrl,
-    rawMetadata,
+  test.afterAll(async ({ request }) => {
+    await deleteConnection(request, {
+      tenant,
+      product,
+    });
   });
 
-  expect(response.ok()).toBe(true);
-  expect(response.status()).toBe(200);
-  expect(await response.json()).toMatchObject(expectedConnection);
-});
+  test('should be able to create a SSO Connection', async ({ request }) => {
+    const response = await createConnection(request, {
+      tenant,
+      product,
+      name,
+      description,
+      defaultRedirectUrl,
+      redirectUrl,
+      rawMetadata,
+    });
 
-test('should be able to get SSO Connections', async ({ request }) => {
-  const { tenant, product } = expectedConnection;
-
-  const response = await getConnection(request, tenant, product);
-
-  expect(response.ok()).toBe(true);
-  expect(response.status()).toBe(200);
-  expect(await response.json()).toMatchObject([expectedConnection]);
-});
-
-test('should be able to update a SSO Connection', async ({ request }) => {
-  const { tenant, product } = expectedConnection;
-
-  // Fetch the connection to get the clientID and clientSecret
-  const responseConnection = await getConnection(request, tenant, product);
-  const connection = (await responseConnection.json())[0];
-
-  // Update the connection
-  const response = await updateConnection(request, {
-    tenant,
-    product,
-    clientID: connection.clientID,
-    clientSecret: connection.clientSecret,
-    name: 'new connection name',
-    description: 'new connection description',
-    defaultRedirectUrl: 'http://localhost:3366/login/saml-new',
-    redirectUrl: 'http://localhost:3366/new/*',
-    metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject(expectedConnection);
   });
 
-  expect(response.ok()).toBe(true);
-  expect(response.status()).toBe(204);
+  test('should be able to get SSO Connections', async ({ request }) => {
+    const response = await getConnection(request, tenant, product);
 
-  // Fetch the connection again to check if the update was successful
-  const responseConnectionUpdated = await getConnection(request, tenant, product);
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject([expectedConnection]);
+  });
 
-  expect(await responseConnectionUpdated.json()).toMatchObject([
-    {
+  test('should be able to update a SSO Connection', async ({ request }) => {
+    // Fetch the connection to get the clientID and clientSecret
+    let response = await getConnection(request, tenant, product);
+    const { clientID, clientSecret } = (await response.json())[0];
+
+    // Update the connection
+    response = await updateConnection(request, {
+      tenant,
+      product,
+      clientID,
+      clientSecret,
       name: 'new connection name',
       description: 'new connection description',
       defaultRedirectUrl: 'http://localhost:3366/login/saml-new',
-      redirectUrl: ['http://localhost:3366/new/*'],
-    },
-  ]);
-});
-
-test('should be able to delete a SSO Connection', async ({ request }) => {
-  // Create a connection
-  const { tenant, product, defaultRedirectUrl, redirectUrl, name, description } = expectedConnection;
-
-  let response = await createConnection(request, {
-    tenant,
-    product,
-    name,
-    description,
-    defaultRedirectUrl,
-    redirectUrl,
-    rawMetadata,
-  });
-
-  expect(response.ok()).toBe(true);
-
-  // Fetch the connection to see if it was created
-  response = await getConnection(request, tenant, product);
-
-  expect(response.ok()).toBe(true);
-  expect(await response.json()).toMatchObject([expectedConnection]);
-
-  // Delete the connection
-  response = await deleteConnection(request, {
-    tenant,
-    product,
-  });
-
-  expect(response.ok()).toBe(true);
-
-  // Fetch the connection again to check if the delete was successful
-  response = await getConnection(request, tenant, product);
-
-  expect(response.ok()).toBe(true);
-  expect(await response.json()).toMatchObject([]);
-});
-
-test('should not be able to create a SSO Connection if params are invalid', async ({ request }) => {
-  const testCases = [
-    {
-      data: {
-        tenant: null,
-        product: 'saml-jackson',
-        defaultRedirectUrl: 'http://localhost:3366/login/saml',
-        redirectUrl: ['http://localhost:3366/*'],
-        metadataUrl: 'https://mocksaml.com/api/saml/metadata',
-      },
-      expectedError: 'Please provide tenant',
-    },
-    {
-      data: {
-        tenant: 'boxyhq',
-        product: null,
-        defaultRedirectUrl: 'http://localhost:3366/login/saml',
-        redirectUrl: ['http://localhost:3366/*'],
-        metadataUrl: 'https://mocksaml.com/api/saml/metadata',
-      },
-      expectedError: 'Please provide product',
-    },
-    {
-      data: {
-        tenant: 'boxyhq',
-        product: 'saml-jackson',
-        defaultRedirectUrl: null,
-        redirectUrl: ['http://localhost:3366/*'],
-        metadataUrl: 'https://mocksaml.com/api/saml/metadata',
-      },
-      expectedError: 'Please provide a defaultRedirectUrl',
-    },
-    {
-      data: {
-        tenant: 'boxyhq',
-        product: 'saml-jackson',
-        defaultRedirectUrl: 'http://localhost:3366/login/saml',
-        redirectUrl: null,
-        metadataUrl: 'https://mocksaml.com/api/saml/metadata',
-      },
-      expectedError: 'Please provide redirectUrl',
-    },
-    {
-      data: {
-        tenant: 'boxyhq',
-        product: 'saml-jackson',
-        defaultRedirectUrl: 'http://localhost:3366/login/saml',
-        redirectUrl: ['http://localhost:3366/*'],
-        metadataUrl: null,
-      },
-      expectedError: 'Please provide rawMetadata or encodedRawMetadata or metadataUrl',
-    },
-  ];
-
-  for (const testCase of testCases) {
-    const response = await createConnection(request, testCase.data);
-
-    expect(response.ok()).toBe(false);
-    expect(response.status()).toBe(400);
-    expect(await response.json()).toMatchObject({
-      error: { message: testCase.expectedError },
+      redirectUrl: 'http://localhost:3366/new/*',
+      metadataUrl: 'https://mocksaml.com/api/saml/metadata',
     });
-  }
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(204);
+
+    // Fetch the connection again to check if the update was successful
+    response = await getConnection(request, tenant, product);
+
+    expect(await response.json()).toMatchObject([
+      {
+        name: 'new connection name',
+        description: 'new connection description',
+        defaultRedirectUrl: 'http://localhost:3366/login/saml-new',
+        redirectUrl: ['http://localhost:3366/new/*'],
+      },
+    ]);
+  });
+
+  test('should be able to delete a SSO Connection', async ({ request }) => {
+    // Delete the connection
+    let response = await deleteConnection(request, {
+      tenant,
+      product,
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(204);
+
+    // Fetch the connection again to check if the delete was successful
+    response = await getConnection(request, tenant, product);
+
+    expect(response.ok()).toBe(true);
+    expect(await response.json()).toMatchObject([]);
+  });
+
+  test('should not be able to create a SSO Connection if params are invalid', async ({ request }) => {
+    const testCases = [
+      {
+        data: {
+          tenant: null,
+          product: 'saml-jackson',
+          defaultRedirectUrl: 'http://localhost:3366/login/saml',
+          redirectUrl: ['http://localhost:3366/*'],
+          metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+        },
+        expectedError: 'Please provide tenant',
+      },
+      {
+        data: {
+          tenant: 'boxyhq',
+          product: null,
+          defaultRedirectUrl: 'http://localhost:3366/login/saml',
+          redirectUrl: ['http://localhost:3366/*'],
+          metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+        },
+        expectedError: 'Please provide product',
+      },
+      {
+        data: {
+          tenant: 'boxyhq',
+          product: 'saml-jackson',
+          defaultRedirectUrl: null,
+          redirectUrl: ['http://localhost:3366/*'],
+          metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+        },
+        expectedError: 'Please provide a defaultRedirectUrl',
+      },
+      {
+        data: {
+          tenant: 'boxyhq',
+          product: 'saml-jackson',
+          defaultRedirectUrl: 'http://localhost:3366/login/saml',
+          redirectUrl: null,
+          metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+        },
+        expectedError: 'Please provide redirectUrl',
+      },
+      {
+        data: {
+          tenant: 'boxyhq',
+          product: 'saml-jackson',
+          defaultRedirectUrl: 'http://localhost:3366/login/saml',
+          redirectUrl: ['http://localhost:3366/*'],
+          metadataUrl: null,
+        },
+        expectedError: 'Please provide rawMetadata or encodedRawMetadata or metadataUrl',
+      },
+    ];
+
+    for (const testCase of testCases) {
+      const response = await createConnection(request, testCase.data);
+
+      expect(response.ok()).toBe(false);
+      expect(response.status()).toBe(400);
+      expect(await response.json()).toMatchObject({
+        error: { message: testCase.expectedError },
+      });
+    }
+  });
 });
