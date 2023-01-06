@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { checkSession } from '@lib/middleware';
 import jackson from '@lib/jackson';
 import { strings } from '@lib/strings';
 
@@ -65,4 +64,4 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.json({ data: apps });
 };
 
-export default checkSession(handler);
+export default handler;
