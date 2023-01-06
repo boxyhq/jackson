@@ -11,6 +11,7 @@ import router from 'next/router';
 import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkPrimary } from '@components/LinkPrimary';
+import { errorToast } from '@components/Toaster';
 
 const ProjectList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -22,7 +23,8 @@ const ProjectList: NextPage = () => {
   }
 
   if (isError) {
-    return <ErrorMessage />;
+    errorToast(isError?.message || t('unable_to_fetch_projects'));
+    return null;
   }
 
   const noProjects = projects.length === 0 && paginate.offset === 0;

@@ -135,5 +135,6 @@
   "publisher_api_base_url": "Publisher API Base URL",
   "send_event_to_url": "Send your event to the following URL",
   "curl_request": "cURL Request",
-  "no_more_results": "No more results found"
+  "no_more_results": "No more results found",
+  "unable_to_fetch_projects": "Unable to fetch the projects!"
 }
