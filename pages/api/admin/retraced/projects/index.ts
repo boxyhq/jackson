@@ -17,7 +17,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     default:
       res.setHeader('Allow', 'GET, POST');
       res.status(405).json({
-        data: null,
         error: { message: `Method ${method} Not Allowed` },
       });
   }
@@ -42,7 +41,6 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
 
   return res.status(201).json({
     data,
-    error: null,
   });
 };
 
@@ -66,11 +64,9 @@ const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
 
     return res.status(200).json({
       data,
-      error: null,
     });
   } catch (ex: any) {
     return res.status(500).json({
-      data: null,
       error: {
         message: ex?.message || ex?.response?.message || ex,
       },
