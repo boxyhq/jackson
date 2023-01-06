@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { IconButton } from '@components/IconButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
-import { Pagination, pageLimit } from '@components/Pagination';
+import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import useSWR from 'swr';
@@ -35,13 +35,13 @@ const ConnectionList = ({
     ? `/setup/${setupLinkToken}/sso-connection/new`
     : '/admin/sso-connection/new';
 
-  const { data, error } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
     getConnectionsUrl,
     fetcher,
     { revalidateOnFocus: false }
   );
 
-  if (!data && !error) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -51,6 +51,8 @@ const ConnectionList = ({
   }
 
   const connections = data?.data || [];
+  const noConnections = connections.length === 0 && paginate.offset === 0;
+  const noMoreResults = connections.length === 0 && paginate.offset > 0;
 
   if (connections && setupLinkToken && connections.length === 0) {
     router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
@@ -82,7 +84,7 @@ const ConnectionList = ({
           </div>
         </div>
       )}
-      {connections.length === 0 && paginate.offset === 0 ? (
+      {noConnections ? (
         <EmptyState title={t('no_connections_found')} href={createConnectionUrl} />
       ) : (
         <>
@@ -158,6 +160,7 @@ const ConnectionList = ({
                     </tr>
                   );
                 })}
+                {noMoreResults && <NoMoreResults colSpan={5} />}
               </tbody>
             </table>
           </div>

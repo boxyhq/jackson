@@ -22,12 +22,16 @@ const EventInfo: NextPage = () => {
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
-  const { data: eventsData, error: eventsError } = useSWR<ApiSuccess<WebhookEventLog>, ApiError>(
+  const {
+    data: eventsData,
+    error: eventsError,
+    isLoading,
+  } = useSWR<ApiSuccess<WebhookEventLog>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/events/${eventId}`,
     fetcher
   );
 
-  if (isDirectoryLoading || !eventsData) {
+  if (isDirectoryLoading || isLoading) {
     return <Loading />;
   }
 
@@ -42,7 +46,7 @@ const EventInfo: NextPage = () => {
     return null;
   }
 
-  const event = eventsData.data;
+  const event = eventsData?.data;
 
   return (
     <>

@@ -22,12 +22,16 @@ const GroupInfo: NextPage = () => {
 
   const { directory, isLoading: isDirectoryLoading, error: directoryError } = useDirectory(directoryId);
 
-  const { data: groupData, error: groupError } = useSWR<ApiSuccess<Group>, ApiError>(
+  const {
+    data: groupData,
+    error: groupError,
+    isLoading,
+  } = useSWR<ApiSuccess<Group>, ApiError>(
     `/api/admin/directory-sync/${directoryId}/groups/${groupId}`,
     fetcher
   );
 
-  if (isDirectoryLoading || !groupData) {
+  if (isDirectoryLoading || isLoading) {
     return <Loading />;
   }
 
@@ -42,7 +46,7 @@ const GroupInfo: NextPage = () => {
     return null;
   }
 
-  const group = groupData.data;
+  const group = groupData?.data;
 
   return (
     <>

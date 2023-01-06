@@ -4,7 +4,6 @@ import axios from 'axios';
 import type { Project } from 'types/retraced';
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
-import { checkSession } from '@lib/middleware';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -15,9 +14,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     case 'POST':
       return createProject(req, res);
     default:
-      res.setHeader('Allow', ['GET', 'POST']);
+      res.setHeader('Allow', 'GET, POST');
       res.status(405).json({
-        data: null,
         error: { message: `Method ${method} Not Allowed` },
       });
   }
@@ -29,36 +27,50 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
   const { name } = req.body;
 
   const { data } = await axios.post<{ project: Project }>(
-    `${retracedOptions?.host}/admin/v1/project`,
+    `${retracedOptions?.hostUrl}/admin/v1/project`,
     {
       name,
     },
     {
       headers: {
-        Authorization: `id=${token.id} token=${token.token}`,
+        Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
       },
     }
   );
 
   return res.status(201).json({
     data,
-    error: null,
   });
 };
 
 const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
-  const token = await getToken(req);
+  try {
+    const token = await getToken(req);
 
-  const { data } = await axios.get<{ projects: Project[] }>(`${retracedOptions?.host}/admin/v1/projects`, {
-    headers: {
-      Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
-    },
-  });
+    const { offset, limit } = req.query as {
+      offset: string;
+      limit: string;
+    };
 
-  return res.status(200).json({
-    data,
-    error: null,
-  });
+    const { data } = await axios.get<{ projects: Project[] }>(
+      `${retracedOptions?.hostUrl}/admin/v1/projects?offset=${+(offset || 0)}&limit=${+(limit || 0)}`,
+      {
+        headers: {
+          Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
+        },
+      }
+    );
+
+    return res.status(200).json({
+      data,
+    });
+  } catch (ex: any) {
+    return res.status(500).json({
+      error: {
+        message: ex?.message || ex?.response?.message || ex,
+      },
+    });
+  }
 };
 
-export default checkSession(handler);
+export default handler;

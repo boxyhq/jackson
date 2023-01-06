@@ -13,7 +13,7 @@ export const getToken = async (req: NextApiRequest): Promise<AdminToken> => {
   });
 
   const { data } = await axios.post<{ adminToken: AdminToken }>(
-    `${retracedOptions?.host}/admin/v1/user/_login`,
+    `${retracedOptions?.hostUrl}/admin/v1/user/_login`,
     {
       claims: {
         upstreamToken: 'ADMIN_ROOT_TOKEN',

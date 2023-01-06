@@ -213,8 +213,6 @@ tap.test('dbs', ({ end }) => {
     });
 
     tap.test('getAll(): ' + dbEngine, async (t) => {
-      // getAll(pageOffset?: number, pageLimit?: number): Promise<unknown[]>;
-
       const allRecords: any = await connectionStore.getAll();
       const allRecordOutput = {};
       let allRecordInput = {};
