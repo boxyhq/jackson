@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import * as Retraced from '@retraced-hq/retraced';
+import * as Retraced from '@retracedhq/retraced';
 
 import { retracedOptions } from '@lib/env';
 import { checkSession } from '@lib/middleware';
