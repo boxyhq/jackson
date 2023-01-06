@@ -24,3 +24,25 @@ export const createConnection = async (request: APIRequestContext, data: any) =>
     data,
   });
 };
+
+// Delete a connection
+export const deleteConnection = async (request: APIRequestContext, data: any) => {
+  return await request.delete('/api/v1/connections', {
+    headers: {
+      Authorization: `Api-Key secret`,
+      'Content-Type': 'application/json',
+    },
+    data,
+  });
+};
+
+// Update a connection
+export const updateConnection = async (request: APIRequestContext, data: any) => {
+  return await request.patch('/api/v1/connections', {
+    headers: {
+      Authorization: `Api-Key secret`,
+      'Content-Type': 'application/json',
+    },
+    data,
+  });
+};
