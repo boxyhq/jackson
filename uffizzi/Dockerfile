@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:18.12.1-alpine3.16
+ARG NODEJS_IMAGE=node:18.13.0-alpine3.16
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
