@@ -36,7 +36,7 @@ class Redis implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);

@@ -126,7 +126,7 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const response = await this.storeRepository.find({
       where: { key: Like(`%${namespace}%`) },

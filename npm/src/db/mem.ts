@@ -51,7 +51,7 @@ class Mem implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const returnValue: string[] = [];
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);

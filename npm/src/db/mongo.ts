@@ -44,10 +44,10 @@ class Mongo implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, offset: number, limit: number): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
     const _namespaceMatch = new RegExp(`^${namespace}:.*`);
     const docs = await this.collection
-      .find({ _id: _namespaceMatch }, { sort: { createdAt: -1 }, skip: offset, limit: limit })
+      .find({ _id: _namespaceMatch }, { sort: { createdAt: -1 }, skip: pageOffset, limit: pageLimit })
       .toArray();
 
     if (docs) {
