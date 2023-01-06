@@ -45,6 +45,7 @@
   "connections": "Connections",
   "new_connection": "New Connection",
   "no_connections_found": "No connections found.",
+  "no_projects_found": "No projects found.",
   "no_setup_links_found": "No setup links found.",
   "oidc": "OIDC",
   "open_menu": "Open menu",
@@ -134,5 +135,6 @@
   "publisher_api_base_url": "Publisher API Base URL",
   "send_event_to_url": "Send your event to the following URL",
   "curl_request": "cURL Request",
-  "no_more_results": "No more results found"
+  "no_more_results": "No more results found",
+  "unable_to_fetch_projects": "Unable to fetch the projects!"
 }
