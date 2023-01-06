@@ -91,7 +91,7 @@ export class SetupLinkController {
       throw new JacksonError('Missing service name', 400);
     }
 
-    const setupLink = await this.setupLinkStore.getByIndex(
+    const setupLinks = await this.setupLinkStore.getByIndex(
       {
         name: IndexNames.Service,
         value: service,
@@ -100,7 +100,7 @@ export class SetupLinkController {
       pageLimit
     );
 
-    return setupLink;
+    return setupLinks;
   }
 
   // Remove a setup link
