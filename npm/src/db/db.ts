@@ -52,8 +52,13 @@ class DB implements DatabaseDriver {
     });
   }
 
-  async getByIndex(namespace: string, idx: Index): Promise<unknown[]> {
-    const res = await this.db.getByIndex(namespace, idx);
+  async getByIndex(
+    namespace: string,
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number
+  ): Promise<unknown[]> {
+    const res = await this.db.getByIndex(namespace, idx, pageOffset, pageLimit);
     const encryptionKey = this.encryptionKey;
     return res.map((r) => {
       return decrypt(r, encryptionKey);

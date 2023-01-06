@@ -126,27 +126,36 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-    const response = await this.storeRepository.find({
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
+    const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const res = await this.storeRepository.find({
       where: { key: Like(`%${namespace}%`) },
       select: ['value', 'iv', 'tag'],
       order: {
         ['createdAt']: 'DESC',
       },
-      take: offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit,
-      skip: offsetAndLimitValueCheck ? 0 : pageOffset,
+      take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
+      skip: skipOffsetAndLimitValue ? 0 : pageOffset,
     });
-    return JSON.parse(JSON.stringify(response)) || [];
+    return JSON.parse(JSON.stringify(res)) || [];
   }
 
-  async getByIndex(namespace: string, idx: Index): Promise<any> {
-    const res = await this.indexRepository.findBy({
-      key: dbutils.keyForIndex(namespace, idx),
-    });
+  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+    const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const res = skipOffsetAndLimitValue
+      ? await this.indexRepository.findBy({
+          key: dbutils.keyForIndex(namespace, idx),
+        })
+      : await this.indexRepository.find({
+          where: { key: dbutils.keyForIndex(namespace, idx) },
+          take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
+          skip: skipOffsetAndLimitValue ? 0 : pageOffset,
+          order: {
+            ['id']: 'DESC',
+          },
+        });
 
     const ret: Encrypted[] = [];
-
     if (res) {
       for (const r of res) {
         let value = r.store;
