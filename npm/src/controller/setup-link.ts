@@ -1,6 +1,6 @@
 import { SetupLink, SetupLinkCreatePayload, Storable } from '../typings';
 import * as dbutils from '../db/utils';
-import { IndexNames, validateTenantAndProduct } from './utils';
+import { IndexNames, validateTenantAndProduct, validateRedirectUrl } from './utils';
 import crypto from 'crypto';
 import { JacksonError } from './error';
 
@@ -13,9 +13,12 @@ export class SetupLinkController {
 
   // Create a new setup link
   async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
-    const { tenant, product, service, regenerate } = body;
+    const { tenant, product, service, name, description, defaultRedirectUrl, regenerate, redirectUrl } = body;
 
     validateTenantAndProduct(tenant, product);
+
+    if (defaultRedirectUrl || redirectUrl)
+      validateRedirectUrl({ defaultRedirectUrl, redirectUrlList: redirectUrl });
 
     const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
     const token = crypto.randomBytes(24).toString('hex');
@@ -39,6 +42,9 @@ export class SetupLinkController {
       tenant,
       product,
       service,
+      name,
+      description,
+      defaultRedirectUrl,
       validTill: +new Date(new Date().setDate(new Date().getDate() + 3)),
       url: `${process.env.NEXTAUTH_URL}/setup/${token}`,
     };

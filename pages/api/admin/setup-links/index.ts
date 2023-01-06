@@ -28,12 +28,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { tenant, product, service, regenerate } = req.body;
+  const { tenant, product, service, regenerate, name, description, defaultRedirectUrl } = req.body;
 
   const setupLink = await setupLinkController.create({
     tenant,
     product,
     service,
+    name,
+    description,
+    defaultRedirectUrl,
     regenerate,
   });
 

@@ -134,5 +134,7 @@
   "publisher_api_base_url": "Publisher API Base URL",
   "send_event_to_url": "Send your event to the following URL",
   "curl_request": "cURL Request",
+  "default_redirect_url": "Default redirect URL",
+  "allowed_redirect_url": "Allowed redirect URLs (newline separated)",
   "no_more_results": "No more results found"
 }

@@ -686,6 +686,10 @@ export interface WebhookEventLog extends DirectorySyncEvent {
 export type SetupLinkCreatePayload = {
   tenant: string;
   product: string;
+  name?: string;
+  description?: string;
+  defaultRedirectUrl?: string;
+  redirectUrl?: string;
   service: SetupLinkService;
   regenerate?: boolean;
 };
@@ -693,6 +697,10 @@ export type SetupLinkCreatePayload = {
 export type SetupLink = {
   setupID: string;
   tenant: string;
+  name?: string;
+  description?: string;
+  defaultRedirectUrl?: string;
+  redirectUrl?: string;
   product: string;
   url: string;
   service: SetupLinkService;
