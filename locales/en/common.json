@@ -138,5 +138,6 @@
   "no_more_results": "No more results found",
   "unable_to_fetch_projects": "Unable to fetch the projects!",
   "default_redirect_url": "Default redirect URL",
-  "allowed_redirect_url": "Allowed redirect URLs (newline separated)"
+  "allowed_redirect_url": "Allowed redirect URLs (newline separated)",
+  "description": "Description"
 }
