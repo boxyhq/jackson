@@ -21,6 +21,10 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
     tenant: '',
     product: '',
     service,
+    name: '',
+    description: '',
+    defaultRedirectUrl: '',
+    redirectUrl: '',
   });
 
   // Create a new setup link
