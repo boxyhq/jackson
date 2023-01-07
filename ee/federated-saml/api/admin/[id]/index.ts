@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { checkSession } from '@lib/middleware';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { strings } from '@lib/strings';
 
@@ -101,4 +100,4 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default checkSession(handler);
+export default handler;

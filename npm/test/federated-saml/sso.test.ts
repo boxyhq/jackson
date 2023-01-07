@@ -8,7 +8,7 @@ import { promises as fs } from 'fs';
 
 const deflateRawAsync = promisify(deflateRaw);
 
-import { databaseOptions } from '../utils';
+import { jacksonOptions } from '../utils';
 import { tenant, product, serviceProvider } from './constants';
 import type {
   ISAMLFederationController,
@@ -26,7 +26,7 @@ let app: SAMLFederationApp;
 let connection: SAMLSSORecord;
 
 tap.before(async () => {
-  const jackson = await (await import('../../src/index')).default(databaseOptions);
+  const jackson = await (await import('../../src/index')).default(jacksonOptions);
 
   oauthController = jackson.oauthController;
   samlFederatedController = jackson.samlFederatedController;
