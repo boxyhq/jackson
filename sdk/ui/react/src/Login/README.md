@@ -18,6 +18,7 @@ import { Login } from '@boxyhq/react-ui';
   inputLabel='Tenant'
   buttonText='Sign-in with SSO'
   styles={{
+    container: {'--btn-outline-color': '219 14% 22%'}
     button: {color: '#fff'},
     input: {'margin-top': '2px'},
     label: {'font-size': '1.5rem'}}},

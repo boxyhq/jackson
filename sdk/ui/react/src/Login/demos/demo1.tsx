@@ -1,6 +1,6 @@
 /**
- * @title Login Component with default styles
- * @description Login Component with a non failing forwardTenant
+ * @title Login Component with the supported props
+ * @description Refer the code below to see the passed props.
  * @order 1
  */
 
@@ -9,10 +9,25 @@ import { Login } from '@boxyhq/react-ui';
 const Demo1 = () => {
   return (
     <Login
-      onSubmit={async () => {
-        // return nothing
+      onSubmit={async (ssoIdentifier) => {
+        // initiate the SSO flow here
       }}
-      inputLabel='Tenant'
+      styles={{
+        container: {
+          '--input-outline-color': 'hsl(0 0% 20%/ 0.2)',
+          '--btn-hover-bg-color': 'hsl(0 0% 20%)',
+          '--btn-outline-color': 'hsl(219 14% 22%),',
+        },
+      }}
+      placeholder='contoso@boxyhq.com'
+      classNames={{
+        container: 'cls1',
+        input: 'input1',
+        label: 'label1',
+        button: 'button1',
+      }}
+      inputLabel='Team Domain'
+      buttonText='Login with SSO'
     />
   );
 };
