@@ -1,7 +1,7 @@
 .container {
-  --input-outline: 0 0% 20%/ 0.2;
-  --btn-hover-bg: 0 0% 20%;
-  --btn-outline: 219 14% 22%;
+  --input-outline-color: hsl(0 0% 20%/ 0.2);
+  --btn-hover-bg-color: hsl(0 0% 20%);
+  --btn-outline-color: hsl(219 14% 22%);
   display: flex;
   flex-direction: column;
   max-width: 28rem;
@@ -27,7 +27,7 @@
 }
 
 .input:focus {
-  outline: 2px solid hsl(var(--input-outline));
+  outline: 2px solid var(--input-outline-color);
   outline-offset: 2px;
 }
 
@@ -43,12 +43,12 @@
 }
 
 .button:hover {
-  background-color: hsl(var(--btn-hover-bg));
+  background-color: var(--btn-hover-bg-color);
   color: hsl(0 0% 100%);
 }
 
 .button:focus-visible {
-  outline: 2px solid hsl(var(--btn-outline));
+  outline: 2px solid var(--btn-outline-color);
   outline-offset: 2px;
 }
 

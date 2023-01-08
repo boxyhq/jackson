@@ -1,9 +1,9 @@
 import type { CSSProperties } from 'react';
 
 interface ContainerCSSProperties extends CSSProperties {
-  '--input-outline': string;
-  '--btn-hover-bg': string;
-  '--btn-outline': string;
+  '--input-outline-color'?: string;
+  '--btn-hover-bg-color'?: string;
+  '--btn-outline-color'?: string;
 }
 export interface LoginProps {
   /**
