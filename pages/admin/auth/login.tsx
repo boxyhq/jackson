@@ -7,7 +7,7 @@ import { useSession, getCsrfToken, signIn, SessionProvider } from 'next-auth/rea
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toaster';
-import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonOutline } from '@components/ButtonOutline';
 import Loading from '@components/Loading';
 import { Login as SSOLogin } from '@boxyhq/react-ui';
 import { adminPortalSSODefaults } from '@lib/env';
@@ -93,9 +93,9 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
                   </label>
                 </div>
                 <div className='flex items-baseline justify-between'>
-                  <ButtonPrimary type='submit' loading={loading} className='btn-block'>
+                  <ButtonOutline type='submit' loading={loading} className='btn-block'>
                     {t('send_magic_link')}
-                  </ButtonPrimary>
+                  </ButtonOutline>
                 </div>
               </div>
             </form>
@@ -105,7 +105,7 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
               onSubmit={onSSOSubmit}
               classNames={{
                 container: 'mt-2',
-                button: 'btn-primary btn-block btn rounded-md active:-scale-95',
+                button: 'btn-outline btn-block btn',
                 input: 'input-bordered input mb-5 mt-2 w-full rounded-md',
               }}
             />
