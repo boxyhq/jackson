@@ -32,12 +32,12 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    cssInjectedByJsPlugin({
-      injectCode: (cssCode) => {
-        return `try{if(typeof document != 'undefined'){var sdkStyles = document.createElement('style');sdkStyles.appendChild(document.createTextNode(${cssCode}));var firstStyleNode = document.head.getElementsByTagName('style')[0];document.head.insertBefore(sdkStyles,firstStyleNode);}}catch(e){console.error('vite-plugin-css-injected-by-js', e);}`;
-      },
-      topExecutionPriority: true,
-    }),
+    // cssInjectedByJsPlugin({
+    //   injectCode: (cssCode) => {
+    //     return `try{if(typeof document != 'undefined'){var sdkStyles = document.createElement('style');sdkStyles.appendChild(document.createTextNode(${cssCode}));var firstStyleNode = document.head.getElementsByTagName('style')[0];document.head.insertBefore(sdkStyles,firstStyleNode);}}catch(e){console.error('vite-plugin-css-injected-by-js', e);}`;
+    //   },
+    //   topExecutionPriority: true,
+    // }),
     // typescript({ declaration: true }),
     // use @rollup/plugin-typescript to generate .d.ts files
     // https://github.com/rollup/plugins/tree/master/packages/typescript#noforceemit
