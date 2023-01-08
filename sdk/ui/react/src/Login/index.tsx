@@ -14,6 +14,7 @@ const Login = ({
   buttonText = 'Sign-in with SSO',
   styles,
   classNames,
+  innerProps,
   unstyled = false,
 }: LoginProps) => {
   // Generate stable html id attributes for input/span elements
@@ -63,6 +64,7 @@ const Login = ({
         className={cssClassAssembler(unstyled, classNames?.input, defaultStyles.input)}
         aria-invalid={isError}
         aria-describedby={errorSpanId}
+        {...innerProps?.input}
       />
       {isError && <span id={errorSpanId}>{errMsg}</span>}
     </>
@@ -80,7 +82,8 @@ const Login = ({
         type='button'
         onClick={onButtonClick}
         style={styles?.button}
-        className={cssClassAssembler(unstyled, classNames?.button, defaultStyles.button)}>
+        className={cssClassAssembler(unstyled, classNames?.button, defaultStyles.button)}
+        {...innerProps?.button}>
         {buttonText}
       </button>
     </div>

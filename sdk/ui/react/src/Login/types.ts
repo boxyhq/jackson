@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import type { ButtonHTMLAttributes, CSSProperties, InputHTMLAttributes } from 'react';
 
 interface ContainerCSSProperties extends CSSProperties {
   '--input-outline-color'?: string;
@@ -44,6 +44,10 @@ export interface LoginProps {
    * Classnames for each inner components that Login is made up of.
    */
   classNames?: { container?: string; button?: string; input?: string; label?: string };
+  innerProps?: {
+    input?: InputHTMLAttributes<HTMLInputElement>;
+    button?: ButtonHTMLAttributes<HTMLButtonElement>;
+  };
   /**
    * Boolean that disables all the default styling making it easier to style from scratch
    */

@@ -28,6 +28,7 @@ const Demo1 = () => {
       }}
       inputLabel='Team Domain'
       buttonText='Login with SSO'
+      innerProps={{ input: { type: 'email' } }}
     />
   );
 };
