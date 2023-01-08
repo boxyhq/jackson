@@ -20,14 +20,14 @@ export const useProject = (projectId: string) => {
   };
 };
 
-export const useProjects = () => {
+export const useProjects = (offset: number, limit: number) => {
   const { data, error, isLoading } = useSWR<ApiSuccess<{ projects: Project[] }>, ApiError>(
-    '/api/admin/retraced/projects',
+    `/api/admin/retraced/projects?offset=${offset}&limit=${limit}`,
     fetcher
   );
 
   return {
-    projects: data?.data?.projects,
+    projects: data?.data?.projects || [],
     isLoading,
     isError: error,
   };

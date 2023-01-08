@@ -1,13 +1,13 @@
 import tap from 'tap';
 
 import { ISAMLFederationController } from '../../src';
-import { databaseOptions } from '../utils';
+import { jacksonOptions } from '../utils';
 import { tenant, product, serviceProvider, appId } from './constants';
 
 let samlFederatedController: ISAMLFederationController;
 
 tap.before(async () => {
-  const jackson = await (await import('../../src/index')).default(databaseOptions);
+  const jackson = await (await import('../../src/index')).default(jacksonOptions);
 
   samlFederatedController = jackson.samlFederatedController;
 });

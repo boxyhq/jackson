@@ -21,7 +21,7 @@ const addSSOConnections = async (
   return connectionRecords;
 };
 
-const databaseOptions = <JacksonOption>{
+const jacksonOptions = <JacksonOption>{
   externalUrl: 'https://my-cool-app.com',
   samlAudience: 'https://saml.boxyhq.com',
   samlPath: '/sso/oauth/saml',
@@ -35,6 +35,7 @@ const databaseOptions = <JacksonOption>{
     jwsAlg: 'RS256',
   },
   boxyhqLicenseKey: 'dummy-license',
+  noAnalytics: true,
 };
 
-export { addSSOConnections, databaseOptions };
+export { addSSOConnections, jacksonOptions };

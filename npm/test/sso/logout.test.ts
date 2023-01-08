@@ -6,7 +6,7 @@ import tap from 'tap';
 import { IConnectionAPIController, ILogoutController } from '../../src/typings';
 import { relayStatePrefix } from '../../src/controller/utils';
 import { saml_connection } from './fixture';
-import { addSSOConnections, databaseOptions } from '../utils';
+import { addSSOConnections, jacksonOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 let logoutController: ILogoutController;
@@ -14,7 +14,7 @@ let logoutController: ILogoutController;
 const metadataPath = path.join(__dirname, '/data/metadata');
 
 tap.before(async () => {
-  const controller = await (await import('../../src/index')).default(databaseOptions);
+  const controller = await (await import('../../src/index')).default(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
   logoutController = controller.logoutController;
