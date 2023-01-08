@@ -1,5 +1,10 @@
 import type { CSSProperties } from 'react';
 
+interface ContainerCSSProperties extends CSSProperties {
+  '--input-outline': string;
+  '--btn-hover-bg': string;
+  '--btn-outline': string;
+}
 export interface LoginProps {
   /**
    * Could be email, tenant or anything that can help to resolve the SSO connection. Use this if you want to set the value directly instead of taking a user input
@@ -27,9 +32,14 @@ export interface LoginProps {
    */
   buttonText?: string;
   /**
-   * Styles for each inner components that Login is made up of.
+   * Styles for each inner component that Login is made up of.
    */
-  styles?: { button?: CSSProperties; input?: CSSProperties; label?: CSSProperties };
+  styles?: {
+    container?: ContainerCSSProperties;
+    button?: CSSProperties;
+    input?: CSSProperties;
+    label?: CSSProperties;
+  };
   /**
    * Classnames for each inner components that Login is made up of.
    */

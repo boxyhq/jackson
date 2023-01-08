@@ -1,4 +1,7 @@
-.form {
+.container {
+  --input-outline: 0 0% 20%/ 0.2;
+  --btn-hover-bg: 0 0% 20%;
+  --btn-outline: 219 14% 22%;
   display: flex;
   flex-direction: column;
   max-width: 28rem;
@@ -16,7 +19,6 @@
   border-width: 1px;
   border-color: #ebedf0;
   border-style: solid;
-  line-height: 1.5rem;
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
   margin-top: 1px;
@@ -25,8 +27,7 @@
 }
 
 .input:focus {
-  --bc: 0 0% 20%;
-  outline: 2px solid hsla(var(--bc) / 0.2);
+  outline: 2px solid hsl(var(--input-outline));
   outline-offset: 2px;
 }
 
@@ -36,14 +37,18 @@
   background-image: none;
   border-radius: 0.25rem;
   padding: 0.5rem 1rem;
-  background-color: #25c2a0;
-  color: #fff;
-  border: none;
+  background-color: transparent;
+  border: 1px solid rgb(51, 51, 51);
+  color: currentColor;
+}
+
+.button:hover {
+  background-color: hsl(var(--btn-hover-bg));
+  color: hsl(0 0% 100%);
 }
 
 .button:focus-visible {
-  --p: 167deg 68% 45%;
-  outline: 2px solid hsl(var(--p));
+  outline: 2px solid hsl(var(--btn-outline));
   outline-offset: 2px;
 }
 

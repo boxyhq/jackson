@@ -71,7 +71,9 @@ const Login = ({
   const disableButton = !(_ssoIdentifier || ssoIdentifier) || isProcessing;
 
   return (
-    <div className={cssClassAssembler(unstyled, classNames?.container, defaultStyles.form)}>
+    <div
+      className={cssClassAssembler(unstyled, classNames?.container, defaultStyles.container)}
+      style={styles?.container}>
       {inputUI}
       <button
         disabled={disableButton}

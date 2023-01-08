@@ -368,6 +368,6 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     with:
       # npmversion: ${{ needs.ci.outputs.NPM_VERSION }}
-      npmversion: 0.0.16
+      npmversion: 0.0.17
       publishtag: ${{ needs.ci.outputs.PUBLISH_TAG }}
     secrets: inherit
