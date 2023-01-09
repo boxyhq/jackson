@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return handleGET(req, res);
     default:
       res.setHeader('Allow', 'GET');
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 }
 
@@ -21,5 +21,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { data, error } = await directorySyncController.directories.get(directoryId as string);
 
-  return res.status(error ? error.code : 200).json({ data, error });
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+
+  return res.status(200).json({ data });
 };
