@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('should return oidc discovery configuration', async ({ request, baseURL }) => {
-  const response = await request.get('http://localhost:5225/.well-known/openid-configuration');
+  const response = await request.get('/.well-known/openid-configuration');
   const oidcDiscovery = await response.json();
 
   expect(oidcDiscovery).toStrictEqual({
