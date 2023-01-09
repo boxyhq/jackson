@@ -277,7 +277,7 @@ export interface DatabaseDriver {
   get(namespace: string, key: string): Promise<any>;
   put(namespace: string, key: string, val: any, ttl: number, ...indexes: Index[]): Promise<any>;
   delete(namespace: string, key: string): Promise<any>;
-  getByIndex(namespace: string, idx: Index): Promise<any>;
+  getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any>;
 }
 
 export interface Storable {
@@ -285,7 +285,7 @@ export interface Storable {
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
-  getByIndex(idx: Index): Promise<any>;
+  getByIndex(idx: Index, pageOffset?: number, pageLimit?: number): Promise<any>;
 }
 
 export interface DatabaseStore {

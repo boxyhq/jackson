@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import * as Retraced from '@retraced-hq/retraced';
+import * as Retraced from '@retracedhq/retraced';
 
 import { retracedOptions } from '@lib/env';
-import { checkSession } from '@lib/middleware';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -41,4 +40,4 @@ const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-export default checkSession(handler);
+export default handler;

@@ -1,12 +1,12 @@
 import { IDirectorySyncController, Directory, DirectoryType } from '../../src/typings';
 import tap from 'tap';
 import { getFakeDirectory } from './data/directories';
-import { databaseOptions } from '../utils';
+import { jacksonOptions } from '../utils';
 
 let directorySync: IDirectorySyncController;
 
 tap.before(async () => {
-  const jackson = await (await import('../../src/index')).default(databaseOptions);
+  const jackson = await (await import('../../src/index')).default(jacksonOptions);
 
   directorySync = jackson.directorySyncController;
 });

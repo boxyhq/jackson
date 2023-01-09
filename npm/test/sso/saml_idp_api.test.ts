@@ -12,7 +12,7 @@ import {
   SAMLSSORecord,
 } from '../../src/typings';
 import { saml_connection } from './fixture';
-import { databaseOptions } from '../utils';
+import { jacksonOptions } from '../utils';
 import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 
 let connectionAPIController: IConnectionAPIController;
@@ -21,7 +21,7 @@ const CLIENT_ID_SAML = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
 
 tap.before(async () => {
-  const controller = await controllers(databaseOptions);
+  const controller = await controllers(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
 });

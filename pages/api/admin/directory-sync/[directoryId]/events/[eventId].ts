@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { checkSession } from '@lib/middleware';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -36,4 +35,4 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({ data: event });
 };
 
-export default checkSession(handler);
+export default handler;
