@@ -194,4 +194,30 @@ test.describe('SAML SSO Connection', () => {
       },
     ]);
   });
+
+  test('should be able to check if a connection exists', async ({ request }) => {
+    await createConnection(request);
+
+    // Fetch a connection that exists
+    let response = await request.get('/api/v1/connections/exists', {
+      params: {
+        tenant,
+        product,
+      },
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(204);
+
+    // Fetch a connection that does not exist
+    response = await request.get('/api/v1/connections/exists', {
+      params: {
+        tenant: 'boxyhq',
+        product: 'saml-jackson',
+      },
+    });
+
+    expect(response.ok()).toBe(false);
+    expect(response.status()).toBe(404);
+  });
 });
