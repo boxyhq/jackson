@@ -3,9 +3,10 @@ import {
   createConnection,
   getConnection,
   deleteConnection,
-  expectedConnection,
   getRawMetadata,
-} from './utils';
+  newConnection,
+  expectedConnection,
+} from './request';
 
 test.use({
   extraHTTPHeaders: {
@@ -15,34 +16,30 @@ test.use({
 });
 
 test.describe('SAML SSO Connection', () => {
-  const { tenant, product } = expectedConnection;
+  const { tenant, product } = newConnection;
 
   test.afterEach(async ({ request }) => {
-    await deleteConnection(request);
+    await deleteConnection(request, { tenant, product });
   });
 
   test('should be able to create a SSO Connection', async ({ request }) => {
-    const response = await createConnection(request);
+    const response = await createConnection(request, newConnection);
 
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(await response.json()).toMatchObject(expectedConnection);
+    expect(response).toMatchObject(expectedConnection);
   });
 
   test('should be able to get SSO Connections', async ({ request }) => {
-    await createConnection(request);
+    await createConnection(request, newConnection);
 
-    const response = await getConnection(request);
+    const response = await getConnection(request, { tenant, product });
 
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(await response.json()).toMatchObject([expectedConnection]);
+    expect(response).toMatchObject([expectedConnection]);
   });
 
   test('should be able to update a SSO Connection', async ({ request }) => {
-    await createConnection(request);
+    await createConnection(request, newConnection);
 
-    const connection = await (await getConnection(request)).json();
+    const connection = await getConnection(request, { tenant, product });
 
     // Update the connection
     const response = await request.patch('/api/v1/connections', {
@@ -63,7 +60,7 @@ test.describe('SAML SSO Connection', () => {
     expect(response.status()).toBe(204);
 
     // Fetch the connection again to check if the update was successful
-    const updatedConnection = await (await getConnection(request)).json();
+    const updatedConnection = await getConnection(request, { tenant, product });
 
     expect(updatedConnection).toMatchObject([
       {
@@ -76,16 +73,13 @@ test.describe('SAML SSO Connection', () => {
   });
 
   test('should be able to delete a SSO Connection', async ({ request }) => {
-    await createConnection(request);
+    await createConnection(request, newConnection);
 
     // Delete the connection
-    const response = await deleteConnection(request);
-
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(204);
+    await deleteConnection(request, { tenant, product });
 
     // Fetch the connection again to check if the delete was successful
-    const connection = await (await getConnection(request)).json();
+    const connection = await getConnection(request, { tenant, product });
 
     expect(connection).toMatchObject([]);
   });
@@ -161,30 +155,21 @@ test.describe('SAML SSO Connection', () => {
     request,
   }) => {
     // Create the first connection
-    await createConnection(request);
+    await createConnection(request, newConnection);
 
-    // Create the second connection
-    const { tenant, product, defaultRedirectUrl, redirectUrl, name, description } = expectedConnection;
-
+    // // Create the second connection
     await request.post('/api/v1/connections', {
       data: {
-        tenant,
-        product,
-        defaultRedirectUrl,
-        redirectUrl,
-        name,
-        description,
+        ...newConnection,
         rawMetadata: getRawMetadata('https://saml.example.com/entityid-1'),
       },
     });
 
     // Fetch the connections
-    const response = await getConnection(request);
+    const response = await getConnection(request, { tenant, product });
 
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(await response.json()).toHaveLength(2);
-    expect(await response.json()).toMatchObject([
+    expect(response).toHaveLength(2);
+    expect(response).toMatchObject([
       expectedConnection,
       {
         ...expectedConnection,
@@ -196,7 +181,7 @@ test.describe('SAML SSO Connection', () => {
   });
 
   test('should be able to check if a connection exists', async ({ request }) => {
-    await createConnection(request);
+    await createConnection(request, newConnection);
 
     // Fetch a connection that exists
     let response = await request.get('/api/v1/connections/exists', {
