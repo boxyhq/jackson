@@ -58,3 +58,23 @@ const onSSOSubmit = async (ssoIdentifier: string) => {
   }}
 />;
 ```
+
+#### Styling
+
+If the classNames prop is passed in, we can override the default styling for each inner element. For example,
+In the below snippet, all the inner elements are styled by passing in the classNames for each inner one.
+
+```tsx
+<SSOLogin
+  buttonText={'Login with SSO'}
+  onSubmit={onSSOSubmit}
+  classNames={{
+    container: 'mt-2',
+    label: 'text-gray-400',
+    button: 'btn-primary btn-block btn rounded-md active:-scale-95',
+    input: 'input-bordered input mb-5 mt-2 w-full rounded-md',
+  }}
+/>
+```
+
+Styling via style attribute is also supported for each inner element.
