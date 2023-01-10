@@ -2,7 +2,6 @@ import { Storable } from '@boxyhq/saml-jackson';
 import DB from 'npm/src/db/db';
 import { jacksonOptions } from './env';
 import type { AdapterUser, VerificationToken } from 'next-auth/adapters';
-import { validateEmailWithACL } from './utils';
 import defaultDb from 'npm/src/db/defaultDb';
 
 const g = global as any;
@@ -44,7 +43,16 @@ export default function Adapter() {
       if (!user.id) {
         return null;
       }
-      return user;
+      const email = user.id;
+      return email
+        ? ({
+            id: email,
+            name: email.split('@')[0],
+            email,
+            role: 'admin',
+            emailVerified: new Date(),
+          } as AdapterUser)
+        : null;
     },
     // will be required in a future release, but are not yet invoked
     async deleteUser(userId) {
