@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { strategyChecker } from '@lib/utils';
-import { checkSession } from '@lib/middleware';
 import { adminPortalSSODefaults } from '@lib/env';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -121,4 +120,4 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default checkSession(handler);
+export default handler;
