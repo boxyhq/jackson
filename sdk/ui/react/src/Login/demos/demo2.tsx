@@ -12,15 +12,6 @@ const Demo2 = () => {
       onSubmit={async (ssoIdentifier) => {
         // initiate the SSO flow here
       }}
-      styles={{
-        input: {
-          '--input-outline-color': 'hsl(0 0% 20%/ 0.2)',
-        },
-        button: {
-          '--btn-hover-bg-color': 'hsl(0 0% 20%)',
-          '--btn-outline-color': 'hsl(219 14% 22%),',
-        },
-      }}
       inputLabel='Team domain *'
       placeholder='contoso@boxyhq.com'
     />

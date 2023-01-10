@@ -9,7 +9,6 @@
 }
 
 .input {
-  --input-outline-color: hsl(0 0% 20%/ 0.2);
   font-family: inherit;
   appearance: none;
   background-color: #fff;
@@ -25,13 +24,11 @@
 }
 
 .input:focus {
-  outline: 2px solid var(--input-outline-color);
+  outline: 2px solid hsl(0 0% 20%/ 0.2);
   outline-offset: 2px;
 }
 
 .button {
-  --btn-hover-bg-color: hsl(0 0% 20%);
-  --btn-outline-color: hsl(219 14% 22%);
   cursor: pointer;
   font-family: inherit;
   background-image: none;
@@ -50,12 +47,12 @@
 }
 
 .button:hover:not(:disabled) {
-  background-color: var(--btn-hover-bg-color);
+  background-color: hsl(0 0% 20%);
   color: hsl(0 0% 100%);
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--btn-outline-color);
+  outline: 2px solid hsl(219 14% 22%);
   outline-offset: 2px;
 }
 

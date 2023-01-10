@@ -61,8 +61,7 @@ const onSSOSubmit = async (ssoIdentifier: string) => {
 
 #### Styling
 
-If the classNames prop is passed in, we can override the default styling for each inner element. For example,
-In the below snippet, all the inner elements are styled by passing in the classNames for each inner one.
+If the classNames prop is passed in, we can override the default styling for each inner element. In case an inner element is omitted from the classNames prop, default styles will be set for the element. For example, In the below snippet, all the inner elements are styled by passing in the classNames for each inner one.
 
 ```tsx
 <SSOLogin
