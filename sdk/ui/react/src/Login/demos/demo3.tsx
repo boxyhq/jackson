@@ -1,5 +1,5 @@
 /**
- * @title Login Component unstyled
+ * @title Login Component without input display
  * @description Here we pass the ssoIdentifier directly instead of taking a user input.
  * @order 3
  */
@@ -13,7 +13,6 @@ const Demo3 = () => {
         // initiate the SSO flow here
       }}
       ssoIdentifier='some-identifier'
-      unstyled
       buttonText='SIGN IN WITH SSO'
     />
   );

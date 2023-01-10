@@ -1,10 +1,11 @@
 /**
- * @title Login Component with the supported props
+ * @title Login Component with custom styling
  * @description Refer the code below to see the passed props.
  * @order 1
  */
 
 import { Login } from '@boxyhq/react-ui';
+import './demo1.css';
 
 const Demo1 = () => {
   return (
@@ -19,14 +20,9 @@ const Demo1 = () => {
           '--btn-outline-color': 'hsl(219 14% 22%),',
         },
       }}
+      classNames={{ button: 'btn', input: 'inp' }}
       placeholder='contoso@boxyhq.com'
-      classNames={{
-        container: 'cls1',
-        input: 'input1',
-        label: 'label1',
-        button: 'button1',
-      }}
-      inputLabel='Team Domain'
+      inputLabel='Team Domain *'
       buttonText='Login with SSO'
       innerProps={{ input: { type: 'email' } }}
     />
