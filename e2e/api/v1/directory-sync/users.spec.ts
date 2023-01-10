@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryExpected, directoryPayload, getDirectory, createUser } from './utils';
+import { createDirectory, directoryPayload, getDirectory, createUser } from './request';
 import users from '@boxyhq/saml-jackson/test/dsync/data/users';
 
 test.use({
@@ -13,6 +13,7 @@ test.describe('Directory Sync / Users', () => {
   const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-1' };
 
   test.beforeAll(async ({ request }) => {
+    // Setup a directory
     await createDirectory(request, {
       ...directoryPayload,
       tenant,
@@ -46,7 +47,7 @@ test.describe('Directory Sync / Users', () => {
     });
   });
 
-  test('should be able to get a user from a directory by ID', async ({ request }) => {
+  test('should be able to get a user from a directory', async ({ request }) => {
     const directory = await getDirectory(request, { tenant, product });
     const createdUser = await createUser(request, directory, users[1]);
 

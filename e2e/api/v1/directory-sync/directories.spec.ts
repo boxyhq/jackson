@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryExpected, directoryPayload } from './utils';
+import { createDirectory, directoryExpected, directoryPayload } from './request';
 
 test.use({
   extraHTTPHeaders: {
