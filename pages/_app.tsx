@@ -11,7 +11,6 @@ import nextI18NextConfig from '../next-i18next.config.js';
 
 import { AccountLayout, SetupLinkLayout } from '@components/layouts';
 
-import '@boxyhq/react-ui/style.css';
 import '../styles/globals.css';
 
 const unauthenticatedRoutes = [

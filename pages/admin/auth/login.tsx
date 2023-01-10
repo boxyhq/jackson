@@ -106,7 +106,6 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
               classNames={{
                 container: 'mt-2',
                 button: 'btn-outline btn-block btn',
-                input: 'input-bordered input mb-5 mt-2 w-full rounded-md',
               }}
             />
           </div>
