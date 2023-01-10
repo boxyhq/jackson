@@ -21,6 +21,10 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
     tenant: '',
     product: '',
     service,
+    name: '',
+    description: '',
+    defaultRedirectUrl: '',
+    redirectUrl: '',
   });
 
   // Create a new setup link
@@ -117,7 +121,7 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
             </div>
             <div className='mb-6'>
               <label
-                htmlFor='tenant'
+                htmlFor='product'
                 className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300`}>
                 {t('product')}
               </label>
@@ -132,6 +136,76 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
                 required
               />
             </div>
+            {service === 'sso' && (
+              <>
+                <div className='mb-6'>
+                  <label
+                    htmlFor='name'
+                    className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300`}>
+                    {t('name')}
+                  </label>
+                  <input
+                    id='name'
+                    name='name'
+                    type='text'
+                    placeholder='MyApp'
+                    value={formObj['name']}
+                    onChange={handleChange}
+                    className='input-bordered input w-full'
+                  />
+                </div>
+                <div className='mb-6'>
+                  <label
+                    htmlFor='description'
+                    className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300`}>
+                    {t('description')}
+                  </label>
+                  <input
+                    id='description'
+                    name='description'
+                    type='text'
+                    placeholder='A short description not more than 100 characters'
+                    value={formObj['description']}
+                    onChange={handleChange}
+                    className='input-bordered input w-full'
+                  />
+                </div>
+                <div className='mb-6'>
+                  <label
+                    htmlFor='defaultRedirectUrl'
+                    className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300`}>
+                    {t('default_redirect_url')}
+                  </label>
+                  <input
+                    id='defaultRedirectUrl'
+                    name='defaultRedirectUrl'
+                    type='url'
+                    placeholder='http://localhost:3366/login/saml'
+                    value={formObj['defaultRedirectUrl']}
+                    onChange={handleChange}
+                    className='input-bordered input w-full'
+                    required
+                  />
+                </div>
+                <div className='mb-6'>
+                  <label
+                    htmlFor='redirectUrl'
+                    className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300`}>
+                    {t('allowed_redirect_url')}
+                  </label>
+                  <textarea
+                    id={'redirectUrl'}
+                    name='redirectUrl'
+                    placeholder={'Allowed redirect URLs (newline separated)'}
+                    value={formObj['redirectUrl']}
+                    required
+                    onChange={handleChange}
+                    className={`whitespace-pre} textarea-bordered textarea h-24 w-full`}
+                    rows={3}
+                  />
+                </div>
+              </>
+            )}
           </div>
           <div className='flex'>
             <ButtonPrimary loading={loading} disabled={buttonDisabled}>

@@ -11,14 +11,14 @@ export const getCommonFields = (isEditView?: boolean) => [
     label: 'Name',
     type: 'text',
     placeholder: 'MyApp',
-    attributes: { required: false, hideInSetupView: false },
+    attributes: { required: false, hideInSetupView: true },
   },
   {
     key: 'description',
     label: 'Description',
     type: 'text',
     placeholder: 'A short description not more than 100 characters',
-    attributes: { maxLength: 100, required: false, hideInSetupView: false },
+    attributes: { maxLength: 100, required: false, hideInSetupView: true },
   },
   {
     key: 'tenant',
@@ -53,14 +53,14 @@ export const getCommonFields = (isEditView?: boolean) => [
     label: 'Allowed redirect URLs (newline separated)',
     type: 'textarea',
     placeholder: 'http://localhost:3366',
-    attributes: { isArray: true, rows: 3, hideInSetupView: false },
+    attributes: { isArray: true, rows: 3, hideInSetupView: true },
   },
   {
     key: 'defaultRedirectUrl',
     label: 'Default redirect URL',
     type: 'url',
     placeholder: 'http://localhost:3366/login/saml',
-    attributes: { hideInSetupView: false },
+    attributes: { hideInSetupView: true },
   },
 
   {
