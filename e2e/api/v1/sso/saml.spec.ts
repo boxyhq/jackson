@@ -15,7 +15,7 @@ test.use({
   },
 });
 
-test.describe('SAML SSO Connection', () => {
+test.describe('POST /api/v1/connections', () => {
   const { tenant, product } = newConnection;
 
   test.afterEach(async ({ request }) => {
@@ -26,62 +26,6 @@ test.describe('SAML SSO Connection', () => {
     const response = await createConnection(request, newConnection);
 
     expect(response).toMatchObject(expectedConnection);
-  });
-
-  test('should be able to get SSO Connections', async ({ request }) => {
-    await createConnection(request, newConnection);
-
-    const response = await getConnection(request, { tenant, product });
-
-    expect(response).toMatchObject([expectedConnection]);
-  });
-
-  test('should be able to update a SSO Connection', async ({ request }) => {
-    await createConnection(request, newConnection);
-
-    const connection = await getConnection(request, { tenant, product });
-
-    // Update the connection
-    const response = await request.patch('/api/v1/connections', {
-      data: {
-        tenant,
-        product,
-        clientID: connection[0].clientID,
-        clientSecret: connection[0].clientSecret,
-        name: 'new connection name',
-        description: 'new connection description',
-        defaultRedirectUrl: 'http://localhost:3366/login/saml-new',
-        redirectUrl: 'http://localhost:3366/new/*',
-        metadataUrl: 'https://mocksaml.com/api/saml/metadata',
-      },
-    });
-
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(204);
-
-    // Fetch the connection again to check if the update was successful
-    const updatedConnection = await getConnection(request, { tenant, product });
-
-    expect(updatedConnection).toMatchObject([
-      {
-        name: 'new connection name',
-        description: 'new connection description',
-        defaultRedirectUrl: 'http://localhost:3366/login/saml-new',
-        redirectUrl: ['http://localhost:3366/new/*'],
-      },
-    ]);
-  });
-
-  test('should be able to delete a SSO Connection', async ({ request }) => {
-    await createConnection(request, newConnection);
-
-    // Delete the connection
-    await deleteConnection(request, { tenant, product });
-
-    // Fetch the connection again to check if the delete was successful
-    const connection = await getConnection(request, { tenant, product });
-
-    expect(connection).toMatchObject([]);
   });
 
   test('should not be able to create a SSO Connection if params are invalid', async ({ request }) => {
@@ -164,6 +108,99 @@ test.describe('SAML SSO Connection', () => {
         },
       },
     ]);
+  });
+});
+
+test.describe('GET /api/v1/connections', () => {
+  const { tenant, product } = newConnection;
+
+  test.afterEach(async ({ request }) => {
+    await deleteConnection(request, { tenant, product });
+  });
+
+  test('should be able to get SSO Connections', async ({ request }) => {
+    await createConnection(request, newConnection);
+
+    const response = await getConnection(request, { tenant, product });
+
+    expect(response).toMatchObject([expectedConnection]);
+  });
+
+  // TODO: Add test for invalid tenant and product
+});
+
+test.describe('PATCH /api/v1/connections', () => {
+  const { tenant, product } = newConnection;
+
+  test.afterEach(async ({ request }) => {
+    await deleteConnection(request, { tenant, product });
+  });
+
+  test('should be able to update a SSO Connection', async ({ request }) => {
+    await createConnection(request, newConnection);
+
+    const connection = await getConnection(request, { tenant, product });
+
+    // Update the connection
+    const response = await request.patch('/api/v1/connections', {
+      data: {
+        tenant,
+        product,
+        clientID: connection[0].clientID,
+        clientSecret: connection[0].clientSecret,
+        name: 'new connection name',
+        description: 'new connection description',
+        defaultRedirectUrl: 'http://localhost:3366/login/saml-new',
+        redirectUrl: 'http://localhost:3366/new/*',
+        metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+      },
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(204);
+
+    // Fetch the connection again to check if the update was successful
+    const updatedConnection = await getConnection(request, { tenant, product });
+
+    expect(updatedConnection).toMatchObject([
+      {
+        name: 'new connection name',
+        description: 'new connection description',
+        defaultRedirectUrl: 'http://localhost:3366/login/saml-new',
+        redirectUrl: ['http://localhost:3366/new/*'],
+      },
+    ]);
+  });
+
+  // TODO: Add test for invalid tenant and product
+  // TODO: Add test for invalid clientID and clientSecret
+});
+
+test.describe('DELETE /api/v1/connections', () => {
+  const { tenant, product } = newConnection;
+
+  test.afterEach(async ({ request }) => {
+    await deleteConnection(request, { tenant, product });
+  });
+
+  test('should be able to delete a SSO Connection', async ({ request }) => {
+    await createConnection(request, newConnection);
+
+    // Delete the connection
+    await deleteConnection(request, { tenant, product });
+
+    // Fetch the connection again to check if the delete was successful
+    const connection = await getConnection(request, { tenant, product });
+
+    expect(connection).toMatchObject([]);
+  });
+});
+
+test.describe('GET /api/v1/connections/exists', () => {
+  const { tenant, product } = newConnection;
+
+  test.afterEach(async ({ request }) => {
+    await deleteConnection(request, { tenant, product });
   });
 
   test('should be able to check if a connection exists', async ({ request }) => {
