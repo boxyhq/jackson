@@ -115,6 +115,11 @@ jobs:
         run: npx playwright install chromium
       - name: e2e tests
         run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
+      - name: [Temporary] Publish trace from playwright
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-trace
+          path: ./test-results/jwks-should-return-public-key-in-jwk-format-Desktop-Chrome-retry1/trace.zip
       - run: npm run test
         working-directory: ./npm
       - run: |
