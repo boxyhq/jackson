@@ -51,7 +51,8 @@ const Login = ({
       <label
         htmlFor={inputId}
         style={styles?.label}
-        className={cssClassAssembler(classNames?.label, defaultClasses.label)}>
+        className={cssClassAssembler(classNames?.label, defaultClasses.label)}
+        {...innerProps?.label}>
         {inputLabel}
       </label>
       <input
@@ -74,7 +75,8 @@ const Login = ({
   return (
     <div
       className={cssClassAssembler(classNames?.container, defaultClasses.container)}
-      style={styles?.container}>
+      style={styles?.container}
+      {...innerProps?.container}>
       {inputUI}
       <button
         disabled={disableButton}

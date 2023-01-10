@@ -1,4 +1,10 @@
-import type { ButtonHTMLAttributes, CSSProperties, InputHTMLAttributes } from 'react';
+import type {
+  ButtonHTMLAttributes,
+  CSSProperties,
+  HTMLAttributes,
+  InputHTMLAttributes,
+  LabelHTMLAttributes,
+} from 'react';
 
 export interface LoginProps {
   /**
@@ -42,5 +48,7 @@ export interface LoginProps {
   innerProps?: {
     input?: InputHTMLAttributes<HTMLInputElement>;
     button?: ButtonHTMLAttributes<HTMLButtonElement>;
+    label?: LabelHTMLAttributes<HTMLLabelElement>;
+    container?: HTMLAttributes<HTMLDivElement>;
   };
 }
