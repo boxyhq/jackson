@@ -16,7 +16,7 @@
     "dev": "cross-env JACKSON_API_KEYS=secret IDP_ENABLED=true next dev -p 5225",
     "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
     "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
-    "lint": "next lint",
+    "lint": "next lint && eslint -c .eslintrc.js --ext .ts ./",
     "mongo": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mongo DB_URL=mongodb://localhost:27017/jackson npm run dev",
     "pre-loaded": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=mem PRE_LOADED_CONNECTION='./uffizzi/saml_config' npm run dev",
     "pre-loaded-db": "cross-env JACKSON_API_KEYS=secret PRE_LOADED_CONNECTION='./uffizzi/saml_config' npm run dev",
@@ -29,19 +29,10 @@
     "start": "next start -p 5225",
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
     "redis": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=redis DB_TYPE=redis DB_URL=redis://localhost:6379/redis npm run dev",
-    "prepare": "husky install && cd npm && npm install --legacy-peer-deps",
+    "prepare": "cd npm && npm install --legacy-peer-deps",
     "pretest:e2e": "env-cmd -f .env.test.local ts-node --log-error e2e/seedAuthDb.ts",
     "test:e2e": "env-cmd -f .env.test.local playwright test",
     "test": "cd npm && npm run test"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,ts}": "eslint --cache --fix",
-    "*.{js,ts,css,md}": "prettier --write"
   },
   "dependencies": {
     "@boxyhq/saml-jackson": "file:./npm",
@@ -92,8 +83,6 @@
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",
     "eslint-config-prettier": "8.5.0",
-    "husky": "8.0.3",
-    "lint-staged": "13.1.0",
     "postcss": "8.4.21",
     "prettier": "2.8.2",
     "prettier-plugin-tailwindcss": "0.2.1",
