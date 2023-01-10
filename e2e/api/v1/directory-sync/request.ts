@@ -27,11 +27,16 @@ export const directoryExpected = {
 };
 
 export const createDirectory = async (request: APIRequestContext, payload: typeof directoryPayload) => {
-  return await request.post('/api/v1/directory-sync', {
+  const response = await request.post('/api/v1/directory-sync', {
     data: {
       ...payload,
     },
   });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(201);
+
+  return await response.json();
 };
 
 export const getDirectory = async (

@@ -15,13 +15,14 @@ test.use({
   },
 });
 
-test.describe('POST /api/v1/connections', () => {
+test.afterEach(async ({ request }) => {
   const { tenant, product } = newConnection;
 
-  test.afterEach(async ({ request }) => {
-    await deleteConnection(request, { tenant, product });
-  });
+  // Delete the connection after each test
+  await deleteConnection(request, { tenant, product });
+});
 
+test.describe('POST /api/v1/connections', () => {
   test('should be able to create a SSO Connection', async ({ request }) => {
     const response = await createConnection(request, newConnection);
 
@@ -81,42 +82,34 @@ test.describe('POST /api/v1/connections', () => {
     }
   });
 
-  test('should be able to create more than one SSO Connection for same tenant and product', async ({
-    request,
-  }) => {
+  test('should be able to create multiple SSO Connections for same tenant & product', async ({ request }) => {
+    const { tenant, product } = newConnection;
+
     // Create the first connection
     await createConnection(request, newConnection);
 
-    // // Create the second connection
-    await request.post('/api/v1/connections', {
-      data: {
-        ...newConnection,
-        rawMetadata: getRawMetadata('https://saml.example.com/entityid-1'),
-      },
+    // Create the second connection
+    await createConnection(request, {
+      ...newConnection,
+      rawMetadata: getRawMetadata('https://saml.example.com/entityid-1'),
     });
 
     // Fetch the connections
     const response = await getConnection(request, { tenant, product });
 
     expect(response).toHaveLength(2);
-    expect(response).toMatchObject([
-      expectedConnection,
-      {
-        ...expectedConnection,
-        idpMetadata: {
-          entityID: 'https://saml.example.com/entityid-1',
-        },
+    expect(response[0]).toMatchObject(expectedConnection);
+    expect(response[1]).toMatchObject({
+      ...expectedConnection,
+      idpMetadata: {
+        entityID: 'https://saml.example.com/entityid-1',
       },
-    ]);
+    });
   });
 });
 
 test.describe('GET /api/v1/connections', () => {
   const { tenant, product } = newConnection;
-
-  test.afterEach(async ({ request }) => {
-    await deleteConnection(request, { tenant, product });
-  });
 
   test('should be able to get SSO Connections', async ({ request }) => {
     await createConnection(request, newConnection);
@@ -131,10 +124,6 @@ test.describe('GET /api/v1/connections', () => {
 
 test.describe('PATCH /api/v1/connections', () => {
   const { tenant, product } = newConnection;
-
-  test.afterEach(async ({ request }) => {
-    await deleteConnection(request, { tenant, product });
-  });
 
   test('should be able to update a SSO Connection', async ({ request }) => {
     await createConnection(request, newConnection);
@@ -179,10 +168,6 @@ test.describe('PATCH /api/v1/connections', () => {
 test.describe('DELETE /api/v1/connections', () => {
   const { tenant, product } = newConnection;
 
-  test.afterEach(async ({ request }) => {
-    await deleteConnection(request, { tenant, product });
-  });
-
   test('should be able to delete a SSO Connection', async ({ request }) => {
     await createConnection(request, newConnection);
 
@@ -198,10 +183,6 @@ test.describe('DELETE /api/v1/connections', () => {
 
 test.describe('GET /api/v1/connections/exists', () => {
   const { tenant, product } = newConnection;
-
-  test.afterEach(async ({ request }) => {
-    await deleteConnection(request, { tenant, product });
-  });
 
   test('should be able to check if a connection exists', async ({ request }) => {
     await createConnection(request, newConnection);

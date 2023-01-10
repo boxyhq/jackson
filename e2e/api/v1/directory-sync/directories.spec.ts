@@ -8,46 +8,14 @@ test.use({
   },
 });
 
-test.describe('Directory Sync / Directories', () => {
-  test.beforeAll(async ({ request }) => {
-    const response = await createDirectory(request, directoryPayload);
+test.beforeAll(async ({ request }) => {
+  const directory = await createDirectory(request, directoryPayload);
 
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(201);
-    expect(await response.json()).toMatchObject({ data: directoryExpected });
-  });
+  expect(directory).toMatchObject({ data: directoryExpected });
+});
 
-  test('should be able to get a Directory Connection by tenant and product', async ({ request }) => {
-    const response = await request.get('/api/v1/directory-sync', {
-      params: {
-        tenant: directoryPayload.tenant,
-        product: directoryPayload.product,
-      },
-    });
-
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(await response.json()).toMatchObject({ data: directoryExpected });
-  });
-
-  test('should be able to get a Directory Connection by ID', async ({ request }) => {
-    let response = await request.get('/api/v1/directory-sync', {
-      params: {
-        tenant: directoryPayload.tenant,
-        product: directoryPayload.product,
-      },
-    });
-
-    const directory = await response.json();
-
-    response = await request.get(`/api/v1/directory-sync/${directory.data.id}`);
-
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(await response.json()).toMatchObject({ data: directoryExpected });
-  });
-
-  test('should not be able to create a Directory Connection if params are invalid', async ({ request }) => {
+test.describe('POST /api/v1/directory-sync', () => {
+  test('should not be able to create a directory if params are invalid', async ({ request }) => {
     const testCases = [
       {
         data: {
@@ -66,7 +34,9 @@ test.describe('Directory Sync / Directories', () => {
     ];
 
     for (const testCase of testCases) {
-      const response = await createDirectory(request, testCase.data);
+      const response = await request.post('/api/v1/directory-sync', {
+        data: testCase.data,
+      });
 
       expect(response.ok()).toBe(false);
       expect(response.status()).toBe(400);
@@ -74,5 +44,39 @@ test.describe('Directory Sync / Directories', () => {
         error: { message: testCase.expectedError },
       });
     }
+  });
+});
+
+test.describe('GET /api/v1/directory-sync', () => {
+  const { tenant, product } = directoryPayload;
+
+  test('should be able to get a directory by tenant and product', async ({ request }) => {
+    const response = await request.get('/api/v1/directory-sync', {
+      params: {
+        tenant,
+        product,
+      },
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject({ data: directoryExpected });
+  });
+
+  test('should be able to get a directory by ID', async ({ request }) => {
+    let response = await request.get('/api/v1/directory-sync', {
+      params: {
+        tenant,
+        product,
+      },
+    });
+
+    const { data: directory } = await response.json();
+
+    response = await request.get(`/api/v1/directory-sync/${directory.id}`);
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject({ data: directoryExpected });
   });
 });
