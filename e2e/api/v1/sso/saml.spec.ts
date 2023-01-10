@@ -88,50 +88,36 @@ test.describe('SAML SSO Connection', () => {
     const testCases = [
       {
         data: {
+          ...newConnection,
           tenant: null,
-          product: 'saml-jackson',
-          defaultRedirectUrl: 'http://localhost:3366/login/saml',
-          redirectUrl: ['http://localhost:3366/*'],
-          metadataUrl: 'https://mocksaml.com/api/saml/metadata',
         },
         expectedError: 'Please provide tenant',
       },
       {
         data: {
-          tenant: 'boxyhq',
+          ...newConnection,
           product: null,
-          defaultRedirectUrl: 'http://localhost:3366/login/saml',
-          redirectUrl: ['http://localhost:3366/*'],
-          metadataUrl: 'https://mocksaml.com/api/saml/metadata',
         },
         expectedError: 'Please provide product',
       },
       {
         data: {
-          tenant: 'boxyhq',
-          product: 'saml-jackson',
+          ...newConnection,
           defaultRedirectUrl: null,
-          redirectUrl: ['http://localhost:3366/*'],
-          metadataUrl: 'https://mocksaml.com/api/saml/metadata',
         },
         expectedError: 'Please provide a defaultRedirectUrl',
       },
       {
         data: {
-          tenant: 'boxyhq',
-          product: 'saml-jackson',
-          defaultRedirectUrl: 'http://localhost:3366/login/saml',
+          ...newConnection,
           redirectUrl: null,
-          metadataUrl: 'https://mocksaml.com/api/saml/metadata',
         },
         expectedError: 'Please provide redirectUrl',
       },
       {
         data: {
-          tenant: 'boxyhq',
-          product: 'saml-jackson',
-          defaultRedirectUrl: 'http://localhost:3366/login/saml',
-          redirectUrl: ['http://localhost:3366/*'],
+          ...newConnection,
+          rawMetadata: null,
           metadataUrl: null,
         },
         expectedError: 'Please provide rawMetadata or encodedRawMetadata or metadataUrl',
