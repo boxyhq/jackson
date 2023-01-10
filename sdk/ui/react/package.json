@@ -10,8 +10,7 @@
     "enterprise-features"
   ],
   "files": [
-    "dist",
-    "dist/style.css"
+    "dist"
   ],
   "homepage": "https://github.com/boxyhq/jackson/tree/main/sdk/ui/react#readme",
   "bugs": {
@@ -29,10 +28,6 @@
     ".": {
       "import": "./dist/@boxyhq/react-ui.js",
       "require": "./dist/@boxyhq/react-ui.umd.cjs"
-    },
-    "./style.css": {
-      "import": "./dist/style.css",
-      "require": "./dist/style.css"
     }
   },
   "scripts": {
