@@ -26,7 +26,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Publish NPM
-        # if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
+        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
           PKG_VERSION=${{ inputs.npmversion }}
