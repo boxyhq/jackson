@@ -140,7 +140,7 @@ const ConnectionList = ({
                             color='primary'
                             variant='outline'
                             size='md'
-                            className='align-super uppercase'
+                            className='ml-1 uppercase'
                             aria-label='is an sso connection for the admin portal'>
                             System
                           </Badge>
