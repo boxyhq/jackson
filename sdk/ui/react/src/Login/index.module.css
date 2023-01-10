@@ -42,7 +42,14 @@
   color: currentColor;
 }
 
-.button:hover {
+.button:disabled {
+  background: hsl(219 14% 28% / 0.2);
+  color: hsl(0 0% 20% / 0.2);
+  border-color: currentColor;
+  pointer-events: none;
+}
+
+.button:hover:not(:disabled) {
   background-color: var(--btn-hover-bg-color);
   color: hsl(0 0% 100%);
 }
