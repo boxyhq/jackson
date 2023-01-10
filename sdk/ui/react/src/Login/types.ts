@@ -1,10 +1,14 @@
 import type { ButtonHTMLAttributes, CSSProperties, InputHTMLAttributes } from 'react';
 
-interface ContainerCSSProperties extends CSSProperties {
-  '--input-outline-color'?: string;
+interface ButtonCSSProperties extends CSSProperties {
   '--btn-hover-bg-color'?: string;
   '--btn-outline-color'?: string;
 }
+
+interface InputCSSProperties extends CSSProperties {
+  '--input-outline-color'?: string;
+}
+
 export interface LoginProps {
   /**
    * Could be email, tenant or anything that can help to resolve the SSO connection. Use this if you want to set the value directly instead of taking a user input
@@ -35,9 +39,9 @@ export interface LoginProps {
    * Styles for each inner component that Login is made up of.
    */
   styles?: {
-    container?: ContainerCSSProperties;
-    button?: CSSProperties;
-    input?: CSSProperties;
+    container?: CSSProperties;
+    button?: ButtonCSSProperties;
+    input?: InputCSSProperties;
     label?: CSSProperties;
   };
   /**

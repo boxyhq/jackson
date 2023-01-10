@@ -1,7 +1,4 @@
 .container {
-  --input-outline-color: hsl(0 0% 20%/ 0.2);
-  --btn-hover-bg-color: hsl(0 0% 20%);
-  --btn-outline-color: hsl(219 14% 22%);
   display: flex;
   flex-direction: column;
   max-width: 28rem;
@@ -12,6 +9,7 @@
 }
 
 .input {
+  --input-outline-color: hsl(0 0% 20%/ 0.2);
   font-family: inherit;
   appearance: none;
   background-color: #fff;
@@ -32,6 +30,8 @@
 }
 
 .button {
+  --btn-hover-bg-color: hsl(0 0% 20%);
+  --btn-outline-color: hsl(219 14% 22%);
   cursor: pointer;
   font-family: inherit;
   background-image: none;
