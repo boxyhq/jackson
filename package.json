@@ -94,7 +94,7 @@
     "eslint-config-prettier": "8.5.0",
     "husky": "8.0.3",
     "lint-staged": "13.1.0",
-    "postcss": "8.4.20",
+    "postcss": "8.4.21",
     "prettier": "2.8.2",
     "prettier-plugin-tailwindcss": "0.2.1",
     "swagger-jsdoc": "6.2.7",
