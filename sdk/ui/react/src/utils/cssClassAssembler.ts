@@ -1,4 +1,4 @@
-const cssClassAssembler = (ignoreDefaultStyles = false, customClasses = '', defaultClasses?: string) =>
-  ignoreDefaultStyles ? customClasses : `${defaultClasses} ${customClasses}`;
+const cssClassAssembler = (customClasses = '', defaultClasses: string) =>
+  customClasses ? customClasses : defaultClasses;
 
 export default cssClassAssembler;

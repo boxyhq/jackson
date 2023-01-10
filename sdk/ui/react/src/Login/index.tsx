@@ -2,7 +2,7 @@ import { useState, type ChangeEventHandler, type FormEvent } from 'react';
 import type { LoginProps } from './types';
 import useId from '../hooks/useId';
 import cssClassAssembler from '../utils/cssClassAssembler';
-import defaultStyles from './index.module.css';
+import defaultClasses from './index.module.css';
 
 const COMPONENT = 'sso';
 
@@ -15,7 +15,6 @@ const Login = ({
   styles,
   classNames,
   innerProps,
-  unstyled = false,
 }: LoginProps) => {
   // Generate stable html id attributes for input/span elements
   const inputId = useId(COMPONENT, 'input');
@@ -52,7 +51,7 @@ const Login = ({
       <label
         htmlFor={inputId}
         style={styles?.label}
-        className={cssClassAssembler(unstyled, classNames?.label, defaultStyles.label)}>
+        className={cssClassAssembler(classNames?.label, defaultClasses.label)}>
         {inputLabel}
       </label>
       <input
@@ -61,7 +60,7 @@ const Login = ({
         placeholder={placeholder}
         onChange={handleChange}
         style={styles?.input}
-        className={cssClassAssembler(unstyled, classNames?.input, defaultStyles.input)}
+        className={cssClassAssembler(classNames?.input, defaultClasses.input)}
         aria-invalid={isError}
         aria-describedby={errorSpanId}
         {...innerProps?.input}
@@ -74,7 +73,7 @@ const Login = ({
 
   return (
     <div
-      className={cssClassAssembler(unstyled, classNames?.container, defaultStyles.container)}
+      className={cssClassAssembler(classNames?.container, defaultClasses.container)}
       style={styles?.container}>
       {inputUI}
       <button
@@ -82,7 +81,7 @@ const Login = ({
         type='button'
         onClick={onButtonClick}
         style={styles?.button}
-        className={cssClassAssembler(unstyled, classNames?.button, defaultStyles.button)}
+        className={cssClassAssembler(classNames?.button, defaultClasses.button)}
         {...innerProps?.button}>
         {buttonText}
       </button>

@@ -48,8 +48,4 @@ export interface LoginProps {
     input?: InputHTMLAttributes<HTMLInputElement>;
     button?: ButtonHTMLAttributes<HTMLButtonElement>;
   };
-  /**
-   * Boolean that disables all the default styling making it easier to style from scratch
-   */
-  unstyled?: boolean;
 }
