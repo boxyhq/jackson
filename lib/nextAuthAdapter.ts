@@ -44,15 +44,13 @@ export default function Adapter() {
         return null;
       }
       const email = user.id;
-      return email
-        ? ({
-            id: email,
-            name: email.split('@')[0],
-            email,
-            role: 'admin',
-            emailVerified: new Date(),
-          } as AdapterUser)
-        : null;
+      return {
+        id: email,
+        name: email.split('@')[0],
+        email,
+        role: 'admin',
+        emailVerified: new Date(),
+      } as AdapterUser;
     },
     // will be required in a future release, but are not yet invoked
     async deleteUser(userId) {
