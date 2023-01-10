@@ -15,6 +15,7 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
 import type { ApiError, ApiSuccess } from 'types';
+import { Badge } from 'react-daisyui';
 
 const ConnectionList = ({
   setupLinkToken,
@@ -33,7 +34,7 @@ const ConnectionList = ({
   const getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
-    ? `/api/admin/settings/sso?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`
+    ? `/api/admin/connections?isSystemSSO`
     : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`
@@ -41,11 +42,10 @@ const ConnectionList = ({
     ? `/admin/settings/sso-connection/new`
     : '/admin/sso-connection/new';
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<(SAMLSSORecord | OIDCSSORecord)[]>, ApiError>(
-    getConnectionsUrl,
-    fetcher,
-    { revalidateOnFocus: false }
-  );
+  const { data, error, isLoading } = useSWR<
+    ApiSuccess<((SAMLSSORecord | OIDCSSORecord) & { isSystemSSO?: boolean })[]>,
+    ApiError
+  >(getConnectionsUrl, fetcher, { revalidateOnFocus: false });
 
   if (isLoading) {
     return <Loading />;
@@ -125,7 +125,7 @@ const ConnectionList = ({
                 {connections.map((connection) => {
                   const connectionIsSAML = 'idpMetadata' in connection;
                   const connectionIsOIDC = 'oidcProvider' in connection;
-
+                  const isSystemSSO = connection?.isSystemSSO;
                   return (
                     <tr
                       key={connection.clientID}
@@ -135,6 +135,16 @@ const ConnectionList = ({
                           (connectionIsSAML
                             ? connection.idpMetadata?.provider
                             : connection.oidcProvider?.provider)}
+                        {isSystemSSO && (
+                          <Badge
+                            color='primary'
+                            variant='outline'
+                            size='md'
+                            className='align-super uppercase'
+                            aria-label='is an sso connection for the admin portal'>
+                            System
+                          </Badge>
+                        )}
                       </td>
                       {displayTenantProduct && (
                         <>

@@ -105,7 +105,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
         setupLinkToken
           ? `/api/setup/${setupLinkToken}/connections`
           : isSettingsView
-          ? `/api/admin/settings/sso`
+          ? `/api/admin/connections?isSystemSSO`
           : '/api/admin/connections'
       );
       router.replace(

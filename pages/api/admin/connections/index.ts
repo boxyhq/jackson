@@ -24,16 +24,26 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Get all connections
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { adminController } = await jackson();
+  const { adminController, connectionAPIController } = await jackson();
 
-  const { pageOffset, pageLimit } = req.query as {
+  const { pageOffset, pageLimit, isSystemSSO } = req.query as {
     pageOffset: string;
     pageLimit: string;
+    isSystemSSO?: string; // if present will be '' else undefined
   };
 
-  const connections = (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0))).filter(
-    (conn) => conn.tenant !== adminPortalSSODefaults.tenant && conn.product !== adminPortalSSODefaults.product
-  );
+  const { tenant: adminPortalSSOTenant, product: adminPortalSSOProduct } = adminPortalSSODefaults;
+
+  const connections =
+    isSystemSSO === undefined
+      ? (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0)))?.map((conn) => ({
+          ...conn,
+          isSystemSSO: adminPortalSSOTenant === conn.tenant && adminPortalSSOProduct === conn.product,
+        }))
+      : await connectionAPIController.getConnections({
+          tenant: adminPortalSSOTenant,
+          product: adminPortalSSOProduct,
+        });
 
   return res.json({ data: connections });
 };
