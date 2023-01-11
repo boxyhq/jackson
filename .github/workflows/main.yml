@@ -113,13 +113,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - run: npm install
+      - run: npm run lint
       - run: npm run build
+      - run: npm run test
+        working-directory: ./npm
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
       - name: e2e tests
         run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
-      - run: npm run test
-        working-directory: ./npm
       - id: version
         run: |
           npm install --legacy-peer-deps
