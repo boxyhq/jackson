@@ -1,12 +1,6 @@
 import { test, expect } from '@playwright/test';
-import {
-  createDirectory,
-  directoryPayload,
-  getDirectory,
-  deleteUser,
-  getUser,
-  createUser,
-} from '../../v1/directory-sync/request';
+import { createDirectory, directoryPayload, getDirectory } from '../../v1/directory-sync/request';
+import { deleteUser, getUser, createUser } from './request';
 import users from '@boxyhq/saml-jackson/test/dsync/data/users';
 
 test.use({
@@ -29,14 +23,13 @@ test.beforeAll(async ({ request }) => {
 
 test.afterAll(async ({ request }) => {
   const directory = await getDirectory(request, { tenant, product });
-
   const firstUser = await getUser(request, directory, users[0].userName);
+  const secondUser = await getUser(request, directory, users[1].userName);
 
   if (firstUser.totalResults === 1) {
     await deleteUser(request, directory, firstUser.Resources[0].id);
   }
 
-  const secondUser = await getUser(request, directory, users[1].userName);
   await deleteUser(request, directory, secondUser.Resources[0].id);
 });
 
