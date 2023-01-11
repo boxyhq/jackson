@@ -29,8 +29,15 @@ test.beforeAll(async ({ request }) => {
 
 test.afterAll(async ({ request }) => {
   const directory = await getDirectory(request, { tenant, product });
-  const user = await getUser(request, directory, users[0].userName);
-  await deleteUser(request, directory, user.Resources[0].id);
+
+  const firstUser = await getUser(request, directory, users[0].userName);
+
+  if (firstUser.totalResults === 1) {
+    await deleteUser(request, directory, firstUser.Resources[0].id);
+  }
+
+  const secondUser = await getUser(request, directory, users[1].userName);
+  await deleteUser(request, directory, secondUser.Resources[0].id);
 });
 
 test.describe('SCIM /api/scim/v2.0', () => {
@@ -97,6 +104,35 @@ test.describe('SCIM /api/scim/v2.0', () => {
     });
   });
 
+  // GET /api/scim/v2.0/[directoryId]/Users
+  test('should be able to get all users', async ({ request }) => {
+    const directory = await getDirectory(request, { tenant, product });
+
+    // Create a second user
+    await createUser(request, directory, users[1]);
+
+    const response = await request.get(`${directory.scim.path}/Users`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+    });
+
+    const directoryUsers = await response.json();
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(directoryUsers.totalResults).toBe(2);
+    expect(directoryUsers.Resources).toHaveLength(2);
+    expect(directoryUsers.Resources[0]).toMatchObject({
+      ...users[1],
+      id: expect.any(String),
+    });
+    expect(directoryUsers.Resources[1]).toMatchObject({
+      ...users[0],
+      id: expect.any(String),
+    });
+  });
+
   // PATCH /api/scim/v2.0/[directoryId]/Users/[userId]
   test('should be able to update a user using PATCH operation', async ({ request }) => {
     const directory = await getDirectory(request, { tenant, product });
@@ -153,5 +189,20 @@ test.describe('SCIM /api/scim/v2.0', () => {
       active: true,
       name: { givenName: 'Jackson2', familyName: 'M2' },
     });
+  });
+
+  // DELETE /api/scim/v2.0/[directoryId]/Users/[userId]
+  test('should be able to delete a user', async ({ request }) => {
+    const directory = await getDirectory(request, { tenant, product });
+    const user = await getUser(request, directory, users[0].userName);
+
+    const response = await request.delete(`${directory.scim.path}/Users/${user.Resources[0].id}`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
   });
 });
