@@ -25,7 +25,7 @@ export const saveConnection = async ({
     return;
   }
   const encodedRawMetadata = btoa(rawMetadata || '');
-  const redirectUrlList = redirectUrl.split(/\r\n|\r|\n/);
+  const redirectUrlList = redirectUrl?.split(/\r\n|\r|\n/);
 
   const res = await fetch(
     setupLinkToken ? `/api/setup/${setupLinkToken}/sso-connection` : '/api/admin/connections',
@@ -40,7 +40,7 @@ export const saveConnection = async ({
         oidcDiscoveryUrl: connectionIsOIDC ? oidcDiscoveryUrl : undefined,
         oidcClientId: connectionIsOIDC ? oidcClientId : undefined,
         oidcClientSecret: connectionIsOIDC ? oidcClientSecret : undefined,
-        redirectUrl: JSON.stringify(redirectUrlList),
+        redirectUrl: redirectUrl && redirectUrlList ? JSON.stringify(redirectUrlList) : undefined,
         metadataUrl: connectionIsSAML ? metadataUrl : undefined,
       }),
     }
