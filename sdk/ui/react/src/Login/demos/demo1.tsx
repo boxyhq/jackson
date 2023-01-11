@@ -1,6 +1,6 @@
 /**
  * @title Login Component with custom styling
- * @description Refer the code below to see the passed props.
+ * @description Refer the code below to see the passed props. Also supported is the passing of style attribute for each inner element (Note that inline style will override other styles).
  * @order 1
  */
 

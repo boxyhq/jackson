@@ -1,6 +1,6 @@
 /**
  * @title Login Component with failing onSubmit
- * @description If error object is returned with the error message, same would be displayed inline.
+ * @description If error object is returned with the error message, the message would be displayed inline.
  * @order 4
  */
 
