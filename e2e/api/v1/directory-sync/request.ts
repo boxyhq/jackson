@@ -79,6 +79,35 @@ export const createUser = async (request: APIRequestContext, directory: Director
   return await response.json();
 };
 
+export const getUser = async (request: APIRequestContext, directory: Directory, userName: string) => {
+  const response = await request.get(`${directory.scim.path}/Users`, {
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+    params: {
+      filter: `userName eq "${userName}"`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
+
+export const deleteUser = async (request: APIRequestContext, directory: Directory, userId: string) => {
+  const response = await request.delete(`${directory.scim.path}/Users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
+
 export const createGroup = async (request: APIRequestContext, directory: Directory, group: any) => {
   const response = await request.post(`${directory.scim.path}/Groups`, {
     data: group,
