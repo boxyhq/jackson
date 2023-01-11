@@ -13,3 +13,7 @@ updates:
     directory: '/npm'
     schedule:
       interval: 'weekly'
+  - package-ecosystem: 'react-sdk'
+    directory: '/sdk/ui/react'
+    schedule:
+      interval: 'weekly'

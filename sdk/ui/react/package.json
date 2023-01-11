@@ -1,0 +1,61 @@
+{
+  "name": "@boxyhq/react-ui",
+  "description": "React UI components from BoxyHQ",
+  "version": "do-not-change",
+  "type": "module",
+  "keywords": [
+    "react",
+    "boxyhq",
+    "sso",
+    "enterprise-features"
+  ],
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/boxyhq/jackson/tree/main/sdk/ui/react#readme",
+  "bugs": {
+    "url": "https://github.com/boxyhq/jackson/issues?q=is%3Aopen+is%3Aissue+label%3Asdk"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boxyhq/jackson",
+    "directory": "sdk/ui/react"
+  },
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "dev": "SHOW_ALL_COMPONENT_DEMOS=true vite serve docs",
+    "build-docs": "rimraf docs/dist && vite build docs && serve -s docs/dist",
+    "ssr-docs": "rimraf docs/dist && vite-pages ssr docs && serve docs/dist",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@mdx-js/react": "2.2.1",
+    "@rollup/plugin-typescript": "10.0.1",
+    "@types/node": "18.11.18",
+    "@types/react": "18.0.26",
+    "@types/react-router-dom": "5.3.3",
+    "@vitejs/plugin-react": "3.0.0",
+    "autoprefixer": "10.4.13",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "6.6.1",
+    "rimraf": "3.0.2",
+    "serve": "14.1.2",
+    "vite": "4.0.4",
+    "vite-pages-theme-doc": "4.0.1",
+    "vite-plugin-css-injected-by-js": "2.2.0",
+    "vite-plugin-react-pages": "4.0.2"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  }
+}
