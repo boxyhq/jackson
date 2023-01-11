@@ -25,12 +25,6 @@ test.afterAll(async ({ request }) => {
   const directory = await getDirectory(request, { tenant, product });
   const firstUser = await getUser(request, directory, users[0].userName);
   const secondUser = await getUser(request, directory, users[1].userName);
-
-  if (firstUser.totalResults === 1) {
-    await deleteUser(request, directory, firstUser.Resources[0].id);
-  }
-
-  await deleteUser(request, directory, secondUser.Resources[0].id);
 });
 
 test.describe('SCIM /api/scim/v2.0', () => {
@@ -187,9 +181,10 @@ test.describe('SCIM /api/scim/v2.0', () => {
   // DELETE /api/scim/v2.0/[directoryId]/Users/[userId]
   test('should be able to delete a user', async ({ request }) => {
     const directory = await getDirectory(request, { tenant, product });
-    const user = await getUser(request, directory, users[0].userName);
+    const firstUser = await getUser(request, directory, users[0].userName);
+    const secondUser = await getUser(request, directory, users[1].userName);
 
-    const response = await request.delete(`${directory.scim.path}/Users/${user.Resources[0].id}`, {
+    let response = await request.delete(`${directory.scim.path}/Users/${firstUser.Resources[0].id}`, {
       headers: {
         Authorization: `Bearer ${directory.scim.secret}`,
       },
@@ -197,5 +192,25 @@ test.describe('SCIM /api/scim/v2.0', () => {
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
+
+    response = await request.delete(`${directory.scim.path}/Users/${secondUser.Resources[0].id}`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+
+    response = await request.get(`${directory.scim.path}/Users`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+    });
+
+    const directoryUsers = await response.json();
+
+    expect(directoryUsers.totalResults).toBe(0);
+    expect(directoryUsers.Resources).toHaveLength(0);
   });
 });

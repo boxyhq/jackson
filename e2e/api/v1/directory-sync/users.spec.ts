@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryPayload, getDirectory, createUser } from './request';
+import { createDirectory, directoryPayload, getDirectory } from './request';
 import users from '@boxyhq/saml-jackson/test/dsync/data/users';
+import { createUser } from '../../scim/v2.0/request';
 
 test.use({
   extraHTTPHeaders: {

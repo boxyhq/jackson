@@ -13,8 +13,8 @@ const newDirectoryPayload = {
   tenant: 'api-boxyhq-4',
 };
 
-const { tenant, product } = newDirectoryPayload;
+// const { tenant, product } = newDirectoryPayload;
 
-test.beforeAll(async ({ request }) => {
-  await createDirectory(request, newDirectoryPayload);
-});
+// test.beforeAll(async ({ request }) => {
+//   await createDirectory(request, newDirectoryPayload);
+// });
