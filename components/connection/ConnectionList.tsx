@@ -184,20 +184,22 @@ const ConnectionList = ({
               </tbody>
             </table>
           </div>
-          <Pagination
-            itemsCount={connections.length}
-            offset={paginate.offset}
-            onPrevClick={() => {
-              setPaginate({
-                offset: paginate.offset - pageLimit,
-              });
-            }}
-            onNextClick={() => {
-              setPaginate({
-                offset: paginate.offset + pageLimit,
-              });
-            }}
-          />
+          {!isSettingsView && (
+            <Pagination
+              itemsCount={connections.length}
+              offset={paginate.offset}
+              onPrevClick={() => {
+                setPaginate({
+                  offset: paginate.offset - pageLimit,
+                });
+              }}
+              onNextClick={() => {
+                setPaginate({
+                  offset: paginate.offset + pageLimit,
+                });
+              }}
+            />
+          )}
         </>
       )}
     </div>
