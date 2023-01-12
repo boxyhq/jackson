@@ -7,7 +7,7 @@ let directorySync: IDirectorySyncController;
 export const directoryPayload = {
   tenant: 'boxyhq',
   product: 'saml-jackson',
-  name: 'Directory name',
+  name: 'Directory 1',
   type: 'okta-scim-v2' as DirectoryType,
   webhook_url: 'https://example.com',
   webhook_secret: 'secret',
@@ -38,6 +38,16 @@ tap.before(async () => {
 });
 
 tap.teardown(async () => {
+  const { data: directoriesFetched } = await directorySync.directories.getByTenantAndProduct(tenant, product);
+
+  if (directoriesFetched === null) {
+    return;
+  }
+
+  // Delete the directory
+  await directorySync.directories.delete(directoriesFetched[0].id);
+  await directorySync.directories.delete(directoriesFetched[1].id);
+
   process.exit(0);
 });
 
@@ -174,17 +184,47 @@ tap.test('Directories / ', async (t) => {
     }
   );
 
-  t.test('should be able to delete a directory', async (t) => {
-    await directorySync.directories.delete(directory.id);
-
-    const { data } = await directorySync.directories.get(directory.id);
+  t.test('should be able to create more than one directory for a tenant and product', async (t) => {
+    // Create another directory
+    await directorySync.directories.create({
+      ...directoryPayload,
+      name: 'Directory 2',
+    });
 
     const { data: directoriesFetched } = await directorySync.directories.getByTenantAndProduct(
       tenant,
       product
     );
 
-    t.notOk(data);
+    t.ok(directoriesFetched);
+    t.match(directoriesFetched?.length, 2);
+
+    t.end();
+  });
+
+  t.test('should be able to delete a directory', async (t) => {
+    const tenant = 'tenant-2';
+    const product = 'product-2';
+
+    const { data: directory } = await directorySync.directories.create({
+      ...directoryPayload,
+      name: 'Directory 3',
+      tenant,
+      product,
+    });
+
+    if (!directory) {
+      t.fail('Directory not created');
+      return t.end();
+    }
+
+    await directorySync.directories.delete(directory.id);
+
+    const { data: directoriesFetched } = await directorySync.directories.getByTenantAndProduct(
+      tenant,
+      product
+    );
+
     t.match(directoriesFetched?.length, 0);
 
     t.end();
