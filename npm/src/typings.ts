@@ -562,7 +562,7 @@ export interface DirectoryConfig {
   getByTenantAndProduct(
     tenant: string,
     product: string
-  ): Promise<{ data: Directory | null; error: ApiError | null }>;
+  ): Promise<{ data: Directory[] | null; error: ApiError | null }>;
   list({
     pageOffset,
     pageLimit,
