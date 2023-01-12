@@ -5,7 +5,7 @@ import users from '@boxyhq/saml-jackson/test/dsync/data/users';
 type User = (typeof users)[0];
 
 export const createUser = async (request: APIRequestContext, directory: Directory, user: User) => {
-  const response = await request.post(`${directory.scim.path}/Users`, {
+  const response = await request.post(`${directory.scim.endpoint}/Users`, {
     data: user,
     headers: {
       Authorization: `Bearer ${directory.scim.secret}`,

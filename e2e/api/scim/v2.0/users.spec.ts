@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryPayload, getDirectory } from '../../v1/directory-sync/request';
-import { deleteUser, getUser, createUser } from './request';
 import users from '@boxyhq/saml-jackson/test/dsync/data/users';
+import { createDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
+import { createUser, getUser } from '../../helpers/users';
 
 test.use({
   extraHTTPHeaders: {
@@ -10,28 +10,19 @@ test.use({
   },
 });
 
-const newDirectoryPayload = {
-  ...directoryPayload,
-  tenant: 'api-boxyhq-3',
-};
-
-const { tenant, product } = newDirectoryPayload;
+const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-3' };
 
 test.beforeAll(async ({ request }) => {
-  await createDirectory(request, newDirectoryPayload);
+  await createDirectory(request, {
+    ...directoryPayload,
+    tenant,
+  });
 });
 
-test.afterAll(async ({ request }) => {
-  const directory = await getDirectory(request, { tenant, product });
-
-  const firstUser = await getUser(request, directory, users[0].userName);
-  const secondUser = await getUser(request, directory, users[1].userName);
-});
-
-test.describe('SCIM /api/scim/v2.0', () => {
+test.describe('SCIM /api/scim/v2.0/:directoryId/Users', () => {
   // POST /api/scim/v2.0/[directoryId]/Users
   test('should be able to create a user', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const [directory] = await getDirectory(request, { tenant, product });
     const response = await createUser(request, directory, users[0]);
 
     expect(response).toMatchObject({
@@ -42,7 +33,7 @@ test.describe('SCIM /api/scim/v2.0', () => {
 
   //  GET /api/scim/v2.0/[directoryId]/Users
   test('should be able to get a user by userName', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const [directory] = await getDirectory(request, { tenant, product });
     const user = await getUser(request, directory, users[0].userName);
 
     expect(user).toMatchObject({
@@ -61,7 +52,7 @@ test.describe('SCIM /api/scim/v2.0', () => {
 
   // GET /api/scim/v2.0/[directoryId]/Users
   test('should not be able to get a user if userName does not exist', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const [directory] = await getDirectory(request, { tenant, product });
     const user = await getUser(request, directory, 'kiran@boxyhq.com`');
 
     expect(user).toMatchObject({
@@ -75,7 +66,7 @@ test.describe('SCIM /api/scim/v2.0', () => {
 
   // GET /api/scim/v2.0/[directoryId]/Users/[userId]
   test('should be able to get a user by userId', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const [directory] = await getDirectory(request, { tenant, product });
     const user = await getUser(request, directory, users[0].userName);
 
     const response = await request.get(`${directory.scim.path}/Users/${user.Resources[0].id}`, {
@@ -94,7 +85,7 @@ test.describe('SCIM /api/scim/v2.0', () => {
 
   // GET /api/scim/v2.0/[directoryId]/Users
   test('should be able to get all users', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const [directory] = await getDirectory(request, { tenant, product });
 
     // Create a second user
     await createUser(request, directory, users[1]);
@@ -123,7 +114,7 @@ test.describe('SCIM /api/scim/v2.0', () => {
 
   // PATCH /api/scim/v2.0/[directoryId]/Users/[userId]
   test('should be able to update a user using PATCH operation', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const [directory] = await getDirectory(request, { tenant, product });
     const user = await getUser(request, directory, users[0].userName);
 
     const response = await request.patch(`${directory.scim.path}/Users/${user.Resources[0].id}`, {
@@ -155,7 +146,7 @@ test.describe('SCIM /api/scim/v2.0', () => {
 
   // PUT /api/scim/v2.0/[directoryId]/Users/[userId]
   test('should be able to update a user using PUT operation', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const [directory] = await getDirectory(request, { tenant, product });
     const user = await getUser(request, directory, users[0].userName);
 
     const response = await request.put(`${directory.scim.path}/Users/${user.Resources[0].id}`, {
@@ -181,7 +172,7 @@ test.describe('SCIM /api/scim/v2.0', () => {
 
   // DELETE /api/scim/v2.0/[directoryId]/Users/[userId]
   test('should be able to delete a user', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const [directory] = await getDirectory(request, { tenant, product });
     const firstUser = await getUser(request, directory, users[0].userName);
     const secondUser = await getUser(request, directory, users[1].userName);
 
