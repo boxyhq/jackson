@@ -75,6 +75,10 @@ module.exports = {
         source: '/.well-known',
         destination: '/well-known',
       },
+      {
+        source: '/admin/settings',
+        destination: '/admin/settings/sso-connection',
+      },
     ];
   },
 };

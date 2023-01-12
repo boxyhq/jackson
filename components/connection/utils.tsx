@@ -1,5 +1,6 @@
 import { errorToast } from '@components/Toaster';
-import { FormEvent, SetStateAction } from 'react';
+import { FormEvent, SetStateAction, useMemo } from 'react';
+import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 
 export const saveConnection = async ({
   formObj,
@@ -46,6 +47,7 @@ export const saveConnection = async ({
   );
   callback(res);
 };
+
 export function fieldCatalogFilterByConnection(connection) {
   return ({ attributes }) =>
     attributes.connection && connection !== null ? attributes.connection === connection : true;
@@ -78,6 +80,29 @@ type FieldCatalog = {
   };
 };
 
+export const useFieldCatalog = ({
+  isEditView,
+  isSettingsView,
+}: {
+  isEditView?: boolean;
+  isSettingsView?: boolean;
+}) => {
+  const fieldCatalog = useMemo(() => {
+    if (isEditView) {
+      return [...getCommonFields({ isEditView: true, isSettingsView }), ...EditViewOnlyFields];
+    }
+    return [...getCommonFields({ isSettingsView })];
+  }, [isEditView, isSettingsView]);
+  return fieldCatalog;
+};
+
+export type AdminPortalSSODefaults = {
+  tenant: string;
+  product: string;
+  redirectUrl: string;
+  defaultRedirectUrl: string;
+};
+
 export function renderFieldList(args: {
   isEditView?: boolean;
   formObj: Record<string, string>;
@@ -99,7 +124,7 @@ export function renderFieldList(args: {
       required = true,
     },
   }: FieldCatalog) => {
-    const disabled = args.isEditView && editable === false;
+    const disabled = editable === false;
     const value =
       disabled && typeof formatForDisplay === 'function'
         ? formatForDisplay(args.formObj[key])
@@ -134,14 +159,18 @@ export function renderFieldList(args: {
             disabled={disabled}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj)}
-            className={`textarea-bordered textarea h-24 w-full ${isArray ? 'whitespace-pre' : ''}`}
+            className={`textarea-bordered textarea h-24 w-full ${isArray ? 'whitespace-pre' : ''} ${
+              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
+            }`}
             rows={rows}
           />
         ) : type === 'checkbox' ? (
           <>
             <label
               htmlFor={key}
-              className='inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300'>
+              className={`inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300 ${
+                isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
+              }`}>
               {label}
             </label>
             <input
@@ -165,7 +194,9 @@ export function renderFieldList(args: {
             disabled={disabled}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj)}
-            className='input-bordered input w-full'
+            className={`input-bordered input w-full ${
+              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
+            }`}
           />
         )}
       </div>

@@ -64,6 +64,14 @@ const jacksonOptions: JacksonOption = {
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
 };
 
+const adminPortalSSODefaults = {
+  tenant: process.env.ADMIN_PORTAL_SSO_TENANT || '_jackson_boxyhq',
+  product: process.env.ADMIN_PORTAL_SSO_PRODUCT || '_jackson_admin_portal',
+  redirectUrl: externalUrl,
+  defaultRedirectUrl: `${externalUrl}/api/auth/callback/boxyhq-saml`,
+};
+
+export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
 export { apiKeys };
 export { jacksonOptions };

@@ -1,7 +1,9 @@
 import Adapter from '@lib/nextAuthAdapter';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
+import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { validateEmailWithACL } from '@lib/utils';
+import { jacksonOptions as env } from '@lib/env';
 import { sessionName } from '@lib/constants';
 
 export default NextAuth({
@@ -9,6 +11,16 @@ export default NextAuth({
     colorScheme: 'light',
   },
   providers: [
+    BoxyHQSAMLProvider({
+      authorization: { params: { scope: '' } },
+      issuer: env.externalUrl,
+      clientId: 'dummy',
+      clientSecret: 'dummy',
+      httpOptions: {
+        timeout: 30000,
+      },
+      allowDangerousEmailAccountLinking: true,
+    }),
     EmailProvider({
       server: {
         host: process.env.SMTP_HOST,
@@ -40,12 +52,11 @@ export default NextAuth({
     },
   },
   callbacks: {
-    async signIn({ user }): Promise<boolean> {
+    async signIn({ user, account }): Promise<boolean> {
       if (!user.email) {
         return false;
       }
-
-      return validateEmailWithACL(user.email);
+      return account?.provider === 'boxyhq-saml' ? true : validateEmailWithACL(user.email);
     },
   },
   pages: {

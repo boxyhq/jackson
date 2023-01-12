@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next';
 import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
+import { Cog8ToothIcon } from '@heroicons/react/24/outline';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -90,6 +91,12 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           active: asPath.includes('/admin/retraced'),
         },
       ],
+    },
+    {
+      href: '/admin/settings',
+      text: t('settings'),
+      icon: Cog8ToothIcon,
+      active: asPath.includes('/admin/settings'),
     },
   ];
 
