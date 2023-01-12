@@ -169,7 +169,7 @@ const ConnectionList = ({
                               router.push(
                                 setupLinkToken
                                   ? `/setup/${setupLinkToken}/sso-connection/edit/${connection.clientID}`
-                                  : isSettingsView
+                                  : isSettingsView || isSystemSSO
                                   ? `/admin/settings/sso-connection/edit/${connection.clientID}`
                                   : `/admin/sso-connection/edit/${connection.clientID}`
                               );
