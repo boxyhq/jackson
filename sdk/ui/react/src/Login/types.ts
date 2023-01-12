@@ -46,9 +46,9 @@ export interface LoginProps {
    */
   classNames?: { container?: string; button?: string; input?: string; label?: string };
   innerProps?: {
-    input?: InputHTMLAttributes<HTMLInputElement>;
-    button?: ButtonHTMLAttributes<HTMLButtonElement>;
-    label?: LabelHTMLAttributes<HTMLLabelElement>;
-    container?: HTMLAttributes<HTMLDivElement>;
+    input?: InputHTMLAttributes<HTMLInputElement> & { 'data-testid'?: string };
+    button?: ButtonHTMLAttributes<HTMLButtonElement> & { 'data-testid'?: string };
+    label?: LabelHTMLAttributes<HTMLLabelElement> & { 'data-testid'?: string };
+    container?: HTMLAttributes<HTMLDivElement> & { 'data-testid'?: string };
   };
 }
