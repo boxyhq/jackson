@@ -23,6 +23,7 @@ test.beforeAll(async ({ request }) => {
 
 test.afterAll(async ({ request }) => {
   const directory = await getDirectory(request, { tenant, product });
+
   const firstUser = await getUser(request, directory, users[0].userName);
   const secondUser = await getUser(request, directory, users[1].userName);
 });

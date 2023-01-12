@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryExpected, directoryPayload } from './request';
+import { createDirectory, directoryExpected, directoryPayload, getDirectory } from './request';
 
 test.use({
   extraHTTPHeaders: {
@@ -8,10 +8,12 @@ test.use({
   },
 });
 
+const { tenant, product } = directoryPayload;
+
 test.beforeAll(async ({ request }) => {
   const directory = await createDirectory(request, directoryPayload);
 
-  expect(directory).toMatchObject({ data: directoryExpected });
+  expect(directory).toMatchObject(directoryExpected);
 });
 
 test.describe('POST /api/v1/directory-sync', () => {
@@ -48,32 +50,16 @@ test.describe('POST /api/v1/directory-sync', () => {
 });
 
 test.describe('GET /api/v1/directory-sync', () => {
-  const { tenant, product } = directoryPayload;
-
   test('should be able to get a directory by tenant and product', async ({ request }) => {
-    const response = await request.get('/api/v1/directory-sync', {
-      params: {
-        tenant,
-        product,
-      },
-    });
+    const directory = await getDirectory(request, { tenant, product });
 
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(await response.json()).toMatchObject({ data: directoryExpected });
+    expect(directory).toMatchObject([directoryExpected]);
   });
 
   test('should be able to get a directory by ID', async ({ request }) => {
-    let response = await request.get('/api/v1/directory-sync', {
-      params: {
-        tenant,
-        product,
-      },
-    });
+    const directory = await getDirectory(request, { tenant, product });
 
-    const { data: directory } = await response.json();
-
-    response = await request.get(`/api/v1/directory-sync/${directory.id}`);
+    const response = await request.get(`/api/v1/directory-sync/${directory[0].id}`);
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);

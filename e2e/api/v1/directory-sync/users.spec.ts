@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryPayload, getDirectory } from './request';
+import { createDirectory, directoryPayload } from './request';
 import users from '@boxyhq/saml-jackson/test/dsync/data/users';
 import { createUser } from '../../scim/v2.0/request';
 
@@ -10,23 +10,20 @@ test.use({
   },
 });
 
-test.describe('Directory Sync / Users', () => {
-  const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-1' };
+const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-1' };
 
-  test.beforeAll(async ({ request }) => {
-    // Setup a directory
-    await createDirectory(request, {
-      ...directoryPayload,
-      tenant,
-    });
+test.beforeAll(async ({ request }) => {
+  const directory = await createDirectory(request, {
+    ...directoryPayload,
+    tenant,
   });
 
-  test('should be able to get users from a directory', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+  await createUser(request, directory, users[0]);
+  await createUser(request, directory, users[1]);
+});
 
-    await createUser(request, directory, users[0]);
-
-    // Get users by making API requests
+test.describe('GET /api/v1/directory-sync/users', () => {
+  test('should be able to get all users from a directory', async ({ request }) => {
     const response = await request.get('/api/v1/directory-sync/users', {
       params: {
         tenant,
@@ -35,10 +32,22 @@ test.describe('Directory Sync / Users', () => {
     });
 
     const { data: directoryUsers } = await response.json();
+    const [firstUser, secondUser] = directoryUsers;
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
-    expect(directoryUsers[0]).toMatchObject({
+    expect(directoryUsers.length).toBe(2);
+
+    expect(firstUser).toMatchObject({
+      id: expect.any(String),
+      first_name: users[1].name.givenName,
+      last_name: users[1].name.familyName,
+      email: users[1].emails[0].value,
+      active: users[1].active,
+      raw: users[1],
+    });
+
+    expect(secondUser).toMatchObject({
       id: expect.any(String),
       first_name: users[0].name.givenName,
       last_name: users[0].name.familyName,
@@ -47,12 +56,22 @@ test.describe('Directory Sync / Users', () => {
       raw: users[0],
     });
   });
+});
 
+test.describe('GET /api/v1/directory-sync/users/:id', () => {
   test('should be able to get a user from a directory', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
-    const createdUser = await createUser(request, directory, users[1]);
+    let response = await request.get('/api/v1/directory-sync/users', {
+      params: {
+        tenant,
+        product,
+      },
+    });
 
-    const response = await request.get(`/api/v1/directory-sync/users/${createdUser.id}`, {
+    const { data: directoryUsers } = await response.json();
+
+    const firstUser = directoryUsers[0];
+
+    response = await request.get(`/api/v1/directory-sync/users/${firstUser.id}`, {
       params: {
         tenant,
         product,
@@ -63,13 +82,6 @@ test.describe('Directory Sync / Users', () => {
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
-    expect(directoryUser).toMatchObject({
-      id: expect.any(String),
-      first_name: users[1].name.givenName,
-      last_name: users[1].name.familyName,
-      email: users[1].emails[0].value,
-      active: users[1].active,
-      raw: users[1],
-    });
+    expect(directoryUser).toMatchObject(firstUser);
   });
 });

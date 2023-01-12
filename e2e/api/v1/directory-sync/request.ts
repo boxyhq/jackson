@@ -36,33 +36,36 @@ export const createDirectory = async (request: APIRequestContext, payload: typeo
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(201);
 
-  return await response.json();
+  const { data } = await response.json();
+
+  return data;
 };
 
 export const getDirectory = async (
   request: APIRequestContext,
-  { tenant, product, id }: { tenant?: string; product?: string; id?: string }
+  { tenant, product }: { tenant: string; product: string }
 ) => {
-  if (tenant && product) {
-    const response = await request.get('/api/v1/directory-sync', {
-      params: {
-        tenant,
-        product,
-      },
-    });
+  const response = await request.get('/api/v1/directory-sync', {
+    params: {
+      tenant,
+      product,
+    },
+  });
 
-    const { data } = await response.json();
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
 
-    return data;
-  }
+  const { data } = await response.json();
 
-  if (id) {
-    const response = await request.get(`/api/v1/directory-sync/${id}`);
+  return data;
 
-    const { data } = await response.json();
+  // if (id) {
+  //   const response = await request.get(`/api/v1/directory-sync/${id}`);
 
-    return data;
-  }
+  //   const { data } = await response.json();
+
+  //   return data;
+  // }
 };
 
 export const createGroup = async (request: APIRequestContext, directory: Directory, group: any) => {
