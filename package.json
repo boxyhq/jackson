@@ -42,7 +42,7 @@
     "@opentelemetry/exporter-metrics-otlp-http": "0.34.0",
     "@opentelemetry/resources": "1.8.0",
     "@opentelemetry/sdk-metrics": "1.8.0",
-    "@opentelemetry/semantic-conventions": "1.8.0",
+    "@opentelemetry/semantic-conventions": "1.9.0",
     "@retracedhq/logs-viewer": "2.4.2",
     "@retracedhq/retraced": "0.5.1",
     "@tailwindcss/typography": "0.5.9",
