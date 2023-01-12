@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryPayload, getDirectory, createGroup } from './request';
+import { createDirectory, directoryPayload } from '../../helpers/directories';
 import groups from '@boxyhq/saml-jackson/test/dsync/data/groups';
+import { createGroup } from '../../helpers/groups';
 
 test.use({
   extraHTTPHeaders: {
@@ -9,23 +10,20 @@ test.use({
   },
 });
 
-test.describe('Directory Sync / Groups', () => {
-  const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-2' };
+const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-2' };
 
-  test.beforeAll(async ({ request }) => {
-    // Setup a directory
-    await createDirectory(request, {
-      ...directoryPayload,
-      tenant,
-    });
+test.beforeAll(async ({ request }) => {
+  const directory = await createDirectory(request, {
+    ...directoryPayload,
+    tenant,
   });
 
-  test('should be able to get groups from a directory', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+  await createGroup(request, directory, groups[0]);
+  await createGroup(request, directory, groups[1]);
+});
 
-    await createGroup(request, directory, groups[0]);
-
-    // Get groups by making API requests
+test.describe('GET /api/v1/directory-sync/groups', () => {
+  test('should be able to get all groups from a directory', async ({ request }) => {
     const response = await request.get('/api/v1/directory-sync/groups', {
       params: {
         tenant,
@@ -34,21 +32,39 @@ test.describe('Directory Sync / Groups', () => {
     });
 
     const { data: directoryGroups } = await response.json();
+    const [firstGroup, secondGroup] = directoryGroups;
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
-    expect(directoryGroups[0]).toMatchObject({
+    expect(directoryGroups.length).toBe(2);
+
+    expect(firstGroup).toMatchObject({
+      id: expect.any(String),
+      name: groups[1].displayName,
+      raw: groups[1],
+    });
+
+    expect(secondGroup).toMatchObject({
       id: expect.any(String),
       name: groups[0].displayName,
       raw: groups[0],
     });
   });
+});
 
+test.describe('GET /api/v1/directory-sync/groups/:id', () => {
   test('should be able to get a group from a directory', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
-    const createdGroup = await createGroup(request, directory, groups[1]);
+    let response = await request.get('/api/v1/directory-sync/groups', {
+      params: {
+        tenant,
+        product,
+      },
+    });
 
-    const response = await request.get(`/api/v1/directory-sync/groups/${createdGroup.id}`, {
+    const { data: directoryGroups } = await response.json();
+    const [firstGroup] = directoryGroups;
+
+    response = await request.get(`/api/v1/directory-sync/groups/${firstGroup.id}`, {
       params: {
         tenant,
         product,
@@ -59,10 +75,6 @@ test.describe('Directory Sync / Groups', () => {
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
-    expect(directoryGroup).toMatchObject({
-      id: expect.any(String),
-      name: groups[1].displayName,
-      raw: groups[1],
-    });
+    expect(directoryGroup).toMatchObject(firstGroup);
   });
 });

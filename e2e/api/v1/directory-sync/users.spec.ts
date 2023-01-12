@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryPayload } from './request';
 import users from '@boxyhq/saml-jackson/test/dsync/data/users';
-import { createUser } from '../../scim/v2.0/request';
+import { createDirectory, directoryPayload } from '../../helpers/directories';
+import { createUser } from '../../helpers/users';
 
 test.use({
   extraHTTPHeaders: {
@@ -68,8 +68,7 @@ test.describe('GET /api/v1/directory-sync/users/:id', () => {
     });
 
     const { data: directoryUsers } = await response.json();
-
-    const firstUser = directoryUsers[0];
+    const [firstUser] = directoryUsers;
 
     response = await request.get(`/api/v1/directory-sync/users/${firstUser.id}`, {
       params: {

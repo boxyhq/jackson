@@ -2,7 +2,7 @@ import { expect, type APIRequestContext } from '@playwright/test';
 import type { Directory } from '@boxyhq/saml-jackson';
 import users from '@boxyhq/saml-jackson/test/dsync/data/users';
 
-type User = typeof users[0];
+type User = (typeof users)[0];
 
 export const createUser = async (request: APIRequestContext, directory: Directory, user: User) => {
   const response = await request.post(`${directory.scim.path}/Users`, {

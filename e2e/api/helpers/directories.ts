@@ -1,5 +1,4 @@
 import { expect, type APIRequestContext } from '@playwright/test';
-import type { Directory } from '@boxyhq/saml-jackson';
 
 const directoryBase = {
   tenant: 'api-boxyhq',
@@ -58,26 +57,4 @@ export const getDirectory = async (
   const { data } = await response.json();
 
   return data;
-
-  // if (id) {
-  //   const response = await request.get(`/api/v1/directory-sync/${id}`);
-
-  //   const { data } = await response.json();
-
-  //   return data;
-  // }
-};
-
-export const createGroup = async (request: APIRequestContext, directory: Directory, group: any) => {
-  const response = await request.post(`${directory.scim.path}/Groups`, {
-    data: group,
-    headers: {
-      Authorization: `Bearer ${directory.scim.secret}`,
-    },
-  });
-
-  expect(response.ok()).toBe(true);
-  expect(response.status()).toBe(201);
-
-  return await response.json();
 };
