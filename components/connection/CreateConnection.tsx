@@ -149,7 +149,9 @@ const CreateConnection = ({
               .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
               .map(renderFieldList({ formObj, setFormObj }))}
             <div className='flex'>
-              <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
+              <ButtonPrimary loading={loading} data-testid='submit-form-create-sso'>
+                {t('save_changes')}
+              </ButtonPrimary>
             </div>
           </div>
         </form>

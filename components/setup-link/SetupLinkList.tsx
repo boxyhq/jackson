@@ -119,7 +119,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
       <div className='mb-5 flex items-center justify-between'>
         <h3>{description}</h3>
         <div>
-          <LinkPrimary Icon={PlusIcon} href={createSetupLinkUrl} data-test-id='create-setup-link'>
+          <LinkPrimary Icon={PlusIcon} href={createSetupLinkUrl} data-testid='create-setup-link'>
             {t('new_setup_link')}
           </LinkPrimary>
         </div>
