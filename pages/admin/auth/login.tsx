@@ -107,6 +107,9 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
                 container: 'mt-2',
                 button: 'btn-outline btn-block btn',
               }}
+              innerProps={{
+                button: { 'data-testid': 'sso-login-button' },
+              }}
             />
           </div>
         </div>
