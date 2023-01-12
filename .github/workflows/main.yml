@@ -157,7 +157,7 @@ jobs:
 
       - name: Get short SHA
         id: slug
-        run: echo "SHA7={$(echo ${GITHUB_SHA} | cut -c1-7)}" >> $GITHUB_OUTPUT
+        run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         id: buildx
