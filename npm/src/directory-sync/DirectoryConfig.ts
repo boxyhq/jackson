@@ -186,7 +186,6 @@ export class DirectoryConfig {
   }
 
   // Delete a configuration by id
-  // Note: This feature is not yet implemented
   public async delete(id: string): Promise<void> {
     if (!id) {
       throw new JacksonError('Missing required parameter.', 400);

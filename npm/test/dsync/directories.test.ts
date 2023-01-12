@@ -1,14 +1,40 @@
-import { IDirectorySyncController, Directory, DirectoryType } from '../../src/typings';
+import { IDirectorySyncController, DirectoryType } from '../../src/typings';
 import tap from 'tap';
-import { getFakeDirectory } from './data/directories';
 import { jacksonOptions } from '../utils';
 
 let directorySync: IDirectorySyncController;
 
-tap.before(async () => {
-  const jackson = await (await import('../../src/index')).default(jacksonOptions);
+export const directoryPayload = {
+  tenant: 'boxyhq',
+  product: 'saml-jackson',
+  name: 'Directory name',
+  type: 'okta-scim-v2' as DirectoryType,
+  webhook_url: 'https://example.com',
+  webhook_secret: 'secret',
+};
 
-  directorySync = jackson.directorySyncController;
+const { tenant, product } = directoryPayload;
+
+tap.before(async () => {
+  const { directorySyncController } = await (await import('../../src/index')).default(jacksonOptions);
+
+  directorySync = directorySyncController;
+
+  const { data: directory } = await directorySync.directories.create(directoryPayload);
+
+  if (directory === null) {
+    tap.fail("Couldn't create a directory");
+  }
+
+  tap.ok(directory);
+  tap.strictSame(directory?.tenant, tenant);
+  tap.strictSame(directory?.product, product);
+  tap.strictSame(directory?.name, directoryPayload.name);
+  tap.strictSame(directory?.type, directoryPayload.type);
+  tap.strictSame(directory?.webhook.endpoint, directoryPayload.webhook_url);
+  tap.strictSame(directory?.webhook.secret, directoryPayload.webhook_secret);
+  tap.strictSame(directory?.log_webhook_events, false);
+  tap.match(directory?.id, /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/);
 });
 
 tap.teardown(async () => {
@@ -16,35 +42,14 @@ tap.teardown(async () => {
 });
 
 tap.test('Directories / ', async (t) => {
-  let directory: Directory;
-  let fakeDirectory: Directory;
+  const { data: directories } = await directorySync.directories.getByTenantAndProduct(tenant, product);
 
-  t.beforeEach(async () => {
-    // Create a directory before each test
-    // t.afterEach() is not working for some reason, so we need to manually delete the directory after each test
+  if (directories === null) {
+    t.fail("Couldn't get a directory");
+    return;
+  }
 
-    fakeDirectory = getFakeDirectory();
-
-    const { data, error } = await directorySync.directories.create(fakeDirectory);
-
-    if (error || !data) {
-      t.fail("Couldn't create a directory");
-      return;
-    }
-
-    directory = data;
-  });
-
-  t.test('should be able to create a directory', async (t) => {
-    t.ok(directory);
-    t.hasStrict(directory, fakeDirectory);
-    t.type(directory.scim, 'object');
-    t.type(directory.webhook, 'object');
-
-    await directorySync.directories.delete(directory.id);
-
-    t.end();
-  });
+  const directory = directories[0];
 
   t.test('should not be able to create a directory without required params', async (t) => {
     const { data, error } = await directorySync.directories.create({
@@ -62,20 +67,18 @@ tap.test('Directories / ', async (t) => {
     t.end();
   });
 
-  t.test('should be able to get a directory', async (t) => {
+  t.test('should be able to get a directory by ID', async (t) => {
     const { data: directoryFetched } = await directorySync.directories.get(directory.id);
 
     t.ok(directoryFetched);
-    t.hasStrict(directoryFetched, fakeDirectory);
+    t.strictSame(directoryFetched, directory);
     t.match(directoryFetched?.id, directory.id);
-
-    await directorySync.directories.delete(directory.id);
 
     t.end();
   });
 
   t.test("should not be able to get a directory that doesn't exist", async (t) => {
-    const { data, error } = await directorySync.directories.get('fake-id');
+    const { data, error } = await directorySync.directories.get('invalid-id');
 
     t.ok(error);
     t.notOk(data);
@@ -101,6 +104,29 @@ tap.test('Directories / ', async (t) => {
     t.notOk(data);
     t.equal(error?.code, 400);
     t.equal(error?.message, 'Missing required parameters.');
+  });
+
+  t.test('should be able to get a directory by tenant and product', async (t) => {
+    const { data: directoriesFetched } = await directorySync.directories.getByTenantAndProduct(
+      tenant,
+      product
+    );
+
+    t.ok(directoriesFetched);
+    t.strictSame(directoriesFetched, [directory]);
+    t.match(directoriesFetched?.length, 1);
+
+    t.end();
+  });
+
+  t.test('should be able to get all directories', async (t) => {
+    const { data: directoriesFetched } = await directorySync.directories.list({});
+
+    t.ok(directoriesFetched);
+    t.strictSame(directoriesFetched, [directory]);
+    t.match(directoriesFetched?.length, 1);
+
+    t.end();
   });
 
   t.test('should be able to update a directory', async (t) => {
@@ -133,43 +159,6 @@ tap.test('Directories / ', async (t) => {
     t.match(anotherDirectory?.name, 'BoxyHQ 2');
     t.match(anotherDirectory?.log_webhook_events, false);
 
-    await directorySync.directories.delete(directory.id);
-
-    t.end();
-  });
-
-  t.test('should be able to get a directory by tenant and product', async (t) => {
-    const { data: directoryFetched } = await directorySync.directories.getByTenantAndProduct(
-      directory.tenant,
-      directory.product
-    );
-
-    t.ok(directoryFetched);
-    t.hasStrict(directoryFetched, fakeDirectory);
-    t.match(directoryFetched, directory);
-
-    await directorySync.directories.delete(directory.id);
-
-    t.end();
-  });
-
-  t.test('should be able to delete a directory', async (t) => {
-    await directorySync.directories.delete(directory.id);
-
-    const { data } = await directorySync.directories.get(directory.id);
-
-    t.notOk(data);
-
-    t.end();
-  });
-
-  t.test('should be able to get all directories', async (t) => {
-    const directoriesList = await directorySync.directories.list({});
-
-    t.ok(directoriesList);
-
-    await directorySync.directories.delete(directory.id);
-
     t.end();
   });
 
@@ -184,6 +173,22 @@ tap.test('Directories / ', async (t) => {
       t.equal(error?.message, 'Missing required parameters.');
     }
   );
+
+  t.test('should be able to delete a directory', async (t) => {
+    await directorySync.directories.delete(directory.id);
+
+    const { data } = await directorySync.directories.get(directory.id);
+
+    const { data: directoriesFetched } = await directorySync.directories.getByTenantAndProduct(
+      tenant,
+      product
+    );
+
+    t.notOk(data);
+    t.match(directoriesFetched?.length, 0);
+
+    t.end();
+  });
 
   t.end();
 });
