@@ -166,8 +166,8 @@ export class DirectoryConfig {
     pageOffset,
     pageLimit,
   }: {
-    pageOffset: number;
-    pageLimit: number;
+    pageOffset?: number;
+    pageLimit?: number;
   }): Promise<{ data: Directory[] | null; error: ApiError | null }> {
     try {
       const directories = (await this.store().getAll(pageOffset, pageLimit)) as Directory[];

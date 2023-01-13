@@ -1,13 +1,7 @@
-import type {
-  Directory,
-  DatabaseStore,
-  WebhookEventLog,
-  DirectorySyncEvent,
-  IWebhookEventsLogger,
-} from '../typings';
+import type { Directory, DatabaseStore, WebhookEventLog, DirectorySyncEvent } from '../typings';
 import { Base } from './Base';
 
-export class WebhookEventsLogger extends Base implements IWebhookEventsLogger {
+export class WebhookEventsLogger extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
   }

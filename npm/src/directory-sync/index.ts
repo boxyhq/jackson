@@ -1,4 +1,4 @@
-import type { DatabaseStore, IDirectorySyncController, JacksonOption } from '../typings';
+import type { DatabaseStore, JacksonOption } from '../typings';
 import { DirectoryConfig } from './DirectoryConfig';
 import { DirectoryUsers } from './DirectoryUsers';
 import { DirectoryGroups } from './DirectoryGroups';
@@ -9,13 +9,7 @@ import { DirectorySyncRequestHandler } from './request';
 import { handleEventCallback } from './events';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 
-const directorySync = async ({
-  db,
-  opts,
-}: {
-  db: DatabaseStore;
-  opts: JacksonOption;
-}): Promise<IDirectorySyncController> => {
+const directorySync = async ({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) => {
   const directories = new DirectoryConfig({ db, opts });
 
   const users = new Users({ db });

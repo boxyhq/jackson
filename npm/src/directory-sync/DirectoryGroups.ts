@@ -1,24 +1,23 @@
 import type {
   Group,
-  DirectoryConfig,
   DirectorySyncResponse,
   Directory,
   DirectorySyncGroupMember,
   DirectorySyncRequest,
-  Users,
-  Groups,
   ApiError,
-  IDirectoryGroups,
   EventCallback,
   HTTPMethod,
+  IDirectoryConfig,
+  IUsers,
+  IGroups,
 } from '../typings';
 import { parseGroupOperations, toGroupMembers } from './utils';
 import { sendEvent } from './events';
 
-export class DirectoryGroups implements IDirectoryGroups {
-  private directories: DirectoryConfig;
-  private users: Users;
-  private groups: Groups;
+export class DirectoryGroups {
+  private directories: IDirectoryConfig;
+  private users: IUsers;
+  private groups: IGroups;
   private callback: EventCallback | undefined;
 
   constructor({
@@ -26,9 +25,9 @@ export class DirectoryGroups implements IDirectoryGroups {
     users,
     groups,
   }: {
-    directories: DirectoryConfig;
-    users: Users;
-    groups: Groups;
+    directories: IDirectoryConfig;
+    users: IUsers;
+    groups: IGroups;
   }) {
     this.directories = directories;
     this.users = users;

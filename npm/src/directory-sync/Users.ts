@@ -31,10 +31,18 @@ export class Users extends Base {
         raw,
       };
 
-      await this.store('users').put(id, user, {
-        name: 'userName',
-        value: email,
-      });
+      await this.store('users').put(
+        id,
+        user,
+        {
+          name: 'userName',
+          value: email,
+        },
+        {
+          name: 'active',
+          value: 'active',
+        }
+      );
 
       return { data: user, error: null };
     } catch (err: any) {

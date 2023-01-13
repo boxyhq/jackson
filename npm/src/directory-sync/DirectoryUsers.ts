@@ -1,24 +1,23 @@
 import type {
-  DirectoryConfig,
   Directory,
   DirectorySyncResponse,
   DirectorySyncRequest,
   User,
-  Users,
   ApiError,
-  IDirectoryUsers,
   EventCallback,
   HTTPMethod,
+  IDirectoryConfig,
+  IUsers,
 } from '../typings';
 import { parseUserOperations } from './utils';
 import { sendEvent } from './events';
 
-export class DirectoryUsers implements IDirectoryUsers {
-  private directories: DirectoryConfig;
-  private users: Users;
+export class DirectoryUsers {
+  private directories: IDirectoryConfig;
+  private users: IUsers;
   private callback: EventCallback | undefined;
 
-  constructor({ directories, users }: { directories: DirectoryConfig; users: Users }) {
+  constructor({ directories, users }: { directories: IDirectoryConfig; users: IUsers }) {
     this.directories = directories;
     this.users = users;
   }
