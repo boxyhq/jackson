@@ -157,7 +157,7 @@ jobs:
 
       - name: Get short SHA
         id: slug
-        run: echo "{sha7}={$(echo ${GITHUB_SHA} | cut -c1-7)}" >> $GITHUB_OUTPUT
+        run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         id: buildx
@@ -182,7 +182,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -213,7 +213,7 @@ jobs:
 
       - name: Sign the image
         if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }} || true
+        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.SHA7 }} || true
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
