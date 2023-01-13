@@ -1,4 +1,4 @@
-import type { Group, DatabaseStore, ApiError } from '../typings';
+import type { Group, DatabaseStore, ApiError, PaginationParams } from '../typings';
 import * as dbutils from '../db/utils';
 import { apiError, JacksonError } from '../controller/error';
 import { Base } from './Base';
@@ -9,13 +9,16 @@ export class Groups extends Base {
   }
 
   // Create a new group
-  public async create(param: {
+  public async create({
+    directoryId,
+    name,
+    raw,
+  }: {
+    directoryId: string;
     name: string;
     raw: any;
   }): Promise<{ data: Group | null; error: ApiError | null }> {
     try {
-      const { name, raw } = param;
-
       const id = this.createId();
 
       raw['id'] = id;
@@ -26,10 +29,18 @@ export class Groups extends Base {
         raw,
       };
 
-      await this.store('groups').put(id, group, {
-        name: 'displayName',
-        value: name,
-      });
+      await this.store('groups').put(
+        id,
+        group,
+        {
+          name: 'displayName',
+          value: name,
+        },
+        {
+          name: 'directoryId',
+          value: directoryId,
+        }
+      );
 
       return { data: group, error: null };
     } catch (err: any) {
@@ -167,15 +178,32 @@ export class Groups extends Base {
   }
 
   // Get all groups in a directory
-  public async list({
+  public async getAll({
     pageOffset,
     pageLimit,
-  }: {
-    pageOffset?: number;
-    pageLimit?: number;
-  }): Promise<{ data: Group[] | null; error: ApiError | null }> {
+    directoryId,
+  }: PaginationParams & {
+    directoryId?: string;
+  } = {}): Promise<{
+    data: Group[] | null;
+    error: ApiError | null;
+  }> {
     try {
-      const groups = (await this.store('groups').getAll(pageOffset, pageLimit)) as Group[];
+      let groups: Group[] = [];
+
+      // Filter by directoryId
+      if (directoryId) {
+        groups = await this.store('groups').getByIndex(
+          {
+            name: 'directoryId',
+            value: directoryId,
+          },
+          pageOffset,
+          pageLimit
+        );
+      } else {
+        groups = await this.store('groups').getAll(pageOffset, pageLimit);
+      }
 
       return { data: groups, error: null };
     } catch (err: any) {

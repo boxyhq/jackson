@@ -17,11 +17,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { tenant, product } = req.query;
+  const { tenant, product, directoryId } = req.query as {
+    tenant: string;
+    product: string;
+    directoryId?: string;
+  };
 
   const { data, error } = await directorySyncController.groups
-    .setTenantAndProduct(<string>tenant, <string>product)
-    .list({});
+    .setTenantAndProduct(tenant, product)
+    .getAll({ directoryId });
 
   return res.status(error ? error.code : 200).json({ data, error });
 };

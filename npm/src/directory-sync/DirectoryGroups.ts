@@ -38,12 +38,13 @@ export class DirectoryGroups {
     const { displayName, members } = body;
 
     const { data: group } = await this.groups.create({
+      directoryId: directory.id,
       name: displayName,
       raw: body,
     });
 
     // Add members to the group if any
-    if (members.length > 0 && group) {
+    if (members && members.length > 0 && group) {
       await this.addOrRemoveGroupMembers(directory, group, members);
     }
 
@@ -97,7 +98,7 @@ export class DirectoryGroups {
       groups = data;
     } else {
       // Fetch all the existing group
-      const { data } = await this.groups.list({ pageOffset: undefined, pageLimit: undefined });
+      const { data } = await this.groups.getAll({ pageOffset: undefined, pageLimit: undefined });
 
       groups = data;
     }

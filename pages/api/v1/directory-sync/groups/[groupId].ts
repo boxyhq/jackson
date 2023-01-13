@@ -17,15 +17,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { tenant, product, groupId } = req.query;
+  const { tenant, product, groupId } = req.query as {
+    tenant: string;
+    product: string;
+    groupId: string;
+  };
 
-  directorySyncController.groups.setTenantAndProduct(<string>tenant, <string>product);
+  directorySyncController.groups.setTenantAndProduct(tenant, product);
 
-  const { data: group, error } = await directorySyncController.groups.get(<string>groupId);
+  const { data: group, error } = await directorySyncController.groups.get(groupId);
 
   // Get the members of the group if it exists
   if (group) {
-    group['members'] = await directorySyncController.groups.getAllUsers(<string>groupId);
+    group['members'] = await directorySyncController.groups.getAllUsers(groupId);
   }
 
   return res.status(error ? error.code : 200).json({ data: group, error });

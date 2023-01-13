@@ -26,6 +26,7 @@ export class DirectoryUsers {
     const { name, emails } = body;
 
     const { data: user } = await this.users.create({
+      directoryId: directory.id,
       first_name: name && 'givenName' in name ? name.givenName : '',
       last_name: name && 'familyName' in name ? name.familyName : '',
       email: emails[0].value,
@@ -124,8 +125,8 @@ export class DirectoryUsers {
     } else {
       // Fetch all the existing Users (Paginated)
       // At this moment, we don't have method to count the database records.
-      const { data: allUsers } = await this.users.list({});
-      const { data } = await this.users.list({ pageOffset: startIndex - 1, pageLimit: count });
+      const { data: allUsers } = await this.users.getAll();
+      const { data } = await this.users.getAll({ pageOffset: startIndex - 1, pageLimit: count });
 
       users = data;
       totalResults = allUsers ? allUsers.length : 0;

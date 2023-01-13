@@ -6,6 +6,14 @@ import { Users } from './Users';
 import { Groups } from './Groups';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 
+export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
+export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
+export type IDirectoryGroups = InstanceType<typeof DirectoryGroups>;
+export type IDirectoryUsers = InstanceType<typeof DirectoryUsers>;
+export type IUsers = InstanceType<typeof Users>;
+export type IGroups = InstanceType<typeof Groups>;
+export type IWebhookEventsLogger = InstanceType<typeof WebhookEventsLogger>;
+
 export type DirectorySyncEventType =
   | 'user.created'
   | 'user.updated'
@@ -110,10 +118,7 @@ export type Group = {
   raw?: any;
 };
 
-export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
-export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
-export type IDirectoryGroups = InstanceType<typeof DirectoryGroups>;
-export type IDirectoryUsers = InstanceType<typeof DirectoryUsers>;
-export type IUsers = InstanceType<typeof Users>;
-export type IGroups = InstanceType<typeof Groups>;
-export type IWebhookEventsLogger = InstanceType<typeof WebhookEventsLogger>;
+export type PaginationParams = {
+  pageOffset?: number;
+  pageLimit?: number;
+};
