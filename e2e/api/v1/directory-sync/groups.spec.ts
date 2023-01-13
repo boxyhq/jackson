@@ -10,7 +10,7 @@ test.use({
   },
 });
 
-const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-2' };
+const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-3' };
 
 test.beforeAll(async ({ request }) => {
   const directory = await createDirectory(request, {

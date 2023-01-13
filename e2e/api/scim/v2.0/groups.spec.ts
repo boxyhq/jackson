@@ -12,7 +12,7 @@ test.use({
   },
 });
 
-const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-4' };
+const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-1' };
 
 test.beforeAll(async ({ request }) => {
   await createDirectory(request, {
@@ -321,19 +321,5 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
     const updatedGroup = await getGroupById(request, directory, createdGroup.id);
 
     expect(updatedGroup.members).toHaveLength(2);
-
-    // expect(updatedGroup).toMatchObject({
-    //   schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-    //   id: createdGroup.id,
-    //   displayName: groups[0].displayName,
-    //   members: [
-    //     {
-    //       value: secondUser.id,
-    //     },
-    //     {
-    //       value: firstUser.id,
-    //     },
-    //   ],
-    // });
   });
 });
