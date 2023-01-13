@@ -34,3 +34,16 @@ export const getGroupByDisplayName = async (
 
   return await response.json();
 };
+
+export const getGroupById = async (request: APIRequestContext, directory: Directory, groupId: string) => {
+  const response = await request.get(`${directory.scim.path}/Groups/${groupId}`, {
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};

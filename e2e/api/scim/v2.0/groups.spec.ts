@@ -1,18 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { createDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
 import { createUser, getUser } from '../../helpers/users';
-import { createGroup, getGroupByDisplayName } from '../../helpers/groups';
+import { createGroup, getGroupByDisplayName, getGroupById } from '../../helpers/groups';
 import groups from '../../../../npm/test/dsync/data/groups';
 import users from '../../../../npm/test/dsync/data/users';
-
-// Create a group with no members (Done)
-// Get a group by displayName (Done)
-// Get a group by id (Done)
-// Add a member to a group (Done)
-// Create a group with members
-// Remove a member from a group (Done)
-// Delete a group
-// Get all groups
 
 test.use({
   extraHTTPHeaders: {
@@ -21,7 +12,7 @@ test.use({
   },
 });
 
-const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-13' };
+const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-4' };
 
 test.beforeAll(async ({ request }) => {
   await createDirectory(request, {
@@ -118,6 +109,15 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
         },
       ],
     });
+
+    // Fetch the group again and check that the member was added
+    const updatedGroup = await getGroupById(request, directory, group.Resources[0].id);
+
+    expect(updatedGroup).toMatchObject({
+      ...groups[0],
+      id: expect.any(String),
+      members: [{ value: user.id }],
+    });
   });
 
   // PATCH /api/scim/v2.0/[directoryId]/Groups/[groupId]
@@ -148,142 +148,190 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
       id: expect.any(String),
       members: [],
     });
+
+    // Fetch the group again and check that the member was removed
+    const updatedGroup = await getGroupById(request, directory, group.Resources[0].id);
+
+    expect(updatedGroup).toMatchObject({
+      ...groups[0],
+      id: expect.any(String),
+      members: [],
+    });
   });
 
-  // // GET /api/scim/v2.0/[directoryId]/Users
-  // test('should not be able to get a user if userName does not exist', async ({ request }) => {
-  //   const [directory] = await getDirectory(request, { tenant, product });
-  //   const user = await getUser(request, directory, 'kiran@boxyhq.com`');
+  // GET /api/scim/v2.0/[directoryId]/Groups
+  test('should be able to get all groups', async ({ request }) => {
+    const [directory] = await getDirectory(request, { tenant, product });
 
-  //   expect(user).toMatchObject({
-  //     schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
-  //     startIndex: 1,
-  //     totalResults: 0,
-  //     itemsPerPage: 0,
-  //     Resources: [],
-  //   });
-  // });
+    // Create second group
+    await createGroup(request, directory, groups[1]);
 
-  // // GET /api/scim/v2.0/[directoryId]/Users
-  // test('should be able to get all users', async ({ request }) => {
-  //   const [directory] = await getDirectory(request, { tenant, product });
+    const response = await request.get(`${directory.scim.path}/Groups`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+    });
 
-  //   // Create a second user
-  //   await createUser(request, directory, users[1]);
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+      startIndex: 1,
+      totalResults: 2,
+      itemsPerPage: 2,
+      Resources: [
+        {
+          ...groups[1],
+          id: expect.any(String),
+        },
+        {
+          ...groups[0],
+          id: expect.any(String),
+        },
+      ],
+    });
+  });
 
-  //   const response = await request.get(`${directory.scim.path}/Users`, {
-  //     headers: {
-  //       Authorization: `Bearer ${directory.scim.secret}`,
-  //     },
-  //   });
+  // PATCH /api/scim/v2.0/[directoryId]/Groups/[groupId]
+  test('should be able to update a group', async ({ request }) => {
+    const [directory] = await getDirectory(request, { tenant, product });
+    const group = await getGroupByDisplayName(request, directory, groups[0].displayName);
 
-  //   const directoryUsers = await response.json();
+    const response = await request.patch(`${directory.scim.path}/Groups/${group.Resources[0].id}`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+      data: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'replace',
+            value: {
+              id: group.Resources[0].id,
+              displayName: 'Developers Updated',
+            },
+          },
+        ],
+      },
+    });
 
-  //   expect(response.ok()).toBe(true);
-  //   expect(response.status()).toBe(200);
-  //   expect(directoryUsers.totalResults).toBe(2);
-  //   expect(directoryUsers.Resources).toHaveLength(2);
-  //   expect(directoryUsers.Resources[0]).toMatchObject({
-  //     ...users[1],
-  //     id: expect.any(String),
-  //   });
-  //   expect(directoryUsers.Resources[1]).toMatchObject({
-  //     ...users[0],
-  //     id: expect.any(String),
-  //   });
-  // });
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+      id: group.Resources[0].id,
+      displayName: 'Developers Updated',
+      members: [],
+    });
 
-  // // PATCH /api/scim/v2.0/[directoryId]/Users/[userId]
-  // test('should be able to update a user using PATCH operation', async ({ request }) => {
-  //   const [directory] = await getDirectory(request, { tenant, product });
-  //   const user = await getUser(request, directory, users[0].userName);
+    // Fetch the group again and check the update was successful
+    const updatedGroup = await getGroupById(request, directory, group.Resources[0].id);
 
-  //   const response = await request.patch(`${directory.scim.path}/Users/${user.Resources[0].id}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${directory.scim.secret}`,
-  //     },
-  //     data: {
-  //       Operations: [
-  //         {
-  //           op: 'replace',
-  //           value: {
-  //             active: false,
-  //             name: { givenName: 'Jackson1', familyName: 'M1' },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   });
+    expect(updatedGroup).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+      id: group.Resources[0].id,
+      displayName: 'Developers Updated',
+      members: [],
+    });
 
-  //   expect(response.ok()).toBe(true);
-  //   expect(response.status()).toBe(200);
-  //   expect(await response.json()).toMatchObject({
-  //     ...users[0],
-  //     id: user.Resources[0].id,
-  //     active: false,
-  //     name: { givenName: 'Jackson1', familyName: 'M1' },
-  //   });
-  // });
+    // Reverse the update so that it doesn't affect other tests
+    await request.patch(`${directory.scim.path}/Groups/${group.Resources[0].id}`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+      data: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'replace',
+            value: {
+              id: group.Resources[0].id,
+              displayName: 'Developers',
+            },
+          },
+        ],
+      },
+    });
+  });
 
-  // // PUT /api/scim/v2.0/[directoryId]/Users/[userId]
-  // test('should be able to update a user using PUT operation', async ({ request }) => {
-  //   const [directory] = await getDirectory(request, { tenant, product });
-  //   const user = await getUser(request, directory, users[0].userName);
+  // DELETE /api/scim/v2.0/[directoryId]/Groups/[groupId]
+  test('should be able to delete a group', async ({ request }) => {
+    const [directory] = await getDirectory(request, { tenant, product });
+    const group = await getGroupByDisplayName(request, directory, groups[0].displayName);
 
-  //   const response = await request.put(`${directory.scim.path}/Users/${user.Resources[0].id}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${directory.scim.secret}`,
-  //     },
-  //     data: {
-  //       ...users[0],
-  //       name: { givenName: 'Jackson2', familyName: 'M2' },
-  //       active: true,
-  //     },
-  //   });
+    const response = await request.delete(`${directory.scim.path}/Groups/${group.Resources[0].id}`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+    });
 
-  //   expect(response.ok()).toBe(true);
-  //   expect(response.status()).toBe(200);
-  //   expect(await response.json()).toMatchObject({
-  //     ...users[0],
-  //     id: user.Resources[0].id,
-  //     active: true,
-  //     name: { givenName: 'Jackson2', familyName: 'M2' },
-  //   });
-  // });
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
 
-  // // DELETE /api/scim/v2.0/[directoryId]/Users/[userId]
-  // test('should be able to delete a user', async ({ request }) => {
-  //   const [directory] = await getDirectory(request, { tenant, product });
-  //   const firstUser = await getUser(request, directory, users[0].userName);
-  //   const secondUser = await getUser(request, directory, users[1].userName);
+    // Fetch the group again and check the update was successful
+    const updatedGroup = await request.get(`${directory.scim.path}/Groups/${group.Resources[0].id}`, {
+      headers: {
+        Authorization: `Bearer ${directory.scim.secret}`,
+      },
+    });
 
-  //   let response = await request.delete(`${directory.scim.path}/Users/${firstUser.Resources[0].id}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${directory.scim.secret}`,
-  //     },
-  //   });
+    expect(updatedGroup.ok()).toBe(false);
+    expect(updatedGroup.status()).toBe(404);
+  });
 
-  //   expect(response.ok()).toBe(true);
-  //   expect(response.status()).toBe(200);
+  // POST /api/scim/v2.0/[directoryId]/Groups
+  test('should be able to push a group with some members', async ({ request }) => {
+    const [directory] = await getDirectory(request, { tenant, product });
 
-  //   response = await request.delete(`${directory.scim.path}/Users/${secondUser.Resources[0].id}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${directory.scim.secret}`,
-  //     },
-  //   });
+    // Create some users
+    const firstUser = await createUser(request, directory, users[0]);
+    const secondUser = await createUser(request, directory, users[1]);
 
-  //   expect(response.ok()).toBe(true);
-  //   expect(response.status()).toBe(200);
+    const createdGroup = await createGroup(request, directory, {
+      ...groups[0],
+      members: [
+        {
+          value: firstUser.id,
+          display: firstUser.userName,
+        },
+        {
+          value: secondUser.id,
+          display: secondUser.userName,
+        },
+      ],
+    });
 
-  //   response = await request.get(`${directory.scim.path}/Users`, {
-  //     headers: {
-  //       Authorization: `Bearer ${directory.scim.secret}`,
-  //     },
-  //   });
+    expect(createdGroup).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+      id: expect.any(String),
+      displayName: groups[0].displayName,
+      members: [
+        {
+          value: firstUser.id,
+          display: firstUser.userName,
+        },
+        {
+          value: secondUser.id,
+          display: secondUser.userName,
+        },
+      ],
+    });
 
-  //   const directoryUsers = await response.json();
+    // Fetch the group again and check the update was successful
+    const updatedGroup = await getGroupById(request, directory, createdGroup.id);
 
-  //   expect(directoryUsers.totalResults).toBe(0);
-  //   expect(directoryUsers.Resources).toHaveLength(0);
-  // });
+    expect(updatedGroup).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+      id: createdGroup.id,
+      displayName: groups[0].displayName,
+      members: [
+        {
+          value: firstUser.id,
+        },
+        {
+          value: secondUser.id,
+        },
+      ],
+    });
+  });
 });
