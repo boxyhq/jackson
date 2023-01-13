@@ -43,6 +43,11 @@ export class DirectoryGroups implements IDirectoryGroups {
       raw: body,
     });
 
+    // Add members to the group if any
+    if (members.length > 0 && group) {
+      await this.addOrRemoveGroupMembers(directory, group, members);
+    }
+
     await sendEvent('group.created', { directory, group }, this.callback);
 
     return {
@@ -290,6 +295,10 @@ export class DirectoryGroups implements IDirectoryGroups {
 
     // Get the group
     const { data: group } = groupId ? await this.groups.get(groupId) : { data: null };
+
+    if (groupId && !group) {
+      return this.respondWithError({ code: 404, message: 'Group not found' });
+    }
 
     if (group) {
       switch (method) {

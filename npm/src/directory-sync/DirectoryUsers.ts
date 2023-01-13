@@ -183,6 +183,10 @@ export class DirectoryUsers implements IDirectoryUsers {
       delete body['password'];
     }
 
+    if (userId && !user) {
+      return this.respondWithError({ code: 404, message: 'User not found' });
+    }
+
     if (user) {
       switch (method) {
         case 'GET':
