@@ -5,7 +5,13 @@
  * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
  */
 
-export const getCommonFields = (isEditView?: boolean) => [
+export const getCommonFields = ({
+  isEditView,
+  isSettingsView,
+}: {
+  isEditView?: boolean;
+  isSettingsView?: boolean;
+}) => [
   {
     key: 'name',
     label: 'Name',
@@ -31,6 +37,7 @@ export const getCommonFields = (isEditView?: boolean) => [
           hideInSetupView: true,
         }
       : {
+          editable: !isSettingsView,
           hideInSetupView: true,
         },
   },
@@ -45,6 +52,7 @@ export const getCommonFields = (isEditView?: boolean) => [
           hideInSetupView: true,
         }
       : {
+          editable: !isSettingsView,
           hideInSetupView: true,
         },
   },
@@ -53,16 +61,15 @@ export const getCommonFields = (isEditView?: boolean) => [
     label: 'Allowed redirect URLs (newline separated)',
     type: 'textarea',
     placeholder: 'http://localhost:3366',
-    attributes: { isArray: true, rows: 3, hideInSetupView: true },
+    attributes: { isArray: true, rows: 3, hideInSetupView: true, editable: !isSettingsView },
   },
   {
     key: 'defaultRedirectUrl',
     label: 'Default redirect URL',
     type: 'url',
     placeholder: 'http://localhost:3366/login/saml',
-    attributes: { hideInSetupView: true },
+    attributes: { hideInSetupView: true, editable: !isSettingsView },
   },
-
   {
     key: 'oidcDiscoveryUrl',
     label: 'Well-known URL of OpenId Provider',

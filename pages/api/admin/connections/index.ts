@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { strategyChecker } from '@lib/utils';
+import { adminPortalSSODefaults } from '@lib/env';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -23,14 +24,26 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Get all connections
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { adminController } = await jackson();
+  const { adminController, connectionAPIController } = await jackson();
 
-  const { pageOffset, pageLimit } = req.query as {
+  const { pageOffset, pageLimit, isSystemSSO } = req.query as {
     pageOffset: string;
     pageLimit: string;
+    isSystemSSO?: string; // if present will be '' else undefined
   };
 
-  const connections = await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0));
+  const { tenant: adminPortalSSOTenant, product: adminPortalSSOProduct } = adminPortalSSODefaults;
+
+  const connections =
+    isSystemSSO === undefined
+      ? (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0)))?.map((conn) => ({
+          ...conn,
+          isSystemSSO: adminPortalSSOTenant === conn.tenant && adminPortalSSOProduct === conn.product,
+        }))
+      : await connectionAPIController.getConnections({
+          tenant: adminPortalSSOTenant,
+          product: adminPortalSSOProduct,
+        });
 
   return res.json({ data: connections });
 };

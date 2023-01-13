@@ -1,19 +1,18 @@
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import { useSession, getCsrfToken, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import Image from 'next/image';
-import { SessionProvider } from 'next-auth/react';
-import { useState } from 'react';
-
+import { useSession, getCsrfToken, signIn, SessionProvider } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toaster';
-import { ButtonPrimary } from '@components/ButtonPrimary';
-import Link from 'next/link';
+import { ButtonOutline } from '@components/ButtonOutline';
 import Loading from '@components/Loading';
+import { Login as SSOLogin } from '@boxyhq/react-ui';
+import { adminPortalSSODefaults } from '@lib/env';
 
-const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { status } = useSession();
@@ -56,6 +55,10 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
     }
   };
 
+  const onSSOSubmit = async (ssoIdentifier: string) => {
+    await signIn('boxyhq-saml', undefined, { client_id: ssoIdentifier });
+  };
+
   return (
     <>
       <div className='flex min-h-screen flex-col items-center justify-center'>
@@ -90,12 +93,21 @@ const Login = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSidePr
                   </label>
                 </div>
                 <div className='flex items-baseline justify-between'>
-                  <ButtonPrimary type='submit' loading={loading} className='btn-block'>
+                  <ButtonOutline type='submit' loading={loading} className='btn-block'>
                     {t('send_magic_link')}
-                  </ButtonPrimary>
+                  </ButtonOutline>
                 </div>
               </div>
             </form>
+            <SSOLogin
+              buttonText={t('login_with_sso')}
+              ssoIdentifier={`tenant=${tenant}&product=${product}`}
+              onSubmit={onSSOSubmit}
+              classNames={{
+                container: 'mt-2',
+                button: 'btn-outline btn-block btn',
+              }}
+            />
           </div>
         </div>
         <Link href='/.well-known' className='my-3 text-sm underline' target='_blank'>
@@ -112,9 +124,12 @@ Login.getLayout = function getLayout(page: ReactElement) {
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { locale }: GetServerSidePropsContext = context;
+  const { tenant, product } = adminPortalSSODefaults;
   return {
     props: {
       csrfToken: await getCsrfToken(context),
+      tenant,
+      product,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
