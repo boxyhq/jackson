@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import users from '@boxyhq/saml-jackson/test/dsync/data/users';
+import users from '../../../../npm/test/dsync/data/users';
 import { createDirectory, directoryPayload } from '../../helpers/directories';
 import { createUser } from '../../helpers/users';
 

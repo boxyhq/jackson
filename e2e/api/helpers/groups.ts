@@ -14,3 +14,23 @@ export const createGroup = async (request: APIRequestContext, directory: Directo
 
   return await response.json();
 };
+
+export const getGroupByDisplayName = async (
+  request: APIRequestContext,
+  directory: Directory,
+  displayName: string
+) => {
+  const response = await request.get(`${directory.scim.path}/Groups`, {
+    params: {
+      filter: `displayName eq "${displayName}"`,
+    },
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
