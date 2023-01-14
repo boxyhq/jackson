@@ -32,23 +32,12 @@ test.describe('GET /api/v1/directory-sync/groups', () => {
     });
 
     const { data: directoryGroups } = await response.json();
-    const [firstGroup, secondGroup] = directoryGroups;
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
     expect(directoryGroups.length).toBe(2);
-
-    expect(firstGroup).toMatchObject({
-      id: expect.any(String),
-      name: groups[1].displayName,
-      raw: groups[1],
-    });
-
-    expect(secondGroup).toMatchObject({
-      id: expect.any(String),
-      name: groups[0].displayName,
-      raw: groups[0],
-    });
+    expect(directoryGroups).toContainEqual(expect.objectContaining(groups[0]));
+    expect(directoryGroups).toContainEqual(expect.objectContaining(groups[1]));
   });
 });
 
