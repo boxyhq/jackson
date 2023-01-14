@@ -6,10 +6,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case 'GET':
-      return handleGET(req, res);
+      return await handleGET(req, res);
     default:
       res.setHeader('Allow', 'GET');
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 }
 
@@ -32,5 +32,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     group['members'] = await directorySyncController.groups.getAllUsers(groupId);
   }
 
-  return res.status(error ? error.code : 200).json({ data: group, error });
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+
+  return res.status(200).json({ data: group });
 };
