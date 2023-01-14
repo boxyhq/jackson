@@ -34,8 +34,6 @@ export enum DirectorySyncProviders {
 
 export type DirectoryType = keyof typeof DirectorySyncProviders;
 
-export type HTTPMethod = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
-
 export type Directory = {
   id: string;
   name: string;
@@ -70,10 +68,10 @@ export interface Events {
 }
 
 export interface DirectorySyncRequest {
-  method: HTTPMethod;
+  method: string; //'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
   body: any | undefined;
   directoryId: Directory['id'];
-  resourceType: 'users' | 'groups';
+  resourceType: string; //'users' | 'groups';
   resourceId: string | undefined;
   apiSecret: string | null;
   query: {

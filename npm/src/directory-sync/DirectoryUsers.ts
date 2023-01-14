@@ -5,7 +5,6 @@ import type {
   User,
   ApiError,
   EventCallback,
-  HTTPMethod,
   IDirectoryConfig,
   IUsers,
 } from '../typings';
@@ -159,7 +158,7 @@ export class DirectoryUsers {
   ): Promise<DirectorySyncResponse> {
     const { body, query, resourceId: userId, directoryId, apiSecret } = request;
 
-    const method = request.method.toUpperCase() as HTTPMethod;
+    const method = request.method.toUpperCase();
 
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);

@@ -5,7 +5,7 @@ import { DirectoryGroups } from './DirectoryGroups';
 import { Users } from './Users';
 import { Groups } from './Groups';
 import { getDirectorySyncProviders } from './utils';
-import { DirectorySyncRequestHandler } from './request';
+import { RequestHandler } from './request';
 import { handleEventCallback } from './events';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 
@@ -23,7 +23,7 @@ const directorySync = async ({ db, opts }: { db: DatabaseStore; opts: JacksonOpt
     groups,
     directories,
     webhookLogs: webhookEventsLogger,
-    requests: new DirectorySyncRequestHandler(directoryUsers, directoryGroups),
+    requests: new RequestHandler(directoryUsers, directoryGroups),
     events: {
       callback: await handleEventCallback(directories, webhookEventsLogger),
     },
