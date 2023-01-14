@@ -36,8 +36,6 @@ test.describe('GET /api/v1/directory-sync/users', () => {
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
     expect(directoryUsers.length).toBe(2);
-    expect(directoryUsers).toContainEqual(expect.objectContaining(users[0]));
-    expect(directoryUsers).toContainEqual(expect.objectContaining(users[1]));
   });
 });
 

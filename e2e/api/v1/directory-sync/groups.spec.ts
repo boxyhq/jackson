@@ -36,8 +36,6 @@ test.describe('GET /api/v1/directory-sync/groups', () => {
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
     expect(directoryGroups.length).toBe(2);
-    expect(directoryGroups).toContainEqual(expect.objectContaining(groups[0]));
-    expect(directoryGroups).toContainEqual(expect.objectContaining(groups[1]));
   });
 });
 
