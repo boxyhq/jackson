@@ -32,29 +32,12 @@ test.describe('GET /api/v1/directory-sync/users', () => {
     });
 
     const { data: directoryUsers } = await response.json();
-    const [firstUser, secondUser] = directoryUsers;
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
     expect(directoryUsers.length).toBe(2);
-
-    expect(firstUser).toMatchObject({
-      id: expect.any(String),
-      first_name: users[1].name.givenName,
-      last_name: users[1].name.familyName,
-      email: users[1].emails[0].value,
-      active: users[1].active,
-      raw: users[1],
-    });
-
-    expect(secondUser).toMatchObject({
-      id: expect.any(String),
-      first_name: users[0].name.givenName,
-      last_name: users[0].name.familyName,
-      email: users[0].emails[0].value,
-      active: users[0].active,
-      raw: users[0],
-    });
+    expect(directoryUsers).toContainEqual(expect.objectContaining(users[0]));
+    expect(directoryUsers).toContainEqual(expect.objectContaining(users[1]));
   });
 });
 
