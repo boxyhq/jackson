@@ -85,15 +85,15 @@ export class DirectoryGroups {
     };
   }
 
-  public async getAll(queryParams: { filter?: string }): Promise<DirectorySyncResponse> {
-    const { filter } = queryParams;
+  public async getAll(queryParams: { filter?: string; directoryId: string }): Promise<DirectorySyncResponse> {
+    const { filter, directoryId } = queryParams;
 
     let groups: Group[] | null = [];
 
     if (filter) {
       // Filter by group displayName
       // filter: displayName eq "Developer"
-      const { data } = await this.groups.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+      const { data } = await this.groups.search(filter.split('eq ')[1].replace(/['"]+/g, ''), directoryId);
 
       groups = data;
     } else {
@@ -319,6 +319,7 @@ export class DirectoryGroups {
       case 'GET':
         return await this.getAll({
           filter: query.filter,
+          directoryId,
         });
     }
 

@@ -109,8 +109,9 @@ export class DirectoryUsers {
     count: number;
     startIndex: number;
     filter?: string;
+    directoryId: string;
   }): Promise<DirectorySyncResponse> {
-    const { startIndex, filter, count } = queryParams;
+    const { startIndex, filter, count, directoryId } = queryParams;
 
     let users: User[] | null = [];
     let totalResults = 0;
@@ -118,15 +119,15 @@ export class DirectoryUsers {
     if (filter) {
       // Search users by userName
       // filter: userName eq "john@example.com"
-      const { data } = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+      const { data } = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''), directoryId);
 
       users = data;
       totalResults = users ? users.length : 0;
     } else {
       // Fetch all the existing Users (Paginated)
       // At this moment, we don't have method to count the database records.
-      const { data: allUsers } = await this.users.getAll();
-      const { data } = await this.users.getAll({ pageOffset: startIndex - 1, pageLimit: count });
+      const { data: allUsers } = await this.users.getAll({ directoryId });
+      const { data } = await this.users.getAll({ pageOffset: startIndex - 1, pageLimit: count, directoryId });
 
       users = data;
       totalResults = allUsers ? allUsers.length : 0;
@@ -208,6 +209,7 @@ export class DirectoryUsers {
           count: query.count as number,
           startIndex: query.startIndex as number,
           filter: query.filter,
+          directoryId,
         });
     }
 

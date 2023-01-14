@@ -11,13 +11,11 @@ import { WebhookEventsLogger } from './WebhookEventsLogger';
 
 const directorySync = async ({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) => {
   const directories = new DirectoryConfig({ db, opts });
-
   const users = new Users({ db });
   const groups = new Groups({ db });
 
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
-
   const webhookEventsLogger = new WebhookEventsLogger({ db });
 
   return {

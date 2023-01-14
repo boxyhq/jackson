@@ -1,6 +1,7 @@
 import type { User, DatabaseStore, ApiError, PaginationParams } from '../typings';
 import { apiError, JacksonError } from '../controller/error';
 import { Base } from './Base';
+import { keyFromParts } from '../db/utils';
 
 type CreateUserPayload = {
   directoryId: string;
@@ -9,6 +10,11 @@ type CreateUserPayload = {
   email: string;
   active: boolean;
   raw: any;
+};
+
+const indexNames = {
+  directoryIdUsername: 'directoryIdUsername',
+  directoryId: 'directoryId',
 };
 
 export class Users extends Base {
@@ -43,11 +49,11 @@ export class Users extends Base {
         id,
         user,
         {
-          name: 'userName',
-          value: email,
+          name: indexNames.directoryIdUsername,
+          value: keyFromParts(directoryId, email),
         },
         {
-          name: 'directoryId',
+          name: indexNames.directoryId,
           value: directoryId,
         }
       );
@@ -124,9 +130,15 @@ export class Users extends Base {
   }
 
   // Search users by userName
-  public async search(userName: string): Promise<{ data: User[] | null; error: ApiError | null }> {
+  public async search(
+    userName: string,
+    directoryId: string
+  ): Promise<{ data: User[] | null; error: ApiError | null }> {
     try {
-      const users = (await this.store('users').getByIndex({ name: 'userName', value: userName })) as User[];
+      const users = await this.store('users').getByIndex({
+        name: indexNames.directoryIdUsername,
+        value: keyFromParts(directoryId, userName),
+      });
 
       return { data: users, error: null };
     } catch (err: any) {
@@ -152,7 +164,7 @@ export class Users extends Base {
       if (directoryId) {
         users = await this.store('users').getByIndex(
           {
-            name: 'directoryId',
+            name: indexNames.directoryId,
             value: directoryId,
           },
           pageOffset,
