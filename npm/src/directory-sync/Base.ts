@@ -6,7 +6,6 @@ export class Base {
   protected db: DatabaseStore;
   protected tenant: null | string = null;
   protected product: null | string = null;
-  protected directoryId: null | string = null;
 
   constructor({ db }: { db: DatabaseStore }) {
     this.db = db;
@@ -33,24 +32,13 @@ export class Base {
     return this;
   }
 
-  // Set the directory id
-  setDirectoryId(directoryId: string): this {
-    this.directoryId = directoryId;
-
-    return this;
-  }
-
   // Set the tenant and product
   setTenantAndProduct(tenant: string, product: string): this {
     return this.setTenant(tenant).setProduct(product);
   }
 
-  // Set the tenant, product and directory id
-  with(tenant: string, product: string, directoryId?: string): this {
-    if (directoryId) {
-      this.setDirectoryId(directoryId);
-    }
-
+  // Set the tenant and product
+  with(tenant: string, product: string): this {
     return this.setTenant(tenant).setProduct(product);
   }
 
