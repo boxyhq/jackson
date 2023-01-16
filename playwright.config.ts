@@ -3,6 +3,7 @@ import path from 'path';
 
 // Reference: https://playwright.dev/docs/test-configuration
 const config: PlaywrightTestConfig = {
+  workers: 1,
   globalSetup: require.resolve('./e2e/globalSetup'),
   // Timeout per test
   timeout: 30 * 1000,

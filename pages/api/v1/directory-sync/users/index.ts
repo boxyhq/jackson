@@ -17,15 +17,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { tenant, product, directoryId } = req.query as {
+  const { tenant, product, directoryId, offset, limit } = req.query as {
     tenant: string;
     product: string;
     directoryId?: string;
+    offset?: string;
+    limit?: string;
   };
+
+  const pageOffset = parseInt(offset || '0');
+  const pageLimit = parseInt(limit || '15');
 
   const { data, error } = await directorySyncController.users
     .setTenantAndProduct(tenant, product)
-    .getAll({ directoryId });
+    .getAll({ directoryId, pageOffset, pageLimit });
 
   if (error) {
     return res.status(error.code).json({ error });
