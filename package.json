@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@boxyhq/react-ui": "file:sdk/ui/react",
-    "@boxyhq/saml-jackson": "file:./npm",
+    "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.13",
     "@opentelemetry/api": "1.4.0",
     "@opentelemetry/exporter-metrics-otlp-grpc": "0.35.0",
