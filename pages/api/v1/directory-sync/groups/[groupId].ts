@@ -23,14 +23,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     groupId: string;
   };
 
-  directorySyncController.groups.setTenantAndProduct(tenant, product);
-
-  const { data: group, error } = await directorySyncController.groups.get(groupId);
-
-  // Get the members of the group if it exists
-  if (group) {
-    group['members'] = await directorySyncController.groups.getAllUsers(groupId);
-  }
+  const { data: group, error } = await directorySyncController.groups
+    .setTenantAndProduct(tenant, product)
+    .get(groupId);
 
   if (error) {
     return res.status(error.code).json({ error });
