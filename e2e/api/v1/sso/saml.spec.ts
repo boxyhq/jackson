@@ -6,7 +6,7 @@ import {
   getRawMetadata,
   newConnection,
   expectedConnection,
-} from './request';
+} from '../../helpers/sso';
 
 test.use({
   extraHTTPHeaders: {

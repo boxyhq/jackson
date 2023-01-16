@@ -102,14 +102,6 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Users', () => {
     expect(response.status()).toBe(200);
     expect(directoryUsers.totalResults).toBe(2);
     expect(directoryUsers.Resources).toHaveLength(2);
-    // expect(directoryUsers.Resources[0]).toMatchObject({
-    //   ...users[1],
-    //   id: expect.any(String),
-    // });
-    // expect(directoryUsers.Resources[1]).toMatchObject({
-    //   ...users[0],
-    //   id: expect.any(String),
-    // });
   });
 
   // PATCH /api/scim/v2.0/[directoryId]/Users/[userId]
