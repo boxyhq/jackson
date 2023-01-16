@@ -44,7 +44,7 @@
     "@opentelemetry/api": "1.4.0",
     "axios": "1.2.2",
     "jose": "4.11.2",
-    "marked": "4.2.5",
+    "marked": "4.2.12",
     "mixpanel": "0.17.0",
     "mongodb": "4.13.0",
     "mssql": "9.0.1",
