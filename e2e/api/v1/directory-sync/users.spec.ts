@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import users from '../../../../npm/test/dsync/data/users';
-import { createDirectory, directoryPayload } from '../../helpers/directories';
+import { createDirectory, deleteDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
 import { createUser } from '../../helpers/users';
 
 test.use({
@@ -20,6 +20,12 @@ test.beforeAll(async ({ request }) => {
 
   await createUser(request, directory, users[0]);
   await createUser(request, directory, users[1]);
+});
+
+test.afterAll(async ({ request }) => {
+  const [directory] = await getDirectory(request, { tenant, product });
+
+  await deleteDirectory(request, directory.id);
 });
 
 test.describe('GET /api/v1/directory-sync/users', () => {

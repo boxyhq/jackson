@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createDirectory, directoryPayload } from '../../helpers/directories';
+import { createDirectory, deleteDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
 import groups from '@boxyhq/saml-jackson/test/dsync/data/groups';
 import { createGroup } from '../../helpers/groups';
 
@@ -20,6 +20,12 @@ test.beforeAll(async ({ request }) => {
 
   await createGroup(request, directory, groups[0]);
   await createGroup(request, directory, groups[1]);
+});
+
+test.afterAll(async ({ request }) => {
+  const [directory] = await getDirectory(request, { tenant, product });
+
+  await deleteDirectory(request, directory.id);
 });
 
 test.describe('GET /api/v1/directory-sync/groups', () => {

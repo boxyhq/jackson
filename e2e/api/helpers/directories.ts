@@ -58,3 +58,10 @@ export const getDirectory = async (
 
   return data;
 };
+
+export const deleteDirectory = async (request: APIRequestContext, directoryId: string) => {
+  const response = await request.delete(`/api/v1/directory-sync/${directoryId}`);
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+};

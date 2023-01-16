@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
   createDirectory,
+  deleteDirectory,
   directoryExpected,
   directoryPayload,
   getDirectory,
@@ -19,6 +20,12 @@ test.beforeAll(async ({ request }) => {
   const directory = await createDirectory(request, directoryPayload);
 
   expect(directory).toMatchObject(directoryExpected);
+});
+
+test.afterAll(async ({ request }) => {
+  const [directory] = await getDirectory(request, { tenant, product });
+
+  await deleteDirectory(request, directory.id);
 });
 
 test.describe('POST /api/v1/directory-sync', () => {

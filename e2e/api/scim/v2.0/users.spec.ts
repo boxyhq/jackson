@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import users from '../../../../npm/test/dsync/data/users';
-import { createDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
+import { createDirectory, deleteDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
 import { createUser, getUser } from '../../helpers/users';
 
 test.use({
@@ -17,6 +17,12 @@ test.beforeAll(async ({ request }) => {
     ...directoryPayload,
     tenant,
   });
+});
+
+test.afterAll(async ({ request }) => {
+  const [directory] = await getDirectory(request, { tenant, product });
+
+  await deleteDirectory(request, directory.id);
 });
 
 test.describe('SCIM /api/scim/v2.0/:directoryId/Users', () => {
@@ -163,7 +169,7 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Users', () => {
   });
 
   // DELETE /api/scim/v2.0/[directoryId]/Users/[userId]
-  test.skip('should be able to delete a user', async ({ request }) => {
+  test('should be able to delete a user', async ({ request }) => {
     const [directory] = await getDirectory(request, { tenant, product });
     const firstUser = await getUser(request, directory, users[0].userName);
     const secondUser = await getUser(request, directory, users[1].userName);
