@@ -45,6 +45,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
                 className='link flex px-4 py-2 text-sm hover:link-primary'
                 role='menuitem'
                 tabIndex={-1}
+                data-testid='logout'
                 id='user-menu-item-2'
                 onClick={() => signOut()}>
                 <PowerIcon className='mr-1 h-5 w-5' aria-hidden />
