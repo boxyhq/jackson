@@ -1,24 +1,22 @@
 import type {
   Group,
-  DirectoryConfig,
   DirectorySyncResponse,
   Directory,
   DirectorySyncGroupMember,
   DirectorySyncRequest,
-  Users,
-  Groups,
   ApiError,
-  IDirectoryGroups,
   EventCallback,
-  HTTPMethod,
+  IDirectoryConfig,
+  IUsers,
+  IGroups,
 } from '../typings';
 import { parseGroupOperations, toGroupMembers } from './utils';
 import { sendEvent } from './events';
 
-export class DirectoryGroups implements IDirectoryGroups {
-  private directories: DirectoryConfig;
-  private users: Users;
-  private groups: Groups;
+export class DirectoryGroups {
+  private directories: IDirectoryConfig;
+  private users: IUsers;
+  private groups: IGroups;
   private callback: EventCallback | undefined;
 
   constructor({
@@ -26,9 +24,9 @@ export class DirectoryGroups implements IDirectoryGroups {
     users,
     groups,
   }: {
-    directories: DirectoryConfig;
-    users: Users;
-    groups: Groups;
+    directories: IDirectoryConfig;
+    users: IUsers;
+    groups: IGroups;
   }) {
     this.directories = directories;
     this.users = users;
@@ -39,9 +37,15 @@ export class DirectoryGroups implements IDirectoryGroups {
     const { displayName, members } = body;
 
     const { data: group } = await this.groups.create({
+      directoryId: directory.id,
       name: displayName,
       raw: body,
     });
+
+    // Add members to the group if any
+    if (members && members.length > 0 && group) {
+      await this.addOrRemoveGroupMembers(directory, group, members);
+    }
 
     await sendEvent('group.created', { directory, group }, this.callback);
 
@@ -80,20 +84,20 @@ export class DirectoryGroups implements IDirectoryGroups {
     };
   }
 
-  public async getAll(queryParams: { filter?: string }): Promise<DirectorySyncResponse> {
-    const { filter } = queryParams;
+  public async getAll(queryParams: { filter?: string; directoryId: string }): Promise<DirectorySyncResponse> {
+    const { filter, directoryId } = queryParams;
 
     let groups: Group[] | null = [];
 
     if (filter) {
       // Filter by group displayName
       // filter: displayName eq "Developer"
-      const { data } = await this.groups.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+      const { data } = await this.groups.search(filter.split('eq ')[1].replace(/['"]+/g, ''), directoryId);
 
       groups = data;
     } else {
       // Fetch all the existing group
-      const { data } = await this.groups.list({ pageOffset: undefined, pageLimit: undefined });
+      const { data } = await this.groups.getAll({ pageOffset: undefined, pageLimit: undefined });
 
       groups = data;
     }
@@ -269,7 +273,7 @@ export class DirectoryGroups implements IDirectoryGroups {
   ): Promise<DirectorySyncResponse> {
     const { body, query, resourceId: groupId, directoryId, apiSecret } = request;
 
-    const method = request.method.toUpperCase() as HTTPMethod;
+    const method = request.method.toUpperCase();
 
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);
@@ -291,6 +295,10 @@ export class DirectoryGroups implements IDirectoryGroups {
     // Get the group
     const { data: group } = groupId ? await this.groups.get(groupId) : { data: null };
 
+    if (groupId && !group) {
+      return this.respondWithError({ code: 404, message: 'Group not found' });
+    }
+
     if (group) {
       switch (method) {
         case 'GET':
@@ -310,6 +318,7 @@ export class DirectoryGroups implements IDirectoryGroups {
       case 'GET':
         return await this.getAll({
           filter: query.filter,
+          directoryId,
         });
     }
 

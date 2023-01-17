@@ -40,7 +40,7 @@ export const bodyParser = (req: NextApiRequest): any => {
 };
 
 export const strategyChecker = (req: NextApiRequest): { isSAML: boolean; isOIDC: boolean } => {
-  const isSAML = 'rawMetadata' in req.body || 'encodedRawMetadata' in req.body;
+  const isSAML = 'rawMetadata' in req.body || 'encodedRawMetadata' in req.body || 'metadataUrl' in req.body;
   const isOIDC = 'oidcDiscoveryUrl' in req.body;
   return { isSAML, isOIDC };
 };

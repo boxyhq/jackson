@@ -11,8 +11,8 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
   "action": "some.record.created",
   "teamId": "boxyhq",
   "group": {
-    "id": "boxyhq",
-    "name": "BoxyHQ"
+    "id": "dev",
+    "name": "dev"
   },
   "crud": "c",
   "created": "${new Date().toISOString()}",

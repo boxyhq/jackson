@@ -60,7 +60,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const { data, error } = await directorySyncController.directories.list({ pageOffset, pageLimit });
+  const { data, error } = await directorySyncController.directories.getAll({ pageOffset, pageLimit });
 
   if (data) {
     const filteredData = data.filter(

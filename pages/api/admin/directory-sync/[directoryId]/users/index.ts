@@ -30,10 +30,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { data: users, error } = await directorySyncController.users
     .with(directory.tenant, directory.product)
-    .list({ pageOffset, pageLimit });
+    .getAll({ pageOffset, pageLimit, directoryId });
 
   if (error) {
-    return res.status(400).json({ error });
+    return res.status(error.code).json({ error });
   }
 
   if (users) {
