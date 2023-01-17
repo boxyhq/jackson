@@ -1,7 +1,12 @@
-import type { Group, DatabaseStore, ApiError } from '../typings';
+import type { Group, DatabaseStore, ApiError, PaginationParams } from '../typings';
 import * as dbutils from '../db/utils';
 import { apiError, JacksonError } from '../controller/error';
 import { Base } from './Base';
+
+const indexNames = {
+  directoryIdDisplayname: 'directoryIdDisplayname',
+  directoryId: 'directoryId',
+};
 
 export class Groups extends Base {
   constructor({ db }: { db: DatabaseStore }) {
@@ -9,13 +14,16 @@ export class Groups extends Base {
   }
 
   // Create a new group
-  public async create(param: {
+  public async create({
+    directoryId,
+    name,
+    raw,
+  }: {
+    directoryId: string;
     name: string;
     raw: any;
   }): Promise<{ data: Group | null; error: ApiError | null }> {
     try {
-      const { name, raw } = param;
-
       const id = this.createId();
 
       raw['id'] = id;
@@ -26,10 +34,18 @@ export class Groups extends Base {
         raw,
       };
 
-      await this.store('groups').put(id, group, {
-        name: 'displayName',
-        value: name,
-      });
+      await this.store('groups').put(
+        id,
+        group,
+        {
+          name: indexNames.directoryIdDisplayname,
+          value: dbutils.keyFromParts(directoryId, name),
+        },
+        {
+          name: indexNames.directoryId,
+          value: directoryId,
+        }
+      );
 
       return { data: group, error: null };
     } catch (err: any) {
@@ -153,12 +169,15 @@ export class Groups extends Base {
   }
 
   // Search groups by displayName
-  public async search(displayName: string): Promise<{ data: Group[] | null; error: ApiError | null }> {
+  public async search(
+    displayName: string,
+    directoryId: string
+  ): Promise<{ data: Group[] | null; error: ApiError | null }> {
     try {
-      const groups = (await this.store('groups').getByIndex({
-        name: 'displayName',
-        value: displayName,
-      })) as Group[];
+      const groups = await this.store('groups').getByIndex({
+        name: indexNames.directoryIdDisplayname,
+        value: dbutils.keyFromParts(directoryId, displayName),
+      });
 
       return { data: groups, error: null };
     } catch (err: any) {
@@ -167,15 +186,32 @@ export class Groups extends Base {
   }
 
   // Get all groups in a directory
-  public async list({
+  public async getAll({
     pageOffset,
     pageLimit,
-  }: {
-    pageOffset?: number;
-    pageLimit?: number;
-  }): Promise<{ data: Group[] | null; error: ApiError | null }> {
+    directoryId,
+  }: PaginationParams & {
+    directoryId?: string;
+  } = {}): Promise<{
+    data: Group[] | null;
+    error: ApiError | null;
+  }> {
     try {
-      const groups = (await this.store('groups').getAll(pageOffset, pageLimit)) as Group[];
+      let groups: Group[] = [];
+
+      // Filter by directoryId
+      if (directoryId) {
+        groups = await this.store('groups').getByIndex(
+          {
+            name: indexNames.directoryId,
+            value: directoryId,
+          },
+          pageOffset,
+          pageLimit
+        );
+      } else {
+        groups = await this.store('groups').getAll(pageOffset, pageLimit);
+      }
 
       return { data: groups, error: null };
     } catch (err: any) {

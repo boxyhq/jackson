@@ -6,10 +6,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case 'GET':
-      return handleGET(req, res);
+      return await handleGET(req, res);
+    case 'DELETE':
+      return await handleDELETE(req, res);
     default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.setHeader('Allow', 'GET, DELETE');
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 }
 
@@ -17,9 +19,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { directoryId } = req.query;
+  const { directoryId } = req.query as { directoryId: string };
 
-  const { data, error } = await directorySyncController.directories.get(directoryId as string);
+  const { data, error } = await directorySyncController.directories.get(directoryId);
 
-  return res.status(error ? error.code : 200).json({ data, error });
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+
+  return res.status(200).json({ data });
+};
+
+// Delete directory by id
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { directorySyncController } = await jackson();
+
+  const { directoryId } = req.query as { directoryId: string };
+
+  await directorySyncController.directories.delete(directoryId);
+
+  return res.status(200).json({ data: {} });
 };

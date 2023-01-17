@@ -6,35 +6,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case 'GET':
-      return handleGET(req, res);
+      return await handleGET(req, res);
     case 'POST':
-      return handlePOST(req, res);
+      return await handlePOST(req, res);
     default:
       res.setHeader('Allow', 'GET, POST');
-      res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
+      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 }
 
-// Get the configurations
+// Get the configuration
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
   const { tenant, product } = req.query;
 
-  // If tenant and product are specified, get the configuration by tenant and product
-  if (tenant && product) {
-    const { data, error } = await directorySyncController.directories.getByTenantAndProduct(
-      tenant as string,
-      product as string
-    );
-
-    return res.status(error ? error.code : 200).json({ data, error });
+  if (!tenant || !product) {
+    return res.status(400).json({ error: { message: 'Please provide tenant and product' } });
   }
 
-  // otherwise, get all configurations
-  const { data, error } = await directorySyncController.directories.list({});
+  const { data, error } = await directorySyncController.directories.getByTenantAndProduct(
+    tenant as string,
+    product as string
+  );
 
-  return res.status(error ? error.code : 200).json({ data, error });
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+
+  return res.status(200).json({ data });
 };
 
 // Create a new configuration
@@ -52,5 +52,9 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     webhook_secret,
   });
 
-  return res.status(error ? error.code : 201).json({ data, error });
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+
+  return res.status(201).json({ data });
 };

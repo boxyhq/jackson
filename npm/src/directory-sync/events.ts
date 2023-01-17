@@ -5,8 +5,8 @@ import type {
   Group,
   EventCallback,
   DirectorySyncEvent,
-  DirectoryConfig,
   IWebhookEventsLogger,
+  IDirectoryConfig,
 } from '../typings';
 import { createHeader, transformEventPayload } from './utils';
 import axios from 'axios';
@@ -22,7 +22,7 @@ export const sendEvent = async (
 };
 
 export const handleEventCallback = async (
-  directories: DirectoryConfig,
+  directories: IDirectoryConfig,
   webhookEventsLogger: IWebhookEventsLogger
 ) => {
   return async (event: DirectorySyncEvent) => {
