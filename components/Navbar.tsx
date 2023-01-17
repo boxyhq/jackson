@@ -22,6 +22,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
                 className='flex h-8 w-8 items-center justify-center rounded-full bg-secondary uppercase text-cyan-50 focus:outline-none'
                 aria-expanded='false'
                 aria-haspopup='true'
+                data-testid='user-avatar'
                 onClick={() => {
                   setIsOpen(!isOpen);
                 }}>
