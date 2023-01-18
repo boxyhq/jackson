@@ -9,7 +9,7 @@ test('Add SSO connection to mocksaml.com for admin portal login', async ({ page 
   await metadataUrlInput.scrollIntoViewIfNeeded();
   await metadataUrlInput.fill('https://mocksaml.com/api/saml/metadata');
   // Add the connection, also handle asynchronous navigation
-  const navigationPromise = page.waitForNavigation();
+  const navigationPromise = page.waitForNavigation({ url: '/admin/settings/sso-connection' });
   await page.getByTestId('submit-form-create-sso').click();
   await navigationPromise;
   // Check if new entry appears in connection list page
