@@ -16,8 +16,7 @@ import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
   authz_request_normal,
-  authz_request_with_prompt_login,
-  authz_request_with_prompt_more_than_one,
+  authz_request_with_forceauthn,
   authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
   authz_request_normal_with_code_challenge,
@@ -196,18 +195,7 @@ tap.test('authorize()', async (t) => {
     });
 
     t.test('accepts single value in prompt', async (t) => {
-      const body = authz_request_with_prompt_login;
-
-      const response = await oauthController.authorize(<OAuthReq>body);
-      const params = new URLSearchParams(new URL(response.redirect_url!).search);
-
-      t.ok('redirect_url' in response, 'got the Idp authorize URL');
-      t.ok(params.has('RelayState'), 'RelayState present in the query string');
-      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-    });
-
-    t.test('accepts multiple values in prompt', async (t) => {
-      const body = authz_request_with_prompt_more_than_one;
+      const body = authz_request_with_forceauthn;
 
       const response = await oauthController.authorize(<OAuthReq>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);

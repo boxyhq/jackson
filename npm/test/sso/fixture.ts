@@ -26,18 +26,11 @@ export const authz_request_normal_with_code_challenge: Partial<OAuthReqBodyWithC
   code_challenge: generators.codeChallenge(code_verifier),
   code_challenge_method: 'S256',
 };
-export const authz_request_with_prompt_login: Partial<OAuthReqBodyWithClientId> = {
+export const authz_request_with_forceauthn: Partial<OAuthReqBodyWithClientId> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
-  prompt: 'login',
-};
-
-export const authz_request_with_prompt_more_than_one: Partial<OAuthReqBodyWithClientId> = {
-  redirect_uri: boxyhq.defaultRedirectUrl,
-  state: 'state-123',
-  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
-  prompt: 'select_account login consent',
+  forceAuthn: 'true',
 };
 
 export const authz_request_normal_with_access_type: Partial<OAuthReqBodyWithAccessType> = {
