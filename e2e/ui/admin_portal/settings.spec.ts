@@ -22,5 +22,5 @@ test('Login via SSO connection to mocksaml.com added previously', async ({ page 
   // Logout to test login using the above connection
   await page.getByTestId('logout').click();
   await page.getByTestId('sso-login-button').click();
-  await page.waitForURL('https://mocksaml.com');
+  await page.waitForURL((url) => url.origin === 'https://mocksaml.com');
 });
