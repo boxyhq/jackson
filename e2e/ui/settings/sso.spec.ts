@@ -13,12 +13,18 @@ test.describe('Admin Portal SSO', () => {
     await expect(page.getByText('saml.example.com')).toBeVisible();
   });
 
-  test('should be able to login via mocksaml.com SSO', async ({ page }) => {
+  test('should be able to login via mocksaml.com SSO', async ({ page, baseURL }) => {
+    const userAvatarLocator = page.getByTestId('user-avatar');
+
     await page.goto('/');
-    await page.getByTestId('user-avatar').click();
+    await userAvatarLocator.click();
     // Logout to test login using the above connection
     await page.getByTestId('logout').click();
     await page.getByTestId('sso-login-button').click();
     await page.waitForURL((url) => url.origin === 'https://mocksaml.com');
+    await page.getByPlaceholder('jackson').fill('bob');
+    await page.getByRole('button', { name: 'Sign In' }).click();
+    await page.waitForURL((url) => url.origin === baseURL);
+    await expect(userAvatarLocator).toBeVisible();
   });
 });
