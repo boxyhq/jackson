@@ -45,9 +45,10 @@ test.describe('Admin Portal SSO', () => {
     // select the row of the connection list table, then locate the edit button
     const editButton = page.getByText(TEST_SSO_CONNECTION_NAME).locator('..').getByTestId('edit');
     await editButton.click();
+    // click the delete and confirm deletion
     await page.getByTestId('delete-connection').click();
     await page.getByTestId('confirm-delete').click();
-    // check that the SSO connection is absent in the connection list
-    await expect(page.getByText('pw_admin_portal_sso')).not.toBeVisible();
+    // check that the SSO connection is deleted from the connection list
+    await expect(page.getByText(TEST_SSO_CONNECTION_NAME)).not.toBeVisible();
   });
 });
