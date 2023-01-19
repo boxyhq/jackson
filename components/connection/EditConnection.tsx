@@ -171,7 +171,11 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
                 <h6 className='mb-1 font-medium'>{t('delete_this_connection')}</h6>
                 <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
               </div>
-              <ButtonDanger type='button' onClick={toggleDelConfirm} data-modal-toggle='popup-modal'>
+              <ButtonDanger
+                type='button'
+                onClick={toggleDelConfirm}
+                data-modal-toggle='popup-modal'
+                data-testid='delete-connection'>
                 {t('delete')}
               </ButtonDanger>
             </section>
