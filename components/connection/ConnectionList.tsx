@@ -165,6 +165,7 @@ const ConnectionList = ({
                             tooltip={t('edit')}
                             Icon={PencilIcon}
                             className='hover:text-green-400'
+                            data-testid='edit'
                             onClick={() => {
                               router.push(
                                 setupLinkToken
