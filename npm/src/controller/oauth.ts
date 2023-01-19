@@ -75,7 +75,7 @@ export class OAuthController implements IOAuthController {
       code_challenge,
       code_challenge_method = '',
       idp_hint,
-      prompt,
+      forceAuthn = 'false',
     } = body;
 
     const tenant = 'tenant' in body ? body.tenant : undefined;
@@ -242,18 +242,13 @@ export class OAuthController implements IOAuthController {
       const cert = await getDefaultCertificate();
 
       try {
-        // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
-        // If login is one of the value in prompt we want to enable forceAuthn
-        // Else use the saml connection forceAuthn value
-        const promptOptions = prompt ? prompt.split(' ').filter((p) => p === 'login') : [];
-
         samlReq = saml.request({
           ssoUrl,
           entityID: this.opts.samlAudience!,
           callbackUrl: this.opts.externalUrl + this.opts.samlPath,
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
-          forceAuthn: promptOptions.length > 0 ? true : !!connection.forceAuthn,
+          forceAuthn: forceAuthn === 'true' ? true : !!connection.forceAuthn,
         });
       } catch (err: unknown) {
         return {

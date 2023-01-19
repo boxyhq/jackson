@@ -177,7 +177,7 @@ export interface OAuthReqBody {
   scope?: string;
   nonce?: string;
   idp_hint?: string;
-  prompt?: string;
+  forceAuthn?: string;
 }
 
 export interface OAuthReqBodyWithClientId extends OAuthReqBody {
