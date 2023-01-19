@@ -15,7 +15,7 @@ export const saveConnection = async ({
   connectionIsSAML: boolean;
   connectionIsOIDC: boolean;
   setupLinkToken?: string;
-  callback: (res: Response) => void;
+  callback: (res: Response) => Promise<void>;
 }) => {
   const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
     formObj;
