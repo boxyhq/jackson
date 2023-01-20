@@ -261,7 +261,7 @@ export const appID = (tenant: string, product: string) => {
 // List of well known providers
 const wellKnownProviders = {
   'okta.com': 'Okta',
-  'sts.windows.net': 'Azure',
+  'sts.windows.net': 'Azure AD',
   'mocksaml.com': 'MockSAML',
   'onelogin.com': 'OneLogin',
   'keycloak.com': 'Keycloak',
