@@ -18,7 +18,9 @@ const ConfirmationModal = (props: {
     <Modal visible={visible} title={title} description={description}>
       <div className='modal-action'>
         <ButtonOutline onClick={onCancel}>{t('cancel')}</ButtonOutline>
-        <ButtonDanger onClick={onConfirm}>{actionButtonText || t('delete')}</ButtonDanger>
+        <ButtonDanger onClick={onConfirm} data-testid='confirm-delete'>
+          {actionButtonText || t('delete')}
+        </ButtonDanger>
       </div>
     </Modal>
   );
