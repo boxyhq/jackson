@@ -88,7 +88,7 @@ const saml = {
       throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
     }
 
-    if (!idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl) {
+    if (!idpMetadata.sso.redirectUrl && !idpMetadata.sso.postUrl) {
       throw new JacksonError("Couldn't find SAML bindings for POST/REDIRECT", 400);
     }
 
