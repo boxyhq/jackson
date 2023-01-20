@@ -1,4 +1,5 @@
-import { IAdminController, Storable } from '../typings';
+import { IAdminController, Storable, SAMLSSORecord, OIDCSSORecord } from '../typings';
+import { transformConnections } from './utils';
 
 export class AdminController implements IAdminController {
   connectionStore: Storable;
@@ -7,11 +8,15 @@ export class AdminController implements IAdminController {
     this.connectionStore = connectionStore;
   }
 
-  public async getAllConnection(pageOffset?: number, pageLimit?: number): Promise<Partial<any>[]> {
-    const connectionList = (await this.connectionStore.getAll(pageOffset, pageLimit)) as Partial<any>[];
+  public async getAllConnection(pageOffset?: number, pageLimit?: number) {
+    const connectionList = (await this.connectionStore.getAll(pageOffset, pageLimit)) satisfies Array<
+      SAMLSSORecord | OIDCSSORecord
+    >;
+
     if (!connectionList || !connectionList.length) {
       return [];
     }
-    return connectionList;
+
+    return transformConnections(connectionList);
   }
 }
