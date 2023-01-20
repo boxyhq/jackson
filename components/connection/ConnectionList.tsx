@@ -72,14 +72,14 @@ const ConnectionList = ({
           {t(isSettingsView ? 'admin_portal_sso' : 'enterprise_sso')}
         </h2>
         <div className='flex gap-2'>
-          <LinkPrimary Icon={PlusIcon} href={createConnectionUrl} data-test-id='create-connection'>
+          <LinkPrimary Icon={PlusIcon} href={createConnectionUrl} data-testid='create-connection'>
             {t('new_connection')}
           </LinkPrimary>
           {!setupLinkToken && !isSettingsView && (
             <LinkPrimary
               Icon={LinkIcon}
               href='/admin/sso-connection/setup-link/new'
-              data-test-id='create-setup-link'>
+              data-testid='create-setup-link'>
               {t('new_setup_link')}
             </LinkPrimary>
           )}
@@ -165,6 +165,7 @@ const ConnectionList = ({
                             tooltip={t('edit')}
                             Icon={PencilIcon}
                             className='hover:text-green-400'
+                            data-testid='edit'
                             onClick={() => {
                               router.push(
                                 setupLinkToken
