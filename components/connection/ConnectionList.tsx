@@ -65,6 +65,23 @@ const ConnectionList = ({
     return null;
   }
 
+  // Find the display name for a connection
+  const connectionDisplayName = (connection: SAMLSSORecord | OIDCSSORecord) => {
+    if (connection.name) {
+      return connection.name;
+    }
+
+    if ('idpMetadata' in connection) {
+      return connection.idpMetadata.friendlyProviderName || connection.idpMetadata.provider;
+    }
+
+    if ('oidcProvider' in connection) {
+      return connection.oidcProvider.provider;
+    }
+
+    return 'Unknown';
+  };
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
@@ -131,10 +148,7 @@ const ConnectionList = ({
                       key={connection.clientID}
                       className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {connection.name ||
-                          (connectionIsSAML
-                            ? connection.idpMetadata?.provider
-                            : connection.oidcProvider?.provider)}
+                        {connectionDisplayName(connection)}
                         {isSystemSSO && (
                           <Badge
                             color='primary'

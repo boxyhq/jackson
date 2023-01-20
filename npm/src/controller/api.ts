@@ -15,7 +15,7 @@ import {
   GetIDPEntityIDBody,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames, appID } from './utils';
+import { IndexNames, appID, transformConnections } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
@@ -494,7 +494,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return connections;
+      return transformConnections(connections);
     }
 
     if (clientID) {
@@ -504,7 +504,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return [connection];
+      return transformConnections([connection]);
     }
 
     if (tenant && product) {
@@ -516,6 +516,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       if (!connections || !connections.length) {
         return [];
       }
+
       // filter if strategy is passed
       const filteredConnections = strategy
         ? connections.filter((connection) => {
@@ -537,7 +538,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return filteredConnections;
+      return transformConnections(filteredConnections);
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
