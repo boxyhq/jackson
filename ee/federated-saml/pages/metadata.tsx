@@ -14,9 +14,9 @@ const Metadata = ({ metadata }: { metadata: Metadata }) => {
   return (
     <LicenseRequired>
       <Toaster />
-      <div className='my-10 mx-5 flex justify-center'>
-        <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-          <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_app_info')}</h2>
+      <div className='mt-10 flex w-full justify-center px-5'>
+        <div className='w-full rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-1/2'>
+          <h2 className='mb-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_app_info')}</h2>
           <div className='flex flex-col'>
             <div className='space-y-3'>
               <p className='text-sm leading-6 text-gray-800'>{t('saml_federation_app_info_details')}</p>
