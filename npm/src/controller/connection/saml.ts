@@ -80,8 +80,16 @@ const saml = {
 
     const idpMetadata = (await saml20.parseMetadata(metadata, {})) as SAMLSSORecord['idpMetadata'];
 
+    if (idpMetadata.loginType !== 'idp') {
+      throw new JacksonError('Please provide a metadata with IDPSSODescriptor', 400);
+    }
+
     if (!idpMetadata.entityID) {
       throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
+    }
+
+    if (!idpMetadata.sso.redirectUrl || idpMetadata.sso.postUrl) {
+      throw new JacksonError("Couldn't find SAML bindings for POST/REDIRECT", 400);
     }
 
     // extract provider
