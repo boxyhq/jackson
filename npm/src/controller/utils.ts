@@ -285,7 +285,10 @@ export const transformConnections = (connections: SAMLSSORecord[]) => {
 
   // Add friendlyProviderName to the connection
   return connections.map((connection) => {
-    connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+    if ('idpMetadata' in connection) {
+      connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+    }
+
     return connection;
   });
 };
