@@ -42,6 +42,7 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     entityID: string;
     loginType?: string;
     provider: string | 'Unknown';
+    friendlyProviderName: string | null;
     slo: {
       postUrl?: string;
       redirectUrl?: string;
