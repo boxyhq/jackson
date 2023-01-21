@@ -11,9 +11,8 @@ import {
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSORecord,
 } from '../../src/typings';
-import { saml_connection } from './fixture';
+import { saml_connection, saml_connection_binding_absent, saml_connection_entityID_absent } from './fixture';
 import { jacksonOptions } from '../utils';
-import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 
 let connectionAPIController: IConnectionAPIController;
 
@@ -170,7 +169,7 @@ tap.test('controller/api', async (t) => {
 
     t.test('When metadata XML is malformed', async (t) => {
       t.test('entityID missing in XML', async (t) => {
-        const body = Object.assign({}, boxyhqNoentityID);
+        const body: Record<string, any> = Object.assign({}, saml_connection_entityID_absent);
         const metadataPath = path.join(__dirname, '/data/metadata/noentityID');
         const files = await fs.promises.readdir(metadataPath);
         const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
@@ -182,6 +181,23 @@ tap.test('controller/api', async (t) => {
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, "Couldn't parse EntityID from SAML metadata");
+          t.equal(err.statusCode, 400);
+        }
+      });
+
+      t.test('POST/REDIRECT binding absent in XML', async (t) => {
+        const body: Record<string, any> = Object.assign({}, saml_connection_binding_absent);
+        const metadataPath = path.join(__dirname, '/data/metadata/nobinding');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        body.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, "Couldn't find SAML bindings for POST/REDIRECT");
           t.equal(err.statusCode, 400);
         }
       });
@@ -394,6 +410,32 @@ tap.test('controller/api', async (t) => {
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, "Couldn't parse EntityID from SAML metadata");
+          t.equal(err.statusCode, 400);
+        }
+      });
+      t.test('POST/REDIRECT binding absent in XML', async (t) => {
+        const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
+          body_saml_provider as SAMLSSOConnectionWithEncodedMetadata
+        );
+        const metadataPath = path.join(__dirname, '/data/metadata/nobinding');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        const encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.updateSAMLConnection({
+            clientID,
+            clientSecret,
+            tenant: body_saml_provider.tenant,
+            product: body_saml_provider.product,
+            redirectUrl: saml_connection.redirectUrl,
+            defaultRedirectUrl: saml_connection.defaultRedirectUrl,
+            encodedRawMetadata,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, "Couldn't find SAML bindings for POST/REDIRECT");
           t.equal(err.statusCode, 400);
         }
       });
