@@ -11,6 +11,7 @@ import boxyhq from './data/metadata/boxyhq';
 import boxyhqNobinding from './data/metadata/nobinding/boxyhq-nobinding';
 import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 import exampleOidc from './data/metadata/example.oidc';
+import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidssodescriptor';
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
@@ -256,5 +257,5 @@ export const saml_connection = boxyhq;
 export const oidc_connection = exampleOidc;
 export const saml_connection_entityID_absent = boxyhqNoentityID;
 export const saml_connection_binding_absent = boxyhqNobinding;
-
+export const saml_connection_invalid_sso_descriptor = invalidssodescriptor;
 // END: Fixtures for *_api.test.ts

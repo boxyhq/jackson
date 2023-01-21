@@ -11,7 +11,12 @@ import {
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSORecord,
 } from '../../src/typings';
-import { saml_connection, saml_connection_binding_absent, saml_connection_entityID_absent } from './fixture';
+import {
+  saml_connection,
+  saml_connection_binding_absent,
+  saml_connection_entityID_absent,
+  saml_connection_invalid_sso_descriptor,
+} from './fixture';
 import { jacksonOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
@@ -181,6 +186,23 @@ tap.test('controller/api', async (t) => {
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, "Couldn't parse EntityID from SAML metadata");
+          t.equal(err.statusCode, 400);
+        }
+      });
+
+      t.test('Invalid SSO Descriptor', async (t) => {
+        const body: Record<string, any> = Object.assign({}, saml_connection_invalid_sso_descriptor);
+        const metadataPath = path.join(__dirname, '/data/metadata/invalidSSODescriptor');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        body.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, 'Please provide a metadata with IDPSSODescriptor');
           t.equal(err.statusCode, 400);
         }
       });
@@ -413,6 +435,34 @@ tap.test('controller/api', async (t) => {
           t.equal(err.statusCode, 400);
         }
       });
+
+      t.test('Invalid SSO Descriptor', async (t) => {
+        const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
+          body_saml_provider as SAMLSSOConnectionWithEncodedMetadata
+        );
+        const metadataPath = path.join(__dirname, '/data/metadata/invalidSSODescriptor');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        const encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.updateSAMLConnection({
+            clientID,
+            clientSecret,
+            tenant: body_saml_provider.tenant,
+            product: body_saml_provider.product,
+            redirectUrl: saml_connection.redirectUrl,
+            defaultRedirectUrl: saml_connection.defaultRedirectUrl,
+            encodedRawMetadata,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, 'Please provide a metadata with IDPSSODescriptor');
+          t.equal(err.statusCode, 400);
+        }
+      });
+
       t.test('POST/REDIRECT binding absent in XML', async (t) => {
         const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
           body_saml_provider as SAMLSSOConnectionWithEncodedMetadata
