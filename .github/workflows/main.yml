@@ -96,8 +96,8 @@ jobs:
         ports:
           - 4000:4000
         env:
-          APP_URL: 'http://localhost:4000'
-          ENTITY_ID: 'https://saml.example.com/entityid'
+          APP_URL: http://localhost:4000
+          ENTITY_ID: https://saml.example.com/entityid
           PUBLIC_KEY: ${{ secrets.MOCK_SAML_PUBLIC_KEY }}
           PRIVATE_KEY: ${{ secrets.MOCK_SAML_PRIVATE_KEY }}
 
