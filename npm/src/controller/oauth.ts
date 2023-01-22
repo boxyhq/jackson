@@ -229,6 +229,7 @@ export class OAuthController implements IOAuthController {
         ssoUrl = sso.postUrl;
         post = true;
       } else {
+        // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
         return {
           redirect_url: OAuthErrorResponse({
             error: 'invalid_request',

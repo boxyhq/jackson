@@ -30,6 +30,20 @@ async function fetchMetadata(resource: string) {
   return response.data;
 }
 
+function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
+  if (metadata.loginType !== 'idp') {
+    throw new JacksonError('Please provide a metadata with IDPSSODescriptor', 400);
+  }
+
+  if (!metadata.entityID) {
+    throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
+  }
+
+  if (!metadata.sso.redirectUrl && !metadata.sso.postUrl) {
+    throw new JacksonError("Couldn't find SAML bindings for POST/REDIRECT", 400);
+  }
+}
+
 const saml = {
   create: async (
     body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata,
@@ -80,9 +94,7 @@ const saml = {
 
     const idpMetadata = (await saml20.parseMetadata(metadata, {})) as SAMLSSORecord['idpMetadata'];
 
-    if (!idpMetadata.entityID) {
-      throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
-    }
+    validateParsedMetadata(idpMetadata);
 
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);
@@ -204,9 +216,8 @@ const saml = {
     if (metadata) {
       newMetadata = await saml20.parseMetadata(metadata, {});
 
-      if (!newMetadata.entityID) {
-        throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
-      }
+      validateParsedMetadata(newMetadata);
+
       // extract provider
       let providerName = extractHostName(newMetadata.entityID);
       if (!providerName) {

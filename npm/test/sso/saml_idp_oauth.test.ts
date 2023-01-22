@@ -33,7 +33,6 @@ import {
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
-  saml_binding_absent,
   state_not_set,
   token_req_cv_mismatch,
   token_req_encoded_client_id,
@@ -120,20 +119,6 @@ tap.test('authorize()', async (t) => {
     t.equal(
       redirect_url,
       `${body.redirect_uri}?error=unsupported_response_type&error_description=Only+Authorization+Code+grant+is+supported&state=${body.state}`,
-      'got OAuth error'
-    );
-  });
-
-  t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
-    const body = saml_binding_absent;
-
-    const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
-      redirect_url: string;
-    };
-
-    t.equal(
-      redirect_url,
-      `${body.redirect_uri}?error=invalid_request&error_description=SAML+binding+could+not+be+retrieved&state=${body.state}`,
       'got OAuth error'
     );
   });
