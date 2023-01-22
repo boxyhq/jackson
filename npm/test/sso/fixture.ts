@@ -106,12 +106,6 @@ export const invalid_tenant_product = (product?, tenant?): Partial<OAuthTokenReq
   };
 };
 
-export const saml_binding_absent: Partial<OAuthReqBodyWithClientId> = {
-  redirect_uri: boxyhqNobinding.defaultRedirectUrl,
-  state: 'state-123',
-  client_id: `tenant=${boxyhqNobinding.tenant}&product=${boxyhqNobinding.product}`,
-};
-
 export const authz_request_oidc_provider: Partial<OAuthReqBodyWithClientId> = {
   redirect_uri: exampleOidc.defaultRedirectUrl,
   state: 'state-123',
