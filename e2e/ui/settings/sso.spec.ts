@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const TEST_SSO_CONNECTION_NAME = 'pw_admin_portal_sso';
-const MOCKSAML_ORIGIN = 'https://mocksaml.com';
+const MOCKSAML_ORIGIN = process.env.MOCKSAML_ORIGIN || 'https://mocksaml.com';
 const MOCKSAML_METADATA_URL = `${MOCKSAML_ORIGIN}/api/saml/metadata`;
 const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
 
@@ -22,7 +22,7 @@ test.describe('Admin Portal SSO', () => {
     await expect(page.getByText(TEST_SSO_CONNECTION_NAME)).toBeVisible();
   });
 
-  test('should be able to login via mocksaml.com SSO', async ({ page, baseURL }) => {
+  test('should be able to login with mocksaml.com via SP initiated SSO', async ({ page, baseURL }) => {
     const userAvatarLocator = page.getByTestId('user-avatar');
     // Logout from the magic link authentication
     await page.goto('/');
@@ -33,6 +33,22 @@ test.describe('Admin Portal SSO', () => {
     // Perform sign in at mocksaml
     await page.waitForURL((url) => url.origin === MOCKSAML_ORIGIN);
     await page.getByPlaceholder('jackson').fill('bob');
+    await page.getByRole('button', { name: MOCKSAML_SIGNIN_BUTTON_NAME }).click();
+    // Wait for browser to redirect back to admin portal
+    await page.waitForURL((url) => url.origin === baseURL);
+    // assert login state
+    await expect(userAvatarLocator).toBeVisible();
+  });
+
+  test('should be able to login with mocksaml.com via IdP initiated SSO', async ({ page, baseURL }) => {
+    const userAvatarLocator = page.getByTestId('user-avatar');
+    // Go directly to mocksaml.com
+    await page.goto(MOCKSAML_ORIGIN);
+    await page.getByRole('link', { name: 'Test IdP Login' }).click();
+    await page
+      .getByPlaceholder('https://jackson-demo.boxyhq.com/api/oauth/saml')
+      .fill('http://localhost:5225/api/oauth/saml');
+    await page.getByRole('textbox', { name: 'Please provide a mock email address' }).fill('bob');
     await page.getByRole('button', { name: MOCKSAML_SIGNIN_BUTTON_NAME }).click();
     // Wait for browser to redirect back to admin portal
     await page.waitForURL((url) => url.origin === baseURL);
