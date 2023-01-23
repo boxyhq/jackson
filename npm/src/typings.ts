@@ -414,7 +414,7 @@ export interface ISPSAMLConfig {
   }>;
   toMarkdown(): string;
   toHTML(): string;
-  toXMLMetadata(): Promise<string>;
+  toXMLMetadata(boolean?): Promise<string>;
 }
 
 export interface ApiError {

@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -52,7 +52,7 @@
     "axios": "1.2.2",
     "classnames": "2.3.2",
     "cors": "2.8.5",
-    "daisyui": "2.46.1",
+    "daisyui": "2.47.0",
     "i18next": "22.4.9",
     "micromatch": "4.0.5",
     "next": "13.1.2",
@@ -75,9 +75,9 @@
     "@types/cors": "2.8.13",
     "@types/micromatch": "4.0.2",
     "@types/node": "18.11.18",
-    "@types/react": "18.0.26",
+    "@types/react": "18.0.27",
     "@typescript-eslint/eslint-plugin": "5.48.1",
-    "@typescript-eslint/parser": "5.48.1",
+    "@typescript-eslint/parser": "5.48.2",
     "autoprefixer": "10.4.13",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
