@@ -5,10 +5,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'GET') {
     throw { message: 'Method not allowed', statusCode: 405 };
   }
+
+  const { encryption = 'true' } = req.query;
+
   const { spConfig } = await jackson();
 
   res
     .status(200)
     .setHeader('Content-Type', 'text/xml')
-    .send(await spConfig.toXMLMetadata());
+    .send(await spConfig.toXMLMetadata(encryption === 'true'));
 }

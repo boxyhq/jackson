@@ -64,10 +64,41 @@ export class SPSAMLConfig {
     return marked.parse(this.toMarkdown());
   }
 
-  public async toXMLMetadata(): Promise<string> {
+  public async toXMLMetadata(encryption = true): Promise<string> {
     const { entityId, acsUrl, publicKeyString } = await this.get();
 
     const today = new Date();
+
+    const keyDescriptor: any[] = [
+      {
+        '@use': 'signing',
+        'ds:KeyInfo': {
+          '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+          'ds:X509Data': {
+            'ds:X509Certificate': {
+              '#text': publicKeyString,
+            },
+          },
+        },
+      },
+    ];
+
+    if (encryption) {
+      keyDescriptor.push({
+        '@use': 'encryption',
+        'ds:KeyInfo': {
+          '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+          'ds:X509Data': {
+            'ds:X509Certificate': {
+              '#text': publicKeyString,
+            },
+          },
+        },
+        'md:EncryptionMethod': {
+          '@Algorithm': 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+        },
+      });
+    }
 
     const nodes = {
       'md:EntityDescriptor': {
@@ -77,33 +108,7 @@ export class SPSAMLConfig {
         'md:SPSSODescriptor': {
           //'@WantAuthnRequestsSigned': true,
           '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-          'md:KeyDescriptor': [
-            {
-              '@use': 'signing',
-              'ds:KeyInfo': {
-                '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-                'ds:X509Data': {
-                  'ds:X509Certificate': {
-                    '#text': publicKeyString,
-                  },
-                },
-              },
-            },
-            {
-              '@use': 'encryption',
-              'ds:KeyInfo': {
-                '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-                'ds:X509Data': {
-                  'ds:X509Certificate': {
-                    '#text': publicKeyString,
-                  },
-                },
-              },
-              'md:EncryptionMethod': {
-                '@Algorithm': 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
-              },
-            },
-          ],
+          'md:KeyDescriptor': keyDescriptor,
           'md:NameIDFormat': {
             '#text': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
           },
