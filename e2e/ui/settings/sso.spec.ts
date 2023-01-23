@@ -42,7 +42,7 @@ test.describe('Admin Portal SSO', () => {
 
   test('should be able to login with mocksaml via IdP initiated SSO', async ({ page, baseURL }) => {
     const userAvatarLocator = page.getByTestId('user-avatar');
-    // Go directly to mocksaml.com
+    // Go directly to mocksaml hosting
     await page.goto(MOCKSAML_ORIGIN);
     await page.getByRole('link', { name: 'Test IdP Login' }).click();
     await page
