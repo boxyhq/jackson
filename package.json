@@ -52,7 +52,7 @@
     "axios": "1.2.2",
     "classnames": "2.3.2",
     "cors": "2.8.5",
-    "daisyui": "2.46.1",
+    "daisyui": "2.47.0",
     "i18next": "22.4.9",
     "micromatch": "4.0.5",
     "next": "13.1.2",
