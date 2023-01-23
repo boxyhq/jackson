@@ -1,4 +1,5 @@
 import { errorToast } from '@components/Toaster';
+import { isLocalhost } from '@lib/ui/utils';
 import { FormEvent, SetStateAction, useMemo } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 
@@ -20,7 +21,7 @@ export const saveConnection = async ({
   const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
     formObj;
 
-  if (metadataUrl && !metadataUrl.startsWith('https')) {
+  if (!isLocalhost() && metadataUrl && !metadataUrl.startsWith('https')) {
     errorToast('Metadata URL must start with https');
     return;
   }

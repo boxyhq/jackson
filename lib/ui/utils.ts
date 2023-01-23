@@ -32,3 +32,10 @@ export const fetcher = async (url: string, queryParams = '') => {
 
   return resContent;
 };
+
+export function isLocalhost() {
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    return true;
+  }
+  return false;
+}
