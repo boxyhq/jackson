@@ -47,7 +47,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "6.7.0",
-    "rimraf": "4.0.7",
+    "rimraf": "4.1.1",
     "serve": "14.1.2",
     "vite": "4.0.4",
     "vite-pages-theme-doc": "4.0.1",
