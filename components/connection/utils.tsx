@@ -1,5 +1,5 @@
 import { errorToast } from '@components/Toaster';
-import { isLocalhost } from '@lib/ui/utils';
+import { isLocalhost } from '@boxyhq/saml-jackson';
 import { FormEvent, SetStateAction, useMemo } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 
@@ -21,8 +21,8 @@ export const saveConnection = async ({
   const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
     formObj;
 
-  if (!isLocalhost() && metadataUrl && !metadataUrl.startsWith('https')) {
-    errorToast('Metadata URL must start with https');
+  if (metadataUrl && !isLocalhost(metadataUrl) && !metadataUrl.startsWith('https')) {
+    errorToast('Metadata URL not valid, allowed ones are localhost/HTTPS URLs');
     return;
   }
   const encodedRawMetadata = btoa(rawMetadata || '');

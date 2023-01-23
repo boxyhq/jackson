@@ -292,3 +292,13 @@ export const transformConnections = (connections: SAMLSSORecord[]) => {
     return connection;
   });
 };
+
+export const isLocalhost = (url: string) => {
+  let givenURL: URL;
+  try {
+    givenURL = new URL(url);
+  } catch (error) {
+    return false;
+  }
+  return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
+};
