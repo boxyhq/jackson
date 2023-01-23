@@ -6,14 +6,16 @@ const MOCKSAML_METADATA_URL = `${MOCKSAML_ORIGIN}/api/saml/metadata`;
 const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
 
 test.describe('Admin Portal SSO', () => {
-  test('should be able to add SSO connection to mocksaml.com', async ({ page }) => {
+  test('should be able to add SSO connection to mocksaml', async ({ page }) => {
+    console.log(`debug`, MOCKSAML_METADATA_URL);
+
     await page.goto('/admin/settings');
     // Find the new connection button and click on it
     await page.getByTestId('create-connection').click();
     // Fill the name for the connection
     const nameInput = page.locator('#name');
     await nameInput.fill(TEST_SSO_CONNECTION_NAME);
-    // Enter the metadata url for mocksaml.com in the form
+    // Enter the metadata url for mocksaml in the form
     const metadataUrlInput = page.locator('#metadataUrl');
     await metadataUrlInput.fill(MOCKSAML_METADATA_URL);
     // submit the form
@@ -22,7 +24,7 @@ test.describe('Admin Portal SSO', () => {
     await expect(page.getByText(TEST_SSO_CONNECTION_NAME)).toBeVisible();
   });
 
-  test('should be able to login with mocksaml.com via SP initiated SSO', async ({ page, baseURL }) => {
+  test('should be able to login with mocksaml via SP initiated SSO', async ({ page, baseURL }) => {
     const userAvatarLocator = page.getByTestId('user-avatar');
     // Logout from the magic link authentication
     await page.goto('/');
@@ -40,7 +42,7 @@ test.describe('Admin Portal SSO', () => {
     await expect(userAvatarLocator).toBeVisible();
   });
 
-  test('should be able to login with mocksaml.com via IdP initiated SSO', async ({ page, baseURL }) => {
+  test('should be able to login with mocksaml via IdP initiated SSO', async ({ page, baseURL }) => {
     const userAvatarLocator = page.getByTestId('user-avatar');
     // Go directly to mocksaml.com
     await page.goto(MOCKSAML_ORIGIN);
