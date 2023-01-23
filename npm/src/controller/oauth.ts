@@ -758,7 +758,7 @@ export class OAuthController implements IOAuthController {
     if (code_verifier) {
       // PKCE flow
       let cv = code_verifier;
-      if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
+      if (codeVal.session.code_challenge_method?.toLowerCase() === 's256') {
         cv = codeVerifier.encode(code_verifier);
       }
 
