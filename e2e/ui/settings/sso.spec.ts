@@ -7,8 +7,6 @@ const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
 
 test.describe('Admin Portal SSO', () => {
   test('should be able to add SSO connection to mocksaml', async ({ page }) => {
-    console.log(`debug`, MOCKSAML_METADATA_URL);
-
     await page.goto('/admin/settings');
     // Find the new connection button and click on it
     await page.getByTestId('create-connection').click();
