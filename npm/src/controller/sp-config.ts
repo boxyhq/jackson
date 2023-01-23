@@ -64,7 +64,7 @@ export class SPSAMLConfig {
     return marked.parse(this.toMarkdown());
   }
 
-  public async toXMLMetadata(encryption = true): Promise<string> {
+  public async toXMLMetadata(encryption = false): Promise<string> {
     const { entityId, acsUrl, publicKeyString } = await this.get();
 
     const today = new Date();

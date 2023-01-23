@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     throw { message: 'Method not allowed', statusCode: 405 };
   }
 
-  const { encryption = 'true' } = req.query;
+  const { encryption = 'false' } = req.query;
 
   const { spConfig } = await jackson();
 
