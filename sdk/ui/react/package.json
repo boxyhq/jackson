@@ -21,6 +21,7 @@
     "url": "https://github.com/boxyhq/jackson",
     "directory": "sdk/ui/react"
   },
+  "license": "Apache-2.0",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",

@@ -29,6 +29,7 @@ export default defineConfig({
         },
       },
     },
+    minify: false,
   },
   plugins: [
     react(),
