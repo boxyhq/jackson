@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/boxyhq/jackson.git"
   },
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "next build",
     "dev": "cross-env JACKSON_API_KEYS=secret IDP_ENABLED=true next dev -p 5225",
