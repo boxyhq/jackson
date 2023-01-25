@@ -140,7 +140,7 @@ jobs:
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
       - name: e2e tests
-        run: npx ts-node --log-error e2e/support/seedAuthDb.ts && npx playwright test
+        run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
       - id: version
         run: |
           npm install --legacy-peer-deps
