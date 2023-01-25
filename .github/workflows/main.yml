@@ -124,7 +124,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - name: Generate mocklab openid discovery document
         run: |
-          cat << EOF > ./public/.well-known/mocklab-openid-configuration
+          cat << EOF > ./public/well-known-mocklab-oidc-discovery
           {
             "authorization_endpoint": "https://oauth.mocklab.io/oauth/authorize",
             "token_endpoint": "https://oauth.mocklab.io/oauth/token",
