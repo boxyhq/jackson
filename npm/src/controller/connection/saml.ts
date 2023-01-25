@@ -14,6 +14,7 @@ import {
   validateSSOConnection,
   validateRedirectUrl,
   validateTenantAndProduct,
+  isLocalhost,
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
 import { JacksonError } from '../error';
@@ -41,6 +42,12 @@ function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
 
   if (!metadata.sso.redirectUrl && !metadata.sso.postUrl) {
     throw new JacksonError("Couldn't find SAML bindings for POST/REDIRECT", 400);
+  }
+}
+
+function validateMetadataURL(metadataUrl: string) {
+  if (!isLocalhost(metadataUrl) && !metadataUrl.startsWith('https')) {
+    throw new JacksonError('Metadata URL not valid, allowed ones are localhost/HTTPS URLs', 400);
   }
 }
 
@@ -89,6 +96,8 @@ const saml = {
     if (encodedRawMetadata) {
       metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
+
+    metadataUrl && validateMetadataURL(metadataUrl);
 
     metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
 
@@ -209,6 +218,8 @@ const saml = {
     if (encodedRawMetadata) {
       metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
+
+    metadataUrl && validateMetadataURL(metadataUrl);
 
     metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
 

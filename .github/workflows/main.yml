@@ -41,6 +41,7 @@ jobs:
       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
       BOXYHQ_NO_ANALYTICS: '1'
+      IDP_ENABLED: true
     strategy:
       matrix:
         node-version: [16.x]
@@ -90,6 +91,15 @@ jobs:
         env:
           ACCEPT_EULA: 'Y'
           SA_PASSWORD: '123ABabc!'
+      mocksaml:
+        image: boxyhq/mock-saml:1.0.9
+        ports:
+          - 4000:4000
+        env:
+          APP_URL: http://localhost:4000
+          ENTITY_ID: https://saml.example.com/entityid
+          PUBLIC_KEY: ${{ secrets.MOCK_SAML_PUBLIC_KEY }}
+          PRIVATE_KEY: ${{ secrets.MOCK_SAML_PRIVATE_KEY }}
 
     steps:
       - uses: actions/checkout@v3

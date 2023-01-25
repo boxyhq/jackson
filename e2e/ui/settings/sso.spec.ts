@@ -1,19 +1,19 @@
 import { expect, test } from '@playwright/test';
 
 const TEST_SSO_CONNECTION_NAME = 'pw_admin_portal_sso';
-const MOCKSAML_ORIGIN = 'https://mocksaml.com';
+const MOCKSAML_ORIGIN = process.env.MOCKSAML_ORIGIN || 'https://mocksaml.com';
 const MOCKSAML_METADATA_URL = `${MOCKSAML_ORIGIN}/api/saml/metadata`;
 const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
 
 test.describe('Admin Portal SSO', () => {
-  test('should be able to add SSO connection to mocksaml.com', async ({ page }) => {
+  test('should be able to add SSO connection to mocksaml', async ({ page }) => {
     await page.goto('/admin/settings');
     // Find the new connection button and click on it
     await page.getByTestId('create-connection').click();
     // Fill the name for the connection
     const nameInput = page.locator('#name');
     await nameInput.fill(TEST_SSO_CONNECTION_NAME);
-    // Enter the metadata url for mocksaml.com in the form
+    // Enter the metadata url for mocksaml in the form
     const metadataUrlInput = page.locator('#metadataUrl');
     await metadataUrlInput.fill(MOCKSAML_METADATA_URL);
     // submit the form
@@ -22,7 +22,7 @@ test.describe('Admin Portal SSO', () => {
     await expect(page.getByText(TEST_SSO_CONNECTION_NAME)).toBeVisible();
   });
 
-  test('should be able to login via mocksaml.com SSO', async ({ page, baseURL }) => {
+  test('should be able to login with mocksaml via SP initiated SSO', async ({ page, baseURL }) => {
     const userAvatarLocator = page.getByTestId('user-avatar');
     // Logout from the magic link authentication
     await page.goto('/');
@@ -35,6 +35,22 @@ test.describe('Admin Portal SSO', () => {
     await page.getByPlaceholder('jackson').fill('bob');
     await page.getByRole('button', { name: MOCKSAML_SIGNIN_BUTTON_NAME }).click();
     // Wait for browser to redirect back to admin portal
+    await page.waitForURL((url) => url.origin === baseURL);
+    // assert login state
+    await expect(userAvatarLocator).toBeVisible();
+  });
+
+  test('should be able to login with mocksaml via IdP initiated SSO', async ({ page, baseURL }) => {
+    const userAvatarLocator = page.getByTestId('user-avatar');
+    // Go directly to mocksaml hosting
+    await page.goto(MOCKSAML_ORIGIN);
+    await page.getByRole('link', { name: 'Test IdP Login' }).click();
+    await page
+      .getByPlaceholder('https://jackson-demo.boxyhq.com/api/oauth/saml')
+      .fill(`${baseURL}/api/oauth/saml`);
+    await page.getByRole('textbox', { name: 'Please provide a mock email address' }).fill('bob');
+    await page.getByRole('button', { name: MOCKSAML_SIGNIN_BUTTON_NAME }).click();
+    // Wait for browser to redirect to admin portal
     await page.waitForURL((url) => url.origin === baseURL);
     // assert login state
     await expect(userAvatarLocator).toBeVisible();

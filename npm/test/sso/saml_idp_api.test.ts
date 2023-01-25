@@ -276,13 +276,13 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when the request is bad with metadataUrl', async (t) => {
-      const body = Object.assign({ metadataUrl: 'invalid url' }, saml_connection);
+      const body = Object.assign({ metadataUrl: 'http://mocksaml.com' }, saml_connection);
 
       try {
         await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
-        t.equal(err.message, "Couldn't fetch XML data");
+        t.equal(err.message, 'Metadata URL not valid, allowed ones are localhost/HTTPS URLs');
         t.equal(err.statusCode, 400);
       }
     });
