@@ -125,7 +125,8 @@ jobs:
       - name: Generate mocklab openid discovery document
         run: |
           mkdir ./public/.well-known
-          cat << EOF > ./public/.well-known/openid-configuration          {
+          cat << EOF > ./public/.well-known/openid-configuration          
+          {
             "authorization_endpoint": "https://oauth.mocklab.io/oauth/authorize",
             "token_endpoint": "https://oauth.mocklab.io/oauth/token",
             "userinfo_endpoint": "https://oauth.mocklab.io/userinfo",
