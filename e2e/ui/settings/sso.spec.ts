@@ -7,7 +7,7 @@ const MOCKSAML_METADATA_URL = `${MOCKSAML_ORIGIN}/api/saml/metadata`;
 const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
 // OIDC SSO
 const TEST_OIDC_SSO_CONNECTION_NAME = 'pw_admin_portal_oidc_sso';
-const MOCKLAB_DISCOVERY_PATH = '/.well-known/openid-configuration';
+const MOCKLAB_DISCOVERY_PATH = '/.well-known/mocklab-openid-configuration';
 const MOCKLAB_ORIGIN = 'https://oauth.mocklab.io';
 const MOCKLAB_CLIENT_ID = 'mocklab_oauth2';
 const MOCKLAB_CLIENT_SECRET = 'mocklab_secret';
