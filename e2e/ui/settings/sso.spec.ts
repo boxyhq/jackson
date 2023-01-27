@@ -77,7 +77,7 @@ test.describe('Admin Portal SSO - SAML', () => {
   });
 });
 
-test.describe.fixme('Admin Portal SSO - OIDC', () => {
+test.describe('Admin Portal SSO - OIDC', () => {
   test('should be able to add SSO connection to mocklab', async ({ page, baseURL }) => {
     await page.goto('/admin/settings');
     // Find the new connection button and click on it
