@@ -127,6 +127,7 @@ jobs:
           mkdir ./public/.well-known
           cat << EOF > ./public/.well-known/mocklab-openid-configuration          
           {
+            "issuer": "https://oauth.mocklab.io",
             "authorization_endpoint": "https://oauth.mocklab.io/oauth/authorize",
             "token_endpoint": "https://oauth.mocklab.io/oauth/token",
             "userinfo_endpoint": "https://oauth.mocklab.io/userinfo",
