@@ -5,6 +5,7 @@ import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { validateEmailWithACL } from '@lib/utils';
 import { jacksonOptions as env } from '@lib/env';
 import { sessionName } from '@lib/constants';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 export default NextAuth({
   theme: {
@@ -32,6 +33,32 @@ export default NextAuth({
       },
       from: process.env.SMTP_FROM,
     }),
+    CredentialsProvider({
+      credentials: {
+        email: {},
+        password: {},
+      },
+      async authorize(credentials, req) {
+        if (!credentials) {
+          return null;
+        }
+
+        const { email, password } = credentials;
+
+        if (!email || !password) {
+          return null;
+        }
+
+        // Fetch user from database
+        const user = { id: '1', name: 'J Smith', email: 'jsmith@example.com' };
+
+        if (!user) {
+          return null;
+        }
+
+        return user;
+      },
+    }),
   ],
   session: {
     strategy: 'jwt',
@@ -56,7 +83,13 @@ export default NextAuth({
       if (!user.email) {
         return false;
       }
-      return account?.provider === 'boxyhq-saml' ? true : validateEmailWithACL(user.email);
+
+      // Bypass ACL for credentials and boxyhq-saml
+      if (account?.provider === 'credentials' || account?.provider === 'boxyhq-saml') {
+        return true;
+      }
+
+      return validateEmailWithACL(user.email);
     },
   },
   pages: {
