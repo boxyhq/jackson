@@ -65,6 +65,23 @@ const ConnectionList = ({
     return null;
   }
 
+  // Find the display name for a connection
+  const connectionDisplayName = (connection: SAMLSSORecord | OIDCSSORecord) => {
+    if (connection.name) {
+      return connection.name;
+    }
+
+    if ('idpMetadata' in connection) {
+      return connection.idpMetadata.friendlyProviderName || connection.idpMetadata.provider;
+    }
+
+    if ('oidcProvider' in connection) {
+      return connection.oidcProvider.provider;
+    }
+
+    return 'Unknown';
+  };
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
@@ -72,14 +89,14 @@ const ConnectionList = ({
           {t(isSettingsView ? 'admin_portal_sso' : 'enterprise_sso')}
         </h2>
         <div className='flex gap-2'>
-          <LinkPrimary Icon={PlusIcon} href={createConnectionUrl} data-test-id='create-connection'>
+          <LinkPrimary Icon={PlusIcon} href={createConnectionUrl} data-testid='create-connection'>
             {t('new_connection')}
           </LinkPrimary>
           {!setupLinkToken && !isSettingsView && (
             <LinkPrimary
               Icon={LinkIcon}
               href='/admin/sso-connection/setup-link/new'
-              data-test-id='create-setup-link'>
+              data-testid='create-setup-link'>
               {t('new_setup_link')}
             </LinkPrimary>
           )}
@@ -131,10 +148,7 @@ const ConnectionList = ({
                       key={connection.clientID}
                       className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
                       <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {connection.name ||
-                          (connectionIsSAML
-                            ? connection.idpMetadata?.provider
-                            : connection.oidcProvider?.provider)}
+                        {connectionDisplayName(connection)}
                         {isSystemSSO && (
                           <Badge
                             color='primary'
@@ -165,6 +179,7 @@ const ConnectionList = ({
                             tooltip={t('edit')}
                             Icon={PencilIcon}
                             className='hover:text-green-400'
+                            data-testid='edit'
                             onClick={() => {
                               router.push(
                                 setupLinkToken

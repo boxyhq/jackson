@@ -8,8 +8,10 @@ import {
   OAuthTokenReq,
 } from '../../src';
 import boxyhq from './data/metadata/boxyhq';
-import boxyhqNobinding from './data/metadata/boxyhq-nobinding';
+import boxyhqNobinding from './data/metadata/nobinding/boxyhq-nobinding';
+import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 import exampleOidc from './data/metadata/example.oidc';
+import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidssodescriptor';
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
@@ -102,12 +104,6 @@ export const invalid_tenant_product = (product?, tenant?): Partial<OAuthTokenReq
     code: CODE,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
-};
-
-export const saml_binding_absent: Partial<OAuthReqBodyWithClientId> = {
-  redirect_uri: boxyhqNobinding.defaultRedirectUrl,
-  state: 'state-123',
-  client_id: `tenant=${boxyhqNobinding.tenant}&product=${boxyhqNobinding.product}`,
 };
 
 export const authz_request_oidc_provider: Partial<OAuthReqBodyWithClientId> = {
@@ -253,3 +249,7 @@ export const token_req_with_cv = {
 // BEGIN: Fixtures for *_api.test.ts
 export const saml_connection = boxyhq;
 export const oidc_connection = exampleOidc;
+export const saml_connection_entityID_absent = boxyhqNoentityID;
+export const saml_connection_binding_absent = boxyhqNobinding;
+export const saml_connection_invalid_sso_descriptor = invalidssodescriptor;
+// END: Fixtures for *_api.test.ts

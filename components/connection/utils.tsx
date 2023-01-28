@@ -1,4 +1,3 @@
-import { errorToast } from '@components/Toaster';
 import { FormEvent, SetStateAction, useMemo } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 
@@ -15,15 +14,11 @@ export const saveConnection = async ({
   connectionIsSAML: boolean;
   connectionIsOIDC: boolean;
   setupLinkToken?: string;
-  callback: (res: Response) => void;
+  callback: (res: Response) => Promise<void>;
 }) => {
   const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
     formObj;
 
-  if (metadataUrl && !metadataUrl.startsWith('https')) {
-    errorToast('Metadata URL must start with https');
-    return;
-  }
   const encodedRawMetadata = btoa(rawMetadata || '');
   const redirectUrlList = redirectUrl?.split(/\r\n|\r|\n/);
 

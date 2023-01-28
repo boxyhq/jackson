@@ -42,6 +42,7 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     entityID: string;
     loginType?: string;
     provider: string | 'Unknown';
+    friendlyProviderName: string | null;
     slo: {
       postUrl?: string;
       redirectUrl?: string;
@@ -413,7 +414,7 @@ export interface ISPSAMLConfig {
   }>;
   toMarkdown(): string;
   toHTML(): string;
-  toXMLMetadata(): Promise<string>;
+  toXMLMetadata(boolean?): Promise<string>;
 }
 
 export interface ApiError {

@@ -229,6 +229,7 @@ export class OAuthController implements IOAuthController {
         ssoUrl = sso.postUrl;
         post = true;
       } else {
+        // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
         return {
           redirect_url: OAuthErrorResponse({
             error: 'invalid_request',
@@ -757,7 +758,7 @@ export class OAuthController implements IOAuthController {
     if (code_verifier) {
       // PKCE flow
       let cv = code_verifier;
-      if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
+      if (codeVal.session.code_challenge_method?.toLowerCase() === 's256') {
         cv = codeVerifier.encode(code_verifier);
       }
 
