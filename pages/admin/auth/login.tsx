@@ -178,21 +178,17 @@ const LoginWithEmail = () => {
       redirect: false,
     });
 
-    console.log(response);
-
     setLoading(false);
 
-    // if (!response) {
-    //   return;
-    // }
+    if (!response) {
+      return;
+    }
 
-    // const { error } = response;
+    const { error } = response;
 
-    // if (error) {
-    //   errorToast(error);
-    // } else {
-    //   successToast(t('login_success_toast'));
-    // }
+    if (error) {
+      errorToast(error);
+    }
   };
 
   return (

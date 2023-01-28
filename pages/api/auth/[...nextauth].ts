@@ -38,7 +38,7 @@ export default NextAuth({
         email: {},
         password: {},
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) {
           return null;
         }
@@ -49,14 +49,31 @@ export default NextAuth({
           return null;
         }
 
-        // Fetch user from database
-        const user = { id: '1', name: 'J Smith', email: 'jsmith@example.com' };
+        const adminCredentials = process.env.ADMIN_CREDENTIALS;
 
-        if (!user) {
-          return null;
+        if (!adminCredentials) {
+          throw Error(
+            'No admin credentials found. Please set ADMIN_CREDENTIALS in your environment variables'
+          );
         }
 
-        return user;
+        // Find the admin credentials that match the email and password
+        const adminCredentialsMatch = adminCredentials.split(',').find((credential) => {
+          const [adminEmail, adminPassword] = credential.split(':');
+
+          return adminEmail === email && adminPassword === password;
+        });
+
+        // No match found
+        if (!adminCredentialsMatch) {
+          throw Error('Invalid email or password provided.');
+        }
+
+        return {
+          id: Buffer.from(email).toString('base64'),
+          name: email.split('@')[0].toUpperCase(),
+          email,
+        };
       },
     }),
   ],
