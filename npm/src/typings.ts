@@ -303,7 +303,7 @@ export interface Encrypted {
 
 export type EncryptionKey = any;
 
-export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale';
+export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale' | 'dynamodb';
 
 export type DatabaseType = 'postgres' | 'mysql' | 'mariadb' | 'mssql';
 
