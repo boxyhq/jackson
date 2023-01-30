@@ -36,7 +36,7 @@ jobs:
             type=raw,value=60h
 
       - name: Build Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           file: ./uffizzi/Dockerfile
