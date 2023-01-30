@@ -16,7 +16,7 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
   const { t } = useTranslation('common');
   const router = useRouter();
   const { status } = useSession();
-  const [authView, setAuthView] = useState<'magic-link' | 'email-password'>('email-password');
+  const [authView, setAuthView] = useState<'magic-link' | 'email-password'>('magic-link');
 
   if (status === 'loading') {
     return <Loading />;
@@ -45,8 +45,7 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
                 {t('enterprise_readiness_for_b2b_saas_straight_out_of_the_box')}
               </p>
             </div>
-            {authView === 'email-password' && <LoginWithEmail />}
-            {authView === 'magic-link' && <LoginWithMagicLink csrfToken={csrfToken} />}
+            {authView === 'magic-link' ? <LoginWithMagicLink csrfToken={csrfToken} /> : <LoginWithEmail />}
             <SSOLogin
               buttonText={t('login_with_sso')}
               ssoIdentifier={`tenant=${tenant}&product=${product}`}
@@ -97,10 +96,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   };
 };
 
-// Login with magic link[]
+// Login with magic link
 const LoginWithMagicLink = ({ csrfToken }: { csrfToken: string | undefined }) => {
   const { t } = useTranslation('common');
-
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
 
