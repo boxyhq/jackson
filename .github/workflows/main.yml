@@ -122,6 +122,18 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Generate mocklab openid discovery document
+        run: |
+          mkdir ./public/.well-known
+          cat << EOF > ./public/.well-known/mocklab-openid-configuration          
+          {
+            "issuer": "https://oauth.mocklab.io",
+            "authorization_endpoint": "https://oauth.mocklab.io/oauth/authorize",
+            "token_endpoint": "https://oauth.mocklab.io/oauth/token",
+            "userinfo_endpoint": "https://oauth.mocklab.io/userinfo",
+            "jwks_uri": "https://oauth.mocklab.io/.well-known/jwks.json"
+          }
+          EOF
       - run: npm install
       - run: npm run lint
       - run: npm run build
@@ -130,7 +142,7 @@ jobs:
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
       - name: e2e tests
-        run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
+        run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
       - id: version
         run: |
           npm install --legacy-peer-deps

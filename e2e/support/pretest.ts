@@ -6,7 +6,7 @@ export function hashToken(token: string) {
   return createHash('sha256').update(`${token}${process.env.NEXTAUTH_SECRET}`).digest('hex');
 }
 
-(async function setup() {
+async function seedAuthDb() {
   const store = await initNextAuthDB();
 
   const verificationToken = {
@@ -16,5 +16,10 @@ export function hashToken(token: string) {
   };
 
   await (await store).put(verificationToken.identifier, verificationToken);
+}
+
+(async function setup() {
+  await seedAuthDb();
+  console.log(`seeding auth db ... COMPLETE`);
   process.exit(0);
 })();
