@@ -59,15 +59,13 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
               }}
             />
             <div className='flex justify-center pt-4'>
-              <a
-                href={`#${authView}`}
-                onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                  e.preventDefault();
+              <button
+                onClick={() => {
                   setAuthView(authView === 'magic-link' ? 'email-password' : 'magic-link');
                 }}
                 className='text-sm text-gray-600 underline underline-offset-4'>
                 {authView === 'email-password' ? t('login_with_magic_link') : t('login_with_email_password')}
-              </a>
+              </button>
             </div>
           </div>
         </div>
