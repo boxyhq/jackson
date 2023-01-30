@@ -306,7 +306,7 @@ jobs:
         with:
           name: sbom.cyclonedx
       - name: Scan docker image using TERN
-        uses: philips-labs/tern-action@v1.2.0
+        uses: philips-labs/tern-action@v1.3.0
         id: scan
         with:
           image: ${{ github.repository }}:latest
