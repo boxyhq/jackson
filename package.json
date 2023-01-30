@@ -47,7 +47,7 @@
     "@opentelemetry/sdk-metrics": "1.9.0",
     "@opentelemetry/semantic-conventions": "1.9.0",
     "@retracedhq/logs-viewer": "2.4.4",
-    "@retracedhq/retraced": "0.5.1",
+    "@retracedhq/retraced": "0.6.1",
     "@tailwindcss/typography": "0.5.9",
     "axios": "1.2.2",
     "classnames": "2.3.2",
