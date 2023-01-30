@@ -107,3 +107,7 @@ span.react-datepicker__navigation-icon {
   margin: 0.4rem !important;
   text-align: center !important;
 }
+
+.modal-content > div > textarea {
+  background-color: white;
+}

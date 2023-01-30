@@ -75,7 +75,7 @@ export class OAuthController implements IOAuthController {
       code_challenge,
       code_challenge_method = '',
       idp_hint,
-      prompt,
+      forceAuthn = 'false',
     } = body;
 
     const tenant = 'tenant' in body ? body.tenant : undefined;
@@ -229,6 +229,7 @@ export class OAuthController implements IOAuthController {
         ssoUrl = sso.postUrl;
         post = true;
       } else {
+        // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
         return {
           redirect_url: OAuthErrorResponse({
             error: 'invalid_request',
@@ -242,18 +243,13 @@ export class OAuthController implements IOAuthController {
       const cert = await getDefaultCertificate();
 
       try {
-        // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
-        // If login is one of the value in prompt we want to enable forceAuthn
-        // Else use the saml connection forceAuthn value
-        const promptOptions = prompt ? prompt.split(' ').filter((p) => p === 'login') : [];
-
         samlReq = saml.request({
           ssoUrl,
           entityID: this.opts.samlAudience!,
           callbackUrl: this.opts.externalUrl + this.opts.samlPath,
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
-          forceAuthn: promptOptions.length > 0 ? true : !!connection.forceAuthn,
+          forceAuthn: forceAuthn === 'true' ? true : !!connection.forceAuthn,
         });
       } catch (err: unknown) {
         return {
@@ -269,6 +265,7 @@ export class OAuthController implements IOAuthController {
 
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
+    let oidcNonce: string | undefined;
     if (connectionIsOIDC && 'oidcProvider' in connection) {
       if (!this.opts.oidcPath) {
         return {
@@ -291,6 +288,7 @@ export class OAuthController implements IOAuthController {
         });
         oidcCodeVerifier = generators.codeVerifier();
         const code_challenge = generators.codeChallenge(oidcCodeVerifier);
+        oidcNonce = generators.nonce();
         ssoUrl = oidcClient.authorizationUrl({
           scope: [...requestedScopes, 'openid', 'email', 'profile']
             .filter((value, index, self) => self.indexOf(value) === index) // filter out duplicates
@@ -298,6 +296,7 @@ export class OAuthController implements IOAuthController {
           code_challenge,
           code_challenge_method: 'S256',
           state: relayState,
+          nonce: oidcNonce,
         });
       } catch (err: unknown) {
         if (err) {
@@ -349,7 +348,7 @@ export class OAuthController implements IOAuthController {
               ...sessionObj,
               id: samlReq?.id,
             }
-          : { ...sessionObj, id: connection.clientID, oidcCodeVerifier }
+          : { ...sessionObj, id: connection.clientID, oidcCodeVerifier, oidcNonce }
       );
       // Redirect to IdP
       if (connectionIsSAML) {
@@ -610,7 +609,7 @@ export class OAuthController implements IOAuthController {
         {
           code: opCode,
         },
-        { code_verifier: session.oidcCodeVerifier }
+        { code_verifier: session.oidcCodeVerifier, nonce: session.oidcNonce }
       );
       profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
@@ -762,7 +761,7 @@ export class OAuthController implements IOAuthController {
     if (code_verifier) {
       // PKCE flow
       let cv = code_verifier;
-      if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
+      if (codeVal.session.code_challenge_method?.toLowerCase() === 's256') {
         cv = codeVerifier.encode(code_verifier);
       }
 

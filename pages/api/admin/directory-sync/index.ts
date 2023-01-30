@@ -47,7 +47,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const { data, error } = await directorySyncController.directories.list({ pageOffset, pageLimit });
+  const { data, error } = await directorySyncController.directories.getAll({ pageOffset, pageLimit });
 
   if (data) {
     return res.status(200).json({ data });

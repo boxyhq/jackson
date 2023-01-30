@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import * as jose from 'jose';
 import { Client, TokenSet } from 'openid-client';
-import * as dbutils from '../db/utils';
 
+import * as dbutils from '../db/utils';
 import type {
   ConnectionType,
   OAuthErrorHandlerParams,
@@ -10,6 +10,7 @@ import type {
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
   Profile,
+  SAMLSSORecord,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -255,4 +256,49 @@ export const validateTenantAndProduct = (tenant: string, product: string) => {
 
 export const appID = (tenant: string, product: string) => {
   return dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
+};
+
+// List of well known providers
+const wellKnownProviders = {
+  'okta.com': 'Okta',
+  'sts.windows.net': 'Azure AD',
+  'mocksaml.com': 'MockSAML',
+  'onelogin.com': 'OneLogin',
+  'keycloak.com': 'Keycloak',
+  'jumpcloud.com': 'JumpCloud',
+  'google.com': 'Google',
+  'auth0.com': 'Auth0',
+  'pingone.com': 'PingOne',
+} as const;
+
+// Find the friendly name of the provider from the entityID
+const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
+  const provider = Object.keys(wellKnownProviders).find((provider) => providerName.includes(provider));
+
+  return provider ? wellKnownProviders[provider] : null;
+};
+
+export const transformConnections = (connections: SAMLSSORecord[]) => {
+  if (connections.length === 0) {
+    return connections;
+  }
+
+  // Add friendlyProviderName to the connection
+  return connections.map((connection) => {
+    if ('idpMetadata' in connection) {
+      connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+    }
+
+    return connection;
+  });
+};
+
+export const isLocalhost = (url: string) => {
+  let givenURL: URL;
+  try {
+    givenURL = new URL(url);
+  } catch (error) {
+    return false;
+  }
+  return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
 };

@@ -16,8 +16,7 @@ import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
   authz_request_normal,
-  authz_request_with_prompt_login,
-  authz_request_with_prompt_more_than_one,
+  authz_request_with_forceauthn,
   authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
   authz_request_normal_with_code_challenge,
@@ -34,7 +33,6 @@ import {
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
-  saml_binding_absent,
   state_not_set,
   token_req_cv_mismatch,
   token_req_encoded_client_id,
@@ -125,20 +123,6 @@ tap.test('authorize()', async (t) => {
     );
   });
 
-  t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
-    const body = saml_binding_absent;
-
-    const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
-      redirect_url: string;
-    };
-
-    t.equal(
-      redirect_url,
-      `${body.redirect_uri}?error=invalid_request&error_description=SAML+binding+could+not+be+retrieved&state=${body.state}`,
-      'got OAuth error'
-    );
-  });
-
   t.test('Should return OAuth Error response if request creation fails', async (t) => {
     const body = authz_request_normal;
     const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
@@ -196,18 +180,7 @@ tap.test('authorize()', async (t) => {
     });
 
     t.test('accepts single value in prompt', async (t) => {
-      const body = authz_request_with_prompt_login;
-
-      const response = await oauthController.authorize(<OAuthReq>body);
-      const params = new URLSearchParams(new URL(response.redirect_url!).search);
-
-      t.ok('redirect_url' in response, 'got the Idp authorize URL');
-      t.ok(params.has('RelayState'), 'RelayState present in the query string');
-      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-    });
-
-    t.test('accepts multiple values in prompt', async (t) => {
-      const body = authz_request_with_prompt_more_than_one;
+      const body = authz_request_with_forceauthn;
 
       const response = await oauthController.authorize(<OAuthReq>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);

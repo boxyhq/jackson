@@ -14,6 +14,7 @@ import {
   validateSSOConnection,
   validateRedirectUrl,
   validateTenantAndProduct,
+  isLocalhost,
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
 import { JacksonError } from '../error';
@@ -28,6 +29,26 @@ async function fetchMetadata(resource: string) {
     throw new JacksonError("Couldn't fetch XML data", error.response?.status || 400);
   });
   return response.data;
+}
+
+function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
+  if (metadata.loginType !== 'idp') {
+    throw new JacksonError('Please provide a metadata with IDPSSODescriptor', 400);
+  }
+
+  if (!metadata.entityID) {
+    throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
+  }
+
+  if (!metadata.sso.redirectUrl && !metadata.sso.postUrl) {
+    throw new JacksonError("Couldn't find SAML bindings for POST/REDIRECT", 400);
+  }
+}
+
+function validateMetadataURL(metadataUrl: string) {
+  if (!isLocalhost(metadataUrl) && !metadataUrl.startsWith('https')) {
+    throw new JacksonError('Metadata URL not valid, allowed ones are localhost/HTTPS URLs', 400);
+  }
 }
 
 const saml = {
@@ -76,13 +97,13 @@ const saml = {
       metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
+    metadataUrl && validateMetadataURL(metadataUrl);
+
     metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
 
     const idpMetadata = (await saml20.parseMetadata(metadata, {})) as SAMLSSORecord['idpMetadata'];
 
-    if (!idpMetadata.entityID) {
-      throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
-    }
+    validateParsedMetadata(idpMetadata);
 
     // extract provider
     let providerName = extractHostName(idpMetadata.entityID);
@@ -198,15 +219,16 @@ const saml = {
       metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
+    metadataUrl && validateMetadataURL(metadataUrl);
+
     metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
 
     let newMetadata;
     if (metadata) {
       newMetadata = await saml20.parseMetadata(metadata, {});
 
-      if (!newMetadata.entityID) {
-        throw new JacksonError("Couldn't parse EntityID from SAML metadata", 400);
-      }
+      validateParsedMetadata(newMetadata);
+
       // extract provider
       let providerName = extractHostName(newMetadata.entityID);
       if (!providerName) {

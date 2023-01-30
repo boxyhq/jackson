@@ -4,14 +4,19 @@ import jackson from '@lib/jackson';
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
 
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    case 'DELETE':
-      return await handleDELETE(req, res);
-    default:
-      res.setHeader('Allow', 'GET, DELETE');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+  try {
+    switch (method) {
+      case 'GET':
+        return await handleGET(req, res);
+      case 'DELETE':
+        return await handleDELETE(req, res);
+      default:
+        res.setHeader('Allow', 'GET, DELETE');
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+    }
+  } catch (error: any) {
+    const { message, statusCode = 500 } = error;
+    return res.status(statusCode).json({ error: { message } });
   }
 };
 
@@ -24,7 +29,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    return res.status(400).json({ error });
+    return res.status(error.code).json({ error });
   }
 
   if (!directory) {
@@ -37,6 +42,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll({
     pageOffset,
     pageLimit,
+    directoryId,
   });
 
   return res.status(200).json({ data: events });
@@ -51,7 +57,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    return res.status(400).json({ error });
+    return res.status(error.code).json({ error });
   }
 
   if (!directory) {

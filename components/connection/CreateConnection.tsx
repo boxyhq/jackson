@@ -1,7 +1,12 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { getCommonFields } from './fieldCatalog';
-import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
+import {
+  saveConnection,
+  fieldCatalogFilterByConnection,
+  renderFieldList,
+  useFieldCatalog,
+  type AdminPortalSSODefaults,
+} from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
 import { errorToast } from '@components/Toaster';
@@ -10,15 +15,18 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 
-const fieldCatalog = [...getCommonFields()];
-
 const CreateConnection = ({
   setupLinkToken,
   idpEntityID,
+  isSettingsView = false,
+  adminPortalSSODefaults,
 }: {
   setupLinkToken?: string;
   idpEntityID?: string;
+  isSettingsView?: boolean;
+  adminPortalSSODefaults?: AdminPortalSSODefaults;
 }) => {
+  const fieldCatalog = useFieldCatalog({ isSettingsView });
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -33,10 +41,20 @@ const CreateConnection = ({
   const connectionIsSAML = newConnectionType === 'saml';
   const connectionIsOIDC = newConnectionType === 'oidc';
 
-  const backUrl = setupLinkToken ? `/setup/${setupLinkToken}` : '/admin/sso-connection';
-  const redirectUrl = setupLinkToken ? `/setup/${setupLinkToken}/sso-connection` : '/admin/sso-connection';
+  const backUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}`
+    : isSettingsView
+    ? '/admin/settings/sso-connection'
+    : '/admin/sso-connection';
+  const redirectUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}/sso-connection`
+    : isSettingsView
+    ? '/admin/settings/sso-connection'
+    : '/admin/sso-connection';
   const mutationUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
+    : isSettingsView
+    ? '/api/admin/connections?isSystemSSO'
     : '/api/admin/connections';
 
   // FORM LOGIC: SUBMIT
@@ -69,7 +87,9 @@ const CreateConnection = ({
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>({});
+  const [formObj, setFormObj] = useState<Record<string, string>>(
+    isSettingsView ? { ...adminPortalSSODefaults } : {}
+  );
 
   return (
     <>
@@ -129,7 +149,9 @@ const CreateConnection = ({
               .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
               .map(renderFieldList({ formObj, setFormObj }))}
             <div className='flex'>
-              <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
+              <ButtonPrimary loading={loading} data-testid='submit-form-create-sso'>
+                {t('save_changes')}
+              </ButtonPrimary>
             </div>
           </div>
         </form>

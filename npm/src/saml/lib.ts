@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import saml from '@boxyhq/saml20';
 import xmlbuilder from 'xmlbuilder';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
-
+import * as dbutils from '../db/utils';
 import claims from '../saml/claims';
 
 // Validate the SAMLResponse and extract the user profile
@@ -24,6 +24,9 @@ export const extractSAMLResponseAttributes = async (
       attributes.claims.id = crypto.createHash('sha256').update(attributes.claims.email).digest('hex');
     }
   }
+
+  // we'll send a ripemd160 hash of the id, this can be used in the case of email missing it can be used as the local part
+  attributes.claims.idHash = dbutils.keyDigest(attributes.claims.id);
 
   return attributes;
 };

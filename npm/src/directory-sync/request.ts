@@ -6,13 +6,15 @@ import type {
   DirectorySyncRequest,
 } from '../typings';
 
-export class DirectorySyncRequestHandler {
+export class RequestHandler {
   constructor(private directoryUsers: IDirectoryUsers, private directoryGroups: IDirectoryGroups) {}
 
   async handle(request: DirectorySyncRequest, callback?: EventCallback): Promise<DirectorySyncResponse> {
-    if (request.resourceType === 'users') {
+    const resourceType = request.resourceType.toLowerCase();
+
+    if (resourceType === 'users') {
       return await this.directoryUsers.handleRequest(request, callback);
-    } else if (request.resourceType === 'groups') {
+    } else if (resourceType === 'groups') {
       return await this.directoryGroups.handleRequest(request, callback);
     }
 

@@ -1,8 +1,19 @@
-import type { Storable, Directory, JacksonOption, DatabaseStore, DirectoryType, ApiError } from '../typings';
+import type {
+  Storable,
+  Directory,
+  JacksonOption,
+  DatabaseStore,
+  DirectoryType,
+  ApiError,
+  PaginationParams,
+} from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomSecret, validateTenantAndProduct } from '../controller/utils';
 import { apiError, JacksonError } from '../controller/error';
 import { storeNamespacePrefix } from '../controller/utils';
+import { randomUUID } from 'crypto';
+import { IndexNames } from '../controller/utils';
+import { getDirectorySyncProviders } from './utils';
 
 export class DirectoryConfig {
   private _store: Storable | null = null;
@@ -40,14 +51,18 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
+      // Validate the directory type
+      if (!Object.keys(getDirectorySyncProviders()).includes(type)) {
+        throw new JacksonError('Invalid directory type.', 400);
+      }
+
       validateTenantAndProduct(tenant, product);
 
       if (!name) {
         name = `scim-${tenant}-${product}`;
       }
 
-      const id = dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
-
+      const id = randomUUID();
       const hasWebhook = webhook_url && webhook_secret;
 
       const directory: Directory = {
@@ -67,7 +82,10 @@ export class DirectoryConfig {
         },
       };
 
-      await this.store().put(id, directory);
+      await this.store().put(id, directory, {
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
 
       return { data: this.transform(directory), error: null };
     } catch (err: any) {
@@ -136,26 +154,30 @@ export class DirectoryConfig {
   public async getByTenantAndProduct(
     tenant: string,
     product: string
-  ): Promise<{ data: Directory | null; error: ApiError | null }> {
+  ): Promise<{ data: Directory[] | null; error: ApiError | null }> {
     try {
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      return await this.get(dbutils.keyDigest(dbutils.keyFromParts(tenant, product)));
+      const directories: Directory[] = await this.store().getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
+
+      const transformedDirectories = directories.map((directory) => this.transform(directory));
+
+      return { data: transformedDirectories, error: null };
     } catch (err: any) {
       return apiError(err);
     }
   }
 
   // Get all configurations
-  public async list({
-    pageOffset,
-    pageLimit,
-  }: {
-    pageOffset: number;
-    pageLimit: number;
-  }): Promise<{ data: Directory[] | null; error: ApiError | null }> {
+  public async getAll({ pageOffset, pageLimit }: PaginationParams = {}): Promise<{
+    data: Directory[] | null;
+    error: ApiError | null;
+  }> {
     try {
       const directories = (await this.store().getAll(pageOffset, pageLimit)) as Directory[];
 
@@ -173,7 +195,6 @@ export class DirectoryConfig {
   }
 
   // Delete a configuration by id
-  // Note: This feature is not yet implemented
   public async delete(id: string): Promise<void> {
     if (!id) {
       throw new JacksonError('Missing required parameter.', 400);

@@ -23,6 +23,9 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    outputs:
+      NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
+      PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
     env:
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       NEXTAUTH_URL: http://localhost:5225
@@ -38,6 +41,7 @@ jobs:
       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
       BOXYHQ_NO_ANALYTICS: '1'
+      IDP_ENABLED: true
     strategy:
       matrix:
         node-version: [18.x]
@@ -87,6 +91,15 @@ jobs:
         env:
           ACCEPT_EULA: 'Y'
           SA_PASSWORD: '123ABabc!'
+      mocksaml:
+        image: boxyhq/mock-saml:1.0.9
+        ports:
+          - 4000:4000
+        env:
+          APP_URL: http://localhost:4000
+          ENTITY_ID: https://saml.example.com/entityid
+          PUBLIC_KEY: ${{ secrets.MOCK_SAML_PUBLIC_KEY }}
+          PRIVATE_KEY: ${{ secrets.MOCK_SAML_PRIVATE_KEY }}
 
     steps:
       - uses: actions/checkout@v3
@@ -109,15 +122,29 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Generate mocklab openid discovery document
+        run: |
+          mkdir ./public/.well-known
+          cat << EOF > ./public/.well-known/mocklab-openid-configuration          
+          {
+            "issuer": "https://oauth.mocklab.io",
+            "authorization_endpoint": "https://oauth.mocklab.io/oauth/authorize",
+            "token_endpoint": "https://oauth.mocklab.io/oauth/token",
+            "userinfo_endpoint": "https://oauth.mocklab.io/userinfo",
+            "jwks_uri": "https://oauth.mocklab.io/.well-known/jwks.json"
+          }
+          EOF
       - run: npm install
+      - run: npm run lint
       - run: npm run build
+      - run: npm run test
+        working-directory: ./npm
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
       - name: e2e tests
-        run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
-      - run: npm run test
-        working-directory: ./npm
-      - run: |
+        run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
+      - id: version
+        run: |
           npm install --legacy-peer-deps
           npm run build
           npm install -g json
@@ -134,47 +161,25 @@ jobs:
             JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
 
-          echo ${JACKSON_VERSION} > npmversion.txt
-          echo ${publishTag} > publishTag.txt
+          echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
+          echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
 
-          echo $(cat npmversion.txt)
-          echo $(cat publishTag.txt)
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Upload saml-jackson npm version
-        uses: actions/upload-artifact@v3
-        with:
-          name: npmversion
-          path: ./npm/npmversion.txt
-      - name: Upload saml-jackson publish tag
-        uses: actions/upload-artifact@v3
-        with:
-          name: publishTag
-          path: ./npm/publishTag.txt
 
   build:
     needs: ci
     runs-on: ubuntu-latest
-
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v3
 
-      - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v3
-        with:
-          name: npmversion
-
-      - name: Get saml-jackson npm version
-        id: npmversion
-        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
-
-      - run: echo ${{ steps.npmversion.outputs.npmversion }}
+      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Get short SHA
         id: slug
-        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
+        run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         id: buildx
@@ -193,13 +198,13 @@ jobs:
       - name: Build and push
         if: github.ref == 'refs/heads/release'
         id: docker_build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.sha7 }},${{ github.repository }}:${{ steps.npmversion.outputs.npmversion }}
+          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -230,7 +235,7 @@ jobs:
 
       - name: Sign the image
         if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.sha7 }} || true
+        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.SHA7 }} || true
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
@@ -301,7 +306,7 @@ jobs:
         with:
           name: sbom.cyclonedx
       - name: Scan docker image using TERN
-        uses: philips-labs/tern-action@v1.2.0
+        uses: philips-labs/tern-action@v1.3.0
         id: scan
         with:
           image: ${{ github.repository }}:latest
@@ -317,13 +322,6 @@ jobs:
           rm results.sarif || true
           rm ./_docker/sbom.json || true
           mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
-      - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v3
-        with:
-          name: npmversion
-      - name: Get saml-jackson npm version
-        id: _npmversion
-        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         if: github.ref == 'refs/heads/release'
         run: |
@@ -332,24 +330,24 @@ jobs:
           curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
           mkdir oras_install
           tar -xvf "${ORAS_FILENAME}" -C oras_install
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd _docker
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd ..
           cd npm
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} ./sbom.*
+          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
           cd ..
 
       - name: Sign the sbom images
         if: github.ref == 'refs/heads/release'
         run: |
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ steps._npmversion.outputs.npmversion }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ steps._npmversion.outputs.npmversion }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ steps._npmversion.outputs.npmversion }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }} || true
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
   publish:
-    needs: build
+    needs: [ci, build]
     runs-on: ubuntu-latest
 
     strategy:
@@ -359,23 +357,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Download saml-jackson npm version
-        uses: actions/download-artifact@v3
-        with:
-          name: npmversion
-      - name: Get saml-jackson npm version
-        id: npmversion
-        run: echo "::set-output name=npmversion::$(cat npmversion.txt)"
-      - run: echo ${{ steps.npmversion.outputs.npmversion }}
-
-      - name: Download saml-jackson publish tag
-        uses: actions/download-artifact@v3
-        with:
-          name: publishTag
-      - name: Get saml-jackson npm version
-        id: publishTag
-        run: echo "::set-output name=publishTag::$(cat publishTag.txt)"
-      - run: echo ${{ steps.publishTag.outputs.publishTag }}
+      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
+      - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -392,12 +375,21 @@ jobs:
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
-          JACKSON_VERSION=${{ steps.npmversion.outputs.npmversion }}
+          JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
           json -I -f package.json -e "this.main=\"dist/index.js\""
           json -I -f package.json -e "this.types=\"dist/index.d.ts\""
           json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
-          npm publish --tag ${{ steps.publishTag.outputs.publishTag }} --access public
+          npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish_sdk:
+    needs: [ci, build]
+    name: Publish SDK for React
+    uses: ./.github/workflows/sdk.yml
+    with:
+      npmversion: ${{ needs.ci.outputs.NPM_VERSION }}
+      publishtag: ${{ needs.ci.outputs.PUBLISH_TAG }}
+    secrets: inherit

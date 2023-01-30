@@ -5,20 +5,26 @@
  * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
  */
 
-export const getCommonFields = (isEditView?: boolean) => [
+export const getCommonFields = ({
+  isEditView,
+  isSettingsView,
+}: {
+  isEditView?: boolean;
+  isSettingsView?: boolean;
+}) => [
   {
     key: 'name',
     label: 'Name',
     type: 'text',
     placeholder: 'MyApp',
-    attributes: { required: false, hideInSetupView: false },
+    attributes: { required: false, hideInSetupView: true },
   },
   {
     key: 'description',
     label: 'Description',
     type: 'text',
     placeholder: 'A short description not more than 100 characters',
-    attributes: { maxLength: 100, required: false, hideInSetupView: false },
+    attributes: { maxLength: 100, required: false, hideInSetupView: true },
   },
   {
     key: 'tenant',
@@ -31,6 +37,7 @@ export const getCommonFields = (isEditView?: boolean) => [
           hideInSetupView: true,
         }
       : {
+          editable: !isSettingsView,
           hideInSetupView: true,
         },
   },
@@ -45,6 +52,7 @@ export const getCommonFields = (isEditView?: boolean) => [
           hideInSetupView: true,
         }
       : {
+          editable: !isSettingsView,
           hideInSetupView: true,
         },
   },
@@ -53,16 +61,15 @@ export const getCommonFields = (isEditView?: boolean) => [
     label: 'Allowed redirect URLs (newline separated)',
     type: 'textarea',
     placeholder: 'http://localhost:3366',
-    attributes: { isArray: true, rows: 3, hideInSetupView: false },
+    attributes: { isArray: true, rows: 3, hideInSetupView: true, editable: !isSettingsView },
   },
   {
     key: 'defaultRedirectUrl',
     label: 'Default redirect URL',
     type: 'url',
     placeholder: 'http://localhost:3366/login/saml',
-    attributes: { hideInSetupView: false },
+    attributes: { hideInSetupView: true, editable: !isSettingsView },
   },
-
   {
     key: 'oidcDiscoveryUrl',
     label: 'Well-known URL of OpenId Provider',

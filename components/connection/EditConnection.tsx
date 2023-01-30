@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
 
 import ConfirmationModal from '@components/ConfirmationModal';
-import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
-import { saveConnection, fieldCatalogFilterByConnection, renderFieldList } from './utils';
+import { saveConnection, fieldCatalogFilterByConnection, renderFieldList, useFieldCatalog } from './utils';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
@@ -12,9 +11,7 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
 
-const fieldCatalog = [...getCommonFields(true), ...EditViewOnlyFields];
-
-function getInitialState(connection) {
+function getInitialState(connection, fieldCatalog) {
   const _state = {};
 
   fieldCatalog.forEach(({ key, attributes }) => {
@@ -37,9 +34,12 @@ function getInitialState(connection) {
 type EditProps = {
   connection?: Record<string, any>;
   setupLinkToken?: string;
+  isSettingsView?: boolean;
 };
 
-const EditConnection = ({ connection, setupLinkToken }: EditProps) => {
+const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: EditProps) => {
+  const fieldCatalog = useFieldCatalog({ isEditView: true, isSettingsView });
+
   const router = useRouter();
   const { t } = useTranslation('common');
 
@@ -101,26 +101,46 @@ const EditConnection = ({ connection, setupLinkToken }: EditProps) => {
     }
 
     if (res.ok) {
-      await mutate(setupLinkToken ? `/api/setup/${setupLinkToken}/connections` : '/api/admin/connections');
-      router.replace(setupLinkToken ? `/setup/${setupLinkToken}/sso-connection` : '/admin/sso-connection');
+      await mutate(
+        setupLinkToken
+          ? `/api/setup/${setupLinkToken}/connections`
+          : isSettingsView
+          ? `/api/admin/connections?isSystemSSO`
+          : '/api/admin/connections'
+      );
+      router.replace(
+        setupLinkToken
+          ? `/setup/${setupLinkToken}/sso-connection`
+          : isSettingsView
+          ? '/admin/settings/sso-connection'
+          : '/admin/sso-connection'
+      );
     }
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(() => getInitialState(connection));
+  const [formObj, setFormObj] = useState<Record<string, string>>(() =>
+    getInitialState(connection, fieldCatalog)
+  );
   // Resync form state on save
   useEffect(() => {
-    const _state = getInitialState(connection);
+    const _state = getInitialState(connection, fieldCatalog);
     setFormObj(_state);
-  }, [connection]);
+  }, [connection, fieldCatalog]);
 
   const filteredFieldsByConnection = fieldCatalog.filter(
     fieldCatalogFilterByConnection(connectionIsSAML ? 'saml' : connectionIsOIDC ? 'oidc' : null)
   );
 
+  const backUrl = setupLinkToken
+    ? `/setup/${setupLinkToken}`
+    : isSettingsView
+    ? '/admin/settings/sso-connection'
+    : '/admin/sso-connection';
+
   return (
     <>
-      <LinkBack href={setupLinkToken ? `/setup/${setupLinkToken}` : '/admin/sso-connection'} />
+      <LinkBack href={backUrl} />
       <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('edit_sso_connection')}
@@ -151,7 +171,11 @@ const EditConnection = ({ connection, setupLinkToken }: EditProps) => {
                 <h6 className='mb-1 font-medium'>{t('delete_this_connection')}</h6>
                 <p className='font-light'>{t('all_your_apps_using_this_connection_will_stop_working')}</p>
               </div>
-              <ButtonDanger type='button' onClick={toggleDelConfirm} data-modal-toggle='popup-modal'>
+              <ButtonDanger
+                type='button'
+                onClick={toggleDelConfirm}
+                data-modal-toggle='popup-modal'
+                data-testid='delete-connection'>
                 {t('delete')}
               </ButtonDanger>
             </section>

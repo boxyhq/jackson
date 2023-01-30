@@ -3,11 +3,11 @@ import type {
   DatabaseStore,
   WebhookEventLog,
   DirectorySyncEvent,
-  IWebhookEventsLogger,
+  PaginationParams,
 } from '../typings';
 import { Base } from './Base';
 
-export class WebhookEventsLogger extends Base implements IWebhookEventsLogger {
+export class WebhookEventsLogger extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
   }
@@ -22,7 +22,10 @@ export class WebhookEventsLogger extends Base implements IWebhookEventsLogger {
       created_at: new Date(),
     };
 
-    await this.store('logs').put(id, log);
+    await this.store('logs').put(id, log, {
+      name: 'directoryId',
+      value: directory.id,
+    });
 
     return log;
   }
@@ -34,10 +37,21 @@ export class WebhookEventsLogger extends Base implements IWebhookEventsLogger {
   public async getAll({
     pageOffset,
     pageLimit,
-  }: {
-    pageOffset?: number;
-    pageLimit?: number;
-  }): Promise<WebhookEventLog[]> {
+    directoryId,
+  }: PaginationParams & {
+    directoryId?: string;
+  } = {}): Promise<WebhookEventLog[]> {
+    if (directoryId) {
+      return (await this.store('logs').getByIndex(
+        {
+          name: 'directoryId',
+          value: directoryId,
+        },
+        pageOffset,
+        pageLimit
+      )) as WebhookEventLog[];
+    }
+
     return (await this.store('logs').getAll(pageOffset, pageLimit)) as WebhookEventLog[];
   }
 
