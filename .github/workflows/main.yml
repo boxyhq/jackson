@@ -246,24 +246,20 @@ jobs:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
       - name: Create NPM Package SBOM Report [SPDX]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: spdx
           artifact-name: npm_sbom.spdx
       - name: Publish report [SPDX]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Create NPM Pacakge SBOM Report [CycloneDx]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
           artifact-name: npm_sbom.cyclonedx
       - name: Publish report [CycloneDx]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
@@ -293,24 +289,20 @@ jobs:
       #     fail-build: true
       #     severity-cutoff: high
       - name: Next Js Project SBOM Report [SPDX]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: spdx
           artifact-name: sbom.spdx
       - name: Publish report [SPDX]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Next Js Project SBOM Report [CycloneDx]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
           artifact-name: sbom.cyclonedx
       - name: Publish report [CycloneDx]
-        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
