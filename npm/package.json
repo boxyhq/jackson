@@ -40,7 +40,7 @@
     "statements": 70
   },
   "dependencies": {
-    "@boxyhq/saml20": "1.1.0",
+    "@boxyhq/saml20": "1.1.1",
     "@opentelemetry/api": "1.4.0",
     "axios": "1.2.6",
     "jose": "4.11.2",
