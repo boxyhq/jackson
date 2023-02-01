@@ -222,12 +222,15 @@ jobs:
       #     severity-cutoff: high
 
       - name: Install Cosign
+        if: github.ref == 'refs/heads/release'
         uses: sigstore/cosign-installer@main
 
       - name: Check install!
+        if: github.ref == 'refs/heads/release'
         run: cosign version
 
       - name: place the cosign private key in a file
+        if: github.ref == 'refs/heads/release'
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
         shell: bash
         env:
@@ -240,36 +243,45 @@ jobs:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
       - name: Create NPM Package SBOM Report [SPDX]
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: spdx
           artifact-name: npm_sbom.spdx
       - name: Publish report [SPDX]
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Create NPM Pacakge SBOM Report [CycloneDx]
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
           artifact-name: npm_sbom.cyclonedx
       - name: Publish report [CycloneDx]
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.cyclonedx
       - name: Remove older SBOMs
+        if: github.ref == 'refs/heads/release'
         run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
+        if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.spdx "./npm/sbom.spdx"
       - name: Move CycloneDx Report
+        if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
       # - name: Next Js Project Scan
       #   uses: anchore/scan-action@v3
@@ -278,30 +290,37 @@ jobs:
       #     fail-build: true
       #     severity-cutoff: high
       - name: Next Js Project SBOM Report [SPDX]
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: spdx
           artifact-name: sbom.spdx
       - name: Publish report [SPDX]
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Next Js Project SBOM Report [CycloneDx]
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
           artifact-name: sbom.cyclonedx
       - name: Publish report [CycloneDx]
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Remove older SBOMs
+        if: github.ref == 'refs/heads/release'
         run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: sbom.spdx
       - name: Download artifact for CycloneDx Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: sbom.cyclonedx
