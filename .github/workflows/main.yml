@@ -182,10 +182,12 @@ jobs:
         run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
+        if: github.ref == 'refs/heads/release'
         id: buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
+        if: github.ref == 'refs/heads/release'
         uses: docker/setup-qemu-action@v2
 
       - name: Login to Docker Hub
@@ -207,6 +209,7 @@ jobs:
           tags: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
+        if: github.ref == 'refs/heads/release'
         run: echo ${{ steps.docker_build.outputs.digest }}
 
       - name: Login to GitHub Container Registry
