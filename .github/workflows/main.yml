@@ -204,7 +204,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -310,7 +310,7 @@ jobs:
         uses: philips-labs/tern-action@v1.2.0
         id: scan
         with:
-          image: ${{ github.repository }}:latest
+          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdxtagvalue
           output: docker_sbom.spdx
       - name: Create/Clear folder
@@ -318,7 +318,7 @@ jobs:
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
       - name: Docker CycloneDx report
         if: github.ref == 'refs/heads/release'
-        run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:latest -o ./_docker/sbom.xml -t docker
+        run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }} -o ./_docker/sbom.xml -t docker
       - name: Move Report & cleanup
         if: github.ref == 'refs/heads/release'
         run: |
