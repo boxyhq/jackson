@@ -66,6 +66,7 @@ const saml = {
       name,
       description,
       metadataUrl,
+      identifierFormat,
     } = body;
     const forceAuthn = body.forceAuthn == 'true' || body.forceAuthn == true;
 
@@ -89,6 +90,7 @@ const saml = {
       clientID: '',
       clientSecret: '',
       forceAuthn,
+      identifierFormat,
       metadataUrl,
     };
 
@@ -182,6 +184,7 @@ const saml = {
       description,
       forceAuthn = false,
       metadataUrl,
+      identifierFormat,
       ...clientInfo
     } = body;
 
@@ -257,6 +260,7 @@ const saml = {
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       forceAuthn,
+      identifierFormat: identifierFormat || _savedConnection.identifierFormat,
     };
 
     await connectionStore.put(

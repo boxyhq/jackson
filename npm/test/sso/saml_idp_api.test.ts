@@ -311,6 +311,30 @@ tap.test('controller/api', async (t) => {
       kdStub.restore();
     });
 
+    t.test('when the request is good with identifierFormat', async (t) => {
+      const body = Object.assign({}, saml_connection);
+      body.identifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified';
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
+
+      const response = await connectionAPIController.createSAMLConnection(
+        body as SAMLSSOConnectionWithEncodedMetadata
+      );
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID_SAML);
+      t.equal(response.idpMetadata.provider, PROVIDER);
+
+      const savedConnection = (
+        await connectionAPIController.getConnections({
+          clientID: CLIENT_ID_SAML,
+        })
+      )[0] as SAMLSSORecord;
+
+      t.equal(savedConnection.identifierFormat, 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified');
+
+      kdStub.restore();
+    });
+
     t.test('when the request is good with forceAuthn and metadataUrl', async (t) => {
       const body = Object.assign({ metadataUrl: 'https://mocksaml.com/api/saml/metadata' }, saml_connection);
       body.forceAuthn = true;
