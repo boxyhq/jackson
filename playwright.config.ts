@@ -18,8 +18,8 @@ const config: PlaywrightTestConfig = {
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
     command: process.env.CI
-      ? 'npm run start -- --dns-result-order=ipv4first'
-      : 'npm run build && npm run start',
+      ? 'NODE_OPTIONS="--dns-result-order=ipv4first" npm run start'
+      : 'npm run build && NODE_OPTIONS="--dns-result-order=ipv4first" npm run start',
     port: 5225,
     timeout: 60 * 1000,
     reuseExistingServer: !process.env.CI,

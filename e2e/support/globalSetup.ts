@@ -2,11 +2,7 @@
 import { chromium, FullConfig } from '@playwright/test';
 import { IDENTIFIER, TOKEN } from './nextAuth.constants';
 
-import dns from 'dns';
-
 async function globalSetup(config: FullConfig) {
-  dns.setDefaultResultOrder('ipv4first');
-
   // Env init
   process.env.MOCKSAML_ORIGIN = process.env.CI ? 'http://localhost:4000' : 'https://mocksaml.com';
   // Magic Link Login

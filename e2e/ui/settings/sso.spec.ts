@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import dns from 'dns';
 
 // SAML SSO
 const TEST_SAML_SSO_CONNECTION_NAME = 'pw_admin_portal_saml_sso';
@@ -13,10 +12,6 @@ const MOCKLAB_ORIGIN = 'https://oauth.mocklab.io';
 const MOCKLAB_CLIENT_ID = 'mocklab_oauth2';
 const MOCKLAB_CLIENT_SECRET = 'mocklab_secret';
 const MOCKLAB_SIGNIN_BUTTON_NAME = 'Login';
-
-test.beforeAll(async () => {
-  dns.setDefaultResultOrder('ipv4first');
-});
 
 test.describe('Admin Portal SSO - SAML', () => {
   test('should be able to add SSO connection to mocksaml', async ({ page }) => {
