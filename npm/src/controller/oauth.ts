@@ -250,6 +250,9 @@ export class OAuthController implements IOAuthController {
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
           forceAuthn: forceAuthn === 'true' ? true : !!connection.forceAuthn,
+          identifierFormat: connection.identifierFormat
+            ? connection.identifierFormat
+            : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
         });
       } catch (err: unknown) {
         return {
