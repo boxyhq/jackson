@@ -35,7 +35,7 @@
     "pretest:e2e": "env-cmd -f .env.test.local ts-node --log-error e2e/support/pretest.ts",
     "test:e2e": "env-cmd -f .env.test.local playwright test",
     "test": "cd npm && npm run test",
-    "install": "npm install --install-links=false"
+    "custom-install": "npm install --install-links=false"
   },
   "dependencies": {
     "@boxyhq/react-ui": "file:sdk/ui/react",
