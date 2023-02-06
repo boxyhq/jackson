@@ -14,6 +14,7 @@ interface SSOConnection {
 
 export interface SAMLSSOConnection extends SSOConnection {
   forceAuthn?: boolean | string;
+  identifierFormat?: string;
 }
 
 export interface SAMLSSOConnectionWithRawMetadata extends SAMLSSOConnection {
