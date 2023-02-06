@@ -134,7 +134,7 @@ jobs:
             "jwks_uri": "https://oauth.mocklab.io/.well-known/jwks.json"
           }
           EOF
-      - run: npm install --install-links=false
+      - run: npm install
       - run: npm run lint
       - run: npm run build
       - run: npm run test
