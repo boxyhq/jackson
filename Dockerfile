@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json package-lock.json  ./
 COPY npm npm
 COPY sdk/ui/react sdk/ui/react
-RUN npm install
+RUN npm install --install-links=false
 
 
 
