@@ -35,7 +35,7 @@ class Mongo implements DatabaseDriver {
 
   async get(namespace: string, key: string): Promise<any> {
     const res = await this.collection.findOne({
-      _id: dbutils.key(namespace, key),
+      _id: dbutils.key(namespace, key) as any,
     });
     if (res && res.value) {
       return res.value;
@@ -102,7 +102,7 @@ class Mongo implements DatabaseDriver {
 
     doc.modifiedAt = new Date().toISOString();
     await this.collection.updateOne(
-      { _id: dbutils.key(namespace, key) },
+      { _id: dbutils.key(namespace, key) as any },
       {
         $set: doc,
         $setOnInsert: {
@@ -115,7 +115,7 @@ class Mongo implements DatabaseDriver {
 
   async delete(namespace: string, key: string): Promise<any> {
     return await this.collection.deleteOne({
-      _id: dbutils.key(namespace, key),
+      _id: dbutils.key(namespace, key) as any,
     });
   }
 }
