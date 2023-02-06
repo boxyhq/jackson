@@ -44,7 +44,7 @@ jobs:
       IDP_ENABLED: true
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
@@ -134,7 +134,7 @@ jobs:
             "jwks_uri": "https://oauth.mocklab.io/.well-known/jwks.json"
           }
           EOF
-      - run: npm install
+      - run: npm install --install-links=false
       - run: npm run lint
       - run: npm run build
       - run: npm run test
@@ -145,7 +145,6 @@ jobs:
         run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
       - id: version
         run: |
-          npm install --legacy-peer-deps
           npm run build
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
