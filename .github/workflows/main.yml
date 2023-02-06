@@ -321,7 +321,7 @@ jobs:
           name: sbom.cyclonedx
       - name: Scan docker image using TERN
         if: github.ref == 'refs/heads/release'
-        uses: philips-labs/tern-action@v1.2.0
+        uses: philips-labs/tern-action@v1.3.0
         id: scan
         with:
           image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
