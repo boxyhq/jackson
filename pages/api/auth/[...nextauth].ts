@@ -31,11 +31,7 @@ export default NextAuth({
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        code: {
-          label: 'Code: Go to https://mocksaml.com/saml/login to initiate SAML IdP login',
-          type: 'text',
-          placeholder: 'Enter code',
-        },
+        code: {},
       },
       async authorize(credentials) {
         const { code } = credentials || {};
