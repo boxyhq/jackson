@@ -49,11 +49,11 @@ export default NextAuth({
           return null;
         }
 
-        const adminCredentials = process.env.ADMIN_CREDENTIALS;
+        const adminCredentials = process.env.NEXTAUTH_ADMIN_CREDENTIALS;
 
         if (!adminCredentials) {
           throw Error(
-            'No admin credentials found. Please set ADMIN_CREDENTIALS in your environment variables'
+            'No admin credentials found. Please set NEXTAUTH_ADMIN_CREDENTIALS in your environment variables'
           );
         }
 
