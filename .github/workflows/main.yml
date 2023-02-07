@@ -144,6 +144,7 @@ jobs:
       - name: e2e tests
         run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
       - id: version
+        name: Generate NPM_VERSION and PUBLISH_TAG
         run: |
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
