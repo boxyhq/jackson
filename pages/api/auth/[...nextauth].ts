@@ -6,6 +6,7 @@ import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { validateEmailWithACL } from '@lib/utils';
 import { jacksonOptions as env } from '@lib/env';
 import { sessionName } from '@lib/constants';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 export default NextAuth({
   theme: {
@@ -89,6 +90,49 @@ export default NextAuth({
       },
       from: process.env.SMTP_FROM,
     }),
+    CredentialsProvider({
+      credentials: {
+        email: {},
+        password: {},
+      },
+      async authorize(credentials) {
+        if (!credentials) {
+          return null;
+        }
+
+        const { email, password } = credentials;
+
+        if (!email || !password) {
+          return null;
+        }
+
+        const adminCredentials = process.env.NEXTAUTH_ADMIN_CREDENTIALS;
+
+        if (!adminCredentials) {
+          throw Error(
+            'No admin credentials found. Please set NEXTAUTH_ADMIN_CREDENTIALS in your environment variables'
+          );
+        }
+
+        // Find the admin credentials that match the email and password
+        const adminCredentialsMatch = adminCredentials.split(',').find((credential) => {
+          const [adminEmail, adminPassword] = credential.split(':');
+
+          return adminEmail === email && adminPassword === password;
+        });
+
+        // No match found
+        if (!adminCredentialsMatch) {
+          throw Error('Invalid email or password provided.');
+        }
+
+        return {
+          id: Buffer.from(email).toString('base64'),
+          name: email.split('@')[0],
+          email,
+        };
+      },
+    }),
   ],
   session: {
     strategy: 'jwt',
@@ -113,9 +157,17 @@ export default NextAuth({
       if (!user.email) {
         return false;
       }
-      return account?.provider === 'boxyhq-saml' || account?.provider === 'boxyhq-saml-idplogin'
-        ? true
-        : validateEmailWithACL(user.email);
+
+      // Bypass ACL for credentials and boxyhq-saml (including IdP login)
+      if (
+        account?.provider === 'credentials' ||
+        account?.provider === 'boxyhq-saml' ||
+        account?.provider === 'boxyhq-saml-idplogin'
+      ) {
+        return true;
+      }
+
+      return validateEmailWithACL(user.email);
     },
   },
   pages: {

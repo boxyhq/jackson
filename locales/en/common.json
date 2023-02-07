@@ -150,5 +150,8 @@
   "signature_algorithm": "Signature Algorithm",
   "assertion_encryption": "Assertion Encryption",
   "sp_saml_config_title": "Service Provider (SP) SAML Configuration",
-  "sp_saml_config_description": "Your Identity Provider (IdP) will ask for the following information while configuring the SAML application. Share this information with your IT administrator."
+  "sp_saml_config_description": "Your Identity Provider (IdP) will ask for the following information while configuring the SAML application. Share this information with your IT administrator.",
+  "password": "Password",
+  "sign_in": "Sign In",
+  "email_required": "Email is required"
 }
