@@ -10,7 +10,10 @@ export default function Page() {
   useEffect(() => {
     if (!isReady) return;
 
-    signIn('boxyhq-saml-idplogin', { code: query?.code });
+    signIn('boxyhq-saml-idplogin', {
+      code: query?.code,
+      callbackUrl: '/',
+    });
   }, [isReady, query?.code]);
 
   return null;
