@@ -111,6 +111,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
+          check-latest: true
       - name: Setup Next.js cache
         uses: actions/cache@v3
         with:
@@ -385,6 +386,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
+          check-latest: true
       - run: npm install --legacy-peer-deps
         working-directory: ./npm
 
