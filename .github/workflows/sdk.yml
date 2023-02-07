@@ -24,7 +24,6 @@ jobs:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
-      - run: npm run build
       - name: Publish NPM
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
