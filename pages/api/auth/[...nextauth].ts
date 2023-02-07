@@ -3,6 +3,7 @@ import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
+import jackson from '@lib/jackson';
 import { validateEmailWithACL } from '@lib/utils';
 import { jacksonOptions as env } from '@lib/env';
 import { sessionName } from '@lib/constants';
@@ -38,40 +39,32 @@ export default NextAuth({
         if (!code) {
           return null;
         }
-        const res = await fetch(`${env.externalUrl}/api/oauth/token`, {
-          method: 'POST',
-          body: JSON.stringify({
-            grant_type: 'authorization_code',
-            client_id: 'dummy',
-            client_secret: process.env.CLIENT_SECRET_VERIFIER,
-            redirect_url: process.env.NEXTAUTH_URL,
-            code,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        const { oauthController } = await jackson();
+
+        // Fetch access token
+        const { access_token } = await oauthController.token({
+          code,
+          grant_type: 'authorization_code',
+          redirect_uri: process.env.NEXTAUTH_URL || '',
+          client_id: 'dummy',
+          client_secret: process.env.CLIENT_SECRET_VERIFIER || '',
         });
-        if (!res.ok) {
+
+        if (!access_token) {
           return null;
         }
-        const json = await res.json();
-        if (!json?.access_token) {
+        // Fetch user info
+        const userInfo = await oauthController.userInfo(access_token);
+
+        if (!userInfo) {
           return null;
         }
-        const resUserInfo = await fetch(`${env.externalUrl}/api/oauth/userinfo`, {
-          headers: {
-            Authorization: `Bearer ${json.access_token}`,
-          },
-        });
-        if (!resUserInfo.ok) {
-          return null;
-        }
-        const profile = await resUserInfo.json();
-        if (profile?.id && profile?.email) {
+
+        if (userInfo?.id && userInfo?.email) {
           return {
-            id: profile.id,
-            email: profile.email,
-            name: [profile.firstName, profile.lastName].filter(Boolean).join(' '),
+            id: userInfo.id,
+            email: userInfo.email,
+            name: [userInfo.firstName, userInfo.lastName].filter(Boolean).join(' '),
             image: null,
           };
         }
