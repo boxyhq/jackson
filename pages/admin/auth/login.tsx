@@ -181,7 +181,7 @@ const Login = ({
                     className='underline underline-offset-2'>
                     BoxyHQ documentation
                   </a>
-                  &nbsp;to learn about how to enable the Magic Link or Email/Password authentication methods.
+                  &nbsp;to learn how to enable the Magic Link or Email/Password authentication methods.
                 </p>
               </div>
             )}
