@@ -12,7 +12,13 @@ import Loading from '@components/Loading';
 import { Login as SSOLogin } from '@boxyhq/react-ui';
 import { adminPortalSSODefaults } from '@lib/env';
 
-const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Login = ({
+  csrfToken,
+  tenant,
+  product,
+  isEmailPasswordEnabled,
+  isMagicLinkEnabled,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { status } = useSession();
@@ -102,8 +108,8 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
   return (
     <>
       <div className='flex min-h-screen flex-col items-center justify-center'>
-        <div className='flex flex-col'>
-          <div className='mt-4 border p-6 text-left shadow-md'>
+        <div className='flex flex-col px-4 sm:mx-auto sm:w-full sm:max-w-[480px]'>
+          <div className='mt-4 border py-8 px-6 text-left shadow-md'>
             <div className='space-y-3'>
               <div className='flex justify-center'>
                 <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
@@ -113,56 +119,83 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
                 {t('enterprise_readiness_for_b2b_saas_straight_out_of_the_box')}
               </p>
             </div>
-            <form method='POST' onSubmit={onEmailPasswordLogin}>
-              <div className='mt-6'>
-                <div className='flex flex-col gap-3'>
-                  <label className='block text-sm font-medium' htmlFor='email'>
-                    {t('email')}
-                    <label>
-                      <input
-                        type='email'
-                        placeholder={t('email')}
-                        className='input-bordered input mt-2 w-full rounded-md'
-                        required
-                        onChange={(e) => {
-                          setEmail(e.target.value);
-                        }}
-                        value={email}
-                      />
+
+            {(isEmailPasswordEnabled || isMagicLinkEnabled) && (
+              <form method='POST' onSubmit={onEmailPasswordLogin}>
+                <div className='mt-6'>
+                  <div className='flex flex-col gap-3'>
+                    <label className='block text-sm font-medium' htmlFor='email'>
+                      {t('email')}
+                      <label>
+                        <input
+                          type='email'
+                          placeholder={t('email')}
+                          className='input-bordered input mt-2 w-full rounded-md'
+                          required
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                          }}
+                          value={email}
+                        />
+                      </label>
                     </label>
-                  </label>
-                  <label className='block text-sm font-medium' htmlFor='password'>
-                    {t('password')}
-                    <label>
-                      <input
-                        type='password'
-                        placeholder={t('password')}
-                        className='input-bordered input mt-2 w-full rounded-md'
-                        required
-                        onChange={(e) => {
-                          setPassword(e.target.value);
-                        }}
-                        value={password}
-                      />
-                    </label>
-                  </label>
-                  <ButtonOutline
-                    loading={loading && authMethod === 'credentials'}
-                    className='btn-block'
-                    type='submit'>
-                    {t('sign_in')}
-                  </ButtonOutline>
+                    {isEmailPasswordEnabled && (
+                      <>
+                        <label className='block text-sm font-medium' htmlFor='password'>
+                          {t('password')}
+                          <label>
+                            <input
+                              type='password'
+                              placeholder={t('password')}
+                              className='input-bordered input mt-2 w-full rounded-md'
+                              required
+                              onChange={(e) => {
+                                setPassword(e.target.value);
+                              }}
+                              value={password}
+                            />
+                          </label>
+                        </label>
+                        <ButtonOutline
+                          loading={loading && authMethod === 'credentials'}
+                          className='btn-block'
+                          type='submit'>
+                          {t('sign_in')}
+                        </ButtonOutline>
+                      </>
+                    )}
+                  </div>
                 </div>
+              </form>
+            )}
+
+            {/* No login methods enabled */}
+            {!isEmailPasswordEnabled && !isMagicLinkEnabled && (
+              <div className='mt-10 text-center font-medium text-gray-600'>
+                <p>
+                  Please visit&nbsp;
+                  <a
+                    href='https://boxyhq.com/docs/admin-portal/overview'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='underline underline-offset-2'>
+                    BoxyHQ documentation
+                  </a>
+                  &nbsp;to learn about how to enable the Magic Link or Email/Password authentication methods.
+                </p>
               </div>
-            </form>
+            )}
+
             <div className='mt-10 flex flex-col gap-3'>
-              <ButtonOutline
-                loading={loading && authMethod === 'email'}
-                className='btn-block'
-                onClick={onMagicLinkLogin}
-                type='button'>
-                {t('send_magic_link')}
-              </ButtonOutline>
+              {isMagicLinkEnabled && (
+                <ButtonOutline
+                  loading={loading && authMethod === 'email'}
+                  className='btn-block'
+                  onClick={onMagicLinkLogin}
+                  type='button'>
+                  {t('send_magic_link')}
+                </ButtonOutline>
+              )}
               <SSOLogin
                 buttonText={t('login_with_sso')}
                 ssoIdentifier={`tenant=${tenant}&product=${product}`}
@@ -192,6 +225,9 @@ Login.getLayout = function getLayout(page: ReactElement) {
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { locale }: GetServerSidePropsContext = context;
 
+  const isMagicLinkEnabled = process.env.NEXTAUTH_ACL ? true : false;
+  const isEmailPasswordEnabled = process.env.NEXTAUTH_ADMIN_CREDENTIALS ? true : false;
+
   const { tenant, product } = adminPortalSSODefaults;
 
   return {
@@ -199,6 +235,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       csrfToken: await getCsrfToken(context),
       tenant,
       product,
+      isMagicLinkEnabled,
+      isEmailPasswordEnabled,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
