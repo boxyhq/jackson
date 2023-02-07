@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:16.18.1-alpine3.16
+ARG NODEJS_IMAGE=node:18.14.0-alpine3.17
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
@@ -10,7 +10,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
-RUN npm install
+RUN npm run custom-install
 
 
 

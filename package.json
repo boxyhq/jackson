@@ -34,7 +34,9 @@
     "prepare:sdk": "cd sdk/ui/react && npm install",
     "pretest:e2e": "env-cmd -f .env.test.local ts-node --log-error e2e/support/pretest.ts",
     "test:e2e": "env-cmd -f .env.test.local playwright test",
-    "test": "cd npm && npm run test"
+    "test": "cd npm && npm run test",
+    "custom-install": "npm install --install-links=false",
+    "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'"
   },
   "dependencies": {
     "@boxyhq/react-ui": "file:sdk/ui/react",
@@ -93,6 +95,6 @@
     "typescript": "4.9.5"
   },
   "engines": {
-    "node": ">=14.18.1 <=18.x"
+    "node": ">=18.14.0"
   }
 }

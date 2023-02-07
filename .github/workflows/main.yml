@@ -44,7 +44,7 @@ jobs:
       IDP_ENABLED: true
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
@@ -111,6 +111,9 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
+          check-latest: true
+      - run: node -v
+      - run: npm -v
       - name: Setup Next.js cache
         uses: actions/cache@v3
         with:
@@ -134,7 +137,7 @@ jobs:
             "jwks_uri": "https://oauth.mocklab.io/.well-known/jwks.json"
           }
           EOF
-      - run: npm install
+      - run: npm run custom-install
       - run: npm run lint
       - run: npm run build
       - run: npm run test
@@ -144,9 +147,8 @@ jobs:
       - name: e2e tests
         run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
       - id: version
+        name: Generate NPM_VERSION and PUBLISH_TAG
         run: |
-          npm install --legacy-peer-deps
-          npm run build
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
 
@@ -370,7 +372,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -386,6 +388,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
+          check-latest: true
       - run: npm install --legacy-peer-deps
         working-directory: ./npm
 
