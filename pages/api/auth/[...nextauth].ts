@@ -6,7 +6,6 @@ import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { validateEmailWithACL } from '@lib/utils';
 import { jacksonOptions as env } from '@lib/env';
 import { sessionName } from '@lib/constants';
-import CredentialsProvider from 'next-auth/providers/credentials';
 
 export default NextAuth({
   theme: {
