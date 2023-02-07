@@ -321,41 +321,41 @@ jobs:
           name: sbom.cyclonedx
 
       - name: Create SBOM Report [Docker][SPDX]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:latest
+          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
           artifact-name: docker_sbom.spdx
       - name: Publish report [Docker][SPDX]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Create SBOM Report [Docker][CycloneDx]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:latest
+          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
           artifact-name: docker_sbom.cyclonedx
       - name: Publish report [Docker][CycloneDx]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report [Docker]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: docker_sbom.spdx
       - name: Download artifact for CycloneDx Report [Docker]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: docker_sbom.cyclonedx
       - name: Create/Clear folder [Docker]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
 
       - name: Move Report & cleanup
