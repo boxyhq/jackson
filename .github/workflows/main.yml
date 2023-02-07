@@ -217,13 +217,6 @@ jobs:
         run: |
           echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
 
-      # - name: NPM Package SBOM Scan
-      #   uses: anchore/scan-action@v3
-      #   with:
-      #     path: './npm'
-      #     fail-build: true
-      #     severity-cutoff: high
-
       - name: Install Cosign
         if: github.ref == 'refs/heads/release'
         uses: sigstore/cosign-installer@main
@@ -282,12 +275,7 @@ jobs:
       - name: Move CycloneDx Report
         if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
-      # - name: Next Js Project Scan
-      #   uses: anchore/scan-action@v3
-      #   with:
-      #     path: './'
-      #     fail-build: true
-      #     severity-cutoff: high
+
       - name: Next Js Project SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
@@ -363,7 +351,6 @@ jobs:
         run: |
           mv docker_sbom.spdx "./_docker/sbom.spdx" || true
           mv docker_sbom.cyclonedx "./_docker/sbom.cyclonedx" || true
-          rm ./_docker/sbom.json || true
 
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         if: github.ref == 'refs/heads/release'
