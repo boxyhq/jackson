@@ -71,7 +71,7 @@ export default NextAuth({
 
         return {
           id: Buffer.from(email).toString('base64'),
-          name: email.split('@')[0].toUpperCase(),
+          name: email.split('@')[0],
           email,
         };
       },

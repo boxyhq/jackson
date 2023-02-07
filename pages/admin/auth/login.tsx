@@ -16,14 +16,22 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
   const { t } = useTranslation('common');
   const router = useRouter();
   const { status } = useSession();
-  const [authView, setAuthView] = useState<'magic-link' | 'email-password'>('magic-link');
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [authMethod, setAuthMethod] = useState('credentials');
+
+  let { callbackUrl } = router.query as { callbackUrl: string };
+
+  callbackUrl = callbackUrl || '/admin/sso-connection';
 
   if (status === 'loading') {
     return <Loading />;
   }
 
   if (status === 'authenticated') {
-    router.push('/admin/sso-connection');
+    router.push(callbackUrl);
     return;
   }
 
@@ -31,79 +39,44 @@ const Login = ({ csrfToken, tenant, product }: InferGetServerSidePropsType<typeo
     await signIn('boxyhq-saml', undefined, { client_id: ssoIdentifier });
   };
 
-  return (
-    <>
-      <div className='flex min-h-screen flex-col items-center justify-center'>
-        <div className='flex flex-col'>
-          <div className='mt-4 border p-6 text-left shadow-md'>
-            <div className='space-y-3'>
-              <div className='flex justify-center'>
-                <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
-              </div>
-              <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin Portal</h2>
-              <p className='text-center text-sm text-gray-600'>
-                {t('enterprise_readiness_for_b2b_saas_straight_out_of_the_box')}
-              </p>
-            </div>
-            {authView === 'magic-link' ? <LoginWithMagicLink csrfToken={csrfToken} /> : <LoginWithEmail />}
-            <SSOLogin
-              buttonText={t('login_with_sso')}
-              ssoIdentifier={`tenant=${tenant}&product=${product}`}
-              onSubmit={onSSOSubmit}
-              classNames={{
-                container: 'mt-2',
-                button: 'btn-outline btn-block btn',
-              }}
-              innerProps={{
-                button: { 'data-testid': 'sso-login-button' },
-              }}
-            />
-            <div className='flex justify-center pt-4'>
-              <button
-                onClick={() => {
-                  setAuthView(authView === 'magic-link' ? 'email-password' : 'magic-link');
-                }}
-                className='text-sm text-gray-600 underline underline-offset-4'>
-                {authView === 'email-password' ? t('login_with_magic_link') : t('login_with_email_password')}
-              </button>
-            </div>
-          </div>
-        </div>
-        <Link href='/.well-known' className='my-3 text-sm underline underline-offset-4' target='_blank'>
-          {t('here_are_the_set_of_uris_you_would_need_access_to')}
-        </Link>
-      </div>
-    </>
-  );
-};
-
-Login.getLayout = function getLayout(page: ReactElement) {
-  return <SessionProvider>{page}</SessionProvider>;
-};
-
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { locale }: GetServerSidePropsContext = context;
-  const { tenant, product } = adminPortalSSODefaults;
-  return {
-    props: {
-      csrfToken: await getCsrfToken(context),
-      tenant,
-      product,
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-    },
-  };
-};
-
-// Login with magic link
-const LoginWithMagicLink = ({ csrfToken }: { csrfToken: string | undefined }) => {
-  const { t } = useTranslation('common');
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-
-  const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  // Handle login with email and password
+  const onEmailPasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     setLoading(true);
+    setAuthMethod('credentials');
+
+    const response = await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+      callbackUrl,
+    });
+
+    setLoading(false);
+
+    if (!response) {
+      return;
+    }
+
+    const { error } = response;
+
+    if (error) {
+      errorToast(error);
+    }
+  };
+
+  // Handle login with magic link
+  const onMagicLinkLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email) {
+      errorToast(t('email_required'));
+      return;
+    }
+
+    setLoading(true);
+    setAuthMethod('email');
 
     const response = await signIn('email', {
       email,
@@ -127,107 +100,108 @@ const LoginWithMagicLink = ({ csrfToken }: { csrfToken: string | undefined }) =>
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <div className='mt-8'>
-        <div>
-          <label className='block' htmlFor='email'>
-            {t('email')}
-            <label>
-              <input
-                type='email'
-                placeholder={t('email')}
-                className='input-bordered input mb-5 mt-2 w-full rounded-md'
-                required
-                onChange={(e) => {
-                  setEmail(e.target.value);
+    <>
+      <div className='flex min-h-screen flex-col items-center justify-center'>
+        <div className='flex flex-col'>
+          <div className='mt-4 border p-6 text-left shadow-md'>
+            <div className='space-y-3'>
+              <div className='flex justify-center'>
+                <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
+              </div>
+              <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin Portal</h2>
+              <p className='text-center text-sm text-gray-600'>
+                {t('enterprise_readiness_for_b2b_saas_straight_out_of_the_box')}
+              </p>
+            </div>
+            <form method='POST' onSubmit={onEmailPasswordLogin}>
+              <div className='mt-6'>
+                <div className='flex flex-col gap-3'>
+                  <label className='block text-sm font-medium' htmlFor='email'>
+                    {t('email')}
+                    <label>
+                      <input
+                        type='email'
+                        placeholder={t('email')}
+                        className='input-bordered input mt-2 w-full rounded-md'
+                        required
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
+                        value={email}
+                      />
+                    </label>
+                  </label>
+                  <label className='block text-sm font-medium' htmlFor='password'>
+                    {t('password')}
+                    <label>
+                      <input
+                        type='password'
+                        placeholder={t('password')}
+                        className='input-bordered input mt-2 w-full rounded-md'
+                        required
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                        }}
+                        value={password}
+                      />
+                    </label>
+                  </label>
+                  <ButtonOutline
+                    loading={loading && authMethod === 'credentials'}
+                    className='btn-block'
+                    type='submit'>
+                    {t('sign_in')}
+                  </ButtonOutline>
+                </div>
+              </div>
+            </form>
+            <div className='mt-10 flex flex-col gap-3'>
+              <ButtonOutline
+                loading={loading && authMethod === 'email'}
+                className='btn-block'
+                onClick={onMagicLinkLogin}
+                type='button'>
+                {t('send_magic_link')}
+              </ButtonOutline>
+              <SSOLogin
+                buttonText={t('login_with_sso')}
+                ssoIdentifier={`tenant=${tenant}&product=${product}`}
+                onSubmit={onSSOSubmit}
+                classNames={{
+                  button: 'btn-outline btn-block btn',
                 }}
-                value={email}
+                innerProps={{
+                  button: { 'data-testid': 'sso-login-button' },
+                }}
               />
-            </label>
-          </label>
+            </div>
+          </div>
         </div>
-        <div className='flex items-baseline justify-between'>
-          <ButtonOutline type='submit' loading={loading} className='btn-block'>
-            {t('send_magic_link')}
-          </ButtonOutline>
-        </div>
+        <Link href='/.well-known' className='my-3 text-sm underline underline-offset-4' target='_blank'>
+          {t('here_are_the_set_of_uris_you_would_need_access_to')}
+        </Link>
       </div>
-    </form>
+    </>
   );
 };
 
-// Login with email and password
-const LoginWithEmail = () => {
-  const { t } = useTranslation('common');
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+Login.getLayout = function getLayout(page: ReactElement) {
+  return <SessionProvider>{page}</SessionProvider>;
+};
 
-  const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { locale }: GetServerSidePropsContext = context;
 
-    setLoading(true);
+  const { tenant, product } = adminPortalSSODefaults;
 
-    const response = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    });
-
-    setLoading(false);
-
-    if (!response) {
-      return;
-    }
-
-    const { error } = response;
-
-    if (error) {
-      errorToast(error);
-    }
+  return {
+    props: {
+      csrfToken: await getCsrfToken(context),
+      tenant,
+      product,
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+    },
   };
-
-  return (
-    <form onSubmit={onSubmit}>
-      <div className='mt-8'>
-        <div className='flex flex-col gap-4'>
-          <label className='block' htmlFor='email'>
-            {t('email')}
-            <label>
-              <input
-                type='email'
-                placeholder={t('email')}
-                className='input-bordered input mt-2 w-full rounded-md'
-                required
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                value={email}
-              />
-            </label>
-          </label>
-          <label className='block' htmlFor='password'>
-            {t('password')}
-            <label>
-              <input
-                type='password'
-                placeholder={t('password')}
-                className='input-bordered input mt-2 w-full rounded-md'
-                required
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                value={password}
-              />
-            </label>
-          </label>
-          <ButtonOutline type='submit' loading={loading} className='btn-block'>
-            {t('sign_in')}
-          </ButtonOutline>
-        </div>
-      </div>
-    </form>
-  );
 };
 
 export default Login;
