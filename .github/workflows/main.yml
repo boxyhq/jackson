@@ -145,7 +145,6 @@ jobs:
         run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
       - id: version
         run: |
-          npm run build
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
 
