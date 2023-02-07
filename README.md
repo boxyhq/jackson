@@ -81,6 +81,14 @@ npm run custom-install
 npm run dev
 ```
 
+#### End-to-End (E2E) tests
+
+Create a `.env.test.local` file and populate the values. To execute the tests run:
+
+```zsh
+npm run test:e2e
+```
+
 ## Support
 
 Reach out to the maintainers at one of the following places:
