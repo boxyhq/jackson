@@ -1,7 +1,7 @@
 {
   "name": "@boxyhq/react-ui",
   "description": "React UI components from BoxyHQ",
-  "version": "do-not-change",
+  "version": "0.0.0",
   "type": "module",
   "keywords": [
     "react",
@@ -35,7 +35,8 @@
     "dev": "SHOW_ALL_COMPONENT_DEMOS=true vite serve docs",
     "build-docs": "rimraf docs/dist && vite build docs && serve -s docs/dist",
     "ssr-docs": "rimraf docs/dist && vite-pages ssr docs && serve docs/dist",
-    "build": "vite build"
+    "build": "vite build",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@mdx-js/react": "2.2.1",

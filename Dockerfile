@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:16.18.1-alpine3.16
+ARG NODEJS_IMAGE=node:18.14.0-alpine3.17
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json package-lock.json  ./
 COPY npm npm
 COPY sdk/ui/react sdk/ui/react
-RUN npm install
+RUN npm run custom-install
 
 
 
@@ -36,7 +36,7 @@ RUN npm run build
 FROM $NODEJS_IMAGE AS runner
 WORKDIR /app
 
-ENV NODE_OPTIONS="--max-http-header-size=81920"
+ENV NODE_OPTIONS="--max-http-header-size=81920 --dns-result-order=ipv4first"
 
 
 ENV NODE_ENV production
