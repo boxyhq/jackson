@@ -62,6 +62,25 @@ Please try to create bug reports that are:
 - _Unique._ Do not duplicate existing opened issues.
 - _Scoped to a Single Bug._ One bug per report.
 
+### Development Setup
+
+#### Database
+
+To get up and running, we have a [docker-compose setup](_dev/docker-compose.yml) that will spawn all the supported databases. Ensure that the docker daemon is running on your machine and then run: `npm run dev-dbs`. In case you need a fresh start, destroy the docker containers using : `npm run dev-dbs-destroy` and run `npm run dev-dbs`.
+
+#### Development server
+
+Copy the `.env.example` to `.env.local` and populate the values. Have a look at https://boxyhq.com/docs/jackson/deploy/env-variables for the available environment variables.
+
+Run the dev server:
+
+```zsh
+# Install the packages
+npm run custom-install
+# Start the server
+npm run dev
+```
+
 ## Support
 
 Reach out to the maintainers at one of the following places:
