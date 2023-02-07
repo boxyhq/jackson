@@ -324,7 +324,7 @@ jobs:
         # if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ github.repository }}:latest
           format: spdx
           artifact-name: docker_sbom.spdx
       - name: Publish report [Docker][SPDX]
@@ -336,7 +336,7 @@ jobs:
         # if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ github.repository }}:latest
           format: cyclonedx
           artifact-name: docker_sbom.cyclonedx
       - name: Publish report [Docker][CycloneDx]
