@@ -1,5 +1,11 @@
 import crypto from 'crypto';
-import { IConnectionAPIController, OIDCSSOConnection, OIDCSSORecord, Storable } from '../../typings';
+import {
+  IConnectionAPIController,
+  OIDCSSOConnectionWithDiscoveryUrl,
+  OIDCSSOConnectionWithMetadata,
+  OIDCSSORecord,
+  Storable,
+} from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
   extractHostName,
@@ -12,7 +18,12 @@ import {
 import { JacksonError } from '../error';
 
 const oidc = {
-  create: async (body: OIDCSSOConnection, connectionStore: Storable) => {
+  create: async (
+    body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata,
+    connectionStore: Storable
+  ) => {
+    validateSSOConnection(body, 'oidc');
+
     const {
       defaultRedirectUrl,
       redirectUrl,
@@ -21,13 +32,12 @@ const oidc = {
       name,
       description,
       oidcDiscoveryUrl = '',
+      oidcMetadata = { issuer: '' },
       oidcClientId = '',
       oidcClientSecret = '',
     } = body;
 
     let connectionClientSecret: string;
-
-    validateSSOConnection(body, 'oidc');
 
     const redirectUrlList = extractRedirectUrls(redirectUrl);
 
@@ -48,13 +58,19 @@ const oidc = {
 
     //  from OpenID Provider
     record.oidcProvider = {
-      discoveryUrl: oidcDiscoveryUrl,
+      metadata: oidcMetadata,
       clientId: oidcClientId,
       clientSecret: oidcClientSecret,
     };
 
+    if (oidcDiscoveryUrl) {
+      record.oidcProvider.discoveryUrl = oidcDiscoveryUrl;
+    } else if (oidcMetadata.issuer) {
+      record.oidcProvider.metadata = oidcMetadata;
+    }
+
     // extract provider
-    const providerName = extractHostName(oidcDiscoveryUrl);
+    const providerName = extractHostName(oidcDiscoveryUrl || oidcMetadata.issuer);
     record.oidcProvider.provider = providerName ? providerName : 'Unknown';
 
     // Use the clientId from the OpenID Provider to generate the clientID hash for the connection
@@ -80,7 +96,10 @@ const oidc = {
   },
 
   update: async (
-    body: OIDCSSOConnection & { clientID: string; clientSecret: string },
+    body: (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
+      clientID: string;
+      clientSecret: string;
+    },
     connectionStore: Storable,
     connectionsGetter: IConnectionAPIController['getConnections']
   ) => {
@@ -90,6 +109,7 @@ const oidc = {
       name,
       description,
       oidcDiscoveryUrl,
+      oidcMetadata,
       oidcClientId,
       oidcClientSecret,
       ...clientInfo
@@ -144,6 +164,11 @@ const oidc = {
       if (oidcDiscoveryUrl && typeof oidcDiscoveryUrl === 'string') {
         oidcProvider.discoveryUrl = oidcDiscoveryUrl;
         const providerName = extractHostName(oidcDiscoveryUrl);
+        oidcProvider.provider = providerName ? providerName : 'Unknown';
+      } else if (oidcMetadata && typeof oidcMetadata === 'object') {
+        // Perform a merge of new metadata with existing one
+        oidcProvider.metadata = { ...oidcProvider.metadata, ...oidcMetadata };
+        const providerName = extractHostName(oidcMetadata.issuer);
         oidcProvider.provider = providerName ? providerName : 'Unknown';
       }
     }
