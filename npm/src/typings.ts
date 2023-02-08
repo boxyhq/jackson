@@ -1,4 +1,5 @@
-import { type JWK } from 'jose';
+import type { JWK } from 'jose';
+import type { IssuerMetadata } from 'openid-client';
 
 export * from './ee/federated-saml/types';
 export * from './directory-sync/types';
@@ -63,6 +64,7 @@ export interface OIDCSSORecord extends SSOConnection {
   oidcProvider: {
     provider?: string;
     discoveryUrl?: string;
+    metadata?: IssuerMetadata;
     clientId?: string;
     clientSecret?: string;
   };
