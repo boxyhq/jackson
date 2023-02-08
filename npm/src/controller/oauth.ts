@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { errors, generators, Issuer } from 'openid-client';
+import { errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
@@ -598,10 +598,10 @@ export class OAuthController implements IOAuthController {
     }
 
     // Reconstruct the oidcClient
-    const { discoveryUrl, clientId, clientSecret } = oidcConnection.oidcProvider;
+    const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
     let profile;
     try {
-      const oidcIssuer = await Issuer.discover(discoveryUrl);
+      const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
       const oidcClient = new oidcIssuer.Client({
         client_id: clientId,
         client_secret: clientSecret,
