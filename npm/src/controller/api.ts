@@ -8,7 +8,8 @@ import {
   Storable,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
-  OIDCSSOConnection,
+  OIDCSSOConnectionWithDiscoveryUrl,
+  OIDCSSOConnectionWithMetadata,
   JacksonOption,
   SAMLSSORecord,
   OIDCSSORecord,
@@ -202,7 +203,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
     return this.createSAMLConnection(...args);
   }
 
-  public async createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord> {
+  public async createOIDCConnection(
+    body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
+  ): Promise<OIDCSSORecord> {
     metrics.increment('createConnection');
 
     if (!this.opts.oidcPath) {
@@ -370,7 +373,10 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
 
   public async updateOIDCConnection(
-    body: OIDCSSOConnection & { clientID: string; clientSecret: string }
+    body: (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
+      clientID: string;
+      clientSecret: string;
+    }
   ): Promise<void> {
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);

@@ -30,10 +30,19 @@ export interface SAMLSSOConnectionWithEncodedMetadata extends SAMLSSOConnection 
   metadataUrl?: string;
 }
 
-export interface OIDCSSOConnection extends SSOConnection {
-  oidcDiscoveryUrl: string;
+interface OIDCSSOConnection extends SSOConnection {
   oidcClientId: string;
   oidcClientSecret: string;
+}
+
+export interface OIDCSSOConnectionWithMetadata extends OIDCSSOConnection {
+  oidcDiscoveryUrl?: never;
+  oidcMetadata: IssuerMetadata;
+}
+
+export interface OIDCSSOConnectionWithDiscoveryUrl extends OIDCSSOConnection {
+  oidcDiscoveryUrl: string;
+  oidcMetadata?: never;
 }
 
 export interface SAMLSSORecord extends SAMLSSOConnection {
