@@ -6,9 +6,10 @@ import * as dbutils from '../db/utils';
 import type {
   ConnectionType,
   OAuthErrorHandlerParams,
-  OIDCSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnectionWithDiscoveryUrl,
+  OIDCSSOConnectionWithMetadata,
   Profile,
   SAMLSSORecord,
 } from '../typings';
@@ -104,13 +105,18 @@ export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
 };
 
 export const validateSSOConnection = (
-  body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata | OIDCSSOConnection,
+  body:
+    | SAMLSSOConnectionWithRawMetadata
+    | SAMLSSOConnectionWithEncodedMetadata
+    | OIDCSSOConnectionWithDiscoveryUrl
+    | OIDCSSOConnectionWithMetadata,
   strategy: ConnectionType
 ): void => {
   const { defaultRedirectUrl, redirectUrl, tenant, product, description } = body;
   const encodedRawMetadata = 'encodedRawMetadata' in body ? body.encodedRawMetadata : undefined;
   const rawMetadata = 'rawMetadata' in body ? body.rawMetadata : undefined;
   const oidcDiscoveryUrl = 'oidcDiscoveryUrl' in body ? body.oidcDiscoveryUrl : undefined;
+  const oidcMetadata = 'oidcMetadata' in body ? body.oidcMetadata : undefined;
   const oidcClientId = 'oidcClientId' in body ? body.oidcClientId : undefined;
   const oidcClientSecret = 'oidcClientSecret' in body ? body.oidcClientSecret : undefined;
   const metadataUrl = 'metadataUrl' in body ? body.metadataUrl : undefined;
@@ -131,8 +137,11 @@ export const validateSSOConnection = (
     if (!oidcClientSecret) {
       throw new JacksonError('Please provide the clientSecret from OpenID Provider', 400);
     }
-    if (!oidcDiscoveryUrl) {
-      throw new JacksonError('Please provide the discoveryUrl for the OpenID Provider', 400);
+    if (!oidcDiscoveryUrl && !oidcMetadata) {
+      throw new JacksonError(
+        'Please provide the discoveryUrl or issuer metadata for the OpenID Provider',
+        400
+      );
     }
   }
 
