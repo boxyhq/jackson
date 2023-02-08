@@ -39,6 +39,7 @@ import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SAMLHandler } from './saml-handler';
 import { extractSAMLResponseAttributes } from '../saml/lib';
+import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -280,9 +281,9 @@ export class OAuthController implements IOAuthController {
           }),
         };
       }
-      const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
+      const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
       try {
-        const oidcIssuer = await Issuer.discover(discoveryUrl as string);
+        const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
         const oidcClient = new oidcIssuer.Client({
           client_id: clientId as string,
           client_secret: clientSecret,
