@@ -143,6 +143,27 @@ export const validateSSOConnection = (
         400
       );
     }
+    if (!oidcDiscoveryUrl && oidcMetadata) {
+      const { issuer, authorization_endpoint, token_endpoint, userinfo_endpoint, jwks_uri } = oidcMetadata;
+      if (!issuer) {
+        throw new JacksonError('"issuer" missing in the metadata for the OpenID Provider', 400);
+      }
+      if (!authorization_endpoint) {
+        throw new JacksonError(
+          '"authorization_endpoint" missing in the metadata for the OpenID Provider',
+          400
+        );
+      }
+      if (!token_endpoint) {
+        throw new JacksonError('"token_endpoint" missing in the metadata for the OpenID Provider', 400);
+      }
+      if (!userinfo_endpoint) {
+        throw new JacksonError('"userinfo_endpoint" missing in the metadata for the OpenID Provider', 400);
+      }
+      if (!jwks_uri) {
+        throw new JacksonError('"jwks_uri" missing in the metadata for the OpenID Provider', 400);
+      }
+    }
   }
 
   if (!defaultRedirectUrl) {
