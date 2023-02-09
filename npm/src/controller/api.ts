@@ -113,6 +113,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: well-known URL where the OpenID Provider configuration is exposed
    *     in: formData
    *     type: string
+   *   oidcMetadataPost:
+   *     name: oidcMetadata
+   *     description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
+   *     in: formData
+   *     type: string
    *   oidcClientIdPost:
    *     name: oidcClientId
    *     description: clientId of the application set up on the OpenID Provider
@@ -176,6 +181,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
    *      - $ref: '#/parameters/oidcDiscoveryUrlPost'
+   *      - $ref: '#/parameters/oidcMetadataPost'
    *      - $ref: '#/parameters/oidcClientIdPost'
    *      - $ref: '#/parameters/oidcClientSecretPost'
    *     responses:
@@ -263,6 +269,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: well-known URL where the OpenID Provider configuration is exposed
    *     in: formData
    *     type: string
+   *   oidcMetadataPatch:
+   *     name: oidcMetadata
+   *     description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
+   *     in: formData
+   *     type: string
    *   oidcClientIdPatch:
    *     name: oidcClientId
    *     description: clientId of the application set up on the OpenID Provider
@@ -340,6 +351,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/rawMetadataParamPatch'
    *       - $ref: '#/parameters/metadataUrlParamPatch'
    *       - $ref: '#/parameters/oidcDiscoveryUrlPatch'
+   *       - $ref: '#/parameters/oidcMetadataPatch'
    *       - $ref: '#/parameters/oidcClientIdPatch'
    *       - $ref: '#/parameters/oidcClientSecretPatch'
    *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
