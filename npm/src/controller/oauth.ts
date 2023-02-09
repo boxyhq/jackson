@@ -886,8 +886,12 @@ export class OAuthController implements IOAuthController {
    *               type: string
    *             roles:
    *               type: array
+   *               items:
+   *                 type: string
    *             groups:
    *               type: array
+   *               items:
+   *                 type: string
    *             raw:
    *               type: object
    *             requested:
