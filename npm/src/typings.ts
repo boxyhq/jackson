@@ -111,7 +111,9 @@ export interface IConnectionAPIController {
   createSAMLConnection(
     body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata
   ): Promise<SAMLSSORecord>;
-  createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord>;
+  createOIDCConnection(
+    body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
+  ): Promise<OIDCSSORecord>;
   /**
    * @deprecated Use `updateSAMLConnection` instead.
    */
@@ -122,7 +124,13 @@ export interface IConnectionAPIController {
       clientSecret: string;
     }
   ): Promise<void>;
-  updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
+  updateOIDCConnection(
+    body:
+      | (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
+          clientID: string;
+          clientSecret: string;
+        }
+  ): Promise<void>;
   getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
   getIDPEntityID(body: GetIDPEntityIDBody): string;
   /**
