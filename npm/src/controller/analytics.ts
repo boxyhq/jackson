@@ -24,7 +24,7 @@ export class AnalyticsController {
     }
 
     const sent = await this.analyticsStore.get(sentKey);
-    const msBetweenDates = Math.abs(new Date().getTime() - new Date(sent).getTime());
+    const msBetweenDates = Math.abs(new Date().getTime() - new Date(sent || 0).getTime());
     const hoursBetweenDates = msBetweenDates / (60 * 60 * 1000);
 
     if (hoursBetweenDates >= 24) {
