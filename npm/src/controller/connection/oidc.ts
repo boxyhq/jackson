@@ -165,11 +165,15 @@ const oidc = {
         oidcProvider.discoveryUrl = oidcDiscoveryUrl;
         const providerName = extractHostName(oidcDiscoveryUrl);
         oidcProvider.provider = providerName ? providerName : 'Unknown';
+        // Remove previous metadata if any
+        delete oidcProvider.metadata;
       } else if (oidcMetadata && typeof oidcMetadata === 'object') {
         // Perform a merge of new metadata with existing one
         oidcProvider.metadata = { ...oidcProvider.metadata, ...oidcMetadata };
         const providerName = extractHostName(oidcMetadata.issuer);
         oidcProvider.provider = providerName ? providerName : 'Unknown';
+        // Remove previous discoveryUrl if any
+        delete oidcProvider.discoveryUrl;
       }
     }
 
