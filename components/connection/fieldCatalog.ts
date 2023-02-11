@@ -71,15 +71,6 @@ export const getCommonFields = ({
     attributes: { hideInSetupView: true, editable: !isSettingsView },
   },
   {
-    key: 'oidcDiscoveryUrl',
-    label: 'Well-known URL of OpenId Provider',
-    type: 'url',
-    placeholder: 'https://example.com/.well-known/openid-configuration',
-    attributes: isEditView
-      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl, hideInSetupView: false }
-      : { connection: 'oidc', hideInSetupView: false },
-  },
-  {
     key: 'oidcClientId',
     label: 'Client ID [OIDC Provider]',
     type: 'text',
@@ -100,6 +91,55 @@ export const getCommonFields = ({
     attributes: isEditView
       ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret, hideInSetupView: false }
       : { connection: 'oidc', hideInSetupView: false },
+  },
+  {
+    key: 'oidcDiscoveryUrl',
+    label: 'Well-known URL of OpenId Provider',
+    type: 'url',
+    placeholder: 'https://example.com/.well-known/openid-configuration',
+    attributes: isEditView
+      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl, hideInSetupView: false }
+      : { connection: 'oidc', hideInSetupView: false },
+  },
+  {
+    key: 'oidcMetadata',
+    type: 'object',
+    members: [
+      {
+        key: 'issuer',
+        label: 'Issuer',
+        type: 'url',
+        attributes: { accessor: (o) => o?.oidcProvider?.metadata?.issuer, hideInSetupView: false },
+      },
+      {
+        key: 'authorization_endpoint',
+        label: 'Authorization Endpoint',
+        type: 'url',
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.authorization_endpoint,
+          hideInSetupView: false,
+        },
+      },
+      {
+        key: 'token_endpoint',
+        label: 'Token endpoint',
+        type: 'url',
+        attributes: { accessor: (o) => o?.oidcProvider?.metadata?.token_endpoint, hideInSetupView: false },
+      },
+      {
+        key: 'jwks_uri',
+        label: 'JWKS uri',
+        type: 'url',
+        attributes: { accessor: (o) => o?.oidcProvider?.metadata?.jwks_uri, hideInSetupView: false },
+      },
+      {
+        key: 'userinfo_endpoint',
+        label: 'Userinfo endpoint',
+        type: 'url',
+        attributes: { accessor: (o) => o?.oidcProvider?.metadata?.userinfo_endpoint, hideInSetupView: false },
+      },
+    ],
+    attributes: { connection: 'oidc', hideInSetupView: false },
   },
   {
     key: 'rawMetadata',
