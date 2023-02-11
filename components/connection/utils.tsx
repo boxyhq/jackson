@@ -1,4 +1,4 @@
-import { FormEvent, SetStateAction, useMemo } from 'react';
+import { Dispatch, FormEvent, SetStateAction, useMemo } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 
 export const saveConnection = async ({
@@ -16,8 +16,16 @@ export const saveConnection = async ({
   setupLinkToken?: string;
   callback: (res: Response) => Promise<void>;
 }) => {
-  const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
-    formObj;
+  const {
+    rawMetadata,
+    redirectUrl,
+    oidcDiscoveryUrl,
+    oidcMetadata,
+    oidcClientId,
+    oidcClientSecret,
+    metadataUrl,
+    ...rest
+  } = formObj;
 
   const encodedRawMetadata = btoa((rawMetadata as string) || '');
   const redirectUrlList = (redirectUrl as string)?.split(/\r\n|\r|\n/);
@@ -33,6 +41,7 @@ export const saveConnection = async ({
         ...rest,
         encodedRawMetadata: connectionIsSAML ? encodedRawMetadata : undefined,
         oidcDiscoveryUrl: connectionIsOIDC ? oidcDiscoveryUrl : undefined,
+        oidcMetadata: connectionIsOIDC ? oidcMetadata : undefined,
         oidcClientId: connectionIsOIDC ? oidcClientId : undefined,
         oidcClientSecret: connectionIsOIDC ? oidcClientSecret : undefined,
         redirectUrl: redirectUrl && redirectUrlList ? JSON.stringify(redirectUrlList) : undefined,
@@ -69,18 +78,18 @@ export function getHandleChange(
 }
 
 type fieldAttributes = {
-    required?: boolean;
-    maxLength?: number;
-    editable?: boolean;
-    isArray?: boolean;
-    rows?: number;
+  required?: boolean;
+  maxLength?: number;
+  editable?: boolean;
+  isArray?: boolean;
+  rows?: number;
   accessor?: (any) => unknown;
-    formatForDisplay?: (value) => string;
-    isHidden?: (value) => boolean;
-    showWarning?: (value) => boolean;
+  formatForDisplay?: (value) => string;
+  isHidden?: (value) => boolean;
+  showWarning?: (value) => boolean;
   hideInSetupView: boolean;
   connection?: string;
-  };
+};
 
 export type FieldCatalogItem = {
   key: string;
@@ -118,23 +127,18 @@ export const useFieldCatalog = ({
   return fieldCatalog;
 };
 
-export type AdminPortalSSODefaults = {
-  tenant: string;
-  product: string;
-  redirectUrl: string;
-  defaultRedirectUrl: string;
-};
-
 export function renderFieldList(args: {
   isEditView?: boolean;
-  formObj: Record<string, string>;
-  setFormObj: (value: SetStateAction<Record<string, string>>) => void;
+  formObj: FormObj;
+  setFormObj: Dispatch<SetStateAction<FormObj>>;
+  formObjParentKey?: string;
 }) {
   const FieldList = ({
     key,
     placeholder,
     label,
     type,
+    members,
     attributes: {
       isHidden,
       isArray,
@@ -145,7 +149,7 @@ export function renderFieldList(args: {
       showWarning,
       required = true,
     },
-  }: FieldCatalog) => {
+  }: FieldCatalogItem) => {
     const disabled = editable === false;
     const value =
       disabled && typeof formatForDisplay === 'function'
@@ -190,11 +194,11 @@ export function renderFieldList(args: {
           <textarea
             id={key}
             placeholder={placeholder}
-            value={value}
+            value={value as string}
             required={required}
             disabled={disabled}
             maxLength={maxLength}
-            onChange={getHandleChange(args.setFormObj)}
+            onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
             className={`textarea-bordered textarea h-24 w-full ${isArray ? 'whitespace-pre' : ''} ${
               isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
             }`}
@@ -228,7 +232,7 @@ export function renderFieldList(args: {
             id={key}
             type={type}
             placeholder={placeholder}
-            value={type === 'text' ? value || '' : value}
+            value={(value as string) || ''}
             required={required}
             disabled={disabled}
             maxLength={maxLength}
