@@ -18,13 +18,14 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
 
-function getInitialState(connection, fieldCatalog) {
+function getInitialState(connection, fieldCatalog: FieldCatalogItem[]) {
   const _state = {};
 
-  fieldCatalog.forEach(({ key, attributes }) => {
+  fieldCatalog.forEach(({ key, attributes, type, members }) => {
     let value;
-
-    if (typeof attributes.accessor === 'function') {
+    if (type === 'object') {
+      value = getInitialState(connection[key], members as FieldCatalogItem[]);
+    } else if (typeof attributes.accessor === 'function') {
       value = attributes.accessor(connection);
     } else {
       value = connection?.[key];
