@@ -6,6 +6,7 @@ import {
   renderFieldList,
   useFieldCatalog,
   type AdminPortalSSODefaults,
+  type FormObj,
 } from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
@@ -87,9 +88,7 @@ const CreateConnection = ({
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(
-    isSettingsView ? { ...adminPortalSSODefaults } : {}
-  );
+  const [formObj, setFormObj] = useState<FormObj>(isSettingsView ? { ...adminPortalSSODefaults } : {});
 
   return (
     <>

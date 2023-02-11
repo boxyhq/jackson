@@ -9,7 +9,7 @@ export const saveConnection = async ({
   setupLinkToken,
   callback,
 }: {
-  formObj: Record<string, string>;
+  formObj: FormObj;
   isEditView?: boolean;
   connectionIsSAML: boolean;
   connectionIsOIDC: boolean;
@@ -19,8 +19,8 @@ export const saveConnection = async ({
   const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
     formObj;
 
-  const encodedRawMetadata = btoa(rawMetadata || '');
-  const redirectUrlList = redirectUrl?.split(/\r\n|\r|\n/);
+  const encodedRawMetadata = btoa((rawMetadata as string) || '');
+  const redirectUrlList = (redirectUrl as string)?.split(/\r\n|\r|\n/);
 
   const res = await fetch(
     setupLinkToken ? `/api/setup/${setupLinkToken}/sso-connection` : '/api/admin/connections',
@@ -58,22 +58,39 @@ export function getHandleChange(
   };
 }
 
-type FieldCatalog = {
-  key: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  attributes: {
+type fieldAttributes = {
     required?: boolean;
     maxLength?: number;
     editable?: boolean;
     isArray?: boolean;
     rows?: number;
+  accessor?: (any) => unknown;
     formatForDisplay?: (value) => string;
     isHidden?: (value) => boolean;
     showWarning?: (value) => boolean;
+  hideInSetupView: boolean;
+  connection?: string;
   };
+
+export type FieldCatalogItem = {
+  key: string;
+  label?: string;
+  type: 'url' | 'object' | 'pre' | 'text' | 'password' | 'textarea' | 'checkbox';
+  placeholder?: string;
+  attributes: fieldAttributes;
+  members?: FieldCatalogItem[];
 };
+
+export type AdminPortalSSODefaults = {
+  tenant: string;
+  product: string;
+  redirectUrl: string;
+  defaultRedirectUrl: string;
+};
+
+type FormObjValues = string | boolean | string[];
+
+export type FormObj = Record<string, FormObjValues | Record<string, FormObjValues>>;
 
 export const useFieldCatalog = ({
   isEditView,

@@ -3,7 +3,14 @@ import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
 
 import ConfirmationModal from '@components/ConfirmationModal';
-import { saveConnection, fieldCatalogFilterByConnection, renderFieldList, useFieldCatalog } from './utils';
+import {
+  saveConnection,
+  fieldCatalogFilterByConnection,
+  renderFieldList,
+  useFieldCatalog,
+  type FormObj,
+  type FieldCatalogItem,
+} from './utils';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
@@ -119,9 +126,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(() =>
-    getInitialState(connection, fieldCatalog)
-  );
+  const [formObj, setFormObj] = useState<FormObj>(() => getInitialState(connection, fieldCatalog));
   // Resync form state on save
   useEffect(() => {
     const _state = getInitialState(connection, fieldCatalog);
