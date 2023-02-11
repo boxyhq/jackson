@@ -5,13 +5,15 @@
  * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
  */
 
+import type { FieldCatalogItem } from './utils';
+
 export const getCommonFields = ({
   isEditView,
   isSettingsView,
 }: {
   isEditView?: boolean;
   isSettingsView?: boolean;
-}) => [
+}): FieldCatalogItem[] => [
   {
     key: 'name',
     label: 'Name',
@@ -172,7 +174,7 @@ export const getCommonFields = ({
   },
 ];
 
-export const EditViewOnlyFields = [
+export const EditViewOnlyFields: FieldCatalogItem[] = [
   {
     key: 'idpMetadata',
     label: 'IdP Metadata',
