@@ -49,12 +49,22 @@ export function fieldCatalogFilterByConnection(connection) {
 }
 
 export function getHandleChange(
-  setFormObj: (value: SetStateAction<Record<string, string>>) => void,
-  opts: { key?: string } = {}
+  setFormObj: Dispatch<SetStateAction<FormObj>>,
+  opts: { key?: string; formObjParentKey?: string } = {}
 ) {
   return (event: FormEvent) => {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
-    setFormObj((cur) => ({ ...cur, [target.id]: target[opts.key || 'value'] }));
+    setFormObj((cur) =>
+      opts.formObjParentKey
+        ? {
+            ...cur,
+            [opts.formObjParentKey]: {
+              ...(cur[opts.formObjParentKey] as FormObj),
+              [target.id]: target[opts.key || 'value'],
+            },
+          }
+        : { ...cur, [target.id]: target[opts.key || 'value'] }
+    );
   };
 }
 
@@ -139,8 +149,22 @@ export function renderFieldList(args: {
     const disabled = editable === false;
     const value =
       disabled && typeof formatForDisplay === 'function'
-        ? formatForDisplay(args.formObj[key])
+        ? formatForDisplay(
+            args.formObjParentKey ? args.formObj[args.formObjParentKey][key] : args.formObj[key]
+          )
+        : args.formObjParentKey
+        ? args.formObj[args.formObjParentKey][key]
         : args.formObj[key];
+
+    if (type === 'object') {
+      return members?.map(
+        renderFieldList({
+          ...args,
+          formObjParentKey: key,
+        })
+      );
+    }
+
     return (
       <div className='mb-6 ' key={key}>
         {type !== 'checkbox' && (
@@ -192,7 +216,10 @@ export function renderFieldList(args: {
               required={required}
               disabled={disabled}
               maxLength={maxLength}
-              onChange={getHandleChange(args.setFormObj, { key: 'checked' })}
+              onChange={getHandleChange(args.setFormObj, {
+                key: 'checked',
+                formObjParentKey: args.formObjParentKey,
+              })}
               className='checkbox-primary checkbox ml-5 align-middle'
             />
           </>
@@ -205,7 +232,7 @@ export function renderFieldList(args: {
             required={required}
             disabled={disabled}
             maxLength={maxLength}
-            onChange={getHandleChange(args.setFormObj)}
+            onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
             className={`input-bordered input w-full ${
               isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
             }`}
