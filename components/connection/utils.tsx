@@ -157,7 +157,7 @@ export function renderFieldList(args: {
             args.formObjParentKey ? args.formObj[args.formObjParentKey][key] : args.formObj[key]
           )
         : args.formObjParentKey
-        ? args.formObj[args.formObjParentKey][key]
+        ? args.formObj[args.formObjParentKey]?.[key]
         : args.formObj[key];
 
     if (type === 'object') {
