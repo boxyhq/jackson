@@ -154,7 +154,7 @@ export function renderFieldList(args: {
     const value =
       disabled && typeof formatForDisplay === 'function'
         ? formatForDisplay(
-            args.formObjParentKey ? args.formObj[args.formObjParentKey][key] : args.formObj[key]
+            args.formObjParentKey ? args.formObj[args.formObjParentKey]?.[key] : args.formObj[key]
           )
         : args.formObjParentKey
         ? args.formObj[args.formObjParentKey]?.[key]
