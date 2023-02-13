@@ -2,6 +2,9 @@ name: Build PR Image
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+    # Trigger only for PRs that target main branch
+    branches:
+      - main
 
 jobs:
   build-jackson:
