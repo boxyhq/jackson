@@ -58,7 +58,6 @@ const oidc = {
 
     //  from OpenID Provider
     record.oidcProvider = {
-      metadata: oidcMetadata,
       clientId: oidcClientId,
       clientSecret: oidcClientSecret,
     };
