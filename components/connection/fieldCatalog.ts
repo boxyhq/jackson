@@ -2,7 +2,9 @@
  * Edit view will have extra fields to render parsed metadata and other attributes.
  * All fields are editable unless they have `editable` set to false.
  * All fields are required unless they have `required` set to false.
- * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
+ * `accessor` - only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
+ * `fallback` - use this key to activate a fallback catalog item that will take in the values. The fallback will be activated
+ *  by means of a switch control in the UI that allows us to deactivate the fallback catalog item and revert to the main field.
  */
 
 import type { FieldCatalogItem } from './utils';
@@ -102,6 +104,11 @@ export const getCommonFields = ({
     attributes: isEditView
       ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl, hideInSetupView: false }
       : { connection: 'oidc', hideInSetupView: false },
+    fallback: {
+      key: 'oidcMetadata',
+      activateCondition: (fieldValue) => !fieldValue,
+      switch: { label: 'Missing discovery path ? Click here to set the metadata manually' },
+    },
   },
   {
     key: 'oidcMetadata',
@@ -142,6 +149,10 @@ export const getCommonFields = ({
       },
     ],
     attributes: { connection: 'oidc', hideInSetupView: false },
+    fallback: {
+      key: 'oidcDiscoveryUrl',
+      switch: { label: 'Have a discovery path ? Click here to use the discovery url' },
+    },
   },
   {
     key: 'rawMetadata',

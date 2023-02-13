@@ -1,3 +1,4 @@
+import { ButtonLink } from '@components/ButtonLink';
 import { Dispatch, FormEvent, SetStateAction, useMemo } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 
@@ -57,6 +58,18 @@ export function fieldCatalogFilterByConnection(connection) {
     attributes.connection && connection !== null ? attributes.connection === connection : true;
 }
 
+/** By default those fields which do not have a fallback.activateCondition  will be excluded */
+export function excludeFallback(formObj: FormObj) {
+  return ({ key, fallback }: FieldCatalogItem) => {
+    if (typeof fallback === 'object') {
+      if (!(key in formObj)) {
+        return false;
+      }
+    }
+    return true;
+  };
+}
+
 export function getHandleChange(
   setFormObj: Dispatch<SetStateAction<FormObj>>,
   opts: { key?: string; formObjParentKey?: string } = {}
@@ -98,6 +111,7 @@ export type FieldCatalogItem = {
   placeholder?: string;
   attributes: fieldAttributes;
   members?: FieldCatalogItem[];
+  fallback?: { key: string; activateCondition?: (fieldValue) => boolean; switch: { label: string } };
 };
 
 export type AdminPortalSSODefaults = {
@@ -132,6 +146,7 @@ export function renderFieldList(args: {
   formObj: FormObj;
   setFormObj: Dispatch<SetStateAction<FormObj>>;
   formObjParentKey?: string;
+  activateFallback: (activeKey, fallbackKey) => void;
 }) {
   const FieldList = ({
     key,
@@ -149,6 +164,7 @@ export function renderFieldList(args: {
       showWarning,
       required = true,
     },
+    fallback,
   }: FieldCatalogItem) => {
     const disabled = editable === false;
     const value =
@@ -161,24 +177,57 @@ export function renderFieldList(args: {
         : args.formObj[key];
 
     if (type === 'object') {
-      return members?.map(
-        renderFieldList({
-          ...args,
-          formObjParentKey: key,
-        })
+      return (
+        <div key={key}>
+          {typeof fallback === 'object' &&
+            (typeof fallback.activateCondition === 'function' ? fallback.activateCondition(value) : true) && (
+              <ButtonLink
+                className='mb-2'
+                type='button'
+                onClick={() => {
+                  /** Switch to fallback.key*/
+
+                  args.activateFallback(key, fallback.key);
+                }}>
+                {fallback.switch.label}
+              </ButtonLink>
+            )}
+          {members?.map(
+            renderFieldList({
+              ...args,
+              formObjParentKey: key,
+            })
+          )}
+        </div>
       );
     }
 
     return (
       <div className='mb-6 ' key={key}>
         {type !== 'checkbox' && (
-          <label
-            htmlFor={key}
-            className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300 ${
-              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-            }`}>
-            {label}
-          </label>
+          <div className='flex items-center'>
+            <label
+              htmlFor={key}
+              className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300 ${
+                isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
+              }`}>
+              {label}
+            </label>
+            {typeof fallback === 'object' &&
+              (typeof fallback.activateCondition === 'function'
+                ? fallback.activateCondition(value)
+                : true) && (
+                <ButtonLink
+                  className='mb-2'
+                  type='button'
+                  onClick={() => {
+                    /** Switch to fallback.key*/
+                    args.activateFallback(key, fallback.key);
+                  }}>
+                  {fallback.switch.label}
+                </ButtonLink>
+              )}
+          </div>
         )}
         {type === 'pre' ? (
           <pre
@@ -194,7 +243,7 @@ export function renderFieldList(args: {
           <textarea
             id={key}
             placeholder={placeholder}
-            value={value as string}
+            value={(value as string) || ''}
             required={required}
             disabled={disabled}
             maxLength={maxLength}
