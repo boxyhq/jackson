@@ -117,8 +117,8 @@ const CreateConnection = ({
   // Resync form state on save
   useEffect(() => {
     const _state = getInitialState(newConnectionType, fieldCatalog);
-    setFormObj(_state);
-  }, [newConnectionType, fieldCatalog]);
+    setFormObj(isSettingsView ? { ..._state, ...adminPortalSSODefaults } : _state);
+  }, [newConnectionType, fieldCatalog, isSettingsView, adminPortalSSODefaults]);
 
   // HANDLER: Track fallback display
   const activateFallback = (key, fallbackKey) => {
