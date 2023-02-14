@@ -88,129 +88,208 @@ test.describe('Admin Portal SSO - SAML', () => {
 });
 
 test.describe('Admin Portal SSO - OIDC', () => {
-  test.describe('SSO connection via discovery url', () => {
-    test('should be able to add SSO connection to mocklab via discovery url', async ({ page, baseURL }) => {
-      await page.goto('/admin/settings');
-      // Find the new connection button and click on it
-      await page.getByTestId('create-connection').click();
-      // Toggle connection type to OIDC
-      await page.getByText('OIDC').click();
-      // Fill the name for the connection
-      const nameInput = page.locator('#name');
-      await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
-      // Enter the OIDC discovery url for mocklab in the form
-      const discoveryUrlInput = page.locator('#oidcDiscoveryUrl');
-      await discoveryUrlInput.fill(baseURL + MOCKLAB_DISCOVERY_PATH);
-      // Enter the OIDC client credentials for mocklab in the form
-      const clientIdInput = page.locator('#oidcClientId');
-      await clientIdInput.fill(MOCKLAB_CLIENT_ID);
-      const clientSecretInput = page.locator('#oidcClientSecret');
-      await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
-      // submit the form
-      await page.getByTestId('submit-form-create-sso').click();
-      // check if the added connection appears in the connection list
-      await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).toBeVisible();
-    });
+  const oidcMetadataMode = ['discoveryUrl', 'metadata'];
+  for (const mode of oidcMetadataMode) {
+    test.describe(`SSO connection via ${mode}`, () => {
+      test('should be able to add OIDC SSO connection to mocklab', async ({ page, baseURL }) => {
+        await page.goto('/admin/settings');
+        // Find the new connection button and click on it
+        await page.getByTestId('create-connection').click();
+        // Toggle connection type to OIDC
+        await page.getByText('OIDC').click();
+        // Fill the name for the connection
+        const nameInput = page.locator('#name');
+        await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
+        if (mode === 'discoveryUrl') {
+          // Enter the OIDC discovery url for mocklab in the form
+          const discoveryUrlInput = page.locator('#oidcDiscoveryUrl');
+          await discoveryUrlInput.fill(baseURL + MOCKLAB_DISCOVERY_PATH);
+        } else {
+          // Activate the oidc discovery fallback fields
+          await page
+            .getByRole('button', { name: 'Missing discovery path ? Click here to set the metadata' })
+            .click();
+          // Enter the OIDC issuer value for mocklab in the form
+          const issuerInput = page.locator('#issuer');
+          await issuerInput.fill(MOCKLAB_ISSUER);
+          // Enter the OIDC authorization_endpoint value for mocklab in the form
+          const authzEndpointInput = page.locator('#authorization_endpoint');
+          await authzEndpointInput.fill(MOCKLAB_AUTHORIZATION_ENDPOINT);
+          // Enter the OIDC token_endpoint value for mocklab in the form
+          const tokenEndpointInput = page.locator('#token_endpoint');
+          await tokenEndpointInput.fill(MOCKLAB_TOKEN_ENDPOINT);
+          // Enter the OIDC userinfo_endpoint value for mocklab in the form
+          const userInfoEndpointInput = page.locator('#userinfo_endpoint');
+          await userInfoEndpointInput.fill(MOCKLAB_USERINFO_ENDPOINT);
+          // Enter the OIDC jwks_uri value for mocklab in the form
+          const jwksUriInput = page.locator('#jwks_uri');
+          await jwksUriInput.fill(MOCKLAB_JWKS_URI);
+        }
+        // Enter the OIDC client credentials for mocklab in the form
+        const clientIdInput = page.locator('#oidcClientId');
+        await clientIdInput.fill(MOCKLAB_CLIENT_ID);
+        const clientSecretInput = page.locator('#oidcClientSecret');
+        await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
+        // submit the form
+        await page.getByTestId('submit-form-create-sso').click();
+        // check if the added connection appears in the connection list
+        await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).toBeVisible();
+      });
 
-    test('should be able to login with mocklab', async ({ page, baseURL }) => {
-      const userAvatarLocator = page.getByTestId('user-avatar');
-      // Logout from the magic link authentication
-      await page.goto('/');
-      await userAvatarLocator.click();
-      await page.getByTestId('logout').click();
-      // Click on login with sso button
-      await page.getByTestId('sso-login-button').click();
-      // Perform sign in at mocksaml
-      await page.waitForURL((url) => url.origin === MOCKLAB_ORIGIN);
-      await page.getByPlaceholder('yours@example.com').fill('bob@oidc.com');
-      await page.getByRole('button', { name: MOCKLAB_SIGNIN_BUTTON_NAME }).click();
-      // Wait for browser to redirect back to admin portal
-      await page.waitForURL((url) => url.origin === baseURL);
-      // assert login state
-      await expect(userAvatarLocator).toBeVisible();
-    });
+      test('should be able to login with mocklab', async ({ page, baseURL }) => {
+        const userAvatarLocator = page.getByTestId('user-avatar');
+        // Logout from the magic link authentication
+        await page.goto('/');
+        await userAvatarLocator.click();
+        await page.getByTestId('logout').click();
+        // Click on login with sso button
+        await page.getByTestId('sso-login-button').click();
+        // Perform sign in at mocksaml
+        await page.waitForURL((url) => url.origin === MOCKLAB_ORIGIN);
+        await page.getByPlaceholder('yours@example.com').fill('bob@oidc.com');
+        await page.getByRole('button', { name: MOCKLAB_SIGNIN_BUTTON_NAME }).click();
+        // Wait for browser to redirect back to admin portal
+        await page.waitForURL((url) => url.origin === baseURL);
+        // assert login state
+        await expect(userAvatarLocator).toBeVisible();
+      });
 
-    test('delete the OIDC SSO connection', async ({ page }) => {
-      await page.goto('/admin/settings');
-      // select the row of the connection list table, then locate the edit button
-      const editButton = page.getByText(TEST_OIDC_SSO_CONNECTION_NAME).locator('..').getByTestId('edit');
-      await editButton.click();
-      // click the delete and confirm deletion
-      await page.getByTestId('delete-connection').click();
-      await page.getByTestId('confirm-delete').click();
-      // check that the SSO connection is deleted from the connection list
-      await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).not.toBeVisible();
+      test('delete the OIDC SSO connection', async ({ page }) => {
+        await page.goto('/admin/settings');
+        // select the row of the connection list table, then locate the edit button
+        const editButton = page.getByText(TEST_OIDC_SSO_CONNECTION_NAME).locator('..').getByTestId('edit');
+        await editButton.click();
+        // click the delete and confirm deletion
+        await page.getByTestId('delete-connection').click();
+        await page.getByTestId('confirm-delete').click();
+        // check that the SSO connection is deleted from the connection list
+        await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).not.toBeVisible();
+      });
     });
-  });
+  }
+  // test.describe('SSO connection via discovery url', () => {
+  //   test('should be able to add SSO connection to mocklab via discovery url', async ({ page, baseURL }) => {
+  //     await page.goto('/admin/settings');
+  //     // Find the new connection button and click on it
+  //     await page.getByTestId('create-connection').click();
+  //     // Toggle connection type to OIDC
+  //     await page.getByText('OIDC').click();
+  //     // Fill the name for the connection
+  //     const nameInput = page.locator('#name');
+  //     await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
+  //     // Enter the OIDC discovery url for mocklab in the form
+  //     const discoveryUrlInput = page.locator('#oidcDiscoveryUrl');
+  //     await discoveryUrlInput.fill(baseURL + MOCKLAB_DISCOVERY_PATH);
+  //     // Enter the OIDC client credentials for mocklab in the form
+  //     const clientIdInput = page.locator('#oidcClientId');
+  //     await clientIdInput.fill(MOCKLAB_CLIENT_ID);
+  //     const clientSecretInput = page.locator('#oidcClientSecret');
+  //     await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
+  //     // submit the form
+  //     await page.getByTestId('submit-form-create-sso').click();
+  //     // check if the added connection appears in the connection list
+  //     await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).toBeVisible();
+  //   });
 
-  test.describe('SSO connection via metadata', () => {
-    test('should be able to add SSO connection to mocklab via metadata', async ({ page }) => {
-      await page.goto('/admin/settings');
-      // Find the new connection button and click on it
-      await page.getByTestId('create-connection').click();
-      // Toggle connection type to OIDC
-      await page.getByText('OIDC').click();
-      // Fill the name for the connection
-      const nameInput = page.locator('#name');
-      await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
-      // Activate the oidc discovery fallback fields
-      await page
-        .getByRole('button', { name: 'Missing discovery path ? Click here to set the metadata' })
-        .click();
-      // Enter the OIDC issuer value for mocklab in the form
-      const issuerInput = page.locator('#issuer');
-      await issuerInput.fill(MOCKLAB_ISSUER);
-      // Enter the OIDC authorization_endpoint value for mocklab in the form
-      const authzEndpointInput = page.locator('#authorization_endpoint');
-      await authzEndpointInput.fill(MOCKLAB_AUTHORIZATION_ENDPOINT);
-      // Enter the OIDC token_endpoint value for mocklab in the form
-      const tokenEndpointInput = page.locator('#token_endpoint');
-      await tokenEndpointInput.fill(MOCKLAB_TOKEN_ENDPOINT);
-      // Enter the OIDC userinfo_endpoint value for mocklab in the form
-      const userInfoEndpointInput = page.locator('#userinfo_endpoint');
-      await userInfoEndpointInput.fill(MOCKLAB_USERINFO_ENDPOINT);
-      // Enter the OIDC jwks_uri value for mocklab in the form
-      const jwksUriInput = page.locator('#jwks_uri');
-      await jwksUriInput.fill(MOCKLAB_JWKS_URI);
-      // Enter the OIDC client credentials for mocklab in the form
-      const clientIdInput = page.locator('#oidcClientId');
-      await clientIdInput.fill(MOCKLAB_CLIENT_ID);
-      const clientSecretInput = page.locator('#oidcClientSecret');
-      await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
-      // submit the form
-      await page.getByTestId('submit-form-create-sso').click();
-      // check if the added connection appears in the connection list
-      await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).toBeVisible();
-    });
+  //   test('should be able to login with mocklab', async ({ page, baseURL }) => {
+  //     const userAvatarLocator = page.getByTestId('user-avatar');
+  //     // Logout from the magic link authentication
+  //     await page.goto('/');
+  //     await userAvatarLocator.click();
+  //     await page.getByTestId('logout').click();
+  //     // Click on login with sso button
+  //     await page.getByTestId('sso-login-button').click();
+  //     // Perform sign in at mocksaml
+  //     await page.waitForURL((url) => url.origin === MOCKLAB_ORIGIN);
+  //     await page.getByPlaceholder('yours@example.com').fill('bob@oidc.com');
+  //     await page.getByRole('button', { name: MOCKLAB_SIGNIN_BUTTON_NAME }).click();
+  //     // Wait for browser to redirect back to admin portal
+  //     await page.waitForURL((url) => url.origin === baseURL);
+  //     // assert login state
+  //     await expect(userAvatarLocator).toBeVisible();
+  //   });
 
-    test('should be able to login with mocklab', async ({ page, baseURL }) => {
-      const userAvatarLocator = page.getByTestId('user-avatar');
-      // Logout from the magic link authentication
-      await page.goto('/');
-      await userAvatarLocator.click();
-      await page.getByTestId('logout').click();
-      // Click on login with sso button
-      await page.getByTestId('sso-login-button').click();
-      // Perform sign in at mocksaml
-      await page.waitForURL((url) => url.origin === MOCKLAB_ORIGIN);
-      await page.getByPlaceholder('yours@example.com').fill('bob@oidc.com');
-      await page.getByRole('button', { name: MOCKLAB_SIGNIN_BUTTON_NAME }).click();
-      // Wait for browser to redirect back to admin portal
-      await page.waitForURL((url) => url.origin === baseURL);
-      // assert login state
-      await expect(userAvatarLocator).toBeVisible();
-    });
+  //   test('delete the OIDC SSO connection', async ({ page }) => {
+  //     await page.goto('/admin/settings');
+  //     // select the row of the connection list table, then locate the edit button
+  //     const editButton = page.getByText(TEST_OIDC_SSO_CONNECTION_NAME).locator('..').getByTestId('edit');
+  //     await editButton.click();
+  //     // click the delete and confirm deletion
+  //     await page.getByTestId('delete-connection').click();
+  //     await page.getByTestId('confirm-delete').click();
+  //     // check that the SSO connection is deleted from the connection list
+  //     await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).not.toBeVisible();
+  //   });
+  // });
 
-    test('delete the OIDC SSO connection', async ({ page }) => {
-      await page.goto('/admin/settings');
-      // select the row of the connection list table, then locate the edit button
-      const editButton = page.getByText(TEST_OIDC_SSO_CONNECTION_NAME).locator('..').getByTestId('edit');
-      await editButton.click();
-      // click the delete and confirm deletion
-      await page.getByTestId('delete-connection').click();
-      await page.getByTestId('confirm-delete').click();
-      // check that the SSO connection is deleted from the connection list
-      await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).not.toBeVisible();
-    });
-  });
+  // test.describe('SSO connection via metadata', () => {
+  //   test('should be able to add SSO connection to mocklab via metadata', async ({ page }) => {
+  //     await page.goto('/admin/settings');
+  //     // Find the new connection button and click on it
+  //     await page.getByTestId('create-connection').click();
+  //     // Toggle connection type to OIDC
+  //     await page.getByText('OIDC').click();
+  //     // Fill the name for the connection
+  //     const nameInput = page.locator('#name');
+  //     await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
+  //     // Activate the oidc discovery fallback fields
+  //     await page
+  //       .getByRole('button', { name: 'Missing discovery path ? Click here to set the metadata' })
+  //       .click();
+  //     // Enter the OIDC issuer value for mocklab in the form
+  //     const issuerInput = page.locator('#issuer');
+  //     await issuerInput.fill(MOCKLAB_ISSUER);
+  //     // Enter the OIDC authorization_endpoint value for mocklab in the form
+  //     const authzEndpointInput = page.locator('#authorization_endpoint');
+  //     await authzEndpointInput.fill(MOCKLAB_AUTHORIZATION_ENDPOINT);
+  //     // Enter the OIDC token_endpoint value for mocklab in the form
+  //     const tokenEndpointInput = page.locator('#token_endpoint');
+  //     await tokenEndpointInput.fill(MOCKLAB_TOKEN_ENDPOINT);
+  //     // Enter the OIDC userinfo_endpoint value for mocklab in the form
+  //     const userInfoEndpointInput = page.locator('#userinfo_endpoint');
+  //     await userInfoEndpointInput.fill(MOCKLAB_USERINFO_ENDPOINT);
+  //     // Enter the OIDC jwks_uri value for mocklab in the form
+  //     const jwksUriInput = page.locator('#jwks_uri');
+  //     await jwksUriInput.fill(MOCKLAB_JWKS_URI);
+  //     // Enter the OIDC client credentials for mocklab in the form
+  //     const clientIdInput = page.locator('#oidcClientId');
+  //     await clientIdInput.fill(MOCKLAB_CLIENT_ID);
+  //     const clientSecretInput = page.locator('#oidcClientSecret');
+  //     await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
+  //     // submit the form
+  //     await page.getByTestId('submit-form-create-sso').click();
+  //     // check if the added connection appears in the connection list
+  //     await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).toBeVisible();
+  //   });
+
+  //   test('should be able to login with mocklab', async ({ page, baseURL }) => {
+  //     const userAvatarLocator = page.getByTestId('user-avatar');
+  //     // Logout from the magic link authentication
+  //     await page.goto('/');
+  //     await userAvatarLocator.click();
+  //     await page.getByTestId('logout').click();
+  //     // Click on login with sso button
+  //     await page.getByTestId('sso-login-button').click();
+  //     // Perform sign in at mocksaml
+  //     await page.waitForURL((url) => url.origin === MOCKLAB_ORIGIN);
+  //     await page.getByPlaceholder('yours@example.com').fill('bob@oidc.com');
+  //     await page.getByRole('button', { name: MOCKLAB_SIGNIN_BUTTON_NAME }).click();
+  //     // Wait for browser to redirect back to admin portal
+  //     await page.waitForURL((url) => url.origin === baseURL);
+  //     // assert login state
+  //     await expect(userAvatarLocator).toBeVisible();
+  //   });
+
+  //   test('delete the OIDC SSO connection', async ({ page }) => {
+  //     await page.goto('/admin/settings');
+  //     // select the row of the connection list table, then locate the edit button
+  //     const editButton = page.getByText(TEST_OIDC_SSO_CONNECTION_NAME).locator('..').getByTestId('edit');
+  //     await editButton.click();
+  //     // click the delete and confirm deletion
+  //     await page.getByTestId('delete-connection').click();
+  //     await page.getByTestId('confirm-delete').click();
+  //     // check that the SSO connection is deleted from the connection list
+  //     await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).not.toBeVisible();
+  //   });
+  // });
 });
