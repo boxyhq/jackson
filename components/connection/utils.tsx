@@ -182,7 +182,7 @@ export function renderFieldList(args: {
           {typeof fallback === 'object' &&
             (typeof fallback.activateCondition === 'function' ? fallback.activateCondition(value) : true) && (
               <ButtonLink
-                className='mb-2'
+                className='mb-2 px-0'
                 type='button'
                 onClick={() => {
                   /** Switch to fallback.key*/
@@ -205,7 +205,7 @@ export function renderFieldList(args: {
     return (
       <div className='mb-6 ' key={key}>
         {type !== 'checkbox' && (
-          <div className='flex items-center'>
+          <div className='flex items-center justify-between'>
             <label
               htmlFor={key}
               className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300 ${
@@ -218,7 +218,7 @@ export function renderFieldList(args: {
                 ? fallback.activateCondition(value)
                 : true) && (
                 <ButtonLink
-                  className='mb-2'
+                  className='mb-2 px-0'
                   type='button'
                   onClick={() => {
                     /** Switch to fallback.key*/

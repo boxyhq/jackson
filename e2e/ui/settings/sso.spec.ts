@@ -144,7 +144,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
   });
 
   test.describe('SSO connection via metadata', () => {
-    test('should be able to add SSO connection to mocklab via discovery url', async ({ page }) => {
+    test('should be able to add SSO connection to mocklab via metadata', async ({ page }) => {
       await page.goto('/admin/settings');
       // Find the new connection button and click on it
       await page.getByTestId('create-connection').click();
@@ -155,7 +155,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
       await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
       // Activate the oidc discovery fallback fields
       await page
-        .getByRole('button', { name: 'Missing discovery path ? Click here to set the metadata manually' })
+        .getByRole('button', { name: 'Missing discovery path ? Click here to set the metadata' })
         .click();
       // Enter the OIDC issuer value for mocklab in the form
       const issuerInput = page.locator('#issuer');

@@ -107,7 +107,7 @@ export const getCommonFields = ({
     fallback: {
       key: 'oidcMetadata',
       activateCondition: (fieldValue) => !fieldValue,
-      switch: { label: 'Missing discovery path ? Click here to set the metadata manually' },
+      switch: { label: 'Missing discovery path ? Click here to set the metadata' },
     },
   },
   {
@@ -151,7 +151,7 @@ export const getCommonFields = ({
     attributes: { connection: 'oidc', hideInSetupView: false },
     fallback: {
       key: 'oidcDiscoveryUrl',
-      switch: { label: 'Have a discovery path ? Click here to use the discovery url' },
+      switch: { label: 'Have a discovery path ? Click here to set the discovery url' },
     },
   },
   {
