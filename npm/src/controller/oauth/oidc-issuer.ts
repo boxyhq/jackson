@@ -8,8 +8,5 @@ export const oidcIssuerInstance = async (discoveryUrl?: string, metadata?: Issue
   if (metadata) {
     return new Issuer(metadata);
   }
-  throw new JacksonError(
-    'Neither "discoveryUrl" nor "metadata" was found to retrieve OIDC IdP configuration parameters',
-    500
-  );
+  throw new JacksonError('Neither "discoveryUrl" nor "metadata" set for the OIDC issuer', 500);
 };
