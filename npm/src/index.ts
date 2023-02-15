@@ -16,6 +16,7 @@ import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
+import SAMLTracer from './ee/saml-tracer';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -104,6 +105,7 @@ export const controllers = async (
     sessionStore,
     codeStore,
     tokenStore,
+    samlTracer: (await checkLicense(opts.boxyhqLicenseKey)) ? new SAMLTracer() : null,
     opts,
   });
 

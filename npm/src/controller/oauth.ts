@@ -39,6 +39,7 @@ import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SAMLHandler } from './saml-handler';
 import { extractSAMLResponseAttributes } from '../saml/lib';
+import SAMLTracer from '../ee/saml-tracer';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -47,14 +48,16 @@ export class OAuthController implements IOAuthController {
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
+  private samlTracer: SAMLTracer;
   private opts: JacksonOption;
   private samlHandler: SAMLHandler;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, opts }) {
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, samlTracer, opts }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
+    this.samlTracer = samlTracer;
     this.opts = opts;
 
     this.samlHandler = new SAMLHandler({
