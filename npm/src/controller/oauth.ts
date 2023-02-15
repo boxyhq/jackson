@@ -48,7 +48,7 @@ export class OAuthController implements IOAuthController {
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
-  private samlTracer: SAMLTracer;
+  private samlTracer: SAMLTracer | null;
   private opts: JacksonOption;
   private samlHandler: SAMLHandler;
 
