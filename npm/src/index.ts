@@ -105,7 +105,7 @@ export const controllers = async (
     sessionStore,
     codeStore,
     tokenStore,
-    samlTracer: (await checkLicense(opts.boxyhqLicenseKey)) ? new SAMLTracer() : null,
+    samlTracer: (await checkLicense(opts.boxyhqLicenseKey)) ? new SAMLTracer({ db }) : null,
     opts,
   });
 
