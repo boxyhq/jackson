@@ -94,7 +94,12 @@ npm run test:e2e
 Reach out to the maintainers at one of the following places:
 
 - [GitHub Discussions](https://github.com/boxyhq/jackson/discussions)
-- [GitHub Issues](https://github.com/boxyhq/jackson/issues)
+- [GitHub Issues](https://github.com/boxyhq/jackson/issues) (Bug reports, Contributions)
+
+## Community
+
+- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Community and BoxyHQ team)
+- [Twitter](https://twitter.com/BoxyHQ) (Get the news fast)
 
 ## Reporting Security Issues
 
