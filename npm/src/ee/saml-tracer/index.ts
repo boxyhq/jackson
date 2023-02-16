@@ -6,6 +6,7 @@ import { keyFromParts } from '../../db/utils';
 // const TTL_1_WEEK = 604800;
 
 type Trace = {
+  traceId: string;
   timestamp: number;
   error: string;
   context: {
@@ -23,12 +24,12 @@ class SAMLTracer {
     this.tracerStore = db.store('saml:tracer');
   }
 
-  public async saveTrace(payload: Trace) {
+  public async saveTrace(payload: Omit<Trace, 'traceId'>) {
     const { context } = payload;
-
+    const traceId = randomUUID();
     await this.tracerStore.put(
-      randomUUID(),
-      payload,
+      traceId,
+      { ...payload, traceId },
       {
         name: IndexNames.TenantProduct,
         value: keyFromParts(context.tenant, context.product),
