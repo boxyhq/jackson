@@ -2,6 +2,17 @@ import { Storable } from '../../typings';
 import { randomUUID } from 'crypto';
 
 const TTL_1_WEEK = 604800;
+
+type Trace = {
+  timestamp: number;
+  error: string;
+  context: {
+    tenant: string;
+    product: string;
+    [key: string]: unknown;
+  };
+};
+
 class SAMLTracer {
   tracerStore: Storable;
 
