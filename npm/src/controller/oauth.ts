@@ -263,7 +263,11 @@ export class OAuthController implements IOAuthController {
         this.samlTracer?.saveTrace({
           timestamp: Date.now(),
           error: error_description,
-          context: { tenant: requestedTenant || '', product: requestedProduct || '' },
+          context: {
+            tenant: requestedTenant as string,
+            product: requestedProduct as string,
+            clientID: connection.clientID,
+          },
         });
 
         return {
