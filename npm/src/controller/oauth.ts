@@ -258,10 +258,18 @@ export class OAuthController implements IOAuthController {
             : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
         });
       } catch (err: unknown) {
+        const error_description = getErrorMessage(err);
+        // If tracer enabled, persist the error in DB
+        this.samlTracer?.saveTrace({
+          timestamp: Date.now(),
+          error: error_description,
+          context: { tenant: requestedTenant || '', product: requestedProduct || '' },
+        });
+
         return {
           redirect_url: OAuthErrorResponse({
             error: 'server_error',
-            error_description: getErrorMessage(err),
+            error_description,
             redirect_uri,
             state,
           }),
