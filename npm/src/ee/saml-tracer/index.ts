@@ -1,7 +1,5 @@
 import { Storable } from '../../typings';
 import { randomUUID } from 'crypto';
-import { IndexNames } from '../../controller/utils';
-import * as dbutils from '../../db/utils';
 
 const TTL_1_WEEK = 604800;
 
@@ -23,16 +21,11 @@ class SAMLTracer {
   }
 
   public async saveTrace(payload: Trace) {
-    const { context } = payload;
-
-    await this.tracerStore.put(randomUUID(), payload, {
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(context.tenant, context.product),
-    });
+    await this.tracerStore.put(randomUUID(), payload);
   }
 
-  public async getAllTraces() {
-    await this.tracerStore.getAll();
+  public async getAllTraces(pageOffset?: number, pageLimit?: number): Promise<Trace[]> {
+    return (await this.tracerStore.getAll(pageOffset, pageLimit)) as Trace[];
   }
 }
 
