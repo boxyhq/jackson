@@ -4,7 +4,7 @@ import path from 'path';
 // Reference: https://playwright.dev/docs/test-configuration
 const config: PlaywrightTestConfig = {
   workers: 1,
-  globalSetup: require.resolve('./e2e/globalSetup'),
+  globalSetup: require.resolve('./e2e/support/globalSetup'),
   // Timeout per test
   timeout: 30 * 1000,
   // Test directory
@@ -17,7 +17,9 @@ const config: PlaywrightTestConfig = {
   // Run your local dev server before starting the tests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
-    command: process.env.CI ? 'npm run start' : 'npm run build && npm run start',
+    command: process.env.CI
+      ? 'NODE_OPTIONS="--dns-result-order=ipv4first" npm run start'
+      : 'npm run build && NODE_OPTIONS="--dns-result-order=ipv4first" npm run start',
     port: 5225,
     timeout: 60 * 1000,
     reuseExistingServer: !process.env.CI,

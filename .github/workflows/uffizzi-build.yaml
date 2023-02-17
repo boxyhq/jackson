@@ -2,6 +2,9 @@ name: Build PR Image
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+    # Trigger only for PRs that target main branch
+    branches:
+      - main
 
 jobs:
   build-jackson:
@@ -29,14 +32,14 @@ jobs:
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: registry.uffizzi.com/${{ env.UUID_TAG }}
           tags: |
             type=raw,value=60h
 
       - name: Build Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           file: ./uffizzi/Dockerfile

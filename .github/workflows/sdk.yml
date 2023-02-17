@@ -21,10 +21,10 @@ jobs:
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: 18
           registry-url: 'https://registry.npmjs.org'
+          check-latest: true
       - run: npm ci
-      - run: npm run build
       - name: Publish NPM
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |

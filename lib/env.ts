@@ -68,7 +68,7 @@ const adminPortalSSODefaults = {
   tenant: process.env.ADMIN_PORTAL_SSO_TENANT || '_jackson_boxyhq',
   product: process.env.ADMIN_PORTAL_SSO_PRODUCT || '_jackson_admin_portal',
   redirectUrl: externalUrl,
-  defaultRedirectUrl: `${externalUrl}/api/auth/callback/boxyhq-saml`,
+  defaultRedirectUrl: `${externalUrl}/admin/auth/idp-login`,
 };
 
 export { adminPortalSSODefaults };

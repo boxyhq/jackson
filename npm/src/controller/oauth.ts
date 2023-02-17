@@ -250,6 +250,9 @@ export class OAuthController implements IOAuthController {
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
           forceAuthn: forceAuthn === 'true' ? true : !!connection.forceAuthn,
+          identifierFormat: connection.identifierFormat
+            ? connection.identifierFormat
+            : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
         });
       } catch (err: unknown) {
         return {
@@ -265,6 +268,7 @@ export class OAuthController implements IOAuthController {
 
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
+    let oidcNonce: string | undefined;
     if (connectionIsOIDC && 'oidcProvider' in connection) {
       if (!this.opts.oidcPath) {
         return {
@@ -287,6 +291,7 @@ export class OAuthController implements IOAuthController {
         });
         oidcCodeVerifier = generators.codeVerifier();
         const code_challenge = generators.codeChallenge(oidcCodeVerifier);
+        oidcNonce = generators.nonce();
         ssoUrl = oidcClient.authorizationUrl({
           scope: [...requestedScopes, 'openid', 'email', 'profile']
             .filter((value, index, self) => self.indexOf(value) === index) // filter out duplicates
@@ -294,6 +299,7 @@ export class OAuthController implements IOAuthController {
           code_challenge,
           code_challenge_method: 'S256',
           state: relayState,
+          nonce: oidcNonce,
         });
       } catch (err: unknown) {
         if (err) {
@@ -345,7 +351,7 @@ export class OAuthController implements IOAuthController {
               ...sessionObj,
               id: samlReq?.id,
             }
-          : { ...sessionObj, id: connection.clientID, oidcCodeVerifier }
+          : { ...sessionObj, id: connection.clientID, oidcCodeVerifier, oidcNonce }
       );
       // Redirect to IdP
       if (connectionIsSAML) {
@@ -606,7 +612,7 @@ export class OAuthController implements IOAuthController {
         {
           code: opCode,
         },
-        { code_verifier: session.oidcCodeVerifier }
+        { code_verifier: session.oidcCodeVerifier, nonce: session.oidcNonce }
       );
       profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {

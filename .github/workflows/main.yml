@@ -7,11 +7,14 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches:
-      - '*'
+      - main
+      - release
     tags:
       - 'beta-v*'
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+  pull_request:
+    # Trigger only for PRs that target main branch
+    branches:
+      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -44,7 +47,7 @@ jobs:
       IDP_ENABLED: true
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
@@ -111,6 +114,9 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
+          check-latest: true
+      - run: node -v
+      - run: npm -v
       - name: Setup Next.js cache
         uses: actions/cache@v3
         with:
@@ -122,7 +128,19 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - run: npm install
+      - name: Generate mocklab openid discovery document
+        run: |
+          mkdir ./public/.well-known
+          cat << EOF > ./public/.well-known/mocklab-openid-configuration          
+          {
+            "issuer": "https://oauth.mocklab.io",
+            "authorization_endpoint": "https://oauth.mocklab.io/oauth/authorize",
+            "token_endpoint": "https://oauth.mocklab.io/oauth/token",
+            "userinfo_endpoint": "https://oauth.mocklab.io/userinfo",
+            "jwks_uri": "https://oauth.mocklab.io/.well-known/jwks.json"
+          }
+          EOF
+      - run: npm run custom-install
       - run: npm run lint
       - run: npm run build
       - run: npm run test
@@ -130,11 +148,10 @@ jobs:
       - name: Install playwright browser dependencies
         run: npx playwright install chromium
       - name: e2e tests
-        run: npx ts-node --log-error e2e/seedAuthDb.ts && npx playwright test
+        run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
       - id: version
+        name: Generate NPM_VERSION and PUBLISH_TAG
         run: |
-          npm install --legacy-peer-deps
-          npm run build
           npm install -g json
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
 
@@ -170,10 +187,12 @@ jobs:
         run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
+        if: github.ref == 'refs/heads/release'
         id: buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
+        if: github.ref == 'refs/heads/release'
         uses: docker/setup-qemu-action@v2
 
       - name: Login to Docker Hub
@@ -186,15 +205,16 @@ jobs:
       - name: Build and push
         if: github.ref == 'refs/heads/release'
         id: docker_build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:latest,${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
+        if: github.ref == 'refs/heads/release'
         run: echo ${{ steps.docker_build.outputs.digest }}
 
       - name: Login to GitHub Container Registry
@@ -202,20 +222,16 @@ jobs:
         run: |
           echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
 
-      # - name: NPM Package SBOM Scan
-      #   uses: anchore/scan-action@v3
-      #   with:
-      #     path: './npm'
-      #     fail-build: true
-      #     severity-cutoff: high
-
       - name: Install Cosign
+        if: github.ref == 'refs/heads/release'
         uses: sigstore/cosign-installer@main
 
       - name: Check install!
+        if: github.ref == 'refs/heads/release'
         run: cosign version
 
       - name: place the cosign private key in a file
+        if: github.ref == 'refs/heads/release'
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
         shell: bash
         env:
@@ -246,25 +262,25 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.cyclonedx
       - name: Remove older SBOMs
+        if: github.ref == 'refs/heads/release'
         run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
+        if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.spdx "./npm/sbom.spdx"
       - name: Move CycloneDx Report
+        if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
-      # - name: Next Js Project Scan
-      #   uses: anchore/scan-action@v3
-      #   with:
-      #     path: './'
-      #     fail-build: true
-      #     severity-cutoff: high
+
       - name: Next Js Project SBOM Report [SPDX]
         uses: anchore/sbom-action@v0
         with:
@@ -284,32 +300,63 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Remove older SBOMs
+        if: github.ref == 'refs/heads/release'
         run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: sbom.spdx
       - name: Download artifact for CycloneDx Report
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: sbom.cyclonedx
-      - name: Scan docker image using TERN
-        uses: philips-labs/tern-action@v1.2.0
-        id: scan
+
+      - name: Create SBOM Report [Docker][SPDX]
+        if: github.ref == 'refs/heads/release'
+        uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:latest
-          format: spdxtagvalue
-          output: docker_sbom.spdx
-      - name: Create/Clear folder
+          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          format: spdx
+          artifact-name: docker_sbom.spdx
+      - name: Publish report [Docker][SPDX]
+        if: github.ref == 'refs/heads/release'
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.spdx$"
+      - name: Create SBOM Report [Docker][CycloneDx]
+        if: github.ref == 'refs/heads/release'
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          format: cyclonedx
+          artifact-name: docker_sbom.cyclonedx
+      - name: Publish report [Docker][CycloneDx]
+        if: github.ref == 'refs/heads/release'
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ".*\\.cyclonedx$"
+      - name: Download artifact for SPDX Report [Docker]
+        if: github.ref == 'refs/heads/release'
+        uses: actions/download-artifact@v3
+        with:
+          name: docker_sbom.spdx
+      - name: Download artifact for CycloneDx Report [Docker]
+        if: github.ref == 'refs/heads/release'
+        uses: actions/download-artifact@v3
+        with:
+          name: docker_sbom.cyclonedx
+      - name: Create/Clear folder [Docker]
+        if: github.ref == 'refs/heads/release'
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
-      - name: Docker CycloneDx report
-        run: npm install -g @appthreat/cdxgen && cdxgen ${{ github.repository }}:latest -o ./_docker/sbom.xml -t docker
+
       - name: Move Report & cleanup
+        if: github.ref == 'refs/heads/release'
         run: |
-          mv docker_sbom.spdx "./_docker/sbom.spdx"
-          rm results.sarif || true
-          rm ./_docker/sbom.json || true
-          mv ./_docker/sbom.xml ./_docker/sbom.cyclonedx || true
+          mv docker_sbom.spdx "./_docker/sbom.spdx" || true
+          mv docker_sbom.cyclonedx "./_docker/sbom.cyclonedx" || true
+
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
         if: github.ref == 'refs/heads/release'
         run: |
@@ -340,7 +387,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -356,6 +403,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           scope: '@boxyhq'
           cache: 'npm'
+          check-latest: true
       - run: npm install --legacy-peer-deps
         working-directory: ./npm
 

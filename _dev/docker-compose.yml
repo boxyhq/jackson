@@ -1,4 +1,4 @@
-version: "3.6"
+version: '3.6'
 services:
   postgres:
     image: postgres:13
@@ -6,7 +6,7 @@ services:
       - 5432:5432
     restart: always
     environment:
-      POSTGRES_PASSWORD: ""
+      POSTGRES_PASSWORD: ''
       POSTGRES_HOST_AUTH_METHOD: trust
   redis:
     image: redis:6.2.5-alpine
@@ -34,7 +34,7 @@ services:
     restart: always
     environment:
       MARIADB_DATABASE: mysql
-      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
   mssql:
     image: mcr.microsoft.com/azure-sql-edge:1.0.6
     ports:

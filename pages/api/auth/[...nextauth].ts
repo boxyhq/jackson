@@ -1,7 +1,9 @@
 import Adapter from '@lib/nextAuthAdapter';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
+import jackson from '@lib/jackson';
 import { validateEmailWithACL } from '@lib/utils';
 import { jacksonOptions as env } from '@lib/env';
 import { sessionName } from '@lib/constants';
@@ -21,6 +23,54 @@ export default NextAuth({
       },
       allowDangerousEmailAccountLinking: true,
     }),
+    CredentialsProvider({
+      id: 'boxyhq-saml-idplogin',
+      // The name to display on the sign in form (e.g. 'Sign in with...')
+      name: 'SAML IdP Login',
+      // The credentials is used to generate a suitable form on the sign in page.
+      // You can specify whatever fields you are expecting to be submitted.
+      // e.g. domain, username, password, 2FA token, etc.
+      // You can pass any HTML attribute to the <input> tag through the object.
+      credentials: {
+        code: {},
+      },
+      async authorize(credentials) {
+        const { code } = credentials || {};
+        if (!code) {
+          return null;
+        }
+        const { oauthController } = await jackson();
+
+        // Fetch access token
+        const { access_token } = await oauthController.token({
+          code,
+          grant_type: 'authorization_code',
+          redirect_uri: process.env.NEXTAUTH_URL || '',
+          client_id: 'dummy',
+          client_secret: process.env.CLIENT_SECRET_VERIFIER || '',
+        });
+
+        if (!access_token) {
+          return null;
+        }
+        // Fetch user info
+        const userInfo = await oauthController.userInfo(access_token);
+
+        if (!userInfo) {
+          return null;
+        }
+
+        if (userInfo?.id && userInfo?.email) {
+          return {
+            id: userInfo.id,
+            email: userInfo.email,
+            name: [userInfo.firstName, userInfo.lastName].filter(Boolean).join(' '),
+            image: null,
+          };
+        }
+        return null;
+      },
+    }),
     EmailProvider({
       server: {
         host: process.env.SMTP_HOST,
@@ -31,6 +81,49 @@ export default NextAuth({
         },
       },
       from: process.env.SMTP_FROM,
+    }),
+    CredentialsProvider({
+      credentials: {
+        email: {},
+        password: {},
+      },
+      async authorize(credentials) {
+        if (!credentials) {
+          return null;
+        }
+
+        const { email, password } = credentials;
+
+        if (!email || !password) {
+          return null;
+        }
+
+        const adminCredentials = process.env.NEXTAUTH_ADMIN_CREDENTIALS;
+
+        if (!adminCredentials) {
+          throw Error(
+            'No admin credentials found. Please set NEXTAUTH_ADMIN_CREDENTIALS in your environment variables'
+          );
+        }
+
+        // Find the admin credentials that match the email and password
+        const adminCredentialsMatch = adminCredentials.split(',').find((credential) => {
+          const [adminEmail, adminPassword] = credential.split(':');
+
+          return adminEmail === email && adminPassword === password;
+        });
+
+        // No match found
+        if (!adminCredentialsMatch) {
+          throw Error('Invalid email or password provided.');
+        }
+
+        return {
+          id: Buffer.from(email).toString('base64'),
+          name: email.split('@')[0],
+          email,
+        };
+      },
     }),
   ],
   session: {
@@ -56,7 +149,17 @@ export default NextAuth({
       if (!user.email) {
         return false;
       }
-      return account?.provider === 'boxyhq-saml' ? true : validateEmailWithACL(user.email);
+
+      // Bypass ACL for credentials and boxyhq-saml (including IdP login)
+      if (
+        account?.provider === 'credentials' ||
+        account?.provider === 'boxyhq-saml' ||
+        account?.provider === 'boxyhq-saml-idplogin'
+      ) {
+        return true;
+      }
+
+      return validateEmailWithACL(user.email);
     },
   },
   pages: {
