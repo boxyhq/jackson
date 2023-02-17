@@ -259,7 +259,7 @@ export class OAuthController implements IOAuthController {
         });
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
-        // If tracer enabled, persist the error in DB
+        // If tracer enabled, save the error to DB
         this.samlTracer?.saveTrace({
           timestamp: Date.now(),
           error: error_description,
@@ -534,10 +534,23 @@ export class OAuthController implements IOAuthController {
     try {
       profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
     } catch (err: unknown) {
+      const error_description = getErrorMessage(err);
+      // If tracer enabled, save the error to DB
+      this.samlTracer?.saveTrace({
+        timestamp: Date.now(),
+        error: error_description,
+        context: {
+          samlResponse: rawResponse,
+          tenant: connection.tenant as string,
+          product: connection.product as string,
+          clientID: connection.clientID,
+        },
+      });
+
       return {
         redirect_url: OAuthErrorResponse({
           error: 'access_denied',
-          error_description: getErrorMessage(err),
+          error_description,
           redirect_uri,
           state: session.requested?.state,
         }),
