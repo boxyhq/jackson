@@ -23,7 +23,12 @@ class SAMLTracer {
 
   constructor({ db }) {
     this.tracerStore = db.store('saml:tracer');
+    // Clean up stale traces at the start
     this.cleanUpStaleTraces();
+    // Set timer to run every day
+    setInterval(async () => {
+      this.cleanUpStaleTraces();
+    }, INTERVAL_1_DAY_MS);
   }
 
   public async saveTrace(payload: Omit<Trace, 'traceId'>) {
@@ -44,21 +49,20 @@ class SAMLTracer {
     return (await this.tracerStore.getAll(pageOffset, pageLimit)) as Trace[];
   }
 
-  private cleanUpStaleTraces() {
-    setInterval(async () => {
-      const traces: Trace[] = [];
-      for (let pageOffset = 0; ; pageOffset++) {
-        const page = await this.getAllTraces(pageOffset, 50);
-        if (page.length === 0) {
-          break;
-        }
-        traces.concat(page.filter(({ timestamp }) => Date.now() - timestamp > MILLISECONDS_1_WEEK));
+  /** Cleans up stale traces older than 1 week */
+  private async cleanUpStaleTraces() {
+    const traces: Trace[] = [];
+    for (let pageOffset = 0; ; pageOffset++) {
+      const page = await this.getAllTraces(pageOffset, 50);
+      if (page.length === 0) {
+        break;
       }
+      traces.concat(page.filter(({ timestamp }) => Date.now() - timestamp > MILLISECONDS_1_WEEK));
+    }
 
-      for (let i = 0; i < traces.length; i++) {
-        this.tracerStore.delete(traces[i].traceId);
-      }
-    }, INTERVAL_1_DAY_MS);
+    for (let i = 0; i < traces.length; i++) {
+      this.tracerStore.delete(traces[i].traceId);
+    }
   }
 }
 
