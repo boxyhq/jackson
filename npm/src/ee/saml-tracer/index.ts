@@ -1,5 +1,5 @@
 import { Storable } from '../../typings';
-import { randomUUID } from 'crypto';
+import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../../controller/utils';
 import { keyFromParts } from '../../db/utils';
 
@@ -33,7 +33,8 @@ class SAMLTracer {
 
   public async saveTrace(payload: Omit<Trace, 'traceId'>) {
     const { context } = payload;
-    const traceId = randomUUID();
+    // Friendly trace id
+    const traceId = await generateMnemonic();
     await this.tracerStore.put(
       traceId,
       { ...payload, traceId },

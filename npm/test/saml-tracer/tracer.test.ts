@@ -22,11 +22,14 @@ tap.test('SAMLTracer', async () => {
     await samlTracer.saveTrace(test_trace);
 
     const traces = await samlTracer.getAllTraces(0, 50);
+    // check if found trace has all the members of the test_trace saved
     t.hasStrict(traces[0], test_trace);
+    //cleanup
     await samlTracer.tracerStore.delete(traces[0].traceId);
   });
 
   tap.test('calling cleanUpStaleTraces cleans traces older than 1 week', async (t) => {
+    // Save traces older than 1 week for testing
     const STALE_TIMESTAMPS = [
       Date.now() - MILLISECONDS_1_WEEK,
       Date.now() - MILLISECONDS_1_WEEK - 500,
@@ -41,11 +44,10 @@ tap.test('SAMLTracer', async () => {
         context: { tenant: 'boxyhq.com', product: 'saml-demo.boxyhq.com', clientID: 'random-clientID' },
       });
     }
-
+    // run cleanUpStaleTraces
     await samlTracer.cleanUpStaleTraces();
-
     const traces = await samlTracer.getAllTraces(0, 50);
-
+    // should be empty
     t.equal(traces.length, 0);
   });
 });
