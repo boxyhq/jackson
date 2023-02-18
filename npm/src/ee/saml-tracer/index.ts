@@ -50,7 +50,7 @@ class SAMLTracer {
   }
 
   /** Cleans up stale traces older than 1 week */
-  private async cleanUpStaleTraces() {
+  public async cleanUpStaleTraces() {
     const traces: Trace[] = [];
     for (let pageOffset = 0; ; pageOffset++) {
       const page = await this.getAllTraces(pageOffset, 50);
