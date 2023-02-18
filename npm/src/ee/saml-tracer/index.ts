@@ -3,7 +3,7 @@ import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../../controller/utils';
 import { keyFromParts } from '../../db/utils';
 
-const MILLISECONDS_1_WEEK = 7 * 24 * 60 * 60 * 1000;
+const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
 
 type Trace = {
@@ -58,7 +58,7 @@ class SAMLTracer {
       if (page.length === 0) {
         break;
       }
-      traces = traces.concat(page.filter(({ timestamp }) => Date.now() - timestamp > MILLISECONDS_1_WEEK));
+      traces = traces.concat(page.filter(({ timestamp }) => Date.now() - timestamp > INTERVAL_1_WEEK_MS));
     }
 
     for (let i = 0; i < traces.length; i++) {

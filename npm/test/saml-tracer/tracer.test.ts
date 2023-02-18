@@ -4,7 +4,7 @@ import { jacksonOptions } from '../utils';
 import DB from '../../src/db/db';
 
 let samlTracer: SAMLTracer;
-const MILLISECONDS_1_WEEK = 7 * 24 * 60 * 60 * 1000;
+const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 tap.before(async () => {
   const { db: dbOptions } = jacksonOptions;
@@ -31,11 +31,11 @@ tap.test('SAMLTracer', async () => {
   tap.test('calling cleanUpStaleTraces cleans traces older than 1 week', async (t) => {
     // Save traces older than 1 week for testing
     const STALE_TIMESTAMPS = [
-      Date.now() - MILLISECONDS_1_WEEK,
-      Date.now() - MILLISECONDS_1_WEEK - 500,
-      Date.now() - MILLISECONDS_1_WEEK - 1000,
-      Date.now() - MILLISECONDS_1_WEEK - 1500,
-      Date.now() - MILLISECONDS_1_WEEK - 2000,
+      Date.now() - INTERVAL_1_WEEK_MS,
+      Date.now() - INTERVAL_1_WEEK_MS - 500,
+      Date.now() - INTERVAL_1_WEEK_MS - 1000,
+      Date.now() - INTERVAL_1_WEEK_MS - 1500,
+      Date.now() - INTERVAL_1_WEEK_MS - 2000,
     ];
     for (let i = 0; i < STALE_TIMESTAMPS.length; i++) {
       await samlTracer.saveTrace({
