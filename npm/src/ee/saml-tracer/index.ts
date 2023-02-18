@@ -61,7 +61,7 @@ class SAMLTracer {
     }
 
     for (let i = 0; i < traces.length; i++) {
-      this.tracerStore.delete(traces[i].traceId);
+      await this.tracerStore.delete(traces[i].traceId);
     }
   }
 }
