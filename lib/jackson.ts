@@ -34,10 +34,10 @@ export default async function init() {
     !g.connectionAPIController ||
     !g.oauthController ||
     !g.adminController ||
-    !g.healthCheckController ||
     !g.logoutController ||
-    !g.directorySync ||
+    !g.healthCheckController ||
     !g.setupLinkController ||
+    !g.directorySyncController ||
     !g.oidcDiscoveryController ||
     !g.spConfig ||
     !g.samlFederatedController
