@@ -3,8 +3,8 @@ import { randomUUID } from 'crypto';
 import { IndexNames } from '../../controller/utils';
 import { keyFromParts } from '../../db/utils';
 
-const MILLISECONDS_1_WEEK = 604800000;
-const INTERVAL_1_DAY_MS = 86400000;
+const MILLISECONDS_1_WEEK = 7 * 24 * 60 * 60 * 1000;
+const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
 
 type Trace = {
   traceId: string;
