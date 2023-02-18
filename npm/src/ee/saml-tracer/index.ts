@@ -51,13 +51,13 @@ class SAMLTracer {
 
   /** Cleans up stale traces older than 1 week */
   public async cleanUpStaleTraces() {
-    const traces: Trace[] = [];
+    let traces: Trace[] = [];
     for (let pageOffset = 0; ; pageOffset++) {
       const page = await this.getAllTraces(pageOffset, 50);
       if (page.length === 0) {
         break;
       }
-      traces.concat(page.filter(({ timestamp }) => Date.now() - timestamp > MILLISECONDS_1_WEEK));
+      traces = traces.concat(page.filter(({ timestamp }) => Date.now() - timestamp > MILLISECONDS_1_WEEK));
     }
 
     for (let i = 0; i < traces.length; i++) {
