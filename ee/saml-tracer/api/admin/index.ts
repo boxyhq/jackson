@@ -30,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-// Get SAML Federation apps
+// Get SAML Traces
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlTracer } = await jackson();
 
