@@ -39,7 +39,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@mdx-js/react": "2.2.1",
+    "@mdx-js/react": "2.3.0",
     "@rollup/plugin-typescript": "11.0.0",
     "@types/node": "18.13.0",
     "@types/react": "18.0.28",
