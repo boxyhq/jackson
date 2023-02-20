@@ -1,6 +1,7 @@
 import { type JWK } from 'jose';
 
 export * from './ee/federated-saml/types';
+export * from './ee/saml-tracer/types';
 export * from './directory-sync/types';
 
 interface SSOConnection {

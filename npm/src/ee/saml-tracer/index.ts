@@ -2,21 +2,10 @@ import { Storable } from '../../typings';
 import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../../controller/utils';
 import { keyFromParts } from '../../db/utils';
+import { Trace } from './types';
 
 const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
-
-type Trace = {
-  traceId: string;
-  timestamp: number;
-  error: string;
-  context: {
-    tenant: string;
-    product: string;
-    clientID: string;
-    [key: string]: unknown;
-  };
-};
 
 class SAMLTracer {
   tracerStore: Storable;
