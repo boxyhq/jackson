@@ -2,7 +2,7 @@ import { Storable } from '../../typings';
 import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../../controller/utils';
 import { keyFromParts } from '../../db/utils';
-import { Trace } from './types';
+import type { SAMLTrace, Trace } from './types';
 
 const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
@@ -20,19 +20,23 @@ class SAMLTracer {
     }, INTERVAL_1_DAY_MS);
   }
 
-  public async saveTrace(payload: Omit<Trace, 'traceId'>) {
+  public async saveTrace(payload: SAMLTrace) {
     const { context } = payload;
     // Friendly trace id
-    const traceId = await generateMnemonic();
+    const traceId: string = await generateMnemonic();
+    // If timestamp present in payload use that value, else generate the current timestamp
+    const timestamp = typeof payload.timestamp === 'number' ? payload.timestamp : Date.now();
+    const traceValue: Trace = { ...payload, traceId, timestamp };
     await this.tracerStore.put(
       traceId,
-      { ...payload, traceId },
+      traceValue,
       {
         name: IndexNames.TenantProduct,
         value: keyFromParts(context.tenant, context.product),
       },
       { name: IndexNames.SSOClientID, value: context.clientID }
     );
+    return traceId;
   }
 
   public async getAllTraces(pageOffset?: number, pageLimit?: number): Promise<Trace[]> {

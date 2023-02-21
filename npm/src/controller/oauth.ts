@@ -260,8 +260,7 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         // If tracer enabled, save the error to DB
-        this.samlTracer?.saveTrace({
-          timestamp: Date.now(),
+        const traceId = await this.samlTracer?.saveTrace({
           error: error_description,
           context: {
             tenant: requestedTenant as string,
@@ -536,8 +535,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // If tracer enabled, save the error to DB
-      this.samlTracer?.saveTrace({
-        timestamp: Date.now(),
+      const traceId = await this.samlTracer?.saveTrace({
         error: error_description,
         context: {
           samlResponse: rawResponse,
