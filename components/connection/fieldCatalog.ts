@@ -98,7 +98,7 @@ export const getCommonFields = ({
   },
   {
     key: 'oidcDiscoveryUrl',
-    label: 'Well-known URL of OpenId Provider',
+    label: 'Well-known URL of OpenID Provider',
     type: 'url',
     placeholder: 'https://example.com/.well-known/openid-configuration',
     attributes: isEditView
@@ -107,7 +107,7 @@ export const getCommonFields = ({
     fallback: {
       key: 'oidcMetadata',
       activateCondition: (fieldValue) => !fieldValue,
-      switch: { label: 'Missing discovery path ? Click here to set the metadata' },
+      switch: { label: 'Missing the discovery URL? Click here to set the individual attributes' },
     },
   },
   {
@@ -137,13 +137,13 @@ export const getCommonFields = ({
       },
       {
         key: 'jwks_uri',
-        label: 'JWKS uri',
+        label: 'JWKS URI',
         type: 'url',
         attributes: { accessor: (o) => o?.oidcProvider?.metadata?.jwks_uri, hideInSetupView: false },
       },
       {
         key: 'userinfo_endpoint',
-        label: 'Userinfo endpoint',
+        label: 'UserInfo endpoint',
         type: 'url',
         attributes: { accessor: (o) => o?.oidcProvider?.metadata?.userinfo_endpoint, hideInSetupView: false },
       },
@@ -151,7 +151,7 @@ export const getCommonFields = ({
     attributes: { connection: 'oidc', hideInSetupView: false },
     fallback: {
       key: 'oidcDiscoveryUrl',
-      switch: { label: 'Have a discovery path ? Click here to set the discovery url' },
+      switch: { label: 'Have a discovery URL? Click here to set it' },
     },
   },
   {
