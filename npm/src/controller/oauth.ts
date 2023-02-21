@@ -272,7 +272,7 @@ export class OAuthController implements IOAuthController {
         return {
           redirect_url: OAuthErrorResponse({
             error: 'server_error',
-            error_description,
+            error_description: traceId ? `${traceId} ${error_description}` : error_description,
             redirect_uri,
             state,
           }),
@@ -548,7 +548,7 @@ export class OAuthController implements IOAuthController {
       return {
         redirect_url: OAuthErrorResponse({
           error: 'access_denied',
-          error_description,
+          error_description: traceId ? `${traceId} ${error_description}` : error_description,
           redirect_uri,
           state: session.requested?.state,
         }),
