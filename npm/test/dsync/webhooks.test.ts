@@ -1,16 +1,16 @@
-import { DirectorySync, Directory, DirectorySyncEvent, EventCallback } from '../../src/typings';
+import { IDirectorySyncController, Directory, DirectorySyncEvent, EventCallback } from '../../src/typings';
 import tap from 'tap';
 import groups from './data/groups';
 import users from './data/users';
 import { default as usersRequest } from './data/user-requests';
 import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
-import { databaseOptions } from '../utils';
+import { jacksonOptions } from '../utils';
 import sinon from 'sinon';
 import axios from 'axios';
 import { createSignatureString } from '../../src/directory-sync/utils';
 
-let directorySync: DirectorySync;
+let directorySync: IDirectorySyncController;
 let directory: Directory;
 let eventCallback: EventCallback;
 
@@ -22,9 +22,9 @@ const webhook: Directory['webhook'] = {
 };
 
 tap.before(async () => {
-  const jackson = await (await import('../../src/index')).default(databaseOptions);
+  const jackson = await (await import('../../src/index')).default(jacksonOptions);
 
-  directorySync = jackson.directorySync;
+  directorySync = jackson.directorySyncController;
 
   // Create a directory before starting the test
   const { data, error } = await directorySync.directories.create({
@@ -81,7 +81,7 @@ tap.test('Webhook Events / ', async (t) => {
     // Create a user
     await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    const events = await directorySync.webhookLogs.getAll();
+    const events = await directorySync.webhookLogs.getAll({});
 
     t.equal(events.length, 0);
 
@@ -103,7 +103,7 @@ tap.test('Webhook Events / ', async (t) => {
     // Create a user
     await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    const events = await directorySync.webhookLogs.getAll();
+    const events = await directorySync.webhookLogs.getAll({});
 
     t.equal(events.length, 0);
 
@@ -119,7 +119,7 @@ tap.test('Webhook Events / ', async (t) => {
     // Create a user
     await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    const logs = await directorySync.webhookLogs.getAll();
+    const logs = await directorySync.webhookLogs.getAll({});
 
     const log = await directorySync.webhookLogs.get(logs[0].id);
 
@@ -154,7 +154,7 @@ tap.test('Webhook Events / ', async (t) => {
     mock.verify();
     mock.restore();
 
-    const logs = await directorySync.webhookLogs.getAll();
+    const logs = await directorySync.webhookLogs.getAll({});
 
     t.ok(logs);
     t.equal(logs.length, 3);
@@ -202,7 +202,7 @@ tap.test('Webhook Events / ', async (t) => {
     mock.verify();
     mock.restore();
 
-    const logs = await directorySync.webhookLogs.getAll();
+    const logs = await directorySync.webhookLogs.getAll({});
 
     t.ok(logs);
     t.equal(logs.length, 3);
@@ -259,7 +259,7 @@ tap.test('Webhook Events / ', async (t) => {
     mock.verify();
     mock.restore();
 
-    const logs = await directorySync.webhookLogs.getAll();
+    const logs = await directorySync.webhookLogs.getAll({});
 
     t.ok(logs);
     t.equal(logs.length, 4);

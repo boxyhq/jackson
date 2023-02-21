@@ -3,9 +3,7 @@ const { i18n } = require('./next-i18next.config');
 /** @type {import('next').NextConfig} */
 
 module.exports = {
-  experimental: {
-    enableUndici: true,
-  },
+  productionBrowserSourceMaps: true,
   reactStrictMode: true,
   i18n,
   output: 'standalone',
@@ -42,12 +40,44 @@ module.exports = {
         destination: '/api/well-known/sp-metadata',
       },
       {
+        source: '/.well-known/idp-metadata',
+        destination: '/api/well-known/idp-metadata',
+      },
+      {
         source: '/.well-known/saml-configuration',
         destination: '/well-known/saml-configuration',
       },
       {
+        source: '/.well-known/idp-configuration',
+        destination: '/well-known/idp-configuration',
+      },
+      {
         source: '/oauth/jwks',
         destination: '/api/oauth/jwks',
+      },
+      {
+        source: '/admin/directory-sync/setup-link',
+        destination: '/admin/setup-link',
+      },
+      {
+        source: '/admin/sso-connection/setup-link',
+        destination: '/admin/setup-link',
+      },
+      {
+        source: '/admin/sso-connection/setup-link/new',
+        destination: '/admin/setup-link/new',
+      },
+      {
+        source: '/admin/directory-sync/setup-link/new',
+        destination: '/admin/setup-link/new',
+      },
+      {
+        source: '/.well-known',
+        destination: '/well-known',
+      },
+      {
+        source: '/admin/settings',
+        destination: '/admin/settings/sso-connection',
       },
     ];
   },

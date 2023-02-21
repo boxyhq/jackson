@@ -1,24 +1,22 @@
 import type {
-  DirectoryConfig,
   Directory,
   DirectorySyncResponse,
   DirectorySyncRequest,
   User,
-  Users,
   ApiError,
-  IDirectoryUsers,
   EventCallback,
-  HTTPMethod,
+  IDirectoryConfig,
+  IUsers,
 } from '../typings';
 import { parseUserOperations } from './utils';
 import { sendEvent } from './events';
 
-export class DirectoryUsers implements IDirectoryUsers {
-  private directories: DirectoryConfig;
-  private users: Users;
+export class DirectoryUsers {
+  private directories: IDirectoryConfig;
+  private users: IUsers;
   private callback: EventCallback | undefined;
 
-  constructor({ directories, users }: { directories: DirectoryConfig; users: Users }) {
+  constructor({ directories, users }: { directories: IDirectoryConfig; users: IUsers }) {
     this.directories = directories;
     this.users = users;
   }
@@ -27,6 +25,7 @@ export class DirectoryUsers implements IDirectoryUsers {
     const { name, emails } = body;
 
     const { data: user } = await this.users.create({
+      directoryId: directory.id,
       first_name: name && 'givenName' in name ? name.givenName : '',
       last_name: name && 'familyName' in name ? name.familyName : '',
       email: emails[0].value,
@@ -109,8 +108,9 @@ export class DirectoryUsers implements IDirectoryUsers {
     count: number;
     startIndex: number;
     filter?: string;
+    directoryId: string;
   }): Promise<DirectorySyncResponse> {
-    const { startIndex, filter, count } = queryParams;
+    const { startIndex, filter, count, directoryId } = queryParams;
 
     let users: User[] | null = [];
     let totalResults = 0;
@@ -118,15 +118,15 @@ export class DirectoryUsers implements IDirectoryUsers {
     if (filter) {
       // Search users by userName
       // filter: userName eq "john@example.com"
-      const { data } = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''));
+      const { data } = await this.users.search(filter.split('eq ')[1].replace(/['"]+/g, ''), directoryId);
 
       users = data;
       totalResults = users ? users.length : 0;
     } else {
       // Fetch all the existing Users (Paginated)
       // At this moment, we don't have method to count the database records.
-      const { data: allUsers } = await this.users.list({});
-      const { data } = await this.users.list({ pageOffset: startIndex - 1, pageLimit: count });
+      const { data: allUsers } = await this.users.getAll({ directoryId });
+      const { data } = await this.users.getAll({ pageOffset: startIndex - 1, pageLimit: count, directoryId });
 
       users = data;
       totalResults = allUsers ? allUsers.length : 0;
@@ -158,7 +158,7 @@ export class DirectoryUsers implements IDirectoryUsers {
   ): Promise<DirectorySyncResponse> {
     const { body, query, resourceId: userId, directoryId, apiSecret } = request;
 
-    const method = request.method.toUpperCase() as HTTPMethod;
+    const method = request.method.toUpperCase();
 
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);
@@ -183,6 +183,10 @@ export class DirectoryUsers implements IDirectoryUsers {
       delete body['password'];
     }
 
+    if (userId && !user) {
+      return this.respondWithError({ code: 404, message: 'User not found' });
+    }
+
     if (user) {
       switch (method) {
         case 'GET':
@@ -204,6 +208,7 @@ export class DirectoryUsers implements IDirectoryUsers {
           count: query.count as number,
           startIndex: query.startIndex as number,
           filter: query.filter,
+          directoryId,
         });
     }
 

@@ -1,13 +1,10 @@
 import crypto from 'crypto';
+import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
-import { Client, errors, generators, Issuer, TokenSet } from 'openid-client';
-import * as jose from 'jose';
-import * as dbutils from '../db/utils';
-import * as metrics from '../opentelemetry/metrics';
-
 import saml from '@boxyhq/saml20';
-import claims from '../saml/claims';
+import { errors, generators, Issuer } from 'openid-client';
+import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
   OIDCAuthzResponsePayload,
@@ -19,11 +16,9 @@ import type {
   Profile,
   SAMLResponsePayload,
   Storable,
+  SAMLSSORecord,
+  OIDCSSORecord,
 } from '../typings';
-import { JacksonError } from './error';
-import * as allowed from './oauth/allowed';
-import * as codeVerifier from './oauth/code-verifier';
-import * as redirect from './oauth/redirect';
 import {
   relayStatePrefix,
   IndexNames,
@@ -31,49 +26,21 @@ import {
   getErrorMessage,
   loadJWSPrivateKey,
   isJWSKeyPairLoaded,
+  extractOIDCUserProfile,
+  getScopeValues,
+  getEncodedTenantProduct,
 } from './utils';
+
+import * as metrics from '../opentelemetry/metrics';
+import { JacksonError } from './error';
+import * as allowed from './oauth/allowed';
+import * as codeVerifier from './oauth/code-verifier';
+import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
+import { SAMLHandler } from './saml-handler';
+import { extractSAMLResponseAttributes } from '../saml/lib';
 
 const deflateRawAsync = promisify(deflateRaw);
-
-const validateSAMLResponse = async (rawResponse: string, validateOpts) => {
-  const profile = await saml.validate(rawResponse, validateOpts);
-  if (profile && profile.claims) {
-    // we map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
-    profile.claims = claims.map(profile.claims);
-
-    // some providers don't return the id in the assertion, we set it to a sha256 hash of the email
-    if (!profile.claims.id && profile.claims.email) {
-      profile.claims.id = crypto.createHash('sha256').update(profile.claims.email).digest('hex');
-    }
-
-    // we'll send a ripemd160 hash of the id, this can be used in the case of email missing it can be used as the local part
-    profile.claims.idHash = dbutils.keyDigest(profile.claims.id);
-  }
-  return profile;
-};
-
-function getEncodedTenantProduct(param: string): { tenant: string | null; product: string | null } | null {
-  try {
-    const sp = new URLSearchParams(param);
-    const tenant = sp.get('tenant');
-    const product = sp.get('product');
-    if (tenant && product) {
-      return {
-        tenant: sp.get('tenant'),
-        product: sp.get('product'),
-      };
-    }
-
-    return null;
-  } catch (err) {
-    return null;
-  }
-}
-
-function getScopeValues(scope?: string): string[] {
-  return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
-}
 
 export class OAuthController implements IOAuthController {
   private connectionStore: Storable;
@@ -81,6 +48,7 @@ export class OAuthController implements IOAuthController {
   private codeStore: Storable;
   private tokenStore: Storable;
   private opts: JacksonOption;
+  private samlHandler: SAMLHandler;
 
   constructor({ connectionStore, sessionStore, codeStore, tokenStore, opts }) {
     this.connectionStore = connectionStore;
@@ -88,59 +56,12 @@ export class OAuthController implements IOAuthController {
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
     this.opts = opts;
-  }
 
-  private resolveMultipleConnectionMatches(
-    connections,
-    idp_hint,
-    originalParams,
-    isIdpFlow = false
-  ): { resolvedConnection?: unknown; redirect_url?: string; app_select_form?: string } {
-    if (connections.length > 1) {
-      if (idp_hint) {
-        return { resolvedConnection: connections.find(({ clientID }) => clientID === idp_hint) };
-      } else if (this.opts.idpDiscoveryPath) {
-        if (!isIdpFlow) {
-          // redirect to IdP selection page
-          const idpList = connections.map(({ idpMetadata, oidcProvider, clientID, name }) =>
-            JSON.stringify({
-              provider: idpMetadata?.provider ?? oidcProvider?.provider,
-              clientID,
-              name,
-              connectionIsSAML: idpMetadata && typeof idpMetadata === 'object',
-              connectionIsOIDC: oidcProvider && typeof oidcProvider === 'object',
-            })
-          );
-          return {
-            redirect_url: redirect.success(this.opts.externalUrl + this.opts.idpDiscoveryPath, {
-              ...originalParams,
-              idp: idpList,
-            }),
-          };
-        } else {
-          // Relevant to IdP initiated SAML flow
-          const appList = connections.map(({ product, name, description, clientID }) => ({
-            product,
-            name,
-            description,
-            clientID,
-          }));
-          return {
-            app_select_form: saml.createPostForm(this.opts.idpDiscoveryPath, [
-              {
-                name: 'SAMLResponse',
-                value: originalParams.SAMLResponse,
-              },
-              {
-                name: 'app',
-                value: encodeURIComponent(JSON.stringify(appList)),
-              },
-            ]),
-          };
-        }
-      }
-    }
-    return {};
+    this.samlHandler = new SAMLHandler({
+      connection: connectionStore,
+      session: sessionStore,
+      opts,
+    });
   }
 
   public async authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }> {
@@ -154,7 +75,7 @@ export class OAuthController implements IOAuthController {
       code_challenge,
       code_challenge_method = '',
       idp_hint,
-      prompt,
+      forceAuthn = 'false',
     } = body;
 
     const tenant = 'tenant' in body ? body.tenant : undefined;
@@ -171,48 +92,27 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Please specify a redirect URL.', 400);
     }
 
-    let connection;
+    let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     const requestedScopes = getScopeValues(scope);
     const requestedOIDCFlow = requestedScopes.includes('openid');
 
     if (tenant && product) {
-      const connections = await this.connectionStore.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
+      const response = await this.samlHandler.resolveConnection({
+        tenant,
+        product,
+        idp_hint,
+        authFlow: 'oauth',
+        originalParams: { ...body },
       });
 
-      if (!connections || connections.length === 0) {
-        throw new JacksonError('IdP connection not found.', 403);
+      if ('redirectUrl' in response) {
+        return {
+          redirect_url: response.redirectUrl,
+        };
       }
 
-      connection = connections[0];
-
-      // Support multiple matches
-      const { resolvedConnection, redirect_url } = this.resolveMultipleConnectionMatches(
-        connections,
-        idp_hint,
-        {
-          response_type,
-          client_id,
-          redirect_uri,
-          state,
-          tenant,
-          product,
-          access_type,
-          resource,
-          scope,
-          nonce,
-          code_challenge,
-          code_challenge_method,
-        }
-      );
-
-      if (redirect_url) {
-        return { redirect_url };
-      }
-
-      if (resolvedConnection) {
-        connection = resolvedConnection;
+      if ('connection' in response) {
+        connection = response.connection;
       }
     } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
       // if tenant and product are encoded in the client_id then we parse it and check for the relevant connection(s)
@@ -231,45 +131,27 @@ export class OAuthController implements IOAuthController {
         }
       }
       if (sp && sp.tenant && sp.product) {
-        requestedTenant = sp.tenant;
-        requestedProduct = sp.product;
+        const { tenant, product } = sp;
 
-        const connections = await this.connectionStore.getByIndex({
-          name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(sp.tenant, sp.product),
+        requestedTenant = tenant;
+        requestedProduct = product;
+
+        const response = await this.samlHandler.resolveConnection({
+          tenant,
+          product,
+          idp_hint,
+          authFlow: 'oauth',
+          originalParams: { ...body },
         });
 
-        if (!connections || connections.length === 0) {
-          throw new JacksonError('IdP connection not found.', 403);
+        if ('redirectUrl' in response) {
+          return {
+            redirect_url: response.redirectUrl,
+          };
         }
 
-        connection = connections[0];
-        // Support multiple matches
-        const { resolvedConnection, redirect_url } = this.resolveMultipleConnectionMatches(
-          connections,
-          idp_hint,
-          {
-            response_type,
-            client_id,
-            redirect_uri,
-            state,
-            tenant,
-            product,
-            access_type,
-            resource,
-            scope,
-            nonce,
-            code_challenge,
-            code_challenge_method,
-          }
-        );
-
-        if (redirect_url) {
-          return { redirect_url };
-        }
-
-        if (resolvedConnection) {
-          connection = resolvedConnection;
+        if ('connection' in response) {
+          connection = response.connection;
         }
       } else {
         connection = await this.connectionStore.get(client_id);
@@ -286,7 +168,7 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('IdP connection not found.', 403);
     }
 
-    if (!allowed.redirect(redirect_uri, connection.redirectUrl)) {
+    if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
@@ -328,15 +210,15 @@ export class OAuthController implements IOAuthController {
     // Connection retrieved: Handover to IdP starts here
     let ssoUrl;
     let post = false;
-    const connectionIsSAML = connection.idpMetadata && typeof connection.idpMetadata === 'object';
-    const connectionIsOIDC = connection.oidcProvider && typeof connection.oidcProvider === 'object';
+    const connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
+    const connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
 
     // Init sessionId
     const sessionId = crypto.randomBytes(16).toString('hex');
     const relayState = relayStatePrefix + sessionId;
     // SAML connection: SAML request will be constructed here
     let samlReq;
-    if (connectionIsSAML) {
+    if ('idpMetadata' in connection) {
       const { sso } = connection.idpMetadata;
 
       if ('redirectUrl' in sso) {
@@ -347,6 +229,7 @@ export class OAuthController implements IOAuthController {
         ssoUrl = sso.postUrl;
         post = true;
       } else {
+        // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
         return {
           redirect_url: OAuthErrorResponse({
             error: 'invalid_request',
@@ -360,18 +243,16 @@ export class OAuthController implements IOAuthController {
       const cert = await getDefaultCertificate();
 
       try {
-        // We will get undefined or Space delimited, case sensitive list of ASCII string values in prompt
-        // If login is one of the value in prompt we want to enable forceAuthn
-        // Else use the saml connection forceAuthn value
-        const promptOptions = prompt ? prompt.split(' ').filter((p) => p === 'login') : [];
-
         samlReq = saml.request({
           ssoUrl,
           entityID: this.opts.samlAudience!,
           callbackUrl: this.opts.externalUrl + this.opts.samlPath,
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
-          forceAuthn: promptOptions.length > 0 ? true : !!connection.forceAuthn,
+          forceAuthn: forceAuthn === 'true' ? true : !!connection.forceAuthn,
+          identifierFormat: connection.identifierFormat
+            ? connection.identifierFormat
+            : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
         });
       } catch (err: unknown) {
         return {
@@ -387,7 +268,8 @@ export class OAuthController implements IOAuthController {
 
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
-    if (connectionIsOIDC) {
+    let oidcNonce: string | undefined;
+    if (connectionIsOIDC && 'oidcProvider' in connection) {
       if (!this.opts.oidcPath) {
         return {
           redirect_url: OAuthErrorResponse({
@@ -400,15 +282,16 @@ export class OAuthController implements IOAuthController {
       }
       const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
       try {
-        const oidcIssuer = await Issuer.discover(discoveryUrl);
+        const oidcIssuer = await Issuer.discover(discoveryUrl as string);
         const oidcClient = new oidcIssuer.Client({
-          client_id: clientId,
+          client_id: clientId as string,
           client_secret: clientSecret,
           redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
           response_types: ['code'],
         });
         oidcCodeVerifier = generators.codeVerifier();
         const code_challenge = generators.codeChallenge(oidcCodeVerifier);
+        oidcNonce = generators.nonce();
         ssoUrl = oidcClient.authorizationUrl({
           scope: [...requestedScopes, 'openid', 'email', 'profile']
             .filter((value, index, self) => self.indexOf(value) === index) // filter out duplicates
@@ -416,6 +299,7 @@ export class OAuthController implements IOAuthController {
           code_challenge,
           code_challenge_method: 'S256',
           state: relayState,
+          nonce: oidcNonce,
         });
       } catch (err: unknown) {
         if (err) {
@@ -467,7 +351,7 @@ export class OAuthController implements IOAuthController {
               ...sessionObj,
               id: samlReq?.id,
             }
-          : { ...sessionObj, id: connection.clientID, oidcCodeVerifier }
+          : { ...sessionObj, id: connection.clientID, oidcCodeVerifier, oidcNonce }
       );
       // Redirect to IdP
       if (connectionIsSAML) {
@@ -523,178 +407,150 @@ export class OAuthController implements IOAuthController {
 
   public async samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string }> {
-    const { SAMLResponse, idp_hint } = body;
-
-    let RelayState = body.RelayState || ''; // RelayState will contain the sessionId from earlier quasi-oauth flow
+  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }> {
+    const { SAMLResponse, idp_hint, RelayState = '' } = body;
 
     const isIdPFlow = !RelayState.startsWith(relayStatePrefix);
 
+    // IdP is disabled so block the request
     if (!this.opts.idpEnabled && isIdPFlow) {
-      // IDP is disabled so block the request
-
+      // IdP login is disabled so block the request
       throw new JacksonError(
         'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
         403
       );
     }
 
-    RelayState = RelayState.replace(relayStatePrefix, '');
-
+    const sessionId = RelayState.replace(relayStatePrefix, '');
     const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
-
     const issuer = saml.parseIssuer(rawResponse);
+
     if (!issuer) {
       throw new JacksonError('Issuer not found.', 403);
     }
-    const samlConnections = await this.connectionStore.getByIndex({
+
+    const connections: SAMLSSORecord[] = await this.connectionStore.getByIndex({
       name: IndexNames.EntityID,
       value: issuer,
     });
 
-    if (!samlConnections || samlConnections.length === 0) {
+    if (!connections || connections.length === 0) {
       throw new JacksonError('SAML connection not found.', 403);
     }
 
-    let samlConnection = samlConnections[0];
+    const session = sessionId ? await this.sessionStore.get(sessionId) : null;
 
+    if (!isIdPFlow && !session) {
+      throw new JacksonError('Unable to validate state from the origin request.', 403);
+    }
+
+    const isSAMLFederated = session && 'samlFederated' in session;
+    const isSPFflow = !isIdPFlow && !isSAMLFederated;
+
+    let connection: SAMLSSORecord | undefined;
+
+    // IdP initiated SSO flow
     if (isIdPFlow) {
-      RelayState = '';
-      const { resolvedConnection, app_select_form } = this.resolveMultipleConnectionMatches(
-        samlConnections,
+      const response = await this.samlHandler.resolveConnection({
         idp_hint,
-        { SAMLResponse },
-        true
-      );
-      if (app_select_form) {
-        return { app_select_form };
+        authFlow: 'idp-initiated',
+        entityId: issuer,
+        originalParams: {
+          SAMLResponse,
+        },
+      });
+
+      // Redirect to the product selection page
+      if ('postForm' in response) {
+        return {
+          app_select_form: response.postForm,
+        };
       }
-      if (resolvedConnection) {
-        samlConnection = resolvedConnection;
+
+      // Found a connection
+      if ('connection' in response) {
+        connection = response.connection as SAMLSSORecord;
       }
     }
 
-    let session;
-
-    if (RelayState !== '') {
-      session = await this.sessionStore.get(RelayState);
-      if (!session) {
-        throw new JacksonError('Unable to validate state from the origin request.', 403);
-      }
-    }
-    if (!isIdPFlow) {
-      // Resolve if there are multiple matches for SP login. TODO: Support multiple matches for IdP login
-      samlConnection =
-        samlConnections.length === 1
-          ? samlConnections[0]
-          : samlConnections.filter((c) => {
-              return (
-                c.clientID === session?.requested?.client_id ||
-                (c.tenant === session?.requested?.tenant && c.product === session?.requested?.product)
-              );
-            })[0];
+    // SP initiated SSO flow
+    // Resolve if there are multiple matches for SP login
+    if (isSPFflow) {
+      connection = connections.filter((c) => {
+        return (
+          c.clientID === session.requested.client_id ||
+          (c.tenant === session.requested.tenant && c.product === session.requested.product)
+        );
+      })[0];
     }
 
-    if (!samlConnection) {
+    if (!connection) {
+      connection = connections[0];
+    }
+
+    if (!connection) {
       throw new JacksonError('SAML connection not found.', 403);
     }
-
-    const { privateKey } = await getDefaultCertificate();
-
-    const validateOpts: Record<string, string> = {
-      thumbprint: samlConnection.idpMetadata.thumbprint,
-      audience: this.opts.samlAudience!,
-      privateKey,
-    };
 
     if (
       session &&
       session.redirect_uri &&
-      !allowed.redirect(session.redirect_uri, samlConnection.redirectUrl)
+      !allowed.redirect(session.redirect_uri, connection.redirectUrl as string[])
     ) {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
 
+    const { privateKey } = await getDefaultCertificate();
+
+    const validateOpts = {
+      thumbprint: `${connection.idpMetadata.thumbprint}`,
+      audience: `${this.opts.samlAudience}`,
+      privateKey,
+    };
+
     if (session && session.id) {
-      validateOpts.inResponseTo = session.id;
+      validateOpts['inResponseTo'] = session.id;
     }
 
-    let profile;
-    const redirect_uri = (session && session.redirect_uri) || samlConnection.defaultRedirectUrl;
+    const redirect_uri = (session && session.redirect_uri) || connection.defaultRedirectUrl;
+
+    let profile: SAMLProfile | null = null;
+
     try {
-      profile = await validateSAMLResponse(rawResponse, validateOpts);
+      profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
     } catch (err: unknown) {
-      // return error to redirect_uri
       return {
         redirect_url: OAuthErrorResponse({
           error: 'access_denied',
           error_description: getErrorMessage(err),
           redirect_uri,
-          state: session?.requested?.state,
-        }),
-      };
-    }
-    // store details against a code
-    const code = crypto.randomBytes(20).toString('hex');
-
-    const codeVal: Record<string, unknown> = {
-      profile,
-      clientID: samlConnection.clientID,
-      clientSecret: samlConnection.clientSecret,
-      requested: session?.requested,
-    };
-
-    if (session) {
-      codeVal.session = session;
-    }
-
-    try {
-      await this.codeStore.put(code, codeVal);
-    } catch (err: unknown) {
-      // return error to redirect_uri
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'server_error',
-          error_description: getErrorMessage(err),
-          redirect_uri,
-          state: session?.requested?.state,
+          state: session.requested?.state,
         }),
       };
     }
 
-    const params: Record<string, string> = {
+    // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
+    if (isSAMLFederated) {
+      const { responseForm } = await this.samlHandler.createSAMLResponse({ profile, session });
+
+      await this.sessionStore.delete(sessionId);
+
+      return { responseForm };
+    }
+
+    const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);
+
+    const params = {
       code,
     };
 
     if (session && session.state) {
-      params.state = session.state;
+      params['state'] = session.state;
     }
 
-    const redirectUrl = redirect.success(redirect_uri, params);
+    await this.sessionStore.delete(sessionId);
 
-    // delete the session
-    try {
-      await this.sessionStore.delete(RelayState);
-    } catch (_err) {
-      // ignore error
-    }
-
-    return { redirect_url: redirectUrl };
-  }
-
-  private async extractOIDCUserProfile(tokenSet: TokenSet, oidcClient: Client) {
-    const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
-    const idTokenClaims = tokenSet.claims();
-    const userinfo = await oidcClient.userinfo(tokenSet);
-    profile.claims.id = idTokenClaims.sub;
-    profile.claims.idHash = dbutils.keyDigest(idTokenClaims.sub);
-    profile.claims.email = idTokenClaims.email ?? userinfo.email;
-    profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
-    profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
-    profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
-    profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
-    profile.claims.raw = userinfo;
-    return profile;
+    return { redirect_url: redirect.success(redirect_uri, params) };
   }
 
   public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
@@ -756,9 +612,9 @@ export class OAuthController implements IOAuthController {
         {
           code: opCode,
         },
-        { code_verifier: session.oidcCodeVerifier }
+        { code_verifier: session.oidcCodeVerifier, nonce: session.oidcNonce }
       );
-      profile = await this.extractOIDCUserProfile(tokenSet, oidcClient);
+      profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
       if (err) {
         return {
@@ -771,51 +627,49 @@ export class OAuthController implements IOAuthController {
         };
       }
     }
-    // store details against a code
-    const code = crypto.randomBytes(20).toString('hex');
 
-    const codeVal: Record<string, unknown> = {
-      profile,
-      clientID: oidcConnection.clientID,
-      clientSecret: oidcConnection.clientSecret,
-      requested: session?.requested,
-    };
+    const code = await this._buildAuthorizationCode(oidcConnection, profile, session, false);
 
-    if (session) {
-      codeVal.session = session;
-    }
-
-    try {
-      await this.codeStore.put(code, codeVal);
-    } catch (err: unknown) {
-      // return error to redirect_uri
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'server_error',
-          error_description: getErrorMessage(err),
-          redirect_uri,
-          state: session.state,
-        }),
-      };
-    }
-    const params: Record<string, string> = {
+    const params = {
       code,
     };
 
     if (session && session.state) {
-      params.state = session.state;
+      params['state'] = session.state;
     }
 
     const redirectUrl = redirect.success(redirect_uri, params);
 
-    // delete the session
-    try {
-      await this.sessionStore.delete(RelayState);
-    } catch (_err) {
-      // ignore error
-    }
+    await this.sessionStore.delete(RelayState);
 
     return { redirect_url: redirectUrl };
+  }
+
+  // Build the authorization code for the session
+  private async _buildAuthorizationCode(
+    connection: SAMLSSORecord | OIDCSSORecord,
+    profile: any,
+    session: any,
+    isIdPFlow: boolean
+  ) {
+    // Store details against a code
+    const code = crypto.randomBytes(20).toString('hex');
+
+    const codeVal = {
+      profile,
+      clientID: connection.clientID,
+      clientSecret: connection.clientSecret,
+      requested: session ? session.requested : null,
+      isIdPFlow,
+    };
+
+    if (session) {
+      codeVal['session'] = session;
+    }
+
+    await this.codeStore.put(code, codeVal);
+
+    return code;
   }
 
   /**
@@ -910,7 +764,7 @@ export class OAuthController implements IOAuthController {
     if (code_verifier) {
       // PKCE flow
       let cv = code_verifier;
-      if (codeVal.session.code_challenge_method.toLowerCase() === 's256') {
+      if (codeVal.session.code_challenge_method?.toLowerCase() === 's256') {
         cv = codeVerifier.encode(code_verifier);
       }
 
@@ -927,7 +781,10 @@ export class OAuthController implements IOAuthController {
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
         } else {
-          if (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product) {
+          if (
+            !codeVal.isIdPFlow &&
+            (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product)
+          ) {
             throw new JacksonError('Invalid tenant or product', 401);
           }
           // encoded client_id, verify client_secret

@@ -5,58 +5,79 @@
  * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
  */
 
-export const getCommonFields = (isEditView?: boolean) => [
+export const getCommonFields = ({
+  isEditView,
+  isSettingsView,
+}: {
+  isEditView?: boolean;
+  isSettingsView?: boolean;
+}) => [
   {
     key: 'name',
     label: 'Name',
     type: 'text',
     placeholder: 'MyApp',
-    attributes: { required: false },
+    attributes: { required: false, hideInSetupView: true },
   },
   {
     key: 'description',
     label: 'Description',
     type: 'text',
     placeholder: 'A short description not more than 100 characters',
-    attributes: { maxLength: 100, required: false },
+    attributes: { maxLength: 100, required: false, hideInSetupView: true },
   },
   {
     key: 'tenant',
     label: 'Tenant',
     type: 'text',
     placeholder: 'acme.com',
-    attributes: isEditView ? { editable: false } : {},
+    attributes: isEditView
+      ? {
+          editable: false,
+          hideInSetupView: true,
+        }
+      : {
+          editable: !isSettingsView,
+          hideInSetupView: true,
+        },
   },
   {
     key: 'product',
     label: 'Product',
     type: 'text',
     placeholder: 'demo',
-    attributes: isEditView ? { editable: false } : {},
+    attributes: isEditView
+      ? {
+          editable: false,
+          hideInSetupView: true,
+        }
+      : {
+          editable: !isSettingsView,
+          hideInSetupView: true,
+        },
   },
   {
     key: 'redirectUrl',
     label: 'Allowed redirect URLs (newline separated)',
     type: 'textarea',
     placeholder: 'http://localhost:3366',
-    attributes: { isArray: true, rows: 3 },
+    attributes: { isArray: true, rows: 3, hideInSetupView: true, editable: !isSettingsView },
   },
   {
     key: 'defaultRedirectUrl',
     label: 'Default redirect URL',
     type: 'url',
     placeholder: 'http://localhost:3366/login/saml',
-    attributes: {},
+    attributes: { hideInSetupView: true, editable: !isSettingsView },
   },
-
   {
     key: 'oidcDiscoveryUrl',
     label: 'Well-known URL of OpenId Provider',
     type: 'url',
     placeholder: 'https://example.com/.well-known/openid-configuration',
     attributes: isEditView
-      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl }
-      : { connection: 'oidc' },
+      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl, hideInSetupView: false }
+      : { connection: 'oidc', hideInSetupView: false },
   },
   {
     key: 'oidcClientId',
@@ -64,8 +85,12 @@ export const getCommonFields = (isEditView?: boolean) => [
     type: 'text',
     placeholder: '',
     attributes: isEditView
-      ? { editable: false, connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientId }
-      : { connection: 'oidc' },
+      ? {
+          connection: 'oidc',
+          accessor: (o) => o?.oidcProvider?.clientId,
+          hideInSetupView: false,
+        }
+      : { connection: 'oidc', hideInSetupView: false },
   },
   {
     key: 'oidcClientSecret',
@@ -73,8 +98,8 @@ export const getCommonFields = (isEditView?: boolean) => [
     type: 'text',
     placeholder: '',
     attributes: isEditView
-      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret }
-      : { connection: 'oidc' },
+      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret, hideInSetupView: false }
+      : { connection: 'oidc', hideInSetupView: false },
   },
   {
     key: 'rawMetadata',
@@ -85,6 +110,7 @@ export const getCommonFields = (isEditView?: boolean) => [
       rows: 5,
       required: false,
       connection: 'saml',
+      hideInSetupView: false,
     },
   },
   {
@@ -95,13 +121,14 @@ export const getCommonFields = (isEditView?: boolean) => [
     attributes: {
       required: false,
       connection: 'saml',
+      hideInSetupView: false,
     },
   },
   {
     key: 'forceAuthn',
     label: 'Force Authentication',
     type: 'checkbox',
-    attributes: { required: false, connection: 'saml' },
+    attributes: { required: false, connection: 'saml', hideInSetupView: false },
   },
 ];
 
@@ -115,6 +142,7 @@ export const EditViewOnlyFields = [
       rows: 10,
       editable: false,
       connection: 'saml',
+      hideInSetupView: false,
       formatForDisplay: (value) => {
         const obj = JSON.parse(JSON.stringify(value));
         delete obj.validTo;
@@ -127,10 +155,11 @@ export const EditViewOnlyFields = [
     label: 'IdP Certificate Validity',
     type: 'pre',
     attributes: {
-      isHidden: (value): boolean => !value.validTo || new Date(value.validTo).toString() == 'Invalid Date',
+      isHidden: (value): boolean => !value || new Date(value).toString() == 'Invalid Date',
       rows: 10,
       editable: false,
       connection: 'saml',
+      hideInSetupView: false,
       accessor: (o) => o?.idpMetadata?.validTo,
       showWarning: (value) => new Date(value) < new Date(),
       formatForDisplay: (value) => new Date(value).toString(),
@@ -140,12 +169,12 @@ export const EditViewOnlyFields = [
     key: 'clientID',
     label: 'Client ID',
     type: 'text',
-    attributes: { editable: false },
+    attributes: { editable: false, hideInSetupView: false },
   },
   {
     key: 'clientSecret',
     label: 'Client Secret',
     type: 'password',
-    attributes: { editable: false },
+    attributes: { editable: false, hideInSetupView: false },
   },
 ];

@@ -2,6 +2,9 @@ name: Build PR Image
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+    # Trigger only for PRs that target main branch
+    branches:
+      - main
 
 jobs:
   build-jackson:
@@ -14,6 +17,12 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
+      - name: Generate Dockerfile
+        id: generate-dockerfile
+        run: |
+          cd uffizzi
+          ./create-dockerfile.sh
+
       - name: Generate UUID image name
         id: uuid
         run: echo "UUID_TAG=$(uuidgen)" >> $GITHUB_ENV
@@ -23,14 +32,14 @@ jobs:
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: registry.uffizzi.com/${{ env.UUID_TAG }}
           tags: |
             type=raw,value=60h
 
       - name: Build Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           file: ./uffizzi/Dockerfile
@@ -41,7 +50,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Push Image to TTL.SH
+      - name: Push Image to Uffizzi
         run: docker push registry.uffizzi.com/${{ env.UUID_TAG }}:60h
 
   render-compose-file:

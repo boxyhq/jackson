@@ -3,26 +3,35 @@ import path from 'path';
 
 // Reference: https://playwright.dev/docs/test-configuration
 const config: PlaywrightTestConfig = {
-  globalSetup: require.resolve('./e2e/globalSetup'),
+  workers: 1,
+  globalSetup: require.resolve('./e2e/support/globalSetup'),
   // Timeout per test
   timeout: 30 * 1000,
   // Test directory
   testDir: path.join(__dirname, 'e2e'),
   // If a test fails, retry it additional 2 times
-  retries: 2,
+  retries: 0,
   // Artifacts folder where screenshots, videos, and traces are stored.
   outputDir: 'test-results/',
 
   // Run your local dev server before starting the tests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
-    command: process.env.CI ? 'npm run start' : 'npm run postgres',
+    command: process.env.CI
+      ? 'NODE_OPTIONS="--dns-result-order=ipv4first" npm run start'
+      : 'npm run build && NODE_OPTIONS="--dns-result-order=ipv4first" npm run start',
     port: 5225,
     timeout: 60 * 1000,
     reuseExistingServer: !process.env.CI,
+    env: {
+      NODE_ENV: 'test',
+    },
   },
 
   use: {
+    // Base URL for all tests
+    baseURL: 'http://localhost:5225',
+
     // Retry a test if its failing with enabled tracing. This allows you to analyse the DOM, console logs, network traffic etc.
     // More information: https://playwright.dev/docs/trace-viewer
     trace: 'retry-with-trace',

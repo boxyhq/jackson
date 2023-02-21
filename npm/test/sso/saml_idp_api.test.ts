@@ -11,9 +11,13 @@ import {
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSORecord,
 } from '../../src/typings';
-import { saml_connection } from './fixture';
-import { databaseOptions } from '../utils';
-import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
+import {
+  saml_connection,
+  saml_connection_binding_absent,
+  saml_connection_entityID_absent,
+  saml_connection_invalid_sso_descriptor,
+} from './fixture';
+import { jacksonOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 
@@ -21,7 +25,7 @@ const CLIENT_ID_SAML = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
 
 tap.before(async () => {
-  const controller = await controllers(databaseOptions);
+  const controller = await controllers(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
 });
@@ -170,7 +174,7 @@ tap.test('controller/api', async (t) => {
 
     t.test('When metadata XML is malformed', async (t) => {
       t.test('entityID missing in XML', async (t) => {
-        const body = Object.assign({}, boxyhqNoentityID);
+        const body: Record<string, any> = Object.assign({}, saml_connection_entityID_absent);
         const metadataPath = path.join(__dirname, '/data/metadata/noentityID');
         const files = await fs.promises.readdir(metadataPath);
         const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
@@ -182,6 +186,40 @@ tap.test('controller/api', async (t) => {
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, "Couldn't parse EntityID from SAML metadata");
+          t.equal(err.statusCode, 400);
+        }
+      });
+
+      t.test('Invalid SSO Descriptor', async (t) => {
+        const body: Record<string, any> = Object.assign({}, saml_connection_invalid_sso_descriptor);
+        const metadataPath = path.join(__dirname, '/data/metadata/invalidSSODescriptor');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        body.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, 'Please provide a metadata with IDPSSODescriptor');
+          t.equal(err.statusCode, 400);
+        }
+      });
+
+      t.test('POST/REDIRECT binding absent in XML', async (t) => {
+        const body: Record<string, any> = Object.assign({}, saml_connection_binding_absent);
+        const metadataPath = path.join(__dirname, '/data/metadata/nobinding');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        body.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, "Couldn't find SAML bindings for POST/REDIRECT");
           t.equal(err.statusCode, 400);
         }
       });
@@ -238,13 +276,13 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when the request is bad with metadataUrl', async (t) => {
-      const body = Object.assign({ metadataUrl: 'invalid url' }, saml_connection);
+      const body = Object.assign({ metadataUrl: 'http://mocksaml.com' }, saml_connection);
 
       try {
         await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
-        t.equal(err.message, "Couldn't fetch XML data");
+        t.equal(err.message, 'Metadata URL not valid, allowed ones are localhost/HTTPS URLs');
         t.equal(err.statusCode, 400);
       }
     });
@@ -269,6 +307,30 @@ tap.test('controller/api', async (t) => {
       )[0] as SAMLSSORecord;
 
       t.equal(savedConnection.forceAuthn, true);
+
+      kdStub.restore();
+    });
+
+    t.test('when the request is good with identifierFormat', async (t) => {
+      const body = Object.assign({}, saml_connection);
+      body.identifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified';
+      const kdStub = sinon.stub(dbutils, 'keyDigest').returns(CLIENT_ID_SAML);
+
+      const response = await connectionAPIController.createSAMLConnection(
+        body as SAMLSSOConnectionWithEncodedMetadata
+      );
+
+      t.ok(kdStub.called);
+      t.equal(response.clientID, CLIENT_ID_SAML);
+      t.equal(response.idpMetadata.provider, PROVIDER);
+
+      const savedConnection = (
+        await connectionAPIController.getConnections({
+          clientID: CLIENT_ID_SAML,
+        })
+      )[0] as SAMLSSORecord;
+
+      t.equal(savedConnection.identifierFormat, 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified');
 
       kdStub.restore();
     });
@@ -394,6 +456,60 @@ tap.test('controller/api', async (t) => {
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, "Couldn't parse EntityID from SAML metadata");
+          t.equal(err.statusCode, 400);
+        }
+      });
+
+      t.test('Invalid SSO Descriptor', async (t) => {
+        const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
+          body_saml_provider as SAMLSSOConnectionWithEncodedMetadata
+        );
+        const metadataPath = path.join(__dirname, '/data/metadata/invalidSSODescriptor');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        const encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.updateSAMLConnection({
+            clientID,
+            clientSecret,
+            tenant: body_saml_provider.tenant,
+            product: body_saml_provider.product,
+            redirectUrl: saml_connection.redirectUrl,
+            defaultRedirectUrl: saml_connection.defaultRedirectUrl,
+            encodedRawMetadata,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, 'Please provide a metadata with IDPSSODescriptor');
+          t.equal(err.statusCode, 400);
+        }
+      });
+
+      t.test('POST/REDIRECT binding absent in XML', async (t) => {
+        const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
+          body_saml_provider as SAMLSSOConnectionWithEncodedMetadata
+        );
+        const metadataPath = path.join(__dirname, '/data/metadata/nobinding');
+        const files = await fs.promises.readdir(metadataPath);
+        const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+        const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+        const encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+        try {
+          await connectionAPIController.updateSAMLConnection({
+            clientID,
+            clientSecret,
+            tenant: body_saml_provider.tenant,
+            product: body_saml_provider.product,
+            redirectUrl: saml_connection.redirectUrl,
+            defaultRedirectUrl: saml_connection.defaultRedirectUrl,
+            encodedRawMetadata,
+          });
+          t.fail('Expecting JacksonError.');
+        } catch (err: any) {
+          t.equal(err.message, "Couldn't find SAML bindings for POST/REDIRECT");
           t.equal(err.statusCode, 400);
         }
       });

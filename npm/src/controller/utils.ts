@@ -1,18 +1,26 @@
+import crypto from 'crypto';
+import * as jose from 'jose';
+import { Client, TokenSet } from 'openid-client';
+
+import * as dbutils from '../db/utils';
 import type {
   ConnectionType,
   OAuthErrorHandlerParams,
   OIDCSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
+  Profile,
+  SAMLSSORecord,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
-import crypto from 'crypto';
-import * as jose from 'jose';
 
 export enum IndexNames {
   EntityID = 'entityID',
+  SetupToken = 'token',
   TenantProduct = 'tenantProduct',
+  TenantProductService = 'tenantProductService',
+  Service = 'service',
   OIDCProviderClientID = 'OIDCProviderClientID',
 }
 
@@ -193,4 +201,104 @@ export const extractHostName = (url: string): string | null => {
   } catch (err) {
     return null;
   }
+};
+
+export const extractOIDCUserProfile = async (tokenSet: TokenSet, oidcClient: Client) => {
+  const idTokenClaims = tokenSet.claims();
+  const userinfo = await oidcClient.userinfo(tokenSet);
+
+  const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
+
+  profile.claims.id = idTokenClaims.sub;
+  profile.claims.email = idTokenClaims.email ?? userinfo.email;
+  profile.claims.firstName = idTokenClaims.given_name ?? userinfo.given_name;
+  profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
+  profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
+  profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
+  profile.claims.raw = userinfo;
+
+  return profile;
+};
+
+export const getScopeValues = (scope?: string): string[] => {
+  return typeof scope === 'string' ? scope.split(' ').filter((s) => s.length > 0) : [];
+};
+
+export const getEncodedTenantProduct = (
+  param: string
+): { tenant: string | null; product: string | null } | null => {
+  try {
+    const sp = new URLSearchParams(param);
+    const tenant = sp.get('tenant');
+    const product = sp.get('product');
+    if (tenant && product) {
+      return {
+        tenant: sp.get('tenant'),
+        product: sp.get('product'),
+      };
+    }
+
+    return null;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const validateTenantAndProduct = (tenant: string, product: string) => {
+  if (tenant.indexOf(':') !== -1) {
+    throw new JacksonError('tenant cannot contain the character :', 400);
+  }
+
+  if (product.indexOf(':') !== -1) {
+    throw new JacksonError('product cannot contain the character :', 400);
+  }
+};
+
+export const appID = (tenant: string, product: string) => {
+  return dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
+};
+
+// List of well known providers
+const wellKnownProviders = {
+  'okta.com': 'Okta',
+  'sts.windows.net': 'Azure AD',
+  'mocksaml.com': 'MockSAML',
+  'onelogin.com': 'OneLogin',
+  'keycloak.com': 'Keycloak',
+  'jumpcloud.com': 'JumpCloud',
+  'google.com': 'Google',
+  'auth0.com': 'Auth0',
+  'pingone.com': 'PingOne',
+} as const;
+
+// Find the friendly name of the provider from the entityID
+const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
+  const provider = Object.keys(wellKnownProviders).find((provider) => providerName.includes(provider));
+
+  return provider ? wellKnownProviders[provider] : null;
+};
+
+export const transformConnections = (connections: SAMLSSORecord[]) => {
+  if (connections.length === 0) {
+    return connections;
+  }
+
+  // Add friendlyProviderName to the connection
+  return connections.map((connection) => {
+    if ('idpMetadata' in connection) {
+      connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+    }
+
+    return connection;
+  });
+};
+
+export const isLocalhost = (url: string) => {
+  let givenURL: URL;
+  try {
+    givenURL = new URL(url);
+  } catch (error) {
+    return false;
+  }
+  return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
 };

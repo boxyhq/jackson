@@ -16,8 +16,7 @@ import saml from '@boxyhq/saml20';
 import * as jose from 'jose';
 import {
   authz_request_normal,
-  authz_request_with_prompt_login,
-  authz_request_with_prompt_more_than_one,
+  authz_request_with_forceauthn,
   authz_request_normal_oidc_flow,
   authz_request_normal_with_access_type,
   authz_request_normal_with_code_challenge,
@@ -34,15 +33,17 @@ import {
   redirect_uri_not_allowed,
   redirect_uri_not_set,
   response_type_not_code,
-  saml_binding_absent,
   state_not_set,
   token_req_cv_mismatch,
   token_req_encoded_client_id,
-  token_req_idp_initiated_saml_login,
+  token_req_dummy_client_id_idp_saml_login,
   token_req_unencoded_client_id_gen,
   token_req_with_cv,
+  token_req_encoded_client_id_idp_saml_login,
+  token_req_dummy_client_id_idp_saml_login_wrong_secretverifier,
+  token_req_encoded_client_id_idp_saml_login_wrong_secretverifier,
 } from './fixture';
-import { addSSOConnections, databaseOptions } from '../utils';
+import { addSSOConnections, jacksonOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
@@ -60,10 +61,10 @@ let connections: Array<any> = [];
 tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
 
-  const controller = await (await import('../../src/index')).default(databaseOptions);
+  const controller = await (await import('../../src/index')).default(jacksonOptions);
   const idpFlowEnabledController = await (
     await import('../../src/index')
-  ).default({ ...databaseOptions, idpEnabled: true });
+  ).default({ ...jacksonOptions, idpEnabled: true });
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
@@ -118,20 +119,6 @@ tap.test('authorize()', async (t) => {
     t.equal(
       redirect_url,
       `${body.redirect_uri}?error=unsupported_response_type&error_description=Only+Authorization+Code+grant+is+supported&state=${body.state}`,
-      'got OAuth error'
-    );
-  });
-
-  t.test('Should return OAuth Error response if saml binding could not be retrieved', async (t) => {
-    const body = saml_binding_absent;
-
-    const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
-      redirect_url: string;
-    };
-
-    t.equal(
-      redirect_url,
-      `${body.redirect_uri}?error=invalid_request&error_description=SAML+binding+could+not+be+retrieved&state=${body.state}`,
       'got OAuth error'
     );
   });
@@ -193,18 +180,7 @@ tap.test('authorize()', async (t) => {
     });
 
     t.test('accepts single value in prompt', async (t) => {
-      const body = authz_request_with_prompt_login;
-
-      const response = await oauthController.authorize(<OAuthReq>body);
-      const params = new URLSearchParams(new URL(response.redirect_url!).search);
-
-      t.ok('redirect_url' in response, 'got the Idp authorize URL');
-      t.ok(params.has('RelayState'), 'RelayState present in the query string');
-      t.ok(params.has('SAMLRequest'), 'SAMLRequest present in the query string');
-    });
-
-    t.test('accepts multiple values in prompt', async (t) => {
-      const body = authz_request_with_prompt_more_than_one;
+      const body = authz_request_with_forceauthn;
 
       const response = await oauthController.authorize(<OAuthReq>body);
       const params = new URLSearchParams(new URL(response.redirect_url!).search);
@@ -602,9 +578,9 @@ tap.test('token()', async (t) => {
         if (tokenRes.id_token) {
           const claims = jose.decodeJwt(tokenRes.id_token);
           const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
-          t.match(protectedHeader.alg, databaseOptions.openid?.jwsAlg);
+          t.match(protectedHeader.alg, jacksonOptions.openid?.jwsAlg);
           t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
-          t.match(claims.iss, databaseOptions.samlAudience);
+          t.match(claims.iss, jacksonOptions.samlAudience);
         }
         t.match(tokenRes.access_token, token);
         t.match(tokenRes.token_type, 'bearer');
@@ -695,36 +671,140 @@ tap.test('token()', async (t) => {
   );
 });
 
-tap.test('IdP initiated flow should return token and profile', async (t) => {
-  const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
-  const responseBody = {
-    SAMLResponse: rawResponse,
-  };
-  const stubValidate = sinon.stub(saml, 'validate').resolves({
-    audience: '',
-    claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
-    issuer: '',
-    sessionIndex: '',
+tap.test('IdP initiated flow', async (t) => {
+  t.test('authentication should fail with encoded client_id and wrong client_secret_verifier', async (t) => {
+    const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+    const responseBody = {
+      SAMLResponse: rawResponse,
+    };
+    const stubValidate = sinon.stub(saml, 'validate').resolves({
+      audience: '',
+      claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+      issuer: '',
+      sessionIndex: '',
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+
+    const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
+    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+
+    const body = token_req_encoded_client_id_idp_saml_login_wrong_secretverifier;
+
+    try {
+      await idpEnabledOAuthController.token(<OAuthTokenReq>body);
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid client_secret', 'got expected error message');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    stubRandomBytes.restore();
+    stubValidate.restore();
   });
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+  t.test('authentication should fail with dummy client_id and wrong client_secret_verifier', async (t) => {
+    const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+    const responseBody = {
+      SAMLResponse: rawResponse,
+    };
+    const stubValidate = sinon.stub(saml, 'validate').resolves({
+      audience: '',
+      claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+      issuer: '',
+      sessionIndex: '',
+    });
 
-  await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
 
-  const body = token_req_idp_initiated_saml_login;
+    const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
+    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
 
-  const tokenRes = await idpEnabledOAuthController.token(<OAuthTokenReq>body);
-  t.ok('access_token' in tokenRes, 'includes access_token');
-  t.ok('token_type' in tokenRes, 'includes token_type');
-  t.ok('expires_in' in tokenRes, 'includes expires_in');
-  t.match(tokenRes.access_token, token);
-  t.match(tokenRes.token_type, 'bearer');
-  t.match(tokenRes.expires_in, 300);
-  const profile = await oauthController.userInfo(tokenRes.access_token);
+    const body = token_req_dummy_client_id_idp_saml_login_wrong_secretverifier;
 
-  t.equal(profile.id, 'id');
-  stubRandomBytes.restore();
-  stubValidate.restore();
+    try {
+      await idpEnabledOAuthController.token(<OAuthTokenReq>body);
+    } catch (err) {
+      const { message, statusCode } = err as JacksonError;
+      t.equal(message, 'Invalid client_secret', 'got expected error message');
+      t.equal(statusCode, 401, 'got expected status code');
+    }
+
+    stubRandomBytes.restore();
+    stubValidate.restore();
+  });
+
+  t.test('authentication should succeed with encoded client_id and client_secret_verifier', async (t) => {
+    const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+    const responseBody = {
+      SAMLResponse: rawResponse,
+    };
+    const stubValidate = sinon.stub(saml, 'validate').resolves({
+      audience: '',
+      claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+      issuer: '',
+      sessionIndex: '',
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+
+    const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
+    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+
+    const body = token_req_encoded_client_id_idp_saml_login;
+
+    const tokenRes = await idpEnabledOAuthController.token(<OAuthTokenReq>body);
+    t.ok('access_token' in tokenRes, 'includes access_token');
+    t.ok('token_type' in tokenRes, 'includes token_type');
+    t.ok('expires_in' in tokenRes, 'includes expires_in');
+    t.equal(tokenRes.access_token, token);
+    t.equal(tokenRes.token_type, 'bearer');
+    t.equal(tokenRes.expires_in, 300);
+    const profile = await oauthController.userInfo(tokenRes.access_token);
+
+    t.equal(profile.id, 'id');
+    stubRandomBytes.restore();
+    stubValidate.restore();
+  });
+
+  t.test('authentication should succeed with dummy client_id and client_secret_verifier', async (t) => {
+    const rawResponse = await fs.readFile(path.join(__dirname, '/data/saml_response'), 'utf8');
+    const responseBody = {
+      SAMLResponse: rawResponse,
+    };
+    const stubValidate = sinon.stub(saml, 'validate').resolves({
+      audience: '',
+      claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+      issuer: '',
+      sessionIndex: '',
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+
+    const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
+    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+
+    const body = token_req_dummy_client_id_idp_saml_login;
+
+    const tokenRes = await idpEnabledOAuthController.token(<OAuthTokenReq>body);
+    t.ok('access_token' in tokenRes, 'includes access_token');
+    t.ok('token_type' in tokenRes, 'includes token_type');
+    t.ok('expires_in' in tokenRes, 'includes expires_in');
+    t.equal(tokenRes.access_token, token);
+    t.equal(tokenRes.token_type, 'bearer');
+    t.equal(tokenRes.expires_in, 300);
+    const profile = await oauthController.userInfo(tokenRes.access_token);
+
+    t.equal(profile.id, 'id');
+    stubRandomBytes.restore();
+    stubValidate.restore();
+  });
 });

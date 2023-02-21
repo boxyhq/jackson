@@ -12,9 +12,10 @@ import {
   JacksonOption,
   SAMLSSORecord,
   OIDCSSORecord,
+  GetIDPEntityIDBody,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames } from './utils';
+import { IndexNames, appID, transformConnections } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
@@ -378,6 +379,16 @@ export class ConnectionAPIController implements IConnectionAPIController {
     await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
 
+  public getIDPEntityID(body: GetIDPEntityIDBody): string {
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
+    if (!tenant || !product) {
+      throw new JacksonError('Please provide `tenant` and `product`.', 400);
+    } else {
+      return `${this.opts.samlAudience}/${appID(tenant, product)}`;
+    }
+  }
+
   /**
    * @swagger
    * parameters:
@@ -469,8 +480,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
     const strategy = 'strategy' in body ? body.strategy : undefined;
+    const entityId = 'entityId' in body ? body.entityId : undefined;
 
     metrics.increment('getConnections');
+
+    if (entityId) {
+      const connections = await this.connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+
+      if (!connections || typeof connections !== 'object') {
+        return [];
+      }
+
+      return transformConnections(connections);
+    }
 
     if (clientID) {
       const connection = await this.connectionStore.get(clientID);
@@ -479,7 +504,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return [connection];
+      return transformConnections([connection]);
     }
 
     if (tenant && product) {
@@ -491,6 +516,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       if (!connections || !connections.length) {
         return [];
       }
+
       // filter if strategy is passed
       const filteredConnections = strategy
         ? connections.filter((connection) => {
@@ -512,7 +538,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return filteredConnections;
+      return transformConnections(filteredConnections);
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
