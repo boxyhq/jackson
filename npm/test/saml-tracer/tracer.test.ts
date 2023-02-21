@@ -15,17 +15,21 @@ tap.before(async () => {
 tap.test('SAMLTracer', async () => {
   tap.test('able to save a trace in db', async (t) => {
     const test_trace = {
-      timestamp: Date.now(),
       error: 'Something wrong happened',
       context: { tenant: 'boxyhq.com', product: 'saml-demo.boxyhq.com', clientID: 'random-clientID' },
     };
-    await samlTracer.saveTrace(test_trace);
-
+    //save
+    const traceId = await samlTracer.saveTrace(test_trace);
+    // retrieve
     const traces = await samlTracer.getAllTraces(0, 50);
     // check if found trace has all the members of the test_trace saved
     t.hasStrict(traces[0], test_trace);
+    // check if traceId follows the pattern expected from mnemonic
+    t.match(traceId, /[a-z]+_[a-z]+_[a-z]+/);
+    // check if returned traceId from save operation is same as the one in the retrieved record
+    t.equal(traces[0].traceId, traceId);
     //cleanup
-    await samlTracer.tracerStore.delete(traces[0].traceId);
+    await samlTracer.tracerStore.delete(traceId);
   });
 
   tap.test('calling cleanUpStaleTraces cleans traces older than 1 week', async (t) => {
