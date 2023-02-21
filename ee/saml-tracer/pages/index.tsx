@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { fetcher } from '@lib/ui/utils';
@@ -11,16 +10,14 @@ import { errorToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
 import { useTranslation } from 'next-i18next';
 import EmptyState from '@components/EmptyState';
-import { IconButton } from '@components/IconButton';
-import { ViewfinderCircleIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 const SAMLTraceViewer: NextPage = () => {
-  const router = useRouter();
   const { t } = useTranslation('common');
   const { paginate, setPaginate } = usePaginate();
 
   const { data, error, isLoading } = useSWR<ApiSuccess<Trace[]>, ApiError>(
-    `/api/admin/saml-tracer/?offset=${paginate.offset}&limit=${pageLimit}`,
+    `/api/admin/saml-tracer?offset=${paginate.offset}&limit=${pageLimit}`,
     fetcher
   );
 
@@ -52,10 +49,10 @@ const SAMLTraceViewer: NextPage = () => {
             <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr className='hover:bg-gray-50'>
-                  <th className='px-6 py-3'>Trace Id</th>
-                  <th className='px-6 py-3'>Timestamp</th>
-                  <th className='px-6 py-3'>Phase</th>
-                  <th className='px-6 py-3'>Failure</th>
+                  <th className='px-6 py-3'>{t('trace_id')}</th>
+                  <th className='px-6 py-3'>{t('timestamp')}</th>
+                  <th className='px-6 py-3'>{t('assertion_type')}</th>
+                  <th className='px-6 py-3'>{t('error_description')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -64,21 +61,14 @@ const SAMLTraceViewer: NextPage = () => {
                     <tr
                       key={traceId}
                       className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='px-6 py-3'>{timestamp}</td>
+                      <td className='px-6 py-3'>
+                        <Link href={`/admin/saml-tracer/${traceId}/view`} className='link-primary link flex'>
+                          {traceId}
+                        </Link>
+                      </td>
+                      <td className='px-6 py-3'>{new Date(timestamp).toLocaleString()}</td>
                       <td className='px-6 py-3'>{context?.samlResponse ? 'Response' : 'Request'}</td>
                       <td className='px-6'>{error}</td>
-                      <td className='px-6'>
-                        <span className='inline-flex items-baseline'>
-                          <IconButton
-                            tooltip={t('view')}
-                            Icon={ViewfinderCircleIcon}
-                            className='hover:text-green-400'
-                            onClick={() => {
-                              router.push(`/admin/saml-tracer/${traceId}/view`);
-                            }}
-                          />
-                        </span>
-                      </td>
                     </tr>
                   );
                 })}
