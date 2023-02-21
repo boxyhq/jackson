@@ -41,17 +41,19 @@ class SAMLTracer {
 
   /** Cleans up stale traces older than 1 week */
   public async cleanUpStaleTraces() {
-    let traces: Trace[] = [];
+    let staleTraces: Trace[] = [];
     for (let pageOffset = 0; ; pageOffset++) {
       const page = await this.getAllTraces(pageOffset, 50);
       if (page.length === 0) {
         break;
       }
-      traces = traces.concat(page.filter(({ timestamp }) => Date.now() - timestamp > INTERVAL_1_WEEK_MS));
+      staleTraces = staleTraces.concat(
+        page.filter(({ timestamp }) => Date.now() - timestamp > INTERVAL_1_WEEK_MS)
+      );
     }
 
-    for (let i = 0; i < traces.length; i++) {
-      await this.tracerStore.delete(traces[i].traceId);
+    for (let i = 0; i < staleTraces.length; i++) {
+      await this.tracerStore.delete(staleTraces[i].traceId);
     }
   }
 }
