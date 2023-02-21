@@ -68,7 +68,7 @@ class DB implements DatabaseDriver {
   // ttl is in seconds
   async put(namespace: string, key: string, val: unknown, ttl = 0, ...indexes: Index[]): Promise<unknown> {
     if (ttl > 0 && indexes && indexes.length > 0) {
-      throw new Error('secondary indexes not allow on a store with ttl');
+      throw new Error('secondary indexes not allowed on a store with ttl');
     }
 
     const dbVal = this.encryptionKey
