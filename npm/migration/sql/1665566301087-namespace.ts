@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class namespaceUpdate1648805358887 implements MigrationInterface {
+export class namespace1665566301087 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const response = await queryRunner.query("select jackson.key from jackson_store jackson")
