@@ -1,4 +1,5 @@
-FROM node:16.18.0-alpine3.15 AS base
+ARG NODEJS_IMAGE=node:18.14.0-alpine3.17
+FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -9,8 +10,9 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
+COPY sdk/ui/react sdk/ui/react
 COPY bootstrap.sh bootstrap.sh
-RUN npm install --legacy-peer-deps
+RUN npm run custom-install
 
 
 
@@ -32,10 +34,10 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM $NODEJS_IMAGE AS runner
 WORKDIR /app
 
-ENV NODE_OPTIONS="--max-http-header-size=81920"
+ENV NODE_OPTIONS="--max-http-header-size=81920 --dns-result-order=ipv4first"
 
 
 ENV NODE_ENV production
@@ -60,4 +62,4 @@ USER nextjs
 EXPOSE 5225
 
 ENV PORT 5225
-ENTRYPOINT ["/bin/sh", "bootstrap.sh"]
+CMD ["/bin/sh", "bootstrap.sh"]

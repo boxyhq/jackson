@@ -4,20 +4,23 @@ import Head from 'next/head';
 
 import { Sidebar } from '@components/Sidebar';
 import { Navbar } from '@components/Navbar';
+import { useTranslation } from 'next-i18next';
+import Loading from '@components/Loading';
 
 export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useTranslation('common');
   const { data: session, status } = useSession({ required: true });
 
   const [isOpen, setIsOpen] = useState(false);
 
   if (status === 'loading') {
-    return null;
+    return <Loading />;
   }
 
   return (
     <>
       <Head>
-        <title>SAML Jackson - BoxyHQ</title>
+        <title>Admin Portal | BoxyHQ</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
@@ -29,7 +32,7 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
             }}
             type='button'
             className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset md:hidden'>
-            <span className='sr-only'>Open sidebar</span>
+            <span className='sr-only'>{t('open_sidebar')}</span>
             <svg
               className='h-6 w-6'
               xmlns='http://www.w3.org/2000/svg'

@@ -1,4 +1,4 @@
-# SAML Jackson
+# SAML Jackson: Enterprise SSO made simple
 
 <p>
     <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="npm" ></a>
@@ -6,7 +6,7 @@
     <a href="https://github.com/boxyhq/jackson/stargazers"><img src="https://img.shields.io/github/stars/boxyhq/jackson" alt="Github stargazers"></a>
     <a href="https://github.com/boxyhq/jackson/issues"><img src="https://img.shields.io/github/issues/boxyhq/jackson" alt="Github issues"></a>
     <a href="https://github.com/boxyhq/jackson/blob/main/LICENSE"><img src="https://img.shields.io/github/license/boxyhq/jackson" alt="license"></a>
-    <a href="https://twitter.com/BoxyHQ"><img src="https://img.shields.io/twitter/follow/BoxyHQ?style=social" alt="Twitter"></a>
+    <a href="https://twitter.com/BoxyHQ"><img src="https://img.shields.io/twitter/follow/boxyhq?style=social" alt="Twitter"></a>
     <a href="https://discord.gg/uyb7pYt4Pa"><img src="https://img.shields.io/discord/877585485235630130" alt="Discord"></a>
     <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/node/v/@boxyhq/saml-jackson" alt="node-current"></a>
     <a href="https://raw.githubusercontent.com/boxyhq/jackson/main/swagger/swagger.json"><img src="https://img.shields.io/swagger/valid/3.0?specUrl=https%3A%2F%2Fraw.githubusercontent.com%2Fboxyhq%2Fjackson%2Fmain%2Fswagger%2Fswagger.json" alt="Swagger Validator"></a>
@@ -15,7 +15,7 @@
 [![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,DB_ENCRYPTION_KEY,DB_TTL,DB_CLEANUP_LIMIT,JACKSON_API_KEYS,EXTERNAL_URL,IDP_ENABLED,SAML_AUDIENCE,CLIENT_SECRET_VERIFIER,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,SMTP_FROM,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXTAUTH_ACL&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.EXTERNAL_URL%20(Usually%20https%3A%2F%2F%3Cproject-name-from-above%3E.vercel.app)%20can%20be%20set%20after%20deployment%20from%20the%20project%20dashboard.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/deploy/env-variables>)
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-SAML SSO service
+SAML/OIDC SSO service
 
 Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, abstracting away all the complexities of the SAML protocol. Integrate SAML with just a few lines of code. We also now support OpenID Connect providers.
 
@@ -62,12 +62,44 @@ Please try to create bug reports that are:
 - _Unique._ Do not duplicate existing opened issues.
 - _Scoped to a Single Bug._ One bug per report.
 
+### Development Setup
+
+#### Database
+
+To get up and running, we have a [docker-compose setup](_dev/docker-compose.yml) that will spawn all the supported databases. Ensure that the docker daemon is running on your machine and then run: `npm run dev-dbs`. In case you need a fresh start, destroy the docker containers using: `npm run dev-dbs-destroy` and run: `npm run dev-dbs`.
+
+#### Development server
+
+Copy the `.env.example` to `.env.local` and populate the values. Have a look at https://boxyhq.com/docs/jackson/deploy/env-variables for the available environment variables.
+
+Run the dev server:
+
+```zsh
+# Install the packages
+npm run custom-install
+# Start the server
+npm run dev
+```
+
+#### End-to-End (E2E) tests
+
+Create a `.env.test.local` file and populate the values. To execute the tests run:
+
+```zsh
+npm run test:e2e
+```
+
 ## Support
 
 Reach out to the maintainers at one of the following places:
 
 - [GitHub Discussions](https://github.com/boxyhq/jackson/discussions)
-- [GitHub Issues](https://github.com/boxyhq/jackson/issues)
+- [GitHub Issues](https://github.com/boxyhq/jackson/issues) (Bug reports, Contributions)
+
+## Community
+
+- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Community and BoxyHQ team)
+- [Twitter](https://twitter.com/BoxyHQ) (Get the news fast)
 
 ## Reporting Security Issues
 

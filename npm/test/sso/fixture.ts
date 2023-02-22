@@ -8,8 +8,10 @@ import {
   OAuthTokenReq,
 } from '../../src';
 import boxyhq from './data/metadata/boxyhq';
-import boxyhqNobinding from './data/metadata/boxyhq-nobinding';
+import boxyhqNobinding from './data/metadata/nobinding/boxyhq-nobinding';
+import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 import exampleOidc from './data/metadata/example.oidc';
+import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidssodescriptor';
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
@@ -26,18 +28,11 @@ export const authz_request_normal_with_code_challenge: Partial<OAuthReqBodyWithC
   code_challenge: generators.codeChallenge(code_verifier),
   code_challenge_method: 'S256',
 };
-export const authz_request_with_prompt_login: Partial<OAuthReqBodyWithClientId> = {
+export const authz_request_with_forceauthn: Partial<OAuthReqBodyWithClientId> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
-  prompt: 'login',
-};
-
-export const authz_request_with_prompt_more_than_one: Partial<OAuthReqBodyWithClientId> = {
-  redirect_uri: boxyhq.defaultRedirectUrl,
-  state: 'state-123',
-  client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
-  prompt: 'select_account login consent',
+  forceAuthn: 'true',
 };
 
 export const authz_request_normal_with_access_type: Partial<OAuthReqBodyWithAccessType> = {
@@ -109,12 +104,6 @@ export const invalid_tenant_product = (product?, tenant?): Partial<OAuthTokenReq
     code: CODE,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
-};
-
-export const saml_binding_absent: Partial<OAuthReqBodyWithClientId> = {
-  redirect_uri: boxyhqNobinding.defaultRedirectUrl,
-  state: 'state-123',
-  client_id: `tenant=${boxyhqNobinding.tenant}&product=${boxyhqNobinding.product}`,
 };
 
 export const authz_request_oidc_provider: Partial<OAuthReqBodyWithClientId> = {
@@ -214,9 +203,32 @@ export const token_req_unencoded_client_id_gen = (connectionRecords) => {
   };
 };
 
-export const token_req_idp_initiated_saml_login = {
+export const token_req_dummy_client_id_idp_saml_login_wrong_secretverifier = {
   grant_type: 'authorization_code',
   code: CODE,
+  client_id: 'dummy',
+  client_secret: 'TOP-SECRET-WRONG',
+};
+
+export const token_req_dummy_client_id_idp_saml_login = {
+  grant_type: 'authorization_code',
+  code: CODE,
+  client_id: 'dummy',
+  client_secret: 'TOP-SECRET',
+};
+
+export const token_req_encoded_client_id_idp_saml_login = {
+  grant_type: 'authorization_code',
+  code: CODE,
+  client_id: 'tenant=boxyhq.com&product=crm',
+  client_secret: 'TOP-SECRET',
+};
+
+export const token_req_encoded_client_id_idp_saml_login_wrong_secretverifier = {
+  grant_type: 'authorization_code',
+  code: CODE,
+  client_id: 'tenant=boxyhq.com&product=crm',
+  client_secret: 'TOP-SECRET-WRONG',
 };
 
 export const token_req_cv_mismatch = {
@@ -237,3 +249,7 @@ export const token_req_with_cv = {
 // BEGIN: Fixtures for *_api.test.ts
 export const saml_connection = boxyhq;
 export const oidc_connection = exampleOidc;
+export const saml_connection_entityID_absent = boxyhqNoentityID;
+export const saml_connection_binding_absent = boxyhqNobinding;
+export const saml_connection_invalid_sso_descriptor = invalidssodescriptor;
+// END: Fixtures for *_api.test.ts

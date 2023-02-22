@@ -3,8 +3,9 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings';
-import { DataSource, Like } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dbutils from '../utils';
+import * as mssql from './mssql';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
@@ -27,15 +28,32 @@ class Sql implements DatabaseDriver {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
     while (true) {
       try {
-        this.dataSource = new DataSource({
+        const baseOpts = {
           type: sqlType,
-          url: this.options.url,
           synchronize: this.options.engine !== 'planetscale',
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
-          ssl: this.options.ssl,
-        });
+        };
+
+        if (sqlType === 'mssql') {
+          const mssqlOpts = mssql.parseURL(this.options.url);
+          this.dataSource = new DataSource(<DataSourceOptions>{
+            host: mssqlOpts.host,
+            port: mssqlOpts.port,
+            database: mssqlOpts.database,
+            username: mssqlOpts.username,
+            password: mssqlOpts.password,
+            options: mssqlOpts.options,
+            ...baseOpts,
+          });
+        } else {
+          this.dataSource = new DataSource(<DataSourceOptions>{
+            url: this.options.url,
+            ssl: this.options.ssl,
+            ...baseOpts,
+          });
+        }
         await this.dataSource.initialize();
 
         break;
@@ -84,7 +102,7 @@ class Sql implements DatabaseDriver {
 
       this.timerId = setTimeout(this.ttlCleanup, this.options.ttl! * 1000);
     } else {
-      console.log(
+      console.warn(
         'Warning: ttl cleanup not enabled, set both "ttl" and "cleanupLimit" options to enable it!'
       );
     }
@@ -108,27 +126,36 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset: number, pageLimit: number): Promise<unknown[]> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-    const response = await this.storeRepository.find({
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
+    const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const res = await this.storeRepository.find({
       where: { namespace: namespace },
       select: ['value', 'iv', 'tag'],
       order: {
         ['createdAt']: 'DESC',
       },
-      take: offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit,
-      skip: offsetAndLimitValueCheck ? 0 : pageOffset,
+      take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
+      skip: skipOffsetAndLimitValue ? 0 : pageOffset,
     });
-    return JSON.parse(JSON.stringify(response)) || [];
+    return JSON.parse(JSON.stringify(res)) || [];
   }
 
-  async getByIndex(namespace: string, idx: Index): Promise<any> {
-    const res = await this.indexRepository.findBy({
-      key: dbutils.keyForIndex(namespace, idx),
-    });
+  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+    const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const res = skipOffsetAndLimitValue
+      ? await this.indexRepository.findBy({
+          key: dbutils.keyForIndex(namespace, idx),
+        })
+      : await this.indexRepository.find({
+          where: { key: dbutils.keyForIndex(namespace, idx) },
+          take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
+          skip: skipOffsetAndLimitValue ? 0 : pageOffset,
+          order: {
+            ['id']: 'DESC',
+          },
+        });
 
     const ret: Encrypted[] = [];
-
     if (res) {
       for (const r of res) {
         let value = r.store;
@@ -172,7 +199,7 @@ class Sql implements DatabaseDriver {
       // no ttl support for secondary indexes
       for (const idx of indexes || []) {
         const key = dbutils.keyForIndex(namespace, idx);
-        const rec = await this.indexRepository.findOneBy({
+        const rec = await transactionalEntityManager.findOneBy(this.JacksonIndex, {
           key,
           storeKey: store.key,
         });

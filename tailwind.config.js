@@ -4,7 +4,9 @@ module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
+    './ee/**/*.{js,ts,jsx,tsx}',
     'node_modules/daisyui/dist/**/*.js',
+    'node_modules/react-daisyui/dist/**/*.js',
   ],
   daisyui: {
     themes: [
@@ -23,5 +25,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [require('daisyui'), require('@tailwindcss/typography')],
+  plugins: [require('@tailwindcss/typography'), require('daisyui')],
 };

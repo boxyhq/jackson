@@ -14,6 +14,14 @@ import { JacksonStore as JacksonStorePlanetscale } from './planetscale/entity/Ja
 import { JacksonIndex as JacksonIndexPlanetscale } from './planetscale/entity/JacksonIndex';
 import { JacksonTTL as JacksonTTLPlanetscale } from './planetscale/entity/JacksonTTL';
 
+import { JacksonStore as JacksonStoreMSSQL } from './sql/mssql/entity/JacksonStore';
+import { JacksonIndex as JacksonIndexMSSQL } from './sql/mssql/entity/JacksonIndex';
+import { JacksonTTL as JacksonTTLMSSQL } from './sql/mssql/entity/JacksonTTL';
+
+import { JacksonStore as JacksonStoreMariaDB } from './sql/mariadb/entity/JacksonStore';
+import { JacksonIndex as JacksonIndexMariaDB } from './sql/mariadb/entity/JacksonIndex';
+import { JacksonTTL as JacksonTTLMariaDB } from './sql/mariadb/entity/JacksonTTL';
+
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
     return JSON.parse(encrypter.decrypt(res.value, res.iv, res.tag, encryptionKey));
@@ -48,8 +56,13 @@ class DB implements DatabaseDriver {
     });
   }
 
-  async getByIndex(namespace: string, idx: Index): Promise<unknown[]> {
-    const res = await this.db.getByIndex(namespace, idx);
+  async getByIndex(
+    namespace: string,
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number
+  ): Promise<unknown[]> {
+    const res = await this.db.getByIndex(namespace, idx, pageOffset, pageLimit);
     const encryptionKey = this.encryptionKey;
     return res.map((r) => {
       return decrypt(r, encryptionKey);
@@ -59,7 +72,7 @@ class DB implements DatabaseDriver {
   // ttl is in seconds
   async put(namespace: string, key: string, val: unknown, ttl = 0, ...indexes: Index[]): Promise<unknown> {
     if (ttl > 0 && indexes && indexes.length > 0) {
-      throw new Error('secondary indexes not allow on a store with ttl');
+      throw new Error('secondary indexes not allowed on a store with ttl');
     }
 
     const dbVal = this.encryptionKey
@@ -86,14 +99,36 @@ export default {
       case 'redis':
         return new DB(await redis.new(options), encryptionKey);
       case 'sql':
-        return new DB(
-          await sql.new(options, {
-            JacksonStore,
-            JacksonIndex,
-            JacksonTTL,
-          }),
-          encryptionKey
-        );
+        switch (options.type) {
+          case 'mssql':
+            return new DB(
+              await sql.new(options, {
+                JacksonStore: JacksonStoreMSSQL,
+                JacksonIndex: JacksonIndexMSSQL,
+                JacksonTTL: JacksonTTLMSSQL,
+              }),
+              encryptionKey
+            );
+          case 'mariadb':
+          case 'mysql':
+            return new DB(
+              await sql.new(options, {
+                JacksonStore: JacksonStoreMariaDB,
+                JacksonIndex: JacksonIndexMariaDB,
+                JacksonTTL: JacksonTTLMariaDB,
+              }),
+              encryptionKey
+            );
+          default:
+            return new DB(
+              await sql.new(options, {
+                JacksonStore,
+                JacksonIndex,
+                JacksonTTL,
+              }),
+              encryptionKey
+            );
+        }
       case 'planetscale':
         return new DB(
           await sql.new(options, {

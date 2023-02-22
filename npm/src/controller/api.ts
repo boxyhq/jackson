@@ -12,9 +12,10 @@ import {
   JacksonOption,
   SAMLSSORecord,
   OIDCSSORecord,
+  GetIDPEntityIDBody,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames } from './utils';
+import { IndexNames, appID, transformConnections } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
@@ -52,10 +53,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *            "description": "SP for hoppscotch.io",
    *            "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
    *            "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *            "certs": {
-   *              "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *              "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *            }
    *          }
    *    validationErrorsPost:
    *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
@@ -79,6 +76,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   rawMetadataParamPost:
    *     name: rawMetadata
    *     description: Raw XML metadata
+   *     in: formData
+   *     type: string
+   *   metadataUrlParamPost:
+   *     name: metadataUrl
+   *     description: URL containing raw XML metadata
    *     in: formData
    *     type: string
    *   defaultRedirectUrlParamPost:
@@ -136,6 +138,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/descriptionParamPost'
    *      - $ref: '#/parameters/encodedRawMetadataParamPost'
    *      - $ref: '#/parameters/rawMetadataParamPost'
+   *      - $ref: '#/parameters/metadataUrlParamPost'
    *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
    *      - $ref: '#/parameters/redirectUrlParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
@@ -166,6 +169,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/descriptionParamPost'
    *      - $ref: '#/parameters/encodedRawMetadataParamPost'
    *      - $ref: '#/parameters/rawMetadataParamPost'
+   *      - $ref: '#/parameters/metadataUrlParamPost'
    *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
    *      - $ref: '#/parameters/redirectUrlParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
@@ -246,6 +250,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Raw XML metadata
    *     in: formData
    *     type: string
+   *   metadataUrlParamPatch:
+   *     name: metadataUrl
+   *     description: URL containing raw XML metadata
+   *     in: formData
+   *     type: string
    *   oidcDiscoveryUrlPatch:
    *     name: oidcDiscoveryUrl
    *     description: well-known URL where the OpenID Provider configuration is exposed
@@ -299,6 +308,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/descriptionParamPatch'
    *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
    *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/metadataUrlParamPatch'
    *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
    *       - $ref: '#/parameters/redirectUrlParamPatch'
    *       - $ref: '#/parameters/tenantParamPatch'
@@ -325,6 +335,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/descriptionParamPatch'
    *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
    *       - $ref: '#/parameters/rawMetadataParamPatch'
+   *       - $ref: '#/parameters/metadataUrlParamPatch'
    *       - $ref: '#/parameters/oidcDiscoveryUrlPatch'
    *       - $ref: '#/parameters/oidcClientIdPatch'
    *       - $ref: '#/parameters/oidcClientSecretPatch'
@@ -366,6 +377,16 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
+  }
+
+  public getIDPEntityID(body: GetIDPEntityIDBody): string {
+    const tenant = 'tenant' in body ? body.tenant : undefined;
+    const product = 'product' in body ? body.product : undefined;
+    if (!tenant || !product) {
+      throw new JacksonError('Please provide `tenant` and `product`.', 400);
+    } else {
+      return `${this.opts.samlAudience}/${appID(tenant, product)}`;
+    }
   }
 
   /**
@@ -422,9 +443,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        idpMetadata:
    *          type: object
    *          description: SAML IdP metadata
-   *        certs:
-   *          type: object
-   *          description: Certs generated for SAML connection
    *        oidcProvider:
    *          type: object
    *          description: OIDC IdP metadata
@@ -462,8 +480,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
     const strategy = 'strategy' in body ? body.strategy : undefined;
+    const entityId = 'entityId' in body ? body.entityId : undefined;
 
     metrics.increment('getConnections');
+
+    if (entityId) {
+      const connections = await this.connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+
+      if (!connections || typeof connections !== 'object') {
+        return [];
+      }
+
+      return transformConnections(connections);
+    }
 
     if (clientID) {
       const connection = await this.connectionStore.get(clientID);
@@ -472,7 +504,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return [connection];
+      return transformConnections([connection]);
     }
 
     if (tenant && product) {
@@ -484,6 +516,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       if (!connections || !connections.length) {
         return [];
       }
+
       // filter if strategy is passed
       const filteredConnections = strategy
         ? connections.filter((connection) => {
@@ -505,7 +538,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return filteredConnections;
+      return transformConnections(filteredConnections);
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
@@ -548,10 +581,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                "description": "SP for hoppscotch.io",
    *                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
    *                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *                "certs": {
-   *                  "publicKey": "-----BEGIN CERTIFICATE-----.......-----END CERTIFICATE-----",
-   *                  "privateKey": "-----BEGIN PRIVATE KEY-----......-----END PRIVATE KEY-----"
-   *                }
    *            }
    *      '400':
    *        $ref: '#/responses/400Get'
