@@ -58,7 +58,7 @@ export function fieldCatalogFilterByConnection(connection) {
     attributes.connection && connection !== null ? attributes.connection === connection : true;
 }
 
-/** By default those fields which do not have a fallback.activateCondition  will be excluded */
+/** If a field item has a fallback attribute, only render it if the form state has the field item */
 export function excludeFallback(formObj: FormObj) {
   return ({ key, fallback }: FieldCatalogItem) => {
     if (typeof fallback === 'object') {

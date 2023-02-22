@@ -26,6 +26,7 @@ function getInitialState(connectionType, fieldCatalog: FieldCatalogItem[]) {
     if (connection && connection !== connectionType) {
       return;
     }
+    /** By default those fields which do not have a fallback.activateCondition  will be excluded */
     if (typeof fallback === 'object' && typeof fallback.activateCondition !== 'function') {
       return;
     }
