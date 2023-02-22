@@ -142,7 +142,7 @@ tap.test('authorize()', async (t) => {
       t.match(
         redirect_url,
         new RegExp(
-          `${body.redirect_uri}\\?error=server_error&error_description=[a-z]+_[a-z]+_[a-z]+\\+Internal\\+error%3A\\+Fatal&state=${body.state}`
+          `${body.redirect_uri}\\?error=server_error&error_description=[a-z]+_[a-z]+_[a-z]+%3A\\+Internal\\+error%3A\\+Fatal&state=${body.state}`
         ),
         'got OAuth error'
       );
