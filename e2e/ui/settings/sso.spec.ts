@@ -106,11 +106,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
           await discoveryUrlInput.fill(baseURL + MOCKLAB_DISCOVERY_PATH);
         } else {
           // Activate the oidc discovery fallback fields
-          await page
-            .getByRole('button', {
-              name: 'Missing the discovery URL? Click here to set the individual attributes',
-            })
-            .click();
+          await page.getByTestId('oidcDiscoveryUrl-fallback-switch').click();
           // Enter the OIDC issuer value for mocklab in the form
           const issuerInput = page.locator('#issuer');
           await issuerInput.fill(MOCKLAB_ISSUER);

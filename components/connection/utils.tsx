@@ -184,9 +184,9 @@ export function renderFieldList(args: {
               <ButtonLink
                 className='mb-2 px-0'
                 type='button'
+                data-testid={`${key}-fallback-switch`}
                 onClick={() => {
                   /** Switch to fallback.key*/
-
                   args.activateFallback(key, fallback.key);
                 }}>
                 {fallback.switch.label}
@@ -220,6 +220,7 @@ export function renderFieldList(args: {
                 <ButtonLink
                   className='mb-2 px-0'
                   type='button'
+                  data-testid={`${key}-fallback-switch`}
                   onClick={() => {
                     /** Switch to fallback.key*/
                     args.activateFallback(key, fallback.key);
