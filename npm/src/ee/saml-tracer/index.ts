@@ -39,6 +39,10 @@ class SAMLTracer {
     return traceId;
   }
 
+  public async getByTraceId(traceId: string) {
+    return (await this.tracerStore.get(traceId)) as Trace;
+  }
+
   public async getAllTraces(pageOffset?: number, pageLimit?: number): Promise<Trace[]> {
     return (await this.tracerStore.getAll(pageOffset, pageLimit)) as Trace[];
   }
