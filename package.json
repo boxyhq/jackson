@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.7.7",
+  "version": "1.8.0",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -35,7 +35,7 @@
     "pretest:e2e": "env-cmd -f .env.test.local ts-node --log-error e2e/support/pretest.ts",
     "test:e2e": "env-cmd -f .env.test.local playwright test",
     "test": "cd npm && npm run test",
-    "custom-install": "npm install --install-links=false",
+    "custom-install": "rm -rf node_modules/@boxyhq/saml-jackson && rm -rf node_modules/@boxyhq/react-ui && npm install --install-links=false",
     "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'"
   },
   "dependencies": {

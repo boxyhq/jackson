@@ -29,14 +29,14 @@ export class JacksonStore {
   tag?: string;
 
   @Column({
-    type: 'datetime',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
     nullable: false,
   })
   createdAt?: Date;
 
   @Column({
-    type: 'datetime',
+    type: 'timestamp',
     nullable: true,
   })
   modifiedAt?: string;
