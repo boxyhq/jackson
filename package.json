@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -95,6 +95,6 @@
     "typescript": "4.9.5"
   },
   "engines": {
-    "node": ">=18.14.0"
+    "node": ">=18.14.2"
   }
 }
