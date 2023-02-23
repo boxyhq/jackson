@@ -24,10 +24,10 @@ test.describe('Admin Portal SSO - SAML', () => {
     // Find the new connection button and click on it
     await page.getByTestId('create-connection').click();
     // Fill the name for the connection
-    const nameInput = page.locator('#name');
+    const nameInput = page.getByTestId('name');
     await nameInput.fill(TEST_SAML_SSO_CONNECTION_NAME);
     // Enter the metadata url for mocksaml in the form
-    const metadataUrlInput = page.locator('#metadataUrl');
+    const metadataUrlInput = page.getByTestId('metadataUrl');
     await metadataUrlInput.fill(MOCKSAML_METADATA_URL);
     // submit the form
     await page.getByTestId('submit-form-create-sso').click();
@@ -98,35 +98,35 @@ test.describe('Admin Portal SSO - OIDC', () => {
         // Toggle connection type to OIDC
         await page.getByText('OIDC').click();
         // Fill the name for the connection
-        const nameInput = page.locator('#name');
+        const nameInput = page.getByTestId('name');
         await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
         if (mode === 'discoveryUrl') {
           // Enter the OIDC discovery url for mocklab in the form
-          const discoveryUrlInput = page.locator('#oidcDiscoveryUrl');
+          const discoveryUrlInput = page.getByTestId('oidcDiscoveryUrl');
           await discoveryUrlInput.fill(baseURL + MOCKLAB_DISCOVERY_PATH);
         } else {
           // Activate the oidc discovery fallback fields
           await page.getByTestId('oidcDiscoveryUrl-fallback-switch').click();
           // Enter the OIDC issuer value for mocklab in the form
-          const issuerInput = page.locator('#issuer');
+          const issuerInput = page.getByTestId('issuer');
           await issuerInput.fill(MOCKLAB_ISSUER);
           // Enter the OIDC authorization_endpoint value for mocklab in the form
-          const authzEndpointInput = page.locator('#authorization_endpoint');
+          const authzEndpointInput = page.getByTestId('authorization_endpoint');
           await authzEndpointInput.fill(MOCKLAB_AUTHORIZATION_ENDPOINT);
           // Enter the OIDC token_endpoint value for mocklab in the form
-          const tokenEndpointInput = page.locator('#token_endpoint');
+          const tokenEndpointInput = page.getByTestId('token_endpoint');
           await tokenEndpointInput.fill(MOCKLAB_TOKEN_ENDPOINT);
           // Enter the OIDC userinfo_endpoint value for mocklab in the form
-          const userInfoEndpointInput = page.locator('#userinfo_endpoint');
+          const userInfoEndpointInput = page.getByTestId('userinfo_endpoint');
           await userInfoEndpointInput.fill(MOCKLAB_USERINFO_ENDPOINT);
           // Enter the OIDC jwks_uri value for mocklab in the form
-          const jwksUriInput = page.locator('#jwks_uri');
+          const jwksUriInput = page.getByTestId('jwks_uri');
           await jwksUriInput.fill(MOCKLAB_JWKS_URI);
         }
         // Enter the OIDC client credentials for mocklab in the form
-        const clientIdInput = page.locator('#oidcClientId');
+        const clientIdInput = page.getByTestId('oidcClientId');
         await clientIdInput.fill(MOCKLAB_CLIENT_ID);
-        const clientSecretInput = page.locator('#oidcClientSecret');
+        const clientSecretInput = page.getByTestId('oidcClientSecret');
         await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
         // submit the form
         await page.getByTestId('submit-form-create-sso').click();
