@@ -116,7 +116,7 @@ export type FieldCatalogItem = {
     key: string;
     activateCondition?: (fieldValue) => boolean;
     switch: { label: string; 'data-testid'?: string };
-};
+  };
 };
 
 export type AdminPortalSSODefaults = {
@@ -208,15 +208,18 @@ export function renderFieldList(args: {
       );
     }
 
+    const isHiddenClassName =
+      typeof isHidden === 'function' && isHidden(args.formObj[key]) == true ? ' hidden' : '';
+
     return (
       <div className='mb-6 ' key={key}>
         {type !== 'checkbox' && (
           <div className='flex items-center justify-between'>
             <label
               htmlFor={key}
-              className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300 ${
-                isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-              }`}>
+              className={
+                'mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300' + isHiddenClassName
+              }>
               {label}
             </label>
             {typeof fallback === 'object' &&
@@ -238,6 +241,13 @@ export function renderFieldList(args: {
         )}
         {type === 'pre' ? (
           <pre
+            className={
+              'block w-full cursor-not-allowed overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500' +
+              isHiddenClassName +
+              (typeof showWarning === 'function' && showWarning(args.formObj[key])
+                ? ' border-2 border-rose-500'
+                : '')
+            }
             data-testid={dataTestId}>
             {value}
           </pre>
@@ -250,9 +260,11 @@ export function renderFieldList(args: {
             disabled={disabled}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
-            className={`textarea-bordered textarea h-24 w-full ${isArray ? 'whitespace-pre' : ''} ${
-              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-            }`}
+            className={
+              'textarea-bordered textarea h-24 w-full' +
+              (isArray ? ' whitespace-pre' : '') +
+              isHiddenClassName
+            }
             rows={rows}
             data-testid={dataTestId}
           />
@@ -260,9 +272,10 @@ export function renderFieldList(args: {
           <>
             <label
               htmlFor={key}
-              className={`inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300 ${
-                isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-              }`}>
+              className={
+                'inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300' +
+                isHiddenClassName
+              }>
               {label}
             </label>
             <input
@@ -290,6 +303,7 @@ export function renderFieldList(args: {
             disabled={disabled}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
+            className={'input-bordered input w-full' + isHiddenClassName}
             data-testid={dataTestId}
           />
         )}
