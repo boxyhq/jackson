@@ -8,7 +8,6 @@ import type { Trace } from '@boxyhq/saml-jackson';
 import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
-import LicenseRequired from '@components/LicenseRequired';
 import { useTranslation } from 'next-i18next';
 import EmptyState from '@components/EmptyState';
 import Link from 'next/link';
@@ -36,7 +35,7 @@ const SAMLTraceViewer: NextPage = () => {
   const noMoreResults = traces.length === 0 && paginate.offset > 0;
 
   return (
-    <LicenseRequired>
+    <>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('saml_tracer')}</h2>
       </div>
@@ -95,7 +94,7 @@ const SAMLTraceViewer: NextPage = () => {
           </div>
         </>
       )}
-    </LicenseRequired>
+    </>
   );
 };
 

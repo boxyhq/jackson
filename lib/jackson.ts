@@ -26,7 +26,7 @@ let directorySyncController: IDirectorySyncController;
 let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 let samlFederatedController: ISAMLFederationController;
-let samlTracer: SAMLTracerInstance | null;
+let samlTracer: SAMLTracerInstance;
 let checkLicense: () => Promise<boolean>;
 
 const g = global as any;
