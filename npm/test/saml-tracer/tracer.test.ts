@@ -1,5 +1,5 @@
 import tap from 'tap';
-import SAMLTracer from '../../src/ee/saml-tracer';
+import SAMLTracer from '../../src/saml-tracer';
 import { jacksonOptions } from '../utils';
 import DB from '../../src/db/db';
 

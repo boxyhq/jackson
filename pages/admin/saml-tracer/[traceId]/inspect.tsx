@@ -1,3 +1,4 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Trace } from '@boxyhq/saml-jackson';
@@ -28,3 +29,12 @@ const SAMLTraceInspector: NextPage = () => {
 };
 
 export default SAMLTraceInspector;
+
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
+}

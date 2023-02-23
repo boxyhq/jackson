@@ -47,8 +47,6 @@ import { addSSOConnections, jacksonOptions } from '../utils';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
-let samlTracerDisabledConnectionAPIController: IConnectionAPIController;
-let samlTracerDisabledOAuthController: IOAuthController;
 let idpEnabledConnectionAPIController: IConnectionAPIController; //idp initiated saml flow enabled
 let idpEnabledOAuthController: IOAuthController;
 let keyPair: jose.GenerateKeyPairResult;
@@ -64,17 +62,12 @@ tap.before(async () => {
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
 
   const controller = await (await import('../../src/index')).default(jacksonOptions);
-  const samlTracerDisabledController = await (
-    await import('../../src/index')
-  ).default({ ...jacksonOptions, boxyhqLicenseKey: undefined });
   const idpFlowEnabledController = await (
     await import('../../src/index')
   ).default({ ...jacksonOptions, idpEnabled: true });
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
-  samlTracerDisabledConnectionAPIController = samlTracerDisabledController.connectionAPIController;
-  samlTracerDisabledOAuthController = samlTracerDisabledController.oauthController;
   idpEnabledConnectionAPIController = idpFlowEnabledController.connectionAPIController;
   idpEnabledOAuthController = idpFlowEnabledController.oauthController;
   connections = await addSSOConnections(
@@ -82,7 +75,6 @@ tap.before(async () => {
     connectionAPIController,
     idpEnabledConnectionAPIController
   );
-  await addSSOConnections(metadataPath, samlTracerDisabledConnectionAPIController);
 });
 
 tap.teardown(async () => {
@@ -132,36 +124,20 @@ tap.test('authorize()', async (t) => {
   });
 
   t.test('Should return OAuth Error response if request creation fails', async (t) => {
-    t.test('samlTracer enabled', async (t) => {
-      const body = authz_request_normal;
-      const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
-      const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
-        redirect_url: string;
-      };
-      // should contain traceId in error_description
-      t.match(
-        redirect_url,
-        new RegExp(
-          `${body.redirect_uri}\\?error=server_error&error_description=[a-z]+_[a-z]+_[a-z]+%3A\\+Internal\\+error%3A\\+Fatal&state=${body.state}`
-        ),
-        'got OAuth error'
-      );
-      stubSamlRequest.restore();
-    });
-
-    t.test('samlTracer disabled', async (t) => {
-      const body = authz_request_normal;
-      const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
-      const { redirect_url } = (await samlTracerDisabledOAuthController.authorize(<OAuthReq>body)) as {
-        redirect_url: string;
-      };
-      t.equal(
-        redirect_url,
-        `${body.redirect_uri}?error=server_error&error_description=Internal+error%3A+Fatal&state=${body.state}`,
-        'got OAuth error'
-      );
-      stubSamlRequest.restore();
-    });
+    const body = authz_request_normal;
+    const stubSamlRequest = sinon.stub(saml, 'request').throws(Error('Internal error: Fatal'));
+    const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
+      redirect_url: string;
+    };
+    // should contain traceId in error_description
+    t.match(
+      redirect_url,
+      new RegExp(
+        `${body.redirect_uri}\\?error=server_error&error_description=[a-z]+_[a-z]+_[a-z]+%3A\\+Internal\\+error%3A\\+Fatal&state=${body.state}`
+      ),
+      'got OAuth error'
+    );
+    stubSamlRequest.restore();
   });
 
   t.test('Should throw an error if `client_id` is invalid', async (t) => {

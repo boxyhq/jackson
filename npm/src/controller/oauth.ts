@@ -18,6 +18,7 @@ import type {
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
+  SAMLTracerInstance,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -39,7 +40,6 @@ import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SAMLHandler } from './saml-handler';
 import { extractSAMLResponseAttributes } from '../saml/lib';
-import SAMLTracer from '../ee/saml-tracer';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -48,7 +48,7 @@ export class OAuthController implements IOAuthController {
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
-  private samlTracer: SAMLTracer | null;
+  private samlTracer: SAMLTracerInstance;
   private opts: JacksonOption;
   private samlHandler: SAMLHandler;
 
@@ -260,7 +260,7 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         // If tracer enabled, save the error to DB
-        const traceId = await this.samlTracer?.saveTrace({
+        const traceId = await this.samlTracer.saveTrace({
           error: error_description,
           context: {
             tenant: requestedTenant as string,
@@ -535,7 +535,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // If tracer enabled, save the error to DB
-      const traceId = await this.samlTracer?.saveTrace({
+      const traceId = await this.samlTracer.saveTrace({
         error: error_description,
         context: {
           samlResponse: rawResponse,

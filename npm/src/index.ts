@@ -16,7 +16,7 @@ import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
-import SAMLTracer from './ee/saml-tracer';
+import SAMLTracer from './saml-tracer';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -66,7 +66,7 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: ISAMLFederationController;
-  samlTracer: SAMLTracerInstance | null;
+  samlTracer: SAMLTracerInstance;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
@@ -101,7 +101,7 @@ export const controllers = async (
   // Create default certificate if it doesn't exist.
   await x509.init(certificateStore, opts);
 
-  const samlTracer = (await checkLicense(opts.boxyhqLicenseKey)) ? new SAMLTracer({ db }) : null;
+  const samlTracer = new SAMLTracer({ db });
 
   const oauthController = new OAuthController({
     connectionStore,
