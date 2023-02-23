@@ -102,6 +102,7 @@ type fieldAttributes = {
   showWarning?: (value) => boolean;
   hideInSetupView: boolean;
   connection?: string;
+  'data-testid'?: string;
 };
 
 export type FieldCatalogItem = {
@@ -111,7 +112,11 @@ export type FieldCatalogItem = {
   placeholder?: string;
   attributes: fieldAttributes;
   members?: FieldCatalogItem[];
-  fallback?: { key: string; activateCondition?: (fieldValue) => boolean; switch: { label: string } };
+  fallback?: {
+    key: string;
+    activateCondition?: (fieldValue) => boolean;
+    switch: { label: string; 'data-testid'?: string };
+};
 };
 
 export type AdminPortalSSODefaults = {
@@ -163,6 +168,7 @@ export function renderFieldList(args: {
       maxLength,
       showWarning,
       required = true,
+      'data-testid': dataTestId,
     },
     fallback,
   }: FieldCatalogItem) => {
@@ -184,7 +190,7 @@ export function renderFieldList(args: {
               <ButtonLink
                 className='mb-2 px-0'
                 type='button'
-                data-testid={`${key}-fallback-switch`}
+                data-testid={fallback.switch['data-testid']}
                 onClick={() => {
                   /** Switch to fallback.key*/
                   args.activateFallback(key, fallback.key);
@@ -220,7 +226,7 @@ export function renderFieldList(args: {
                 <ButtonLink
                   className='mb-2 px-0'
                   type='button'
-                  data-testid={`${key}-fallback-switch`}
+                  data-testid={fallback.switch['data-testid']}
                   onClick={() => {
                     /** Switch to fallback.key*/
                     args.activateFallback(key, fallback.key);
@@ -232,12 +238,7 @@ export function renderFieldList(args: {
         )}
         {type === 'pre' ? (
           <pre
-            className={`block w-full cursor-not-allowed overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 
-            text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 
-            dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 
-            dark:focus:ring-blue-500 ${
-              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-            } ${showWarning ? (showWarning(args.formObj[key]) ? 'border-2 border-rose-500' : '') : ''}`}>
+            data-testid={dataTestId}>
             {value}
           </pre>
         ) : type === 'textarea' ? (
@@ -253,6 +254,7 @@ export function renderFieldList(args: {
               isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
             }`}
             rows={rows}
+            data-testid={dataTestId}
           />
         ) : type === 'checkbox' ? (
           <>
@@ -275,6 +277,7 @@ export function renderFieldList(args: {
                 formObjParentKey: args.formObjParentKey,
               })}
               className='checkbox-primary checkbox ml-5 align-middle'
+              data-testid={dataTestId}
             />
           </>
         ) : (
@@ -287,9 +290,7 @@ export function renderFieldList(args: {
             disabled={disabled}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
-            className={`input-bordered input w-full ${
-              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-            }`}
+            data-testid={dataTestId}
           />
         )}
       </div>

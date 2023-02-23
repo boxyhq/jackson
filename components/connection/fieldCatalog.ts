@@ -21,7 +21,7 @@ export const getCommonFields = ({
     label: 'Name',
     type: 'text',
     placeholder: 'MyApp',
-    attributes: { required: false, hideInSetupView: true },
+    attributes: { required: false, hideInSetupView: true, 'data-testid': 'name' },
   },
   {
     key: 'description',
@@ -79,35 +79,43 @@ export const getCommonFields = ({
     label: 'Client ID [OIDC Provider]',
     type: 'text',
     placeholder: '',
-    attributes: isEditView
-      ? {
-          connection: 'oidc',
-          accessor: (o) => o?.oidcProvider?.clientId,
-          hideInSetupView: false,
-        }
-      : { connection: 'oidc', hideInSetupView: false },
+    attributes: {
+      'data-testid': 'oidcClientId',
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.clientId,
+      hideInSetupView: false,
+    },
   },
   {
     key: 'oidcClientSecret',
     label: 'Client Secret [OIDC Provider]',
     type: 'text',
     placeholder: '',
-    attributes: isEditView
-      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret, hideInSetupView: false }
-      : { connection: 'oidc', hideInSetupView: false },
+    attributes: {
+      'data-testid': 'oidcClientSecret',
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.clientSecret,
+      hideInSetupView: false,
+    },
   },
   {
     key: 'oidcDiscoveryUrl',
     label: 'Well-known URL of OpenID Provider',
     type: 'url',
     placeholder: 'https://example.com/.well-known/openid-configuration',
-    attributes: isEditView
-      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl, hideInSetupView: false }
-      : { connection: 'oidc', hideInSetupView: false },
+    attributes: {
+      'data-testid': 'oidcDiscoveryUrl',
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.discoveryUrl,
+      hideInSetupView: false,
+    },
     fallback: {
       key: 'oidcMetadata',
       activateCondition: (fieldValue) => !fieldValue,
-      switch: { label: 'Missing the discovery URL? Click here to set the individual attributes' },
+      switch: {
+        label: 'Missing the discovery URL? Click here to set the individual attributes',
+        'data-testid': 'oidcDiscoveryUrl-fallback-switch',
+      },
     },
   },
   {
@@ -118,7 +126,11 @@ export const getCommonFields = ({
         key: 'issuer',
         label: 'Issuer',
         type: 'url',
-        attributes: { accessor: (o) => o?.oidcProvider?.metadata?.issuer, hideInSetupView: false },
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.issuer,
+          hideInSetupView: false,
+          'data-testid': 'issuer',
+        },
       },
       {
         key: 'authorization_endpoint',
@@ -127,31 +139,47 @@ export const getCommonFields = ({
         attributes: {
           accessor: (o) => o?.oidcProvider?.metadata?.authorization_endpoint,
           hideInSetupView: false,
+          'data-testid': 'authorization_endpoint',
         },
       },
       {
         key: 'token_endpoint',
         label: 'Token endpoint',
         type: 'url',
-        attributes: { accessor: (o) => o?.oidcProvider?.metadata?.token_endpoint, hideInSetupView: false },
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.token_endpoint,
+          hideInSetupView: false,
+          'data-testid': 'token_endpoint',
+        },
       },
       {
         key: 'jwks_uri',
         label: 'JWKS URI',
         type: 'url',
-        attributes: { accessor: (o) => o?.oidcProvider?.metadata?.jwks_uri, hideInSetupView: false },
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.jwks_uri,
+          hideInSetupView: false,
+          'data-testid': 'jwks_uri',
+        },
       },
       {
         key: 'userinfo_endpoint',
         label: 'UserInfo endpoint',
         type: 'url',
-        attributes: { accessor: (o) => o?.oidcProvider?.metadata?.userinfo_endpoint, hideInSetupView: false },
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.userinfo_endpoint,
+          hideInSetupView: false,
+          'data-testid': 'userinfo_endpoint',
+        },
       },
     ],
     attributes: { connection: 'oidc', hideInSetupView: false },
     fallback: {
       key: 'oidcDiscoveryUrl',
-      switch: { label: 'Have a discovery URL? Click here to set it' },
+      switch: {
+        label: 'Have a discovery URL? Click here to set it',
+        'data-testid': 'oidcMetadata-fallback-switch',
+      },
     },
   },
   {
@@ -175,6 +203,7 @@ export const getCommonFields = ({
       required: false,
       connection: 'saml',
       hideInSetupView: false,
+      'data-testid': 'metadataUrl',
     },
   },
   {
