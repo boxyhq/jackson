@@ -289,7 +289,7 @@ export function renderFieldList(args: {
                 key: 'checked',
                 formObjParentKey: args.formObjParentKey,
               })}
-              className='checkbox-primary checkbox ml-5 align-middle'
+              className={'checkbox-primary checkbox ml-5 align-middle' + isHiddenClassName}
               data-testid={dataTestId}
             />
           </>
