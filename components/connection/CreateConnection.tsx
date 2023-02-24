@@ -1,11 +1,14 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   saveConnection,
   fieldCatalogFilterByConnection,
   renderFieldList,
   useFieldCatalog,
+  excludeFallback,
   type AdminPortalSSODefaults,
+  type FormObj,
+  type FieldCatalogItem,
 } from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
@@ -14,6 +17,26 @@ import { useTranslation } from 'next-i18next';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { InputWithCopyButton } from '@components/ClipboardButton';
+
+function getInitialState(connectionType, fieldCatalog: FieldCatalogItem[]) {
+  const _state = {};
+
+  fieldCatalog.forEach(({ key, type, members, fallback, attributes: { connection } }) => {
+    let value;
+    if (connection && connection !== connectionType) {
+      return;
+    }
+    /** By default those fields which do not have a fallback.activateCondition  will be excluded */
+    if (typeof fallback === 'object' && typeof fallback.activateCondition !== 'function') {
+      return;
+    }
+    if (type === 'object') {
+      value = getInitialState(connectionType, members as FieldCatalogItem[]);
+    }
+    _state[key] = value ? value : '';
+  });
+  return _state;
+}
 
 const CreateConnection = ({
   setupLinkToken,
@@ -87,9 +110,27 @@ const CreateConnection = ({
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(
-    isSettingsView ? { ...adminPortalSSODefaults } : {}
+  const [formObj, setFormObj] = useState<FormObj>(() =>
+    isSettingsView
+      ? { ...getInitialState(newConnectionType, fieldCatalog), ...adminPortalSSODefaults }
+      : { ...getInitialState(newConnectionType, fieldCatalog) }
   );
+  // Resync form state on save
+  useEffect(() => {
+    const _state = getInitialState(newConnectionType, fieldCatalog);
+    setFormObj(isSettingsView ? { ..._state, ...adminPortalSSODefaults } : _state);
+  }, [newConnectionType, fieldCatalog, isSettingsView, adminPortalSSODefaults]);
+
+  // HANDLER: Track fallback display
+  const activateFallback = (key, fallbackKey) => {
+    setFormObj((cur) => {
+      const temp = { ...cur };
+      delete temp[key];
+      const fallbackItem = fieldCatalog.find(({ key }) => key === fallbackKey);
+      const fallbackItemVal = fallbackItem?.type === 'object' ? {} : '';
+      return { ...temp, [fallbackKey]: fallbackItemVal };
+    });
+  };
 
   return (
     <>
@@ -147,7 +188,8 @@ const CreateConnection = ({
             {fieldCatalog
               .filter(fieldCatalogFilterByConnection(newConnectionType))
               .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
-              .map(renderFieldList({ formObj, setFormObj }))}
+              .filter(excludeFallback(formObj))
+              .map(renderFieldList({ formObj, setFormObj, activateFallback }))}
             <div className='flex'>
               <ButtonPrimary loading={loading} data-testid='submit-form-create-sso'>
                 {t('save_changes')}

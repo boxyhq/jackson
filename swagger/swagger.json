@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.3.7",
+    "version": "1.7.5",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -293,6 +293,9 @@
             "$ref": "#/parameters/oidcDiscoveryUrlPost"
           },
           {
+            "$ref": "#/parameters/oidcMetadataPost"
+          },
+          {
             "$ref": "#/parameters/oidcClientIdPost"
           },
           {
@@ -348,6 +351,9 @@
           },
           {
             "$ref": "#/parameters/oidcDiscoveryUrlPatch"
+          },
+          {
+            "$ref": "#/parameters/oidcMetadataPatch"
           },
           {
             "$ref": "#/parameters/oidcClientIdPatch"
@@ -561,10 +567,16 @@
                   "type": "string"
                 },
                 "roles": {
-                  "type": "array"
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 },
                 "groups": {
-                  "type": "array"
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 },
                 "raw": {
                   "type": "object"
@@ -744,6 +756,12 @@
       "in": "formData",
       "type": "string"
     },
+    "oidcMetadataPost": {
+      "name": "oidcMetadata",
+      "description": "metadata (JSON) for the OpenID Provider in the absence of discoveryUrl",
+      "in": "formData",
+      "type": "string"
+    },
     "oidcClientIdPost": {
       "name": "oidcClientId",
       "description": "clientId of the application set up on the OpenID Provider",
@@ -803,6 +821,12 @@
     "oidcDiscoveryUrlPatch": {
       "name": "oidcDiscoveryUrl",
       "description": "well-known URL where the OpenID Provider configuration is exposed",
+      "in": "formData",
+      "type": "string"
+    },
+    "oidcMetadataPatch": {
+      "name": "oidcMetadata",
+      "description": "metadata (JSON) for the OpenID Provider in the absence of discoveryUrl",
       "in": "formData",
       "type": "string"
     },

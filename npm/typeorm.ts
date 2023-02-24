@@ -7,8 +7,23 @@ const type =
     ? 'mysql'
     : <DatabaseType>process.env.DB_TYPE || <DatabaseType>'postgres';
 
-const entitiesDir =
-  process.env.DB_ENGINE === 'planetscale' ? 'planetscale' : type === 'mssql' ? 'sql/mssql' : 'sql';
+let entitiesDir;
+if (process.env.DB_ENGINE === 'planetscale') {
+  entitiesDir = 'planetscale';
+} else {
+  switch (type) {
+    case 'mssql':
+      entitiesDir = `sql/${type}`;
+      break;
+    case 'mariadb':
+    case 'mysql':
+      entitiesDir = `sql/mariadb`;
+      break;
+    default:
+      entitiesDir = 'sql';
+      break;
+  }
+}
 const migrationsDir = process.env.DB_ENGINE === 'planetscale' ? 'planetscale' : type;
 
 let ssl;
