@@ -34,10 +34,10 @@ export default async function init() {
     !g.connectionAPIController ||
     !g.oauthController ||
     !g.adminController ||
-    !g.healthCheckController ||
     !g.logoutController ||
-    !g.directorySync ||
+    !g.healthCheckController ||
     !g.setupLinkController ||
+    !g.directorySyncController ||
     !g.oidcDiscoveryController ||
     !g.spConfig ||
     !g.samlFederatedController
@@ -60,7 +60,7 @@ export default async function init() {
     g.adminController = adminController;
     g.logoutController = logoutController;
     g.healthCheckController = healthCheckController;
-    g.directorySync = directorySyncController;
+    g.directorySyncController = directorySyncController;
     g.setupLinkController = setupLinkController;
     g.oidcDiscoveryController = oidcDiscoveryController;
     g.spConfig = spConfig;
@@ -73,7 +73,7 @@ export default async function init() {
     adminController = g.adminController;
     logoutController = g.logoutController;
     healthCheckController = g.healthCheckController;
-    directorySyncController = g.directorySync;
+    directorySyncController = g.directorySyncController;
     oidcDiscoveryController = g.oidcDiscoveryController;
     setupLinkController = g.setupLinkController;
     spConfig = g.spConfig;
