@@ -2,7 +2,11 @@ import sinon from 'sinon';
 import tap from 'tap';
 import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
-import { IConnectionAPIController, OIDCSSOConnection, OIDCSSORecord } from '../../src/typings';
+import {
+  IConnectionAPIController,
+  OIDCSSOConnectionWithDiscoveryUrl,
+  OIDCSSORecord,
+} from '../../src/typings';
 import { oidc_connection } from './fixture';
 import { jacksonOptions } from '../utils';
 
@@ -34,7 +38,7 @@ tap.test('controller/api', async (t) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       connectionAPIController.opts.oidcPath = undefined;
-      const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+      const body: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
       try {
         await connectionAPIController.createOIDCConnection(body);
         t.fail('Expecting JacksonError.');
@@ -48,8 +52,8 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when required fields are missing or invalid', async (t) => {
-      t.test('missing discoveryUrl', async (t) => {
-        const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+      t.test('missing discoveryUrl and metadata', async (t) => {
+        const body: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         delete body['oidcDiscoveryUrl'];
@@ -57,12 +61,12 @@ tap.test('controller/api', async (t) => {
           await connectionAPIController.createOIDCConnection(body);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
-          t.equal(err.message, 'Please provide the discoveryUrl for the OpenID Provider');
+          t.equal(err.message, 'Please provide the discoveryUrl or issuer metadata for the OpenID Provider');
           t.equal(err.statusCode, 400);
         }
       });
       t.test('missing clientId', async (t) => {
-        const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+        const body: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         delete body['oidcClientId'];
@@ -75,7 +79,7 @@ tap.test('controller/api', async (t) => {
         }
       });
       t.test('missing clientSecret', async (t) => {
-        const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+        const body: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         delete body['oidcClientSecret'];
@@ -89,11 +93,11 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `defaultRedirectUrl` is empty', async (t) => {
-        const body: Partial<OIDCSSOConnection> = Object.assign({}, oidc_connection);
+        const body: Partial<OIDCSSOConnectionWithDiscoveryUrl> = Object.assign({}, oidc_connection);
         delete body['defaultRedirectUrl'];
 
         try {
-          await connectionAPIController.createOIDCConnection(body as OIDCSSOConnection);
+          await connectionAPIController.createOIDCConnection(body as OIDCSSOConnectionWithDiscoveryUrl);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide a defaultRedirectUrl');
@@ -102,11 +106,11 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when `redirectUrl` is empty', async (t) => {
-        const body: Partial<OIDCSSOConnection> = Object.assign({}, oidc_connection);
+        const body: Partial<OIDCSSOConnectionWithDiscoveryUrl> = Object.assign({}, oidc_connection);
         delete body['redirectUrl'];
 
         try {
-          await connectionAPIController.createOIDCConnection(body as OIDCSSOConnection);
+          await connectionAPIController.createOIDCConnection(body as OIDCSSOConnectionWithDiscoveryUrl);
           t.fail('Expecting JacksonError.');
         } catch (err: any) {
           t.equal(err.message, 'Please provide redirectUrl');
@@ -115,12 +119,14 @@ tap.test('controller/api', async (t) => {
       });
 
       t.test('when defaultRedirectUrl or redirectUrl is invalid', async (t) => {
-        const body_oidc_provider: OIDCSSOConnection = Object.assign({}, oidc_connection);
+        const body_oidc_provider: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
 
         t.test('when defaultRedirectUrl is invalid', async (t) => {
           body_oidc_provider['defaultRedirectUrl'] = 'http://localhost::';
           try {
-            await connectionAPIController.createOIDCConnection(body_oidc_provider as OIDCSSOConnection);
+            await connectionAPIController.createOIDCConnection(
+              body_oidc_provider as OIDCSSOConnectionWithDiscoveryUrl
+            );
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'defaultRedirectUrl is invalid');
@@ -131,7 +137,9 @@ tap.test('controller/api', async (t) => {
         t.test('when redirectUrl list is huge', async (t) => {
           body_oidc_provider['redirectUrl'] = Array(101).fill('http://localhost:8080');
           try {
-            await connectionAPIController.createOIDCConnection(body_oidc_provider as OIDCSSOConnection);
+            await connectionAPIController.createOIDCConnection(
+              body_oidc_provider as OIDCSSOConnectionWithDiscoveryUrl
+            );
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Exceeded maximum number of allowed redirect urls');
@@ -143,7 +151,9 @@ tap.test('controller/api', async (t) => {
           body_oidc_provider['redirectUrl'] = '["http://localhost:8000","http://localhost::8080"]';
 
           try {
-            await connectionAPIController.createOIDCConnection(body_oidc_provider as OIDCSSOConnection);
+            await connectionAPIController.createOIDCConnection(
+              body_oidc_provider as OIDCSSOConnectionWithDiscoveryUrl
+            );
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'redirectUrl is invalid');
@@ -154,11 +164,11 @@ tap.test('controller/api', async (t) => {
 
       t.test('tenant/product empty', async (t) => {
         t.test('when `tenant` is empty', async (t) => {
-          const body: Partial<OIDCSSOConnection> = Object.assign({}, oidc_connection);
+          const body: Partial<OIDCSSOConnectionWithDiscoveryUrl> = Object.assign({}, oidc_connection);
           delete body['tenant'];
 
           try {
-            await connectionAPIController.createOIDCConnection(body as OIDCSSOConnection);
+            await connectionAPIController.createOIDCConnection(body as OIDCSSOConnectionWithDiscoveryUrl);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide tenant');
@@ -167,11 +177,11 @@ tap.test('controller/api', async (t) => {
         });
 
         t.test('when `product` is empty', async (t) => {
-          const body: Partial<OIDCSSOConnection> = Object.assign({}, oidc_connection);
+          const body: Partial<OIDCSSOConnectionWithDiscoveryUrl> = Object.assign({}, oidc_connection);
           delete body['product'];
 
           try {
-            await connectionAPIController.createOIDCConnection(body as OIDCSSOConnection);
+            await connectionAPIController.createOIDCConnection(body as OIDCSSOConnectionWithDiscoveryUrl);
             t.fail('Expecting JacksonError.');
           } catch (err: any) {
             t.equal(err.message, 'Please provide product');
@@ -207,10 +217,10 @@ tap.test('controller/api', async (t) => {
   });
 
   t.test('Update the connection', async (t) => {
-    const body_oidc_provider: OIDCSSOConnection = Object.assign({}, oidc_connection);
+    const body_oidc_provider: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
     t.test('should throw when `oidcPath` is not set', async (t) => {
       const { clientSecret, clientID } = await connectionAPIController.createOIDCConnection(
-        body_oidc_provider as OIDCSSOConnection
+        body_oidc_provider as OIDCSSOConnectionWithDiscoveryUrl
       );
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -238,7 +248,7 @@ tap.test('controller/api', async (t) => {
 
     t.test('When clientID is missing', async (t) => {
       const { clientSecret } = await connectionAPIController.createOIDCConnection(
-        body_oidc_provider as OIDCSSOConnection
+        body_oidc_provider as OIDCSSOConnectionWithDiscoveryUrl
       );
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -261,7 +271,7 @@ tap.test('controller/api', async (t) => {
 
     t.test('When clientSecret is missing', async (t) => {
       const { clientID } = await connectionAPIController.createOIDCConnection(
-        body_oidc_provider as OIDCSSOConnection
+        body_oidc_provider as OIDCSSOConnectionWithDiscoveryUrl
       );
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -284,7 +294,7 @@ tap.test('controller/api', async (t) => {
 
     t.test('Update the name/description', async (t) => {
       const { clientID, clientSecret } = await connectionAPIController.createOIDCConnection(
-        body_oidc_provider as OIDCSSOConnection
+        body_oidc_provider as OIDCSSOConnectionWithDiscoveryUrl
       );
       const { name, description } = (await connectionAPIController.getConnections({ clientID }))[0];
       t.equal(name, 'OIDC Metadata for oidc.example.com');
@@ -309,9 +319,9 @@ tap.test('controller/api', async (t) => {
 
   t.test('Get the connection', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+      const body: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
 
-      await connectionAPIController.createOIDCConnection(body as OIDCSSOConnection);
+      await connectionAPIController.createOIDCConnection(body as OIDCSSOConnectionWithDiscoveryUrl);
 
       const savedConnection = (await connectionAPIController.getConnections(body))[0];
 
@@ -321,7 +331,7 @@ tap.test('controller/api', async (t) => {
     t.test('when invalid request', async (t) => {
       let response;
 
-      const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+      const body: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
 
       await connectionAPIController.createOIDCConnection(body);
 
@@ -352,7 +362,7 @@ tap.test('controller/api', async (t) => {
 
   t.test('Delete the connection', async (t) => {
     t.test('when valid request', async (t) => {
-      const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+      const body: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
 
       const { clientID, clientSecret } = await connectionAPIController.createOIDCConnection(body);
 
@@ -369,7 +379,7 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('when invalid request', async (t) => {
-      const body: OIDCSSOConnection = Object.assign({}, oidc_connection);
+      const body: OIDCSSOConnectionWithDiscoveryUrl = Object.assign({}, oidc_connection);
 
       const { clientID } = await connectionAPIController.createOIDCConnection(body);
 

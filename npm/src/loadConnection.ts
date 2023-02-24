@@ -2,16 +2,19 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 import {
-  OIDCSSOConnection,
+  OIDCSSOConnectionWithDiscoveryUrl,
+  OIDCSSOConnectionWithMetadata,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
 } from './typings';
 
-const loadConnection = async (
-  preLoadedConnection: string
-): Promise<
-  (SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata | OIDCSSOConnection)[]
-> => {
+type connection =
+  | SAMLSSOConnectionWithEncodedMetadata
+  | SAMLSSOConnectionWithRawMetadata
+  | OIDCSSOConnectionWithDiscoveryUrl
+  | OIDCSSOConnectionWithMetadata;
+
+const loadConnection = async (preLoadedConnection: string): Promise<connection[]> => {
   if (preLoadedConnection.startsWith('./')) {
     preLoadedConnection = path.resolve(process.cwd(), preLoadedConnection);
   } else {
@@ -19,11 +22,7 @@ const loadConnection = async (
   }
 
   const files = await fs.promises.readdir(preLoadedConnection);
-  const connections: (
-    | SAMLSSOConnectionWithEncodedMetadata
-    | SAMLSSOConnectionWithRawMetadata
-    | OIDCSSOConnection
-  )[] = [];
+  const connections: connection[] = [];
 
   for (const idx in files) {
     const file = files[idx];
@@ -33,9 +32,9 @@ const loadConnection = async (
       const {
         default: connection,
       }: {
-        default: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata | OIDCSSOConnection;
+        default: connection;
       } = await import(/* webpackIgnore: true */ fileUrl);
-      if (!('oidcDiscoveryUrl' in connection)) {
+      if (!('oidcDiscoveryUrl' in connection) && !('oidcMetadata' in connection)) {
         const rawMetadata = await fs.promises.readFile(
           path.join(preLoadedConnection, path.parse(file).name + '.xml'),
           'utf8'
