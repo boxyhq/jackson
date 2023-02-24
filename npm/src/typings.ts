@@ -448,3 +448,11 @@ export type SetupLink = {
 };
 
 export type SetupLinkService = 'sso' | 'dsync';
+
+export type AdminPortalSettings = {
+  branding: {
+    logoUrl: string | null;
+    primaryColor: string | null;
+    pageTitle: string | null;
+  };
+};

@@ -16,6 +16,7 @@ import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
+import { SettingsController } from './settings';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -65,6 +66,7 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: ISAMLFederationController;
+  settingsController: ISettingsController;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
@@ -80,12 +82,14 @@ export const controllers = async (
   const healthCheckStore = db.store('_health:check');
   const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
+  const settingsStore = db.store('portal:settings');
 
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
   const adminController = new AdminController({ connectionStore });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore });
+  const settingsController = new SettingsController({ store: settingsStore });
 
   if (!opts.noAnalytics) {
     console.info(
@@ -150,6 +154,7 @@ export const controllers = async (
     directorySyncController,
     oidcDiscoveryController,
     samlFederatedController,
+    settingsController,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
     },
@@ -162,3 +167,4 @@ export * from './typings';
 export * from './ee/federated-saml/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
 export type ISetupLinkController = InstanceType<typeof SetupLinkController>;
+export type ISettingsController = InstanceType<typeof SettingsController>;

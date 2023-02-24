@@ -93,10 +93,22 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       ],
     },
     {
-      href: '/admin/settings',
+      href: '/admin/settings/sso-connection',
       text: t('settings'),
       icon: Cog8ToothIcon,
       active: asPath.includes('/admin/settings'),
+      items: [
+        {
+          href: '/admin/settings/sso-connection',
+          text: 'Single Sign-On',
+          active: asPath.includes('/admin/settings/sso-connection'),
+        },
+        {
+          href: '/admin/settings/branding',
+          text: 'Branding',
+          active: asPath.includes('/admin/settings/branding'),
+        },
+      ],
     },
   ];
 
