@@ -153,5 +153,7 @@
   "sp_saml_config_description": "Your Identity Provider (IdP) will ask for the following information while configuring the SAML application. Share this information with your IT administrator.",
   "password": "Password",
   "sign_in": "Sign In",
-  "email_required": "Email is required"
+  "email_required": "Email is required",
+  "audit_logs": "Audit Logs",
+  "privacy_vault": "Privacy Vault"
 }

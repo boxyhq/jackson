@@ -39,6 +39,7 @@
     "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'"
   },
   "dependencies": {
+    "@blockly/continuous-toolbox": "3.0.9",
     "@boxyhq/react-ui": "file:sdk/ui/react",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.16",
@@ -52,6 +53,7 @@
     "@retracedhq/retraced": "0.6.2",
     "@tailwindcss/typography": "0.5.9",
     "axios": "1.2.6",
+    "blockly": "9.2.1",
     "classnames": "2.3.2",
     "cors": "2.8.5",
     "daisyui": "2.51.0",
