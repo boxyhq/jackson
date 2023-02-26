@@ -29,7 +29,7 @@ function BlocklyComponent(props) {
       toolbox: toolbox.current,
       readOnly: false,
       trashcan: true,
-      media: 'media/',
+      media: '/terminus/media/',
       move: {
         scrollbars: true,
         drag: true,
@@ -46,7 +46,7 @@ function BlocklyComponent(props) {
 
   return (
     <React.Fragment>
-      <button onClick={generateCode}>Convert</button>
+      {/* <button onClick={generateCode}>Convert</button> */}
       <div ref={blocklyDiv} className={styles.blocklyDiv} />
       <div style={{ display: 'none' }} ref={toolbox}>
         {props.children}

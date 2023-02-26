@@ -43,4 +43,4 @@ yarn-error.log*
 npmversion.txt
 publishTag.txt
 .env
-public/admin/media/**
+public/terminus/media/**
