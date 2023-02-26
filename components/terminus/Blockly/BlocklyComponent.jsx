@@ -27,6 +27,15 @@ function BlocklyComponent(props) {
     const { initialXml, children, ...rest } = props;
     primaryWorkspace.current = Blockly.inject(blocklyDiv.current, {
       toolbox: toolbox.current,
+      readOnly: false,
+      trashcan: true,
+      media: 'media/',
+      move: {
+        scrollbars: true,
+        drag: true,
+        wheel: true,
+      },
+      sounds: false,
       ...rest,
     });
 
