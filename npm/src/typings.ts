@@ -1,4 +1,5 @@
-import { type JWK } from 'jose';
+import type { JWK } from 'jose';
+import type { IssuerMetadata } from 'openid-client';
 
 export * from './ee/federated-saml/types';
 export * from './saml-tracer/types';
@@ -30,10 +31,19 @@ export interface SAMLSSOConnectionWithEncodedMetadata extends SAMLSSOConnection 
   metadataUrl?: string;
 }
 
-export interface OIDCSSOConnection extends SSOConnection {
-  oidcDiscoveryUrl: string;
+interface OIDCSSOConnection extends SSOConnection {
   oidcClientId: string;
   oidcClientSecret: string;
+}
+
+export interface OIDCSSOConnectionWithMetadata extends OIDCSSOConnection {
+  oidcDiscoveryUrl?: never;
+  oidcMetadata: IssuerMetadata;
+}
+
+export interface OIDCSSOConnectionWithDiscoveryUrl extends OIDCSSOConnection {
+  oidcDiscoveryUrl: string;
+  oidcMetadata?: never;
 }
 
 export interface SAMLSSORecord extends SAMLSSOConnection {
@@ -64,6 +74,7 @@ export interface OIDCSSORecord extends SSOConnection {
   oidcProvider: {
     provider?: string;
     discoveryUrl?: string;
+    metadata?: IssuerMetadata;
     clientId?: string;
     clientSecret?: string;
   };
@@ -101,7 +112,9 @@ export interface IConnectionAPIController {
   createSAMLConnection(
     body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata
   ): Promise<SAMLSSORecord>;
-  createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord>;
+  createOIDCConnection(
+    body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
+  ): Promise<OIDCSSORecord>;
   /**
    * @deprecated Use `updateSAMLConnection` instead.
    */
@@ -112,7 +125,13 @@ export interface IConnectionAPIController {
       clientSecret: string;
     }
   ): Promise<void>;
-  updateOIDCConnection(body: OIDCSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
+  updateOIDCConnection(
+    body:
+      | (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
+          clientID: string;
+          clientSecret: string;
+        }
+  ): Promise<void>;
   getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
   getIDPEntityID(body: GetIDPEntityIDBody): string;
   /**

@@ -1,5 +1,5 @@
 import jackson from '@lib/jackson';
-import { strategyChecker } from '@lib/utils';
+import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { GetConnectionsQuery } from '@boxyhq/saml-jackson';
 
@@ -55,7 +55,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Create OIDC connection
   if (isOIDC) {
-    const connection = await connectionAPIController.createOIDCConnection(req.body);
+    const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
     return res.json(connection);
   }
@@ -80,7 +80,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Update OIDC connection
   if (isOIDC) {
-    const connection = await connectionAPIController.updateOIDCConnection(req.body);
+    const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
     return res.status(204).json(connection);
   }

@@ -3,21 +3,40 @@ import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
 
 import ConfirmationModal from '@components/ConfirmationModal';
-import { saveConnection, fieldCatalogFilterByConnection, renderFieldList, useFieldCatalog } from './utils';
+import {
+  saveConnection,
+  fieldCatalogFilterByConnection,
+  renderFieldList,
+  useFieldCatalog,
+  type FormObj,
+  type FieldCatalogItem,
+  excludeFallback,
+} from './utils';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
+import { isObjectEmpty } from '@lib/ui/utils';
 
-function getInitialState(connection, fieldCatalog) {
+function getInitialState(connection, fieldCatalog: FieldCatalogItem[], connectionType) {
   const _state = {};
 
-  fieldCatalog.forEach(({ key, attributes }) => {
+  fieldCatalog.forEach(({ key, attributes, type, members }) => {
     let value;
-
-    if (typeof attributes.accessor === 'function') {
+    if (attributes.connection && attributes.connection !== connectionType) {
+      return;
+    }
+    if (type === 'object') {
+      value = getInitialState(connection, members as FieldCatalogItem[], connectionType);
+      if (isObjectEmpty(value)) {
+        return;
+      }
+    } else if (typeof attributes.accessor === 'function') {
+      if (attributes.accessor(connection) === undefined) {
+        return;
+      }
       value = attributes.accessor(connection);
     } else {
       value = connection?.[key];
@@ -118,19 +137,29 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
     }
   };
 
+  const connectionType = connectionIsSAML ? 'saml' : connectionIsOIDC ? 'oidc' : null;
+
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(() =>
-    getInitialState(connection, fieldCatalog)
+  const [formObj, setFormObj] = useState<FormObj>(() =>
+    getInitialState(connection, fieldCatalog, connectionType)
   );
   // Resync form state on save
   useEffect(() => {
-    const _state = getInitialState(connection, fieldCatalog);
+    const _state = getInitialState(connection, fieldCatalog, connectionType);
     setFormObj(_state);
-  }, [connection, fieldCatalog]);
+  }, [connection, fieldCatalog, connectionType]);
 
-  const filteredFieldsByConnection = fieldCatalog.filter(
-    fieldCatalogFilterByConnection(connectionIsSAML ? 'saml' : connectionIsOIDC ? 'oidc' : null)
-  );
+  const filteredFieldsByConnection = fieldCatalog.filter(fieldCatalogFilterByConnection(connectionType));
+
+  const activateFallback = (activeKey, fallbackKey) => {
+    setFormObj((cur) => {
+      const temp = { ...cur };
+      delete temp[activeKey];
+      const fallbackItem = fieldCatalog.find(({ key }) => key === fallbackKey);
+      const fallbackItemVal = fallbackItem?.type === 'object' ? {} : '';
+      return { ...temp, [fallbackKey]: fallbackItemVal };
+    });
+  };
 
   const backUrl = setupLinkToken
     ? `/setup/${setupLinkToken}`
@@ -152,13 +181,15 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable !== false)
                   .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
-                  .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
+                  .filter(excludeFallback(formObj))
+                  .map(renderFieldList({ isEditView: true, formObj, setFormObj, activateFallback }))}
               </div>
               <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-2/5 lg:border lg:p-3'>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable === false)
                   .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
-                  .map(renderFieldList({ isEditView: true, formObj, setFormObj }))}
+                  .filter(excludeFallback(formObj))
+                  .map(renderFieldList({ isEditView: true, formObj, setFormObj, activateFallback }))}
               </div>
             </div>
             <div className='flex w-full lg:mt-6'>
