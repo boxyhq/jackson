@@ -29,7 +29,8 @@ function BlocklyComponent(props) {
       toolbox: toolbox.current,
       readOnly: false,
       trashcan: true,
-      media: '/terminus/media/',
+      media: '/terminus/',
+      renderer: 'minimalist', // geras zelos thrasos minimalist
       move: {
         scrollbars: true,
         drag: true,

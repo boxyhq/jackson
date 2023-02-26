@@ -39,7 +39,7 @@
     "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'",
     "postcustom-install": "npm run prebuild",
     "postinstall": "npm run prebuild",
-    "prebuild": "(mkdir public/terminus || true) && cp -r node_modules/blockly/media public/terminus"
+    "prebuild": "(mkdir public/terminus || true) && cp -r node_modules/blockly/media/sprites.png public/terminus"
   },
   "dependencies": {
     "@boxyhq/react-ui": "file:sdk/ui/react",
