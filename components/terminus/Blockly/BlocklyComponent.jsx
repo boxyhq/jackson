@@ -30,7 +30,7 @@ function BlocklyComponent(props) {
       readOnly: false,
       trashcan: true,
       media: '/terminus/',
-      renderer: 'minimalist', // geras zelos thrasos minimalist
+      renderer: 'thrasos', // geras zelos thrasos minimalist
       move: {
         scrollbars: true,
         drag: true,
