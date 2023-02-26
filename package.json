@@ -36,10 +36,12 @@
     "test:e2e": "env-cmd -f .env.test.local playwright test",
     "test": "cd npm && npm run test",
     "custom-install": "rm -rf node_modules/@boxyhq/saml-jackson && rm -rf node_modules/@boxyhq/react-ui && npm install --install-links=false",
-    "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'"
+    "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'",
+    "postcustom-install": "npm run prebuild",
+    "postinstall": "npm run prebuild",
+    "prebuild": "(mkdir public/admin || true) && cp -r node_modules/blockly/media public/admin"
   },
   "dependencies": {
-    "@blockly/continuous-toolbox": "3.0.9",
     "@boxyhq/react-ui": "file:sdk/ui/react",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.16",

@@ -1,3 +1,4 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { GetServerSidePropsContext, NextPage } from 'next';
 import BlocklyComponent, { Block, Value, Field, Shadow } from '@components/terminus/Blockly';
 
@@ -49,5 +50,13 @@ const TerminusIndexPage: NextPage = () => {
     </div>
   );
 };
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
+}
 
 export default TerminusIndexPage;

@@ -20,6 +20,10 @@ function BlocklyComponent(props) {
   };
 
   useEffect(() => {
+    if (primaryWorkspace.current) {
+      return;
+    }
+
     const { initialXml, children, ...rest } = props;
     primaryWorkspace.current = Blockly.inject(blocklyDiv.current, {
       toolbox: toolbox.current,
