@@ -12,10 +12,10 @@ Blockly.setLocale(locale);
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
   const toolbox = useRef();
-  let primaryWorkspace = useRef();
+  const primaryWorkspace = useRef();
 
   const generateCode = () => {
-    var code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
+    const code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
     console.log(code);
   };
 
@@ -25,7 +25,7 @@ function BlocklyComponent(props) {
     }
 
     const { initialXml, children, ...rest } = props;
-    primaryWorkspace.current = Blockly.inject(blocklyDiv.current, {
+    primaryWorkspace.current = Blockly.inject(blocklyDiv.current as any, {
       toolbox: toolbox.current,
       readOnly: false,
       trashcan: true,
@@ -38,18 +38,18 @@ function BlocklyComponent(props) {
       },
       sounds: false,
       ...rest,
-    });
+    }) as any;
 
     if (initialXml) {
-      Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(initialXml), primaryWorkspace.current);
+      Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(initialXml), primaryWorkspace.current as any);
     }
   }, [primaryWorkspace, toolbox, blocklyDiv, props]);
 
   return (
     <React.Fragment>
       {/* <button onClick={generateCode}>Convert</button> */}
-      <div ref={blocklyDiv} className={styles.blocklyDiv} />
-      <div style={{ display: 'none' }} ref={toolbox}>
+      <div ref={blocklyDiv as any} className={styles.blocklyDiv} />
+      <div style={{ display: 'none' }} ref={toolbox as any}>
         {props.children}
       </div>
     </React.Fragment>

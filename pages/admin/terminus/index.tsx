@@ -3,6 +3,7 @@ import type { NextPage } from 'next';
 import BlocklyComponent, { Block } from '@components/terminus/Blockly';
 
 import '@components/terminus/blocks/customblocks';
+import '@components/terminus/blocks/generator';
 
 const TerminusIndexPage: NextPage = () => {
   return (
