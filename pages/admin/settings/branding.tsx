@@ -13,9 +13,10 @@ const Branding: NextPage = () => {
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [branding, setBranding] = useState<Branding>({
-    logoUrl: null,
-    pageTitle: null,
-    primaryColor: null,
+    logoUrl: '',
+    faviconUrl: '',
+    companyName: '',
+    primaryColor: '',
   });
 
   // Fetch settings
@@ -84,10 +85,7 @@ const Branding: NextPage = () => {
           <div className='flex flex-col space-y-3'>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>
-                  {t('branding_logo_url_label')}
-                  <span className='text-gray-400'>( {t('branding_logo_url_help')} )</span>
-                </span>
+                <span className='label-text'>{t('branding_logo_url_label')}</span>
               </label>
               <input
                 type='url'
@@ -95,37 +93,60 @@ const Branding: NextPage = () => {
                 className='input-bordered input'
                 onChange={onChange}
                 value={branding.logoUrl || ''}
+                placeholder='https://company.com/logo.png'
               />
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>
-                  {t('branding_page_title_label')}
-                  <span className='text-gray-400'>( {t('branding_page_title_help')} )</span>
-                </span>
+                <span className='label-text'>{t('branding_favicon_label')}</span>
+              </label>
+              <input
+                type='url'
+                id='faviconUrl'
+                className='input-bordered input'
+                onChange={onChange}
+                value={branding.faviconUrl || ''}
+                placeholder='https://company.com/favicon.ico'
+              />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>{t('branding_company_name_label')}</span>
               </label>
               <input
                 type='text'
-                id='pageTitle'
+                id='companyName'
                 className='input-bordered input'
                 onChange={onChange}
-                value={branding.pageTitle || ''}
+                value={branding.companyName || ''}
+                placeholder={t('branding_company_name_label')}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
-                <span className='label-text'>
-                  {t('branding_primary_color_label')}
-                  <span className='text-gray-400'>( {t('branding_primary_color_help')} )</span>
-                </span>
-              </label>
-              <input
-                type='color'
-                id='primaryColor'
-                className='input-bordered input'
-                onChange={onChange}
-                value={branding.primaryColor || ''}
-              />
+            <div className='flex justify-start gap-6'>
+              <div className='form-control'>
+                <label className='label'>
+                  <span className='label-text'>{t('branding_primary_color_label')}</span>
+                </label>
+                <input
+                  type='color'
+                  id='primaryColor'
+                  className='w-15 input-bordered h-10'
+                  onChange={onChange}
+                  value={branding.primaryColor || ''}
+                />
+              </div>
+              {/* <div className='form-control'>
+                <label className='label'>
+                  <span className='label-text'>{t('branding_primary_color_label')}</span>
+                </label>
+                <input
+                  type='color'
+                  id='primaryColor'
+                  className='input-bordered h-10 w-20'
+                  onChange={onChange}
+                  value={branding.primaryColor || ''}
+                />
+              </div> */}
             </div>
             <div>
               <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>

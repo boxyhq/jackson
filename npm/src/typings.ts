@@ -452,7 +452,8 @@ export type SetupLinkService = 'sso' | 'dsync';
 export type AdminPortalSettings = {
   branding: {
     logoUrl: string | null;
+    faviconUrl: string | null;
     primaryColor: string | null;
-    pageTitle: string | null;
+    companyName: string | null;
   };
 };

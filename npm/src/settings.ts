@@ -1,13 +1,5 @@
 import type { Storable, AdminPortalSettings } from './typings';
 
-const defaultSettings = {
-  branding: {
-    logoUrl: null,
-    pageTitle: null,
-    primaryColor: null,
-  },
-};
-
 export class SettingsController {
   private store: Storable;
   private storeKey = 'settings';
@@ -16,30 +8,40 @@ export class SettingsController {
     this.store = store;
   }
 
-  public async get() {
+  public async get(): Promise<AdminPortalSettings> {
     const settings: AdminPortalSettings = await this.store.get(this.storeKey);
 
-    return settings ? settings : defaultSettings;
+    // If no settings are found, return the default settings values
+    const defaultSettings = {
+      branding: {
+        logoUrl: null,
+        faviconUrl: null,
+        companyName: null,
+        primaryColor: null,
+      },
+    };
+
+    return settings ?? defaultSettings;
   }
 
   public async update(params: { branding: Partial<AdminPortalSettings['branding']> }) {
-    const { branding } = params;
-
     const settings = await this.get();
 
     const updatedSettings = {
       ...settings,
     };
 
+    const { branding } = params;
+
     // If branding is provided, update it
     if (branding) {
-      const { logoUrl, pageTitle, primaryColor } = branding;
-      const { branding: defaultBranding } = defaultSettings;
+      const { logoUrl, faviconUrl, companyName, primaryColor } = branding;
 
       updatedSettings.branding = {
-        logoUrl: logoUrl || defaultBranding.logoUrl,
-        pageTitle: pageTitle || defaultBranding.pageTitle,
-        primaryColor: primaryColor || defaultBranding.primaryColor,
+        logoUrl: logoUrl ?? null,
+        faviconUrl: faviconUrl ?? null,
+        companyName: companyName ?? null,
+        primaryColor: primaryColor ?? null,
       };
     }
 

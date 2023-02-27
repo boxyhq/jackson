@@ -9,6 +9,7 @@ import Loading from '@components/Loading';
 import useSetupLink from '@lib/ui/hooks/useSetupLink';
 import usePortalSettings from '@lib/ui/hooks/usePortalSettings';
 import { useTranslation } from 'next-i18next';
+import { hexToHSL } from '@lib/utils';
 
 export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation('common');
@@ -23,23 +24,28 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
     return <Loading />;
   }
 
+  const { branding } = settings || {};
+
   const title = setupLink?.service === 'sso' ? t('configure_sso') : t('configure_dsync');
-  const pageTitle = `${title} - ${settings?.branding.pageTitle || 'BoxyHQ'}`;
-  const logoUrl = settings?.branding.logoUrl || BoxyHQLogo;
-  // const faviconUrl = settings?.branding.logoUrl || '/favicon.ico';
 
   return (
     <>
       <Head>
-        <title>{pageTitle}</title>
-        <link rel='icon' href='/favicon.ico' />
+        <title>{`${title} - ${branding?.companyName || 'BoxyHQ'}`}</title>
+        <link rel='icon' href={branding?.faviconUrl || '/favicon.ico'} />
       </Head>
+      <style>{`:root { --p: ${hexToHSL(branding?.primaryColor || '#25c2a0')}; }`}</style>
       <div className='flex flex-1 flex-col'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <div className='flex flex-shrink-0 items-center px-4'>
             <Link href={`/setup/${token}`}>
               <div className='flex items-center'>
-                <Image src={logoUrl} alt={pageTitle} width={42} height={42} />
+                <Image
+                  src={branding?.logoUrl || BoxyHQLogo}
+                  alt={branding?.companyName || 'BoxyHQ'}
+                  width={42}
+                  height={42}
+                />
                 <span className='ml-4 text-xl font-bold text-gray-900'>{title}</span>
               </div>
             </Link>

@@ -156,13 +156,11 @@
   "email_required": "Email is required",
   "settings_branding_description": "Customize the look and feel of your portal. You can change the logo, page title and primary color. These values will be used in the Setup Links pages.",
   "settings_updated_successfully": "Settings updated successfully",
-  "settings_branding_title": "Customize Branding",
+  "settings_branding_title": "Portal Customization",
   "branding_logo_url_label": "Logo URL",
-  "branding_logo_url_help": "URL to a logo",
-  "branding_page_title_label": "Page Title",
-  "branding_page_title_help": "It will be used as browser tab title",
+  "branding_favicon_label": "Favicon URL",
+  "branding_company_name_label": "Company Name",
   "branding_primary_color_label": "Primary Color",
-  "branding_primary_color_help": "It will be used for the buttons, links, etc.",
   "configure_sso": "Configure Single Sign-On",
   "configure_dsync": "Configure Directory Sync"
 }
