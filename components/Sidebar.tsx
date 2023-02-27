@@ -119,7 +119,6 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     <>
       {/* Sidebar for mobile */}
       <div
-        style={{ zIndex: 1000 }}
         className={classNames('relative z-40 md:hidden', { hidden: isOpen })}
         role='dialog'
         aria-modal='true'>
@@ -161,7 +160,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       </div>
 
       {/* Sidebar for desktop */}
-      <div style={{ zIndex: 1000 }} className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
+      <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
         <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
           <div className='flex flex-shrink-0 items-center px-4'>
             <Link href='/' className='flex items-center'>

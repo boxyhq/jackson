@@ -1,6 +1,7 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { NextPage } from 'next';
 import BlocklyComponent, { Block } from '@components/terminus/Blockly';
+import { ButtonPrimary } from '@components/ButtonPrimary';
 
 import '@components/terminus/blocks/customblocks';
 import '@components/terminus/blocks/generator';
@@ -8,6 +9,23 @@ import '@components/terminus/blocks/generator';
 const TerminusIndexPage: NextPage = () => {
   return (
     <div>
+      <div className='mb-2" -mx-3 flex flex-wrap'>
+        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
+          <ButtonPrimary onClick={() => {}}>Publish Model</ButtonPrimary>
+        </div>
+        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
+          <ButtonPrimary onClick={() => {}}>Retrieve Model</ButtonPrimary>
+        </div>
+        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
+          <input
+            type='text'
+            className='input-bordered input h-10 w-full'
+            id='productName'
+            defaultValue='productDemo'
+          />
+        </div>
+      </div>
+
       <BlocklyComponent initialXml={'<xml xmlns="http://www.w3.org/1999/xhtml"></xml>'}>
         <Block type='data_object_wrapper' />
         <Block type='data_object_wrapper_with_encryption' />
