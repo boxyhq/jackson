@@ -423,125 +423,168 @@ export class OAuthController implements IOAuthController {
   public async samlResponse(
     body: SAMLResponsePayload
   ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }> {
+    let connection: SAMLSSORecord | undefined;
+    let rawResponse: string | undefined;
+    let sessionId: string;
+    let session: any;
+    let isIdPFlow: boolean;
+    let isSAMLFederated: boolean;
+    let validateOpts: { thumbprint: string; audience: string; privateKey: string };
+    let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
 
-    const isIdPFlow = !RelayState.startsWith(relayStatePrefix);
+    try {
+      isIdPFlow = !RelayState.startsWith(relayStatePrefix);
 
-    // IdP is disabled so block the request
-    if (!this.opts.idpEnabled && isIdPFlow) {
-      // IdP login is disabled so block the request
-      throw new JacksonError(
-        'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
-        403
-      );
-    }
+      // IdP is disabled so block the request
+      if (!this.opts.idpEnabled && isIdPFlow) {
+        // IdP login is disabled so block the request
+        throw new JacksonError(
+          'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
+          403
+        );
+      }
 
-    const sessionId = RelayState.replace(relayStatePrefix, '');
-    const rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
-    const issuer = saml.parseIssuer(rawResponse);
+      sessionId = RelayState.replace(relayStatePrefix, '');
+      rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
+      const issuer = saml.parseIssuer(rawResponse);
 
-    if (!issuer) {
-      throw new JacksonError('Issuer not found.', 403);
-    }
+      if (!issuer) {
+        throw new JacksonError('Issuer not found.', 403);
+      }
 
-    const connections: SAMLSSORecord[] = await this.connectionStore.getByIndex({
-      name: IndexNames.EntityID,
-      value: issuer,
-    });
-
-    if (!connections || connections.length === 0) {
-      throw new JacksonError('SAML connection not found.', 403);
-    }
-
-    const session = sessionId ? await this.sessionStore.get(sessionId) : null;
-
-    if (!isIdPFlow && !session) {
-      throw new JacksonError('Unable to validate state from the origin request.', 403);
-    }
-
-    const isSAMLFederated = session && 'samlFederated' in session;
-    const isSPFflow = !isIdPFlow && !isSAMLFederated;
-
-    let connection: SAMLSSORecord | undefined;
-
-    // IdP initiated SSO flow
-    if (isIdPFlow) {
-      const response = await this.samlHandler.resolveConnection({
-        idp_hint,
-        authFlow: 'idp-initiated',
-        entityId: issuer,
-        originalParams: {
-          SAMLResponse,
-        },
+      const connections: SAMLSSORecord[] = await this.connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: issuer,
       });
 
-      // Redirect to the product selection page
-      if ('postForm' in response) {
-        return {
-          app_select_form: response.postForm,
-        };
+      if (!connections || connections.length === 0) {
+        throw new JacksonError('SAML connection not found.', 403);
       }
 
-      // Found a connection
-      if ('connection' in response) {
-        connection = response.connection as SAMLSSORecord;
+      session = sessionId ? await this.sessionStore.get(sessionId) : null;
+
+      if (!isIdPFlow && !session) {
+        throw new JacksonError('Unable to validate state from the origin request.', 403);
       }
+
+      isSAMLFederated = session && 'samlFederated' in session;
+      const isSPFflow = !isIdPFlow && !isSAMLFederated;
+
+      // IdP initiated SSO flow
+      if (isIdPFlow) {
+        const response = await this.samlHandler.resolveConnection({
+          idp_hint,
+          authFlow: 'idp-initiated',
+          entityId: issuer,
+          originalParams: {
+            SAMLResponse,
+          },
+        });
+
+        // Redirect to the product selection page
+        if ('postForm' in response) {
+          return {
+            app_select_form: response.postForm,
+          };
+        }
+
+        // Found a connection
+        if ('connection' in response) {
+          connection = response.connection as SAMLSSORecord;
+        }
+      }
+
+      // SP initiated SSO flow
+      // Resolve if there are multiple matches for SP login
+      if (isSPFflow) {
+        connection = connections.filter((c) => {
+          return (
+            c.clientID === session.requested.client_id ||
+            (c.tenant === session.requested.tenant && c.product === session.requested.product)
+          );
+        })[0];
+      }
+
+      if (!connection) {
+        connection = connections[0];
+      }
+
+      if (!connection) {
+        throw new JacksonError('SAML connection not found.', 403);
+      }
+
+      if (
+        session &&
+        session.redirect_uri &&
+        !allowed.redirect(session.redirect_uri, connection.redirectUrl as string[])
+      ) {
+        throw new JacksonError('Redirect URL is not allowed.', 403);
+      }
+
+      const { privateKey } = await getDefaultCertificate();
+
+      validateOpts = {
+        thumbprint: `${connection?.idpMetadata.thumbprint}`,
+        audience: `${this.opts.samlAudience}`,
+        privateKey,
+      };
+
+      if (session && session.id) {
+        validateOpts['inResponseTo'] = session.id;
+      }
+
+      redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
+    } catch (err: unknown) {
+      // Trace the error
+      await this.samlTracer.saveTrace({
+        error: getErrorMessage(err),
+        context: {
+          samlResponse: rawResponse,
+          tenant: connection?.tenant || '',
+          product: connection?.product || '',
+          clientID: connection?.clientID || '',
+        },
+      });
+      throw err; // Rethrow the error
     }
-
-    // SP initiated SSO flow
-    // Resolve if there are multiple matches for SP login
-    if (isSPFflow) {
-      connection = connections.filter((c) => {
-        return (
-          c.clientID === session.requested.client_id ||
-          (c.tenant === session.requested.tenant && c.product === session.requested.product)
-        );
-      })[0];
-    }
-
-    if (!connection) {
-      connection = connections[0];
-    }
-
-    if (!connection) {
-      throw new JacksonError('SAML connection not found.', 403);
-    }
-
-    if (
-      session &&
-      session.redirect_uri &&
-      !allowed.redirect(session.redirect_uri, connection.redirectUrl as string[])
-    ) {
-      throw new JacksonError('Redirect URL is not allowed.', 403);
-    }
-
-    const { privateKey } = await getDefaultCertificate();
-
-    const validateOpts = {
-      thumbprint: `${connection.idpMetadata.thumbprint}`,
-      audience: `${this.opts.samlAudience}`,
-      privateKey,
-    };
-
-    if (session && session.id) {
-      validateOpts['inResponseTo'] = session.id;
-    }
-
-    const redirect_uri = (session && session.redirect_uri) || connection.defaultRedirectUrl;
-
-    let profile: SAMLProfile | null = null;
 
     try {
+      let profile: SAMLProfile | null = null;
+
       profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
+
+      // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
+      if (isSAMLFederated) {
+        const { responseForm } = await this.samlHandler.createSAMLResponse({ profile, session });
+
+        await this.sessionStore.delete(sessionId);
+
+        return { responseForm };
+      }
+
+      const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);
+
+      const params = {
+        code,
+      };
+
+      if (session && session.state) {
+        params['state'] = session.state;
+      }
+
+      await this.sessionStore.delete(sessionId);
+
+      return { redirect_url: redirect.success(redirect_uri, params) };
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
-      // If tracer enabled, save the error to DB
+      // Trace the error
       const traceId = await this.samlTracer.saveTrace({
         error: error_description,
         context: {
           samlResponse: rawResponse,
-          tenant: connection.tenant as string,
-          product: connection.product as string,
+          tenant: connection.tenant,
+          product: connection.product,
           clientID: connection.clientID,
         },
       });
@@ -555,29 +598,6 @@ export class OAuthController implements IOAuthController {
         }),
       };
     }
-
-    // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
-    if (isSAMLFederated) {
-      const { responseForm } = await this.samlHandler.createSAMLResponse({ profile, session });
-
-      await this.sessionStore.delete(sessionId);
-
-      return { responseForm };
-    }
-
-    const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);
-
-    const params = {
-      code,
-    };
-
-    if (session && session.state) {
-      params['state'] = session.state;
-    }
-
-    await this.sessionStore.delete(sessionId);
-
-    return { redirect_url: redirect.success(redirect_uri, params) };
   }
 
   public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
