@@ -16,6 +16,7 @@ const unAuthenticatedApiRoutes = [
   '/api/scim/v2.0/**',
   '/api/well-known/**',
   '/api/setup/**',
+  '/api/settings',
 ];
 
 export async function middleware(req: NextRequest) {
