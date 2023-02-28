@@ -545,7 +545,7 @@ export class OAuthController implements IOAuthController {
           tenant: connection?.tenant || '',
           product: connection?.product || '',
           clientID: connection?.clientID || '',
-          issuer,
+          issuer: issuer || '',
         },
       });
       throw err; // Rethrow the error
