@@ -260,7 +260,7 @@ export class OAuthController implements IOAuthController {
         });
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
-        // If tracer enabled, save the error to DB
+        // Save the error trace
         const traceId = await this.samlTracer.saveTrace({
           error: error_description,
           context: {
@@ -537,7 +537,7 @@ export class OAuthController implements IOAuthController {
 
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
-      // Trace the error
+      // Save the error trace
       await this.samlTracer.saveTrace({
         error: getErrorMessage(err),
         context: {
