@@ -128,7 +128,7 @@ export const controllers = async (
     const connections = await loadConnection(preLoadedConnection);
 
     for (const connection of connections) {
-      if ('oidcDiscoveryUrl' in connection) {
+      if ('oidcDiscoveryUrl' in connection || 'oidcMetadata' in connection) {
         await connectionAPIController.createOIDCConnection(connection);
       } else {
         await connectionAPIController.createSAMLConnection(connection);

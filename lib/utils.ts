@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import micromatch from 'micromatch';
+import type { OIDCSSOConnectionWithDiscoveryUrl, OIDCSSOConnectionWithMetadata } from '@boxyhq/saml-jackson';
+import { JacksonError } from 'npm/src/controller/error';
 
 export const validateEmailWithACL = (email: string) => {
   const NEXTAUTH_ACL = process.env.NEXTAUTH_ACL || undefined;
@@ -41,8 +43,30 @@ export const bodyParser = (req: NextApiRequest): any => {
 
 export const strategyChecker = (req: NextApiRequest): { isSAML: boolean; isOIDC: boolean } => {
   const isSAML = 'rawMetadata' in req.body || 'encodedRawMetadata' in req.body || 'metadataUrl' in req.body;
-  const isOIDC = 'oidcDiscoveryUrl' in req.body;
+  const isOIDC = 'oidcDiscoveryUrl' in req.body || 'oidcMetadata' in req.body;
   return { isSAML, isOIDC };
+};
+
+// The oidcMetadata JSON will be parsed here
+export const oidcMetadataParse = (
+  body:
+    | (
+        | OIDCSSOConnectionWithDiscoveryUrl
+        | (Omit<OIDCSSOConnectionWithMetadata, 'oidcMetadata'> & { oidcMetadata: string })
+      ) & {
+        clientID: string;
+        clientSecret: string;
+      }
+) => {
+  if (!body.oidcDiscoveryUrl && typeof body.oidcMetadata === 'string') {
+    try {
+      const oidcMetadata = JSON.parse(body.oidcMetadata);
+      return { ...body, oidcMetadata };
+    } catch (err) {
+      throw new JacksonError('Could not parse OIDC Provider metadata, expected a valid JSON string', 400);
+    }
+  }
+  return body;
 };
 
 // Hex to HSL converter
@@ -88,4 +112,4 @@ export const hexToHSL = (H: string) => {
   l = +(l * 100).toFixed(1);
 
   return `${h} ${s}% ${l}%`;
-};
+  }
