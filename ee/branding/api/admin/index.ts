@@ -1,7 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { strings } from '@lib/strings';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { checkLicense } = await jackson();
+
+  if (!(await checkLicense())) {
+    return res.status(404).json({
+      error: {
+        message: strings['enterise_license_not_found'],
+      },
+    });
+  }
+
   const { method } = req;
 
   try {
