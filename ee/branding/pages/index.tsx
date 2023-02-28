@@ -129,34 +129,20 @@ const Branding: NextPage = () => {
                 <span className='label-text-alt'>{t('branding_company_name_alt')}</span>
               </label>
             </div>
-            <div className='flex justify-start gap-6'>
-              <div className='form-control'>
-                <label className='label'>
-                  <span className='label-text'>{t('branding_primary_color_label')}</span>
-                </label>
-                <input
-                  type='color'
-                  id='primaryColor'
-                  className=''
-                  onChange={onChange}
-                  value={branding.primaryColor || ''}
-                />
-                <label className='label'>
-                  <span className='label-text-alt'>{t('branding_primary_color_alt')}</span>
-                </label>
-              </div>
-              {/* <div className='form-control'>
-                <label className='label'>
-                  <span className='label-text'>{t('branding_primary_color_label')}</span>
-                </label>
-                <input
-                  type='color'
-                  id='primaryColor'
-                  className='input-bordered h-10 w-20'
-                  onChange={onChange}
-                  value={branding.primaryColor || ''}
-                />
-              </div> */}
+            <div className='form-control'>
+              <label className='label'>
+                <span className='label-text'>{t('branding_primary_color_label')}</span>
+              </label>
+              <input
+                type='color'
+                id='primaryColor'
+                className=''
+                onChange={onChange}
+                value={branding.primaryColor || ''}
+              />
+              <label className='label'>
+                <span className='label-text-alt'>{t('branding_primary_color_alt')}</span>
+              </label>
             </div>
             <div className='mt-5'>
               <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
