@@ -82,64 +82,31 @@ export class OAuthController implements IOAuthController {
       forceAuthn = 'false',
     } = body;
 
-    const tenant = 'tenant' in body ? body.tenant : undefined;
-    const product = 'product' in body ? body.product : undefined;
-    const access_type = 'access_type' in body ? body.access_type : undefined;
-    const resource = 'resource' in body ? body.resource : undefined;
-
-    let requestedTenant = tenant;
-    let requestedProduct = product;
-
-    metrics.increment('oauthAuthorize');
-
-    if (!redirect_uri) {
-      throw new JacksonError('Please specify a redirect URL.', 400);
-    }
-
+    let requestedTenant;
+    let requestedProduct;
+    let requestedScopes: string[];
+    let requestedOIDCFlow: boolean;
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
-    const requestedScopes = getScopeValues(scope);
-    const requestedOIDCFlow = requestedScopes.includes('openid');
 
-    if (tenant && product) {
-      const response = await this.samlHandler.resolveConnection({
-        tenant,
-        product,
-        idp_hint,
-        authFlow: 'oauth',
-        originalParams: { ...body },
-      });
+    try {
+      const tenant = 'tenant' in body ? body.tenant : undefined;
+      const product = 'product' in body ? body.product : undefined;
+      const access_type = 'access_type' in body ? body.access_type : undefined;
+      const resource = 'resource' in body ? body.resource : undefined;
 
-      if ('redirectUrl' in response) {
-        return {
-          redirect_url: response.redirectUrl,
-        };
+      requestedTenant = tenant;
+      requestedProduct = product;
+
+      metrics.increment('oauthAuthorize');
+
+      if (!redirect_uri) {
+        throw new JacksonError('Please specify a redirect URL.', 400);
       }
 
-      if ('connection' in response) {
-        connection = response.connection;
-      }
-    } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
-      // if tenant and product are encoded in the client_id then we parse it and check for the relevant connection(s)
-      let sp = getEncodedTenantProduct(client_id);
+      requestedScopes = getScopeValues(scope);
+      requestedOIDCFlow = requestedScopes.includes('openid');
 
-      if (!sp && access_type) {
-        sp = getEncodedTenantProduct(access_type);
-      }
-      if (!sp && resource) {
-        sp = getEncodedTenantProduct(resource);
-      }
-      if (!sp && requestedScopes) {
-        const encodedParams = requestedScopes.find((scope) => scope.includes('=') && scope.includes('&')); // for now assume only one encoded param i.e. for tenant/product
-        if (encodedParams) {
-          sp = getEncodedTenantProduct(encodedParams);
-        }
-      }
-      if (sp && sp.tenant && sp.product) {
-        const { tenant, product } = sp;
-
-        requestedTenant = tenant;
-        requestedProduct = product;
-
+      if (tenant && product) {
         const response = await this.samlHandler.resolveConnection({
           tenant,
           product,
@@ -157,54 +124,113 @@ export class OAuthController implements IOAuthController {
         if ('connection' in response) {
           connection = response.connection;
         }
-      } else {
-        connection = await this.connectionStore.get(client_id);
-        if (connection) {
-          requestedTenant = connection.tenant;
-          requestedProduct = connection.product;
+      } else if (client_id && client_id !== '' && client_id !== 'undefined' && client_id !== 'null') {
+        // if tenant and product are encoded in the client_id then we parse it and check for the relevant connection(s)
+        let sp = getEncodedTenantProduct(client_id);
+
+        if (!sp && access_type) {
+          sp = getEncodedTenantProduct(access_type);
         }
+        if (!sp && resource) {
+          sp = getEncodedTenantProduct(resource);
+        }
+        if (!sp && requestedScopes) {
+          const encodedParams = requestedScopes.find((scope) => scope.includes('=') && scope.includes('&')); // for now assume only one encoded param i.e. for tenant/product
+          if (encodedParams) {
+            sp = getEncodedTenantProduct(encodedParams);
+          }
+        }
+        if (sp && sp.tenant && sp.product) {
+          const { tenant, product } = sp;
+
+          requestedTenant = tenant;
+          requestedProduct = product;
+
+          const response = await this.samlHandler.resolveConnection({
+            tenant,
+            product,
+            idp_hint,
+            authFlow: 'oauth',
+            originalParams: { ...body },
+          });
+
+          if ('redirectUrl' in response) {
+            return {
+              redirect_url: response.redirectUrl,
+            };
+          }
+
+          if ('connection' in response) {
+            connection = response.connection;
+          }
+        } else {
+          connection = await this.connectionStore.get(client_id);
+          if (connection) {
+            requestedTenant = connection.tenant;
+            requestedProduct = connection.product;
+          }
+        }
+      } else {
+        throw new JacksonError('You need to specify client_id or tenant & product', 403);
       }
-    } else {
-      throw new JacksonError('You need to specify client_id or tenant & product', 403);
+
+      if (!connection) {
+        throw new JacksonError('IdP connection not found.', 403);
+      }
+
+      if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
+        throw new JacksonError('Redirect URL is not allowed.', 403);
+      }
+    } catch (err: unknown) {
+      const error_description = getErrorMessage(err);
+      // Save the error trace
+      await this.samlTracer.saveTrace({
+        error: error_description,
+        context: {
+          tenant: requestedTenant || '',
+          product: requestedProduct || '',
+          clientID: connection?.clientID || '',
+        },
+      });
+      throw err;
     }
 
-    if (!connection) {
-      throw new JacksonError('IdP connection not found.', 403);
-    }
-
-    if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
-      throw new JacksonError('Redirect URL is not allowed.', 403);
-    }
-
-    if (
+    const isMissingJWTKeysForOIDCFlow =
       requestedOIDCFlow &&
-      (!this.opts.openid?.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys))
-    ) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'server_error',
-          error_description:
-            'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded',
-          redirect_uri,
-        }),
-      };
-    }
+      (!this.opts.openid?.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys));
 
-    if (!state) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'invalid_request',
-          error_description: 'Please specify a state to safeguard against XSRF attacks',
-          redirect_uri,
-        }),
-      };
-    }
+    const oAuthClientReqError = !state || response_type !== 'code';
+    if (isMissingJWTKeysForOIDCFlow || oAuthClientReqError) {
+      let error, error_description;
+      if (isMissingJWTKeysForOIDCFlow) {
+        error = 'server_error';
+        error_description =
+          'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded';
+      }
 
-    if (response_type !== 'code') {
+      if (!state) {
+        error = 'invalid_request';
+        error_description = 'Please specify a state to safeguard against XSRF attacks';
+      }
+
+      if (response_type !== 'code') {
+        error = 'unsupported_response_type';
+        error_description = 'Only Authorization Code grant is supported';
+      }
+
+      // Save the error trace
+      const traceId = await this.samlTracer.saveTrace({
+        error: error_description,
+        context: {
+          tenant: requestedTenant as string,
+          product: requestedProduct as string,
+          clientID: connection.clientID,
+        },
+      });
       return {
         redirect_url: OAuthErrorResponse({
-          error: 'unsupported_response_type',
-          error_description: 'Only Authorization Code grant is supported',
+          error,
+          error_description: traceId ? `${traceId}: ${error_description}` : error_description,
           redirect_uri,
           state,
         }),
@@ -222,40 +248,50 @@ export class OAuthController implements IOAuthController {
     const relayState = relayStatePrefix + sessionId;
     // SAML connection: SAML request will be constructed here
     let samlReq;
-    if ('idpMetadata' in connection) {
-      const { sso } = connection.idpMetadata;
-
-      if ('redirectUrl' in sso) {
-        // HTTP Redirect binding
-        ssoUrl = sso.redirectUrl;
-      } else if ('postUrl' in sso) {
-        // HTTP-POST binding
-        ssoUrl = sso.postUrl;
-        post = true;
-      } else {
-        // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
-        return {
-          redirect_url: OAuthErrorResponse({
-            error: 'invalid_request',
-            error_description: 'SAML binding could not be retrieved',
-            redirect_uri,
-            state,
-          }),
-        };
-      }
-
-      const cert = await getDefaultCertificate();
-
+    if (connectionIsSAML) {
       try {
+        const { sso } = (connection as SAMLSSORecord).idpMetadata;
+
+        if ('redirectUrl' in sso) {
+          // HTTP Redirect binding
+          ssoUrl = sso.redirectUrl;
+        } else if ('postUrl' in sso) {
+          // HTTP-POST binding
+          ssoUrl = sso.postUrl;
+          post = true;
+        } else {
+          // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
+          const error_description = 'SAML binding could not be retrieved';
+          // Save the error trace
+          const traceId = await this.samlTracer.saveTrace({
+            error: error_description,
+            context: {
+              tenant: requestedTenant as string,
+              product: requestedProduct as string,
+              clientID: connection.clientID,
+            },
+          });
+          return {
+            redirect_url: OAuthErrorResponse({
+              error: 'invalid_request',
+              error_description: traceId ? `${traceId}: ${error_description}` : error_description,
+              redirect_uri,
+              state,
+            }),
+          };
+        }
+
+        const cert = await getDefaultCertificate();
+
         samlReq = saml.request({
           ssoUrl,
           entityID: this.opts.samlAudience!,
           callbackUrl: this.opts.externalUrl + this.opts.samlPath,
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
-          forceAuthn: forceAuthn === 'true' ? true : !!connection.forceAuthn,
-          identifierFormat: connection.identifierFormat
-            ? connection.identifierFormat
+          forceAuthn: forceAuthn === 'true' ? true : !!(connection as SAMLSSORecord).forceAuthn,
+          identifierFormat: (connection as SAMLSSORecord).identifierFormat
+            ? (connection as SAMLSSORecord).identifierFormat
             : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
         });
       } catch (err: unknown) {
@@ -284,7 +320,7 @@ export class OAuthController implements IOAuthController {
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
     let oidcNonce: string | undefined;
-    if (connectionIsOIDC && 'oidcProvider' in connection) {
+    if (connectionIsOIDC) {
       if (!this.opts.oidcPath) {
         return {
           redirect_url: OAuthErrorResponse({
@@ -295,7 +331,7 @@ export class OAuthController implements IOAuthController {
           }),
         };
       }
-      const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
+      const { discoveryUrl, metadata, clientId, clientSecret } = (connection as OIDCSSORecord).oidcProvider;
       try {
         const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
         const oidcClient = new oidcIssuer.Client({
@@ -409,10 +445,20 @@ export class OAuthController implements IOAuthController {
         };
       }
     } catch (err: unknown) {
+      const error_description = getErrorMessage(err);
+      // Save the error trace
+      const traceId = await this.samlTracer.saveTrace({
+        error: error_description,
+        context: {
+          tenant: requestedTenant as string,
+          product: requestedProduct as string,
+          clientID: connection.clientID,
+        },
+      });
       return {
         redirect_url: OAuthErrorResponse({
           error: 'server_error',
-          error_description: getErrorMessage(err),
+          error_description: traceId ? `${traceId}: ${error_description}` : error_description,
           redirect_uri,
           state,
         }),
