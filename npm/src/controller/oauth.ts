@@ -589,6 +589,10 @@ export class OAuthController implements IOAuthController {
         },
       });
 
+      if (isSAMLFederated) {
+        throw err;
+      }
+
       return {
         redirect_url: OAuthErrorResponse({
           error: 'access_denied',
