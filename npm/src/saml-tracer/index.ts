@@ -21,22 +21,26 @@ class SAMLTracer {
   }
 
   public async saveTrace(payload: SAMLTrace) {
-    const { context } = payload;
-    // Friendly trace id
-    const traceId: string = await generateMnemonic();
-    // If timestamp present in payload use that value, else generate the current timestamp
-    const timestamp = typeof payload.timestamp === 'number' ? payload.timestamp : Date.now();
-    const traceValue: Trace = { ...payload, traceId, timestamp };
-    await this.tracerStore.put(
-      traceId,
-      traceValue,
-      {
-        name: IndexNames.TenantProduct,
-        value: keyFromParts(context.tenant, context.product),
-      },
-      { name: IndexNames.SSOClientID, value: context.clientID }
-    );
-    return traceId;
+    try {
+      const { context } = payload;
+      // Friendly trace id
+      const traceId: string = await generateMnemonic();
+      // If timestamp present in payload use that value, else generate the current timestamp
+      const timestamp = typeof payload.timestamp === 'number' ? payload.timestamp : Date.now();
+      const traceValue: Trace = { ...payload, traceId, timestamp };
+      await this.tracerStore.put(
+        traceId,
+        traceValue,
+        {
+          name: IndexNames.TenantProduct,
+          value: keyFromParts(context.tenant, context.product),
+        },
+        { name: IndexNames.SSOClientID, value: context.clientID }
+      );
+      return traceId;
+    } catch (err: unknown) {
+      console.error(`Failed to save trace`, err);
+    }
   }
 
   public async getByTraceId(traceId: string) {

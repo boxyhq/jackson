@@ -29,7 +29,7 @@ tap.test('SAMLTracer', async () => {
     // check if returned traceId from save operation is same as the one in the retrieved record
     t.equal(traces[0].traceId, traceId);
     //cleanup
-    await samlTracer.tracerStore.delete(traceId);
+    traceId && (await samlTracer.tracerStore.delete(traceId));
   });
 
   tap.test('calling cleanUpStaleTraces cleans traces older than 1 week', async (t) => {
