@@ -427,6 +427,7 @@ export class OAuthController implements IOAuthController {
     let rawResponse: string | undefined;
     let sessionId: string;
     let session: any;
+    let issuer: string | undefined;
     let isIdPFlow: boolean;
     let isSAMLFederated: boolean;
     let validateOpts: { thumbprint: string; audience: string; privateKey: string };
@@ -447,7 +448,7 @@ export class OAuthController implements IOAuthController {
 
       sessionId = RelayState.replace(relayStatePrefix, '');
       rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
-      const issuer = saml.parseIssuer(rawResponse);
+      issuer = saml.parseIssuer(rawResponse);
 
       if (!issuer) {
         throw new JacksonError('Issuer not found.', 403);
@@ -544,14 +545,14 @@ export class OAuthController implements IOAuthController {
           tenant: connection?.tenant || '',
           product: connection?.product || '',
           clientID: connection?.clientID || '',
+          issuer,
         },
       });
       throw err; // Rethrow the error
     }
+    let profile: SAMLProfile | null = null;
 
     try {
-      let profile: SAMLProfile | null = null;
-
       profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
 
       // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
@@ -586,6 +587,8 @@ export class OAuthController implements IOAuthController {
           tenant: connection.tenant,
           product: connection.product,
           clientID: connection.clientID,
+          issuer,
+          profile,
         },
       });
 
