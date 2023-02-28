@@ -9,15 +9,35 @@ import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
 import { hexToHSL } from '@lib/utils';
+import { branding as defaultBranding } from '@lib/settings';
+import Image from 'next/image';
 
 export default function ChooseIdPConnection({
   connections,
   SAMLResponse,
   requestType,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const { branding } = usePortalBranding();
+  const { t } = useTranslation('common');
+
+  const logoUrl = branding?.logoUrl || defaultBranding.logoUrl;
+  const faviconUrl = branding?.faviconUrl || defaultBranding.faviconUrl;
+  const primaryColor = hexToHSL(branding?.primaryColor || defaultBranding.primaryColor);
+  const companyName = branding?.companyName || defaultBranding.companyName;
+  const title = requestType === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
+  const pageTitle = `${title} - ${companyName}`;
+
   return (
     <div className='mx-auto my-28 w-[500px]'>
       <div className='mx-5 flex flex-col space-y-10 rounded border border-gray-300 p-10'>
+        <Head>
+          <title>{pageTitle}</title>
+          <link rel='icon' href={faviconUrl} />
+        </Head>
+        <style>{`:root { --p: ${primaryColor}; }`}</style>
+        <div className='flex justify-center'>
+          <Image src={logoUrl} alt={companyName} width={50} height={50} />
+        </div>
         {requestType === 'sp-initiated' ? (
           <IdpSelector connections={connections} />
         ) : (
@@ -30,26 +50,16 @@ export default function ChooseIdPConnection({
 
 const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORecord)[] }) => {
   const router = useRouter();
-  const { branding } = usePortalBranding();
+  const { t } = useTranslation('common');
 
   // SP initiated SSO: Redirect to the same path with idp_hint set to the selected connection clientID
   const connectionSelected = (clientID: string) => {
     return router.push(`${router.asPath}&idp_hint=${clientID}`);
   };
 
-  const title = 'Select an Identity Provider to continue';
-  const pageTitle = `${title} - ${branding?.companyName || 'BoxyHQ'}`;
-  const faviconUrl = branding?.faviconUrl || '/favicon.ico';
-  const primaryColor = hexToHSL(branding?.primaryColor || '#25c2a0');
-
   return (
     <>
-      <Head>
-        <title>{pageTitle}</title>
-        <link rel='icon' href={faviconUrl} />
-      </Head>
-      <style>{`:root { --p: ${primaryColor}; }`}</style>
-      <h3 className='text-center text-xl font-bold'>{title}</h3>
+      <h3 className='text-center text-xl font-bold'>{t('select_an_idp')}</h3>
       <ul className='flex flex-col space-y-5'>
         {connections.map((connection) => {
           const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
