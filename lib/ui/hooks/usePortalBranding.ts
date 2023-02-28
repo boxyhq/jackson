@@ -4,7 +4,7 @@ import { fetcher } from '@lib/ui/utils';
 import type { AdminPortalBranding } from '@boxyhq/saml-jackson';
 
 const usePortalBranding = () => {
-  const url = `/api/branding`;
+  const url = '/api/branding';
 
   const { data, error, isLoading } = useSWR<ApiSuccess<AdminPortalBranding>, ApiError>(url, fetcher);
 
