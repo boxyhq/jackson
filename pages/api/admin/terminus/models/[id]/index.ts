@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
-
-import type { Project } from 'types/retraced';
+import { terminusOptions } from '@lib/env';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -20,15 +19,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-const CONF_PROXY_X_ACCESS_TOKEN = 'adminAPIKey1';
+const getTerminusUrl = (id) => {
+  return `${terminusOptions.hostUrl}/v1/admin/${id}/model`;
+};
 
 const getModel = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
 
-  const { data } = await axios.get<any>(`http://localhost:3002/v1/admin/${id}/model`, {
+  const { data } = await axios.get<any>(getTerminusUrl(id), {
     headers: {
-      Authorization: `token=${CONF_PROXY_X_ACCESS_TOKEN}`,
-      'x-access-token': CONF_PROXY_X_ACCESS_TOKEN,
+      Authorization: `token=${terminusOptions.adminToken}`, // TODO: Implement this on terminus
+      'x-access-token': terminusOptions.adminToken, // TODO: Remove this
     },
   });
 
@@ -41,10 +42,10 @@ const getModel = async (req: NextApiRequest, res: NextApiResponse) => {
 const saveModel = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
 
-  const { data } = await axios.post<any>(`http://localhost:3002/v1/admin/${id}/model`, req.body, {
+  const { data } = await axios.post<any>(getTerminusUrl(id), req.body, {
     headers: {
-      Authorization: `token=${CONF_PROXY_X_ACCESS_TOKEN}`,
-      'x-access-token': CONF_PROXY_X_ACCESS_TOKEN,
+      Authorization: `token=${terminusOptions.adminToken}`, // TODO: Implement this on terminus
+      'x-access-token': terminusOptions.adminToken, // TODO: Remove this
     },
   });
 

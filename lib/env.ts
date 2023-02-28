@@ -18,9 +18,15 @@ if (process.env.DB_SSL === 'true') {
 
 // Retraced
 const retraced = {
-  hostUrl: process.env.RETRACED_HOST_URL,
-  externalUrl: process.env.RETRACED_EXTERNAL_URL || process.env.RETRACED_HOST_URL,
-  adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
+  hostUrl: process.env.RETRACED_HOST_URL || null,
+  externalUrl: process.env.RETRACED_EXTERNAL_URL || process.env.RETRACED_HOST_URL || null,
+  adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN || null,
+};
+
+// Terminus
+const terminus = {
+  hostUrl: process.env.TERMINUS_PROXY_HOST_URL || null,
+  adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN || null,
 };
 
 const db: DatabaseOption = {
@@ -62,6 +68,7 @@ const jacksonOptions: JacksonOption = {
     process.env.DO_NOT_TRACK === 'true' ||
     process.env.BOXYHQ_NO_ANALYTICS === '1' ||
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
+  terminus,
 };
 
 const adminPortalSSODefaults = {
@@ -73,5 +80,6 @@ const adminPortalSSODefaults = {
 
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
+export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
