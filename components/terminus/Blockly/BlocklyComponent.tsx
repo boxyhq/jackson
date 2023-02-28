@@ -14,9 +14,23 @@ function BlocklyComponent(props) {
   const toolbox = useRef();
   const primaryWorkspace = useRef();
 
-  const generateCode = () => {
-    const code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
-    console.log(code);
+  const getEndpoint = () => {
+    // TODO robustify
+    var p = 'productName';
+    // if (document.getElementById('productName') != null) {
+    //   p = document.getElementById('productName').value;
+    // }
+
+    return `/api/admin/terminus/models/${p}`;
+  };
+
+  const retrieveModel = async () => {
+    const rsp = await fetch(getEndpoint());
+    const response = await rsp.json();
+
+    (primaryWorkspace.current! as any).clear();
+    var textToDom = Blockly.Xml.textToDom(Buffer.from(response.data, 'base64').toString());
+    Blockly.Xml.domToWorkspace(textToDom, primaryWorkspace.current! as any);
   };
 
   useEffect(() => {
@@ -43,6 +57,8 @@ function BlocklyComponent(props) {
     if (initialXml) {
       Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(initialXml), primaryWorkspace.current as any);
     }
+
+    retrieveModel();
   }, [primaryWorkspace, toolbox, blocklyDiv, props]);
 
   return (
