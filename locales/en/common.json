@@ -158,9 +158,13 @@
   "settings_updated_successfully": "Settings updated successfully",
   "settings_branding_title": "Portal Customization",
   "branding_logo_url_label": "Logo URL",
-  "branding_favicon_label": "Favicon URL",
+  "branding_favicon_url_label": "Favicon URL",
   "branding_company_name_label": "Company Name",
   "branding_primary_color_label": "Primary Color",
   "configure_sso": "Configure Single Sign-On",
-  "configure_dsync": "Configure Directory Sync"
+  "configure_dsync": "Configure Directory Sync",
+  "branding_logo_url_alt": "Provide a URL to your logo. Recommend PNG and SVG formats.",
+  "branding_favicon_url_alt": "Provide a URL to your favicon. Recommend PNG and ICO formats.",
+  "branding_company_name_alt": "Provide your company name or product name.",
+  "branding_primary_color_alt": "Primary color will be applied to buttons, links, and other elements."
 }

@@ -17,8 +17,8 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
 
   const { token } = router.query as { token: string };
 
-  const { setupLink, error, isLoading } = useSetupLink(token);
   const { settings } = usePortalSettings();
+  const { setupLink, error, isLoading } = useSetupLink(token);
 
   if (isLoading) {
     return <Loading />;
@@ -27,7 +27,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
   const { branding } = settings || {};
 
   const title = setupLink?.service === 'sso' ? t('configure_sso') : t('configure_dsync');
-
+  //--pf: 254 86% 77%;
   return (
     <>
       <Head>

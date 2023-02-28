@@ -45,7 +45,7 @@ export const strategyChecker = (req: NextApiRequest): { isSAML: boolean; isOIDC:
   return { isSAML, isOIDC };
 };
 
-// Hex to HSL c
+// Hex to HSL converter
 export const hexToHSL = (H: string) => {
   let r = 0,
     g = 0,
@@ -87,5 +87,5 @@ export const hexToHSL = (H: string) => {
   s = +(s * 100).toFixed(1);
   l = +(l * 100).toFixed(1);
 
-  return `${h}deg ${s}% ${l}%`;
+  return `${h} ${s}% ${l}%`;
 };
