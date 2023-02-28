@@ -75,11 +75,9 @@ const SAMLTraceInspector: NextPage = () => {
               <DescriptionListItem term='Product' value={data.data.context.product} />
             )}
             {typeof data.data.context.issuer === 'string' && (
-              <DescriptionListItem term='Product' value={data.data.context.issuer} />
+              <DescriptionListItem term='Issuer' value={data.data.context.issuer} />
             )}
-            {typeof data.data.context.profile === 'string' && (
-              <DescriptionListItem term='Product' value={data.data.context.profile} />
-            )}
+
             <DescriptionListItem
               term='Raw response'
               value={
@@ -88,6 +86,16 @@ const SAMLTraceInspector: NextPage = () => {
                 </SyntaxHighlighter>
               }
             />
+            {typeof data.data.context.profile === 'string' && (
+              <DescriptionListItem
+                term='Profile'
+                value={
+                  <SyntaxHighlighter language='json' style={materialOceanic}>
+                    {data?.data.context.profile}
+                  </SyntaxHighlighter>
+                }
+              />
+            )}
           </dl>
         </div>
       </div>
