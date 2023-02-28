@@ -52,16 +52,16 @@ const SAMLTraceInspector: NextPage = () => {
         <div className='px-4 py-5 sm:px-6'>
           <h3 className='text-base font-semibold leading-6 text-gray-900'>Trace details</h3>
           <p className='mt-1 flex max-w-2xl gap-6 text-sm text-gray-500'>
-            <div>
-              <span className='font-medium text-gray-500'>Trace ID:</span>
+            <span>
+              <span className='font-medium text-gray-500'>TraceID:</span>
               <span className='ml-2 font-bold text-gray-700'> {traceId}</span>
-            </div>
-            <div>
+            </span>
+            <span>
               <span className='font-medium text-gray-500'>{t('assertion_type')}:</span>
               <span className='ml-2 font-bold text-gray-700'>
                 {data.data.context?.samlResponse ? 'Response' : 'Request'}
               </span>
-            </div>
+            </span>
           </p>
         </div>
         <div className='border-t border-gray-200'>
