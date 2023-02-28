@@ -3,11 +3,27 @@ import styles from './BlocklyComponent.module.css';
 import { useEffect, useRef } from 'react';
 
 import Blockly from 'blockly/core';
+import 'blockly/blocks';
 import { javascriptGenerator } from 'blockly/javascript';
 import locale from 'blockly/msg/en';
-import 'blockly/blocks';
-
 Blockly.setLocale(locale);
+
+import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ObjectMap, CONST_OBJ_GLB_ENCR } from '@components/terminus/blocks/generator';
+
+const IGNORE_FIELDS = [CONST_OBJ_GLB_ENCR];
+
+// TODO this must come from CUE and the regexp are hacked here for generation
+const simpleRegex = '^[a-zA-Z]+$';
+const regexMap = {
+  'defs.#Letters': simpleRegex,
+  'defs.#LettersWithSpaces': simpleRegex,
+  'defs.#Alphanumerical': simpleRegex,
+  'defs.#AlphanumericalWithSpaces': simpleRegex,
+  'defs.#AlphanumericalNotAccented': simpleRegex,
+  'defs.#AlphanumericalNotAccentedWithSpaces': simpleRegex,
+  'defs.#SimpleDateFormat': '^20[0-9]{2}-[0-1][1-2]-[0-2][1-8]$', // regex restricted.
+};
 
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
@@ -16,12 +32,103 @@ function BlocklyComponent(props) {
 
   const getEndpoint = () => {
     // TODO robustify
-    var p = 'productName';
-    // if (document.getElementById('productName') != null) {
-    //   p = document.getElementById('productName').value;
+    var p = 'productDemo';
+    // if (document.getElementById('productDemo') != null) {
+    //   p = document.getElementById('productDemo').value;
     // }
 
     return `/api/admin/terminus/models/${p}`;
+  };
+
+  const generateModel = () => {
+    ObjectMap.clear();
+    // trigger the BLOCKLY processing which will run our custom code generation
+    javascriptGenerator.workspaceToCode(primaryWorkspace.current);
+    var ret = _generateCUEStructureAndJSONSchemas();
+
+    // add specific BoxyHQ imports
+    var cue = `
+    EncryptedDefinitions: ${JSON.stringify(ret[1])}
+    ${ret[0]}
+    `;
+    return cue;
+  };
+
+  // Rudimentary way of generating a CUE file and a JSON model for synthetic data generation
+  const _generateCUEStructureAndJSONSchemas = () => {
+    var defs = ``;
+    var encrObjects = [];
+    for (const [key, value] of Object.entries(Object.fromEntries(ObjectMap))) {
+      encrObjects.push(key as never);
+      var valuesMap = Object.fromEntries(value as any);
+
+      // DEFINITIONS
+      var definitions = ``;
+      for (const [field, values] of Object.entries(valuesMap)) {
+        if (IGNORE_FIELDS.includes(field)) {
+          continue;
+        }
+        definitions += `\n\t\t\t${field}: ${values[0]}`;
+
+        let pattern = regexMap[values[0]];
+        if (pattern == null) {
+          pattern = '.*';
+        }
+      }
+
+      // ENCRYPTION
+      var encryption = ``;
+      if (valuesMap[CONST_OBJ_GLB_ENCR] != null) {
+        encryption += `${valuesMap[CONST_OBJ_GLB_ENCR]}`;
+      } else {
+        for (const [field, values] of Object.entries(valuesMap)) {
+          encryption += `\n\t\t\t${field}: ${values[1]}`;
+        }
+        encryption = `{ ${encryption}
+        }`;
+      }
+
+      // MASKS
+      var masks = ``;
+      for (const [field, values] of Object.entries(valuesMap)) {
+        if (IGNORE_FIELDS.includes(field)) {
+          continue;
+        }
+        masks += `\n\t\t\t${field}: ${values[2]}`;
+      }
+      var objectOutput = `\n#${key}: {
+        #Definition: { ${definitions}
+        }
+        #Encryption: ${encryption}
+        #Mask_admin: { ${masks}
+        }
+      }`;
+      defs += objectOutput;
+    }
+
+    return [defs, encrObjects];
+  };
+
+  const modelToXML = () => {
+    var xml = Blockly.Xml.workspaceToDom(primaryWorkspace.current as any);
+    var domToPretty = Blockly.Xml.domToPrettyText(xml);
+    return domToPretty;
+  };
+
+  const uploadModel = async () => {
+    var domToPretty = modelToXML();
+    var cueModel = generateModel();
+
+    let body = {
+      cue_schema: Buffer.from(cueModel).toString('base64'),
+      blockly_schema: Buffer.from(domToPretty).toString('base64'),
+    };
+
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(body),
+    };
+    const response = await fetch(getEndpoint(), requestOptions);
   };
 
   const retrieveModel = async () => {
@@ -62,13 +169,31 @@ function BlocklyComponent(props) {
   }, [primaryWorkspace, toolbox, blocklyDiv, props]);
 
   return (
-    <React.Fragment>
-      {/* <button onClick={generateCode}>Convert</button> */}
-      <div ref={blocklyDiv as any} className={styles.blocklyDiv} />
-      <div style={{ display: 'none' }} ref={toolbox as any}>
-        {props.children}
+    <div>
+      <div className='mb-2" -mx-3 flex flex-wrap'>
+        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
+          <ButtonPrimary onClick={uploadModel}>Publish Model</ButtonPrimary>
+        </div>
+        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
+          <ButtonPrimary onClick={retrieveModel}>Retrieve Model</ButtonPrimary>
+        </div>
+        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
+          <input
+            type='text'
+            className='input-bordered input h-10 w-full'
+            id='productDemo'
+            defaultValue='productDemo'
+          />
+        </div>
       </div>
-    </React.Fragment>
+
+      <React.Fragment>
+        <div ref={blocklyDiv as any} className={styles.blocklyDiv} />
+        <div style={{ display: 'none' }} ref={toolbox as any}>
+          {props.children}
+        </div>
+      </React.Fragment>
+    </div>
   );
 }
 
