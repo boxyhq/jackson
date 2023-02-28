@@ -1,18 +1,15 @@
-import type { GetServerSidePropsContext, NextPage } from 'next';
+import type { NextPage } from 'next';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import type { ApiResponse } from 'types';
-import type { AdminPortalSettings } from '@boxyhq/saml-jackson';
-
-type Branding = AdminPortalSettings['branding'];
+import type { AdminPortalBranding } from '@boxyhq/saml-jackson';
 
 const Branding: NextPage = () => {
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
-  const [branding, setBranding] = useState<Branding>({
+  const [branding, setBranding] = useState<AdminPortalBranding>({
     logoUrl: '',
     faviconUrl: '',
     companyName: '',
@@ -21,16 +18,16 @@ const Branding: NextPage = () => {
 
   // Fetch settings
   const fetchSettings = async () => {
-    const rawResponse = await fetch('/api/admin/settings', {
+    const rawResponse = await fetch('/api/admin/branding', {
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    const response: ApiResponse<{ branding: Branding }> = await rawResponse.json();
+    const response: ApiResponse<AdminPortalBranding> = await rawResponse.json();
 
     if ('data' in response) {
-      setBranding(response.data.branding);
+      setBranding(response.data);
     }
   };
 
@@ -40,9 +37,9 @@ const Branding: NextPage = () => {
 
     setLoading(true);
 
-    const rawResponse = await fetch('/api/admin/settings', {
+    const rawResponse = await fetch('/api/admin/branding', {
       method: 'POST',
-      body: JSON.stringify({ branding }),
+      body: JSON.stringify(branding),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -50,7 +47,7 @@ const Branding: NextPage = () => {
 
     setLoading(false);
 
-    const response: ApiResponse<Branding> = await rawResponse.json();
+    const response: ApiResponse<AdminPortalBranding> = await rawResponse.json();
 
     if ('error' in response) {
       errorToast(response.error.message);
@@ -169,13 +166,5 @@ const Branding: NextPage = () => {
     </>
   );
 };
-
-export async function getStaticProps({ locale }: GetServerSidePropsContext) {
-  return {
-    props: {
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-    },
-  };
-}
 
 export default Branding;

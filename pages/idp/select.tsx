@@ -5,8 +5,10 @@ import { useTranslation } from 'next-i18next';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-
+import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 import jackson from '@lib/jackson';
+import Head from 'next/head';
+import { hexToHSL } from '@lib/utils';
 
 export default function ChooseIdPConnection({
   connections,
@@ -28,21 +30,36 @@ export default function ChooseIdPConnection({
 
 const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORecord)[] }) => {
   const router = useRouter();
+  const { branding } = usePortalBranding();
 
   // SP initiated SSO: Redirect to the same path with idp_hint set to the selected connection clientID
   const connectionSelected = (clientID: string) => {
     return router.push(`${router.asPath}&idp_hint=${clientID}`);
   };
 
+  const title = 'Select an Identity Provider to continue';
+  const pageTitle = `${title} - ${branding?.companyName || 'BoxyHQ'}`;
+  const faviconUrl = branding?.faviconUrl || '/favicon.ico';
+  const primaryColor = hexToHSL(branding?.primaryColor || '#25c2a0');
+
   return (
     <>
-      <h3 className='text-center text-xl font-bold'>Select an Identity Provider to continue</h3>
+      <Head>
+        <title>{pageTitle}</title>
+        <link rel='icon' href={faviconUrl} />
+      </Head>
+      <style>{`:root { --p: ${primaryColor}; }`}</style>
+      <h3 className='text-center text-xl font-bold'>{title}</h3>
       <ul className='flex flex-col space-y-5'>
         {connections.map((connection) => {
           const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
           const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
 
-          const name = connection.name || (idpMetadata ? idpMetadata.provider : `${oidcProvider?.provider}`);
+          const name =
+            connection.name ||
+            (idpMetadata
+              ? idpMetadata.friendlyProviderName || idpMetadata.provider
+              : `${oidcProvider?.provider}`);
 
           return (
             <li key={connection.clientID} className='rounded bg-gray-100'>
@@ -55,7 +72,7 @@ const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORec
                 <div className='flex items-center gap-2 py-3 px-3'>
                   <div className='placeholder avatar'>
                     <div className='w-8 rounded-full bg-primary text-white'>
-                      <span className='text-xs font-bold'>{name.charAt(0).toUpperCase()}</span>
+                      <span className='text-lg font-bold'>{name.charAt(0).toUpperCase()}</span>
                     </div>
                   </div>
                   {name}

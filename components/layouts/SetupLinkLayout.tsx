@@ -7,7 +7,7 @@ import BoxyHQLogo from '../../public/logo.png';
 import InvalidSetupLinkAlert from '@components/setup-link/InvalidSetupLinkAlert';
 import Loading from '@components/Loading';
 import useSetupLink from '@lib/ui/hooks/useSetupLink';
-import usePortalSettings from '@lib/ui/hooks/usePortalSettings';
+import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 import { useTranslation } from 'next-i18next';
 import { hexToHSL } from '@lib/utils';
 
@@ -17,17 +17,15 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
 
   const { token } = router.query as { token: string };
 
-  const { settings } = usePortalSettings();
+  const { branding } = usePortalBranding();
   const { setupLink, error, isLoading } = useSetupLink(token);
 
   if (isLoading) {
     return <Loading />;
   }
 
-  const { branding } = settings || {};
-
   const title = setupLink?.service === 'sso' ? t('configure_sso') : t('configure_dsync');
-  //--pf: 254 86% 77%;
+
   return (
     <>
       <Head>

@@ -112,4 +112,4 @@ export const hexToHSL = (H: string) => {
   l = +(l * 100).toFixed(1);
 
   return `${h} ${s}% ${l}%`;
-  }
+};

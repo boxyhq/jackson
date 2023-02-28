@@ -9,7 +9,7 @@ import type {
   IOidcDiscoveryController,
   ISPSAMLConfig,
   ISAMLFederationController,
-  ISettingsController,
+  IBrandingController,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -27,7 +27,7 @@ let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 let samlFederatedController: ISAMLFederationController;
 let checkLicense: () => Promise<boolean>;
-let settingsController: ISettingsController;
+let brandingController: IBrandingController;
 
 const g = global as any;
 
@@ -43,7 +43,7 @@ export default async function init() {
     !g.oidcDiscoveryController ||
     !g.spConfig ||
     !g.samlFederatedController ||
-    !g.settingsController
+    !g.brandingController
   ) {
     const ret = await jackson(jacksonOptions);
     connectionAPIController = ret.connectionAPIController;
@@ -57,7 +57,7 @@ export default async function init() {
     spConfig = ret.spConfig;
     samlFederatedController = ret.samlFederatedController;
     checkLicense = ret.checkLicense;
-    settingsController = ret.settingsController;
+    brandingController = ret.brandingController;
 
     g.connectionAPIController = connectionAPIController;
     g.oauthController = oauthController;
@@ -71,7 +71,7 @@ export default async function init() {
     g.isJacksonReady = true;
     g.samlFederatedController = samlFederatedController;
     g.checkLicense = checkLicense;
-    g.settingsController = settingsController;
+    g.brandingController = brandingController;
   } else {
     connectionAPIController = g.connectionAPIController;
     oauthController = g.oauthController;
@@ -84,7 +84,7 @@ export default async function init() {
     spConfig = g.spConfig;
     samlFederatedController = g.samlFederatedController;
     checkLicense = g.checkLicense;
-    settingsController = g.settingsController;
+    brandingController = g.brandingController;
   }
 
   return {
@@ -99,6 +99,6 @@ export default async function init() {
     setupLinkController,
     samlFederatedController,
     checkLicense,
-    settingsController,
+    brandingController,
   };
 }

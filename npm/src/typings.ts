@@ -468,11 +468,15 @@ export type SetupLink = {
 
 export type SetupLinkService = 'sso' | 'dsync';
 
+// Admin Portal settings
 export type AdminPortalSettings = {
-  branding: {
-    logoUrl: string | null;
-    faviconUrl: string | null;
-    primaryColor: string | null;
-    companyName: string | null;
-  };
+  branding: AdminPortalBranding;
+};
+
+// Admin Portal branding options
+export type AdminPortalBranding = {
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  primaryColor: string | null;
+  companyName: string | null;
 };
