@@ -8,7 +8,8 @@ import {
   Storable,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
-  OIDCSSOConnection,
+  OIDCSSOConnectionWithDiscoveryUrl,
+  OIDCSSOConnectionWithMetadata,
   JacksonOption,
   SAMLSSORecord,
   OIDCSSORecord,
@@ -112,6 +113,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: well-known URL where the OpenID Provider configuration is exposed
    *     in: formData
    *     type: string
+   *   oidcMetadataPost:
+   *     name: oidcMetadata
+   *     description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
+   *     in: formData
+   *     type: string
    *   oidcClientIdPost:
    *     name: oidcClientId
    *     description: clientId of the application set up on the OpenID Provider
@@ -175,6 +181,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
    *      - $ref: '#/parameters/oidcDiscoveryUrlPost'
+   *      - $ref: '#/parameters/oidcMetadataPost'
    *      - $ref: '#/parameters/oidcClientIdPost'
    *      - $ref: '#/parameters/oidcClientSecretPost'
    *     responses:
@@ -202,7 +209,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
     return this.createSAMLConnection(...args);
   }
 
-  public async createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord> {
+  public async createOIDCConnection(
+    body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
+  ): Promise<OIDCSSORecord> {
     metrics.increment('createConnection');
 
     if (!this.opts.oidcPath) {
@@ -258,6 +267,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   oidcDiscoveryUrlPatch:
    *     name: oidcDiscoveryUrl
    *     description: well-known URL where the OpenID Provider configuration is exposed
+   *     in: formData
+   *     type: string
+   *   oidcMetadataPatch:
+   *     name: oidcMetadata
+   *     description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
    *     in: formData
    *     type: string
    *   oidcClientIdPatch:
@@ -337,6 +351,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/rawMetadataParamPatch'
    *       - $ref: '#/parameters/metadataUrlParamPatch'
    *       - $ref: '#/parameters/oidcDiscoveryUrlPatch'
+   *       - $ref: '#/parameters/oidcMetadataPatch'
    *       - $ref: '#/parameters/oidcClientIdPatch'
    *       - $ref: '#/parameters/oidcClientSecretPatch'
    *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
@@ -370,7 +385,10 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
 
   public async updateOIDCConnection(
-    body: OIDCSSOConnection & { clientID: string; clientSecret: string }
+    body: (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
+      clientID: string;
+      clientSecret: string;
+    }
   ): Promise<void> {
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);

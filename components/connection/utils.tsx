@@ -1,4 +1,5 @@
-import { FormEvent, SetStateAction, useMemo } from 'react';
+import { ButtonLink } from '@components/ButtonLink';
+import { Dispatch, FormEvent, SetStateAction, useMemo } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 
 export const saveConnection = async ({
@@ -9,18 +10,26 @@ export const saveConnection = async ({
   setupLinkToken,
   callback,
 }: {
-  formObj: Record<string, string>;
+  formObj: FormObj;
   isEditView?: boolean;
   connectionIsSAML: boolean;
   connectionIsOIDC: boolean;
   setupLinkToken?: string;
   callback: (res: Response) => Promise<void>;
 }) => {
-  const { rawMetadata, redirectUrl, oidcDiscoveryUrl, oidcClientId, oidcClientSecret, metadataUrl, ...rest } =
-    formObj;
+  const {
+    rawMetadata,
+    redirectUrl,
+    oidcDiscoveryUrl,
+    oidcMetadata,
+    oidcClientId,
+    oidcClientSecret,
+    metadataUrl,
+    ...rest
+  } = formObj;
 
-  const encodedRawMetadata = btoa(rawMetadata || '');
-  const redirectUrlList = redirectUrl?.split(/\r\n|\r|\n/);
+  const encodedRawMetadata = btoa((rawMetadata as string) || '');
+  const redirectUrlList = (redirectUrl as string)?.split(/\r\n|\r|\n/);
 
   const res = await fetch(
     setupLinkToken ? `/api/setup/${setupLinkToken}/sso-connection` : '/api/admin/connections',
@@ -33,6 +42,7 @@ export const saveConnection = async ({
         ...rest,
         encodedRawMetadata: connectionIsSAML ? encodedRawMetadata : undefined,
         oidcDiscoveryUrl: connectionIsOIDC ? oidcDiscoveryUrl : undefined,
+        oidcMetadata: connectionIsOIDC ? oidcMetadata : undefined,
         oidcClientId: connectionIsOIDC ? oidcClientId : undefined,
         oidcClientSecret: connectionIsOIDC ? oidcClientSecret : undefined,
         redirectUrl: redirectUrl && redirectUrlList ? JSON.stringify(redirectUrlList) : undefined,
@@ -48,32 +58,77 @@ export function fieldCatalogFilterByConnection(connection) {
     attributes.connection && connection !== null ? attributes.connection === connection : true;
 }
 
-export function getHandleChange(
-  setFormObj: (value: SetStateAction<Record<string, string>>) => void,
-  opts: { key?: string } = {}
-) {
-  return (event: FormEvent) => {
-    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
-    setFormObj((cur) => ({ ...cur, [target.id]: target[opts.key || 'value'] }));
+/** If a field item has a fallback attribute, only render it if the form state has the field item */
+export function excludeFallback(formObj: FormObj) {
+  return ({ key, fallback }: FieldCatalogItem) => {
+    if (typeof fallback === 'object') {
+      if (!(key in formObj)) {
+        return false;
+      }
+    }
+    return true;
   };
 }
 
-type FieldCatalog = {
+export function getHandleChange(
+  setFormObj: Dispatch<SetStateAction<FormObj>>,
+  opts: { key?: string; formObjParentKey?: string } = {}
+) {
+  return (event: FormEvent) => {
+    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+    setFormObj((cur) =>
+      opts.formObjParentKey
+        ? {
+            ...cur,
+            [opts.formObjParentKey]: {
+              ...(cur[opts.formObjParentKey] as FormObj),
+              [target.id]: target[opts.key || 'value'],
+            },
+          }
+        : { ...cur, [target.id]: target[opts.key || 'value'] }
+    );
+  };
+}
+
+type fieldAttributes = {
+  required?: boolean;
+  maxLength?: number;
+  editable?: boolean;
+  isArray?: boolean;
+  rows?: number;
+  accessor?: (any) => unknown;
+  formatForDisplay?: (value) => string;
+  isHidden?: (value) => boolean;
+  showWarning?: (value) => boolean;
+  hideInSetupView: boolean;
+  connection?: string;
+  'data-testid'?: string;
+};
+
+export type FieldCatalogItem = {
   key: string;
-  label: string;
-  type: string;
+  label?: string;
+  type: 'url' | 'object' | 'pre' | 'text' | 'password' | 'textarea' | 'checkbox';
   placeholder?: string;
-  attributes: {
-    required?: boolean;
-    maxLength?: number;
-    editable?: boolean;
-    isArray?: boolean;
-    rows?: number;
-    formatForDisplay?: (value) => string;
-    isHidden?: (value) => boolean;
-    showWarning?: (value) => boolean;
+  attributes: fieldAttributes;
+  members?: FieldCatalogItem[];
+  fallback?: {
+    key: string;
+    activateCondition?: (fieldValue) => boolean;
+    switch: { label: string; 'data-testid'?: string };
   };
 };
+
+export type AdminPortalSSODefaults = {
+  tenant: string;
+  product: string;
+  redirectUrl: string;
+  defaultRedirectUrl: string;
+};
+
+type FormObjValues = string | boolean | string[];
+
+export type FormObj = Record<string, FormObjValues | Record<string, FormObjValues>>;
 
 export const useFieldCatalog = ({
   isEditView,
@@ -91,23 +146,19 @@ export const useFieldCatalog = ({
   return fieldCatalog;
 };
 
-export type AdminPortalSSODefaults = {
-  tenant: string;
-  product: string;
-  redirectUrl: string;
-  defaultRedirectUrl: string;
-};
-
 export function renderFieldList(args: {
   isEditView?: boolean;
-  formObj: Record<string, string>;
-  setFormObj: (value: SetStateAction<Record<string, string>>) => void;
+  formObj: FormObj;
+  setFormObj: Dispatch<SetStateAction<FormObj>>;
+  formObjParentKey?: string;
+  activateFallback: (activeKey, fallbackKey) => void;
 }) {
   const FieldList = ({
     key,
     placeholder,
     label,
     type,
+    members,
     attributes: {
       isHidden,
       isArray,
@@ -117,55 +168,114 @@ export function renderFieldList(args: {
       maxLength,
       showWarning,
       required = true,
+      'data-testid': dataTestId,
     },
-  }: FieldCatalog) => {
+    fallback,
+  }: FieldCatalogItem) => {
     const disabled = editable === false;
     const value =
       disabled && typeof formatForDisplay === 'function'
-        ? formatForDisplay(args.formObj[key])
+        ? formatForDisplay(
+            args.formObjParentKey ? args.formObj[args.formObjParentKey]?.[key] : args.formObj[key]
+          )
+        : args.formObjParentKey
+        ? args.formObj[args.formObjParentKey]?.[key]
         : args.formObj[key];
+
+    if (type === 'object') {
+      return (
+        <div key={key}>
+          {typeof fallback === 'object' &&
+            (typeof fallback.activateCondition === 'function' ? fallback.activateCondition(value) : true) && (
+              <ButtonLink
+                className='mb-2 px-0'
+                type='button'
+                data-testid={fallback.switch['data-testid']}
+                onClick={() => {
+                  /** Switch to fallback.key*/
+                  args.activateFallback(key, fallback.key);
+                }}>
+                {fallback.switch.label}
+              </ButtonLink>
+            )}
+          {members?.map(
+            renderFieldList({
+              ...args,
+              formObjParentKey: key,
+            })
+          )}
+        </div>
+      );
+    }
+
+    const isHiddenClassName =
+      typeof isHidden === 'function' && isHidden(args.formObj[key]) == true ? ' hidden' : '';
+
     return (
       <div className='mb-6 ' key={key}>
         {type !== 'checkbox' && (
-          <label
-            htmlFor={key}
-            className={`mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300 ${
-              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-            }`}>
-            {label}
-          </label>
+          <div className='flex items-center justify-between'>
+            <label
+              htmlFor={key}
+              className={
+                'mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300' + isHiddenClassName
+              }>
+              {label}
+            </label>
+            {typeof fallback === 'object' &&
+              (typeof fallback.activateCondition === 'function'
+                ? fallback.activateCondition(value)
+                : true) && (
+                <ButtonLink
+                  className='mb-2 px-0'
+                  type='button'
+                  data-testid={fallback.switch['data-testid']}
+                  onClick={() => {
+                    /** Switch to fallback.key*/
+                    args.activateFallback(key, fallback.key);
+                  }}>
+                  {fallback.switch.label}
+                </ButtonLink>
+              )}
+          </div>
         )}
         {type === 'pre' ? (
           <pre
-            className={`block w-full cursor-not-allowed overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 
-            text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 
-            dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 
-            dark:focus:ring-blue-500 ${
-              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-            } ${showWarning ? (showWarning(args.formObj[key]) ? 'border-2 border-rose-500' : '') : ''}`}>
+            className={
+              'block w-full cursor-not-allowed overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500' +
+              isHiddenClassName +
+              (typeof showWarning === 'function' && showWarning(args.formObj[key])
+                ? ' border-2 border-rose-500'
+                : '')
+            }
+            data-testid={dataTestId}>
             {value}
           </pre>
         ) : type === 'textarea' ? (
           <textarea
             id={key}
             placeholder={placeholder}
-            value={value}
+            value={(value as string) || ''}
             required={required}
             disabled={disabled}
             maxLength={maxLength}
-            onChange={getHandleChange(args.setFormObj)}
-            className={`textarea-bordered textarea h-24 w-full ${isArray ? 'whitespace-pre' : ''} ${
-              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-            }`}
+            onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
+            className={
+              'textarea-bordered textarea h-24 w-full' +
+              (isArray ? ' whitespace-pre' : '') +
+              isHiddenClassName
+            }
             rows={rows}
+            data-testid={dataTestId}
           />
         ) : type === 'checkbox' ? (
           <>
             <label
               htmlFor={key}
-              className={`inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300 ${
-                isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-              }`}>
+              className={
+                'inline-block align-middle text-sm font-medium text-gray-900 dark:text-gray-300' +
+                isHiddenClassName
+              }>
               {label}
             </label>
             <input
@@ -175,8 +285,12 @@ export function renderFieldList(args: {
               required={required}
               disabled={disabled}
               maxLength={maxLength}
-              onChange={getHandleChange(args.setFormObj, { key: 'checked' })}
-              className='checkbox-primary checkbox ml-5 align-middle'
+              onChange={getHandleChange(args.setFormObj, {
+                key: 'checked',
+                formObjParentKey: args.formObjParentKey,
+              })}
+              className={'checkbox-primary checkbox ml-5 align-middle' + isHiddenClassName}
+              data-testid={dataTestId}
             />
           </>
         ) : (
@@ -184,14 +298,13 @@ export function renderFieldList(args: {
             id={key}
             type={type}
             placeholder={placeholder}
-            value={type === 'text' ? value || '' : value}
+            value={(value as string) || ''}
             required={required}
             disabled={disabled}
             maxLength={maxLength}
-            onChange={getHandleChange(args.setFormObj)}
-            className={`input-bordered input w-full ${
-              isHidden ? (isHidden(args.formObj[key]) == true ? 'hidden' : '') : ''
-            }`}
+            onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
+            className={'input-bordered input w-full' + isHiddenClassName}
+            data-testid={dataTestId}
           />
         )}
       </div>

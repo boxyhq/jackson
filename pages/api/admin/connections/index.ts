@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { strategyChecker } from '@lib/utils';
+import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -68,7 +68,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Create OIDC connection
     if (isOIDC) {
-      const connection = await connectionAPIController.createOIDCConnection(req.body);
+      const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
       return res.status(201).json({ data: connection });
     }
@@ -99,7 +99,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Update OIDC connection
     if (isOIDC) {
-      const connection = await connectionAPIController.updateOIDCConnection(req.body);
+      const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
       return res.status(200).json({ data: connection });
     }

@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { errors, generators, Issuer } from 'openid-client';
+import { errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
@@ -39,6 +39,7 @@ import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SAMLHandler } from './saml-handler';
 import { extractSAMLResponseAttributes } from '../saml/lib';
+import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -280,9 +281,9 @@ export class OAuthController implements IOAuthController {
           }),
         };
       }
-      const { discoveryUrl, clientId, clientSecret } = connection.oidcProvider;
+      const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
       try {
-        const oidcIssuer = await Issuer.discover(discoveryUrl as string);
+        const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
         const oidcClient = new oidcIssuer.Client({
           client_id: clientId as string,
           client_secret: clientSecret,
@@ -597,10 +598,10 @@ export class OAuthController implements IOAuthController {
     }
 
     // Reconstruct the oidcClient
-    const { discoveryUrl, clientId, clientSecret } = oidcConnection.oidcProvider;
+    const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
     let profile;
     try {
-      const oidcIssuer = await Issuer.discover(discoveryUrl);
+      const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
       const oidcClient = new oidcIssuer.Client({
         client_id: clientId,
         client_secret: clientSecret,
@@ -885,8 +886,12 @@ export class OAuthController implements IOAuthController {
    *               type: string
    *             roles:
    *               type: array
+   *               items:
+   *                 type: string
    *             groups:
    *               type: array
+   *               items:
+   *                 type: string
    *             raw:
    *               type: object
    *             requested:
