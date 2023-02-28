@@ -18,9 +18,9 @@ if (process.env.DB_SSL === 'true') {
 
 // Retraced
 const retraced = {
-  hostUrl: process.env.RETRACED_HOST_URL,
-  externalUrl: process.env.RETRACED_EXTERNAL_URL || process.env.RETRACED_HOST_URL,
-  adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
+  hostUrl: process.env.RETRACED_HOST_URL || null,
+  externalUrl: process.env.RETRACED_EXTERNAL_URL || process.env.RETRACED_HOST_URL || null,
+  adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN || null,
 };
 
 const db: DatabaseOption = {
