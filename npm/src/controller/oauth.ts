@@ -200,7 +200,11 @@ export class OAuthController implements IOAuthController {
       (!this.opts.openid?.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys));
 
     const oAuthClientReqError = !state || response_type !== 'code';
-    if (isMissingJWTKeysForOIDCFlow || oAuthClientReqError) {
+
+    const connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
+    const connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
+
+    if (isMissingJWTKeysForOIDCFlow || oAuthClientReqError || (!connectionIsSAML && !connectionIsOIDC)) {
       let error, error_description;
       if (isMissingJWTKeysForOIDCFlow) {
         error = 'server_error';
@@ -216,6 +220,11 @@ export class OAuthController implements IOAuthController {
       if (response_type !== 'code') {
         error = 'unsupported_response_type';
         error_description = 'Only Authorization Code grant is supported';
+      }
+
+      if (!connectionIsSAML && !connectionIsOIDC) {
+        error = 'server_error';
+        error_description = 'Connection appears to be misconfigured';
       }
 
       // Save the error trace
@@ -240,8 +249,6 @@ export class OAuthController implements IOAuthController {
     // Connection retrieved: Handover to IdP starts here
     let ssoUrl;
     let post = false;
-    const connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
-    const connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
 
     // Init sessionId
     const sessionId = crypto.randomBytes(16).toString('hex');
@@ -432,18 +439,11 @@ export class OAuthController implements IOAuthController {
           redirect_url: redirectUrl,
           authorize_form: authorizeForm,
         };
-      } else if (connectionIsOIDC) {
-        return { redirect_url: ssoUrl };
-      } else {
-        return {
-          redirect_url: OAuthErrorResponse({
-            error: 'invalid_request',
-            error_description: 'Connection appears to be misconfigured',
-            redirect_uri,
-            state,
-          }),
-        };
       }
+      if (connectionIsOIDC) {
+        return { redirect_url: ssoUrl };
+      }
+      throw 'Connection appears to be misconfigured';
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Save the error trace
@@ -596,7 +596,7 @@ export class OAuthController implements IOAuthController {
       });
       throw err; // Rethrow the error
     }
-    let profile: SAMLProfile | null = null;
+    let profile: SAMLProfile | undefined;
 
     try {
       profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
