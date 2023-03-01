@@ -34,8 +34,6 @@ export const generateModel = (workspace) => {
 
 // Rudimentary way of generating a CUE file
 const generateCUEStructure = () => {
-  ObjectMap.clear();
-
   let defs = ``;
   const encrObjects = [];
   for (const [key, value] of Object.entries(Object.fromEntries(ObjectMap))) {
