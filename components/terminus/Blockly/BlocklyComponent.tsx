@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './BlocklyComponent.module.css';
 import { useEffect, useRef, createRef } from 'react';
+import { useTranslation } from 'next-i18next';
 
 import Blockly from 'blockly/core';
 import 'blockly/blocks';
@@ -9,8 +10,13 @@ Blockly.setLocale(locale);
 
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { generateModel } from '@components/terminus/blocks/generator';
+import { errorToast, successToast } from '@components/Toaster';
+import ConfirmationModal from '@components/ConfirmationModal';
+import { ButtonBase } from '@components/ButtonBase';
 
 function BlocklyComponent(props) {
+  const { t } = useTranslation('common');
+
   const blocklyDiv = useRef();
   const toolbox = useRef();
   const primaryWorkspace = useRef();
@@ -41,8 +47,19 @@ function BlocklyComponent(props) {
       method: 'POST',
       body: JSON.stringify(body),
     };
-    const response = await fetch(getEndpoint(), requestOptions);
+
+    const rsp = await fetch(getEndpoint(), requestOptions);
+
+    if (rsp.ok) {
+      successToast(t('model_published_successfully'));
+      return;
+    }
+
+    errorToast(t('model_publish_failed'));
   };
+
+  const [retrieveModalVisible, setRetrieveModalVisible] = useState(false);
+  const toggleRetrieveConfirm = () => setRetrieveModalVisible(!retrieveModalVisible);
 
   const retrieveModel = async () => {
     const rsp = await fetch(getEndpoint());
@@ -51,6 +68,8 @@ function BlocklyComponent(props) {
     (primaryWorkspace.current! as any).clear();
     const textToDom = Blockly.Xml.textToDom(Buffer.from(response.data, 'base64').toString());
     Blockly.Xml.domToWorkspace(textToDom, primaryWorkspace.current! as any);
+
+    toggleRetrieveConfirm();
   };
 
   useEffect(() => {
@@ -85,12 +104,6 @@ function BlocklyComponent(props) {
     <div>
       <div className='mb-2" -mx-3 flex flex-wrap'>
         <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
-          <ButtonPrimary onClick={uploadModel}>Publish Model</ButtonPrimary>
-        </div>
-        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
-          <ButtonPrimary onClick={retrieveModel}>Retrieve Model</ButtonPrimary>
-        </div>
-        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
           <input
             ref={productField as any}
             type='text'
@@ -98,6 +111,14 @@ function BlocklyComponent(props) {
             id='productDemo'
             defaultValue='productDemo'
           />
+        </div>
+        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
+          <ButtonPrimary onClick={uploadModel}>Publish Model</ButtonPrimary>
+        </div>
+        <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
+          <ButtonBase color='secondary' onClick={toggleRetrieveConfirm}>
+            Retrieve Model
+          </ButtonBase>
         </div>
       </div>
 
@@ -107,6 +128,15 @@ function BlocklyComponent(props) {
           {props.children}
         </div>
       </React.Fragment>
+
+      <ConfirmationModal
+        title={t('discard_and_retrieve_model')}
+        description={t('discard_and_retrieve_model_desc')}
+        actionButtonText={t('retrieve')}
+        overrideDeleteButton={true}
+        visible={retrieveModalVisible}
+        onConfirm={retrieveModel}
+        onCancel={toggleRetrieveConfirm}></ConfirmationModal>
     </div>
   );
 }

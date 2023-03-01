@@ -155,5 +155,10 @@
   "sign_in": "Sign In",
   "email_required": "Email is required",
   "audit_logs": "Audit Logs",
-  "privacy_vault": "Privacy Vault"
+  "privacy_vault": "Privacy Vault",
+  "model_published_successfully": "Model published successfully",
+  "model_publish_failed": "Model publish failed. Please try again!",
+  "discard_and_retrieve_model": "Retrieve Model?",
+  "discard_and_retrieve_model_desc": "Discard any unsaved changes and retrieve the Model from the server?",
+  "retrieve": "Retrieve"
 }
