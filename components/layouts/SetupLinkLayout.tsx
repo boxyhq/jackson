@@ -8,7 +8,7 @@ import Loading from '@components/Loading';
 import useSetupLink from '@lib/ui/hooks/useSetupLink';
 import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 import { useTranslation } from 'next-i18next';
-import { hexToHSL } from '@lib/utils';
+import { hexToHsl, darkenHslColor } from '@lib/color';
 import { branding as defaultBranding } from '@lib/settings';
 
 export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => {
@@ -26,7 +26,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
 
   const logoUrl = branding?.logoUrl || defaultBranding.logoUrl;
   const faviconUrl = branding?.faviconUrl || defaultBranding.faviconUrl;
-  const primaryColor = hexToHSL(branding?.primaryColor || defaultBranding.primaryColor);
+  const primaryColor = hexToHsl(branding?.primaryColor || defaultBranding.primaryColor);
   const companyName = branding?.companyName || defaultBranding.companyName;
   const title = setupLink?.service === 'sso' ? t('configure_sso') : t('configure_dsync');
   const pageTitle = `${title} - ${companyName}`;
@@ -37,7 +37,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
         <title>{pageTitle}</title>
         <link rel='icon' href={faviconUrl} />
       </Head>
-      <style>{`:root { --p: ${primaryColor}; }`}</style>
+      <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
       <div className='flex flex-1 flex-col'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <div className='flex flex-shrink-0 items-center px-4'>
