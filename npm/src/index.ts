@@ -121,7 +121,7 @@ export const controllers = async (
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSAMLConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts });
-  const samlFederatedController = await initFederatedSAML({ db, opts });
+  const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
