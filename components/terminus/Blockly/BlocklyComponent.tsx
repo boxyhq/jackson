@@ -69,7 +69,7 @@ function BlocklyComponent(props) {
     const textToDom = Blockly.Xml.textToDom(Buffer.from(response.data, 'base64').toString());
     Blockly.Xml.domToWorkspace(textToDom, primaryWorkspace.current! as any);
 
-    toggleRetrieveConfirm();
+    setRetrieveModalVisible(false);
   };
 
   useEffect(() => {
