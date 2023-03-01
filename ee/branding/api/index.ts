@@ -28,7 +28,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.json({ data: defaultBranding });
   }
 
-  return res.json({ data: await brandingController.get() });
+  return res.json({ data: await brandingController?.get() });
 };
 
 export default handler;

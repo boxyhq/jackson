@@ -27,7 +27,7 @@ let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 let samlFederatedController: ISAMLFederationController;
 let checkLicense: () => Promise<boolean>;
-let brandingController: IBrandingController;
+let brandingController: IBrandingController | null;
 
 const g = global as any;
 
@@ -43,7 +43,7 @@ export default async function init() {
     !g.oidcDiscoveryController ||
     !g.spConfig ||
     !g.samlFederatedController ||
-    !g.brandingController
+    !'brandingController'
   ) {
     const ret = await jackson(jacksonOptions);
     connectionAPIController = ret.connectionAPIController;

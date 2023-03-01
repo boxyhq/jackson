@@ -66,7 +66,7 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: ISAMLFederationController;
-  brandingController: IBrandingController;
+  brandingController: IBrandingController | null;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
@@ -89,7 +89,6 @@ export const controllers = async (
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore });
-  const brandingController = new BrandingController({ store: settingsStore });
 
   if (!opts.noAnalytics) {
     console.info(
@@ -120,7 +119,12 @@ export const controllers = async (
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSAMLConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts });
+
+  // Enterprise Features
   const samlFederatedController = await initFederatedSAML({ db, opts });
+  const brandingController = (await checkLicense(opts.boxyhqLicenseKey))
+    ? new BrandingController({ store: settingsStore })
+    : null;
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
