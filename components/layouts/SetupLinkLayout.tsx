@@ -37,7 +37,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
         <title>{pageTitle}</title>
         <link rel='icon' href={faviconUrl} />
       </Head>
-      <style>{`:root { --p: ${primaryColor}; --pf: ; }`}</style>
+      <style>{`:root { --p: ${primaryColor}; }`}</style>
       <div className='flex flex-1 flex-col'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <div className='flex flex-shrink-0 items-center px-4'>
