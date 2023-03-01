@@ -1,3 +1,4 @@
+import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import SAMLTracer from '.';
 
 export interface Trace {
@@ -16,6 +17,8 @@ export interface SAMLTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     product: string;
     clientID: string;
     samlResponse?: string;
+    issuer?: string;
+    profile?: SAMLProfile;
   };
 }
 
