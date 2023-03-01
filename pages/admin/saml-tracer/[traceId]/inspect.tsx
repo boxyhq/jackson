@@ -1,7 +1,7 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import type { Trace } from '@boxyhq/saml-jackson';
+import type { SAMLTrace } from '@boxyhq/saml-jackson';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import useSWR from 'swr';
@@ -26,7 +26,7 @@ const SAMLTraceInspector: NextPage = () => {
 
   const { traceId } = router.query as { traceId: string };
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<Trace>, ApiError>(
+  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLTrace>, ApiError>(
     `/api/admin/saml-tracer/${traceId}`,
     fetcher,
     {
@@ -45,6 +45,9 @@ const SAMLTraceInspector: NextPage = () => {
 
   if (!data) return null;
 
+  const trace = data.data;
+  const assertionType = trace.context.samlResponse ? 'Response' : 'Request';
+
   return (
     <>
       <LinkBack onClick={() => router.back()} />
@@ -58,40 +61,35 @@ const SAMLTraceInspector: NextPage = () => {
             </span>
             <span>
               <span className='font-medium text-gray-500'>{t('assertion_type')}:</span>
-              <span className='ml-2 font-bold text-gray-700'>
-                {data.data.context?.samlResponse ? 'Response' : 'Request'}
-              </span>
+              <span className='ml-2 font-bold text-gray-700'>{assertionType}</span>
             </span>
           </p>
         </div>
         <div className='border-t border-gray-200'>
           <dl>
-            <DescriptionListItem term='Timestamp' value={new Date(data.data.timestamp).toLocaleString()} />
+            {typeof trace.timestamp === 'number' && (
+              <DescriptionListItem term='Timestamp' value={new Date(trace.timestamp).toLocaleString()} />
+            )}
             <DescriptionListItem term='Error' value={data.data.error} />
-            {typeof data.data.context.tenant === 'string' && (
-              <DescriptionListItem term='Tenant' value={data.data.context.tenant} />
+            {trace.context.tenant && <DescriptionListItem term='Tenant' value={trace.context.tenant} />}
+            {trace.context.product && <DescriptionListItem term='Product' value={trace.context.product} />}
+            {trace.context.issuer && <DescriptionListItem term='Issuer' value={trace.context.issuer} />}
+            {assertionType === 'Response' && (
+              <DescriptionListItem
+                term='Raw response'
+                value={
+                  <SyntaxHighlighter language='xml' style={materialOceanic}>
+                    {trace.context.samlResponse}
+                  </SyntaxHighlighter>
+                }
+              />
             )}
-            {typeof data.data.context.product === 'string' && (
-              <DescriptionListItem term='Product' value={data.data.context.product} />
-            )}
-            {typeof data.data.context.issuer === 'string' && (
-              <DescriptionListItem term='Issuer' value={data.data.context.issuer} />
-            )}
-
-            <DescriptionListItem
-              term='Raw response'
-              value={
-                <SyntaxHighlighter language='xml' style={materialOceanic}>
-                  {data?.data.context.samlResponse}
-                </SyntaxHighlighter>
-              }
-            />
-            {typeof data.data.context.profile === 'string' && (
+            {typeof trace.context.profile === 'object' && trace.context.profile && (
               <DescriptionListItem
                 term='Profile'
                 value={
                   <SyntaxHighlighter language='json' style={materialOceanic}>
-                    {data?.data.context.profile}
+                    {JSON.stringify(trace.context.profile)}
                   </SyntaxHighlighter>
                 }
               />
