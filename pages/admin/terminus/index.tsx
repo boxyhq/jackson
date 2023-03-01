@@ -38,7 +38,7 @@ export async function getServerSideProps({ locale }) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
-      host: terminusOptions.hostUrl,
+      host: terminusOptions.hostUrl || null,
     },
   };
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './BlocklyComponent.module.css';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, createRef } from 'react';
 
 import Blockly from 'blockly/core';
 import 'blockly/blocks';
@@ -29,41 +29,37 @@ function BlocklyComponent(props) {
   const blocklyDiv = useRef();
   const toolbox = useRef();
   const primaryWorkspace = useRef();
+  const productField = createRef();
 
   const getEndpoint = () => {
-    // TODO robustify
-    var p = 'productDemo';
-    // if (document.getElementById('productDemo') != null) {
-    //   p = document.getElementById('productDemo').value;
-    // }
+    const product = (productField.current as any).value || 'productDemo';
 
-    return `/api/admin/terminus/models/${p}`;
+    return `/api/admin/terminus/models/${product}`;
   };
 
   const generateModel = () => {
     ObjectMap.clear();
     // trigger the BLOCKLY processing which will run our custom code generation
     javascriptGenerator.workspaceToCode(primaryWorkspace.current);
-    var ret = _generateCUEStructureAndJSONSchemas();
+    const ret = _generateCUEStructureAndJSONSchemas();
 
     // add specific BoxyHQ imports
-    var cue = `
+    return `
     EncryptedDefinitions: ${JSON.stringify(ret[1])}
     ${ret[0]}
     `;
-    return cue;
   };
 
   // Rudimentary way of generating a CUE file and a JSON model for synthetic data generation
   const _generateCUEStructureAndJSONSchemas = () => {
-    var defs = ``;
-    var encrObjects = [];
+    let defs = ``;
+    const encrObjects = [];
     for (const [key, value] of Object.entries(Object.fromEntries(ObjectMap))) {
       encrObjects.push(key as never);
-      var valuesMap = Object.fromEntries(value as any);
+      const valuesMap = Object.fromEntries(value as any);
 
       // DEFINITIONS
-      var definitions = ``;
+      let definitions = ``;
       for (const [field, values] of Object.entries(valuesMap)) {
         if (IGNORE_FIELDS.includes(field)) {
           continue;
@@ -77,7 +73,7 @@ function BlocklyComponent(props) {
       }
 
       // ENCRYPTION
-      var encryption = ``;
+      let encryption = ``;
       if (valuesMap[CONST_OBJ_GLB_ENCR] != null) {
         encryption += `${valuesMap[CONST_OBJ_GLB_ENCR]}`;
       } else {
@@ -89,14 +85,14 @@ function BlocklyComponent(props) {
       }
 
       // MASKS
-      var masks = ``;
+      let masks = ``;
       for (const [field, values] of Object.entries(valuesMap)) {
         if (IGNORE_FIELDS.includes(field)) {
           continue;
         }
         masks += `\n\t\t\t${field}: ${values[2]}`;
       }
-      var objectOutput = `\n#${key}: {
+      const objectOutput = `\n#${key}: {
         #Definition: { ${definitions}
         }
         #Encryption: ${encryption}
@@ -110,16 +106,16 @@ function BlocklyComponent(props) {
   };
 
   const modelToXML = () => {
-    var xml = Blockly.Xml.workspaceToDom(primaryWorkspace.current as any);
-    var domToPretty = Blockly.Xml.domToPrettyText(xml);
+    const xml = Blockly.Xml.workspaceToDom(primaryWorkspace.current as any);
+    const domToPretty = Blockly.Xml.domToPrettyText(xml);
     return domToPretty;
   };
 
   const uploadModel = async () => {
-    var domToPretty = modelToXML();
-    var cueModel = generateModel();
+    const domToPretty = modelToXML();
+    const cueModel = generateModel();
 
-    let body = {
+    const body = {
       cue_schema: Buffer.from(cueModel).toString('base64'),
       blockly_schema: Buffer.from(domToPretty).toString('base64'),
     };
@@ -136,7 +132,7 @@ function BlocklyComponent(props) {
     const response = await rsp.json();
 
     (primaryWorkspace.current! as any).clear();
-    var textToDom = Blockly.Xml.textToDom(Buffer.from(response.data, 'base64').toString());
+    const textToDom = Blockly.Xml.textToDom(Buffer.from(response.data, 'base64').toString());
     Blockly.Xml.domToWorkspace(textToDom, primaryWorkspace.current! as any);
   };
 
@@ -179,6 +175,7 @@ function BlocklyComponent(props) {
         </div>
         <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
           <input
+            ref={productField as any}
             type='text'
             className='input-bordered input h-10 w-full'
             id='productDemo'
