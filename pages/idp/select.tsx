@@ -8,7 +8,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
-import { hexToHSL } from '@lib/utils';
+import { hexToHsl, darkenHslColor } from '@lib/color';
 import { branding as defaultBranding } from '@lib/settings';
 import Image from 'next/image';
 
@@ -22,7 +22,7 @@ export default function ChooseIdPConnection({
 
   const logoUrl = branding?.logoUrl || defaultBranding.logoUrl;
   const faviconUrl = branding?.faviconUrl || defaultBranding.faviconUrl;
-  const primaryColor = hexToHSL(branding?.primaryColor || defaultBranding.primaryColor);
+  const primaryColor = hexToHsl(branding?.primaryColor || defaultBranding.primaryColor);
   const companyName = branding?.companyName || defaultBranding.companyName;
   const title = requestType === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
   const pageTitle = `${title} - ${companyName}`;
@@ -34,7 +34,7 @@ export default function ChooseIdPConnection({
           <title>{pageTitle}</title>
           <link rel='icon' href={faviconUrl} />
         </Head>
-        <style>{`:root { --p: ${primaryColor}; }`}</style>
+        <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
         <div className='flex justify-center'>
           <Image src={logoUrl} alt={companyName} width={50} height={50} />
         </div>
