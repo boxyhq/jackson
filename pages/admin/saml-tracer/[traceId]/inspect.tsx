@@ -86,8 +86,10 @@ const SAMLTraceInspector: NextPage = () => {
               <DescriptionListItem term='Timestamp' value={new Date(trace.timestamp).toLocaleString()} />
             )}
             <DescriptionListItem term='Error' value={trace.error} />
-            {trace.context.tenant && <DescriptionListItem term='Tenant' value={trace.context.tenant} />}
-            {trace.context.product && <DescriptionListItem term='Product' value={trace.context.product} />}
+            {trace.context.tenant && <DescriptionListItem term={t('tenant')} value={trace.context.tenant} />}
+            {trace.context.product && (
+              <DescriptionListItem term={t('product')} value={trace.context.product} />
+            )}
             {trace.context.clientID && (
               <DescriptionListItem term='SSO Connection Client ID' value={trace.context.clientID} />
             )}
@@ -97,7 +99,7 @@ const SAMLTraceInspector: NextPage = () => {
               <DescriptionListItem term='Entity ID' value={trace.context.entityId} />
             )}
             {trace.context.providerName && (
-              <DescriptionListItem term='Entity ID' value={trace.context.providerName} />
+              <DescriptionListItem term='Provider' value={trace.context.providerName} />
             )}
             {assertionType === 'Response' && (
               <DescriptionListItem
