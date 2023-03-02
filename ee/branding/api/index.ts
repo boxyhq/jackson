@@ -28,7 +28,16 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.json({ data: defaultBranding });
   }
 
-  return res.json({ data: await brandingController?.get() });
+  const brandingSettings = await brandingController?.get();
+
+  const branding = {
+    logoUrl: brandingSettings?.logoUrl || defaultBranding.logoUrl,
+    primaryColor: brandingSettings?.primaryColor || defaultBranding.primaryColor,
+    faviconUrl: brandingSettings?.faviconUrl || defaultBranding.faviconUrl,
+    companyName: brandingSettings?.companyName || defaultBranding.companyName,
+  };
+
+  return res.json({ data: branding });
 };
 
 export default handler;

@@ -5,12 +5,12 @@ import { useTranslation } from 'next-i18next';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
 import { hexToHsl, darkenHslColor } from '@lib/color';
-import { branding as defaultBranding } from '@lib/settings';
 import Image from 'next/image';
+import { PoweredBy } from '@components/PoweredBy';
+import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 
 export default function ChooseIdPConnection({
   connections,
@@ -20,29 +20,35 @@ export default function ChooseIdPConnection({
   const { branding } = usePortalBranding();
   const { t } = useTranslation('common');
 
-  const logoUrl = branding?.logoUrl || defaultBranding.logoUrl;
-  const faviconUrl = branding?.faviconUrl || defaultBranding.faviconUrl;
-  const primaryColor = hexToHsl(branding?.primaryColor || defaultBranding.primaryColor);
-  const companyName = branding?.companyName || defaultBranding.companyName;
+  const primaryColor = branding?.primaryColor ? hexToHsl(branding?.primaryColor) : null;
   const title = requestType === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
-  const pageTitle = `${title} - ${companyName}`;
 
   return (
     <div className='mx-auto my-28 w-[500px]'>
       <div className='mx-5 flex flex-col space-y-10 rounded border border-gray-300 p-10'>
         <Head>
-          <title>{pageTitle}</title>
-          <link rel='icon' href={faviconUrl} />
+          <title>{`${title} - ${branding?.companyName}`}</title>
+          {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
         </Head>
-        <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
-        <div className='flex justify-center'>
-          <Image src={logoUrl} alt={companyName} width={50} height={50} />
-        </div>
+
+        {primaryColor && (
+          <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
+        )}
+
+        {branding?.logoUrl && (
+          <div className='flex justify-center'>
+            <Image src={branding.logoUrl} alt={branding.companyName} width={50} height={50} />
+          </div>
+        )}
+
         {requestType === 'sp-initiated' ? (
           <IdpSelector connections={connections} />
         ) : (
           <AppSelector connections={connections} SAMLResponse={SAMLResponse} />
         )}
+      </div>
+      <div className='my-4'>
+        <PoweredBy />
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import useSetupLink from '@lib/ui/hooks/useSetupLink';
 import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 import { useTranslation } from 'next-i18next';
 import { hexToHsl, darkenHslColor } from '@lib/color';
-import { branding as defaultBranding } from '@lib/settings';
+import { PoweredBy } from '@components/PoweredBy';
 
 export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation('common');
@@ -24,26 +24,28 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
     return <Loading />;
   }
 
-  const logoUrl = branding?.logoUrl || defaultBranding.logoUrl;
-  const faviconUrl = branding?.faviconUrl || defaultBranding.faviconUrl;
-  const primaryColor = hexToHsl(branding?.primaryColor || defaultBranding.primaryColor);
-  const companyName = branding?.companyName || defaultBranding.companyName;
+  const primaryColor = branding?.primaryColor ? hexToHsl(branding?.primaryColor) : null;
   const title = setupLink?.service === 'sso' ? t('configure_sso') : t('configure_dsync');
-  const pageTitle = `${title} - ${companyName}`;
 
   return (
     <>
       <Head>
-        <title>{pageTitle}</title>
-        <link rel='icon' href={faviconUrl} />
+        <title>{`${title} - ${branding?.companyName}`}</title>
+        {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
       </Head>
-      <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
+
+      {primaryColor && (
+        <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
+      )}
+
       <div className='flex flex-1 flex-col'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <div className='flex flex-shrink-0 items-center px-4'>
             <Link href={`/setup/${token}`}>
               <div className='flex items-center'>
-                <Image src={logoUrl} alt={companyName} width={42} height={42} />
+                {branding?.logoUrl && (
+                  <Image src={branding.logoUrl} alt={branding.companyName} width={42} height={42} />
+                )}
                 <span className='ml-4 text-xl font-bold text-gray-900'>{title}</span>
               </div>
             </Link>
@@ -58,6 +60,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
           </div>
         </main>
       </div>
+      <PoweredBy />
     </>
   );
 };
