@@ -83,9 +83,9 @@ const SAMLTraceInspector: NextPage = () => {
         <div className='border-t border-gray-200'>
           <dl>
             {typeof trace.timestamp === 'number' && (
-              <DescriptionListItem term='Timestamp' value={new Date(trace.timestamp).toLocaleString()} />
+              <DescriptionListItem term={t('timestamp')} value={new Date(trace.timestamp).toLocaleString()} />
             )}
-            <DescriptionListItem term='Error' value={trace.error} />
+            <DescriptionListItem term={t('error')} value={trace.error} />
             {trace.context.tenant && <DescriptionListItem term={t('tenant')} value={trace.context.tenant} />}
             {trace.context.product && (
               <DescriptionListItem term={t('product')} value={trace.context.product} />
@@ -93,8 +93,8 @@ const SAMLTraceInspector: NextPage = () => {
             {trace.context.clientID && (
               <DescriptionListItem term='SSO Connection Client ID' value={trace.context.clientID} />
             )}
-            {trace.context.issuer && <DescriptionListItem term='Issuer' value={trace.context.issuer} />}
-            {trace.context.acsUrl && <DescriptionListItem term='ACS URL' value={trace.context.acsUrl} />}
+            {trace.context.issuer && <DescriptionListItem term={t('issuer')} value={trace.context.issuer} />}
+            {trace.context.acsUrl && <DescriptionListItem term={t('acs_url')} value={trace.context.acsUrl} />}
             {trace.context.entityId && (
               <DescriptionListItem term='Entity ID' value={trace.context.entityId} />
             )}
