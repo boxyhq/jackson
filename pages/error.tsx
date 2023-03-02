@@ -47,7 +47,9 @@ export default function Error() {
               <p className='mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl'>
                 {statusText}
               </p>
-              <p className='mb-4 text-lg font-light'>{t('saml_error')}: {message}</p>
+              <p className='mb-4 text-lg font-light'>
+                {t('sso_error')}: {message}
+              </p>
             </div>
           </div>
         </section>
