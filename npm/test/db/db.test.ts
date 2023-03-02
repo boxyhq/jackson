@@ -79,56 +79,70 @@ const mssqlDbConfig = <DatabaseOption>{
   cleanupLimit: 10,
 };
 
+const dynamoDbConfig = <DatabaseOption>{
+  engine: 'dynamodb',
+  url: 'http://localhost:8000',
+  ttl: 1,
+  cleanupLimit: 10,
+};
+
 const dbs = [
   {
-    ...memDbConfig,
+    ...dynamoDbConfig,
   },
   {
-    ...memDbConfig,
+    ...dynamoDbConfig,
     encryptionKey,
   },
-  {
-    ...redisDbConfig,
-  },
-  {
-    ...redisDbConfig,
-    encryptionKey,
-  },
-  {
-    ...postgresDbConfig,
-  },
-  {
-    ...postgresDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mongoDbConfig,
-  },
-  {
-    ...mongoDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mysqlDbConfig,
-  },
-  {
-    ...mysqlDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mariadbDbConfig,
-  },
-  {
-    ...mariadbDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mssqlDbConfig,
-  },
-  {
-    ...mssqlDbConfig,
-    encryptionKey,
-  },
+  // {
+  //   ...memDbConfig,
+  // },
+  // {
+  //   ...memDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...redisDbConfig,
+  // },
+  // {
+  //   ...redisDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...postgresDbConfig,
+  // },
+  // {
+  //   ...postgresDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mongoDbConfig,
+  // },
+  // {
+  //   ...mongoDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mysqlDbConfig,
+  // },
+  // {
+  //   ...mysqlDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mariadbDbConfig,
+  // },
+  // {
+  //   ...mariadbDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mssqlDbConfig,
+  // },
+  // {
+  //   ...mssqlDbConfig,
+  //   encryptionKey,
+  // },
 ];
 
 if (process.env.PLANETSCALE_URL) {

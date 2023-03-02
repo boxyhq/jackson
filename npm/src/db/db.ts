@@ -5,6 +5,7 @@ import mongo from './mongo';
 import redis from './redis';
 import sql from './sql/sql';
 import store from './store';
+import dynamodb from './dynamoDb';
 
 import { JacksonStore } from './sql/entity/JacksonStore';
 import { JacksonIndex } from './sql/entity/JacksonIndex';
@@ -142,6 +143,8 @@ export default {
         return new DB(await mongo.new(options), encryptionKey);
       case 'mem':
         return new DB(await mem.new(options), encryptionKey);
+      case 'dynamodb':
+        return new DB(await dynamodb.new(options), encryptionKey);
       default:
         throw new Error('unsupported db engine: ' + options.engine);
     }

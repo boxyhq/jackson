@@ -12,13 +12,6 @@ import { marshall, unmarshall, NativeAttributeValue } from '@aws-sdk/util-dynamo
 import { DatabaseDriver, DatabaseOption, Encrypted, Index } from '../typings';
 import * as dbutils from './utils';
 
-type Document = {
-  value: Encrypted;
-  expiresAt?: Date;
-  modifiedAt: string;
-  indexes: string[];
-};
-
 const getSeconds = (date: Date) => Math.floor(date.getTime() / 1000);
 
 class DynamoDB implements DatabaseDriver {
@@ -28,24 +21,16 @@ class DynamoDB implements DatabaseDriver {
 
   constructor(options: DatabaseOption) {
     this.options = options;
-    this.tableName = 'jackson-store';
+    this.tableName = 'jacksonStore';
   }
 
   async init(): Promise<DynamoDB> {
+    console.log('init dynamodb', this.options);
     this.client = new DynamoDBClient({ endpoint: this.options.url });
     try {
+      console.log('init dynamodb1');
       await this.client.send(
         new CreateTableCommand({
-          AttributeDefinitions: [
-            {
-              AttributeName: 'createdAt',
-              AttributeType: 'S',
-            },
-            {
-              AttributeName: 'updatedAt',
-              AttributeType: 'S',
-            },
-          ],
           KeySchema: [
             {
               AttributeName: 'namespace',
@@ -56,6 +41,36 @@ class DynamoDB implements DatabaseDriver {
               KeyType: 'RANGE',
             },
           ],
+          AttributeDefinitions: [
+            {
+              AttributeName: 'namespace',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'key',
+              AttributeType: 'S',
+            },
+            // {
+            //   AttributeName: 'value',
+            //   AttributeType: 'B',
+            // },
+            // {
+            //   AttributeName: 'iv',
+            //   AttributeType: 'B',
+            // },
+            // {
+            //   AttributeName: 'tag',
+            //   AttributeType: 'B',
+            // },
+            // {
+            //   AttributeName: 'createdAt',
+            //   AttributeType: 'S',
+            // },
+            // {
+            //   AttributeName: 'modifiedAt',
+            //   AttributeType: 'S',
+            // },
+          ],
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 5,
@@ -63,6 +78,7 @@ class DynamoDB implements DatabaseDriver {
           TableName: this.tableName,
         })
       );
+      console.log('init dynamodb2');
       await this.client.send(
         new UpdateTimeToLiveCommand({
           TableName: this.tableName,
@@ -72,7 +88,9 @@ class DynamoDB implements DatabaseDriver {
           },
         })
       );
+      console.log('init dynamodb3');
     } catch (error) {
+      console.log('init dynamodb4');
       console.error(error);
     }
 
@@ -106,35 +124,38 @@ class DynamoDB implements DatabaseDriver {
       })
     );
 
+    console.log(pageOffset, res);
+
     return [];
   }
 
   async getByIndex(namespace: string, idx: Index, offset?: number, limit?: number): Promise<any> {
-    const docs =
-      dbutils.isNumeric(offset) && dbutils.isNumeric(limit)
-        ? await this.collection
-            .find(
-              {
-                indexes: dbutils.keyForIndex(namespace, idx),
-              },
-              { sort: { createdAt: -1 }, skip: offset, limit: limit }
-            )
-            .toArray()
-        : await this.collection
-            .find({
-              indexes: dbutils.keyForIndex(namespace, idx),
-            })
-            .toArray();
-
-    const ret: string[] = [];
-    for (const doc of docs || []) {
-      ret.push(doc.value);
-    }
-
-    return ret;
+    console.log(namespace, idx, offset, limit);
+    // const docs =
+    //   dbutils.isNumeric(offset) && dbutils.isNumeric(limit)
+    //     ? await this.collection
+    //         .find(
+    //           {
+    //             indexes: dbutils.keyForIndex(namespace, idx),
+    //           },
+    //           { sort: { createdAt: -1 }, skip: offset, limit: limit }
+    //         )
+    //         .toArray()
+    //     : await this.collection
+    //         .find({
+    //           indexes: dbutils.keyForIndex(namespace, idx),
+    //         })
+    //         .toArray();
+    // const ret: string[] = [];
+    // for (const doc of docs || []) {
+    //   ret.push(doc.value);
+    // }
+    // return ret;
+    return [];
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
+    console.log(indexes);
     const now = getSeconds(new Date());
     const doc: Record<string, NativeAttributeValue> = {
       namespace,
