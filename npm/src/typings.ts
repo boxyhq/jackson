@@ -366,6 +366,10 @@ export interface JacksonOption {
     adminToken?: string;
   };
   noAnalytics?: boolean;
+  terminus?: {
+    host?: string;
+    adminToken?: string;
+  };
 }
 
 export interface SLORequestParams {
