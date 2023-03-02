@@ -18,17 +18,17 @@ class DynamoDB implements DatabaseDriver {
   private options: DatabaseOption;
   private client!: DynamoDBClient;
   private tableName!: string;
+  private indexTableName!: string;
 
   constructor(options: DatabaseOption) {
     this.options = options;
     this.tableName = 'jacksonStore';
+    this.indexTableName = 'jacksonIndex';
   }
 
   async init(): Promise<DynamoDB> {
-    console.log('init dynamodb', this.options);
     this.client = new DynamoDBClient({ endpoint: this.options.url });
     try {
-      console.log('init dynamodb1');
       await this.client.send(
         new CreateTableCommand({
           KeySchema: [
@@ -78,21 +78,22 @@ class DynamoDB implements DatabaseDriver {
           TableName: this.tableName,
         })
       );
-      console.log('init dynamodb2');
       await this.client.send(
         new UpdateTimeToLiveCommand({
           TableName: this.tableName,
           TimeToLiveSpecification: {
-            AttributeName: 'ttl',
+            AttributeName: 'expiresAt',
             Enabled: true,
           },
         })
       );
-      console.log('init dynamodb3');
-    } catch (error) {
-      console.log('init dynamodb4');
-      console.error(error);
+    } catch (error: any) {
+      if (!error?.message?.includes('Cannot create preexisting table')) {
+        throw error;
+      }
     }
+
+    // TODO: create index table
 
     return this;
   }
@@ -107,11 +108,15 @@ class DynamoDB implements DatabaseDriver {
 
     const item = res.Item ? unmarshall(res.Item) : null;
 
-    if (item?.ttl < now) {
+    if (item?.expiresAt < now) {
       return null;
     }
 
-    return item;
+    if (item && item.value) {
+      return JSON.parse(item.value);
+    }
+
+    return null;
   }
 
   async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
@@ -160,7 +165,7 @@ class DynamoDB implements DatabaseDriver {
     const doc: Record<string, NativeAttributeValue> = {
       namespace,
       key,
-      value: val,
+      value: JSON.stringify(val),
       createdAt: now,
     };
 
@@ -179,7 +184,7 @@ class DynamoDB implements DatabaseDriver {
 
   async delete(namespace: string, key: string): Promise<any> {
     const res = await this.client.send(
-      new DeleteItemCommand({ TableName: this.tableName, Key: marshall({ id: dbutils.key(namespace, key) }) })
+      new DeleteItemCommand({ TableName: this.tableName, Key: marshall({ namespace, key }) })
     );
 
     return res;
