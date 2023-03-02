@@ -1,4 +1,4 @@
-import type { Storable, AdminPortalBranding, AdminPortalSettings } from '../../typings';
+import type { Storable, AdminPortalBranding } from '../../typings';
 
 export class BrandingController {
   private store: Storable;
@@ -8,9 +8,9 @@ export class BrandingController {
     this.store = store;
   }
 
-  // Get branding settings
+  // Get branding
   public async get(): Promise<AdminPortalBranding> {
-    const settings: AdminPortalSettings = await this.store.get(this.storeKey);
+    const branding: AdminPortalBranding = await this.store.get(this.storeKey);
 
     const defaultBranding = {
       logoUrl: null,
@@ -19,29 +19,29 @@ export class BrandingController {
       primaryColor: null,
     };
 
-    return settings ? settings.branding : defaultBranding;
+    return branding ? branding : defaultBranding;
   }
 
-  // Update branding settings
+  // Update branding
   public async update(params: Partial<AdminPortalBranding>) {
-    const settings: AdminPortalSettings = await this.store.get(this.storeKey);
-
     const { logoUrl, faviconUrl, companyName, primaryColor } = params;
 
-    const brandingUpdated = {
+    const currentBranding: AdminPortalBranding = await this.get();
+
+    const newBranding = {
       logoUrl: logoUrl ?? null,
       faviconUrl: faviconUrl ?? null,
       companyName: companyName ?? null,
       primaryColor: primaryColor ?? null,
     };
 
-    const settingsUpdated = {
-      ...settings,
-      branding: brandingUpdated,
+    const updatedbranding = {
+      ...currentBranding,
+      ...newBranding,
     };
 
-    await this.store.put(this.storeKey, settingsUpdated);
+    await this.store.put(this.storeKey, updatedbranding);
 
-    return brandingUpdated;
+    return updatedbranding;
   }
 }
