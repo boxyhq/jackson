@@ -9,7 +9,7 @@ export class BrandingController {
   }
 
   // Get branding
-  public async get(): Promise<AdminPortalBranding> {
+  public async get() {
     const branding: AdminPortalBranding = await this.store.get(this.storeKey);
 
     const defaultBranding = {
@@ -26,7 +26,7 @@ export class BrandingController {
   public async update(params: Partial<AdminPortalBranding>) {
     const { logoUrl, faviconUrl, companyName, primaryColor } = params;
 
-    const currentBranding: AdminPortalBranding = await this.get();
+    const currentBranding = await this.get();
 
     const newBranding = {
       logoUrl: logoUrl ?? null,
