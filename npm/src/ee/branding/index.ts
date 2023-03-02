@@ -2,7 +2,7 @@ import type { Storable, AdminPortalBranding, AdminPortalSettings } from '../../t
 
 export class BrandingController {
   private store: Storable;
-  private storeKey = 'settings';
+  private storeKey = 'branding';
 
   constructor({ store }: { store: Storable }) {
     this.store = store;

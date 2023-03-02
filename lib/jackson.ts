@@ -43,7 +43,7 @@ export default async function init() {
     !g.oidcDiscoveryController ||
     !g.spConfig ||
     !g.samlFederatedController ||
-    !'brandingController'
+    !g.brandingController
   ) {
     const ret = await jackson(jacksonOptions);
     connectionAPIController = ret.connectionAPIController;
