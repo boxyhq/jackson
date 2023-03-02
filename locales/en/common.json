@@ -61,7 +61,7 @@
   "server_error": "server error",
   "sign_out": "Sign out",
   "saml": "SAML",
-  "saml_error": "SAML error",
+  "sso_error": "SSO error",
   "scim_endpoint": "SCIM Endpoint",
   "scim_token": "SCIM Token",
   "select_type": "Select Type",

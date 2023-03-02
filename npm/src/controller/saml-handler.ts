@@ -73,8 +73,11 @@ export class SAMLHandler {
       });
     }
 
+    const noSSOConnectionErrMessage =
+      authFlow === 'oauth' ? 'No SSO connection found.' : 'No SAML connection found.';
+
     if (!connections || connections.length === 0) {
-      throw new JacksonError('No SAML connection found.', 404);
+      throw new JacksonError(noSSOConnectionErrMessage, 404);
     }
 
     // If an IdP is specified, find the connection for that IdP
@@ -82,7 +85,7 @@ export class SAMLHandler {
       const connection = connections.find((c) => c.clientID === idp_hint);
 
       if (!connection) {
-        throw new JacksonError('No SAML connection found.', 404);
+        throw new JacksonError(noSSOConnectionErrMessage, 404);
       }
 
       return { connection };
