@@ -37,7 +37,7 @@ export class SSO {
     idp_hint?: string;
   }) => {
     let connection: SAMLSSORecord | undefined;
-    let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
+    let id, acsUrl, entityId, publicKey, providerName, decodedRequest, app;
     try {
       const parsedSAMLRequest = await extractSAMLRequestAttributes(request);
 
@@ -53,7 +53,7 @@ export class SSO {
         throw new JacksonError('Invalid SAML Request signature.', 400);
       }
 
-      const app = await this.app.getByEntityId(entityId);
+      app = await this.app.getByEntityId(entityId);
 
       if (app.acsUrl !== acsUrl) {
         throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
@@ -107,8 +107,8 @@ export class SSO {
       this.samlTracer.saveTrace({
         error: error_description,
         context: {
-          tenant: connection?.tenant || '',
-          product: connection?.product || '',
+          tenant: app?.tenant || '',
+          product: app?.product || '',
           clientID: connection?.clientID || '',
           isSAMLFederated: true,
           providerName,
