@@ -84,8 +84,8 @@ export class OAuthController implements IOAuthController {
 
     let requestedTenant;
     let requestedProduct;
-    let requestedScopes: string[];
-    let requestedOIDCFlow: boolean;
+    let requestedScopes: string[] | undefined;
+    let requestedOIDCFlow: boolean | undefined;
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
 
     try {
@@ -231,9 +231,10 @@ export class OAuthController implements IOAuthController {
       const traceId = await this.samlTracer.saveTrace({
         error: error_description,
         context: {
-          tenant: requestedTenant as string,
-          product: requestedProduct as string,
+          tenant: requestedTenant,
+          product: requestedProduct,
           clientID: connection.clientID,
+          requestedOIDCFlow,
         },
       });
       return {
@@ -276,6 +277,7 @@ export class OAuthController implements IOAuthController {
               tenant: requestedTenant as string,
               product: requestedProduct as string,
               clientID: connection.clientID,
+              requestedOIDCFlow,
             },
           });
           return {
@@ -307,9 +309,11 @@ export class OAuthController implements IOAuthController {
         const traceId = await this.samlTracer.saveTrace({
           error: error_description,
           context: {
-            tenant: requestedTenant as string,
-            product: requestedProduct as string,
+            tenant: requestedTenant,
+            product: requestedProduct,
             clientID: connection.clientID,
+            requestedOIDCFlow,
+            samlRequest: samlReq?.request || '',
           },
         });
 
@@ -453,6 +457,8 @@ export class OAuthController implements IOAuthController {
           tenant: requestedTenant as string,
           product: requestedProduct as string,
           clientID: connection.clientID,
+          requestedOIDCFlow,
+          samlRequest: samlReq?.request || '',
         },
       });
       return {
@@ -471,11 +477,11 @@ export class OAuthController implements IOAuthController {
   ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }> {
     let connection: SAMLSSORecord | undefined;
     let rawResponse: string | undefined;
-    let sessionId: string;
+    let sessionId: string | undefined;
     let session: any;
     let issuer: string | undefined;
-    let isIdPFlow: boolean;
-    let isSAMLFederated: boolean;
+    let isIdPFlow: boolean | undefined;
+    let isSAMLFederated: boolean | undefined;
     let validateOpts: { thumbprint: string; audience: string; privateKey: string };
     let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
@@ -592,6 +598,7 @@ export class OAuthController implements IOAuthController {
           product: connection?.product || '',
           clientID: connection?.clientID || '',
           issuer: issuer || '',
+          isSAMLFederated: !!isSAMLFederated,
         },
       });
       throw err; // Rethrow the error
@@ -633,6 +640,7 @@ export class OAuthController implements IOAuthController {
           tenant: connection.tenant,
           product: connection.product,
           clientID: connection.clientID,
+          isSAMLFederated,
           issuer,
           profile,
         },

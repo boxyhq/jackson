@@ -16,9 +16,15 @@ export interface SAMLTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     tenant: string;
     product: string;
     clientID: string;
-    samlResponse?: string;
-    issuer?: string;
-    profile?: SAMLProfile;
+    requestedOIDCFlow?: boolean; // Type of OAuth client request
+    isSAMLFederated?: boolean; // true if hit the SAML Federation flow
+    providerName?: string; // SAML Federation SP
+    acsUrl?: string; // ACS Url of SP in SAML Federation flow
+    entityId?: string; // Entity ID of SP in SAML Federation flow
+    samlRequest?: string; // Generated SAML Request
+    samlResponse?: string; // Raw SAML response from IdP
+    issuer?: string; // Parsed issuer from samlResponse
+    profile?: SAMLProfile; // Profile extracted from samlResponse
   };
 }
 

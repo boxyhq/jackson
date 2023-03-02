@@ -37,10 +37,17 @@ export class SSO {
     idp_hint?: string;
   }) => {
     let connection: SAMLSSORecord | undefined;
-    let serviceProvider: string | undefined;
+    let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
     try {
-      const { id, acsUrl, entityId, publicKey, providerName } = await extractSAMLRequestAttributes(request);
-      serviceProvider = providerName;
+      const parsedSAMLRequest = await extractSAMLRequestAttributes(request);
+
+      id = parsedSAMLRequest.id;
+      acsUrl = parsedSAMLRequest.acsUrl;
+      entityId = parsedSAMLRequest.entityId;
+      publicKey = parsedSAMLRequest.publicKey;
+      providerName = parsedSAMLRequest.providerName;
+      decodedRequest = parsedSAMLRequest.decodedRequest;
+
       // Verify the request if it is signed
       if (publicKey && !saml.hasValidSignature(request, publicKey, null)) {
         throw new JacksonError('Invalid SAML Request signature.', 400);
@@ -104,7 +111,10 @@ export class SSO {
           product: connection?.product || '',
           clientID: connection?.clientID || '',
           isSAMLFederated: true,
-          serviceProvider,
+          providerName,
+          acsUrl,
+          entityId,
+          samlRequest: decodedRequest,
         },
       });
 

@@ -11,6 +11,7 @@ import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
 import { useTranslation } from 'react-i18next';
 import { LinkBack } from '@components/LinkBack';
+import { Badge } from 'react-daisyui';
 
 const DescriptionListItem = ({ term, value }: { term: string; value: string | JSX.Element }) => (
   <div className='px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
@@ -55,13 +56,27 @@ const SAMLTraceInspector: NextPage = () => {
         <div className='px-4 py-5 sm:px-6'>
           <h3 className='text-base font-semibold leading-6 text-gray-900'>Trace details</h3>
           <p className='mt-1 flex max-w-2xl gap-6 text-sm text-gray-500'>
-            <span>
+            <span className='whitespace-nowrap'>
               <span className='font-medium text-gray-500'>TraceID:</span>
               <span className='ml-2 font-bold text-gray-700'> {traceId}</span>
             </span>
-            <span>
+            <span className='whitespace-nowrap'>
               <span className='font-medium text-gray-500'>{t('assertion_type')}:</span>
               <span className='ml-2 font-bold text-gray-700'>{assertionType}</span>
+            </span>
+            <span className='whitespace-nowrap'>
+              <span className='font-medium text-gray-500'>{t('sp_protocol')}:</span>
+              <Badge
+                color='primary'
+                size='md'
+                className='ml-2 font-mono uppercase text-white'
+                aria-label='SP Protocol'>
+                {trace.context.requestedOIDCFlow
+                  ? 'OIDC'
+                  : trace.context.isSAMLFederated
+                  ? t('saml_federation')
+                  : 'OAuth 2.0'}
+              </Badge>
             </span>
           </p>
         </div>
@@ -70,13 +85,23 @@ const SAMLTraceInspector: NextPage = () => {
             {typeof trace.timestamp === 'number' && (
               <DescriptionListItem term='Timestamp' value={new Date(trace.timestamp).toLocaleString()} />
             )}
-            <DescriptionListItem term='Error' value={data.data.error} />
+            <DescriptionListItem term='Error' value={trace.error} />
             {trace.context.tenant && <DescriptionListItem term='Tenant' value={trace.context.tenant} />}
             {trace.context.product && <DescriptionListItem term='Product' value={trace.context.product} />}
+            {trace.context.clientID && (
+              <DescriptionListItem term='SSO Connection Client ID' value={trace.context.clientID} />
+            )}
             {trace.context.issuer && <DescriptionListItem term='Issuer' value={trace.context.issuer} />}
+            {trace.context.acsUrl && <DescriptionListItem term='ACS URL' value={trace.context.acsUrl} />}
+            {trace.context.entityId && (
+              <DescriptionListItem term='Entity ID' value={trace.context.entityId} />
+            )}
+            {trace.context.providerName && (
+              <DescriptionListItem term='Entity ID' value={trace.context.providerName} />
+            )}
             {assertionType === 'Response' && (
               <DescriptionListItem
-                term='Raw response'
+                term='SAML Response'
                 value={
                   <SyntaxHighlighter language='xml' style={materialOceanic}>
                     {trace.context.samlResponse}
@@ -84,6 +109,17 @@ const SAMLTraceInspector: NextPage = () => {
                 }
               />
             )}
+            {assertionType === 'Request' && trace.context.samlRequest && (
+              <DescriptionListItem
+                term='SAML Request'
+                value={
+                  <SyntaxHighlighter language='xml' style={materialOceanic}>
+                    {trace.context.samlRequest}
+                  </SyntaxHighlighter>
+                }
+              />
+            )}
+
             {typeof trace.context.profile === 'object' && trace.context.profile && (
               <DescriptionListItem
                 term='Profile'

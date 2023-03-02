@@ -113,6 +113,7 @@
   "trace_id": "Trace Id",
   "timestamp": "Timestamp",
   "assertion_type": "Assertion Type",
+  "sp_protocol": "SP Protocol",
   "error_description": "Error description",
   "new_saml_federation_app": "New App",
   "view": "View",
