@@ -3,10 +3,10 @@ import jackson from '@lib/jackson';
 import type { SAMLTracerInstance } from '@boxyhq/saml-jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlTracer } = await jackson();
   const { method } = req;
 
   try {
+    const { samlTracer } = await jackson();
     switch (method) {
       case 'GET':
         return await handleGET(req, res, samlTracer);
