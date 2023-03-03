@@ -1,4 +1,6 @@
 import {
+  BatchWriteItemCommand,
+  WriteRequest,
   BatchGetItemCommand,
   CreateTableCommand,
   DeleteItemCommand,
@@ -14,16 +16,17 @@ import * as dbutils from './utils';
 
 const getSeconds = (date: Date) => Math.floor(date.getTime() / 1000);
 
+const tableName = 'jacksonStore';
+const indexTableName = 'jacksonIndex';
+const globalStoreKeyIndexName = 'storeKeyIndex';
+const globalIndexKeyIndexName = 'indexKeyIndex';
+
 class DynamoDB implements DatabaseDriver {
   private options: DatabaseOption;
   private client!: DynamoDBClient;
-  private tableName!: string;
-  private indexTableName!: string;
 
   constructor(options: DatabaseOption) {
     this.options = options;
-    this.tableName = 'jacksonStore';
-    this.indexTableName = 'jacksonIndex';
   }
 
   async init(): Promise<DynamoDB> {
@@ -50,41 +53,89 @@ class DynamoDB implements DatabaseDriver {
               AttributeName: 'key',
               AttributeType: 'S',
             },
-            // {
-            //   AttributeName: 'value',
-            //   AttributeType: 'B',
-            // },
-            // {
-            //   AttributeName: 'iv',
-            //   AttributeType: 'B',
-            // },
-            // {
-            //   AttributeName: 'tag',
-            //   AttributeType: 'B',
-            // },
-            // {
-            //   AttributeName: 'createdAt',
-            //   AttributeType: 'S',
-            // },
-            // {
-            //   AttributeName: 'modifiedAt',
-            //   AttributeType: 'S',
-            // },
           ],
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 5,
           },
-          TableName: this.tableName,
+          TableName: tableName,
         })
       );
       await this.client.send(
         new UpdateTimeToLiveCommand({
-          TableName: this.tableName,
+          TableName: tableName,
           TimeToLiveSpecification: {
             AttributeName: 'expiresAt',
             Enabled: true,
           },
+        })
+      );
+
+      await this.client.send(
+        new CreateTableCommand({
+          KeySchema: [
+            {
+              AttributeName: 'key',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'storeKey',
+              KeyType: 'RANGE',
+            },
+          ],
+          AttributeDefinitions: [
+            {
+              AttributeName: 'namespace',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'key',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'storeKey',
+              AttributeType: 'S',
+            },
+          ],
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: globalIndexKeyIndexName,
+              KeySchema: [
+                {
+                  AttributeName: 'key',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+            {
+              IndexName: globalStoreKeyIndexName,
+              KeySchema: [
+                {
+                  AttributeName: 'storeKey',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+          },
+          TableName: indexTableName,
         })
       );
     } catch (error: any) {
@@ -92,15 +143,13 @@ class DynamoDB implements DatabaseDriver {
         throw error;
       }
     }
-
-    // TODO: create index table
-
     return this;
   }
 
-  async get(namespace: string, key: string): Promise<any> {
+  // internal get without dbutils.Key
+  async _get(namespace: string, key: string): Promise<any> {
     const res = await this.client.send(
-      new GetItemCommand({ Key: marshall({ namespace, key }), TableName: this.tableName })
+      new GetItemCommand({ Key: marshall({ namespace, key }), TableName: tableName })
     );
 
     // Double check that the item has not expired
@@ -119,12 +168,16 @@ class DynamoDB implements DatabaseDriver {
     return null;
   }
 
+  async get(namespace: string, key: string): Promise<any> {
+    return this._get(namespace, dbutils.key(namespace, key));
+  }
+
   async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
     const res = await this.client.send(
       new QueryCommand({
         KeyConditionExpression: 'namespace = :namespace',
         ExpressionAttributeValues: marshall({ namespace }),
-        TableName: this.tableName,
+        TableName: tableName,
         Limit: pageLimit,
       })
     );
@@ -134,37 +187,47 @@ class DynamoDB implements DatabaseDriver {
     return [];
   }
 
-  async getByIndex(namespace: string, idx: Index, offset?: number, limit?: number): Promise<any> {
-    console.log(namespace, idx, offset, limit);
-    // const docs =
-    //   dbutils.isNumeric(offset) && dbutils.isNumeric(limit)
-    //     ? await this.collection
-    //         .find(
-    //           {
-    //             indexes: dbutils.keyForIndex(namespace, idx),
-    //           },
-    //           { sort: { createdAt: -1 }, skip: offset, limit: limit }
-    //         )
-    //         .toArray()
-    //     : await this.collection
-    //         .find({
-    //           indexes: dbutils.keyForIndex(namespace, idx),
-    //         })
-    //         .toArray();
-    // const ret: string[] = [];
-    // for (const doc of docs || []) {
-    //   ret.push(doc.value);
-    // }
-    // return ret;
-    return [];
+  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+    console.log(pageOffset, pageLimit);
+    const res = await this.client.send(
+      new QueryCommand({
+        KeyConditionExpression: '#key = :key',
+        ExpressionAttributeNames: {
+          '#key': 'key',
+        },
+        ExpressionAttributeValues: {
+          ':key': { S: dbutils.keyForIndex(namespace, idx) },
+        },
+        TableName: indexTableName,
+        IndexName: globalIndexKeyIndexName,
+      })
+    );
+
+    const items: Encrypted[] = [];
+    for (const item of res.Items || []) {
+      const ns = item.namespace?.S;
+      const sk = item.storeKey?.S;
+      if (ns && sk) {
+        const val = await this._get(ns, sk); // use internal get to avoid double keying
+        if (val) {
+          items.push({
+            value: val.value,
+            iv: val.iv,
+            tag: val.tag,
+          });
+        }
+      }
+    }
+
+    return items;
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
-    console.log(indexes);
+    const dbKey = dbutils.key(namespace, key);
     const now = getSeconds(new Date());
     const doc: Record<string, NativeAttributeValue> = {
       namespace,
-      key,
+      key: dbKey,
       value: JSON.stringify(val),
       createdAt: now,
     };
@@ -174,9 +237,35 @@ class DynamoDB implements DatabaseDriver {
       doc.expiresAt = getSeconds(ttlDate);
     }
 
+    const indexWrites: WriteRequest[] = [];
+    // no ttl support for secondary indexes
+    for (const idx of indexes || []) {
+      const idxKey = dbutils.keyForIndex(namespace, idx);
+
+      indexWrites.push({
+        PutRequest: {
+          Item: marshall({
+            namespace,
+            key: idxKey,
+            storeKey: dbKey,
+          }),
+        },
+      });
+    }
+
+    if (indexWrites.length > 0) {
+      const reqItems: Record<string, WriteRequest[]> = {};
+      reqItems[indexTableName] = indexWrites;
+      await this.client.send(
+        new BatchWriteItemCommand({
+          RequestItems: reqItems,
+        })
+      );
+    }
+
     await this.client.send(
       new PutItemCommand({
-        TableName: this.tableName,
+        TableName: tableName,
         Item: marshall(doc),
       })
     );
@@ -184,8 +273,30 @@ class DynamoDB implements DatabaseDriver {
 
   async delete(namespace: string, key: string): Promise<any> {
     const res = await this.client.send(
-      new DeleteItemCommand({ TableName: this.tableName, Key: marshall({ namespace, key }) })
+      new DeleteItemCommand({ TableName: tableName, Key: marshall({ namespace, key }) })
     );
+
+    // const res = await this.client.send(
+    //   new QueryCommand({
+    //     KeyConditions: {
+    //       storeKey: {
+    //         ComparisonOperator: 'EQ',
+    //         AttributeValueList: [
+    //           {
+    //             S: dbutils.keyForIndex(namespace, idx),
+    //           },
+    //         ],
+    //       },
+    //     },
+    //     // KeyConditionExpression: 'storeKey = :storeKey',
+    //     // ExpressionAttributeValues: {
+    //     //   // ':namespace': { S: namespace },
+    //     //   ':storeKey': { S: dbutils.keyForIndex(namespace, idx) },
+    //     // },
+    //     TableName: indexTableName,
+    //     IndexName: globalStoreKeyIndexName,
+    //   })
+    // );
 
     return res;
   }
