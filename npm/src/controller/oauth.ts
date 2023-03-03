@@ -190,6 +190,7 @@ export class OAuthController implements IOAuthController {
           tenant: requestedTenant || '',
           product: requestedProduct || '',
           clientID: connection?.clientID || '',
+          requestedOIDCFlow,
         },
       });
       throw err;
