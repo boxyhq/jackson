@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.8.2",
+  "version": "1.9.0",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -36,7 +36,10 @@
     "test:e2e": "env-cmd -f .env.test.local playwright test",
     "test": "cd npm && npm run test",
     "custom-install": "rm -rf node_modules/@boxyhq/saml-jackson && rm -rf node_modules/@boxyhq/react-ui && npm install --install-links=false",
-    "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'"
+    "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'",
+    "postcustom-install": "npm run prebuild",
+    "postinstall": "npm run prebuild",
+    "prebuild": "(mkdir -p public/terminus || true) && cp -r node_modules/blockly/media/sprites.png public/terminus"
   },
   "dependencies": {
     "@boxyhq/react-ui": "file:sdk/ui/react",
@@ -52,6 +55,7 @@
     "@retracedhq/retraced": "0.6.2",
     "@tailwindcss/typography": "0.5.9",
     "axios": "1.3.4",
+    "blockly": "9.2.1",
     "classnames": "2.3.2",
     "cors": "2.8.5",
     "daisyui": "2.51.2",

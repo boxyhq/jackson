@@ -23,6 +23,12 @@ const retraced = {
   adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
 };
 
+// Terminus
+const terminus = {
+  hostUrl: process.env.TERMINUS_PROXY_HOST_URL,
+  adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
+};
+
 const db: DatabaseOption = {
   engine: process.env.DB_ENGINE ? <DatabaseEngine>process.env.DB_ENGINE : undefined,
   url: process.env.DB_URL || process.env.DATABASE_URL,
@@ -62,6 +68,7 @@ const jacksonOptions: JacksonOption = {
     process.env.DO_NOT_TRACK === 'true' ||
     process.env.BOXYHQ_NO_ANALYTICS === '1' ||
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
+  terminus,
 };
 
 const adminPortalSSODefaults = {
@@ -73,5 +80,6 @@ const adminPortalSSODefaults = {
 
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
+export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };

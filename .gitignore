@@ -43,3 +43,4 @@ yarn-error.log*
 npmversion.txt
 publishTag.txt
 .env
+public/terminus/sprites.png
