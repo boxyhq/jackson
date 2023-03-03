@@ -167,5 +167,12 @@
   "branding_favicon_url_alt": "Provide a URL to your favicon. Recommend PNG, SVG, or ICO formats.",
   "branding_company_name_alt": "Provide your company name or product name.",
   "branding_primary_color_alt": "Primary color will be applied to buttons, links, and other elements.",
-  "select_an_idp": "Select an Identity Provider to continue"
+  "select_an_idp": "Select an Identity Provider to continue",
+  "audit_logs": "Audit Logs",
+  "privacy_vault": "Privacy Vault",
+  "model_published_successfully": "Model published successfully",
+  "model_publish_failed": "Model publish failed. Please try again!",
+  "discard_and_retrieve_model": "Retrieve Model?",
+  "discard_and_retrieve_model_desc": "Discard any unsaved changes and retrieve the Model from the server?",
+  "retrieve": "Retrieve"
 }
