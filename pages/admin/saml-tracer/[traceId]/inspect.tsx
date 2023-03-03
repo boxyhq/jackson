@@ -12,6 +12,7 @@ import Loading from '@components/Loading';
 import { useTranslation } from 'react-i18next';
 import { LinkBack } from '@components/LinkBack';
 import { Badge } from 'react-daisyui';
+import { CopyToClipboardButton } from '@components/ClipboardButton';
 
 const DescriptionListItem = ({ term, value }: { term: string; value: string | JSX.Element }) => (
   <div className='px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
@@ -101,13 +102,16 @@ const SAMLTraceInspector: NextPage = () => {
             {trace.context.providerName && (
               <DescriptionListItem term={t('provider')} value={trace.context.providerName} />
             )}
-            {assertionType === 'Response' && (
+            {assertionType === 'Response' && trace.context.samlResponse && (
               <DescriptionListItem
                 term={t('saml_response')}
                 value={
-                  <SyntaxHighlighter language='xml' style={materialOceanic}>
-                    {trace.context.samlResponse}
-                  </SyntaxHighlighter>
+                  <>
+                    <CopyToClipboardButton text={trace.context.samlResponse}></CopyToClipboardButton>
+                    <SyntaxHighlighter language='xml' style={materialOceanic}>
+                      {trace.context.samlResponse}
+                    </SyntaxHighlighter>
+                  </>
                 }
               />
             )}
@@ -115,9 +119,12 @@ const SAMLTraceInspector: NextPage = () => {
               <DescriptionListItem
                 term={t('saml_request')}
                 value={
-                  <SyntaxHighlighter language='xml' style={materialOceanic}>
-                    {trace.context.samlRequest}
-                  </SyntaxHighlighter>
+                  <>
+                    <CopyToClipboardButton text={trace.context.samlRequest}></CopyToClipboardButton>
+                    <SyntaxHighlighter language='xml' style={materialOceanic}>
+                      {trace.context.samlRequest}
+                    </SyntaxHighlighter>
+                  </>
                 }
               />
             )}
