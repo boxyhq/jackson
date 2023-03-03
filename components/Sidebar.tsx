@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next';
 import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
+import Vault from '@components/logo/Vault';
 import { Cog8ToothIcon } from '@heroicons/react/24/outline';
 
 type SidebarProps = {
@@ -85,7 +86,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     },
     {
       href: '/admin/retraced',
-      text: 'Audit Logs',
+      text: t('audit_logs'),
       icon: AuditLogsLogo,
       current: asPath.includes('retraced'),
       active: asPath.includes('/admin/retraced'),
@@ -94,6 +95,20 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           href: '/admin/retraced',
           text: t('projects'),
           active: asPath.includes('/admin/retraced'),
+        },
+      ],
+    },
+    {
+      href: '/admin/terminus',
+      text: t('privacy_vault'),
+      icon: Vault,
+      current: asPath.includes('terminus'),
+      active: asPath.includes('/admin/terminus'),
+      items: [
+        {
+          href: '/admin/terminus',
+          text: t('Policies'),
+          active: asPath.includes('/admin/terminus'),
         },
       ],
     },

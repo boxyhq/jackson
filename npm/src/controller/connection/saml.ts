@@ -18,17 +18,19 @@ import {
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
 import { JacksonError } from '../error';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 async function fetchMetadata(resource: string) {
-  const response = await axios(resource, {
-    maxContentLength: 1000000,
-    maxBodyLength: 1000000,
-    timeout: 8000,
-  }).catch((error: AxiosError) => {
+  try {
+    const response = await axios(resource, {
+      maxContentLength: 1000000,
+      maxBodyLength: 1000000,
+      timeout: 8000,
+    });
+    return response.data;
+  } catch (error: any) {
     throw new JacksonError("Couldn't fetch XML data", error.response?.status || 400);
-  });
-  return response.data;
+  }
 }
 
 function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
