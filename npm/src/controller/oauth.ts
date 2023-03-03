@@ -313,7 +313,6 @@ export class OAuthController implements IOAuthController {
             product: requestedProduct,
             clientID: connection.clientID,
             requestedOIDCFlow,
-            samlRequest: samlReq?.request || '',
           },
         });
 
