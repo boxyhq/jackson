@@ -54,7 +54,7 @@ const SAMLTraceInspector: NextPage = () => {
       <LinkBack onClick={() => router.back()} />
       <div className='mt-5 overflow-hidden bg-white shadow sm:rounded-lg'>
         <div className='px-4 py-5 sm:px-6'>
-          <h3 className='text-base font-semibold leading-6 text-gray-900'>Trace details</h3>
+          <h3 className='text-base font-semibold leading-6 text-gray-900'>{t('trace_details')}</h3>
           <p className='mt-1 flex max-w-2xl gap-6 text-sm text-gray-500'>
             <span className='whitespace-nowrap'>
               <span className='font-medium text-gray-500'>TraceID:</span>
@@ -91,19 +91,19 @@ const SAMLTraceInspector: NextPage = () => {
               <DescriptionListItem term={t('product')} value={trace.context.product} />
             )}
             {trace.context.clientID && (
-              <DescriptionListItem term='SSO Connection Client ID' value={trace.context.clientID} />
+              <DescriptionListItem term={t('sso_connection_client_id')} value={trace.context.clientID} />
             )}
             {trace.context.issuer && <DescriptionListItem term={t('issuer')} value={trace.context.issuer} />}
             {trace.context.acsUrl && <DescriptionListItem term={t('acs_url')} value={trace.context.acsUrl} />}
             {trace.context.entityId && (
-              <DescriptionListItem term='Entity ID' value={trace.context.entityId} />
+              <DescriptionListItem term={t('trace_entity_id')} value={trace.context.entityId} />
             )}
             {trace.context.providerName && (
-              <DescriptionListItem term='Provider' value={trace.context.providerName} />
+              <DescriptionListItem term={t('provider')} value={trace.context.providerName} />
             )}
             {assertionType === 'Response' && (
               <DescriptionListItem
-                term='SAML Response'
+                term={t('saml_response')}
                 value={
                   <SyntaxHighlighter language='xml' style={materialOceanic}>
                     {trace.context.samlResponse}
@@ -113,7 +113,7 @@ const SAMLTraceInspector: NextPage = () => {
             )}
             {assertionType === 'Request' && trace.context.samlRequest && (
               <DescriptionListItem
-                term='SAML Request'
+                term={t('saml_request')}
                 value={
                   <SyntaxHighlighter language='xml' style={materialOceanic}>
                     {trace.context.samlRequest}
@@ -124,7 +124,7 @@ const SAMLTraceInspector: NextPage = () => {
 
             {typeof trace.context.profile === 'object' && trace.context.profile && (
               <DescriptionListItem
-                term='Profile'
+                term={t('profile')}
                 value={
                   <SyntaxHighlighter language='json' style={materialOceanic}>
                     {JSON.stringify(trace.context.profile)}
