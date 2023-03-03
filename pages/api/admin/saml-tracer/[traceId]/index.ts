@@ -27,11 +27,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, samlTracer: 
   const { traceId } = req.query as { traceId: string };
 
   const trace = await samlTracer.getByTraceId(traceId);
-  const context = trace.context as SAMLTrace['context'];
-
-  if ('samlResponse' in context) {
-    // parse raw response and attach it to returned trace
-  }
 
   if (!trace) {
     return res.status(404).json({ error: { message: 'Trace not found.' } });
