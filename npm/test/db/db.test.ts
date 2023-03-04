@@ -94,55 +94,55 @@ const dbs = [
     ...dynamoDbConfig,
     encryptionKey,
   },
-  // {
-  //   ...memDbConfig,
-  // },
-  // {
-  //   ...memDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...redisDbConfig,
-  // },
-  // {
-  //   ...redisDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...postgresDbConfig,
-  // },
-  // {
-  //   ...postgresDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mysqlDbConfig,
-  // },
-  // {
-  //   ...mysqlDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mssqlDbConfig,
-  // },
-  // {
-  //   ...mssqlDbConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...memDbConfig,
+  },
+  {
+    ...memDbConfig,
+    encryptionKey,
+  },
+  {
+    ...redisDbConfig,
+  },
+  {
+    ...redisDbConfig,
+    encryptionKey,
+  },
+  {
+    ...postgresDbConfig,
+  },
+  {
+    ...postgresDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mongoDbConfig,
+  },
+  {
+    ...mongoDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mysqlDbConfig,
+  },
+  {
+    ...mysqlDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mariadbDbConfig,
+  },
+  {
+    ...mariadbDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mssqlDbConfig,
+  },
+  {
+    ...mssqlDbConfig,
+    encryptionKey,
+  },
 ];
 
 if (process.env.PLANETSCALE_URL) {
@@ -238,22 +238,22 @@ tap.test('dbs', ({ end }) => {
         const keyVal = records[keyValue.toString()];
         allRecordInput[allRecords[keyVal]];
       }
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
       allRecordInput = {};
-      let allRecordsWithPaggination: any = await connectionStore.getAll(0, 2);
-      for (const keyValue in allRecordsWithPaggination) {
+      let allRecordsWithPagination: any = await connectionStore.getAll(0, 2);
+      for (const keyValue in allRecordsWithPagination) {
         const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPaggination[keyVal]];
+        allRecordInput[allRecordsWithPagination[keyVal]];
       }
 
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
-      allRecordsWithPaggination = await connectionStore.getAll(0, 0);
-      for (const keyValue in allRecordsWithPaggination) {
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
+      allRecordsWithPagination = await connectionStore.getAll(0, 0);
+      for (const keyValue in allRecordsWithPagination) {
         const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPaggination[keyVal]];
+        allRecordInput[allRecordsWithPagination[keyVal]];
       }
 
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
       t.end();
     });
 
