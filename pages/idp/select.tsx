@@ -3,31 +3,31 @@ import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
-import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import type { InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
 import { hexToHsl, darkenHslColor } from '@lib/color';
 import Image from 'next/image';
 import { PoweredBy } from '@components/PoweredBy';
-import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
+import { getPortalBranding } from '@lib/settings';
 
 export default function ChooseIdPConnection({
   connections,
   SAMLResponse,
   requestType,
+  branding,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { branding } = usePortalBranding();
   const { t } = useTranslation('common');
 
-  const primaryColor = branding?.primaryColor ? hexToHsl(branding?.primaryColor) : null;
+  const primaryColor = hexToHsl(branding.primaryColor);
   const title = requestType === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
 
   return (
     <div className='mx-auto my-28 w-[500px]'>
       <div className='mx-5 flex flex-col space-y-10 rounded border border-gray-300 p-10'>
         <Head>
-          <title>{`${title} - ${branding?.companyName}`}</title>
+          <title>{`${title} - ${branding.companyName}`}</title>
           {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
         </Head>
 
@@ -157,21 +157,18 @@ const AppSelector = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps<{
-  connections: (OIDCSSORecord | SAMLSSORecord)[];
-  SAMLResponse: string | null;
-  requestType: 'sp-initiated' | 'idp-initiated';
-}> = async ({ query, locale, req }) => {
-  const { connectionAPIController } = await jackson();
+export const getServerSideProps = async ({ query, locale, req }) => {
+  const { connectionAPIController, samlFederatedController, checkLicense } = await jackson();
 
   const paramsToRelay = { ...query } as { [key: string]: string };
 
-  const { authFlow, entityId, tenant, product, idp_hint } = query as {
+  const { authFlow, entityId, tenant, product, idp_hint, samlFedAppId } = query as {
     authFlow: 'saml' | 'oauth';
     tenant?: string;
     product?: string;
     idp_hint?: string;
     entityId?: string;
+    samlFedAppId?: string;
   };
 
   // The user has selected an IdP to continue with
@@ -200,6 +197,27 @@ export const getServerSideProps: GetServerSideProps<{
     connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
   }
 
+  const samlFederationApp = samlFedAppId ? await samlFederatedController.app.get(samlFedAppId) : null;
+
+  if (samlFedAppId && !samlFederationApp) {
+    return {
+      notFound: true,
+    };
+  }
+
+  // Get the branding to use for the IdP selector screen
+  let branding = await getPortalBranding();
+
+  // For SAML federated requests, use the branding from the SAML federated app
+  if (samlFederationApp && (await checkLicense())) {
+    branding = {
+      logoUrl: samlFederationApp?.logoUrl || branding.logoUrl,
+      primaryColor: samlFederationApp?.primaryColor || branding.primaryColor,
+      faviconUrl: samlFederationApp?.faviconUrl || branding.faviconUrl,
+      companyName: samlFederationApp?.name || branding.companyName,
+    };
+  }
+
   // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
   if (req.method == 'POST') {
     const body = await getRawBody(req);
@@ -220,6 +238,7 @@ export const getServerSideProps: GetServerSideProps<{
         requestType: 'idp-initiated',
         SAMLResponse,
         connections,
+        branding,
       },
     };
   }
@@ -230,6 +249,7 @@ export const getServerSideProps: GetServerSideProps<{
       requestType: 'sp-initiated',
       SAMLResponse: null,
       connections,
+      branding,
     },
   };
 };

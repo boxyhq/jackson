@@ -19,11 +19,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (method) {
     case 'GET':
-      return handleGET(req, res);
+      return await handleGET(req, res);
     case 'PUT':
-      return handlePUT(req, res);
+      return await handlePUT(req, res);
     case 'DELETE':
-      return handleDELETE(req, res);
+      return await handleDELETE(req, res);
     default:
       res.setHeader('Allow', 'GET, PUT, DELETE');
       res.status(405).json({ data: null, error: { message: `Method ${method} Not Allowed` } });
@@ -60,22 +60,26 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
   const { id } = req.query as { id: string };
-  const { name, acsUrl, entityId } = req.body as Pick<SAMLFederationApp, 'acsUrl' | 'entityId' | 'name'>;
+  const { name, acsUrl, entityId, logoUrl, faviconUrl, primaryColor } = req.body as Pick<
+    SAMLFederationApp,
+    'acsUrl' | 'entityId' | 'name' | 'logoUrl' | 'faviconUrl' | 'primaryColor'
+  >;
 
   try {
     const updatedApp = await samlFederatedController.app.update(id, {
       name,
       acsUrl,
       entityId,
+      logoUrl,
+      faviconUrl,
+      primaryColor,
     });
 
-    res.status(200).json({
-      data: updatedApp,
-    });
+    return res.status(200).json({ data: updatedApp });
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
 
-    res.status(statusCode).json({
+    return res.status(statusCode).json({
       error: { message },
     });
   }

@@ -133,13 +133,7 @@ const Branding: NextPage = () => {
               <label className='label'>
                 <span className='label-text'>{t('branding_primary_color_label')}</span>
               </label>
-              <input
-                type='color'
-                id='primaryColor'
-                className=''
-                onChange={onChange}
-                value={branding.primaryColor || ''}
-              />
+              <input type='color' id='primaryColor' onChange={onChange} value={branding.primaryColor || ''} />
               <label className='label'>
                 <span className='label-text-alt'>{t('branding_primary_color_alt')}</span>
               </label>
