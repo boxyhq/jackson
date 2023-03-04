@@ -81,19 +81,12 @@ const mssqlDbConfig = <DatabaseOption>{
 
 const dynamoDbConfig = <DatabaseOption>{
   engine: 'dynamodb',
-  url: 'http://localhost:8000',
+  url: process.env.DYNAMODB_URL,
   ttl: 1,
   cleanupLimit: 10,
 };
 
 const dbs = [
-  {
-    ...dynamoDbConfig,
-  },
-  {
-    ...dynamoDbConfig,
-    encryptionKey,
-  },
   {
     ...memDbConfig,
   },
@@ -152,6 +145,18 @@ if (process.env.PLANETSCALE_URL) {
     },
     {
       ...planetscaleDbConfig,
+      encryptionKey,
+    }
+  );
+}
+
+if (process.env.DYNAMODB_URL) {
+  dbs.push(
+    {
+      ...dynamoDbConfig,
+    },
+    {
+      ...dynamoDbConfig,
       encryptionKey,
     }
   );
