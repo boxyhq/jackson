@@ -1,15 +1,11 @@
-import type {
-  Storable,
-  JacksonOption,
-  SAMLFederationAppWithMetadata,
-  SAMLFederationApp,
-  AdminPortalBranding,
-} from '../../typings';
+import type { Storable, JacksonOption, SAMLFederationApp } from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
+
+type NewAppParams = Pick<SAMLFederationApp, 'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId'>;
 
 export class App {
   protected store: Storable;
@@ -21,7 +17,7 @@ export class App {
   }
 
   // Create a new SAML Federation app for the tenant and product
-  public async create({ name, tenant, product, acsUrl, entityId }: Omit<SAMLFederationApp, 'id'>) {
+  public async create({ name, tenant, product, acsUrl, entityId }: NewAppParams) {
     if (!tenant || !product || !acsUrl || !entityId || !name) {
       throw new JacksonError(
         'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
