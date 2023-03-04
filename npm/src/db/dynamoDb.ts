@@ -1,7 +1,6 @@
 import {
   BatchWriteItemCommand,
   WriteRequest,
-  BatchGetItemCommand,
   CreateTableCommand,
   DeleteItemCommand,
   DynamoDBClient,
@@ -173,18 +172,32 @@ class DynamoDB implements DatabaseDriver {
   }
 
   async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
+    console.log(pageOffset, pageLimit);
+
     const res = await this.client.send(
       new QueryCommand({
         KeyConditionExpression: 'namespace = :namespace',
-        ExpressionAttributeValues: marshall({ namespace }),
+        ExpressionAttributeValues: {
+          ':namespace': { S: namespace },
+        },
         TableName: tableName,
-        Limit: pageLimit,
       })
     );
 
-    console.log(pageOffset, res);
+    const items: Encrypted[] = [];
+    for (const item of res.Items || []) {
+      const ns = item.namespace?.S;
+      const k = item.key?.S;
+      const value = item.value?.S;
+      if (ns && k && value) {
+        const val = JSON.parse(value);
+        if (val) {
+          items.push(val);
+        }
+      }
+    }
 
-    return [];
+    return items;
   }
 
   async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
@@ -272,33 +285,34 @@ class DynamoDB implements DatabaseDriver {
   }
 
   async delete(namespace: string, key: string): Promise<any> {
-    const res = await this.client.send(
-      new DeleteItemCommand({ TableName: tableName, Key: marshall({ namespace, key }) })
+    const dbKey = dbutils.key(namespace, key);
+    await this.client.send(
+      new DeleteItemCommand({
+        TableName: tableName,
+        Key: marshall({ namespace, key: dbKey }),
+      })
     );
 
-    // const res = await this.client.send(
-    //   new QueryCommand({
-    //     KeyConditions: {
-    //       storeKey: {
-    //         ComparisonOperator: 'EQ',
-    //         AttributeValueList: [
-    //           {
-    //             S: dbutils.keyForIndex(namespace, idx),
-    //           },
-    //         ],
-    //       },
-    //     },
-    //     // KeyConditionExpression: 'storeKey = :storeKey',
-    //     // ExpressionAttributeValues: {
-    //     //   // ':namespace': { S: namespace },
-    //     //   ':storeKey': { S: dbutils.keyForIndex(namespace, idx) },
-    //     // },
-    //     TableName: indexTableName,
-    //     IndexName: globalStoreKeyIndexName,
-    //   })
-    // );
+    const res = await this.client.send(
+      new QueryCommand({
+        KeyConditionExpression: 'storeKey = :storeKey',
+        ExpressionAttributeValues: {
+          ':storeKey': { S: dbKey },
+        },
+        TableName: indexTableName,
+        IndexName: globalStoreKeyIndexName,
+      })
+    );
 
-    return res;
+    for (const item of res.Items || []) {
+      const k = item.key?.S;
+      await this.client.send(
+        new DeleteItemCommand({
+          TableName: indexTableName,
+          Key: marshall({ key: k, storeKey: dbKey }),
+        })
+      );
+    }
   }
 }
 
