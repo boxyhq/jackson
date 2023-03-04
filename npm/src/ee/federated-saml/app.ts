@@ -86,9 +86,13 @@ export class App {
   public async update(id: string, params: Partial<Omit<SAMLFederationApp, 'id'>>) {
     const { acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor } = params;
 
-    if (!id || !acsUrl || !entityId || !name) {
+    if (!id) {
+      throw new JacksonError('Missing the app id', 400);
+    }
+
+    if (!acsUrl && !entityId && !name && !logoUrl && !faviconUrl && !primaryColor) {
       throw new JacksonError(
-        "Missing required parameters. Required parameters are: id, acsUrl, entityId, name'",
+        'Missing required parameters. Please provide at least one of the following parameters: acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor',
         400
       );
     }
@@ -97,12 +101,12 @@ export class App {
 
     const updatedApp: SAMLFederationApp = {
       ...app,
-      name,
-      acsUrl,
-      entityId,
-      logoUrl: logoUrl || null,
-      faviconUrl: faviconUrl || null,
-      primaryColor: primaryColor || null,
+      name: name || app.name,
+      acsUrl: acsUrl || app.acsUrl,
+      entityId: entityId || app.entityId,
+      logoUrl: logoUrl || app.logoUrl,
+      faviconUrl: faviconUrl || app.faviconUrl,
+      primaryColor: primaryColor || app.primaryColor,
     };
 
     await this.store.put(id, updatedApp);
