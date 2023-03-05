@@ -28,15 +28,24 @@ class SAMLTracer {
       // If timestamp present in payload use that value, else generate the current timestamp
       const timestamp = typeof payload.timestamp === 'number' ? payload.timestamp : Date.now();
       const traceValue: Trace = { ...payload, traceId, timestamp };
-      await this.tracerStore.put(
-        traceId,
-        traceValue,
+      const { tenant, product, clientID } = context;
+
+      const indices = [
         {
           name: IndexNames.TenantProduct,
-          value: keyFromParts(context.tenant, context.product),
+          value: keyFromParts(tenant, product),
+          filterLogic: ({ tenant, product }) => !!(tenant && product),
         },
-        { name: IndexNames.SSOClientID, value: context.clientID }
-      );
+        {
+          name: IndexNames.SSOClientID,
+          value: clientID,
+          filterLogic: ({ clientID }) => !!clientID,
+        },
+      ]
+        .filter(({ filterLogic }) => filterLogic(context))
+        .map(({ name, value }) => ({ name, value }));
+
+      await this.tracerStore.put(traceId, traceValue, ...indices);
       return traceId;
     } catch (err: unknown) {
       console.error(`Failed to save trace`, err);
