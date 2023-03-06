@@ -64,7 +64,7 @@
   "sso_error": "SSO error",
   "scim_endpoint": "SCIM Endpoint",
   "scim_token": "SCIM Token",
-  "select_type": "Select Type",
+  "select_sso_type": "Select SSO type",
   "select_an_app": "Select an App to continue",
   "selection_list_empty": "Selection list empty",
   "send_magic_link": "Send Magic Link",

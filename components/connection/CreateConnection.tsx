@@ -146,39 +146,33 @@ const CreateConnection = ({
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_sso_connection')}
         </h2>
-        <div className='mb-4 flex'>
-          <div className='mr-2 py-3'>{t('select_type')}:</div>
-          <div className='flex flex-nowrap items-stretch justify-start gap-1 rounded-md border-2 border-dashed py-3'>
-            <div>
-              <input
-                type='radio'
-                name='connection'
-                value='saml'
-                className='peer sr-only'
-                checked={newConnectionType === 'saml'}
-                onChange={handleNewConnectionTypeChange}
-                id='saml-conn'
-              />
-              <label
-                htmlFor='saml-conn'
-                className='cursor-pointer rounded-md border-2 border-solid py-3 px-8 font-semibold hover:shadow-md peer-checked:border-secondary-focus peer-checked:bg-secondary peer-checked:text-white'>
-                {t('saml')}
+        <div className='mb-4 flex items-center'>
+          <div className='mr-2 py-3'>{t('select_sso_type')}:</div>
+          <div className='flex w-52'>
+            <div className='form-control'>
+              <label className='label mr-4 cursor-pointer'>
+                <input
+                  type='radio'
+                  name='connection'
+                  value='saml'
+                  className='radio-primary radio'
+                  checked={newConnectionType === 'saml'}
+                  onChange={handleNewConnectionTypeChange}
+                />
+                <span className='label-text ml-1'>{t('saml')}</span>
               </label>
             </div>
-            <div>
-              <input
-                type='radio'
-                name='connection'
-                value='oidc'
-                className='peer sr-only'
-                checked={newConnectionType === 'oidc'}
-                onChange={handleNewConnectionTypeChange}
-                id='oidc-conn'
-              />
-              <label
-                htmlFor='oidc-conn'
-                className='cursor-pointer rounded-md border-2 border-solid px-8 py-3 font-semibold hover:shadow-md peer-checked:bg-secondary peer-checked:text-white'>
-                {t('oidc')}
+            <div className='form-control'>
+              <label className='label mr-4 cursor-pointer' data-testid='sso-type-oidc'>
+                <input
+                  type='radio'
+                  name='connection'
+                  value='oidc'
+                  className='radio-primary radio'
+                  checked={newConnectionType === 'oidc'}
+                  onChange={handleNewConnectionTypeChange}
+                />
+                <span className='label-text ml-1'>{t('oidc')}</span>
               </label>
             </div>
           </div>
