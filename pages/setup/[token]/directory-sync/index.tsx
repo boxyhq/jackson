@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSidePropsContext } from 'next';
+import type { NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import DirectoryList from '@components/dsync/DirectoryList';

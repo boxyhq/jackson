@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSidePropsContext } from 'next';
+import type { NextPage } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
 import DirectoryInfo from '@components/dsync/DirectoryInfo';
