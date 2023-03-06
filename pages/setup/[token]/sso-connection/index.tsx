@@ -14,18 +14,11 @@ const ConnectionsIndexPage: NextPage = () => {
   return <ConnectionList setupLinkToken={token} idpEntityID={idpEntityID} />;
 };
 
-export async function getStaticProps({ locale }: GetServerSidePropsContext) {
+export async function getServerSideProps({ locale }) {
   return {
     props: {
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+      ...(await serverSideTranslations(locale, ['common'])),
     },
-  };
-}
-
-export async function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: 'blocking',
   };
 }
 

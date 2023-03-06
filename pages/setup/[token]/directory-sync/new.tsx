@@ -12,10 +12,10 @@ const DirectoryCreatePage: NextPage = () => {
   return <CreateDirectory setupLinkToken={token} />;
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getServerSideProps = async ({ locale }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale ?? '', ['common'])),
+      ...(await serverSideTranslations(locale, ['common'])),
     },
   };
 };

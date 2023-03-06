@@ -11,12 +11,12 @@ const DirectoryIndexPage: NextPage = () => {
   return <DirectoryList setupLinkToken={token} />;
 };
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (context) => {
   const { locale } = context;
 
   return {
     props: {
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+      ...(await serverSideTranslations(locale, ['common'])),
     },
   };
 };
