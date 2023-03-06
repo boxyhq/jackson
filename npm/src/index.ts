@@ -1,4 +1,4 @@
-import type { IDirectorySyncController, JacksonOption, SAMLTracerInstance } from './typings';
+import type { IDirectorySyncController, JacksonOption } from './typings';
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
@@ -66,7 +66,6 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: ISAMLFederationController;
-  samlTracer: SAMLTracerInstance;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
@@ -83,8 +82,10 @@ export const controllers = async (
   const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
 
+  const samlTracer = new SAMLTracer({ db });
+
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
-  const adminController = new AdminController({ connectionStore });
+  const adminController = new AdminController({ connectionStore, samlTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore });
@@ -100,8 +101,6 @@ export const controllers = async (
 
   // Create default certificate if it doesn't exist.
   await x509.init(certificateStore, opts);
-
-  const samlTracer = new SAMLTracer({ db });
 
   const oauthController = new OAuthController({
     connectionStore,
@@ -155,7 +154,6 @@ export const controllers = async (
     directorySyncController,
     oidcDiscoveryController,
     samlFederatedController,
-    samlTracer,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
     },
