@@ -157,6 +157,8 @@ export interface IOAuthController {
 
 export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number);
+  getAllSAMLTraces(pageOffset: number, pageLimit: number);
+  getSAMLTraceById(traceId: string);
 }
 
 export interface IHealthCheckController {

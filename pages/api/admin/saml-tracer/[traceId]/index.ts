@@ -1,15 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { SAMLTracerInstance } from '@boxyhq/saml-jackson';
+import type { IAdminController } from '@boxyhq/saml-jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
   try {
-    const { samlTracer } = await jackson();
+    const { adminController } = await jackson();
 
     switch (method) {
       case 'GET':
-        return await handleGET(req, res, samlTracer);
+        return await handleGET(req, res, adminController);
       default:
         res.setHeader('Allow', 'GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -22,10 +22,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Get SAML Trace by traceId
-const handleGET = async (req: NextApiRequest, res: NextApiResponse, samlTracer: SAMLTracerInstance) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminController: IAdminController) => {
   const { traceId } = req.query as { traceId: string };
 
-  const trace = await samlTracer.getByTraceId(traceId);
+  const trace = await adminController.getSAMLTraceById(traceId);
 
   if (!trace) {
     return res.status(404).json({ error: { message: 'Trace not found.' } });
