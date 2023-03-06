@@ -25,7 +25,12 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
   }
 
   const primaryColor = branding?.primaryColor ? hexToHsl(branding?.primaryColor) : null;
-  const title = setupLink?.service === 'sso' ? t('configure_sso') : t('configure_dsync');
+  const title =
+    setupLink?.service === 'sso'
+      ? t('configure_sso')
+      : setupLink?.service === 'dsync'
+      ? t('configure_dsync')
+      : null;
 
   return (
     <>
