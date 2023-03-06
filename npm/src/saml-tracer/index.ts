@@ -57,7 +57,7 @@ class SAMLTracer {
   }
 
   public async getAllTraces(pageOffset?: number, pageLimit?: number): Promise<Trace[]> {
-    return (await this.tracerStore.getAll(pageOffset, pageLimit)) as Trace[];
+    return (await this.tracerStore.getAll(pageOffset || 0, pageLimit || 0)) as Trace[];
   }
 
   /** Cleans up stale traces older than 1 week */
