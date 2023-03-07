@@ -488,6 +488,8 @@ export class OAuthController implements IOAuthController {
 
     try {
       isIdPFlow = !RelayState.startsWith(relayStatePrefix);
+      rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
+      issuer = saml.parseIssuer(rawResponse);
 
       // IdP is disabled so block the request
       if (!this.opts.idpEnabled && isIdPFlow) {
@@ -499,8 +501,6 @@ export class OAuthController implements IOAuthController {
       }
 
       sessionId = RelayState.replace(relayStatePrefix, '');
-      rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
-      issuer = saml.parseIssuer(rawResponse);
 
       if (!issuer) {
         throw new JacksonError('Issuer not found.', 403);
