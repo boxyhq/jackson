@@ -58,6 +58,11 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           text: t('saml_federation'),
           active: asPath.includes('/admin/federated-saml'),
         },
+        {
+          href: '/admin/saml-tracer',
+          text: t('saml_tracer'),
+          active: asPath.includes('/admin/saml-tracer'),
+        },
       ],
     },
     {

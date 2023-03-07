@@ -198,6 +198,7 @@ export class SAMLHandler {
 
       return { responseForm };
     } catch (err) {
+      // TODO: Instead send saml response with status code
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
   };
