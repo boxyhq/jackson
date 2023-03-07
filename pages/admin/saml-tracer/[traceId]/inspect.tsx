@@ -76,6 +76,8 @@ const SAMLTraceInspector: NextPage = () => {
                   ? 'OIDC'
                   : trace.context.isSAMLFederated
                   ? t('saml_federation')
+                  : trace.context.isIdPFlow
+                  ? t('idp_login')
                   : 'OAuth 2.0'}
               </Badge>
             </span>

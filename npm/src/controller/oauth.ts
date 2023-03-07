@@ -599,6 +599,7 @@ export class OAuthController implements IOAuthController {
           clientID: connection?.clientID || '',
           issuer: issuer || '',
           isSAMLFederated: !!isSAMLFederated,
+          isIdPFlow: !!isIdPFlow,
         },
       });
       throw err; // Rethrow the error
@@ -641,6 +642,7 @@ export class OAuthController implements IOAuthController {
           product: connection.product,
           clientID: connection.clientID,
           isSAMLFederated,
+          isIdPFlow: !!isIdPFlow,
           issuer,
           profile,
         },
