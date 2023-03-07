@@ -93,6 +93,9 @@ const SAMLTraceInspector: NextPage = () => {
             {trace.context.product && (
               <DescriptionListItem term={t('product')} value={trace.context.product} />
             )}
+            {trace.context.relayState && (
+              <DescriptionListItem term={t('relay_state')} value={trace.context.relayState} />
+            )}
             {trace.context.clientID && (
               <DescriptionListItem term={t('sso_connection_client_id')} value={trace.context.clientID} />
             )}

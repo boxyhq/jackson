@@ -118,6 +118,7 @@
   "sp_protocol": "SP Protocol",
   "issuer": "Issuer",
   "profile": "Profile",
+  "relay_state": "Relay State",
   "saml_request": "SAML Request",
   "saml_response": "SAML Response",
   "provider": "Provider",

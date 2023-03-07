@@ -19,6 +19,7 @@ export interface SAMLTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     requestedOIDCFlow?: boolean; // Type of OAuth client request
     isSAMLFederated?: boolean; // true if hit the SAML Federation flow
     isIDPFlow?: boolean; // true if IdP Login flow
+    relayState?: string; // RelayState in SP flow
     providerName?: string; // SAML Federation SP
     acsUrl?: string; // ACS Url of SP in SAML Federation flow
     entityId?: string; // Entity ID of SP in SAML Federation flow
