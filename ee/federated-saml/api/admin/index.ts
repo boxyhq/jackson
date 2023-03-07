@@ -9,7 +9,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!(await checkLicense())) {
     return res.status(404).json({
       error: {
-        message: strings['enterise_license_not_found'],
+        message: strings['enterprise_license_not_found'],
       },
     });
   }

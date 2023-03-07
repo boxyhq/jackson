@@ -1,11 +1,13 @@
-import { IAdminController, Storable, SAMLSSORecord, OIDCSSORecord } from '../typings';
+import { IAdminController, Storable, SAMLSSORecord, OIDCSSORecord, SAMLTracerInstance } from '../typings';
 import { transformConnections } from './utils';
 
 export class AdminController implements IAdminController {
-  connectionStore: Storable;
+  private connectionStore: Storable;
+  private samlTracer: SAMLTracerInstance;
 
-  constructor({ connectionStore }) {
+  constructor({ connectionStore, samlTracer }) {
     this.connectionStore = connectionStore;
+    this.samlTracer = samlTracer;
   }
 
   public async getAllConnection(pageOffset?: number, pageLimit?: number) {
@@ -18,5 +20,21 @@ export class AdminController implements IAdminController {
     }
 
     return transformConnections(connectionList);
+  }
+
+  public async getAllSAMLTraces(pageOffset: number, pageLimit: number) {
+    const traces = await this.samlTracer.getAllTraces(pageOffset, pageLimit);
+
+    if (!traces || !traces.length) {
+      return [];
+    }
+
+    return traces;
+  }
+
+  public async getSAMLTraceById(traceId: string) {
+    const trace = await this.samlTracer.getByTraceId(traceId);
+
+    return trace;
   }
 }

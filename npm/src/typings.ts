@@ -2,6 +2,7 @@ import type { JWK } from 'jose';
 import type { IssuerMetadata } from 'openid-client';
 
 export * from './ee/federated-saml/types';
+export * from './saml-tracer/types';
 export * from './directory-sync/types';
 
 interface SSOConnection {
@@ -156,6 +157,8 @@ export interface IOAuthController {
 
 export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number);
+  getAllSAMLTraces(pageOffset: number, pageLimit: number);
+  getSAMLTraceById(traceId: string);
 }
 
 export interface IHealthCheckController {

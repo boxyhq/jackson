@@ -101,10 +101,12 @@ tap.test('authorize()', async (t) => {
     const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
       redirect_url: string;
     };
-
-    t.equal(
+    // should contain traceId in error_description
+    t.match(
       redirect_url,
-      `${body.redirect_uri}?error=invalid_request&error_description=Please+specify+a+state+to+safeguard+against+XSRF+attacks`,
+      new RegExp(
+        `${body.redirect_uri}\\?error=invalid_request&error_description=[a-z]+_[a-z]+_[a-z]+%3A\\+Please\\+specify\\+a\\+state\\+to\\+safeguard\\+against\\+XSRF\\+attacks`
+      ),
       'got OAuth error'
     );
   });
@@ -115,10 +117,12 @@ tap.test('authorize()', async (t) => {
     const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
       redirect_url: string;
     };
-
-    t.equal(
+    // should contain traceId in error_description
+    t.match(
       redirect_url,
-      `${body.redirect_uri}?error=unsupported_response_type&error_description=Only+Authorization+Code+grant+is+supported&state=${body.state}`,
+      new RegExp(
+        `${body.redirect_uri}\\?error=unsupported_response_type&error_description=[a-z]+_[a-z]+_[a-z]+%3A\\+Only\\+Authorization\\+Code\\+grant\\+is\\+supported&state=${body.state}`
+      ),
       'got OAuth error'
     );
   });
@@ -129,9 +133,12 @@ tap.test('authorize()', async (t) => {
     const { redirect_url } = (await oauthController.authorize(<OAuthReq>body)) as {
       redirect_url: string;
     };
-    t.equal(
+    // should contain traceId in error_description
+    t.match(
       redirect_url,
-      `${body.redirect_uri}?error=server_error&error_description=Internal+error%3A+Fatal&state=${body.state}`,
+      new RegExp(
+        `${body.redirect_uri}\\?error=server_error&error_description=[a-z]+_[a-z]+_[a-z]+%3A\\+Internal\\+error%3A\\+Fatal&state=${body.state}`
+      ),
       'got OAuth error'
     );
     stubSamlRequest.restore();

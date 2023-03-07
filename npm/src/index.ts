@@ -17,6 +17,7 @@ import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
 import { BrandingController } from './ee/branding';
+import SAMLTracer from './saml-tracer';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -84,8 +85,10 @@ export const controllers = async (
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
 
+  const samlTracer = new SAMLTracer({ db });
+
   const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
-  const adminController = new AdminController({ connectionStore });
+  const adminController = new AdminController({ connectionStore, samlTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore });
@@ -107,6 +110,7 @@ export const controllers = async (
     sessionStore,
     codeStore,
     tokenStore,
+    samlTracer,
     opts,
   });
 
@@ -125,6 +129,8 @@ export const controllers = async (
   const brandingController = (await checkLicense(opts.boxyhqLicenseKey))
     ? new BrandingController({ store: settingsStore })
     : null;
+
+  const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
