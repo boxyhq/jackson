@@ -86,7 +86,7 @@ export class SSO {
         throw new JacksonError('No SAML connection found.', 404);
       }
 
-      const { redirectUrl } = await this.samlHandler.createSAMLRequest({
+      return await this.samlHandler.createSAMLRequest({
         connection,
         requestParams: {
           id,
@@ -97,24 +97,6 @@ export class SSO {
           relayState,
         },
       });
-
-    const response = await this.samlHandler.resolveConnection({
-      tenant: app.tenant,
-      product: app.product,
-      idp_hint,
-      authFlow: 'saml',
-      samlFedAppId: app.id,
-      originalParams: {
-        RelayState: relayState,
-        SAMLRequest: request,
-      },
-    });
-
-    // If there is a redirect URL, then we need to redirect to that URL
-    if ('redirectUrl' in response) {
-      return {
-        redirectUrl,
-      };
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
