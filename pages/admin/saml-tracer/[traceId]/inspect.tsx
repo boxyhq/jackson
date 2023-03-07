@@ -96,6 +96,12 @@ const SAMLTraceInspector: NextPage = () => {
             {trace.context.relayState && (
               <DescriptionListItem term={t('relay_state')} value={trace.context.relayState} />
             )}
+            {trace.context.redirectUri && (
+              <DescriptionListItem
+                term={t(trace.context.isIDPFlow ? 'default_redirect_url' : 'redirect_uri')}
+                value={trace.context.redirectUri}
+              />
+            )}
             {trace.context.clientID && (
               <DescriptionListItem term={t('sso_connection_client_id')} value={trace.context.clientID} />
             )}

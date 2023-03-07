@@ -16,6 +16,7 @@ export interface SAMLTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     tenant: string;
     product: string;
     clientID: string;
+    redirectUri?: string;
     requestedOIDCFlow?: boolean; // Type of OAuth client request
     isSAMLFederated?: boolean; // true if hit the SAML Federation flow
     isIDPFlow?: boolean; // true if IdP Login flow

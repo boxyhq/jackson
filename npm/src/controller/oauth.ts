@@ -191,6 +191,7 @@ export class OAuthController implements IOAuthController {
           product: requestedProduct || '',
           clientID: connection?.clientID || '',
           requestedOIDCFlow,
+          redirectUri: redirect_uri,
         },
       });
       throw err;
@@ -236,6 +237,7 @@ export class OAuthController implements IOAuthController {
           product: requestedProduct,
           clientID: connection.clientID,
           requestedOIDCFlow,
+          redirectUri: redirect_uri,
         },
       });
       return {
@@ -279,6 +281,7 @@ export class OAuthController implements IOAuthController {
               product: requestedProduct as string,
               clientID: connection.clientID,
               requestedOIDCFlow,
+              redirectUri: redirect_uri,
             },
           });
           return {
@@ -314,6 +317,7 @@ export class OAuthController implements IOAuthController {
             product: requestedProduct,
             clientID: connection.clientID,
             requestedOIDCFlow,
+            redirectUri: redirect_uri,
           },
         });
 
@@ -458,6 +462,7 @@ export class OAuthController implements IOAuthController {
           product: requestedProduct as string,
           clientID: connection.clientID,
           requestedOIDCFlow,
+          redirectUri: redirect_uri,
           samlRequest: samlReq?.request || '',
         },
       });
@@ -597,6 +602,7 @@ export class OAuthController implements IOAuthController {
           tenant: connection?.tenant || '',
           product: connection?.product || '',
           clientID: connection?.clientID || '',
+          redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
           issuer: issuer || '',
           isSAMLFederated: !!isSAMLFederated,
           isIdPFlow: !!isIdPFlow,
@@ -642,6 +648,7 @@ export class OAuthController implements IOAuthController {
           tenant: connection.tenant,
           product: connection.product,
           clientID: connection.clientID,
+          redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
           isSAMLFederated,
           isIdPFlow,
           relayState: RelayState,
