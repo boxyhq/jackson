@@ -125,12 +125,10 @@ export const controllers = async (
   const directorySyncController = await initDirectorySync({ db, opts });
 
   // Enterprise Features
-  const samlFederatedController = await initFederatedSAML({ db, opts });
+  const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
   const brandingController = (await checkLicense(opts.boxyhqLicenseKey))
     ? new BrandingController({ store: settingsStore })
     : null;
-
-  const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
