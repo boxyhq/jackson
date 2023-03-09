@@ -16,6 +16,7 @@ import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
+import { BrandingController } from './ee/branding';
 import SAMLTracer from './saml-tracer';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
@@ -66,6 +67,7 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: ISAMLFederationController;
+  brandingController: IBrandingController | null;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
@@ -81,6 +83,7 @@ export const controllers = async (
   const healthCheckStore = db.store('_health:check');
   const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
+  const settingsStore = db.store('portal:settings');
 
   const samlTracer = new SAMLTracer({ db });
 
@@ -120,7 +123,12 @@ export const controllers = async (
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSAMLConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts });
+
+  // Enterprise Features
   const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
+  const brandingController = (await checkLicense(opts.boxyhqLicenseKey))
+    ? new BrandingController({ store: settingsStore })
+    : null;
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -154,6 +162,7 @@ export const controllers = async (
     directorySyncController,
     oidcDiscoveryController,
     samlFederatedController,
+    brandingController,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
     },
@@ -166,3 +175,4 @@ export * from './typings';
 export * from './ee/federated-saml/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
 export type ISetupLinkController = InstanceType<typeof SetupLinkController>;
+export type IBrandingController = InstanceType<typeof BrandingController>;

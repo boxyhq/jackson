@@ -86,7 +86,7 @@ export class SSO {
         throw new JacksonError('No SAML connection found.', 404);
       }
 
-      const { redirectUrl } = await this.samlHandler.createSAMLRequest({
+      return await this.samlHandler.createSAMLRequest({
         connection,
         requestParams: {
           id,
@@ -97,10 +97,6 @@ export class SSO {
           relayState,
         },
       });
-
-      return {
-        redirectUrl,
-      };
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 

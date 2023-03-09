@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSideProps } from 'next';
+import type { NextPage } from 'next';
 import React from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
@@ -12,10 +12,10 @@ const DirectoryCreatePage: NextPage = () => {
   return <CreateDirectory setupLinkToken={token} />;
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+export const getServerSideProps = async ({ locale }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale ?? '', ['common'])),
+      ...(await serverSideTranslations(locale, ['common'])),
     },
   };
 };

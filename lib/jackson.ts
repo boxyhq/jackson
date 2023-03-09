@@ -9,6 +9,7 @@ import type {
   IOidcDiscoveryController,
   ISPSAMLConfig,
   ISAMLFederationController,
+  IBrandingController,
 } from '@boxyhq/saml-jackson';
 
 import jackson from '@boxyhq/saml-jackson';
@@ -26,6 +27,7 @@ let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 let samlFederatedController: ISAMLFederationController;
 let checkLicense: () => Promise<boolean>;
+let brandingController: IBrandingController | null;
 
 const g = global as any;
 
@@ -40,7 +42,8 @@ export default async function init() {
     !g.directorySyncController ||
     !g.oidcDiscoveryController ||
     !g.spConfig ||
-    !g.samlFederatedController
+    !g.samlFederatedController ||
+    !g.brandingController
   ) {
     const ret = await jackson(jacksonOptions);
     connectionAPIController = ret.connectionAPIController;
@@ -54,6 +57,7 @@ export default async function init() {
     spConfig = ret.spConfig;
     samlFederatedController = ret.samlFederatedController;
     checkLicense = ret.checkLicense;
+    brandingController = ret.brandingController;
 
     g.connectionAPIController = connectionAPIController;
     g.oauthController = oauthController;
@@ -67,6 +71,7 @@ export default async function init() {
     g.isJacksonReady = true;
     g.samlFederatedController = samlFederatedController;
     g.checkLicense = checkLicense;
+    g.brandingController = brandingController;
   } else {
     connectionAPIController = g.connectionAPIController;
     oauthController = g.oauthController;
@@ -79,6 +84,7 @@ export default async function init() {
     spConfig = g.spConfig;
     samlFederatedController = g.samlFederatedController;
     checkLicense = g.checkLicense;
+    brandingController = g.brandingController;
   }
 
   return {
@@ -93,5 +99,6 @@ export default async function init() {
     setupLinkController,
     samlFederatedController,
     checkLicense,
+    brandingController,
   };
 }

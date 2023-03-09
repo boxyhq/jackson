@@ -1,14 +1,11 @@
-import type {
-  Storable,
-  JacksonOption,
-  SAMLFederationAppWithMetadata,
-  SAMLFederationApp,
-} from '../../typings';
+import type { Storable, JacksonOption, SAMLFederationApp } from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
+
+type NewAppParams = Pick<SAMLFederationApp, 'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId'>;
 
 export class App {
   protected store: Storable;
@@ -20,13 +17,7 @@ export class App {
   }
 
   // Create a new SAML Federation app for the tenant and product
-  public async create({
-    name,
-    tenant,
-    product,
-    acsUrl,
-    entityId,
-  }: Omit<SAMLFederationApp, 'id'>): Promise<SAMLFederationApp> {
+  public async create({ name, tenant, product, acsUrl, entityId }: NewAppParams) {
     if (!tenant || !product || !acsUrl || !entityId || !name) {
       throw new JacksonError(
         'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
@@ -38,13 +29,16 @@ export class App {
 
     const id = appID(tenant, product);
 
-    const app = {
+    const app: SAMLFederationApp = {
       id,
       name,
       tenant,
       product,
       acsUrl,
       entityId,
+      logoUrl: null,
+      faviconUrl: null,
+      primaryColor: null,
     };
 
     await this.store.put(id, app, {
@@ -52,11 +46,11 @@ export class App {
       value: entityId,
     });
 
-    return { ...app };
+    return app;
   }
 
   // Get an app by tenant and product
-  public async get(id: string): Promise<SAMLFederationApp> {
+  public async get(id: string) {
     if (!id) {
       throw new JacksonError('Missing required parameters. Required parameters are: id', 400);
     }
@@ -67,11 +61,11 @@ export class App {
       throw new JacksonError('SAML Federation app not found', 404);
     }
 
-    return { ...app };
+    return app;
   }
 
   // Get the app by SP EntityId
-  public async getByEntityId(entityId: string): Promise<SAMLFederationApp> {
+  public async getByEntityId(entityId: string) {
     if (!entityId) {
       throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
     }
@@ -85,46 +79,46 @@ export class App {
       throw new JacksonError('SAML Federation app not found', 404);
     }
 
-    return { ...apps[0] };
+    return apps[0];
   }
 
   // Update the app
-  public async update(
-    id: string,
-    { acsUrl, entityId, name }: Partial<Omit<SAMLFederationApp, 'id'>>
-  ): Promise<SAMLFederationApp> {
-    if (!id && (!acsUrl || !entityId || !name)) {
+  public async update(id: string, params: Partial<Omit<SAMLFederationApp, 'id'>>) {
+    const { acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor } = params;
+
+    if (!id) {
+      throw new JacksonError('Missing the app id', 400);
+    }
+
+    if (!acsUrl && !entityId && !name && !logoUrl && !faviconUrl && !primaryColor) {
       throw new JacksonError(
-        "Missing required parameters. Required parameters are: id, acsUrl, entityId, name'",
+        'Missing required parameters. Please provide at least one of the following parameters: acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor',
         400
       );
     }
 
     const app = await this.get(id);
 
-    const updatedApp = {
+    const updatedApp: SAMLFederationApp = {
       ...app,
       name: name || app.name,
       acsUrl: acsUrl || app.acsUrl,
       entityId: entityId || app.entityId,
+      logoUrl: logoUrl || app.logoUrl,
+      faviconUrl: faviconUrl || app.faviconUrl,
+      primaryColor: primaryColor || app.primaryColor,
     };
 
     await this.store.put(id, updatedApp);
 
-    return { ...updatedApp };
+    return updatedApp;
   }
 
   // Get all apps
-  public async getAll({
-    pageOffset,
-    pageLimit,
-  }: {
-    pageOffset?: number;
-    pageLimit?: number;
-  }): Promise<SAMLFederationApp[]> {
-    const apps = (await this.store.getAll(pageOffset, pageLimit)) as SAMLFederationApp[];
+  public async getAll({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }) {
+    const apps: SAMLFederationApp[] = await this.store.getAll(pageOffset, pageLimit);
 
-    return apps.map((app) => ({ ...app }));
+    return apps;
   }
 
   // Delete the app
@@ -140,7 +134,7 @@ export class App {
   }
 
   // Get the metadata for the app
-  public async getMetadata(): Promise<Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata']> {
+  public async getMetadata() {
     const { publicKey } = await getDefaultCertificate();
 
     const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
