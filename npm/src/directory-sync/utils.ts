@@ -143,7 +143,7 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
   const { value, path } = operation;
 
   const attributes: Partial<User> = {};
-  const customAttributes = {};
+  const rawAttributes = {};
 
   const attributesMap = {
     active: 'active',
@@ -155,10 +155,10 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
   // For example { path: "active", value: true }
   if (path) {
     if (path in attributesMap) {
-      attributes[path] = value;
-    } else {
-      customAttributes[path] = value;
+      attributes[attributesMap[path]] = value;
     }
+
+    rawAttributes[path] = value;
   }
 
   // If there is no path, then the value can be an object with multiple attributes
@@ -167,17 +167,41 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
     for (const attribute of Object.keys(value)) {
       if (attribute in attributesMap) {
         attributes[attributesMap[attribute]] = value[attribute];
-      } else {
-        customAttributes[attribute] = value[attribute];
       }
+
+      rawAttributes[attribute] = value[attribute];
     }
   }
 
   return {
     attributes,
-    customAttributes,
+    rawAttributes,
   };
 };
+
+// function dotToObject(data) {
+//   function index(parent, key, value) {
+//     const [mainKey, ...children] = key.split('.');
+//     parent[mainKey] = parent[mainKey] || {};
+
+//     if (children.length === 1) {
+//       parent[mainKey][children[0]] = value;
+//     } else {
+//       index(parent[mainKey], children.join('.'), value);
+//     }
+//   }
+
+//   const result = Object.entries(data).reduce((acc, [key, value]) => {
+//     if (key.includes('.')) {
+//       index(acc, key, value);
+//     } else {
+//       acc[key] = value;
+//     }
+
+//     return acc;
+//   }, {});
+//   return result;
+// }
 
 export {
   parseGroupOperations,

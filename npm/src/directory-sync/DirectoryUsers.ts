@@ -71,21 +71,34 @@ export class DirectoryUsers {
   public async patch(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
     const { Operations } = body as { Operations: UserPatchOperation[] };
 
+    let attributes: Partial<User> = {};
+    let rawAttributes = {};
+
     // There can be multiple update operations in a single request for a user
     for (const operation of Operations) {
-      const { attributes, customAttributes } = parseUserPatchRequest(operation);
+      const parsedAttributes = parseUserPatchRequest(operation);
 
-      const { data: updatedUser } = await this.users.update(user.id, {
-        ...user,
+      attributes = {
         ...attributes,
-        raw: { ...user.raw, ...customAttributes, ...attributes },
-      });
+        ...parsedAttributes.attributes,
+      };
 
-      await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
+      rawAttributes = {
+        ...rawAttributes,
+        ...parsedAttributes.rawAttributes,
+      };
     }
 
-    // Send the updated user back
-    const { data: updatedUser } = await this.users.get(user.id);
+    const { data: updatedUser } = await this.users.update(user.id, {
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      active: user.active,
+      ...attributes,
+      raw: { ...user.raw, ...rawAttributes },
+    });
+
+    await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
 
     return {
       status: 200,
