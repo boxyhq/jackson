@@ -7,8 +7,9 @@ import type {
   EventCallback,
   IDirectoryConfig,
   IUsers,
+  UserPatchOperation,
 } from '../typings';
-import { parseUserOperations } from './utils';
+import { parseUserPatchRequest } from './utils';
 import { sendEvent } from './events';
 
 export class DirectoryUsers {
@@ -68,28 +69,27 @@ export class DirectoryUsers {
   }
 
   public async patch(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
-    const { Operations } = body;
+    const { Operations } = body as { Operations: UserPatchOperation[] };
 
-    const operation = parseUserOperations(Operations);
+    // There can be multiple update operations in a single request for a user
+    for (const operation of Operations) {
+      const { attributes, customAttributes } = parseUserPatchRequest(operation);
 
-    if (operation.action === 'updateUser') {
       const { data: updatedUser } = await this.users.update(user.id, {
         ...user,
-        ...operation.attributes,
-        raw: { ...user.raw, ...operation.raw },
+        ...attributes,
+        raw: { ...user.raw, ...customAttributes, ...attributes },
       });
 
       await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
-
-      return {
-        status: 200,
-        data: updatedUser?.raw,
-      };
     }
+
+    // Send the updated user back
+    const { data: updatedUser } = await this.users.get(user.id);
 
     return {
       status: 200,
-      data: null,
+      data: updatedUser?.raw,
     };
   }
 

@@ -120,3 +120,19 @@ export type PaginationParams = {
   pageOffset?: number;
   pageLimit?: number;
 };
+
+export type UserPatchOperation = {
+  op: 'replace';
+  path?: string;
+  value:
+    | boolean
+    | {
+        active: boolean;
+      }
+    | {
+        'name.givenName': string;
+      }
+    | {
+        'name.familyName': string;
+      };
+};
