@@ -120,8 +120,6 @@ tap.test('Directory users / ', async (t) => {
       requests.multiValuedProperties(directory, createdUser.id)
     );
 
-    console.log({ data });
-
     t.ok(data);
     t.equal(status, 200);
     t.equal(data.active, false);
