@@ -7,8 +7,9 @@ import type {
   EventCallback,
   IDirectoryConfig,
   IUsers,
+  UserPatchOperation,
 } from '../typings';
-import { parseUserOperations } from './utils';
+import { parseUserPatchRequest } from './utils';
 import { sendEvent } from './events';
 
 export class DirectoryUsers {
@@ -68,28 +69,40 @@ export class DirectoryUsers {
   }
 
   public async patch(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
-    const { Operations } = body;
+    const { Operations } = body as { Operations: UserPatchOperation[] };
 
-    const operation = parseUserOperations(Operations);
+    let attributes: Partial<User> = {};
+    let rawAttributes = {};
 
-    if (operation.action === 'updateUser') {
-      const { data: updatedUser } = await this.users.update(user.id, {
-        ...user,
-        ...operation.attributes,
-        raw: { ...user.raw, ...operation.raw },
-      });
+    // There can be multiple update operations in a single request for a user
+    for (const operation of Operations) {
+      const parsedAttributes = parseUserPatchRequest(operation);
 
-      await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
+      attributes = {
+        ...attributes,
+        ...parsedAttributes.attributes,
+      };
 
-      return {
-        status: 200,
-        data: updatedUser?.raw,
+      rawAttributes = {
+        ...rawAttributes,
+        ...parsedAttributes.rawAttributes,
       };
     }
 
+    const { data: updatedUser } = await this.users.update(user.id, {
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      active: user.active,
+      ...attributes,
+      raw: { ...user.raw, ...rawAttributes },
+    });
+
+    await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
+
     return {
       status: 200,
-      data: null,
+      data: updatedUser?.raw,
     };
   }
 
