@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSidePropsContext } from 'next';
+import type { NextPage } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
 import DirectoryInfo from '@components/dsync/DirectoryInfo';
@@ -12,12 +12,12 @@ const DirectoryDetailsPage: NextPage = () => {
   return <DirectoryInfo directoryId={directoryId} setupLinkToken={token} />;
 };
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (context) => {
   const { locale } = context;
 
   return {
     props: {
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+      ...(await serverSideTranslations(locale, ['common'])),
     },
   };
 };

@@ -58,6 +58,11 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           text: t('saml_federation'),
           active: asPath.includes('/admin/federated-saml'),
         },
+        {
+          href: '/admin/saml-tracer',
+          text: t('saml_tracer'),
+          active: asPath.includes('/admin/saml-tracer'),
+        },
       ],
     },
     {
@@ -112,6 +117,18 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       text: t('settings'),
       icon: Cog8ToothIcon,
       active: asPath.includes('/admin/settings'),
+      items: [
+        {
+          href: '/admin/settings/sso-connection',
+          text: 'Single Sign-On',
+          active: asPath.includes('/admin/settings/sso-connection'),
+        },
+        {
+          href: '/admin/settings/branding',
+          text: 'Branding',
+          active: asPath.includes('/admin/settings/branding'),
+        },
+      ],
     },
   ];
 

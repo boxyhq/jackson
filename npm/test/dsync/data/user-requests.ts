@@ -106,6 +106,41 @@ const requests = {
       query: {},
     };
   },
+
+  // Multi-valued properties
+  multiValuedProperties: (directory: Directory, userId: string): DirectorySyncRequest => {
+    return {
+      method: 'PATCH',
+      body: {
+        Operations: [
+          {
+            op: 'replace',
+            path: 'name.givenName',
+            value: 'David',
+          },
+          {
+            op: 'replace',
+            path: 'name.familyName',
+            value: 'Jones',
+          },
+          {
+            op: 'add',
+            path: 'companyName',
+            value: 'BoxyHQ',
+          },
+          {
+            op: 'replace',
+            value: { active: false },
+          },
+        ],
+      },
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: userId,
+      apiSecret: directory.scim.secret,
+      query: {},
+    };
+  },
 };
 
 export default requests;

@@ -115,6 +115,19 @@ tap.test('Directory users / ', async (t) => {
     t.end();
   });
 
+  t.test('should be able to update the user with multi-valued properties', async (t) => {
+    const { status, data } = await directorySync.requests.handle(
+      requests.multiValuedProperties(directory, createdUser.id)
+    );
+
+    t.ok(data);
+    t.equal(status, 200);
+    t.equal(data.active, false);
+    t.equal(data.companyName, 'BoxyHQ');
+
+    t.end();
+  });
+
   t.test('Should be able to fetch all users', async (t) => {
     const { status, data } = await directorySync.requests.handle(requests.getAll(directory));
 

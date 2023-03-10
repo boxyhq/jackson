@@ -6,7 +6,7 @@ import type {
   Group,
   User,
 } from '../typings';
-import { DirectorySyncProviders } from '../typings';
+import { DirectorySyncProviders, UserPatchOperation } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 
@@ -71,46 +71,6 @@ const toGroupMembers = (users: { user_id: string }[]): DirectorySyncGroupMember[
   return users.map((user) => ({
     value: user.user_id,
   }));
-};
-
-export const parseUserOperations = (operations: {
-  op: 'replace';
-  value: any;
-}): {
-  action: 'updateUser' | 'unknown';
-  raw: any;
-  attributes: Partial<User>;
-} => {
-  const { op, value } = operations[0];
-
-  const attributes: Partial<User> = {};
-
-  // Update the user
-  if (op === 'replace') {
-    if ('active' in value) {
-      attributes['active'] = value.active;
-    }
-
-    if ('name.givenName' in value) {
-      attributes['first_name'] = value['name.givenName'];
-    }
-
-    if ('name.familyName' in value) {
-      attributes['last_name'] = value['name.familyName'];
-    }
-
-    return {
-      action: 'updateUser',
-      raw: value,
-      attributes,
-    };
-  }
-
-  return {
-    action: 'unknown',
-    raw: value,
-    attributes,
-  };
 };
 
 // List of directory sync providers
@@ -178,6 +138,47 @@ const createSignatureString = async (secret: string, event: DirectorySyncEvent) 
   return `t=${timestamp},s=${signature}`;
 };
 
+// Parse the PATCH request body and return the user attributes (both standard and custom)
+const parseUserPatchRequest = (operation: UserPatchOperation) => {
+  const { value, path } = operation;
+
+  const attributes: Partial<User> = {};
+  const rawAttributes = {};
+
+  const attributesMap = {
+    active: 'active',
+    'name.givenName': 'first_name',
+    'name.familyName': 'last_name',
+  };
+
+  // If there is a path, then the value is the value
+  // For example { path: "active", value: true }
+  if (path) {
+    if (path in attributesMap) {
+      attributes[attributesMap[path]] = value;
+    }
+
+    rawAttributes[path] = value;
+  }
+
+  // If there is no path, then the value can be an object with multiple attributes
+  // For example { value: { active: true, "name.familyName": "John" } }
+  else if (typeof value === 'object') {
+    for (const attribute of Object.keys(value)) {
+      if (attribute in attributesMap) {
+        attributes[attributesMap[attribute]] = value[attribute];
+      }
+
+      rawAttributes[attribute] = value[attribute];
+    }
+  }
+
+  return {
+    attributes,
+    rawAttributes,
+  };
+};
+
 export {
   parseGroupOperations,
   toGroupMembers,
@@ -185,4 +186,5 @@ export {
   transformEventPayload,
   createHeader,
   createSignatureString,
+  parseUserPatchRequest,
 };

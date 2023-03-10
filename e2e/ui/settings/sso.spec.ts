@@ -96,7 +96,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
         // Find the new connection button and click on it
         await page.getByTestId('create-connection').click();
         // Toggle connection type to OIDC
-        await page.getByText('OIDC').click();
+        await page.getByTestId('sso-type-oidc').click();
         // Fill the name for the connection
         const nameInput = page.getByTestId('name');
         await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);

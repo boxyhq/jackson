@@ -43,6 +43,7 @@ export class SAMLHandler {
     product?: string;
     entityId?: string;
     idp_hint?: string;
+    samlFedAppId?: string;
   }): Promise<
     | {
         connection: SAMLSSORecord | OIDCSSORecord;
@@ -54,7 +55,7 @@ export class SAMLHandler {
         postForm: string;
       }
   > {
-    const { authFlow, originalParams, tenant, product, idp_hint, entityId } = params;
+    const { authFlow, originalParams, tenant, product, idp_hint, entityId, samlFedAppId = '' } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
 
@@ -101,6 +102,7 @@ export class SAMLHandler {
           tenant,
           product,
           authFlow,
+          samlFedAppId,
           ...originalParams,
         });
 
@@ -198,6 +200,7 @@ export class SAMLHandler {
 
       return { responseForm };
     } catch (err) {
+      // TODO: Instead send saml response with status code
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
   };

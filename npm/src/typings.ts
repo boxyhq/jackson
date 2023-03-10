@@ -2,6 +2,7 @@ import type { JWK } from 'jose';
 import type { IssuerMetadata } from 'openid-client';
 
 export * from './ee/federated-saml/types';
+export * from './saml-tracer/types';
 export * from './directory-sync/types';
 
 interface SSOConnection {
@@ -156,6 +157,8 @@ export interface IOAuthController {
 
 export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number);
+  getAllSAMLTraces(pageOffset: number, pageLimit: number);
+  getSAMLTraceById(traceId: string);
 }
 
 export interface IHealthCheckController {
@@ -471,3 +474,16 @@ export type SetupLink = {
 };
 
 export type SetupLinkService = 'sso' | 'dsync';
+
+// Admin Portal settings
+export type AdminPortalSettings = {
+  branding: AdminPortalBranding;
+};
+
+// Admin Portal branding options
+export type AdminPortalBranding = {
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  primaryColor: string | null;
+  companyName: string | null;
+};

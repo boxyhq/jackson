@@ -36,11 +36,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const connections =
     isSystemSSO === undefined
-      ? (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0)))?.map((conn) => ({
+      ? // For the Connections list under Enterprise SSO, `isSystemSSO` flag added to show system sso badge
+        (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0)))?.map((conn) => ({
           ...conn,
           isSystemSSO: adminPortalSSOTenant === conn.tenant && adminPortalSSOProduct === conn.product,
         }))
-      : await connectionAPIController.getConnections({
+      : // For settings view, pagination not done for now as the system connections are expected to be a few
+        await connectionAPIController.getConnections({
           tenant: adminPortalSSOTenant,
           product: adminPortalSSOProduct,
         });

@@ -69,6 +69,28 @@ tap.test('Federated SAML App', async (t) => {
     t.end();
   });
 
+  tap.test('Should be able to update the app branding', async (t) => {
+    const response = await samlFederatedController.app.update(app.id, {
+      logoUrl: 'https://company.com/logo.png',
+      faviconUrl: 'https://company.com/favicon.ico',
+      primaryColor: '#000000',
+    });
+
+    t.ok(response);
+    t.match(response.logoUrl, 'https://company.com/logo.png');
+    t.match(response.faviconUrl, 'https://company.com/favicon.ico');
+    t.match(response.primaryColor, '#000000');
+
+    const updatedApp = await samlFederatedController.app.get(app.id);
+
+    t.ok(updatedApp);
+    t.match(updatedApp.logoUrl, 'https://company.com/logo.png');
+    t.match(updatedApp.faviconUrl, 'https://company.com/favicon.ico');
+    t.match(updatedApp.primaryColor, '#000000');
+
+    t.end();
+  });
+
   tap.test('Should be able to get all SAML Federation apps', async (t) => {
     const response = await samlFederatedController.app.getAll({});
 
