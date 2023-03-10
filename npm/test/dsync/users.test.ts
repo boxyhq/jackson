@@ -124,6 +124,8 @@ tap.test('Directory users / ', async (t) => {
     t.equal(status, 200);
     t.equal(data.active, false);
     t.equal(data.companyName, 'BoxyHQ');
+    t.equal(data.name.givenName, 'David');
+    t.equal(data.name.familyName, 'Jones');
 
     t.end();
   });
