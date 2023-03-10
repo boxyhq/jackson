@@ -496,7 +496,6 @@ export class OAuthController implements IOAuthController {
       rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
       issuer = saml.parseIssuer(rawResponse);
 
-      // IdP is disabled so block the request
       if (!this.opts.idpEnabled && isIdPFlow) {
         // IdP login is disabled so block the request
         throw new JacksonError(
