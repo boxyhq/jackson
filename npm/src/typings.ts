@@ -297,20 +297,31 @@ export interface Index {
   value: string;
 }
 
+export interface Records {
+  data: any[];
+  pageToken?: string;
+}
+
 export interface DatabaseDriver {
-  getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]>;
+  getAll(namespace: string, pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
   get(namespace: string, key: string): Promise<any>;
   put(namespace: string, key: string, val: any, ttl: number, ...indexes: Index[]): Promise<any>;
   delete(namespace: string, key: string): Promise<any>;
-  getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any>;
+  getByIndex(
+    namespace: string,
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string
+  ): Promise<Records>;
 }
 
 export interface Storable {
-  getAll(pageOffset?: number, pageLimit?: number): Promise<any[]>;
+  getAll(pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
-  getByIndex(idx: Index, pageOffset?: number, pageLimit?: number): Promise<any>;
+  getByIndex(idx: Index, pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
 }
 
 export interface DatabaseStore {

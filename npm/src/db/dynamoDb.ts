@@ -10,7 +10,7 @@ import {
   UpdateTimeToLiveCommand,
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall, NativeAttributeValue } from '@aws-sdk/util-dynamodb';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index } from '../typings';
+import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records } from '../typings';
 import * as dbutils from './utils';
 
 const getSeconds = (date: Date) => Math.floor(date.getTime() / 1000);
@@ -171,9 +171,12 @@ class DynamoDB implements DatabaseDriver {
     return this._get(namespace, dbutils.key(namespace, key));
   }
 
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
-    console.log(pageOffset, pageLimit);
-
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string
+  ): Promise<Records> {
     const res = await this.client.send(
       new QueryCommand({
         KeyConditionExpression: 'namespace = :namespace',
@@ -181,9 +184,14 @@ class DynamoDB implements DatabaseDriver {
           ':namespace': { S: namespace },
         },
         TableName: tableName,
+        Limit: pageLimit ? pageLimit : undefined,
+        ExclusiveStartKey: pageToken ? JSON.parse(Buffer.from(pageToken, 'base64').toString()) : undefined,
       })
     );
 
+    const newPageToken = res.LastEvaluatedKey
+      ? Buffer.from(JSON.stringify(res.LastEvaluatedKey)).toString('base64')
+      : undefined;
     const items: Encrypted[] = [];
     for (const item of res.Items || []) {
       const ns = item.namespace?.S;
@@ -197,11 +205,16 @@ class DynamoDB implements DatabaseDriver {
       }
     }
 
-    return items;
+    return { data: items, pageToken: newPageToken };
   }
 
-  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
-    console.log(pageOffset, pageLimit);
+  async getByIndex(
+    namespace: string,
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string
+  ): Promise<Records> {
     const res = await this.client.send(
       new QueryCommand({
         KeyConditionExpression: '#key = :key',
@@ -213,9 +226,14 @@ class DynamoDB implements DatabaseDriver {
         },
         TableName: indexTableName,
         IndexName: globalIndexKeyIndexName,
+        Limit: pageLimit ? pageLimit : undefined,
+        ExclusiveStartKey: pageToken ? JSON.parse(Buffer.from(pageToken, 'base64').toString()) : undefined,
       })
     );
 
+    const newPageToken = res.LastEvaluatedKey
+      ? Buffer.from(JSON.stringify(res.LastEvaluatedKey)).toString('base64')
+      : undefined;
     const items: Encrypted[] = [];
     for (const item of res.Items || []) {
       const ns = item.namespace?.S;
@@ -232,7 +250,7 @@ class DynamoDB implements DatabaseDriver {
       }
     }
 
-    return items;
+    return { data: items, pageToken: newPageToken };
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {

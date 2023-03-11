@@ -232,33 +232,41 @@ tap.test('dbs', ({ end }) => {
     });
 
     tap.test('getAll(): ' + dbEngine, async (t) => {
-      const allRecords: any = await connectionStore.getAll();
+      const allRecords = await connectionStore.getAll();
       const allRecordOutput = {};
       let allRecordInput = {};
       for (const keyValue in records) {
         const keyVal = records[keyValue.toString()];
         allRecordOutput[keyVal];
       }
-      for (const keyValue in allRecords) {
+      for (const keyValue in allRecords.data) {
         const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecords[keyVal]];
+        allRecordInput[allRecords.data[keyVal]];
       }
       t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
       allRecordInput = {};
-      let allRecordsWithPagination: any = await connectionStore.getAll(0, 2);
-      for (const keyValue in allRecordsWithPagination) {
+      let allRecordsWithPagination = await connectionStore.getAll(0, 2);
+      for (const keyValue in allRecordsWithPagination.data) {
         const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPagination[keyVal]];
+        allRecordInput[allRecordsWithPagination.data[keyVal]];
       }
 
       t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
       allRecordsWithPagination = await connectionStore.getAll(0, 0);
-      for (const keyValue in allRecordsWithPagination) {
+      for (const keyValue in allRecordsWithPagination.data) {
         const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPagination[keyVal]];
+        allRecordInput[allRecordsWithPagination.data[keyVal]];
       }
 
       t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
+
+      let oneRecordWithPagination = await connectionStore.getAll(0, 1);
+      t.same(
+        oneRecordWithPagination.data.length,
+        1,
+        "getAll pagination should get only 1 record, order doesn't matter"
+      );
+
       t.end();
     });
 
@@ -273,12 +281,22 @@ tap.test('dbs', ({ end }) => {
         value: record1.city,
       });
 
-      t.same(ret1, [record1], 'unable to get index "name"');
+      t.same(ret1.data, [record1], 'unable to get index "name"');
       t.same(
-        ret2.sort((a, b) => a.id.localeCompare(b.id)),
+        ret2.data.sort((a, b) => a.id.localeCompare(b.id)),
         [record1, record2].sort((a, b) => a.id.localeCompare(b.id)),
         'unable to get index "city"'
       );
+
+      const ret3 = await connectionStore.getByIndex(
+        {
+          name: 'city',
+          value: record1.city,
+        },
+        0,
+        1
+      );
+      t.same(ret3.data.length, 1, "getByIndex pagination should get only 1 record, order doesn't matter");
 
       t.end();
     });
@@ -291,7 +309,7 @@ tap.test('dbs', ({ end }) => {
         value: record1.city,
       });
 
-      t.same(ret0, [record2], 'unable to get index "city" after delete');
+      t.same(ret0.data, [record2], 'unable to get index "city" after delete');
 
       await connectionStore.delete(record2.id);
 
@@ -310,8 +328,8 @@ tap.test('dbs', ({ end }) => {
       t.same(ret1, null, 'delete for record1 failed');
       t.same(ret2, null, 'delete for record2 failed');
 
-      t.same(ret3, [], 'delete for record1 failed');
-      t.same(ret4, [], 'delete for record2 failed');
+      t.same(ret3.data, [], 'delete for record1 failed');
+      t.same(ret4.data, [], 'delete for record2 failed');
 
       t.end();
     });

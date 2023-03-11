@@ -1,4 +1,4 @@
-import { Index, Storable } from '../typings';
+import { Index, Records, Storable } from '../typings';
 import * as dbutils from './utils';
 
 class Store implements Storable {
@@ -16,11 +16,11 @@ class Store implements Storable {
     return await this.db.get(this.namespace, dbutils.keyDigest(key));
   }
 
-  async getAll(pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
+  async getAll(pageOffset?: number, pageLimit?: number): Promise<Records> {
     return await this.db.getAll(this.namespace, pageOffset, pageLimit);
   }
 
-  async getByIndex(idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+  async getByIndex(idx: Index, pageOffset?: number, pageLimit?: number): Promise<Records> {
     idx.value = dbutils.keyDigest(idx.value);
 
     return await this.db.getByIndex(this.namespace, idx, pageOffset, pageLimit);

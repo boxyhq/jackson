@@ -1,6 +1,6 @@
 // This is an in-memory implementation to be used with testing and prototyping only
 
-import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../typings';
+import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records } from '../typings';
 import * as dbutils from './utils';
 
 class Mem implements DatabaseDriver {
@@ -51,7 +51,7 @@ class Mem implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const returnValue: string[] = [];
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
@@ -65,7 +65,7 @@ class Mem implements DatabaseDriver {
       const index = dbutils.keyFromParts(dbutils.createdAtPrefix, namespace);
 
       if (this.indexes[index] === undefined) {
-        return [];
+        return { data: [] };
       }
 
       const val: string[] = Array.from(this.indexes[index]);
@@ -84,10 +84,16 @@ class Mem implements DatabaseDriver {
       }
     }
 
-    return returnValue || [];
+    return { data: returnValue || [] };
   }
 
-  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+  async getByIndex(
+    namespace: string,
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string
+  ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
 
@@ -113,7 +119,7 @@ class Mem implements DatabaseDriver {
       }
     }
 
-    return ret;
+    return { data: ret };
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<any> {

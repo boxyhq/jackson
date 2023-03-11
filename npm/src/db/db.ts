@@ -1,4 +1,12 @@
-import { DatabaseDriver, DatabaseOption, Encrypted, EncryptionKey, Index, Storable } from '../typings';
+import {
+  DatabaseDriver,
+  DatabaseOption,
+  Encrypted,
+  EncryptionKey,
+  Index,
+  Records,
+  Storable,
+} from '../typings';
 import * as encrypter from './encrypter';
 import mem from './mem';
 import mongo from './mongo';
@@ -49,25 +57,37 @@ class DB implements DatabaseDriver {
     return decrypt(res, this.encryptionKey);
   }
 
-  async getAll(namespace, pageOffset, pageLimit): Promise<unknown[]> {
-    const res = (await this.db.getAll(namespace, pageOffset, pageLimit)) as Encrypted[];
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string
+  ): Promise<Records> {
+    const res = await this.db.getAll(namespace, pageOffset, pageLimit, pageToken);
     const encryptionKey = this.encryptionKey;
-    return res.map((r) => {
-      return decrypt(r, encryptionKey);
-    });
+    return {
+      data: res.data.map((r) => {
+        return decrypt(r, encryptionKey);
+      }),
+      pageToken: res.pageToken,
+    };
   }
 
   async getByIndex(
     namespace: string,
     idx: Index,
     pageOffset?: number,
-    pageLimit?: number
-  ): Promise<unknown[]> {
-    const res = await this.db.getByIndex(namespace, idx, pageOffset, pageLimit);
+    pageLimit?: number,
+    pageToken?: string
+  ): Promise<Records> {
+    const res = await this.db.getByIndex(namespace, idx, pageOffset, pageLimit, pageToken);
     const encryptionKey = this.encryptionKey;
-    return res.map((r) => {
-      return decrypt(r, encryptionKey);
-    });
+    return {
+      data: res.data.map((r) => {
+        return decrypt(r, encryptionKey);
+      }),
+      pageToken: res.pageToken,
+    };
   }
 
   // ttl is in seconds
