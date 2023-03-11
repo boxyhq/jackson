@@ -135,10 +135,12 @@ export class Users extends Base {
     directoryId: string
   ): Promise<{ data: User[] | null; error: ApiError | null }> {
     try {
-      const users = await this.store('users').getByIndex({
-        name: indexNames.directoryIdUsername,
-        value: keyFromParts(directoryId, userName),
-      });
+      const users = (
+        await this.store('users').getByIndex({
+          name: indexNames.directoryIdUsername,
+          value: keyFromParts(directoryId, userName),
+        })
+      ).data;
 
       return { data: users, error: null };
     } catch (err: any) {
@@ -162,16 +164,18 @@ export class Users extends Base {
 
       // Filter by directoryId
       if (directoryId) {
-        users = await this.store('users').getByIndex(
-          {
-            name: indexNames.directoryId,
-            value: directoryId,
-          },
-          pageOffset,
-          pageLimit
-        );
+        users = (
+          await this.store('users').getByIndex(
+            {
+              name: indexNames.directoryId,
+              value: directoryId,
+            },
+            pageOffset,
+            pageLimit
+          )
+        ).data as User[];
       } else {
-        users = await this.store('users').getAll(pageOffset, pageLimit);
+        users = (await this.store('users').getAll(pageOffset, pageLimit)).data;
       }
 
       return { data: users, error: null };

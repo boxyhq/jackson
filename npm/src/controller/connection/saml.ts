@@ -121,10 +121,12 @@ const saml = {
 
     record.idpMetadata = idpMetadata;
 
-    const existing = await connectionStore.getByIndex({
-      name: IndexNames.EntityID,
-      value: idpMetadata.entityID,
-    });
+    const existing = (
+      await connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: idpMetadata.entityID,
+      })
+    ).data;
 
     if (existing.length > 0) {
       for (let i = 0; i < existing.length; i++) {
@@ -139,12 +141,10 @@ const saml = {
       }
     }
 
-    const exists = await connectionStore.getByIndex({
-      name: IndexNames.EntityID,
-      value: record.clientID,
-    });
+    // TODO: (deepak) Review this change
+    const exists = await connectionStore.get(record.clientID);
 
-    if (exists.length > 0) {
+    if (exists) {
       connectionClientSecret = exists.clientSecret;
     } else {
       connectionClientSecret = crypto.randomBytes(24).toString('hex');

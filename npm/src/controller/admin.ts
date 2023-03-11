@@ -11,7 +11,7 @@ export class AdminController implements IAdminController {
   }
 
   public async getAllConnection(pageOffset?: number, pageLimit?: number) {
-    const connectionList = (await this.connectionStore.getAll(pageOffset, pageLimit)) satisfies Array<
+    const connectionList = (await this.connectionStore.getAll(pageOffset, pageLimit)).data satisfies Array<
       SAMLSSORecord | OIDCSSORecord
     >;
 

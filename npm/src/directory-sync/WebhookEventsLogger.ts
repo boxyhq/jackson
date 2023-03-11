@@ -42,17 +42,19 @@ export class WebhookEventsLogger extends Base {
     directoryId?: string;
   } = {}): Promise<WebhookEventLog[]> {
     if (directoryId) {
-      return (await this.store('logs').getByIndex(
-        {
-          name: 'directoryId',
-          value: directoryId,
-        },
-        pageOffset,
-        pageLimit
-      )) as WebhookEventLog[];
+      return (
+        await this.store('logs').getByIndex(
+          {
+            name: 'directoryId',
+            value: directoryId,
+          },
+          pageOffset,
+          pageLimit
+        )
+      ).data as WebhookEventLog[];
     }
 
-    return (await this.store('logs').getAll(pageOffset, pageLimit)) as WebhookEventLog[];
+    return (await this.store('logs').getAll(pageOffset, pageLimit)).data as WebhookEventLog[];
   }
 
   public async delete(id: string) {

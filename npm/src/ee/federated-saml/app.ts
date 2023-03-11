@@ -70,10 +70,12 @@ export class App {
       throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
     }
 
-    const apps: SAMLFederationApp[] = await this.store.getByIndex({
-      name: IndexNames.EntityID,
-      value: entityId,
-    });
+    const apps: SAMLFederationApp[] = (
+      await this.store.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      })
+    ).data;
 
     if (!apps || apps.length === 0) {
       throw new JacksonError('SAML Federation app not found', 404);
@@ -116,7 +118,7 @@ export class App {
 
   // Get all apps
   public async getAll({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }) {
-    const apps: SAMLFederationApp[] = await this.store.getAll(pageOffset, pageLimit);
+    const apps: SAMLFederationApp[] = (await this.store.getAll(pageOffset, pageLimit)).data;
 
     return apps;
   }

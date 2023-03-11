@@ -160,10 +160,12 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const directories: Directory[] = await this.store().getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      const directories: Directory[] = (
+        await this.store().getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
 
       const transformedDirectories = directories.map((directory) => this.transform(directory));
 
@@ -179,7 +181,7 @@ export class DirectoryConfig {
     error: ApiError | null;
   }> {
     try {
-      const directories = (await this.store().getAll(pageOffset, pageLimit)) as Directory[];
+      const directories = (await this.store().getAll(pageOffset, pageLimit)).data as Directory[];
 
       const transformedDirectories = directories
         ? directories.map((directory) => this.transform(directory))

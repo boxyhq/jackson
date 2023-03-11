@@ -61,17 +61,21 @@ export class SAMLHandler {
 
     // Find SAML connections for the app
     if (tenant && product) {
-      connections = await this.connection.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      connections = (
+        await this.connection.getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
     }
 
     if (entityId) {
-      connections = await this.connection.getByIndex({
-        name: IndexNames.EntityID,
-        value: entityId,
-      });
+      connections = (
+        await this.connection.getByIndex({
+          name: IndexNames.EntityID,
+          value: entityId,
+        })
+      ).data;
     }
 
     const noSSOConnectionErrMessage =

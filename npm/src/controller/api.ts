@@ -512,7 +512,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return transformConnections(connections);
+      return transformConnections(connections.data);
     }
 
     if (clientID) {
@@ -531,13 +531,13 @@ export class ConnectionAPIController implements IConnectionAPIController {
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!connections || !connections.length) {
+      if (!connections || !connections.data.length) {
         return [];
       }
 
       // filter if strategy is passed
       const filteredConnections = strategy
-        ? connections.filter((connection) => {
+        ? connections.data.filter((connection) => {
             if (strategy === 'saml') {
               if (connection.idpMetadata) {
                 return true;
@@ -550,7 +550,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
             }
             return false;
           })
-        : connections;
+        : connections.data;
 
       if (!filteredConnections.length) {
         return [];
@@ -619,10 +619,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     if (tenant && product) {
-      const samlConfigs = await this.connectionStore.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      const samlConfigs = (
+        await this.connectionStore.getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
 
       if (!samlConfigs || !samlConfigs.length) {
         return {};
@@ -731,10 +733,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     if (tenant && product) {
-      const connections = await this.connectionStore.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      const connections = (
+        await this.connectionStore.getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
 
       if (!connections || !connections.length) {
         return;

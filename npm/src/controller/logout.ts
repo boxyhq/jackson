@@ -33,10 +33,12 @@ export class LogoutController {
     let samlConnection: SAMLConnection | null = null;
 
     if (tenant && product) {
-      const samlConnections = await this.connectionStore.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      const samlConnections = (
+        await this.connectionStore.getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
 
       if (!samlConnections || samlConnections.length === 0) {
         throw new JacksonError('SAML connection not found.', 403);
@@ -119,10 +121,12 @@ export class LogoutController {
       throw new JacksonError(`SLO failed with mismatched request ID.`, 400);
     }
 
-    const samlConnections = await this.connectionStore.getByIndex({
-      name: IndexNames.EntityID,
-      value: parsedResponse.issuer,
-    });
+    const samlConnections = (
+      await this.connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: parsedResponse.issuer,
+      })
+    ).data;
 
     if (!samlConnections || samlConnections.length === 0) {
       throw new JacksonError('SAML connection not found.', 403);
