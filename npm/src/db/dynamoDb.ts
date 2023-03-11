@@ -29,7 +29,10 @@ class DynamoDB implements DatabaseDriver {
   }
 
   async init(): Promise<DynamoDB> {
-    this.client = new DynamoDBClient({ endpoint: this.options.url });
+    this.client = new DynamoDBClient({
+      endpoint: this.options.url,
+      region: this.options.region || 'us-east-1',
+    });
     try {
       await this.client.send(
         new CreateTableCommand({
