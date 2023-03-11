@@ -46,6 +46,8 @@ jobs:
       DYNAMODB_URL: 'http://localhost:8000'
       BOXYHQ_NO_ANALYTICS: '1'
       IDP_ENABLED: true
+      AWS_ACCESS_KEY_ID: secret
+      AWS_SECRET_ACCESS_KEY: secret
     strategy:
       matrix:
         node-version: [18]
