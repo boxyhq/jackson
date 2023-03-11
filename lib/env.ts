@@ -39,7 +39,6 @@ const db: DatabaseOption = {
   pageLimit: process.env.DB_PAGE_LIMIT ? Number(process.env.DB_PAGE_LIMIT) : undefined,
   ssl,
   region: process.env.DB_REGION,
-  },
 };
 
 const jacksonOptions: JacksonOption = {
