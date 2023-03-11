@@ -260,14 +260,18 @@ tap.test('dbs', ({ end }) => {
 
       t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
 
-      let oneRecordWithPagination = await connectionStore.getAll(0, 1);
+      const oneRecordWithPagination = await connectionStore.getAll(0, 1);
       t.same(
         oneRecordWithPagination.data.length,
         dbEngine === 'dynamodb' ? 2 : 1,
         "getAll pagination should get only 1 record, order doesn't matter"
       );
 
-      let secondRecordWithPagination = await connectionStore.getAll(1, 1, oneRecordWithPagination.pageToken);
+      const secondRecordWithPagination = await connectionStore.getAll(
+        1,
+        1,
+        oneRecordWithPagination.pageToken
+      );
       t.same(
         secondRecordWithPagination.data.length,
         dbEngine === 'dynamodb' ? 2 : 1,
