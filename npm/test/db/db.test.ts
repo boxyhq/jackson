@@ -263,7 +263,14 @@ tap.test('dbs', ({ end }) => {
       let oneRecordWithPagination = await connectionStore.getAll(0, 1);
       t.same(
         oneRecordWithPagination.data.length,
-        1,
+        dbEngine === 'dynamodb' ? 2 : 1,
+        "getAll pagination should get only 1 record, order doesn't matter"
+      );
+
+      let secondRecordWithPagination = await connectionStore.getAll(1, 1, oneRecordWithPagination.pageToken);
+      t.same(
+        secondRecordWithPagination.data.length,
+        dbEngine === 'dynamodb' ? 2 : 1,
         "getAll pagination should get only 1 record, order doesn't matter"
       );
 
@@ -296,7 +303,34 @@ tap.test('dbs', ({ end }) => {
         0,
         1
       );
-      t.same(ret3.data.length, 1, "getByIndex pagination should get only 1 record, order doesn't matter");
+      t.same(
+        ret3.data.length,
+        dbEngine === 'dynamodb' ? 2 : 1,
+        "getByIndex pagination should get only 1 record, order doesn't matter"
+      );
+
+      const ret4 = await connectionStore.getByIndex(
+        {
+          name: 'city',
+          value: record1.city,
+        },
+        1,
+        1,
+        ret3.pageToken
+      );
+      t.same(
+        ret4.data.length,
+        dbEngine === 'dynamodb' ? 2 : 1,
+        "getByIndex pagination should get only 1 record, order doesn't matter"
+      );
+
+      t.same(
+        ret2.data.sort((a, b) => a.id.localeCompare(b.id)),
+        dbEngine === 'dynamodb'
+          ? ret3.data.sort((a, b) => a.id.localeCompare(b.id))
+          : [ret3.data[0], ret4.data[0]].sort((a, b) => a.id.localeCompare(b.id)),
+        'getByIndex pagination for index "city" failed'
+      );
 
       t.end();
     });

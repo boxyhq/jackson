@@ -171,12 +171,8 @@ class DynamoDB implements DatabaseDriver {
     return this._get(namespace, dbutils.key(namespace, key));
   }
 
-  async getAll(
-    namespace: string,
-    pageOffset?: number,
-    pageLimit?: number,
-    pageToken?: string
-  ): Promise<Records> {
+  // dynamodb pagination cannot care about pageOffset and pageLimit
+  async getAll(namespace: string, _?: number, __?: number, pageToken?: string): Promise<Records> {
     const res = await this.client.send(
       new QueryCommand({
         KeyConditionExpression: 'namespace = :namespace',
@@ -184,8 +180,9 @@ class DynamoDB implements DatabaseDriver {
           ':namespace': { S: namespace },
         },
         TableName: tableName,
-        Limit: pageLimit ? pageLimit : undefined,
-        ExclusiveStartKey: pageToken ? JSON.parse(Buffer.from(pageToken, 'base64').toString()) : undefined,
+        ExclusiveStartKey: pageToken
+          ? marshall(JSON.parse(Buffer.from(pageToken, 'base64').toString()))
+          : undefined,
       })
     );
 
@@ -208,11 +205,12 @@ class DynamoDB implements DatabaseDriver {
     return { data: items, pageToken: newPageToken };
   }
 
+  // dynamodb pagination cannot care about pageOffset and pageLimit
   async getByIndex(
     namespace: string,
     idx: Index,
-    pageOffset?: number,
-    pageLimit?: number,
+    _?: number,
+    __?: number,
     pageToken?: string
   ): Promise<Records> {
     const res = await this.client.send(
@@ -226,8 +224,9 @@ class DynamoDB implements DatabaseDriver {
         },
         TableName: indexTableName,
         IndexName: globalIndexKeyIndexName,
-        Limit: pageLimit ? pageLimit : undefined,
-        ExclusiveStartKey: pageToken ? JSON.parse(Buffer.from(pageToken, 'base64').toString()) : undefined,
+        ExclusiveStartKey: pageToken
+          ? marshall(JSON.parse(Buffer.from(pageToken, 'base64').toString()))
+          : undefined,
       })
     );
 
