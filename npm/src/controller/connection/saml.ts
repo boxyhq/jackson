@@ -126,8 +126,6 @@ const saml = {
       value: idpMetadata.entityID,
     });
 
-    let exists: any[] = [];
-
     if (existing.length > 0) {
       for (let i = 0; i < existing.length; i++) {
         const samlConfig = existing[i];
@@ -135,16 +133,16 @@ const saml = {
           throw new JacksonError('EntityID already exists for different tenant/product');
         } else if (samlConfig.tenant !== tenant && samlConfig.product !== product) {
           throw new JacksonError('EntityID already exists for different tenant/product');
-        } else if (samlConfig.tenant === tenant && samlConfig.product !== product) {
-          continue;
         } else {
-          exists.push(samlConfig);
+          continue;
         }
       }
     }
 
-    if (exists.length > 0) {
-      connectionClientSecret = exists[0].clientSecret;
+    let exists = await connectionStore.get(record.clientID);
+
+    if (exists) {
+      connectionClientSecret = exists.clientSecret;
     } else {
       connectionClientSecret = crypto.randomBytes(24).toString('hex');
     }
