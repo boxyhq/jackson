@@ -139,7 +139,7 @@ const saml = {
       }
     }
 
-    let exists = await connectionStore.get(record.clientID);
+    const exists = await connectionStore.get(record.clientID);
 
     if (exists) {
       connectionClientSecret = exists.clientSecret;
