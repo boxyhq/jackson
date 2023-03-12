@@ -141,7 +141,6 @@ const saml = {
       }
     }
 
-    // TODO: (deepak) Review this change
     const exists = await connectionStore.get(record.clientID);
 
     if (exists) {
