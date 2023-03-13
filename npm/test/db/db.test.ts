@@ -263,7 +263,7 @@ tap.test('dbs', ({ end }) => {
       const oneRecordWithPagination = await connectionStore.getAll(0, 1);
       t.same(
         oneRecordWithPagination.data.length,
-        dbEngine === 'dynamodb' ? 2 : 1,
+        1,
         "getAll pagination should get only 1 record, order doesn't matter"
       );
 
@@ -274,7 +274,7 @@ tap.test('dbs', ({ end }) => {
       );
       t.same(
         secondRecordWithPagination.data.length,
-        dbEngine === 'dynamodb' ? 2 : 1,
+        1,
         "getAll pagination should get only 1 record, order doesn't matter"
       );
 
