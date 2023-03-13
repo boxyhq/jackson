@@ -61,7 +61,7 @@
     "daisyui": "2.51.3",
     "i18next": "22.4.10",
     "micromatch": "4.0.5",
-    "next": "13.2.1",
+    "next": "13.2.4",
     "next-auth": "4.20.1",
     "next-i18next": "13.1.5",
     "nodemailer": "6.9.1",
