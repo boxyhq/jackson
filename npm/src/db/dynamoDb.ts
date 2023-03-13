@@ -174,7 +174,6 @@ class DynamoDB implements DatabaseDriver {
     return this._get(namespace, dbutils.key(namespace, key));
   }
 
-  // dynamodb pagination cannot care about pageOffset and pageLimit
   async getAll(namespace: string, _?: number, pageLimit?: number, pageToken?: string): Promise<Records> {
     const res = await this.client.send(
       new QueryCommand({
@@ -209,7 +208,7 @@ class DynamoDB implements DatabaseDriver {
     return { data: items, pageToken: newPageToken };
   }
 
-  // dynamodb pagination cannot care about pageOffset and pageLimit
+  // dynamodb pagination cannot care about pageOffset and pageLimit here, we let it handle it on it's own
   async getByIndex(
     namespace: string,
     idx: Index,
