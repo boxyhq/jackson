@@ -9,8 +9,9 @@ import type {
   IDirectoryConfig,
   IUsers,
   IGroups,
+  GroupPatchOperation,
 } from '../typings';
-import { parseGroupOperations, toGroupMembers } from './utils';
+import { parseGroupOperation, toGroupMembers } from './utils';
 import { sendEvent } from './events';
 
 export class DirectoryGroups {
@@ -43,9 +44,9 @@ export class DirectoryGroups {
     });
 
     // Add members to the group if any
-    if (members && members.length > 0 && group) {
-      await this.addOrRemoveGroupMembers(directory, group, members);
-    }
+    // if (members && members.length > 0 && group) {
+    //   await this.addOrRemoveGroupMembers(directory, group, members);
+    // }
 
     await sendEvent('group.created', { directory, group }, this.callback);
 
@@ -55,7 +56,7 @@ export class DirectoryGroups {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
         id: group?.id,
         displayName: group?.name,
-        members: members ?? [],
+        members: [],
       },
     };
   }
@@ -114,47 +115,28 @@ export class DirectoryGroups {
     };
   }
 
-  // Update group displayName
-  public async updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group> {
-    const { displayName } = body;
-
-    const { data: updatedGroup, error } = await this.groups.update(group.id, {
-      name: displayName,
-      raw: {
-        ...group.raw,
-        ...body,
-      },
-    });
-
-    if (error || !updatedGroup) {
-      throw error;
-    }
-
-    await sendEvent('group.updated', { directory, group: updatedGroup }, this.callback);
-
-    return updatedGroup;
-  }
-
   public async patch(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
-    const { Operations } = body;
+    const { Operations } = body as { Operations: GroupPatchOperation[] };
 
-    const operation = parseGroupOperations(Operations);
+    for (const op of Operations) {
+      const operation = parseGroupOperation(op);
 
-    // Add group members
-    if (operation.action === 'addGroupMember') {
-      await this.addGroupMembers(directory, group, operation.members);
-    }
+      // Add group members
+      if (operation.action === 'addGroupMember') {
+        await this.addGroupMembers(directory, group, operation.members);
+      }
 
-    // Remove group members
-    if (operation.action === 'removeGroupMember') {
-      await this.removeGroupMembers(directory, group, operation.members);
-    }
+      // Remove group members
+      if (operation.action === 'removeGroupMember') {
+        await this.removeGroupMembers(directory, group, operation.members);
+      }
 
-    // Update group name
-    if (operation.action === 'updateGroupName') {
-      await this.updateDisplayName(directory, group, {
-        displayName: operation.displayName,
-      });
+      // Update group name
+      if (operation.action === 'updateGroupName') {
+        await this.updateDisplayName(directory, group, {
+          displayName: operation.displayName,
+        });
+      }
     }
 
     const { data: updatedGroup } = await this.groups.get(group.id);
@@ -194,6 +176,27 @@ export class DirectoryGroups {
     };
   }
 
+  // Update group displayName
+  public async updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group> {
+    const { displayName } = body;
+
+    const { data: updatedGroup, error } = await this.groups.update(group.id, {
+      name: displayName,
+      raw: {
+        ...group.raw,
+        ...body,
+      },
+    });
+
+    if (error || !updatedGroup) {
+      throw error;
+    }
+
+    await sendEvent('group.updated', { directory, group: updatedGroup }, this.callback);
+
+    return updatedGroup;
+  }
+
   public async addGroupMembers(
     directory: Directory,
     group: Group,
@@ -222,10 +225,10 @@ export class DirectoryGroups {
   public async removeGroupMembers(
     directory: Directory,
     group: Group,
-    members: DirectorySyncGroupMember[],
+    members: DirectorySyncGroupMember[] | undefined,
     sendWebhookEvent = true
   ) {
-    if (members.length === 0) {
+    if (members === undefined || (members && members.length === 0)) {
       return;
     }
 

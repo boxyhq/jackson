@@ -6,56 +6,54 @@ import type {
   Group,
   User,
 } from '../typings';
-import { DirectorySyncProviders, UserPatchOperation } from '../typings';
+import { DirectorySyncProviders, UserPatchOperation, GroupPatchOperation } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 
-const parseGroupOperations = (
-  operations: {
-    op: 'add' | 'remove' | 'replace';
-    path: string;
-    value: any;
-  }[]
-):
-  | {
-      action: 'addGroupMember' | 'removeGroupMember';
-      members: DirectorySyncGroupMember[];
+// :
+//   | {
+//       action: 'addGroupMember' | 'removeGroupMember';
+//       members: DirectorySyncGroupMember[];
+//     }
+//   | {
+//       action: 'updateGroupName';
+//       displayName: string;
+//     }
+//   | {
+//       action: 'unknown';
+//     }
+
+// Remove group members
+// if (op === 'remove' && path.startsWith('members[value eq')) {
+//   return {
+//     action: 'removeGroupMember',
+//     members: [{ value: path.split('"')[1] }],
+//   };
+// }
+
+const parseGroupOperation = (operation: GroupPatchOperation) => {
+  const { op, path, value } = operation;
+
+  if (path === 'members' || (path && path.startsWith('members[value eq'))) {
+    // Add group members
+    if (op === 'add') {
+      return {
+        action: 'addGroupMember',
+        members: value,
+      };
     }
-  | {
-      action: 'updateGroupName';
-      displayName: string;
+
+    // Remove group members
+    if (op === 'remove') {
+      return {
+        action: 'removeGroupMember',
+        members: value,
+      };
     }
-  | {
-      action: 'unknown';
-    } => {
-  const { op, path, value } = operations[0];
-
-  // Add group members
-  if (op === 'add' && path === 'members') {
-    return {
-      action: 'addGroupMember',
-      members: value,
-    };
-  }
-
-  // Remove group members
-  if (op === 'remove' && path === 'members') {
-    return {
-      action: 'removeGroupMember',
-      members: value,
-    };
-  }
-
-  // Remove group members
-  if (op === 'remove' && path.startsWith('members[value eq')) {
-    return {
-      action: 'removeGroupMember',
-      members: [{ value: path.split('"')[1] }],
-    };
   }
 
   // Update group name
-  if (op === 'replace') {
+  if (op === 'replace' && 'displayName' in value) {
     return {
       action: 'updateGroupName',
       displayName: value.displayName,
@@ -68,6 +66,7 @@ const parseGroupOperations = (
 };
 
 const toGroupMembers = (users: { user_id: string }[]): DirectorySyncGroupMember[] => {
+  return [];
   return users.map((user) => ({
     value: user.user_id,
   }));
@@ -180,7 +179,7 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
 };
 
 export {
-  parseGroupOperations,
+  parseGroupOperation,
   toGroupMembers,
   getDirectorySyncProviders,
   transformEventPayload,

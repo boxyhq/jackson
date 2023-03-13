@@ -136,3 +136,17 @@ export type UserPatchOperation = {
         'name.familyName': string;
       };
 };
+
+export type GroupPatchOperation = {
+  op: 'add' | 'remove' | 'replace';
+  path?: 'members' | 'displayName';
+  value:
+    | {
+        value: string;
+        display?: string;
+      }[];
+  // | {
+  //     id: string;
+  //     displayName: string;
+  //   };
+};
