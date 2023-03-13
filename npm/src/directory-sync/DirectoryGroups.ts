@@ -35,18 +35,13 @@ export class DirectoryGroups {
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
-    const { displayName, members } = body;
+    const { displayName } = body as { displayName: string };
 
     const { data: group } = await this.groups.create({
       directoryId: directory.id,
       name: displayName,
-      raw: body,
+      raw: { ...body, members: [] },
     });
-
-    // Add members to the group if any
-    // if (members && members.length > 0 && group) {
-    //   await this.addOrRemoveGroupMembers(directory, group, members);
-    // }
 
     await sendEvent('group.created', { directory, group }, this.callback);
 
@@ -70,18 +65,6 @@ export class DirectoryGroups {
         displayName: group.name,
         members: toGroupMembers(await this.groups.getAllUsers(group.id)),
       },
-    };
-  }
-
-  public async delete(directory: Directory, group: Group): Promise<DirectorySyncResponse> {
-    await this.groups.removeAllUsers(group.id);
-    await this.groups.delete(group.id);
-
-    await sendEvent('group.deleted', { directory, group }, this.callback);
-
-    return {
-      status: 200,
-      data: {},
     };
   }
 
@@ -176,6 +159,18 @@ export class DirectoryGroups {
     };
   }
 
+  public async delete(directory: Directory, group: Group): Promise<DirectorySyncResponse> {
+    await this.groups.removeAllUsers(group.id);
+    await this.groups.delete(group.id);
+
+    await sendEvent('group.deleted', { directory, group }, this.callback);
+
+    return {
+      status: 200,
+      data: {},
+    };
+  }
+
   // Update group displayName
   public async updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group> {
     const { displayName } = body;
@@ -200,25 +195,20 @@ export class DirectoryGroups {
   public async addGroupMembers(
     directory: Directory,
     group: Group,
-    members: DirectorySyncGroupMember[] | undefined,
-    sendWebhookEvent = true
+    members: DirectorySyncGroupMember[] | undefined
   ) {
     if (members === undefined || (members && members.length === 0)) {
       return;
     }
 
     for (const member of members) {
-      if (await this.groups.isUserInGroup(group.id, member.value)) {
-        continue;
+      if (!(await this.groups.isUserInGroup(group.id, member.value))) {
+        await this.groups.addUserToGroup(group.id, member.value);
       }
-
-      await this.groups.addUserToGroup(group.id, member.value);
 
       const { data: user } = await this.users.get(member.value);
 
-      if (sendWebhookEvent && user) {
-        await sendEvent('group.user_added', { directory, group, user }, this.callback);
-      }
+      await sendEvent('group.user_added', { directory, group, user }, this.callback);
     }
   }
 
@@ -258,7 +248,7 @@ export class DirectoryGroups {
       .filter((user) => !members.some((member) => member.value === user.value))
       .map((user) => ({ value: user.value }));
 
-    await this.addGroupMembers(directory, group, usersToAdd, false);
+    await this.addGroupMembers(directory, group, usersToAdd);
     await this.removeGroupMembers(directory, group, usersToRemove, false);
   }
 
