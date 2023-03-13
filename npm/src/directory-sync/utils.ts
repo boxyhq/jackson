@@ -10,27 +10,6 @@ import { DirectorySyncProviders, UserPatchOperation, GroupPatchOperation } from 
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
 
-// :
-//   | {
-//       action: 'addGroupMember' | 'removeGroupMember';
-//       members: DirectorySyncGroupMember[];
-//     }
-//   | {
-//       action: 'updateGroupName';
-//       displayName: string;
-//     }
-//   | {
-//       action: 'unknown';
-//     }
-
-// Remove group members
-// if (op === 'remove' && path.startsWith('members[value eq')) {
-//   return {
-//     action: 'removeGroupMember',
-//     members: [{ value: path.split('"')[1] }],
-//   };
-// }
-
 const parseGroupOperation = (operation: GroupPatchOperation) => {
   const { op, path, value } = operation;
 
@@ -47,7 +26,7 @@ const parseGroupOperation = (operation: GroupPatchOperation) => {
     if (op === 'remove') {
       return {
         action: 'removeGroupMember',
-        members: value,
+        members: path ? [{ value: path.split('"')[1] }] : value,
       };
     }
   }
