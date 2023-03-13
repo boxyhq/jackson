@@ -35,11 +35,11 @@
     "pretest:e2e": "env-cmd -f .env.test.local ts-node --log-error e2e/support/pretest.ts",
     "test:e2e": "env-cmd -f .env.test.local playwright test",
     "test": "cd npm && npm run test",
-    "custom-install": "rimraf node_modules/@boxyhq/saml-jackson && rimraf node_modules/@boxyhq/react-ui && npm install --install-links=false",
+    "custom-install": "rm -rf node_modules/@boxyhq/saml-jackson && rm -rf node_modules/@boxyhq/react-ui && npm install --install-links=false",
     "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'",
     "postcustom-install": "npm run prebuild",
     "postinstall": "npm run prebuild",
-    "prebuild": "mkdirp public/terminus && cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus"
+    "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)"
   },
   "dependencies": {
     "@boxyhq/react-ui": "file:sdk/ui/react",
@@ -93,7 +93,6 @@
     "postcss": "8.4.21",
     "prettier": "2.8.4",
     "prettier-plugin-tailwindcss": "0.2.3",
-    "rimraf": "4.4.0",
     "swagger-jsdoc": "6.2.8",
     "tailwindcss": "3.2.7",
     "ts-node": "10.9.1",
