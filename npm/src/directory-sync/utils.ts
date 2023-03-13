@@ -9,7 +9,7 @@ import type {
 import { DirectorySyncProviders, UserPatchOperation } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
-import setPath from 'lodash.set';
+import lodash from 'lodash';
 
 const parseGroupOperations = (
   operations: {
@@ -207,7 +207,7 @@ const updateRawUserAttributes = (raw, attributes) => {
   }
 
   for (const key of keys) {
-    setPath(raw, key, attributes[key]);
+    lodash.set(raw, key, attributes[key]);
   }
 
   return raw;
