@@ -13,8 +13,7 @@ import crypto from 'crypto';
 const parseGroupOperation = (operation: GroupPatchOperation) => {
   const { op, path, value } = operation;
 
-  if (path === 'members' || (path && path.startsWith('members[value eq'))) {
-    // Add group members
+  if (path === 'members') {
     if (op === 'add') {
       return {
         action: 'addGroupMember',
@@ -22,11 +21,19 @@ const parseGroupOperation = (operation: GroupPatchOperation) => {
       };
     }
 
-    // Remove group members
     if (op === 'remove') {
       return {
         action: 'removeGroupMember',
-        members: path ? [{ value: path.split('"')[1] }] : value,
+        members: value,
+      };
+    }
+  }
+
+  if (path && path.startsWith('members[value eq')) {
+    if (op === 'remove') {
+      return {
+        action: 'removeGroupMember',
+        members: [{ value: path.split('"')[1] }],
       };
     }
   }
