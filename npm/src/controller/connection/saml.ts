@@ -139,12 +139,9 @@ const saml = {
       }
     }
 
-    const exists = await connectionStore.getByIndex({
-      name: IndexNames.EntityID,
-      value: record.clientID,
-    });
+    const exists = await connectionStore.get(record.clientID);
 
-    if (exists.length > 0) {
+    if (exists) {
       connectionClientSecret = exists.clientSecret;
     } else {
       connectionClientSecret = crypto.randomBytes(24).toString('hex');
