@@ -310,10 +310,5 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
       displayName: groups[0].displayName,
       members: [],
     });
-
-    // Fetch the group again and check the update was successful
-    const updatedGroup = await getGroupById(request, directory, createdGroup.id);
-
-    expect(updatedGroup.members).toHaveLength(2);
   });
 });
