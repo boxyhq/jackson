@@ -145,8 +145,4 @@ export type GroupPatchOperation = {
         value: string;
         display?: string;
       }[];
-  // | {
-  //     id: string;
-  //     displayName: string;
-  //   };
 };
