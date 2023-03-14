@@ -143,11 +143,6 @@ export class DirectoryGroups {
       displayName,
     });
 
-    // Update group members
-    if (members) {
-      await this.addOrRemoveGroupMembers(directory, group, members);
-    }
-
     return {
       status: 200,
       data: {
@@ -215,8 +210,7 @@ export class DirectoryGroups {
   public async removeGroupMembers(
     directory: Directory,
     group: Group,
-    members: DirectorySyncGroupMember[] | undefined,
-    sendWebhookEvent = true
+    members: DirectorySyncGroupMember[] | undefined
   ) {
     if (members === undefined || (members && members.length === 0)) {
       return;
@@ -228,29 +222,29 @@ export class DirectoryGroups {
       const { data: user } = await this.users.get(member.value);
 
       // User may not exist in the directory, so we need to check if the user exists
-      if (sendWebhookEvent && user) {
+      if (user) {
         await sendEvent('group.user_removed', { directory, group, user }, this.callback);
       }
     }
   }
 
   // Add or remove users from a group
-  public async addOrRemoveGroupMembers(
-    directory: Directory,
-    group: Group,
-    members: DirectorySyncGroupMember[]
-  ) {
-    const users = toGroupMembers(await this.groups.getAllUsers(group.id));
+  // public async addOrRemoveGroupMembers(
+  //   directory: Directory,
+  //   group: Group,
+  //   members: DirectorySyncGroupMember[]
+  // ) {
+  //   const users = toGroupMembers(await this.groups.getAllUsers(group.id));
 
-    const usersToAdd = members.filter((member) => !users.some((user) => user.value === member.value));
+  //   const usersToAdd = members.filter((member) => !users.some((user) => user.value === member.value));
 
-    const usersToRemove = users
-      .filter((user) => !members.some((member) => member.value === user.value))
-      .map((user) => ({ value: user.value }));
+  //   const usersToRemove = users
+  //     .filter((user) => !members.some((member) => member.value === user.value))
+  //     .map((user) => ({ value: user.value }));
 
-    await this.addGroupMembers(directory, group, usersToAdd);
-    await this.removeGroupMembers(directory, group, usersToRemove, false);
-  }
+  //   await this.addGroupMembers(directory, group, usersToAdd);
+  //   await this.removeGroupMembers(directory, group, usersToRemove);
+  // }
 
   private respondWithError(error: ApiError | null) {
     return {
