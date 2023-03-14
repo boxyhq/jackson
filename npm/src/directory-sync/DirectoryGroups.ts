@@ -11,7 +11,7 @@ import type {
   IGroups,
   GroupPatchOperation,
 } from '../typings';
-import { parseGroupOperation, toGroupMembers } from './utils';
+import { parseGroupOperation } from './utils';
 import { sendEvent } from './events';
 
 export class DirectoryGroups {
@@ -63,7 +63,7 @@ export class DirectoryGroups {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
         id: group.id,
         displayName: group.name,
-        members: toGroupMembers(await this.groups.getAllUsers(group.id)),
+        members: [],
       },
     };
   }
@@ -130,13 +130,13 @@ export class DirectoryGroups {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
         id: updatedGroup?.id,
         displayName: updatedGroup?.name,
-        members: toGroupMembers(await this.groups.getAllUsers(group.id)),
+        members: [],
       },
     };
   }
 
   public async update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
-    const { displayName, members } = body;
+    const { displayName } = body;
 
     // Update group name
     const updatedGroup = await this.updateDisplayName(directory, group, {
@@ -149,7 +149,7 @@ export class DirectoryGroups {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
         id: group.id,
         displayName: updatedGroup.name,
-        members: toGroupMembers(await this.groups.getAllUsers(group.id)),
+        members: [],
       },
     };
   }
@@ -227,24 +227,6 @@ export class DirectoryGroups {
       }
     }
   }
-
-  // Add or remove users from a group
-  // public async addOrRemoveGroupMembers(
-  //   directory: Directory,
-  //   group: Group,
-  //   members: DirectorySyncGroupMember[]
-  // ) {
-  //   const users = toGroupMembers(await this.groups.getAllUsers(group.id));
-
-  //   const usersToAdd = members.filter((member) => !users.some((user) => user.value === member.value));
-
-  //   const usersToRemove = users
-  //     .filter((user) => !members.some((member) => member.value === user.value))
-  //     .map((user) => ({ value: user.value }));
-
-  //   await this.addGroupMembers(directory, group, usersToAdd);
-  //   await this.removeGroupMembers(directory, group, usersToRemove);
-  // }
 
   private respondWithError(error: ApiError | null) {
     return {

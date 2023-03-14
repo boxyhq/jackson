@@ -51,13 +51,6 @@ const parseGroupOperation = (operation: GroupPatchOperation) => {
   };
 };
 
-const toGroupMembers = (users: { user_id: string }[]): DirectorySyncGroupMember[] => {
-  return [];
-  return users.map((user) => ({
-    value: user.user_id,
-  }));
-};
-
 // List of directory sync providers
 // TODO: Fix the return type
 const getDirectorySyncProviders = (): { [K: string]: string } => {
@@ -166,7 +159,6 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
 
 export {
   parseGroupOperation,
-  toGroupMembers,
   getDirectorySyncProviders,
   transformEventPayload,
   createHeader,
