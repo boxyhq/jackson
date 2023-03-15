@@ -137,10 +137,6 @@ export class Groups extends Base {
       {
         name: 'groupId',
         value: groupId,
-      },
-      {
-        name: 'userId',
-        value: userId,
       }
     );
   }
