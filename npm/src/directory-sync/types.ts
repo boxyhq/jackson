@@ -122,7 +122,7 @@ export type PaginationParams = {
 };
 
 export type UserPatchOperation = {
-  op: 'replace';
+  op: 'replace' | 'add';
   path?: string;
   value:
     | boolean
@@ -134,6 +134,12 @@ export type UserPatchOperation = {
       }
     | {
         'name.familyName': string;
+      }
+    | {
+        'emails[type eq "work"].value': string;
+      }
+    | {
+        [key: string]: string | boolean;
       };
 };
 
