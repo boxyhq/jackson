@@ -123,7 +123,21 @@ tap.test('Directory users / ', async (t) => {
     t.ok(data);
     t.equal(status, 200);
     t.equal(data.active, false);
+    t.equal(data.name.givenName, 'David');
+    t.equal(data.name.familyName, 'Jones');
+
+    t.end();
+  });
+
+  t.test('Should be able to update the custom user attributes', async (t) => {
+    const { status, data } = await directorySync.requests.handle(
+      requests.customAttributes(directory, createdUser.id)
+    );
+
+    t.ok(data);
+    t.equal(status, 200);
     t.equal(data.companyName, 'BoxyHQ');
+    t.equal(data.address.streetAddress, '123 Main St');
 
     t.end();
   });
