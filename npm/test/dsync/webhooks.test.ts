@@ -7,7 +7,7 @@ import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
 import { jacksonOptions } from '../utils';
 import sinon from 'sinon';
-import axios from 'axios';
+import axios from '../../src/directory-sync/axios';
 import { createSignatureString } from '../../src/directory-sync/utils';
 
 let directorySync: IDirectorySyncController;
