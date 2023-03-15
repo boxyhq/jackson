@@ -9,6 +9,7 @@ import type {
 import { DirectorySyncProviders, UserPatchOperation } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
+import lodash from 'lodash';
 
 const parseGroupOperations = (
   operations: {
@@ -149,6 +150,7 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
     active: 'active',
     'name.givenName': 'first_name',
     'name.familyName': 'last_name',
+    'emails[type eq "work"].value': 'email',
   };
 
   // If there is a path, then the value is the value
@@ -179,6 +181,38 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
   };
 };
 
+// Extract standard attributes from the user body
+const extractStandardUserAttributes = (body: any) => {
+  const { name, emails, userName, active } = body as {
+    name?: { givenName: string; familyName: string };
+    emails?: { value: string }[];
+    userName: string;
+    active: boolean;
+  };
+
+  return {
+    first_name: name && 'givenName' in name ? name.givenName : '',
+    last_name: name && 'familyName' in name ? name.familyName : '',
+    email: emails && emails.length > 0 ? emails[0].value : userName,
+    active: active || true,
+  };
+};
+
+// Update raw user attributes
+const updateRawUserAttributes = (raw, attributes) => {
+  const keys = Object.keys(attributes);
+
+  if (keys.length === 0) {
+    return raw;
+  }
+
+  for (const key of keys) {
+    lodash.set(raw, key, attributes[key]);
+  }
+
+  return raw;
+};
+
 export {
   parseGroupOperations,
   toGroupMembers,
@@ -187,4 +221,6 @@ export {
   createHeader,
   createSignatureString,
   parseUserPatchRequest,
+  extractStandardUserAttributes,
+  updateRawUserAttributes,
 };
