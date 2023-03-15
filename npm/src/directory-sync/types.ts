@@ -142,3 +142,13 @@ export type UserPatchOperation = {
         [key: string]: string | boolean;
       };
 };
+
+export type GroupPatchOperation = {
+  op: 'add' | 'remove' | 'replace';
+  path?: 'members' | 'displayName';
+  value:
+    | {
+        value: string;
+        display?: string;
+      }[];
+};
