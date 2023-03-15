@@ -239,7 +239,7 @@ jobs:
 
       - name: Sign the image
         if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.SHA7 }} || true
+        run: cosign sign --key /tmp/cosign.key -y ${{ github.repository }}@${{ steps.docker_build.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
