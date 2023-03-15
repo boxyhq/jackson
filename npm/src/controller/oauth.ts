@@ -80,6 +80,7 @@ export class OAuthController implements IOAuthController {
       code_challenge_method = '',
       idp_hint,
       forceAuthn = 'false',
+      login_hint,
     } = body;
 
     let requestedTenant;
@@ -366,6 +367,7 @@ export class OAuthController implements IOAuthController {
           code_challenge_method: 'S256',
           state: relayState,
           nonce: oidcNonce,
+          login_hint,
         });
       } catch (err: unknown) {
         if (err) {
