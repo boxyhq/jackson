@@ -12,6 +12,7 @@ import type {
   OIDCSSOConnectionWithMetadata,
   Profile,
   SAMLSSORecord,
+  OIDCSSORecord,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -309,7 +310,7 @@ const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownP
   return provider ? wellKnownProviders[provider] : null;
 };
 
-export const transformConnections = (connections: SAMLSSORecord[]) => {
+export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSORecord>) => {
   if (connections.length === 0) {
     return connections;
   }

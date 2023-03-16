@@ -55,12 +55,24 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { directorySyncController } = await jackson();
 
-  const { offset, limit } = req.query as { offset: string; limit: string };
+  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
 
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const { data, error } = await directorySyncController.directories.getAll({ pageOffset, pageLimit });
+  const {
+    data,
+    error,
+    pageToken: nextPageToken,
+  } = await directorySyncController.directories.getAll({
+    pageOffset,
+    pageLimit,
+    pageToken,
+  });
+
+  if (nextPageToken) {
+    res.setHeader('jackson-pagetoken', nextPageToken);
+  }
 
   if (data) {
     const filteredData = data.filter(

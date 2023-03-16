@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { NextPage } from 'next';
 import useSWR from 'swr';
@@ -14,12 +15,24 @@ import Link from 'next/link';
 
 const SAMLTraceViewer: NextPage = () => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<Trace[]>, ApiError>(
-    `/api/admin/saml-tracer?offset=${paginate.offset}&limit=${pageLimit}`,
-    fetcher
-  );
+  let getSamlTracesUrl = `/api/admin/saml-tracer?offset=${paginate.offset}&limit=${pageLimit}`;
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    getSamlTracesUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  }
+
+  const { data, error, isLoading } = useSWR<ApiSuccess<Trace[]>, ApiError>(getSamlTracesUrl, fetcher);
+
+  const nextPageToken = data?.pageToken;
+  // store the nextPageToken against the pageOffset
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
     return <Loading />;

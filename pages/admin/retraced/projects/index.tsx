@@ -4,7 +4,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import EmptyState from '@components/EmptyState';
 import { useProjects } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
-import ErrorMessage from '@components/Error';
 import { IconButton } from '@components/IconButton';
 import { useTranslation } from 'next-i18next';
 import router from 'next/router';

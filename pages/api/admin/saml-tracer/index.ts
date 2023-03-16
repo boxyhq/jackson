@@ -23,14 +23,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Get SAML Traces
 const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminController: IAdminController) => {
-  const { offset, limit } = req.query as { offset: string; limit: string };
+  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
 
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const traces = await adminController.getAllSAMLTraces(pageOffset, pageLimit);
+  const tracesPaginated = await adminController.getAllSAMLTraces(pageOffset, pageLimit, pageToken);
 
-  return res.json({ data: traces });
+  if (tracesPaginated.pageToken) {
+    res.setHeader('jackson-pagetoken', tracesPaginated.pageToken);
+  }
+
+  return res.json({ data: tracesPaginated.data });
 };
 
 export default handler;

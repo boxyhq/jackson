@@ -1,4 +1,4 @@
-import { Storable } from '../typings';
+import { Records, Storable } from '../typings';
 import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../controller/utils';
 import { keyFromParts } from '../db/utils';
@@ -56,15 +56,24 @@ class SAMLTracer {
     return (await this.tracerStore.get(traceId)) as Trace;
   }
 
-  public async getAllTraces(pageOffset?: number, pageLimit?: number): Promise<Trace[]> {
-    return (await this.tracerStore.getAll(pageOffset || 0, pageLimit || 0)) as Trace[];
+  public async getAllTraces(
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string
+  ): Promise<Records<Trace>> {
+    return await this.tracerStore.getAll(pageOffset || 0, pageLimit || 0, pageToken);
   }
 
   /** Cleans up stale traces older than 1 week */
   public async cleanUpStaleTraces() {
     let staleTraces: Trace[] = [];
-    for (let pageOffset = 0; ; pageOffset++) {
-      const page = await this.getAllTraces(pageOffset, 50);
+    for (let pageOffset = 0, pageTokenMap = {}; ; pageOffset += 50) {
+      const { data: page, pageToken: nextPageToken } = await this.getAllTraces(
+        pageOffset,
+        50,
+        pageTokenMap[pageOffset]
+      );
+      pageTokenMap[pageOffset + 50] = nextPageToken;
       if (page.length === 0) {
         break;
       }
