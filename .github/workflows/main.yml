@@ -383,9 +383,9 @@ jobs:
       - name: Sign the sbom images
         if: github.ref == 'refs/heads/release'
         run: |
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }}
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }}
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
   publish:
