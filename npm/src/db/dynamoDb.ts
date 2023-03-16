@@ -225,9 +225,7 @@ class DynamoDB implements DatabaseDriver {
         },
         TableName: indexTableName,
         IndexName: globalIndexKeyIndexName,
-        ExclusiveStartKey: pageToken
-          ? marshall(JSON.parse(Buffer.from(pageToken, 'base64').toString()))
-          : undefined,
+        ExclusiveStartKey: pageToken ? JSON.parse(Buffer.from(pageToken, 'base64').toString()) : undefined,
       })
     );
 
