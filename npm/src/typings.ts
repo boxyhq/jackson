@@ -156,7 +156,7 @@ export interface IOAuthController {
 }
 
 export interface IAdminController {
-  getAllConnection(pageOffset?: number, pageLimit?: number);
+  getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string);
   getAllSAMLTraces(pageOffset: number, pageLimit: number);
   getSAMLTraceById(traceId: string);
 }
@@ -297,8 +297,8 @@ export interface Index {
   value: string;
 }
 
-export interface Records {
-  data: any[];
+export interface Records<T = any> {
+  data: T[];
   pageToken?: string;
 }
 

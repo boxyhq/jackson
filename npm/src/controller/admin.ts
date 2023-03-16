@@ -1,4 +1,11 @@
-import { IAdminController, Storable, SAMLSSORecord, OIDCSSORecord, SAMLTracerInstance } from '../typings';
+import {
+  IAdminController,
+  Storable,
+  SAMLSSORecord,
+  OIDCSSORecord,
+  SAMLTracerInstance,
+  Records,
+} from '../typings';
 import { transformConnections } from './utils';
 
 export class AdminController implements IAdminController {
@@ -10,16 +17,18 @@ export class AdminController implements IAdminController {
     this.samlTracer = samlTracer;
   }
 
-  public async getAllConnection(pageOffset?: number, pageLimit?: number) {
-    const connectionList = (await this.connectionStore.getAll(pageOffset, pageLimit)).data satisfies Array<
-      SAMLSSORecord | OIDCSSORecord
-    >;
+  public async getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string) {
+    const { data: connectionList, pageToken: nextPageToken } = (await this.connectionStore.getAll(
+      pageOffset,
+      pageLimit,
+      pageToken
+    )) as Records<SAMLSSORecord | OIDCSSORecord>;
 
     if (!connectionList || !connectionList.length) {
       return [];
     }
 
-    return transformConnections(connectionList);
+    return { data: transformConnections(connectionList), pageToken: nextPageToken };
   }
 
   public async getAllSAMLTraces(pageOffset: number, pageLimit: number) {

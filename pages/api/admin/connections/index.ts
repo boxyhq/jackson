@@ -26,18 +26,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController, connectionAPIController } = await jackson();
 
-  const { pageOffset, pageLimit, isSystemSSO } = req.query as {
+  const { pageOffset, pageLimit, isSystemSSO, pageToken } = req.query as {
     pageOffset: string;
     pageLimit: string;
     isSystemSSO?: string; // if present will be '' else undefined
+    pageToken?: string;
   };
 
   const { tenant: adminPortalSSOTenant, product: adminPortalSSOProduct } = adminPortalSSODefaults;
 
+  const paginatedConnectionList = await adminController.getAllConnection(
+    +(pageOffset || 0),
+    +(pageLimit || 0),
+    pageToken
+  );
+
   const connections =
     isSystemSSO === undefined
       ? // For the Connections list under Enterprise SSO, `isSystemSSO` flag added to show system sso badge
-        (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0)))?.map((conn) => ({
+        paginatedConnectionList?.data?.map((conn) => ({
           ...conn,
           isSystemSSO: adminPortalSSOTenant === conn.tenant && adminPortalSSOProduct === conn.product,
         }))
@@ -47,6 +54,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
           product: adminPortalSSOProduct,
         });
 
+  if (paginatedConnectionList.pageToken) {
+    res.setHeader('jackson-pagetoken', paginatedConnectionList.pageToken);
+  }
   return res.json({ data: connections });
 };
 
