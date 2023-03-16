@@ -20,10 +20,15 @@ class Store implements Storable {
     return await this.db.getAll(this.namespace, pageOffset, pageLimit, pageToken);
   }
 
-  async getByIndex(idx: Index, pageOffset?: number, pageLimit?: number): Promise<Records> {
+  async getByIndex(
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string
+  ): Promise<Records> {
     idx.value = dbutils.keyDigest(idx.value);
 
-    return await this.db.getByIndex(this.namespace, idx, pageOffset, pageLimit);
+    return await this.db.getByIndex(this.namespace, idx, pageOffset, pageLimit, pageToken);
   }
 
   async put(key: string, val: any, ...indexes: Index[]): Promise<any> {

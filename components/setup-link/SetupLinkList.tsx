@@ -20,7 +20,7 @@ import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 import { SetupLinkInfo } from './SetupLinkInfo';
 
 const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
-  const { paginate, setPaginate } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
   const { t } = useTranslation('common');
   const [showDelConfirmModal, setShowDelConfirmModal] = useState(false);
   const [showRegenConfirmModal, setShowRegenConfirmModal] = useState(false);
@@ -33,13 +33,27 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
     setShowSetupLinkModal(false);
   }, [service]);
 
+  let getSetupLinksUrl = `/api/admin/setup-links?service=${service}&offset=${paginate.offset}&limit=${pageLimit}`;
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    getSetupLinksUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  }
+
   const { data, error, mutate, isLoading } = useSWR<ApiSuccess<SetupLink[]>, ApiError>(
-    `/api/admin/setup-links?service=${service}&offset=${paginate.offset}&limit=${pageLimit}`,
+    getSetupLinksUrl,
     fetcher,
     {
       revalidateOnFocus: false,
     }
   );
+  const nextPageToken = data?.pageToken;
+  // store the nextPageToken against the pageOffset
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
     return <Loading />;
