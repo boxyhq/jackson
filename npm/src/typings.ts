@@ -350,7 +350,9 @@ export interface DatabaseOption {
   encryptionKey?: string;
   pageLimit?: number;
   ssl?: any;
-  region?: string; // dynamodb
+  dynamodb?: {
+    region?: string;
+  };
 }
 
 export interface JacksonOption {
