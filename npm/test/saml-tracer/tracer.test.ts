@@ -52,7 +52,7 @@ tap.test('SAMLTracer', async () => {
     await samlTracer.cleanUpStaleTraces();
     const traces = await samlTracer.getAllTraces(0, 50);
     // should be empty
-    t.equal(traces.length, 0);
+    t.equal(traces.data.length, 0);
   });
 });
 
