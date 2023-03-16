@@ -1,4 +1,4 @@
-import type { Storable, JacksonOption, SAMLFederationApp } from '../../typings';
+import type { Storable, JacksonOption, SAMLFederationApp, Records } from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
@@ -117,8 +117,16 @@ export class App {
   }
 
   // Get all apps
-  public async getAll({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }) {
-    const apps: SAMLFederationApp[] = (await this.store.getAll(pageOffset, pageLimit)).data;
+  public async getAll({
+    pageOffset,
+    pageLimit,
+    pageToken,
+  }: {
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }) {
+    const apps = (await this.store.getAll(pageOffset, pageLimit, pageToken)) as Records<SAMLFederationApp>;
 
     return apps;
   }
