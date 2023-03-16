@@ -119,6 +119,7 @@ export type Group = {
 export type PaginationParams = {
   pageOffset?: number;
   pageLimit?: number;
+  pageToken?: string;
 };
 
 export type UserPatchOperation = {
