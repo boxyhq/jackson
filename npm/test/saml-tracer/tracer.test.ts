@@ -21,7 +21,7 @@ tap.test('SAMLTracer', async () => {
     //save
     const traceId = await samlTracer.saveTrace(test_trace);
     // retrieve
-    const traces = await samlTracer.getAllTraces(0, 50);
+    const { data: traces } = await samlTracer.getAllTraces(0, 50);
     // check if found trace has all the members of the test_trace saved
     t.hasStrict(traces[0], test_trace);
     // check if traceId follows the pattern expected from mnemonic
@@ -50,9 +50,9 @@ tap.test('SAMLTracer', async () => {
     }
     // run cleanUpStaleTraces
     await samlTracer.cleanUpStaleTraces();
-    const traces = await samlTracer.getAllTraces(0, 50);
+    const { data: traces } = await samlTracer.getAllTraces(0, 50);
     // should be empty
-    t.equal(traces.data.length, 0);
+    t.equal(traces.length, 0);
   });
 });
 
