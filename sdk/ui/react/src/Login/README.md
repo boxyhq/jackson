@@ -21,8 +21,8 @@ import { Login } from '@boxyhq/react-ui';
   styles={{
     container: {'--btn-outline-color': '219 14% 22%'}
     button: {color: '#fff'},
-    input: {'margin-top': '2px'},
-    label: {'font-size': '1.5rem'}}},
+    input: {marginTop: '2px'},
+    label: {fontSize: '1.5rem'}}},
   classNames={{
     container: 'mt-2',
     button: 'btn-primary btn-block btn rounded-md',
