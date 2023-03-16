@@ -9,7 +9,6 @@ on:
     branches:
       - main
       - release
-      - cosign_fixes
     tags:
       - 'beta-v*'
   pull_request:
@@ -188,23 +187,23 @@ jobs:
         run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         id: buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: docker/setup-qemu-action@v2
 
       - name: Login to Docker Hub
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         id: docker_build
         uses: docker/build-push-action@v4
         with:
@@ -215,31 +214,31 @@ jobs:
           tags: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: echo ${{ steps.docker_build.outputs.digest }}
 
       - name: Login to GitHub Container Registry
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: |
           echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
 
       - name: Install Cosign
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: sigstore/cosign-installer@main
 
       - name: Check install!
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: cosign version
 
       - name: place the cosign private key in a file
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
         shell: bash
         env:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
 
       - name: Sign the image
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: cosign sign --key /tmp/cosign.key -y ${{ github.repository }}@${{ steps.docker_build.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
@@ -263,23 +262,23 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.cyclonedx
       - name: Remove older SBOMs
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.spdx "./npm/sbom.spdx"
       - name: Move CycloneDx Report
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
 
       - name: Next Js Project SBOM Report [SPDX]
@@ -301,65 +300,65 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Remove older SBOMs
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: sbom.spdx
       - name: Download artifact for CycloneDx Report
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: sbom.cyclonedx
 
       - name: Create SBOM Report [Docker][SPDX]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
           artifact-name: docker_sbom.spdx
       - name: Publish report [Docker][SPDX]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Create SBOM Report [Docker][CycloneDx]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
           artifact-name: docker_sbom.cyclonedx
       - name: Publish report [Docker][CycloneDx]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report [Docker]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: docker_sbom.spdx
       - name: Download artifact for CycloneDx Report [Docker]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: docker_sbom.cyclonedx
       - name: Create/Clear folder [Docker]
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
 
       - name: Move Report & cleanup
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: |
           mv docker_sbom.spdx "./_docker/sbom.spdx" || true
           mv docker_sbom.cyclonedx "./_docker/sbom.cyclonedx" || true
 
       - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: |
           ORAS_VERSION="v0.8.1"
           ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
@@ -375,7 +374,7 @@ jobs:
           cd ..
 
       - name: Sign the sbom images
-        # if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         run: |
           cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }}
           cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }}
@@ -409,7 +408,7 @@ jobs:
         working-directory: ./npm
 
       - name: Publish NPM
-        # if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
+        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
           JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
