@@ -352,6 +352,8 @@ export interface DatabaseOption {
   ssl?: any;
   dynamodb?: {
     region?: string;
+    readCapacityUnits?: number;
+    writeCapacityUnits?: number;
   };
 }
 

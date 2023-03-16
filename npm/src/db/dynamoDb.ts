@@ -31,7 +31,7 @@ class DynamoDB implements DatabaseDriver {
   async init(): Promise<DynamoDB> {
     this.client = new DynamoDBClient({
       endpoint: this.options.url,
-      region: this.options.dynamodb?.region || 'us-east-1',
+      region: this.options.dynamodb!.region!,
     });
     try {
       await this.client.send(
@@ -57,8 +57,8 @@ class DynamoDB implements DatabaseDriver {
             },
           ],
           ProvisionedThroughput: {
-            ReadCapacityUnits: 5,
-            WriteCapacityUnits: 5,
+            ReadCapacityUnits: this.options.dynamodb!.readCapacityUnits!,
+            WriteCapacityUnits: this.options.dynamodb!.writeCapacityUnits!,
           },
           TableName: tableName,
         })
@@ -112,8 +112,8 @@ class DynamoDB implements DatabaseDriver {
                 ProjectionType: 'ALL',
               },
               ProvisionedThroughput: {
-                ReadCapacityUnits: 5,
-                WriteCapacityUnits: 5,
+                ReadCapacityUnits: this.options.dynamodb!.readCapacityUnits!,
+                WriteCapacityUnits: this.options.dynamodb!.writeCapacityUnits!,
               },
             },
             {
@@ -128,14 +128,14 @@ class DynamoDB implements DatabaseDriver {
                 ProjectionType: 'ALL',
               },
               ProvisionedThroughput: {
-                ReadCapacityUnits: 5,
-                WriteCapacityUnits: 5,
+                ReadCapacityUnits: this.options.dynamodb!.readCapacityUnits!,
+                WriteCapacityUnits: this.options.dynamodb!.writeCapacityUnits!,
               },
             },
           ],
           ProvisionedThroughput: {
-            ReadCapacityUnits: 5,
-            WriteCapacityUnits: 5,
+            ReadCapacityUnits: this.options.dynamodb!.readCapacityUnits!,
+            WriteCapacityUnits: this.options.dynamodb!.writeCapacityUnits!,
           },
           TableName: indexTableName,
         })

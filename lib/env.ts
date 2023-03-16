@@ -40,6 +40,8 @@ const db: DatabaseOption = {
   ssl,
   dynamodb: {
     region: process.env.DB_DYNAMODB_REGION,
+    readCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_RCUS) : undefined,
+    writeCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_WCUS) : undefined,
   },
 };
 

@@ -84,6 +84,11 @@ const dynamoDbConfig = <DatabaseOption>{
   url: process.env.DYNAMODB_URL,
   ttl: 1,
   cleanupLimit: 10,
+  dynamodb: {
+    region: 'us-east-1',
+    readCapacityUnits: 5,
+    writeCapacityUnits: 5,
+  },
 };
 
 const dbs = [
