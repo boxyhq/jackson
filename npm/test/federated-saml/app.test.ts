@@ -95,7 +95,7 @@ tap.test('Federated SAML App', async (t) => {
     const response = await samlFederatedController.app.getAll({});
 
     t.ok(response);
-    t.ok(response.length === 1);
+    t.ok(response.data.length === 1);
 
     t.end();
   });
@@ -105,7 +105,7 @@ tap.test('Federated SAML App', async (t) => {
 
     const allApps = await samlFederatedController.app.getAll({});
 
-    t.ok(allApps.length === 0);
+    t.ok(allApps.data.length === 0);
 
     t.end();
   });
