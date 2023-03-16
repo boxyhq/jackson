@@ -9,7 +9,7 @@ import type {
   IDirectoryConfig,
 } from '../typings';
 import { createHeader, transformEventPayload } from './utils';
-import axios from 'axios';
+import axios from './axios';
 
 export const sendEvent = async (
   event: DirectorySyncEventType,

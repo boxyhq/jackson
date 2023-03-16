@@ -36,6 +36,7 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
     expect(response).toMatchObject({
       ...groups[0],
       id: expect.any(String),
+      members: [],
     });
   });
 
@@ -109,11 +110,7 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
     expect(await response.json()).toMatchObject({
       ...groups[0],
       id: expect.any(String),
-      members: [
-        {
-          value: user.id,
-        },
-      ],
+      members: [],
     });
 
     // Fetch the group again and check that the member was added
@@ -122,7 +119,7 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
     expect(updatedGroup).toMatchObject({
       ...groups[0],
       id: expect.any(String),
-      members: [{ value: user.id }],
+      members: [],
     });
   });
 
@@ -311,21 +308,7 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
       schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
       id: expect.any(String),
       displayName: groups[0].displayName,
-      members: [
-        {
-          value: firstUser.id,
-          display: firstUser.userName,
-        },
-        {
-          value: secondUser.id,
-          display: secondUser.userName,
-        },
-      ],
+      members: [],
     });
-
-    // Fetch the group again and check the update was successful
-    const updatedGroup = await getGroupById(request, directory, createdGroup.id);
-
-    expect(updatedGroup.members).toHaveLength(2);
   });
 });

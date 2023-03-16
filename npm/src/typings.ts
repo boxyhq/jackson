@@ -202,6 +202,7 @@ export interface OAuthReqBody {
   nonce?: string;
   idp_hint?: string;
   forceAuthn?: string;
+  login_hint?: string;
 }
 
 export interface OAuthReqBodyWithClientId extends OAuthReqBody {

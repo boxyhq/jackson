@@ -9,7 +9,7 @@ import type {
   IUsers,
   UserPatchOperation,
 } from '../typings';
-import { parseUserPatchRequest } from './utils';
+import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
 import { sendEvent } from './events';
 
 export class DirectoryUsers {
@@ -23,14 +23,14 @@ export class DirectoryUsers {
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
-    const { name, emails } = body;
+    const { first_name, last_name, email, active } = extractStandardUserAttributes(body);
 
     const { data: user } = await this.users.create({
       directoryId: directory.id,
-      first_name: name && 'givenName' in name ? name.givenName : '',
-      last_name: name && 'familyName' in name ? name.familyName : '',
-      email: emails[0].value,
-      active: true,
+      first_name,
+      last_name,
+      email,
+      active,
       raw: body,
     });
 
@@ -95,7 +95,7 @@ export class DirectoryUsers {
       email: user.email,
       active: user.active,
       ...attributes,
-      raw: { ...user.raw, ...rawAttributes },
+      raw: updateRawUserAttributes(user.raw, rawAttributes),
     });
 
     await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);

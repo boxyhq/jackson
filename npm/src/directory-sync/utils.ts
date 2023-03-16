@@ -6,56 +6,41 @@ import type {
   Group,
   User,
 } from '../typings';
-import { DirectorySyncProviders, UserPatchOperation } from '../typings';
+import { DirectorySyncProviders, UserPatchOperation, GroupPatchOperation } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
 import crypto from 'crypto';
+import lodash from 'lodash';
 
-const parseGroupOperations = (
-  operations: {
-    op: 'add' | 'remove' | 'replace';
-    path: string;
-    value: any;
-  }[]
-):
-  | {
-      action: 'addGroupMember' | 'removeGroupMember';
-      members: DirectorySyncGroupMember[];
-    }
-  | {
-      action: 'updateGroupName';
-      displayName: string;
-    }
-  | {
-      action: 'unknown';
-    } => {
-  const { op, path, value } = operations[0];
+const parseGroupOperation = (operation: GroupPatchOperation) => {
+  const { op, path, value } = operation;
 
-  // Add group members
-  if (op === 'add' && path === 'members') {
-    return {
-      action: 'addGroupMember',
-      members: value,
-    };
+  if (path === 'members') {
+    if (op === 'add') {
+      return {
+        action: 'addGroupMember',
+        members: value,
+      };
+    }
+
+    if (op === 'remove') {
+      return {
+        action: 'removeGroupMember',
+        members: value,
+      };
+    }
   }
 
-  // Remove group members
-  if (op === 'remove' && path === 'members') {
-    return {
-      action: 'removeGroupMember',
-      members: value,
-    };
-  }
-
-  // Remove group members
-  if (op === 'remove' && path.startsWith('members[value eq')) {
-    return {
-      action: 'removeGroupMember',
-      members: [{ value: path.split('"')[1] }],
-    };
+  if (path && path.startsWith('members[value eq')) {
+    if (op === 'remove') {
+      return {
+        action: 'removeGroupMember',
+        members: [{ value: path.split('"')[1] }],
+      };
+    }
   }
 
   // Update group name
-  if (op === 'replace') {
+  if (op === 'replace' && 'displayName' in value) {
     return {
       action: 'updateGroupName',
       displayName: value.displayName,
@@ -65,12 +50,6 @@ const parseGroupOperations = (
   return {
     action: 'unknown',
   };
-};
-
-const toGroupMembers = (users: { user_id: string }[]): DirectorySyncGroupMember[] => {
-  return users.map((user) => ({
-    value: user.user_id,
-  }));
 };
 
 // List of directory sync providers
@@ -149,6 +128,7 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
     active: 'active',
     'name.givenName': 'first_name',
     'name.familyName': 'last_name',
+    'emails[type eq "work"].value': 'email',
   };
 
   // If there is a path, then the value is the value
@@ -179,12 +159,45 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
   };
 };
 
+// Extract standard attributes from the user body
+const extractStandardUserAttributes = (body: any) => {
+  const { name, emails, userName, active } = body as {
+    name?: { givenName: string; familyName: string };
+    emails?: { value: string }[];
+    userName: string;
+    active: boolean;
+  };
+
+  return {
+    first_name: name && 'givenName' in name ? name.givenName : '',
+    last_name: name && 'familyName' in name ? name.familyName : '',
+    email: emails && emails.length > 0 ? emails[0].value : userName,
+    active: active || true,
+  };
+};
+
+// Update raw user attributes
+const updateRawUserAttributes = (raw, attributes) => {
+  const keys = Object.keys(attributes);
+
+  if (keys.length === 0) {
+    return raw;
+  }
+
+  for (const key of keys) {
+    lodash.set(raw, key, attributes[key]);
+  }
+
+  return raw;
+};
+
 export {
-  parseGroupOperations,
-  toGroupMembers,
+  parseGroupOperation,
   getDirectorySyncProviders,
   transformEventPayload,
   createHeader,
   createSignatureString,
   parseUserPatchRequest,
+  extractStandardUserAttributes,
+  updateRawUserAttributes,
 };

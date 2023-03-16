@@ -124,13 +124,34 @@ const requests = {
             value: 'Jones',
           },
           {
-            op: 'add',
+            op: 'replace',
+            value: { active: false },
+          },
+        ],
+      },
+      directoryId: directory.id,
+      resourceType: 'users',
+      resourceId: userId,
+      apiSecret: directory.scim.secret,
+      query: {},
+    };
+  },
+
+  // Custom attributes
+  customAttributes: (directory: Directory, userId: string): DirectorySyncRequest => {
+    return {
+      method: 'PATCH',
+      body: {
+        Operations: [
+          {
+            op: 'replace',
             path: 'companyName',
             value: 'BoxyHQ',
           },
           {
-            op: 'replace',
-            value: { active: false },
+            op: 'add',
+            path: 'address.streetAddress',
+            value: '123 Main St',
           },
         ],
       },
