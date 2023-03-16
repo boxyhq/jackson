@@ -183,9 +183,7 @@ class DynamoDB implements DatabaseDriver {
         },
         TableName: tableName,
         Limit: pageLimit && pageLimit > 0 ? pageLimit : undefined,
-        ExclusiveStartKey: pageToken
-          ? marshall(JSON.parse(Buffer.from(pageToken, 'base64').toString()))
-          : undefined,
+        ExclusiveStartKey: pageToken ? JSON.parse(Buffer.from(pageToken, 'base64').toString()) : undefined,
       })
     );
 
