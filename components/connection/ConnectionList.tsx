@@ -27,7 +27,7 @@ const ConnectionList = ({
   isSettingsView?: boolean;
 }) => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
   const router = useRouter();
 
   const displayTenantProduct = setupLinkToken ? false : true;
@@ -46,6 +46,15 @@ const ConnectionList = ({
     ApiSuccess<((SAMLSSORecord | OIDCSSORecord) & { isSystemSSO?: boolean })[]>,
     ApiError
   >(getConnectionsUrl, fetcher, { revalidateOnFocus: false });
+
+  const nextPageToken = data?.pageToken;
+  // store the nextPageToken against the pageOffset
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
     return <Loading />;
