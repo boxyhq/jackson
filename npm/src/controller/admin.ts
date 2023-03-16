@@ -5,6 +5,7 @@ import {
   OIDCSSORecord,
   SAMLTracerInstance,
   Records,
+  Trace,
 } from '../typings';
 import { transformConnections } from './utils';
 
@@ -31,14 +32,18 @@ export class AdminController implements IAdminController {
     return { data: transformConnections(connectionList), pageToken: nextPageToken };
   }
 
-  public async getAllSAMLTraces(pageOffset: number, pageLimit: number) {
-    const traces = await this.samlTracer.getAllTraces(pageOffset, pageLimit);
+  public async getAllSAMLTraces(pageOffset: number, pageLimit: number, pageToken?: string) {
+    const { data: traces, pageToken: nextPageToken } = (await this.samlTracer.getAllTraces(
+      pageOffset,
+      pageLimit,
+      pageToken
+    )) as Records<Trace>;
 
     if (!traces || !traces.length) {
       return [];
     }
 
-    return traces;
+    return { data: traces, pageToken: nextPageToken };
   }
 
   public async getSAMLTraceById(traceId: string) {

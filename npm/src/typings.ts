@@ -157,7 +157,7 @@ export interface IOAuthController {
 
 export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string);
-  getAllSAMLTraces(pageOffset: number, pageLimit: number);
+  getAllSAMLTraces(pageOffset: number, pageLimit: number, pageToken?: string);
   getSAMLTraceById(traceId: string);
 }
 
