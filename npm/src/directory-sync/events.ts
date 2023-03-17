@@ -1,4 +1,3 @@
-import { sendWebhookEvent } from '../event/webhook';
 import type {
   DirectorySyncEventType,
   Directory,
@@ -9,7 +8,8 @@ import type {
   IWebhookEventsLogger,
   IDirectoryConfig,
 } from '../typings';
-import { transformEventPayload } from './utils';
+import { sendWebhookEvent } from '../event/webhook';
+import { transformEventPayload } from './transform';
 
 export const sendEvent = async (
   event: DirectorySyncEventType,
