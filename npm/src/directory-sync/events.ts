@@ -34,12 +34,9 @@ export const handleEventCallback = async (
       return;
     }
 
-    webhookEventsLogger.setTenantAndProduct(tenant, product);
-
-    // Log the events only if `log_webhook_events` is enabled
-    const eventLog = directory.log_webhook_events
-      ? await webhookEventsLogger.log(directory, event)
-      : undefined;
+    if (!directory.webhook.endpoint || !directory.webhook.secret) {
+      return;
+    }
 
     let status = 200;
 
@@ -49,8 +46,8 @@ export const handleEventCallback = async (
       status = err.response ? err.response.status : 500;
     }
 
-    if (eventLog) {
-      await webhookEventsLogger.updateStatus(eventLog, status);
+    if (directory.log_webhook_events) {
+      await webhookEventsLogger.setTenantAndProduct(tenant, product).log(directory, event, status);
     }
   };
 };

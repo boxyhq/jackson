@@ -2,7 +2,7 @@ import type { EventPayloadSchema, Webhook } from '../typings';
 import crypto from 'crypto';
 import axios from './axios';
 
-const createSignatureString = (secret: string, payload: EventPayloadSchema) => {
+export const createSignatureString = (secret: string, payload: EventPayloadSchema) => {
   if (!secret) {
     return '';
   }

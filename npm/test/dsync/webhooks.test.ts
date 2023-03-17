@@ -7,8 +7,8 @@ import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
 import { jacksonOptions } from '../utils';
 import sinon from 'sinon';
-import axios from '../../src/directory-sync/axios';
-import { createSignatureString } from '../../src/directory-sync/utils';
+import axios from '../../src/event/axios';
+import { createSignatureString } from '../../src/event/webhook';
 
 let directorySync: IDirectorySyncController;
 let directory: Directory;
@@ -81,7 +81,7 @@ tap.test('Webhook Events / ', async (t) => {
     // Create a user
     await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    const events = await directorySync.webhookLogs.getAll({});
+    const events = await directorySync.webhookLogs.getAll();
 
     t.equal(events.length, 0);
 

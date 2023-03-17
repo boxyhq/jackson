@@ -5,6 +5,7 @@ import type {
   EventType,
   SSOConnectionEventType,
   EventSchema,
+  EventPayloadSchema,
 } from '../typings';
 import { sendWebhookEvent } from './webhook';
 import { transformSSOConnection, transformDirectoryConnection } from './utils';
@@ -30,7 +31,7 @@ export default class Event {
 
     const { tenant, product } = data;
 
-    const payload = {
+    const payload: EventPayloadSchema = {
       event,
       tenant,
       product,

@@ -50,9 +50,9 @@ export class DirectoryConfig {
     webhook_secret?: string;
     type?: DirectoryType;
   }): Promise<{ data: Directory | null; error: ApiError | null }> {
-    const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
-
     try {
+      const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
+
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
       }
@@ -215,15 +215,17 @@ export class DirectoryConfig {
       throw new JacksonError('Missing required parameter.', 400);
     }
 
-    // TODO: Delete the users and groups associated with the configuration
-
     const directory = await this.store().get(id);
+
+    if (!directory) {
+      return;
+    }
 
     await this.store().delete(id);
 
-    await this.eventController.notify('dsync.deleted', directory);
+    await this.eventController.notify('dsync.deleted', this.transform(directory));
 
-    return;
+    // TODO: Delete the users and groups associated with the configuration
   }
 
   private transform(directory: Directory): Directory {

@@ -31,5 +31,4 @@ export type EventPayloadSchema = {
   product: string;
   event: EventType;
   data: EventSchema;
-  directory_id?: string;
 };
