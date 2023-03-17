@@ -303,7 +303,7 @@ const wellKnownProviders = {
 } as const;
 
 // Find the friendly name of the provider from the entityID
-const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
+export const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
   const provider = Object.keys(wellKnownProviders).find((provider) => providerName.includes(provider));
 
   return provider ? wellKnownProviders[provider] : null;

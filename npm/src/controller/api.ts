@@ -14,6 +14,7 @@ import {
   SAMLSSORecord,
   OIDCSSORecord,
   GetIDPEntityIDBody,
+  IEventController,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames, appID, transformConnections } from './utils';
@@ -23,10 +24,12 @@ import samlConnection from './connection/saml';
 export class ConnectionAPIController implements IConnectionAPIController {
   private connectionStore: Storable;
   private opts: JacksonOption;
+  private eventController: IEventController;
 
-  constructor({ connectionStore, opts }) {
+  constructor({ connectionStore, opts, eventController }) {
     this.connectionStore = connectionStore;
     this.opts = opts;
+    this.eventController = eventController;
   }
 
   /**
@@ -199,7 +202,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
   ): Promise<SAMLSSORecord> {
     metrics.increment('createConnection');
 
-    return await samlConnection.create(body, this.connectionStore);
+    const connection = await samlConnection.create(body, this.connectionStore);
+
+    await this.eventController.notify('sso.created', connection);
+
+    return connection;
   }
 
   // For backwards compatibility

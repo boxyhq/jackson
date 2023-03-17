@@ -6,6 +6,7 @@ import type {
   DirectoryType,
   ApiError,
   PaginationParams,
+  IEventController,
 } from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomSecret, validateTenantAndProduct } from '../controller/utils';
@@ -19,10 +20,20 @@ export class DirectoryConfig {
   private _store: Storable | null = null;
   private opts: JacksonOption;
   private db: DatabaseStore;
+  private eventController: IEventController;
 
-  constructor({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) {
+  constructor({
+    db,
+    opts,
+    eventController,
+  }: {
+    db: DatabaseStore;
+    opts: JacksonOption;
+    eventController: IEventController;
+  }) {
     this.opts = opts;
     this.db = db;
+    this.eventController = eventController;
   }
 
   // Return the database store
@@ -31,14 +42,7 @@ export class DirectoryConfig {
   }
 
   // Create the configuration
-  public async create({
-    name,
-    tenant,
-    product,
-    webhook_url,
-    webhook_secret,
-    type = 'generic-scim-v2',
-  }: {
+  public async create(params: {
     name?: string;
     tenant: string;
     product: string;
@@ -46,6 +50,8 @@ export class DirectoryConfig {
     webhook_secret?: string;
     type?: DirectoryType;
   }): Promise<{ data: Directory | null; error: ApiError | null }> {
+    const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
+
     try {
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -58,16 +64,13 @@ export class DirectoryConfig {
 
       validateTenantAndProduct(tenant, product);
 
-      if (!name) {
-        name = `scim-${tenant}-${product}`;
-      }
-
+      const directoryName = name || `scim-${tenant}-${product}`;
       const id = randomUUID();
       const hasWebhook = webhook_url && webhook_secret;
 
       const directory: Directory = {
         id,
-        name,
+        name: directoryName,
         tenant,
         product,
         type,
@@ -87,7 +90,11 @@ export class DirectoryConfig {
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      return { data: this.transform(directory), error: null };
+      const connection = this.transform(directory);
+
+      await this.eventController.notify('dsync.created', connection);
+
+      return { data: connection, error: null };
     } catch (err: any) {
       return apiError(err);
     }
@@ -143,6 +150,14 @@ export class DirectoryConfig {
       }
 
       await this.store().put(id, { ...directory });
+
+      const state = 'activated';
+
+      if (state === 'activated') {
+        await this.eventController.notify('dsync.activated', directory);
+      } else if (state === 'deactivated') {
+        await this.eventController.notify('dsync.deactivated', directory);
+      }
 
       return { data: this.transform(directory), error: null };
     } catch (err: any) {
@@ -202,7 +217,11 @@ export class DirectoryConfig {
 
     // TODO: Delete the users and groups associated with the configuration
 
+    const directory = await this.store().get(id);
+
     await this.store().delete(id);
+
+    await this.eventController.notify('dsync.deleted', directory);
 
     return;
   }

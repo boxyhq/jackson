@@ -1,14 +1,6 @@
-import type {
-  Directory,
-  DirectorySyncEvent,
-  DirectorySyncEventType,
-  DirectorySyncGroupMember,
-  Group,
-  User,
-} from '../typings';
+import type { Directory, DirectorySyncEvent, DirectorySyncEventType, Group, User } from '../typings';
 import { DirectorySyncProviders, UserPatchOperation, GroupPatchOperation } from '../typings';
 import { transformUser, transformGroup, transformUserGroup } from './transform';
-import crypto from 'crypto';
 import lodash from 'lodash';
 
 const parseGroupOperation = (operation: GroupPatchOperation) => {
@@ -93,30 +85,6 @@ const transformEventPayload = (
   return eventPayload;
 };
 
-// Create request headers
-const createHeader = async (secret: string, event: DirectorySyncEvent) => {
-  return {
-    'Content-Type': 'application/json',
-    'BoxyHQ-Signature': await createSignatureString(secret, event),
-  };
-};
-
-// Create a signature string
-const createSignatureString = async (secret: string, event: DirectorySyncEvent) => {
-  if (!secret) {
-    return '';
-  }
-
-  const timestamp = new Date().getTime();
-
-  const signature = crypto
-    .createHmac('sha256', secret)
-    .update(`${timestamp}.${JSON.stringify(event)}`)
-    .digest('hex');
-
-  return `t=${timestamp},s=${signature}`;
-};
-
 // Parse the PATCH request body and return the user attributes (both standard and custom)
 const parseUserPatchRequest = (operation: UserPatchOperation) => {
   const { value, path } = operation;
@@ -195,8 +163,6 @@ export {
   parseGroupOperation,
   getDirectorySyncProviders,
   transformEventPayload,
-  createHeader,
-  createSignatureString,
   parseUserPatchRequest,
   extractStandardUserAttributes,
   updateRawUserAttributes,

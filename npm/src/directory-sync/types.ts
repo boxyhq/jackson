@@ -84,10 +84,12 @@ export interface DirectorySyncRequest {
 export interface DirectorySyncEvent {
   directory_id: Directory['id'];
   event: DirectorySyncEventType;
-  data: User | Group | (User & { group: Group });
+  data: DirectorySyncEventSchema;
   tenant: string;
   product: string;
 }
+
+export type DirectorySyncEventSchema = User | Group | UserWithGroup;
 
 export interface EventCallback {
   (event: DirectorySyncEvent): Promise<void>;
@@ -115,6 +117,8 @@ export type Group = {
   name: string;
   raw?: any;
 };
+
+export type UserWithGroup = User & { group: Group };
 
 export type PaginationParams = {
   pageOffset?: number;

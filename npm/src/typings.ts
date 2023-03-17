@@ -4,6 +4,7 @@ import type { IssuerMetadata } from 'openid-client';
 export * from './ee/federated-saml/types';
 export * from './saml-tracer/types';
 export * from './directory-sync/types';
+export * from './event/types';
 
 interface SSOConnection {
   defaultRedirectUrl: string;
@@ -374,6 +375,7 @@ export interface JacksonOption {
     host?: string;
     adminToken?: string;
   };
+  webhook?: Webhook;
 }
 
 export interface SLORequestParams {
@@ -487,4 +489,9 @@ export type AdminPortalBranding = {
   faviconUrl: string | null;
   primaryColor: string | null;
   companyName: string | null;
+};
+
+export type Webhook = {
+  endpoint: string;
+  secret: string;
 };
