@@ -17,7 +17,7 @@ import {
   IEventController,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames, appID, transformConnections } from './utils';
+import { IndexNames, appID, transformConnections, transformConnection } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
@@ -730,6 +730,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
       if (connection.clientSecret === clientSecret) {
         await this.connectionStore.delete(clientID);
+        await this.eventController.notify('sso.deleted', transformConnection(connection));
       } else {
         throw new JacksonError('clientSecret mismatch', 400);
       }
@@ -764,8 +765,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
           })
         : connections;
 
-      for (const conf of filteredConnections) {
+      for (const conf of transformConnections(filteredConnections)) {
         await this.connectionStore.delete(conf.clientID);
+        await this.eventController.notify('sso.deleted', conf);
       }
 
       return;

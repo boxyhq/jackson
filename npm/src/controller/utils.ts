@@ -315,13 +315,15 @@ export const transformConnections = (connections: SAMLSSORecord[]) => {
   }
 
   // Add friendlyProviderName to the connection
-  return connections.map((connection) => {
-    if ('idpMetadata' in connection) {
-      connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
-    }
+  return connections.map(transformConnection);
+};
 
-    return connection;
-  });
+export const transformConnection = (connection: SAMLSSORecord) => {
+  if ('idpMetadata' in connection) {
+    connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+  }
+
+  return connection;
 };
 
 export const isLocalhost = (url: string) => {
