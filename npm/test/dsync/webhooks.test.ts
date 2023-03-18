@@ -294,7 +294,7 @@ tap.test('Webhook Events / ', async (t) => {
       },
     };
 
-    const signatureString = await createSignatureString(directory.webhook.secret, event);
+    const signatureString = createSignatureString(directory.webhook.secret, event);
     const parts = signatureString.split(',');
 
     t.ok(signatureString);
@@ -302,7 +302,7 @@ tap.test('Webhook Events / ', async (t) => {
     t.ok(parts[1].match(/^s=[0-9a-f]/));
 
     // Empty secret should create an empty signature
-    const emptySignatureString = await createSignatureString('', event);
+    const emptySignatureString = createSignatureString('', event);
 
     t.match(emptySignatureString, '');
 
