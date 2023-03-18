@@ -8,7 +8,7 @@ import type {
   IWebhookEventsLogger,
   IDirectoryConfig,
 } from '../typings';
-import { sendWebhookEvent } from '../event/webhook';
+import { sendPayloadToWebhook } from '../event/webhook';
 import { transformEventPayload } from './transform';
 
 export const sendEvent = async (
@@ -41,7 +41,7 @@ export const handleEventCallback = async (
     let status = 200;
 
     try {
-      await sendWebhookEvent(directory.webhook, event);
+      await sendPayloadToWebhook(directory.webhook, event);
     } catch (err: any) {
       status = err.response ? err.response.status : 500;
     }

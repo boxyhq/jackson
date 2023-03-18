@@ -17,14 +17,14 @@ export const createSignatureString = (secret: string, payload: EventPayloadSchem
   return `t=${timestamp},s=${signature}`;
 };
 
-export const createHeader = (secret: string, payload: EventPayloadSchema) => {
+const createHeader = (secret: string, payload: EventPayloadSchema) => {
   return {
     'Content-Type': 'application/json',
     'BoxyHQ-Signature': createSignatureString(secret, payload),
   };
 };
 
-export const sendWebhookEvent = async (webhook: Webhook | undefined, payload: EventPayloadSchema) => {
+export const sendPayloadToWebhook = async (webhook: Webhook | undefined, payload: EventPayloadSchema) => {
   if (!webhook) {
     return;
   }

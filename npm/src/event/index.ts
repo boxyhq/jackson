@@ -5,9 +5,10 @@ import type {
   EventType,
   SSOConnectionEventType,
   EventSchema,
+  Webhook,
   EventPayloadSchema,
 } from '../typings';
-import { sendWebhookEvent } from './webhook';
+import { sendPayloadToWebhook } from './webhook';
 import { transformSSOConnection, transformDirectoryConnection } from './utils';
 
 export default class Event {
@@ -31,13 +32,17 @@ export default class Event {
 
     const { tenant, product } = data;
 
-    const payload: EventPayloadSchema = {
+    const payload = {
       event,
       tenant,
       product,
       data: transformedData,
     };
 
-    await sendWebhookEvent(this.webhook, payload);
+    this.sendWebhookEvent(this.webhook, payload);
+  }
+
+  async sendWebhookEvent(webhook: Webhook | undefined, payload: EventPayloadSchema) {
+    return await sendPayloadToWebhook(webhook, payload);
   }
 }
