@@ -310,16 +310,16 @@ export const findFriendlyProviderName = (providerName: string): keyof typeof wel
   return provider ? wellKnownProviders[provider] : null;
 };
 
+// Add friendlyProviderName to the connection
 export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSORecord>) => {
   if (connections.length === 0) {
     return connections;
   }
 
-  // Add friendlyProviderName to the connection
   return connections.map(transformConnection);
 };
 
-export const transformConnection = (connection: SAMLSSORecord) => {
+export const transformConnection = (connection: SAMLSSORecord | OIDCSSORecord) => {
   if ('idpMetadata' in connection) {
     connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
   }
