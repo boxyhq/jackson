@@ -79,6 +79,18 @@ const mssqlDbConfig = <DatabaseOption>{
   cleanupLimit: 10,
 };
 
+const dynamoDbConfig = <DatabaseOption>{
+  engine: 'dynamodb',
+  url: process.env.DYNAMODB_URL,
+  ttl: 1,
+  cleanupLimit: 10,
+  dynamodb: {
+    region: 'us-east-1',
+    readCapacityUnits: 5,
+    writeCapacityUnits: 5,
+  },
+};
+
 const dbs = [
   {
     ...memDbConfig,
@@ -138,6 +150,18 @@ if (process.env.PLANETSCALE_URL) {
     },
     {
       ...planetscaleDbConfig,
+      encryptionKey,
+    }
+  );
+}
+
+if (process.env.DYNAMODB_URL) {
+  dbs.push(
+    {
+      ...dynamoDbConfig,
+    },
+    {
+      ...dynamoDbConfig,
       encryptionKey,
     }
   );
@@ -213,33 +237,52 @@ tap.test('dbs', ({ end }) => {
     });
 
     tap.test('getAll(): ' + dbEngine, async (t) => {
-      const allRecords: any = await connectionStore.getAll();
+      const allRecords = await connectionStore.getAll();
       const allRecordOutput = {};
       let allRecordInput = {};
       for (const keyValue in records) {
         const keyVal = records[keyValue.toString()];
         allRecordOutput[keyVal];
       }
-      for (const keyValue in allRecords) {
+      for (const keyValue in allRecords.data) {
         const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecords[keyVal]];
+        allRecordInput[allRecords.data[keyVal]];
       }
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
       allRecordInput = {};
-      let allRecordsWithPaggination: any = await connectionStore.getAll(0, 2);
-      for (const keyValue in allRecordsWithPaggination) {
+      let allRecordsWithPagination = await connectionStore.getAll(0, 2);
+      for (const keyValue in allRecordsWithPagination.data) {
         const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPaggination[keyVal]];
+        allRecordInput[allRecordsWithPagination.data[keyVal]];
       }
 
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
-      allRecordsWithPaggination = await connectionStore.getAll(0, 0);
-      for (const keyValue in allRecordsWithPaggination) {
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
+      allRecordsWithPagination = await connectionStore.getAll(0, 0);
+      for (const keyValue in allRecordsWithPagination.data) {
         const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPaggination[keyVal]];
+        allRecordInput[allRecordsWithPagination.data[keyVal]];
       }
 
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll record');
+      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
+
+      const oneRecordWithPagination = await connectionStore.getAll(0, 1);
+      t.same(
+        oneRecordWithPagination.data.length,
+        1,
+        "getAll pagination should get only 1 record, order doesn't matter"
+      );
+
+      const secondRecordWithPagination = await connectionStore.getAll(
+        1,
+        1,
+        oneRecordWithPagination.pageToken
+      );
+      t.same(
+        secondRecordWithPagination.data.length,
+        1,
+        "getAll pagination should get only 1 record, order doesn't matter"
+      );
+
       t.end();
     });
 
@@ -254,11 +297,48 @@ tap.test('dbs', ({ end }) => {
         value: record1.city,
       });
 
-      t.same(ret1, [record1], 'unable to get index "name"');
+      t.same(ret1.data, [record1], 'unable to get index "name"');
       t.same(
-        ret2.sort((a, b) => a.id.localeCompare(b.id)),
+        ret2.data.sort((a, b) => a.id.localeCompare(b.id)),
         [record1, record2].sort((a, b) => a.id.localeCompare(b.id)),
         'unable to get index "city"'
+      );
+
+      const ret3 = await connectionStore.getByIndex(
+        {
+          name: 'city',
+          value: record1.city,
+        },
+        0,
+        1
+      );
+      t.same(
+        ret3.data.length,
+        dbEngine === 'dynamodb' ? 2 : 1,
+        "getByIndex pagination should get only 1 record, order doesn't matter"
+      );
+
+      const ret4 = await connectionStore.getByIndex(
+        {
+          name: 'city',
+          value: record1.city,
+        },
+        1,
+        1,
+        ret3.pageToken
+      );
+      t.same(
+        ret4.data.length,
+        dbEngine === 'dynamodb' ? 2 : 1,
+        "getByIndex pagination should get only 1 record, order doesn't matter"
+      );
+
+      t.same(
+        ret2.data.sort((a, b) => a.id.localeCompare(b.id)),
+        dbEngine === 'dynamodb'
+          ? ret3.data.sort((a, b) => a.id.localeCompare(b.id))
+          : [ret3.data[0], ret4.data[0]].sort((a, b) => a.id.localeCompare(b.id)),
+        'getByIndex pagination for index "city" failed'
       );
 
       t.end();
@@ -272,7 +352,7 @@ tap.test('dbs', ({ end }) => {
         value: record1.city,
       });
 
-      t.same(ret0, [record2], 'unable to get index "city" after delete');
+      t.same(ret0.data, [record2], 'unable to get index "city" after delete');
 
       await connectionStore.delete(record2.id);
 
@@ -291,8 +371,8 @@ tap.test('dbs', ({ end }) => {
       t.same(ret1, null, 'delete for record1 failed');
       t.same(ret2, null, 'delete for record2 failed');
 
-      t.same(ret3, [], 'delete for record1 failed');
-      t.same(ret4, [], 'delete for record2 failed');
+      t.same(ret3.data, [], 'delete for record1 failed');
+      t.same(ret4.data, [], 'delete for record2 failed');
 
       t.end();
     });

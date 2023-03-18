@@ -123,6 +123,7 @@ export type UserWithGroup = User & { group: Group };
 export type PaginationParams = {
   pageOffset?: number;
   pageLimit?: number;
+  pageToken?: string;
 };
 
 export type UserPatchOperation = {

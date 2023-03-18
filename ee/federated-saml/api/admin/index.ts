@@ -54,14 +54,18 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { offset, limit } = req.query as { offset: string; limit: string };
+  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
 
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const apps = await samlFederatedController.app.getAll({ pageOffset, pageLimit });
+  const apps = await samlFederatedController.app.getAll({ pageOffset, pageLimit, pageToken });
 
-  return res.json({ data: apps });
+  if (apps.pageToken) {
+    res.setHeader('jackson-pagetoken', apps.pageToken);
+  }
+
+  return res.json({ data: apps.data });
 };
 
 export default handler;

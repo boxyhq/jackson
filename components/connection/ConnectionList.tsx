@@ -2,6 +2,7 @@ import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import EmptyState from '@components/EmptyState';
+import { useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
@@ -27,15 +28,20 @@ const ConnectionList = ({
   isSettingsView?: boolean;
 }) => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
   const router = useRouter();
 
   const displayTenantProduct = setupLinkToken ? false : true;
-  const getConnectionsUrl = setupLinkToken
+  let getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
     ? `/api/admin/connections?isSystemSSO`
     : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
+
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    getConnectionsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  }
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`
     : isSettingsView
@@ -46,6 +52,15 @@ const ConnectionList = ({
     ApiSuccess<((SAMLSSORecord | OIDCSSORecord) & { isSystemSSO?: boolean })[]>,
     ApiError
   >(getConnectionsUrl, fetcher, { revalidateOnFocus: false });
+
+  const nextPageToken = data?.pageToken;
+  // store the nextPageToken against the pageOffset
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
     return <Loading />;

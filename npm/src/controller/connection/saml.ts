@@ -121,10 +121,12 @@ const saml = {
 
     record.idpMetadata = idpMetadata;
 
-    const existing = await connectionStore.getByIndex({
-      name: IndexNames.EntityID,
-      value: idpMetadata.entityID,
-    });
+    const existing = (
+      await connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: idpMetadata.entityID,
+      })
+    ).data;
 
     if (existing.length > 0) {
       for (let i = 0; i < existing.length; i++) {

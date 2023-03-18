@@ -51,9 +51,9 @@ export class WebhookEventsLogger extends Base {
         value: directoryId,
       };
 
-      eventLogs = await this.store('logs').getByIndex(index, pageOffset, pageLimit);
+      eventLogs = await this.store('logs').getByIndex(index, pageOffset, pageLimit).data;
     } else {
-      eventLogs = await this.store('logs').getAll(pageOffset, pageLimit);
+      eventLogs = await this.store('logs').getAll(pageOffset, pageLimit).data;
     }
 
     return eventLogs;
