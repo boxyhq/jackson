@@ -1,5 +1,5 @@
 import EventController from '../event';
-import type { Directory, DirectorySyncEventType, SAMLSSORecord, DirectorySyncEventSchema } from '../typings';
+import type { Directory, DirectorySyncEventType, SAMLSSORecord, DirectorySyncEventData } from '../typings';
 
 export type IEventController = InstanceType<typeof EventController>;
 
@@ -13,7 +13,7 @@ export type DsyncConnectionEventType =
 
 export type EventType = SSOConnectionEventType | DsyncConnectionEventType | DirectorySyncEventType;
 
-export type SSOConnectionEventSchema = Pick<
+export type SSOConnectionEventData = Pick<
   SAMLSSORecord,
   'name' | 'description' | 'clientID' | 'clientSecret'
 > & {
@@ -22,13 +22,13 @@ export type SSOConnectionEventSchema = Pick<
   friendlyProviderName: string;
 };
 
-export type DsyncConnectionEventSchema = Pick<Directory, 'id' | 'name' | 'type'>;
+export type DsyncConnectionEventData = Pick<Directory, 'id' | 'name' | 'type'>;
 
-export type EventSchema = SSOConnectionEventSchema | DsyncConnectionEventSchema | DirectorySyncEventSchema;
+export type EventData = SSOConnectionEventData | DsyncConnectionEventData | DirectorySyncEventData;
 
 export type EventPayloadSchema = {
   tenant: string;
   product: string;
   event: EventType;
-  data: EventSchema;
+  data: EventData;
 };

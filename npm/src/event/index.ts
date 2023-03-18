@@ -4,7 +4,7 @@ import type {
   SAMLSSORecord,
   EventType,
   SSOConnectionEventType,
-  EventSchema,
+  EventData,
   Webhook,
   EventPayloadSchema,
 } from '../typings';
@@ -22,7 +22,7 @@ export default class Event {
     event: T,
     data: T extends SSOConnectionEventType ? SAMLSSORecord : Directory
   ) {
-    let transformedData: EventSchema;
+    let transformedData: EventData;
 
     if ('clientID' in data) {
       transformedData = transformSSOConnection(data);

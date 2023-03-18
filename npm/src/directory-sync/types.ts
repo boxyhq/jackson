@@ -81,15 +81,15 @@ export interface DirectorySyncRequest {
   };
 }
 
+export type DirectorySyncEventData = User | Group | UserWithGroup;
+
 export interface DirectorySyncEvent {
   directory_id: Directory['id'];
   event: DirectorySyncEventType;
-  data: DirectorySyncEventSchema;
+  data: DirectorySyncEventData;
   tenant: string;
   product: string;
 }
-
-export type DirectorySyncEventSchema = User | Group | UserWithGroup;
 
 export interface EventCallback {
   (event: DirectorySyncEvent): Promise<void>;

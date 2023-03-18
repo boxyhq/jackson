@@ -1,12 +1,7 @@
-import type {
-  Directory,
-  DsyncConnectionEventSchema,
-  SSOConnectionEventSchema,
-  SAMLSSORecord,
-} from '../typings';
+import type { Directory, DsyncConnectionEventData, SSOConnectionEventData, SAMLSSORecord } from '../typings';
 import { findFriendlyProviderName } from '../controller/utils';
 
-export const transformSSOConnection = (data: SAMLSSORecord): SSOConnectionEventSchema => {
+export const transformSSOConnection = (data: SAMLSSORecord): SSOConnectionEventData => {
   const { name, description, clientID, clientSecret, idpMetadata } = data;
   const { entityID, provider } = idpMetadata;
 
@@ -21,7 +16,7 @@ export const transformSSOConnection = (data: SAMLSSORecord): SSOConnectionEventS
   };
 };
 
-export const transformDirectoryConnection = (data: Directory): DsyncConnectionEventSchema => {
+export const transformDirectoryConnection = (data: Directory): DsyncConnectionEventData => {
   const { id, name, type } = data;
 
   return {
