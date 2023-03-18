@@ -151,14 +151,6 @@ export class DirectoryConfig {
 
       await this.store().put(id, { ...directory });
 
-      const state = 'activated';
-
-      if (state === 'activated') {
-        await this.eventController.notify('dsync.activated', directory);
-      } else if (state === 'deactivated') {
-        await this.eventController.notify('dsync.deactivated', directory);
-      }
-
       return { data: this.transform(directory), error: null };
     } catch (err: any) {
       return apiError(err);
