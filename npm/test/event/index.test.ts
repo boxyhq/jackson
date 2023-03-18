@@ -11,7 +11,7 @@ import type {
   SAMLSSORecord,
 } from '../../src/typings';
 import { saml_connection } from '../sso/fixture';
-import { transformDirectoryConnection, transformSSOConnection } from '../../src/event/utils';
+import { transformDirectoryConnection, transformSAMLSSOConnection } from '../../src/event/utils';
 import { getFakeDirectory } from '../dsync/data/directories';
 
 let ssoConnectionController: IConnectionAPIController;
@@ -52,7 +52,7 @@ tap.test('should send sso.created event', async (t) => {
     event: eventType,
     tenant: connection.tenant,
     product: connection.product,
-    data: transformSSOConnection(connection),
+    data: transformSAMLSSOConnection(connection),
   };
 
   assertCalledWith(notifySpy, [eventType, connection]);
@@ -98,7 +98,7 @@ tap.test('should send sso.deleted event', async (t) => {
     event: eventType,
     tenant: saml_connection.tenant,
     product: saml_connection.product,
-    data: transformSSOConnection(connection),
+    data: transformSAMLSSOConnection(connection),
   };
 
   // Delete the connection

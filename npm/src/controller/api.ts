@@ -225,7 +225,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
 
-    return await oidcConnection.create(body, this.connectionStore);
+    const connection = await oidcConnection.create(body, this.connectionStore);
+
+    await this.eventController.notify('sso.created', connection);
+
+    return connection;
   }
 
   /**
