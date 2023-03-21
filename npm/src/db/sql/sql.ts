@@ -3,7 +3,7 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records } from '../../typings';
-import { DataSource, DataSourceOptions, Like } from 'typeorm';
+import { DataSource, DataSourceOptions, Like, In } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
 
@@ -243,6 +243,32 @@ class Sql implements DatabaseDriver {
     return await this.storeRepository.remove({
       key: dbKey,
     });
+  }
+
+  // Delete many record at once using a list of keys
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    if (keys.length === 0) {
+      return;
+    }
+
+    const dbKeys = keys.map((key) => dbutils.key(namespace, key));
+
+    await this.ttlRepository.remove(dbKeys);
+
+    if (this.options.engine === 'planetscale') {
+      const records = await this.indexRepository.find({
+        where: { storeKey: In(dbKeys) },
+        select: ['id'],
+      });
+
+      const identifiers = records.map((record) => record.id);
+
+      if (identifiers && identifiers.length > 0) {
+        await this.indexRepository.remove(identifiers);
+      }
+    }
+
+    return await this.storeRepository.remove(dbKeys);
   }
 }
 

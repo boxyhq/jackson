@@ -315,6 +315,7 @@ export interface DatabaseDriver {
     pageLimit?: number,
     pageToken?: string
   ): Promise<Records>;
+  deleteMany(namespace: string, keys: string[]): Promise<void>;
 }
 
 export interface Storable {
