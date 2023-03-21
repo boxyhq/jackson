@@ -17,15 +17,11 @@ export const createSignatureString = (secret: string, payload: EventPayloadSchem
   return `t=${timestamp},s=${signature}`;
 };
 
-const createHeader = (secret: string, payload: EventPayloadSchema) => {
-  return {
-    'Content-Type': 'application/json',
-    'BoxyHQ-Signature': createSignatureString(secret, payload),
-  };
-};
-
 export const sendPayloadToWebhook = async (webhook: Webhook, payload: EventPayloadSchema) => {
   return await axios.post(webhook.endpoint, payload, {
-    headers: createHeader(webhook.secret, payload),
+    headers: {
+      'Content-Type': 'application/json',
+      'BoxyHQ-Signature': createSignatureString(webhook.secret, payload),
+    },
   });
 };
