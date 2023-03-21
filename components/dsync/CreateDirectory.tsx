@@ -22,7 +22,7 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
     name: '',
     tenant: '',
     product: '',
-    webhook_url: '',
+    webhook_url: defaultWebhookEndpoint,
     webhook_secret: '',
     type: providers ? (Object.keys(providers).length > 0 ? Object.keys(providers)[0] : '') : '',
   });
@@ -145,7 +145,6 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                 id='webhook_url'
                 className='input-bordered input w-full'
                 onChange={onChange}
-                value={defaultWebhookEndpoint}
               />
             </div>
             <div className='form-control w-full'>
