@@ -382,15 +382,27 @@ jobs:
         run: |
           result=$(./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+          if [ -z "$ORAS_DIGEST" ]; then
+            echo "Error: ORAS_DIGEST is empty"
+            exit 1
+          fi
           cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
           cd _docker
           result=$(../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+          if [ -z "$ORAS_DIGEST" ]; then
+            echo "Error: ORAS_DIGEST is empty"
+            exit 1
+          fi
           cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
           cd ..
           cd npm
           result=$(../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+          if [ -z "$ORAS_DIGEST" ]; then
+            echo "Error: ORAS_DIGEST is empty"
+            exit 1
+          fi
           cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
           cd ..
         env:
