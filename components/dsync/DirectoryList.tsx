@@ -3,6 +3,7 @@ import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
+import { useEffect } from 'react';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { useTranslation } from 'next-i18next';
 import { LinkPrimary } from '@components/LinkPrimary';
@@ -19,7 +20,7 @@ import { errorToast } from '@components/Toaster';
 
 const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
   const router = useRouter();
 
   const displayTenantProduct = setupLinkToken ? false : true;
@@ -32,10 +33,25 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
 
   const { providers, isLoading: isLoadingProviders } = useDirectoryProviders(setupLinkToken);
 
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
+  let getDirectoriesUrlPaginated = `${getDirectoriesUrl}?offset=${paginate.offset}&limit=${pageLimit}`;
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    getDirectoriesUrlPaginated += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  }
+
   const { data, error, isLoading } = useSWR<ApiSuccess<Directory[]>, ApiError>(
-    `${getDirectoriesUrl}?offset=${paginate.offset}&limit=${pageLimit}`,
+    getDirectoriesUrlPaginated,
     fetcher
   );
+
+  const nextPageToken = data?.pageToken;
+  // store the nextPageToken against the pageOffset
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading || isLoadingProviders) {
     return <Loading />;

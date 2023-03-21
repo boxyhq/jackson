@@ -38,6 +38,11 @@ const db: DatabaseOption = {
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
   pageLimit: process.env.DB_PAGE_LIMIT ? Number(process.env.DB_PAGE_LIMIT) : undefined,
   ssl,
+  dynamodb: {
+    region: process.env.DB_DYNAMODB_REGION,
+    readCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_RCUS) : undefined,
+    writeCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_WCUS) : undefined,
+  },
 };
 
 const jacksonOptions: JacksonOption = {

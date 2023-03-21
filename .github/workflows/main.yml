@@ -43,8 +43,11 @@ jobs:
       OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
+      DYNAMODB_URL: 'http://localhost:8000'
       BOXYHQ_NO_ANALYTICS: '1'
       IDP_ENABLED: true
+      AWS_ACCESS_KEY_ID: secret
+      AWS_SECRET_ACCESS_KEY: secret
     strategy:
       matrix:
         node-version: [18]
@@ -94,6 +97,10 @@ jobs:
         env:
           ACCEPT_EULA: 'Y'
           SA_PASSWORD: '123ABabc!'
+      dynamodb-local:
+        image: 'amazon/dynamodb-local:latest'
+        ports:
+          - '8000:8000'
       mocksaml:
         image: boxyhq/mock-saml:1.0.9
         ports:
@@ -376,9 +383,9 @@ jobs:
       - name: Sign the sbom images
         if: github.ref == 'refs/heads/release'
         run: |
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }} || true
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }}
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }}
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
   publish:

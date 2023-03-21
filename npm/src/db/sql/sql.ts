@@ -2,7 +2,7 @@
 
 require('reflect-metadata');
 
-import { DatabaseDriver, DatabaseOption, Index, Encrypted } from '../../typings';
+import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records } from '../../typings';
 import { DataSource, DataSourceOptions, Like } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
@@ -126,7 +126,7 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const res = await this.storeRepository.find({
       where: { key: Like(`%${namespace}%`) },
@@ -137,10 +137,16 @@ class Sql implements DatabaseDriver {
       take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
       skip: skipOffsetAndLimitValue ? 0 : pageOffset,
     });
-    return JSON.parse(JSON.stringify(res)) || [];
+    return { data: res || [] };
   }
 
-  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+  async getByIndex(
+    namespace: string,
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string
+  ): Promise<Records> {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const res = skipOffsetAndLimitValue
       ? await this.indexRepository.findBy({
@@ -173,7 +179,7 @@ class Sql implements DatabaseDriver {
       }
     }
 
-    return ret;
+    return { data: ret };
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {

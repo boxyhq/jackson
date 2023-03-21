@@ -160,10 +160,12 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const directories: Directory[] = await this.store().getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      const directories: Directory[] = (
+        await this.store().getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
 
       const transformedDirectories = directories.map((directory) => this.transform(directory));
 
@@ -174,12 +176,17 @@ export class DirectoryConfig {
   }
 
   // Get all configurations
-  public async getAll({ pageOffset, pageLimit }: PaginationParams = {}): Promise<{
+  public async getAll({ pageOffset, pageLimit, pageToken }: PaginationParams = {}): Promise<{
     data: Directory[] | null;
+    pageToken?: string;
     error: ApiError | null;
   }> {
     try {
-      const directories = (await this.store().getAll(pageOffset, pageLimit)) as Directory[];
+      const { data: directories, pageToken: nextPageToken } = await this.store().getAll(
+        pageOffset,
+        pageLimit,
+        pageToken
+      );
 
       const transformedDirectories = directories
         ? directories.map((directory) => this.transform(directory))
@@ -187,6 +194,7 @@ export class DirectoryConfig {
 
       return {
         data: transformedDirectories,
+        pageToken: nextPageToken,
         error: null,
       };
     } catch (err: any) {

@@ -1,8 +1,8 @@
+import { useEffect } from 'react';
 import type { NextPage } from 'next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
-
 import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
@@ -20,12 +20,24 @@ import router from 'next/router';
 
 const AppsList: NextPage = () => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp[]>, ApiError>(
-    `/api/admin/federated-saml?offset=${paginate.offset}&limit=${pageLimit}`,
-    fetcher
-  );
+  let getAppsUrl = `/api/admin/federated-saml?offset=${paginate.offset}&limit=${pageLimit}`;
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  }
+
+  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp[]>, ApiError>(getAppsUrl, fetcher);
+
+  const nextPageToken = data?.pageToken;
+  // store the nextPageToken against the pageOffset
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
     return <Loading />;

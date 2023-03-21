@@ -112,10 +112,12 @@ export class Groups extends Base {
 
   // Get all users in a group
   public async getAllUsers(groupId: string): Promise<{ user_id: string }[]> {
-    const users: { user_id: string }[] = await this.store('members').getByIndex({
-      name: 'groupId',
-      value: groupId,
-    });
+    const users: { user_id: string }[] = (
+      await this.store('members').getByIndex({
+        name: 'groupId',
+        value: groupId,
+      })
+    ).data;
 
     if (users.length === 0) {
       return [];
@@ -174,10 +176,12 @@ export class Groups extends Base {
     directoryId: string
   ): Promise<{ data: Group[] | null; error: ApiError | null }> {
     try {
-      const groups = await this.store('groups').getByIndex({
-        name: indexNames.directoryIdDisplayname,
-        value: dbutils.keyFromParts(directoryId, displayName),
-      });
+      const groups = (
+        await this.store('groups').getByIndex({
+          name: indexNames.directoryIdDisplayname,
+          value: dbutils.keyFromParts(directoryId, displayName),
+        })
+      ).data;
 
       return { data: groups, error: null };
     } catch (err: any) {
@@ -201,16 +205,18 @@ export class Groups extends Base {
 
       // Filter by directoryId
       if (directoryId) {
-        groups = await this.store('groups').getByIndex(
-          {
-            name: indexNames.directoryId,
-            value: directoryId,
-          },
-          pageOffset,
-          pageLimit
-        );
+        groups = (
+          await this.store('groups').getByIndex(
+            {
+              name: indexNames.directoryId,
+              value: directoryId,
+            },
+            pageOffset,
+            pageLimit
+          )
+        ).data;
       } else {
-        groups = await this.store('groups').getAll(pageOffset, pageLimit);
+        groups = (await this.store('groups').getAll(pageOffset, pageLimit)).data;
       }
 
       return { data: groups, error: null };

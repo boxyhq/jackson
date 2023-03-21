@@ -7,6 +7,8 @@ const usePaginate = () => {
   const offset = router.query.offset ? Number(router.query.offset) : 0;
 
   const [paginate, setPaginate] = useState({ offset });
+  // store that maps the pageToken for the next page with the current offset
+  const [pageTokenMap, setPageTokenMap] = useState({});
 
   useEffect(() => {
     // Prevent pushing the same URL to the history
@@ -27,6 +29,8 @@ const usePaginate = () => {
   return {
     paginate,
     setPaginate,
+    pageTokenMap,
+    setPageTokenMap,
   };
 };
 

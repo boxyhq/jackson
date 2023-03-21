@@ -512,10 +512,12 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('Issuer not found.', 403);
       }
 
-      const connections: SAMLSSORecord[] = await this.connectionStore.getByIndex({
-        name: IndexNames.EntityID,
-        value: issuer,
-      });
+      const connections: SAMLSSORecord[] = (
+        await this.connectionStore.getByIndex({
+          name: IndexNames.EntityID,
+          value: issuer,
+        })
+      ).data;
 
       if (!connections || connections.length === 0) {
         throw new JacksonError('SAML connection not found.', 403);

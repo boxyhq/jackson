@@ -1,4 +1,4 @@
-import type { Storable, JacksonOption, SAMLFederationApp } from '../../typings';
+import type { Storable, JacksonOption, SAMLFederationApp, Records } from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
@@ -70,10 +70,12 @@ export class App {
       throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
     }
 
-    const apps: SAMLFederationApp[] = await this.store.getByIndex({
-      name: IndexNames.EntityID,
-      value: entityId,
-    });
+    const apps: SAMLFederationApp[] = (
+      await this.store.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      })
+    ).data;
 
     if (!apps || apps.length === 0) {
       throw new JacksonError('SAML Federation app not found', 404);
@@ -115,8 +117,16 @@ export class App {
   }
 
   // Get all apps
-  public async getAll({ pageOffset, pageLimit }: { pageOffset?: number; pageLimit?: number }) {
-    const apps: SAMLFederationApp[] = await this.store.getAll(pageOffset, pageLimit);
+  public async getAll({
+    pageOffset,
+    pageLimit,
+    pageToken,
+  }: {
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }) {
+    const apps = (await this.store.getAll(pageOffset, pageLimit, pageToken)) as Records<SAMLFederationApp>;
 
     return apps;
   }
