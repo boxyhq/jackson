@@ -145,6 +145,7 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                 id='webhook_url'
                 className='input-bordered input w-full'
                 onChange={onChange}
+                value={directory.webhook_url}
               />
             </div>
             <div className='form-control w-full'>
