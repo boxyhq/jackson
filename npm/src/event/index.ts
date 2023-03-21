@@ -55,7 +55,7 @@ export default class Event {
     return payload;
   }
 
-  private async sendWebhookEvent(webhook: Webhook | undefined, payload: EventPayloadSchema) {
+  async sendWebhookEvent(webhook: Webhook | undefined, payload: EventPayloadSchema) {
     if (!webhook?.endpoint || !webhook.secret) {
       return;
     }
