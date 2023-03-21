@@ -27,16 +27,12 @@ export default class Event {
     event: T,
     data: T extends SSOConnectionEventType ? SAMLSSORecord | OIDCSSORecord : Directory
   ) {
-    const payload = this._constructPayload(event, data);
+    const payload = this.constructPayload(event, data);
 
-    this.sendWebhookEvent(this.webhook, payload);
+    return this.sendWebhookEvent(this.webhook, payload);
   }
 
-  async sendWebhookEvent(webhook: Webhook | undefined, payload: EventPayloadSchema) {
-    return await sendPayloadToWebhook(webhook, payload);
-  }
-
-  private _constructPayload(event: EventType, data: SAMLSSORecord | OIDCSSORecord | Directory) {
+  private constructPayload(event: EventType, data: SAMLSSORecord | OIDCSSORecord | Directory) {
     let transformedData: EventData;
 
     if ('idpMetadata' in data) {
@@ -57,5 +53,13 @@ export default class Event {
     };
 
     return payload;
+  }
+
+  private async sendWebhookEvent(webhook: Webhook | undefined, payload: EventPayloadSchema) {
+    if (!webhook?.endpoint || !webhook.secret) {
+      return;
+    }
+
+    return await sendPayloadToWebhook(webhook, payload);
   }
 }

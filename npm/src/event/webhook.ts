@@ -24,15 +24,7 @@ const createHeader = (secret: string, payload: EventPayloadSchema) => {
   };
 };
 
-export const sendPayloadToWebhook = async (webhook: Webhook | undefined, payload: EventPayloadSchema) => {
-  if (!webhook) {
-    return;
-  }
-
-  if (!webhook.endpoint || !webhook.secret) {
-    return;
-  }
-
+export const sendPayloadToWebhook = async (webhook: Webhook, payload: EventPayloadSchema) => {
   return await axios.post(webhook.endpoint, payload, {
     headers: createHeader(webhook.secret, payload),
   });
