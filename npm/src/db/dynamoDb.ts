@@ -330,6 +330,14 @@ class DynamoDB implements DatabaseDriver {
       );
     }
   }
+
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    if (keys.length === 0) {
+      return;
+    }
+
+    console.log(namespace);
+  }
 }
 
 export default {
