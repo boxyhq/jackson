@@ -99,13 +99,13 @@ const dbs = [
     ...memDbConfig,
     encryptionKey,
   },
-  // {
-  //   ...redisDbConfig,
-  // },
-  // {
-  //   ...redisDbConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...redisDbConfig,
+  },
+  {
+    ...redisDbConfig,
+    encryptionKey,
+  },
   {
     ...postgresDbConfig,
   },
@@ -113,13 +113,13 @@ const dbs = [
     ...postgresDbConfig,
     encryptionKey,
   },
-  // {
-  //   ...mongoDbConfig,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...mongoDbConfig,
+  },
+  {
+    ...mongoDbConfig,
+    encryptionKey,
+  },
   {
     ...mysqlDbConfig,
   },
@@ -127,20 +127,20 @@ const dbs = [
     ...mysqlDbConfig,
     encryptionKey,
   },
-  // {
-  //   ...mariadbDbConfig,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mssqlDbConfig,
-  // },
-  // {
-  //   ...mssqlDbConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...mariadbDbConfig,
+  },
+  {
+    ...mariadbDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mssqlDbConfig,
+  },
+  {
+    ...mssqlDbConfig,
+    encryptionKey,
+  },
 ];
 
 if (process.env.PLANETSCALE_URL) {

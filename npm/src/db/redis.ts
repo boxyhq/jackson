@@ -169,6 +169,34 @@ class Redis implements DatabaseDriver {
 
     return await tx.exec();
   }
+
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    if (keys.length === 0) {
+      return;
+    }
+
+    let tx = this.client.multi();
+
+    for (const key of keys) {
+      const k = dbutils.key(namespace, key);
+
+      tx = tx.del(k);
+
+      const idxKey = dbutils.keyFromParts(dbutils.indexPrefix, k);
+      const dbKeys = await this.client.sMembers(idxKey);
+
+      for (const dbKey of dbKeys || []) {
+        tx.sRem(dbutils.keyFromParts(dbutils.indexPrefix, dbKey), key);
+      }
+
+      tx.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), key);
+      tx.ZREM(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), key);
+
+      tx.del(idxKey);
+    }
+
+    await tx.exec();
+  }
 }
 
 export default {
