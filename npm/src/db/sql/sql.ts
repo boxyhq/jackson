@@ -26,6 +26,7 @@ class Sql implements DatabaseDriver {
 
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
+
     while (true) {
       try {
         const baseOpts = {
@@ -245,7 +246,6 @@ class Sql implements DatabaseDriver {
     });
   }
 
-  // Delete many record at once using a list of keys
   async deleteMany(namespace: string, keys: string[]): Promise<void> {
     if (keys.length === 0) {
       return;
@@ -253,7 +253,7 @@ class Sql implements DatabaseDriver {
 
     const dbKeys = keys.map((key) => dbutils.key(namespace, key));
 
-    await this.ttlRepository.remove(dbKeys);
+    await this.ttlRepository.delete(dbKeys);
 
     if (this.options.engine === 'planetscale') {
       const records = await this.indexRepository.find({
@@ -268,7 +268,7 @@ class Sql implements DatabaseDriver {
       }
     }
 
-    return await this.storeRepository.remove(dbKeys);
+    await this.storeRepository.delete(dbKeys);
   }
 }
 

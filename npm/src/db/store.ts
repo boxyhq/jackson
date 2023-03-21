@@ -43,6 +43,13 @@ class Store implements Storable {
   async delete(key: string): Promise<any> {
     return await this.db.delete(this.namespace, dbutils.keyDigest(key));
   }
+
+  async deleteMany(keys: string[]): Promise<void> {
+    return await this.db.deleteMany(
+      this.namespace,
+      keys.map((k) => dbutils.keyDigest(k))
+    );
+  }
 }
 
 export default {

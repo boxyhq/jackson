@@ -324,6 +324,7 @@ export interface Storable {
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
   getByIndex(idx: Index, pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
+  deleteMany(keys: string[]): Promise<void>;
 }
 
 export interface DatabaseStore {
