@@ -171,7 +171,7 @@ tap.test('Webhook Events / ', async (t) => {
     t.match(logs[2].directory_id, directory.id);
     t.hasStrict(logs[2].data.raw, createdUser);
 
-    await directorySync.users.clear();
+    await directorySync.users.deleteAll();
 
     t.end();
   });

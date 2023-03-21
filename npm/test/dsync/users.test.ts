@@ -178,7 +178,7 @@ tap.test('Directory users / ', async (t) => {
   t.test('Should be able to delete all users using clear() method', async (t) => {
     directorySync.users.setTenantAndProduct(directory.tenant, directory.product);
 
-    await directorySync.users.clear();
+    await directorySync.users.deleteAll();
 
     // Make sure all the user was deleted
     const { data: users } = await directorySync.users.getAll();

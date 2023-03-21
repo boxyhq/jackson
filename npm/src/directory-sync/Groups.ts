@@ -103,6 +103,7 @@ export class Groups extends Base {
       }
 
       await this.store('groups').delete(id);
+      await this.removeAllUsers(id);
 
       return { data: null, error: null };
     } catch (err: any) {
@@ -112,12 +113,10 @@ export class Groups extends Base {
 
   // Get all users in a group
   public async getAllUsers(groupId: string): Promise<{ user_id: string }[]> {
-    const users: { user_id: string }[] = (
-      await this.store('members').getByIndex({
-        name: 'groupId',
-        value: groupId,
-      })
-    ).data;
+    const { data: users } = await this.store('members').getByIndex({
+      name: 'groupId',
+      value: groupId,
+    });
 
     if (users.length === 0) {
       return [];
@@ -150,19 +149,6 @@ export class Groups extends Base {
     await this.store('members').delete(id);
   }
 
-  // Remove all users from a group
-  public async removeAllUsers(groupId: string) {
-    const users = await this.getAllUsers(groupId);
-
-    if (users.length === 0) {
-      return;
-    }
-
-    for (const user of users) {
-      await this.removeUserFromGroup(groupId, user.user_id);
-    }
-  }
-
   // Check if a user is a member of a group
   public async isUserInGroup(groupId: string, userId: string): Promise<boolean> {
     const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
@@ -176,12 +162,10 @@ export class Groups extends Base {
     directoryId: string
   ): Promise<{ data: Group[] | null; error: ApiError | null }> {
     try {
-      const groups = (
-        await this.store('groups').getByIndex({
-          name: indexNames.directoryIdDisplayname,
-          value: dbutils.keyFromParts(directoryId, displayName),
-        })
-      ).data;
+      const { data: groups } = await this.store('groups').getByIndex({
+        name: indexNames.directoryIdDisplayname,
+        value: dbutils.keyFromParts(directoryId, displayName),
+      });
 
       return { data: groups, error: null };
     } catch (err: any) {
@@ -190,31 +174,27 @@ export class Groups extends Base {
   }
 
   // Get all groups in a directory
-  public async getAll({
-    pageOffset,
-    pageLimit,
-    directoryId,
-  }: PaginationParams & {
-    directoryId?: string;
-  } = {}): Promise<{
+  public async getAll(
+    params: PaginationParams & {
+      directoryId?: string;
+    }
+  ): Promise<{
     data: Group[] | null;
     error: ApiError | null;
   }> {
+    const { pageOffset, pageLimit, directoryId } = params;
+
     try {
       let groups: Group[] = [];
 
       // Filter by directoryId
       if (directoryId) {
-        groups = (
-          await this.store('groups').getByIndex(
-            {
-              name: indexNames.directoryId,
-              value: directoryId,
-            },
-            pageOffset,
-            pageLimit
-          )
-        ).data;
+        const index = {
+          name: indexNames.directoryId,
+          value: directoryId,
+        };
+
+        groups = (await this.store('groups').getByIndex(index, pageOffset, pageLimit)).data;
       } else {
         groups = (await this.store('groups').getAll(pageOffset, pageLimit)).data;
       }
@@ -222,6 +202,42 @@ export class Groups extends Base {
       return { data: groups, error: null };
     } catch (err: any) {
       return apiError(err);
+    }
+  }
+
+  // Delete all groups from a directory
+  async deleteAll() {
+    while (true) {
+      const { data: groups } = await this.store('groups').getAll(0, 500);
+
+      if (!groups || groups.length === 0) {
+        break;
+      }
+
+      await this.store('groups').deleteMany(groups.map((group) => group.id));
+
+      // Remove all users from each group
+      for (const group of groups) {
+        await this.removeAllUsers(group.id);
+      }
+    }
+  }
+
+  // Remove all users from a group
+  public async removeAllUsers(groupId: string) {
+    while (true) {
+      const index = {
+        name: 'groupId',
+        value: groupId,
+      };
+
+      const { data: members } = await this.store('members').getByIndex(index, 0, 500);
+
+      if (!members || members.length === 0) {
+        break;
+      }
+
+      await this.store('members').deleteMany(members.map((member) => member.id));
     }
   }
 }

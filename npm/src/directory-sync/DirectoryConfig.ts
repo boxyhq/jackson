@@ -6,6 +6,8 @@ import type {
   DirectoryType,
   ApiError,
   PaginationParams,
+  IUsers,
+  IGroups,
 } from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomSecret, validateTenantAndProduct } from '../controller/utils';
@@ -15,14 +17,25 @@ import { randomUUID } from 'crypto';
 import { IndexNames } from '../controller/utils';
 import { getDirectorySyncProviders } from './utils';
 
+type ConstructorParams = {
+  db: DatabaseStore;
+  opts: JacksonOption;
+  users: IUsers;
+  groups: IGroups;
+};
+
 export class DirectoryConfig {
   private _store: Storable | null = null;
   private opts: JacksonOption;
   private db: DatabaseStore;
+  private users: IUsers;
+  private groups: IGroups;
 
-  constructor({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) {
+  constructor({ db, opts, users, groups }: ConstructorParams) {
     this.opts = opts;
     this.db = db;
+    this.users = users;
+    this.groups = groups;
   }
 
   // Return the database store
@@ -160,12 +173,10 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const directories: Directory[] = (
-        await this.store().getByIndex({
-          name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(tenant, product),
-        })
-      ).data;
+      const { data: directories } = await this.store().getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
 
       const transformedDirectories = directories.map((directory) => this.transform(directory));
 
@@ -208,11 +219,22 @@ export class DirectoryConfig {
       throw new JacksonError('Missing required parameter.', 400);
     }
 
-    // TODO: Delete the users and groups associated with the configuration
+    const { data: directory } = await this.get(id);
 
+    if (!directory) {
+      return;
+    }
+
+    const { tenant, product } = directory;
+
+    // Delete the configuration
     await this.store().delete(id);
 
-    return;
+    // Delete the groups
+    await this.groups.setTenantAndProduct(tenant, product).deleteAll();
+
+    // Delete the users
+    await this.users.setTenantAndProduct(tenant, product).deleteAll();
   }
 
   private transform(directory: Directory): Directory {

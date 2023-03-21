@@ -10,9 +10,9 @@ import { handleEventCallback } from './events';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 
 const directorySync = async ({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) => {
-  const directories = new DirectoryConfig({ db, opts });
   const users = new Users({ db });
   const groups = new Groups({ db });
+  const directories = new DirectoryConfig({ db, opts, users, groups });
 
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });

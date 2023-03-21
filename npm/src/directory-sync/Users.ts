@@ -184,19 +184,18 @@ export class Users extends Base {
     }
   }
 
-  // Clear all the users
-  // This is used for testing
-  public async clear() {
-    const { data: users, error } = await this.getAll();
+  // Delete all users from a directory
+  async deleteAll() {
+    const limit = 500;
 
-    if (!users || error) {
-      return;
+    while (true) {
+      const { data: users } = await this.store('users').getAll(0, limit);
+
+      if (!users || users.length === 0) {
+        break;
+      }
+
+      await this.store('users').deleteMany(users.map((user) => user.id));
     }
-
-    await Promise.all(
-      users.map(async (user) => {
-        return this.delete(user.id);
-      })
-    );
   }
 }
