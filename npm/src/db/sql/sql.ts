@@ -261,11 +261,7 @@ class Sql implements DatabaseDriver {
         select: ['id'],
       });
 
-      const identifiers = records.map((record) => record.id);
-
-      if (identifiers && identifiers.length > 0) {
-        await this.indexRepository.remove(identifiers);
-      }
+      await this.indexRepository.delete(records.map((record) => record.id));
     }
 
     await this.storeRepository.delete(dbKeys);
