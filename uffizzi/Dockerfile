@@ -10,6 +10,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
+COPY sdk/ui/react sdk/ui/react
 RUN npm run custom-install
 
 
@@ -35,7 +36,7 @@ RUN npm run build
 FROM $NODEJS_IMAGE AS runner
 WORKDIR /app
 
-ENV NODE_OPTIONS="--max-http-header-size=81920"
+ENV NODE_OPTIONS="--max-http-header-size=81920 --dns-result-order=ipv4first"
 
 
 ENV NODE_ENV production
@@ -61,8 +62,6 @@ EXPOSE 5225
 ENV PORT 5225
 
 CMD ["node", "server.js"]
-
-
 FROM runner AS uffizzi
 USER root
 COPY --from=builder /app/uffizzi/saml_config ./uffizzi/saml_config
