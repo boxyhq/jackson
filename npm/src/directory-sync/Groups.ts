@@ -228,15 +228,15 @@ export class Groups extends Base {
 
   // Remove all users from a group
   public async removeAllUsers(groupId: string) {
+    const limit = 500;
+
     while (true) {
       const index = {
         name: 'groupId',
         value: groupId,
       };
 
-      const { data: members } = (await this.store('members').getByIndex(index, 0, 500)) as {
-        data: GroupMembership[];
-      };
+      const { data: members } = await this.store('members').getByIndex(index, 0, limit);
 
       if (!members || members.length === 0) {
         break;
