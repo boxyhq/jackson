@@ -331,8 +331,14 @@ class DynamoDB implements DatabaseDriver {
     }
   }
 
-  async deleteMany(): Promise<void> {
-    throw new Error('Not implemented');
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    if (keys.length === 0) {
+      return;
+    }
+
+    for (const key in keys) {
+      await this.delete(namespace, key);
+    }
   }
 }
 
