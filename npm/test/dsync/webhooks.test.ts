@@ -60,7 +60,7 @@ tap.teardown(async () => {
 
 tap.test('Webhook Events / ', async (t) => {
   tap.afterEach(async () => {
-    await directorySync.webhookLogs.clear();
+    await directorySync.webhookLogs.deleteAll();
   });
 
   t.test("Should be able to get the directory's webhook", async (t) => {

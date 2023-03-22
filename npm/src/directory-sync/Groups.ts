@@ -1,4 +1,4 @@
-import type { Group, DatabaseStore, ApiError, PaginationParams } from '../typings';
+import type { Group, DatabaseStore, ApiError, PaginationParams, GroupMembership } from '../typings';
 import * as dbutils from '../db/utils';
 import { apiError, JacksonError } from '../controller/error';
 import { Base } from './Base';
@@ -132,6 +132,7 @@ export class Groups extends Base {
     await this.store('members').put(
       id,
       {
+        id: id,
         group_id: groupId,
         user_id: userId,
       },
@@ -214,11 +215,13 @@ export class Groups extends Base {
         break;
       }
 
-      await this.store('groups').deleteMany(groups.map((group) => group.id));
+      const keys = groups.map((group) => group.id);
+
+      await this.store('groups').deleteMany(keys);
 
       // Remove all users from each group
-      for (const group of groups) {
-        await this.removeAllUsers(group.id);
+      for (const key of keys) {
+        await this.removeAllUsers(key);
       }
     }
   }
@@ -231,7 +234,9 @@ export class Groups extends Base {
         value: groupId,
       };
 
-      const { data: members } = await this.store('members').getByIndex(index, 0, 500);
+      const { data: members } = (await this.store('members').getByIndex(index, 0, 500)) as {
+        data: GroupMembership[];
+      };
 
       if (!members || members.length === 0) {
         break;

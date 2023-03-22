@@ -8,6 +8,7 @@ import type {
   PaginationParams,
   IUsers,
   IGroups,
+  IWebhookEventsLogger,
 } from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomSecret, validateTenantAndProduct } from '../controller/utils';
@@ -22,6 +23,7 @@ type ConstructorParams = {
   opts: JacksonOption;
   users: IUsers;
   groups: IGroups;
+  logger: IWebhookEventsLogger;
 };
 
 export class DirectoryConfig {
@@ -30,12 +32,14 @@ export class DirectoryConfig {
   private db: DatabaseStore;
   private users: IUsers;
   private groups: IGroups;
+  private logger: IWebhookEventsLogger;
 
-  constructor({ db, opts, users, groups }: ConstructorParams) {
+  constructor({ db, opts, users, groups, logger }: ConstructorParams) {
     this.opts = opts;
     this.db = db;
     this.users = users;
     this.groups = groups;
+    this.logger = logger;
   }
 
   // Return the database store
@@ -214,27 +218,36 @@ export class DirectoryConfig {
   }
 
   // Delete a configuration by id
-  public async delete(id: string): Promise<void> {
-    if (!id) {
-      throw new JacksonError('Missing required parameter.', 400);
+  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+    try {
+      if (!id) {
+        throw new JacksonError('Missing required parameter.', 400);
+      }
+
+      const { data: directory } = await this.get(id);
+
+      if (!directory) {
+        throw new JacksonError('Directory configuration not found.', 404);
+      }
+
+      const { tenant, product } = directory;
+
+      // Delete the configuration
+      await this.store().delete(id);
+
+      // Delete the groups
+      await this.groups.setTenantAndProduct(tenant, product).deleteAll();
+
+      // Delete the users
+      await this.users.setTenantAndProduct(tenant, product).deleteAll();
+
+      // Delete the webhook events
+      await this.logger.setTenantAndProduct(tenant, product).deleteAll();
+
+      return { data: null, error: null };
+    } catch (err: any) {
+      return apiError(err);
     }
-
-    const { data: directory } = await this.get(id);
-
-    if (!directory) {
-      return;
-    }
-
-    const { tenant, product } = directory;
-
-    // Delete the configuration
-    await this.store().delete(id);
-
-    // Delete the groups
-    await this.groups.setTenantAndProduct(tenant, product).deleteAll();
-
-    // Delete the users
-    await this.users.setTenantAndProduct(tenant, product).deleteAll();
   }
 
   private transform(directory: Directory): Directory {
