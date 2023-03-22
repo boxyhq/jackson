@@ -207,10 +207,15 @@ export class Groups extends Base {
   }
 
   // Delete all groups from a directory
-  async deleteAll() {
+  async deleteAll(directoryId: string) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const { data: groups } = await this.store('groups').getAll(0, this.bulkDeleteBatchSize);
+      const index = {
+        name: indexNames.directoryId,
+        value: directoryId,
+      };
+
+      const { data: groups } = await this.store('groups').getByIndex(index, 0, this.bulkDeleteBatchSize);
 
       if (!groups || groups.length === 0) {
         break;
