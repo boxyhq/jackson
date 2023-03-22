@@ -64,7 +64,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(404).json({ error: { message: 'Directory not found.' } });
   }
 
-  await directorySyncController.webhookLogs.with(directory.tenant, directory.product).deleteAll();
+  await directorySyncController.webhookLogs.with(directory.tenant, directory.product).deleteAll(directoryId);
 
   return res.status(200).json({ data: null });
 };

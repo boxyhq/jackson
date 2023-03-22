@@ -63,13 +63,13 @@ export class WebhookEventsLogger extends Base {
 
   // Delete all event logs for a directory
   async deleteAll(directoryId: string) {
+    const index = {
+      name: 'directoryId',
+      value: directoryId,
+    };
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const index = {
-        name: 'directoryId',
-        value: directoryId,
-      };
-
       const { data: events } = await this.store('logs').getByIndex(index, 0, this.bulkDeleteBatchSize);
 
       if (!events || events.length === 0) {
