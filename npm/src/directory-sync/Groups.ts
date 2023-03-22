@@ -233,13 +233,13 @@ export class Groups extends Base {
 
   // Remove all users from a group
   public async removeAllUsers(groupId: string) {
+    const index = {
+      name: 'groupId',
+      value: groupId,
+    };
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const index = {
-        name: 'groupId',
-        value: groupId,
-      };
-
       const { data: members } = await this.store('members').getByIndex(index, 0, this.bulkDeleteBatchSize);
 
       if (!members || members.length === 0) {
