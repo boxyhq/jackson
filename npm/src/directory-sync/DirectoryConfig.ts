@@ -233,16 +233,16 @@ export class DirectoryConfig {
       const { tenant, product } = directory;
 
       // Delete the configuration
-      //await this.store().delete(id);
+      await this.store().delete(id);
 
       // Delete the groups
-      await this.groups.setTenantAndProduct(tenant, product).deleteAll(directory.id);
+      await this.groups.setTenantAndProduct(tenant, product).deleteAll(id);
 
       // Delete the users
-      await this.users.setTenantAndProduct(tenant, product).deleteAll(directory.id);
+      await this.users.setTenantAndProduct(tenant, product).deleteAll(id);
 
       // Delete the webhook events
-      await this.logger.setTenantAndProduct(tenant, product).deleteAll(directory.id);
+      await this.logger.setTenantAndProduct(tenant, product).deleteAll(id);
 
       return { data: null, error: null };
     } catch (err: any) {

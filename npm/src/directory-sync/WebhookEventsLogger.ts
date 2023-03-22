@@ -40,7 +40,7 @@ export class WebhookEventsLogger extends Base {
     directoryId,
   }: PaginationParams & {
     directoryId?: string;
-  } = {}): Promise<WebhookEventLog[]> {
+  }): Promise<WebhookEventLog[]> {
     if (directoryId) {
       return (
         await this.store('logs').getByIndex(
@@ -61,7 +61,7 @@ export class WebhookEventsLogger extends Base {
     await this.store('logs').delete(id);
   }
 
-  // Delete all events logs for a directory
+  // Delete all event logs for a directory
   async deleteAll(directoryId: string) {
     // eslint-disable-next-line no-constant-condition
     while (true) {

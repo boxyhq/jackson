@@ -198,9 +198,13 @@ class Mem implements DatabaseDriver {
   }
 
   async deleteMany(namespace: string, keys: string[]): Promise<void> {
-    const promises = keys.map((key) => this.delete(namespace, key));
+    if (keys.length === 0) {
+      return;
+    }
 
-    await Promise.all(promises);
+    for (const key of keys) {
+      await this.delete(namespace, key);
+    }
   }
 }
 
