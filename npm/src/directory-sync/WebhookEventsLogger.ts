@@ -65,6 +65,7 @@ export class WebhookEventsLogger extends Base {
   async deleteAll() {
     const limit = 500;
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { data: events } = await this.store('logs').getAll(0, limit);
 

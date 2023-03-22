@@ -208,8 +208,11 @@ export class Groups extends Base {
 
   // Delete all groups from a directory
   async deleteAll() {
+    const limit = 500;
+
+    // eslint-disable-next-line no-constant-condition
     while (true) {
-      const { data: groups } = await this.store('groups').getAll(0, 500);
+      const { data: groups } = await this.store('groups').getAll(0, limit);
 
       if (!groups || groups.length === 0) {
         break;
@@ -219,7 +222,6 @@ export class Groups extends Base {
 
       await this.store('groups').deleteMany(keys);
 
-      // Remove all users from each group
       for (const key of keys) {
         await this.removeAllUsers(key);
       }
@@ -230,6 +232,7 @@ export class Groups extends Base {
   public async removeAllUsers(groupId: string) {
     const limit = 500;
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const index = {
         name: 'groupId',

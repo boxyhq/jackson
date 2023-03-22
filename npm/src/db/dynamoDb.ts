@@ -331,12 +331,13 @@ class DynamoDB implements DatabaseDriver {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   async deleteMany(namespace: string, keys: string[]): Promise<void> {
     if (keys.length === 0) {
       return;
     }
 
-    console.log(namespace);
+    throw new Error('not implemented');
   }
 }
 

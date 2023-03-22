@@ -188,6 +188,7 @@ export class Users extends Base {
   async deleteAll() {
     const limit = 500;
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { data: users } = await this.store('users').getAll(0, limit);
 
