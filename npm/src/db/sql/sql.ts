@@ -253,18 +253,37 @@ class Sql implements DatabaseDriver {
 
     const dbKeys = keys.map((key) => dbutils.key(namespace, key));
 
-    await this.ttlRepository.delete(dbKeys);
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    if (this.options.engine === 'planetscale') {
-      const records = await this.indexRepository.find({
-        where: { storeKey: In(dbKeys) },
-        select: ['id'],
-      });
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-      await this.indexRepository.delete(records.map((record) => record.id));
+    try {
+      await queryRunner.manager.delete(this.JacksonTTL, dbKeys);
+
+      if (this.options.engine === 'planetscale') {
+        const records = await queryRunner.manager.find(this.JacksonIndex, {
+          where: { storeKey: In(dbKeys) },
+          // @ts-ignore
+          select: ['id'],
+        });
+
+        await queryRunner.manager.delete(
+          this.JacksonIndex,
+          // @ts-ignore
+          records.map((record) => record.id)
+        );
+      }
+
+      await queryRunner.manager.delete(this.JacksonStore, dbKeys);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
     }
-
-    await this.storeRepository.delete(dbKeys);
   }
 }
 
