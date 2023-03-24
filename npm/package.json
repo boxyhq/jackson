@@ -43,7 +43,7 @@
     "@aws-sdk/client-dynamodb": "3.259.0",
     "@aws-sdk/util-dynamodb": "3.259.0",
     "@aws-sdk/credential-providers": "3.289.0",
-    "@boxyhq/saml20": "1.1.3",
+    "@boxyhq/saml20": "1.1.4",
     "@boxyhq/error-code-mnemonic": "0.1.0",
     "@opentelemetry/api": "1.4.0",
     "axios": "1.3.4",
