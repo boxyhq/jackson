@@ -262,15 +262,12 @@ class Sql implements DatabaseDriver {
       await queryRunner.manager.delete(this.JacksonTTL, dbKeys);
 
       if (this.options.engine === 'planetscale') {
-        const records = await queryRunner.manager.find(this.JacksonIndex, {
+        const records = (await queryRunner.manager.find(this.JacksonIndex, {
           where: { storeKey: In(dbKeys) },
-          // @ts-ignore
-          select: ['id'],
-        });
+        })) as any[];
 
         await queryRunner.manager.delete(
           this.JacksonIndex,
-          // @ts-ignore
           records.map((record) => record.id)
         );
       }
