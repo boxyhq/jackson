@@ -339,7 +339,7 @@ export type EncryptionKey = any;
 
 export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale' | 'dynamodb';
 
-export type DatabaseType = 'postgres' | 'mysql' | 'mariadb' | 'mssql';
+export type DatabaseType = 'postgres' | 'mysql' | 'mariadb' | 'mssql' | 'sqlite';
 
 export interface DatabaseOption {
   engine?: DatabaseEngine;

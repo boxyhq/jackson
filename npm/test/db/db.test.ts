@@ -79,6 +79,12 @@ const mssqlDbConfig = <DatabaseOption>{
   cleanupLimit: 10,
 };
 
+const sqliteConfig = <DatabaseOption>{
+  engine: 'sql',
+  type: 'sqlite',
+  url: 'test-sqlite-database.db',
+};
+
 const dynamoDbConfig = <DatabaseOption>{
   engine: 'dynamodb',
   url: process.env.DYNAMODB_URL,
@@ -141,6 +147,10 @@ const dbs = [
     ...mssqlDbConfig,
     encryptionKey,
   },
+  {
+    ...sqliteConfig,
+    encryptionKey,
+  }
 ];
 
 if (process.env.PLANETSCALE_URL) {

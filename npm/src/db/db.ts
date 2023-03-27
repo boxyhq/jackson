@@ -27,6 +27,10 @@ import { JacksonStore as JacksonStoreMSSQL } from './sql/mssql/entity/JacksonSto
 import { JacksonIndex as JacksonIndexMSSQL } from './sql/mssql/entity/JacksonIndex';
 import { JacksonTTL as JacksonTTLMSSQL } from './sql/mssql/entity/JacksonTTL';
 
+import { JacksonStore as JacksonStoreSQLITE } from './sql/mssql/entity/JacksonStore';
+import { JacksonIndex as JacksonIndexSQLITE } from './sql/mssql/entity/JacksonIndex';
+import { JacksonTTL as JacksonTTLSQLITE } from './sql/mssql/entity/JacksonTTL';
+
 import { JacksonStore as JacksonStoreMariaDB } from './sql/mariadb/entity/JacksonStore';
 import { JacksonIndex as JacksonIndexMariaDB } from './sql/mariadb/entity/JacksonIndex';
 import { JacksonTTL as JacksonTTLMariaDB } from './sql/mariadb/entity/JacksonTTL';
@@ -137,6 +141,15 @@ export default {
                 JacksonStore: JacksonStoreMariaDB,
                 JacksonIndex: JacksonIndexMariaDB,
                 JacksonTTL: JacksonTTLMariaDB,
+              }),
+              encryptionKey
+            );
+          case 'sqlite':
+            return new DB(
+              await sql.new(options, {
+                JacksonStore: JacksonStoreSQLITE,
+                JacksonIndex: JacksonIndexSQLITE,
+                JacksonTTL: JacksonTTLSQLITE,
               }),
               encryptionKey
             );

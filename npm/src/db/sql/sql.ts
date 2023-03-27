@@ -47,6 +47,12 @@ class Sql implements DatabaseDriver {
             options: mssqlOpts.options,
             ...baseOpts,
           });
+        }
+        else if (sqlType === 'sqlite') {
+          this.dataSource = new DataSource(<DataSourceOptions>{
+            database: this.options.url,
+            ...baseOpts,
+          });
         } else {
           this.dataSource = new DataSource(<DataSourceOptions>{
             url: this.options.url,
@@ -150,16 +156,16 @@ class Sql implements DatabaseDriver {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const res = skipOffsetAndLimitValue
       ? await this.indexRepository.findBy({
-          key: dbutils.keyForIndex(namespace, idx),
-        })
+        key: dbutils.keyForIndex(namespace, idx),
+      })
       : await this.indexRepository.find({
-          where: { key: dbutils.keyForIndex(namespace, idx) },
-          take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
-          skip: skipOffsetAndLimitValue ? 0 : pageOffset,
-          order: {
-            ['id']: 'DESC',
-          },
-        });
+        where: { key: dbutils.keyForIndex(namespace, idx) },
+        take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
+        skip: skipOffsetAndLimitValue ? 0 : pageOffset,
+        order: {
+          ['id']: 'DESC',
+        },
+      });
 
     const ret: Encrypted[] = [];
     if (res) {
