@@ -74,7 +74,7 @@
     "react-dom": "18.2.0",
     "react-i18next": "12.2.0",
     "react-syntax-highlighter": "15.5.0",
-    "sharp": "0.31.3",
+    "sharp": "0.32.0",
     "swr": "2.0.4"
   },
   "devDependencies": {
