@@ -232,6 +232,9 @@ export class DirectoryConfig {
 
       const { tenant, product } = directory;
 
+      // Delete the configuration
+      await this.store().delete(id);
+
       // Delete the groups
       await this.groups.setTenantAndProduct(tenant, product).deleteAll(id);
 
@@ -240,9 +243,6 @@ export class DirectoryConfig {
 
       // Delete the webhook events
       await this.logger.setTenantAndProduct(tenant, product).deleteAll(id);
-
-      // Delete the configuration
-      await this.store().delete(id);
 
       return { data: null, error: null };
     } catch (err: any) {
