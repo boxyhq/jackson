@@ -7,12 +7,16 @@ import type {
 } from '../typings';
 import { Base } from './Base';
 
+type GetAllParams = PaginationParams & {
+  directoryId?: string;
+};
+
 export class WebhookEventsLogger extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
   }
 
-  public async log(directory: Directory, event: DirectorySyncEvent): Promise<WebhookEventLog> {
+  public async log(directory: Directory, event: DirectorySyncEvent, status: number) {
     const id = this.createId();
 
     const log: WebhookEventLog = {
@@ -20,6 +24,8 @@ export class WebhookEventsLogger extends Base {
       id,
       webhook_endpoint: directory.webhook.endpoint,
       created_at: new Date(),
+      status_code: status,
+      delivered: status === 200,
     };
 
     await this.store('logs').put(id, log, {
@@ -34,27 +40,23 @@ export class WebhookEventsLogger extends Base {
     return await this.store('logs').get(id);
   }
 
-  public async getAll({
-    pageOffset,
-    pageLimit,
-    directoryId,
-  }: PaginationParams & {
-    directoryId?: string;
-  } = {}): Promise<WebhookEventLog[]> {
+  public async getAll(params: GetAllParams = {}) {
+    const { pageOffset, pageLimit, directoryId } = params;
+
+    let eventLogs: WebhookEventLog[] = [];
+
     if (directoryId) {
-      return (
-        await this.store('logs').getByIndex(
-          {
-            name: 'directoryId',
-            value: directoryId,
-          },
-          pageOffset,
-          pageLimit
-        )
-      ).data as WebhookEventLog[];
+      const index = {
+        name: 'directoryId',
+        value: directoryId,
+      };
+
+      eventLogs = (await this.store('logs').getByIndex(index, pageOffset, pageLimit)).data;
+    } else {
+      eventLogs = (await this.store('logs').getAll(pageOffset, pageLimit)).data;
     }
 
-    return (await this.store('logs').getAll(pageOffset, pageLimit)).data as WebhookEventLog[];
+    return eventLogs;
   }
 
   public async delete(id: string) {
@@ -69,17 +71,5 @@ export class WebhookEventsLogger extends Base {
         await this.delete(event.id);
       })
     );
-  }
-
-  public async updateStatus(log: WebhookEventLog, statusCode: number): Promise<WebhookEventLog> {
-    const updatedLog = {
-      ...log,
-      status_code: statusCode,
-      delivered: statusCode === 200,
-    };
-
-    await this.store('logs').put(log.id, updatedLog);
-
-    return updatedLog;
   }
 }

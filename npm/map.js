@@ -28,6 +28,7 @@ const map = {
   'test/dsync/events.test.ts': ['src/directory-sync/events.ts'],
   'test/federated-saml/app.test.ts': ['src/ee/federated-saml/app.ts'],
   'test/federated-saml/sso.test.ts': ['src/ee/federated-saml/sso.ts'],
+  'test/event/index.test.ts': ['src/event/*'],
 };
 
 module.exports = (testFile) => {

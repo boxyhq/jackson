@@ -8,8 +8,8 @@ import type {
   IWebhookEventsLogger,
   IDirectoryConfig,
 } from '../typings';
-import { createHeader, transformEventPayload } from './utils';
-import axios from './axios';
+import { sendPayloadToWebhook } from '../event/webhook';
+import { transformEventPayload } from './transform';
 
 export const sendEvent = async (
   event: DirectorySyncEventType,
@@ -34,32 +34,20 @@ export const handleEventCallback = async (
       return;
     }
 
-    const { webhook } = directory;
-
-    // If there is no webhook, then we don't need to send an event
-    if (webhook.endpoint === '') {
+    if (!directory.webhook.endpoint || !directory.webhook.secret) {
       return;
     }
-
-    webhookEventsLogger.setTenantAndProduct(tenant, product);
-
-    const headers = await createHeader(webhook.secret, event);
-
-    // Log the events only if `log_webhook_events` is enabled
-    const log = directory.log_webhook_events ? await webhookEventsLogger.log(directory, event) : undefined;
 
     let status = 200;
 
     try {
-      await axios.post(webhook.endpoint, event, {
-        headers,
-      });
+      await sendPayloadToWebhook(directory.webhook, event);
     } catch (err: any) {
       status = err.response ? err.response.status : 500;
     }
 
-    if (log) {
-      await webhookEventsLogger.updateStatus(log, status);
+    if (directory.log_webhook_events) {
+      await webhookEventsLogger.setTenantAndProduct(tenant, product).log(directory, event, status);
     }
   };
 };

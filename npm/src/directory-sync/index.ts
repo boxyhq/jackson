@@ -1,4 +1,4 @@
-import type { DatabaseStore, JacksonOption } from '../typings';
+import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
 import { DirectoryConfig } from './DirectoryConfig';
 import { DirectoryUsers } from './DirectoryUsers';
 import { DirectoryGroups } from './DirectoryGroups';
@@ -9,8 +9,14 @@ import { RequestHandler } from './request';
 import { handleEventCallback } from './events';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 
-const directorySync = async ({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) => {
-  const directories = new DirectoryConfig({ db, opts });
+const directorySync = async (params: {
+  db: DatabaseStore;
+  opts: JacksonOption;
+  eventController: IEventController;
+}) => {
+  const { db, opts, eventController } = params;
+
+  const directories = new DirectoryConfig({ db, opts, eventController });
   const users = new Users({ db });
   const groups = new Groups({ db });
 
