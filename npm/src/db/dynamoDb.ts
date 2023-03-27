@@ -336,9 +336,7 @@ class DynamoDB implements DatabaseDriver {
       return;
     }
 
-    for (const key in keys) {
-      await this.delete(namespace, key);
-    }
+    await Promise.all(keys.map((key) => this.delete(namespace, key)));
   }
 }
 
