@@ -45,8 +45,10 @@
     "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)"
   },
   "dependencies": {
-    "@boxyhq/react-ui": "file:sdk/ui/react",
+    "@boxyhq/react-ui": "file:output/react/sdk/ui",
     "@boxyhq/saml-jackson": "file:npm",
+    "@builder.io/mitosis": "^0.0.93",
+    "@builder.io/mitosis-cli": "^0.0.52",
     "@heroicons/react": "2.0.16",
     "@opentelemetry/api": "1.4.0",
     "@opentelemetry/exporter-metrics-otlp-grpc": "0.35.1",
