@@ -160,7 +160,6 @@ export interface IConnectionAPIController {
    * @deprecated Use `deleteConnections` instead.
    */
   deleteConfig(body: DelConfigQuery): Promise<void>;
-  isActive(connection: SAMLSSORecord | OIDCSSORecord): boolean;
 }
 
 export interface IOAuthController {

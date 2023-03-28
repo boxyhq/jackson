@@ -13,6 +13,7 @@ import type {
   Profile,
   SAMLSSORecord,
   OIDCSSORecord,
+  Directory,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -338,4 +339,12 @@ export const isLocalhost = (url: string) => {
     return false;
   }
   return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
+};
+
+export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
+  if ('deactivated' in connection) {
+    return connection.deactivated === false;
+  }
+
+  return true;
 };

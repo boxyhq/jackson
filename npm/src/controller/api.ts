@@ -19,7 +19,7 @@ import {
   UpdateOIDCConnectionParams,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames, appID, transformConnections, transformConnection } from './utils';
+import { IndexNames, appID, transformConnections, transformConnection, isConnectionActive } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
@@ -389,7 +389,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     );
 
     if ('deactivated' in body) {
-      if (this.isActive(connection)) {
+      if (isConnectionActive(connection)) {
         await this.eventController.notify('sso.activated', connection);
       } else {
         await this.eventController.notify('sso.deactivated', connection);
@@ -416,7 +416,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     );
 
     if ('deactivated' in body) {
-      if (this.isActive(connection)) {
+      if (isConnectionActive(connection)) {
         await this.eventController.notify('sso.activated', connection);
       } else {
         await this.eventController.notify('sso.deactivated', connection);
@@ -802,13 +802,5 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
   public async deleteConfig(body: DelConnectionsQuery): Promise<void> {
     await this.deleteConnections({ ...body, strategy: 'saml' });
-  }
-
-  public isActive(connection: SAMLSSORecord | OIDCSSORecord): boolean {
-    if ('deactivated' in connection) {
-      return connection.deactivated === false;
-    }
-
-    return true;
   }
 }

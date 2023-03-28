@@ -9,6 +9,7 @@ import {
 } from '../../src/typings';
 import { oidc_connection } from './fixture';
 import { jacksonOptions } from '../utils';
+import { isConnectionActive } from '../../src/controller/utils';
 
 let connectionAPIController: IConnectionAPIController;
 
@@ -429,7 +430,7 @@ tap.test('controller/api', async (t) => {
     });
 
     t.match(connection.deactivated, true);
-    t.match(connectionAPIController.isActive(connection), false);
+    t.match(isConnectionActive(connection), false);
 
     // Activate the connection
     await connectionAPIController.updateOIDCConnection({
@@ -446,7 +447,7 @@ tap.test('controller/api', async (t) => {
     });
 
     t.match(connectionActivated.deactivated, false);
-    t.match(connectionAPIController.isActive(connectionActivated), true);
+    t.match(isConnectionActive(connectionActivated), true);
 
     await connectionAPIController.deleteConnections({
       clientID,

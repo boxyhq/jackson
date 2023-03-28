@@ -50,6 +50,7 @@ export type Directory = {
     endpoint: string;
     secret: string;
   };
+  deactivated?: boolean;
 };
 
 export type DirectorySyncGroupMember = { value: string; email?: string };
