@@ -26,12 +26,12 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
   const { t } = useTranslation('common');
 
   const [loading, setLoading] = useState(false);
-  const [updatedDirectory, setUpdatedDirectory] = useState<FormState>(defaultFormState);
+  const [directoryUpdated, setDirectoryUpdated] = useState<FormState>(defaultFormState);
   const { directory, isLoading, error } = useDirectory(directoryId, setupLinkToken);
 
   useEffect(() => {
     if (directory) {
-      setUpdatedDirectory({
+      setDirectoryUpdated({
         name: directory.name,
         log_webhook_events: directory.log_webhook_events,
         webhook: {
@@ -67,7 +67,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedDirectory),
+      body: JSON.stringify(directoryUpdated),
     });
 
     setLoading(false);
@@ -90,10 +90,10 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
     const value = target.type === 'checkbox' ? target.checked : target.value;
 
     if (target.id === 'webhook.endpoint' || target.id === 'webhook.secret') {
-      setUpdatedDirectory({
-        ...updatedDirectory,
+      setDirectoryUpdated({
+        ...directoryUpdated,
         webhook: {
-          ...updatedDirectory.webhook,
+          ...directoryUpdated.webhook,
           [target.id.split('.')[1]]: value,
         },
       });
@@ -101,8 +101,8 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
       return;
     }
 
-    setUpdatedDirectory({
-      ...updatedDirectory,
+    setDirectoryUpdated({
+      ...directoryUpdated,
       [target.id]: value,
     });
   };
@@ -127,7 +127,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
                 className='input-bordered input w-full'
                 required
                 onChange={onChange}
-                value={updatedDirectory.name}
+                value={directoryUpdated.name}
               />
             </div>
             <div className='form-control w-full'>
@@ -139,7 +139,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
                 id='webhook.endpoint'
                 className='input-bordered input w-full'
                 onChange={onChange}
-                value={updatedDirectory.webhook.endpoint}
+                value={directoryUpdated.webhook.endpoint}
               />
             </div>
             <div className='form-control w-full'>
@@ -151,7 +151,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
                 id='webhook.secret'
                 className='input-bordered input w-full'
                 onChange={onChange}
-                value={updatedDirectory.webhook.secret}
+                value={directoryUpdated.webhook.secret}
               />
             </div>
             <div className='form-control w-full py-2'>
@@ -159,7 +159,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
                 <input
                   id='log_webhook_events'
                   type='checkbox'
-                  checked={updatedDirectory.log_webhook_events}
+                  checked={directoryUpdated.log_webhook_events}
                   onChange={onChange}
                   className='h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600'
                 />
