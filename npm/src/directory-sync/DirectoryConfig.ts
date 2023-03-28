@@ -9,6 +9,7 @@ import type {
   IUsers,
   IGroups,
   IWebhookEventsLogger,
+  IEventController,
 } from '../typings';
 import * as dbutils from '../db/utils';
 import { createRandomSecret, validateTenantAndProduct } from '../controller/utils';
@@ -24,6 +25,7 @@ type ConstructorParams = {
   users: IUsers;
   groups: IGroups;
   logger: IWebhookEventsLogger;
+  eventController: IEventController;
 };
 
 export class DirectoryConfig {
@@ -33,13 +35,15 @@ export class DirectoryConfig {
   private users: IUsers;
   private groups: IGroups;
   private logger: IWebhookEventsLogger;
+  private eventController: IEventController;
 
-  constructor({ db, opts, users, groups, logger }: ConstructorParams) {
+  constructor({ db, opts, users, groups, logger, eventController }: ConstructorParams) {
     this.opts = opts;
     this.db = db;
     this.users = users;
     this.groups = groups;
     this.logger = logger;
+    this.eventController = eventController;
   }
 
   // Return the database store
@@ -48,14 +52,7 @@ export class DirectoryConfig {
   }
 
   // Create the configuration
-  public async create({
-    name,
-    tenant,
-    product,
-    webhook_url,
-    webhook_secret,
-    type = 'generic-scim-v2',
-  }: {
+  public async create(params: {
     name?: string;
     tenant: string;
     product: string;
@@ -64,6 +61,8 @@ export class DirectoryConfig {
     type?: DirectoryType;
   }): Promise<{ data: Directory | null; error: ApiError | null }> {
     try {
+      const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
+
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
       }
@@ -75,16 +74,13 @@ export class DirectoryConfig {
 
       validateTenantAndProduct(tenant, product);
 
-      if (!name) {
-        name = `scim-${tenant}-${product}`;
-      }
-
+      const directoryName = name || `scim-${tenant}-${product}`;
       const id = randomUUID();
       const hasWebhook = webhook_url && webhook_secret;
 
       const directory: Directory = {
         id,
-        name,
+        name: directoryName,
         tenant,
         product,
         type,
@@ -104,7 +100,11 @@ export class DirectoryConfig {
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      return { data: this.transform(directory), error: null };
+      const connection = this.transform(directory);
+
+      await this.eventController.notify('dsync.created', connection);
+
+      return { data: connection, error: null };
     } catch (err: any) {
       return apiError(err);
     }
@@ -243,6 +243,8 @@ export class DirectoryConfig {
 
       // Delete the webhook events
       await this.logger.setTenantAndProduct(tenant, product).deleteAll(id);
+
+      await this.eventController.notify('dsync.deleted', directory);
 
       return { data: null, error: null };
     } catch (err: any) {

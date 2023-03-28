@@ -74,6 +74,10 @@ const jacksonOptions: JacksonOption = {
     process.env.BOXYHQ_NO_ANALYTICS === '1' ||
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
   terminus,
+  webhook: {
+    endpoint: process.env.WEBHOOK_URL || '',
+    secret: process.env.WEBHOOK_SECRET || '',
+  },
 };
 
 const adminPortalSSODefaults = {

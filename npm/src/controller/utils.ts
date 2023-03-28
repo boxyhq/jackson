@@ -304,25 +304,27 @@ const wellKnownProviders = {
 } as const;
 
 // Find the friendly name of the provider from the entityID
-const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
+export const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
   const provider = Object.keys(wellKnownProviders).find((provider) => providerName.includes(provider));
 
   return provider ? wellKnownProviders[provider] : null;
 };
 
+// Add friendlyProviderName to the connection
 export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSORecord>) => {
   if (connections.length === 0) {
     return connections;
   }
 
-  // Add friendlyProviderName to the connection
-  return connections.map((connection) => {
-    if ('idpMetadata' in connection) {
-      connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
-    }
+  return connections.map(transformConnection);
+};
 
-    return connection;
-  });
+export const transformConnection = (connection: SAMLSSORecord | OIDCSSORecord) => {
+  if ('idpMetadata' in connection) {
+    connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+  }
+
+  return connection;
 };
 
 export const isLocalhost = (url: string) => {
