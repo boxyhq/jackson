@@ -5,6 +5,7 @@ import {
   SAMLSSOConnectionWithRawMetadata,
   SAMLSSORecord,
   Storable,
+  UpdateSAMLConnectionParams,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
@@ -169,10 +170,7 @@ const saml = {
   },
 
   update: async (
-    body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
-      clientID: string;
-      clientSecret: string;
-    },
+    body: UpdateSAMLConnectionParams,
     connectionStore: Storable,
     connectionsGetter: IConnectionAPIController['getConnections']
   ) => {
@@ -253,7 +251,7 @@ const saml = {
       }
     }
 
-    const record = {
+    const record: SAMLSSORecord = {
       ..._savedConnection,
       name: name || name === '' ? name : _savedConnection.name,
       description: description || description === '' ? description : _savedConnection.description,
@@ -263,6 +261,10 @@ const saml = {
       forceAuthn,
       identifierFormat: identifierFormat || _savedConnection.identifierFormat,
     };
+
+    if ('deactivated' in body) {
+      record['deactivated'] = body.deactivated;
+    }
 
     await connectionStore.put(
       clientInfo?.clientID,
@@ -278,6 +280,8 @@ const saml = {
         value: dbutils.keyFromParts(_savedConnection.tenant, _savedConnection.product),
       }
     );
+
+    return record;
   },
 };
 

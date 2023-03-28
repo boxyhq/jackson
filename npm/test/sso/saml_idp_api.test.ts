@@ -607,4 +607,53 @@ tap.test('controller/api', async (t) => {
       }
     });
   });
+
+  t.test('Activate and deactivate the connection', async (t) => {
+    const connectionCreated = await connectionAPIController.createSAMLConnection(
+      saml_connection as SAMLSSOConnectionWithEncodedMetadata
+    );
+
+    const { clientID, clientSecret, tenant, product } = connectionCreated;
+
+    t.notOk('deactivated' in connectionCreated);
+
+    // Deactivate the connection
+    await connectionAPIController.updateSAMLConnection({
+      clientID,
+      clientSecret,
+      tenant,
+      product,
+      deactivated: true,
+    });
+
+    // Get the connection
+    const [connection] = await connectionAPIController.getConnections({
+      clientID,
+    });
+
+    t.match(connection.deactivated, true);
+    t.match(connectionAPIController.isActive(connection), false);
+
+    // Activate the connection
+    await connectionAPIController.updateSAMLConnection({
+      clientID,
+      clientSecret,
+      tenant,
+      product,
+      deactivated: false,
+    });
+
+    // Get the connection again
+    const [connectionActivated] = await connectionAPIController.getConnections({
+      clientID,
+    });
+
+    t.match(connectionActivated.deactivated, false);
+    t.match(connectionAPIController.isActive(connectionActivated), true);
+
+    await connectionAPIController.deleteConnections({
+      clientID,
+      clientSecret,
+    });
+  });
 });

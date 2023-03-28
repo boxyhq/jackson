@@ -192,5 +192,8 @@
   "model_publish_failed": "Model publish failed. Please try again!",
   "discard_and_retrieve_model": "Retrieve Model?",
   "discard_and_retrieve_model_desc": "Discard any unsaved changes and retrieve the Model from the server?",
-  "retrieve": "Retrieve"
+  "retrieve": "Retrieve",
+  "connection_activated": "Connection activated successfully",
+  "connection_deactivated": "Connection deactivated successfully",
+  "inactive": "Inactive"
 }
