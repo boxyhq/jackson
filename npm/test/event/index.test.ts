@@ -222,6 +222,8 @@ tap.test('should send dsync.created event', async (t) => {
   assertCalledWith(notifySpy, [eventType, connection]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
+  await directoryConnectionController.delete(connection.id);
+
   t.end();
 });
 
@@ -252,6 +254,8 @@ tap.test('should send dsync.deactivated event', async (t) => {
 
   assertCalledWith(notifySpy, [eventType, connectionUpdated]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await directoryConnectionController.delete(connection.id);
 
   t.end();
 });
@@ -284,6 +288,8 @@ tap.test('should send dsync.activated event', async (t) => {
   assertCalledWith(notifySpy, [eventType, connectionUpdated]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
+  await directoryConnectionController.delete(connection.id);
+
   t.end();
 });
 
@@ -312,6 +318,8 @@ tap.test('should send dsync.deleted event', async (t) => {
 
   assertCalledWith(notifySpy, [eventType, connection]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await directoryConnectionController.delete(connection.id);
 
   t.end();
 });
