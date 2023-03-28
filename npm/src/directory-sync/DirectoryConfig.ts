@@ -131,7 +131,7 @@ export class DirectoryConfig {
 
       const { name, log_webhook_events, webhook, type } = param;
 
-      const directory: Directory = await this.store().get(id);
+      let directory: Directory = await this.store().get(id);
 
       if (name) {
         directory.name = name;
@@ -155,6 +155,8 @@ export class DirectoryConfig {
 
       await this.store().put(id, { ...directory });
 
+      directory = this.transform(directory);
+
       if ('deactivated' in param) {
         if (isConnectionActive(directory)) {
           await this.eventController.notify('dsync.activated', directory);
@@ -163,7 +165,7 @@ export class DirectoryConfig {
         }
       }
 
-      return { data: this.transform(directory), error: null };
+      return { data: directory, error: null };
     } catch (err: any) {
       return apiError(err);
     }

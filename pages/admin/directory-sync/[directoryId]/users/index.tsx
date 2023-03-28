@@ -99,9 +99,13 @@ const UsersList: NextPage = () => {
                         <td className='px-6 py-3'>{user.email}</td>
                         <td className='px-6 py-3'>
                           {user.active ? (
-                            <Badge vairant='success'>{t('active')}</Badge>
+                            <Badge color='success' size='md'>
+                              {t('active')}
+                            </Badge>
                           ) : (
-                            <Badge vairant='warning'>{t('suspended')}</Badge>
+                            <Badge color='warning' size='md'>
+                              {t('suspended')}
+                            </Badge>
                           )}
                         </td>
                         <td className='px-6 py-3'>

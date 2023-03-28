@@ -5,6 +5,7 @@ import { jacksonOptions } from '../utils';
 import EventController from '../../src/event';
 import type {
   EventPayloadSchema,
+  EventType,
   IConnectionAPIController,
   IDirectorySyncController,
   SAMLSSOConnectionWithEncodedMetadata,
@@ -41,8 +42,7 @@ tap.test('should send sso.created event', async (t) => {
     metadataUrl: 'https://mocksaml.com/api/saml/metadata',
   } as SAMLSSOConnectionWithEncodedMetadata;
 
-  const eventType = 'sso.created' as const;
-
+  const eventType: EventType = 'sso.created';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -74,7 +74,7 @@ tap.test('should send sso.deactivated event', async (t) => {
 
   const connection = await ssoConnectionController.createSAMLConnection(body);
 
-  const eventType = 'sso.deactivated' as const;
+  const eventType: EventType = 'sso.deactivated';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -121,7 +121,7 @@ tap.test('should send sso.activated event', async (t) => {
 
   const connection = await ssoConnectionController.createSAMLConnection(body);
 
-  const eventType = 'sso.activated' as const;
+  const eventType: EventType = 'sso.activated';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -169,8 +169,7 @@ tap.test('should send sso.deleted event', async (t) => {
   // Create a connection
   await ssoConnectionController.createSAMLConnection(body);
 
-  const eventType = 'sso.deleted' as const;
-
+  const eventType: EventType = 'sso.deleted';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -201,8 +200,7 @@ tap.test('should send sso.deleted event', async (t) => {
 });
 
 tap.test('should send dsync.created event', async (t) => {
-  const eventType = 'dsync.created' as const;
-
+  const eventType: EventType = 'dsync.created';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -227,15 +225,65 @@ tap.test('should send dsync.created event', async (t) => {
   t.end();
 });
 
-// TODO: Add test for dsync.activated event
-tap.test('should send dsync.activated event', async (t) => {
-  t.pass();
+tap.test('should send dsync.deactivated event', async (t) => {
+  // Create a connection
+  const { data: connection, error } = await directoryConnectionController.create(getFakeDirectory());
+
+  if (!connection) {
+    t.fail('No connection was created');
+    throw error;
+  }
+
+  const eventType: EventType = 'dsync.deactivated';
+  const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
+  const notifySpy = sinon.spy(EventController.prototype, 'notify');
+
+  // Deactivate the connection
+  const { data: connectionUpdated } = await directoryConnectionController.update(connection.id, {
+    deactivated: true,
+  });
+
+  const payload: EventPayloadSchema = {
+    event: eventType,
+    tenant: connection.tenant,
+    product: connection.product,
+    data: transformDirectoryConnection(connectionUpdated!),
+  };
+
+  assertCalledWith(notifySpy, [eventType, connectionUpdated]);
+  assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
   t.end();
 });
 
-// TODO: Add test for dsync.deactivated event
-tap.test('should send dsync.deactivated event', async (t) => {
-  t.pass();
+tap.test('should send dsync.activated event', async (t) => {
+  // Create a connection
+  const { data: connection, error } = await directoryConnectionController.create(getFakeDirectory());
+
+  if (!connection) {
+    t.fail('No connection was created');
+    throw error;
+  }
+
+  const eventType: EventType = 'dsync.activated';
+  const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
+  const notifySpy = sinon.spy(EventController.prototype, 'notify');
+
+  // Activate the connection
+  const { data: connectionUpdated } = await directoryConnectionController.update(connection.id, {
+    deactivated: false,
+  });
+
+  const payload: EventPayloadSchema = {
+    event: eventType,
+    tenant: connection.tenant,
+    product: connection.product,
+    data: transformDirectoryConnection(connectionUpdated!),
+  };
+
+  assertCalledWith(notifySpy, [eventType, connectionUpdated]);
+  assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
   t.end();
 });
 
@@ -248,8 +296,7 @@ tap.test('should send dsync.deleted event', async (t) => {
     throw error;
   }
 
-  const eventType = 'dsync.deleted' as const;
-
+  const eventType: EventType = 'dsync.deleted';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 

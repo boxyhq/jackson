@@ -195,5 +195,6 @@
   "retrieve": "Retrieve",
   "connection_activated": "Connection activated successfully",
   "connection_deactivated": "Connection deactivated successfully",
-  "inactive": "Inactive"
+  "inactive": "Inactive",
+  "system": "System"
 }

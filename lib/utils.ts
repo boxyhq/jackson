@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import micromatch from 'micromatch';
 import type {
+  Directory,
   OIDCSSOConnectionWithDiscoveryUrl,
   OIDCSSOConnectionWithMetadata,
   OIDCSSORecord,
@@ -80,7 +81,7 @@ export const oidcMetadataParse = (
   return body;
 };
 
-export const isSSOConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord) => {
+export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
   if ('deactivated' in connection) {
     return connection.deactivated === false;
   }
