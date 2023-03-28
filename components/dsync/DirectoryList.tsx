@@ -17,6 +17,8 @@ import usePaginate from '@lib/ui/hooks/usePaginate';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
+import { isConnectionActive } from '@lib/utils';
+import Badge from '@components/Badge';
 
 const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
@@ -35,6 +37,7 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
 
   // Use the (next)pageToken mapped to the previous page offset to get the current page
   let getDirectoriesUrlPaginated = `${getDirectoriesUrl}?offset=${paginate.offset}&limit=${pageLimit}`;
+
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
     getDirectoriesUrlPaginated += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
@@ -45,12 +48,11 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   );
 
   const nextPageToken = data?.pageToken;
-  // store the nextPageToken against the pageOffset
+
   useEffect(() => {
     if (nextPageToken) {
       setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextPageToken, paginate.offset]);
 
   if (isLoading || isLoadingProviders) {
@@ -106,6 +108,9 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                     {t('type')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
+                    {t('status')}
+                  </th>
+                  <th scope='col' className='px-6 py-3'>
                     {t('actions')}
                   </th>
                 </tr>
@@ -127,6 +132,17 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                           </>
                         )}
                         <td className='px-6'>{providers && providers[directory.type]}</td>
+                        <td className='px-6'>
+                          {isConnectionActive(directory) ? (
+                            <Badge color='success' size='md'>
+                              {t('active')}
+                            </Badge>
+                          ) : (
+                            <Badge color='warning' size='md'>
+                              {t('inactive')}
+                            </Badge>
+                          )}
+                        </td>
                         <td className='px-6'>
                           <span className='inline-flex items-baseline'>
                             <IconButton

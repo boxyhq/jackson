@@ -16,7 +16,8 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
 import type { ApiError, ApiSuccess } from 'types';
-import { Badge } from 'react-daisyui';
+import { isConnectionActive } from '@lib/utils';
+import Badge from '@components/Badge';
 
 const ConnectionList = ({
   setupLinkToken,
@@ -59,7 +60,6 @@ const ConnectionList = ({
     if (nextPageToken) {
       setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
@@ -149,6 +149,9 @@ const ConnectionList = ({
                     {t('idp_type')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
+                    {t('status')}
+                  </th>
+                  <th scope='col' className='px-6 py-3'>
                     {t('actions')}
                   </th>
                 </tr>
@@ -166,12 +169,11 @@ const ConnectionList = ({
                         {connectionDisplayName(connection)}
                         {isSystemSSO && (
                           <Badge
-                            color='primary'
-                            variant='outline'
-                            size='sm'
-                            className='ml-1 uppercase'
-                            aria-label='is an sso connection for the admin portal'>
-                            System
+                            color='info'
+                            className='ml-2 uppercase'
+                            aria-label='is an sso connection for the admin portal'
+                            size='xs'>
+                            {t('system')}
                           </Badge>
                         )}
                       </td>
@@ -187,6 +189,17 @@ const ConnectionList = ({
                       )}
                       <td className='px-6 py-3'>
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
+                      </td>
+                      <td className='px-6'>
+                        {isConnectionActive(connection) ? (
+                          <Badge color='success' size='md'>
+                            {t('active')}
+                          </Badge>
+                        ) : (
+                          <Badge color='warning' size='md'>
+                            {t('inactive')}
+                          </Badge>
+                        )}
                       </td>
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>
