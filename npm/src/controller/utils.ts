@@ -310,7 +310,6 @@ export const findFriendlyProviderName = (providerName: string): keyof typeof wel
   return provider ? wellKnownProviders[provider] : null;
 };
 
-// Add friendlyProviderName to the connection
 export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSORecord>) => {
   if (connections.length === 0) {
     return connections;
@@ -322,6 +321,10 @@ export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSOR
 export const transformConnection = (connection: SAMLSSORecord | OIDCSSORecord) => {
   if ('idpMetadata' in connection) {
     connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+  }
+
+  if (!('deactivated' in connection)) {
+    connection.deactivated = false;
   }
 
   return connection;
