@@ -3,7 +3,7 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records } from '../../typings';
-import { DataSource, DataSourceOptions, Like } from 'typeorm';
+import { DataSource, DataSourceOptions, Like, In } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
 
@@ -26,6 +26,7 @@ class Sql implements DatabaseDriver {
 
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
+
     while (true) {
       try {
         const baseOpts = {
@@ -243,6 +244,43 @@ class Sql implements DatabaseDriver {
     return await this.storeRepository.remove({
       key: dbKey,
     });
+  }
+
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    if (keys.length === 0) {
+      return;
+    }
+
+    const dbKeys = keys.map((key) => dbutils.key(namespace, key));
+
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.delete(this.JacksonTTL, dbKeys);
+
+      if (this.options.engine === 'planetscale') {
+        const records = (await queryRunner.manager.find(this.JacksonIndex, {
+          where: { storeKey: In(dbKeys) },
+        })) as any[];
+
+        await queryRunner.manager.delete(
+          this.JacksonIndex,
+          records.map((record) => record.id)
+        );
+      }
+
+      await queryRunner.manager.delete(this.JacksonStore, dbKeys);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
 

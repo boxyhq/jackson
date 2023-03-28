@@ -184,19 +184,22 @@ export class Users extends Base {
     }
   }
 
-  // Clear all the users
-  // This is used for testing
-  public async clear() {
-    const { data: users, error } = await this.getAll();
+  // Delete all users from a directory
+  async deleteAll(directoryId: string): Promise<void> {
+    const index = {
+      name: indexNames.directoryId,
+      value: directoryId,
+    };
 
-    if (!users || error) {
-      return;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { data: users } = await this.store('users').getByIndex(index, 0, this.bulkDeleteBatchSize);
+
+      if (!users || users.length === 0) {
+        break;
+      }
+
+      await this.store('users').deleteMany(users.map((user) => user.id));
     }
-
-    await Promise.all(
-      users.map(async (user) => {
-        return this.delete(user.id);
-      })
-    );
   }
 }

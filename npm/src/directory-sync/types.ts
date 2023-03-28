@@ -157,3 +157,9 @@ export type GroupPatchOperation = {
         display?: string;
       }[];
 };
+
+export type GroupMembership = {
+  id: string;
+  group_id: string;
+  user_id: string;
+};

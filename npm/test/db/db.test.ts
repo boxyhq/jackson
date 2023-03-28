@@ -20,7 +20,7 @@ const record2 = {
   city: 'London',
 };
 
-const records: any = [record1, record2];
+const records = [record1, record2];
 
 const memDbConfig = <DatabaseOption>{
   engine: 'mem',
@@ -434,6 +434,57 @@ tap.test('dbs', ({ end }) => {
 
       t.same(ret1, null, 'ttl for record1 failed');
       t.same(ret2, null, 'ttl for record2 failed');
+
+      t.end();
+    });
+
+    tap.test('deleteMany(): ' + dbEngine, async (t) => {
+      await connectionStore.put(
+        record1.id,
+        record1,
+        {
+          name: 'city',
+          value: record1.city,
+        },
+        {
+          name: 'name',
+          value: record1.name,
+        }
+      );
+
+      await connectionStore.put(
+        record2.id,
+        record2,
+        {
+          name: 'city',
+          value: record2.city,
+        },
+        {
+          name: 'name',
+          value: record2.name,
+        }
+      );
+
+      await connectionStore.deleteMany([record1.id, record2.id]);
+
+      const ret1 = await connectionStore.get(record1.id);
+      const ret2 = await connectionStore.get(record2.id);
+
+      t.same(ret1, null);
+      t.same(ret2, null);
+
+      const ret3 = await connectionStore.getByIndex({
+        name: 'name',
+        value: record1.name,
+      });
+
+      const ret4 = await connectionStore.getByIndex({
+        name: 'city',
+        value: record1.city,
+      });
+
+      t.same(ret3.data, []);
+      t.same(ret4.data, []);
 
       t.end();
     });

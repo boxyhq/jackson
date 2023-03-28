@@ -6,6 +6,9 @@ import type {
   DirectoryType,
   ApiError,
   PaginationParams,
+  IUsers,
+  IGroups,
+  IWebhookEventsLogger,
   IEventController,
 } from '../typings';
 import * as dbutils from '../db/utils';
@@ -16,23 +19,30 @@ import { randomUUID } from 'crypto';
 import { IndexNames } from '../controller/utils';
 import { getDirectorySyncProviders } from './utils';
 
+type ConstructorParams = {
+  db: DatabaseStore;
+  opts: JacksonOption;
+  users: IUsers;
+  groups: IGroups;
+  logger: IWebhookEventsLogger;
+  eventController: IEventController;
+};
+
 export class DirectoryConfig {
   private _store: Storable | null = null;
   private opts: JacksonOption;
   private db: DatabaseStore;
+  private users: IUsers;
+  private groups: IGroups;
+  private logger: IWebhookEventsLogger;
   private eventController: IEventController;
 
-  constructor({
-    db,
-    opts,
-    eventController,
-  }: {
-    db: DatabaseStore;
-    opts: JacksonOption;
-    eventController: IEventController;
-  }) {
+  constructor({ db, opts, users, groups, logger, eventController }: ConstructorParams) {
     this.opts = opts;
     this.db = db;
+    this.users = users;
+    this.groups = groups;
+    this.logger = logger;
     this.eventController = eventController;
   }
 
@@ -167,12 +177,10 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const directories: Directory[] = (
-        await this.store().getByIndex({
-          name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(tenant, product),
-        })
-      ).data;
+      const { data: directories } = await this.store().getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
 
       const transformedDirectories = directories.map((directory) => this.transform(directory));
 
@@ -210,22 +218,38 @@ export class DirectoryConfig {
   }
 
   // Delete a configuration by id
-  public async delete(id: string): Promise<void> {
-    if (!id) {
-      throw new JacksonError('Missing required parameter.', 400);
+  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+    try {
+      if (!id) {
+        throw new JacksonError('Missing required parameter.', 400);
+      }
+
+      const { data: directory } = await this.get(id);
+
+      if (!directory) {
+        throw new JacksonError('Directory configuration not found.', 404);
+      }
+
+      const { tenant, product } = directory;
+
+      // Delete the configuration
+      await this.store().delete(id);
+
+      // Delete the groups
+      await this.groups.setTenantAndProduct(tenant, product).deleteAll(id);
+
+      // Delete the users
+      await this.users.setTenantAndProduct(tenant, product).deleteAll(id);
+
+      // Delete the webhook events
+      await this.logger.setTenantAndProduct(tenant, product).deleteAll(id);
+
+      await this.eventController.notify('dsync.deleted', directory);
+
+      return { data: null, error: null };
+    } catch (err: any) {
+      return apiError(err);
     }
-
-    const directory = await this.store().get(id);
-
-    if (!directory) {
-      return;
-    }
-
-    await this.store().delete(id);
-
-    await this.eventController.notify('dsync.deleted', this.transform(directory));
-
-    // TODO: Delete the users and groups associated with the configuration
   }
 
   private transform(directory: Directory): Directory {

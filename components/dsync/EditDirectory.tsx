@@ -8,6 +8,7 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
+import { DeleteDirectory } from './DeleteDirectory';
 
 type FormState = Pick<Directory, 'name' | 'log_webhook_events'> & {
   webhook_url: string;
@@ -162,6 +163,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
           </div>
         </form>
       </div>
+      <DeleteDirectory directoryId={directoryId} />
     </div>
   );
 };
