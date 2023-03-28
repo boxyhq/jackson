@@ -58,18 +58,105 @@ tap.test('should send sso.created event', async (t) => {
   assertCalledWith(notifySpy, [eventType, connection]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
+  await ssoConnectionController.deleteConnections({
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+  });
+
   t.end();
 });
 
-// TODO: Add test for sso.activated event
-tap.test('should send sso.activated event', async (t) => {
-  t.pass();
-  t.end();
-});
-
-// TODO: Add test for sso.deactivated event
 tap.test('should send sso.deactivated event', async (t) => {
-  t.pass();
+  const body = {
+    ...saml_connection,
+    metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+  } as SAMLSSOConnectionWithEncodedMetadata;
+
+  const connection = await ssoConnectionController.createSAMLConnection(body);
+
+  const eventType = 'sso.deactivated' as const;
+  const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
+  const notifySpy = sinon.spy(EventController.prototype, 'notify');
+
+  // Deactivate the connection
+  await ssoConnectionController.updateSAMLConnection({
+    tenant: connection.tenant,
+    product: connection.product,
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+    deactivated: true,
+  });
+
+  // Get the connection again to get the updated data
+  const connections = await ssoConnectionController.getConnections({
+    tenant: connection.tenant,
+    product: connection.product,
+  });
+
+  const connectionUpdated = connections[0] as SAMLSSORecord;
+
+  const payload: EventPayloadSchema = {
+    event: eventType,
+    tenant: connection.tenant,
+    product: connection.product,
+    data: transformSAMLSSOConnection(connectionUpdated),
+  };
+
+  assertCalledWith(notifySpy, [eventType, connectionUpdated]);
+  assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await ssoConnectionController.deleteConnections({
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+  });
+
+  t.end();
+});
+
+tap.test('should send sso.activated event', async (t) => {
+  const body = {
+    ...saml_connection,
+    metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+  } as SAMLSSOConnectionWithEncodedMetadata;
+
+  const connection = await ssoConnectionController.createSAMLConnection(body);
+
+  const eventType = 'sso.activated' as const;
+  const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
+  const notifySpy = sinon.spy(EventController.prototype, 'notify');
+
+  // Aactivate the connection
+  await ssoConnectionController.updateSAMLConnection({
+    tenant: connection.tenant,
+    product: connection.product,
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+    deactivated: false,
+  });
+
+  // Get the connection again to get the updated data
+  const connections = await ssoConnectionController.getConnections({
+    tenant: connection.tenant,
+    product: connection.product,
+  });
+
+  const connectionUpdated = connections[0] as SAMLSSORecord;
+
+  const payload: EventPayloadSchema = {
+    event: eventType,
+    tenant: connection.tenant,
+    product: connection.product,
+    data: transformSAMLSSOConnection(connectionUpdated),
+  };
+
+  assertCalledWith(notifySpy, [eventType, connectionUpdated]);
+  assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await ssoConnectionController.deleteConnections({
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+  });
+
   t.end();
 });
 

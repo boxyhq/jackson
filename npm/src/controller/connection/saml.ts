@@ -259,11 +259,14 @@ const saml = {
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       forceAuthn,
-      identifierFormat: identifierFormat || _savedConnection.identifierFormat,
     };
 
     if ('deactivated' in body) {
       record['deactivated'] = body.deactivated;
+    }
+
+    if ('identifierFormat' in body) {
+      record['identifierFormat'] = body.identifierFormat;
     }
 
     await connectionStore.put(
