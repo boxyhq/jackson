@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 
 interface Props {
   status: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => {};
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const ConnectionToggle: FC<Props> = (props) => {

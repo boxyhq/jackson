@@ -31,6 +31,7 @@ import {
   getScopeValues,
   getEncodedTenantProduct,
   transformConnection,
+  isConnectionActive,
 } from './utils';
 
 import * as metrics from '../opentelemetry/metrics';
@@ -199,9 +200,7 @@ export class OAuthController implements IOAuthController {
       throw err;
     }
 
-    connection = transformConnection(connection);
-
-    if (connection.deactivated) {
+    if (!isConnectionActive(connection)) {
       throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
     }
 
