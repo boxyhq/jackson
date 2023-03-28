@@ -324,10 +324,6 @@ export const transformConnection = (connection: SAMLSSORecord | OIDCSSORecord) =
     connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
   }
 
-  // if (!('deactivated' in connection)) {
-  //   connection.deactivated = false;
-  // }
-
   return connection;
 };
 
