@@ -274,6 +274,10 @@ export class DirectoryConfig {
 
     directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
 
+    if (!('deactivated' in directory)) {
+      directory.deactivated = false;
+    }
+
     return directory;
   }
 }

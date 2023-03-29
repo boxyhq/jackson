@@ -191,13 +191,13 @@ const ConnectionList = ({
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
                       </td>
                       <td className='px-6'>
-                        {isConnectionActive(connection) ? (
-                          <Badge color='success' size='md'>
-                            {t('active')}
-                          </Badge>
-                        ) : (
+                        {connection.deactivated ? (
                           <Badge color='warning' size='md'>
                             {t('inactive')}
+                          </Badge>
+                        ) : (
+                          <Badge color='success' size='md'>
+                            {t('active')}
                           </Badge>
                         )}
                       </td>

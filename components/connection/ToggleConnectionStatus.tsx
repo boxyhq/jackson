@@ -15,7 +15,7 @@ export const ToggleConnectionStatus: FC<Props> = (props) => {
   const { connection, setupLinkToken } = props;
 
   const { t } = useTranslation('common');
-  const [status, setStatus] = useState(isConnectionActive(connection));
+  const [status, setStatus] = useState(!connection.deactivated);
 
   const updateConnectionStatus = async (active: boolean) => {
     setStatus(active);

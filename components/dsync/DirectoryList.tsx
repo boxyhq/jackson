@@ -133,13 +133,13 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                         )}
                         <td className='px-6'>{providers && providers[directory.type]}</td>
                         <td className='px-6'>
-                          {isConnectionActive(directory) ? (
-                            <Badge color='success' size='md'>
-                              {t('active')}
-                            </Badge>
-                          ) : (
+                          {directory.deactivated ? (
                             <Badge color='warning' size='md'>
                               {t('inactive')}
+                            </Badge>
+                          ) : (
+                            <Badge color='success' size='md'>
+                              {t('active')}
                             </Badge>
                           )}
                         </td>
