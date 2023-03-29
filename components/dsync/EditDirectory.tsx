@@ -63,7 +63,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
     setLoading(true);
 
     const rawResponse = await fetch(putUrl, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
