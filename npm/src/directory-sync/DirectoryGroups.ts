@@ -155,7 +155,6 @@ export class DirectoryGroups {
   }
 
   public async delete(directory: Directory, group: Group): Promise<DirectorySyncResponse> {
-    await this.groups.removeAllUsers(group.id);
     await this.groups.delete(group.id);
 
     await sendEvent('group.deleted', { directory, group }, this.callback);

@@ -40,9 +40,9 @@
     "statements": 70
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.259.0",
+    "@aws-sdk/client-dynamodb": "3.300.0",
     "@aws-sdk/util-dynamodb": "3.299.0",
-    "@aws-sdk/credential-providers": "3.289.0",
+    "@aws-sdk/credential-providers": "3.300.0",
     "@boxyhq/saml20": "1.1.4",
     "@boxyhq/error-code-mnemonic": "0.1.0",
     "@opentelemetry/api": "1.4.0",
@@ -66,7 +66,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "7.6.0",
-    "@types/node": "18.15.1",
+    "@types/node": "18.15.10",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.8",
     "cross-env": "7.0.3",

@@ -16,22 +16,22 @@ const directorySync = async (params: {
 }) => {
   const { db, opts, eventController } = params;
 
-  const directories = new DirectoryConfig({ db, opts, eventController });
   const users = new Users({ db });
   const groups = new Groups({ db });
+  const logger = new WebhookEventsLogger({ db });
+  const directories = new DirectoryConfig({ db, opts, users, groups, logger, eventController });
 
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
-  const webhookEventsLogger = new WebhookEventsLogger({ db });
 
   return {
     users,
     groups,
     directories,
-    webhookLogs: webhookEventsLogger,
+    webhookLogs: logger,
     requests: new RequestHandler(directoryUsers, directoryGroups),
     events: {
-      callback: await handleEventCallback(directories, webhookEventsLogger),
+      callback: await handleEventCallback(directories, logger),
     },
     providers: () => {
       return getDirectorySyncProviders();

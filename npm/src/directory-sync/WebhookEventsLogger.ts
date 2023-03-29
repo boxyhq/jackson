@@ -63,13 +63,22 @@ export class WebhookEventsLogger extends Base {
     await this.store('logs').delete(id);
   }
 
-  public async clear() {
-    const events = await this.getAll({});
+  // Delete all event logs for a directory
+  async deleteAll(directoryId: string) {
+    const index = {
+      name: 'directoryId',
+      value: directoryId,
+    };
 
-    await Promise.all(
-      events.map(async (event) => {
-        await this.delete(event.id);
-      })
-    );
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { data: events } = await this.store('logs').getByIndex(index, 0, this.bulkDeleteBatchSize);
+
+      if (!events || events.length === 0) {
+        break;
+      }
+
+      await this.store('logs').deleteMany(events.map((event) => event.id));
+    }
   }
 }

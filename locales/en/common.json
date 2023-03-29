@@ -203,5 +203,8 @@
   "deactivate_sso_connection_description": "Deactivating this SSO connection will prevent users from signing in with this connection.",
   "activate_dsync_connection_description": "Activating this Directory connection will start sending webhook events to your configured webhook URL.",
   "deactivate_dsync_connection_description": "Deactivating this Directory connection will stop sending webhook events to your configured webhook URL.",
-  "yes_proceed": "Yes, proceed"
+  "yes_proceed": "Yes, proceed",
+  "delete_this_directory": "Delete this directory connection?",
+  "delete_this_directory_desc": "This action cannot be undone. This will permanently delete the directory connection, users, and groups.",
+  "directory_connection_deleted_successfully": "Directory connection deleted successfully"
 }

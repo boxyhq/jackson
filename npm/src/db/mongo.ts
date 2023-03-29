@@ -124,6 +124,18 @@ class Mongo implements DatabaseDriver {
       _id: dbutils.key(namespace, key) as any,
     });
   }
+
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    if (keys.length === 0) {
+      return;
+    }
+
+    const dbKeys = keys.map((key) => dbutils.key(namespace, key)) as any[];
+
+    await this.collection.deleteMany({
+      _id: { $in: dbKeys },
+    });
+  }
 }
 
 export default {
