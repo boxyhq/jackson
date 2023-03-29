@@ -17,8 +17,8 @@ export const ToggleConnectionStatus: FC<Props> = (props) => {
   const { t } = useTranslation('common');
   const [status, setStatus] = useState(isConnectionActive(connection));
 
-  const updateConnectionStatus = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStatus(e.target.checked);
+  const updateConnectionStatus = async (active: boolean) => {
+    setStatus(active);
 
     const body = {
       directoryId: connection.id,
@@ -53,7 +53,7 @@ export const ToggleConnectionStatus: FC<Props> = (props) => {
 
   return (
     <>
-      <ConnectionToggle status={status} onChange={updateConnectionStatus} />
+      <ConnectionToggle onChange={updateConnectionStatus} connection={{ active: status, type: 'dsync' }} />
     </>
   );
 };

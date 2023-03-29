@@ -196,5 +196,12 @@
   "connection_activated": "Connection activated successfully",
   "connection_deactivated": "Connection deactivated successfully",
   "inactive": "Inactive",
-  "system": "System"
+  "system": "System",
+  "activate_connection": "Activate this connection?",
+  "deactivate_connection": "Deactivate this connection?",
+  "activate_sso_connection_description": "Activating this SSO connection will allow users to sign in with this connection.",
+  "deactivate_sso_connection_description": "Deactivating this SSO connection will prevent users from signing in with this connection.",
+  "activate_dsync_connection_description": "Activating this Directory connection will start sending webhook events to your configured webhook URL.",
+  "deactivate_dsync_connection_description": "Deactivating this Directory connection will stop sending webhook events to your configured webhook URL.",
+  "yes_proceed": "Yes, proceed"
 }
