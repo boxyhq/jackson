@@ -61,7 +61,7 @@ export const ToggleConnectionStatus: FC<Props> = (props) => {
 
   return (
     <>
-      <ConnectionToggle onChange={updateConnectionStatus} connection={{ active: status, type: 'sso' }} />
+      <ConnectionToggle connection={{ active: status, type: 'sso' }} onChange={updateConnectionStatus} />
     </>
   );
 };

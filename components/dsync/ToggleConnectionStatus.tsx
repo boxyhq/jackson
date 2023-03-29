@@ -53,7 +53,7 @@ export const ToggleConnectionStatus: FC<Props> = (props) => {
 
   return (
     <>
-      <ConnectionToggle onChange={updateConnectionStatus} connection={{ active: status, type: 'dsync' }} />
+      <ConnectionToggle connection={{ active: status, type: 'dsync' }} onChange={updateConnectionStatus} />
     </>
   );
 };
