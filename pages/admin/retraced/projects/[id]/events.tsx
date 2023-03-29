@@ -81,7 +81,7 @@ const Events: NextPage<Props> = ({ host }: Props) => {
         </div>
         <div className='form-control max-w-xs'>
           <label className='label pl-0'>
-            <span className='label-text'>Tenant</span>
+            <span className='label-text'>Group (Tenant)</span>
           </label>
           {groups ? (
             <Select
