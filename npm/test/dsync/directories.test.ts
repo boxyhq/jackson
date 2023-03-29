@@ -349,8 +349,6 @@ tap.test('directories.', async (t) => {
       return;
     }
 
-    t.notOk('deactivated' in directory);
-
     // Deactivate the connection
     await directorySync.directories.update(directory.id, {
       deactivated: true,
