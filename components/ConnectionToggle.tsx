@@ -56,7 +56,7 @@ export const ConnectionToggle: FC<Props> = (props) => {
           type='checkbox'
           className='toggle-success toggle'
           onChange={askForConfirmation}
-          checked={active || connection.active}
+          checked={connection.active}
         />
       </label>
       <ConfirmationModal
