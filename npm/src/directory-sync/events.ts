@@ -10,12 +10,17 @@ import type {
 } from '../typings';
 import { sendPayloadToWebhook } from '../event/webhook';
 import { transformEventPayload } from './transform';
+import { isConnectionActive } from '../controller/utils';
 
 export const sendEvent = async (
   event: DirectorySyncEventType,
   payload: { directory: Directory; group?: Group | null; user?: User | null },
   callback?: EventCallback
 ) => {
+  if (!isConnectionActive(payload.directory)) {
+    return;
+  }
+
   const eventTransformed = transformEventPayload(event, payload);
 
   return callback ? await callback(eventTransformed) : Promise.resolve();
