@@ -67,6 +67,7 @@ export const ConnectionToggle: FC<Props> = (props) => {
         visible={isModalVisible}
         onConfirm={onConfirm}
         onCancel={onCancel}
+        dataTestId='confirm-connection-toggle'
       />
     </>
   );

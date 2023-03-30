@@ -224,7 +224,8 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
           description={t('confirmation_modal_description')}
           visible={delModalVisible}
           onConfirm={deleteConnection}
-          onCancel={toggleDelConfirm}></ConfirmationModal>
+          onCancel={toggleDelConfirm}
+        />
       </div>
     </>
   );
