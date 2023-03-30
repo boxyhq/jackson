@@ -96,7 +96,7 @@ const dynamoDbConfig = <DatabaseOption>{
   },
 };
 
-let dbs = [
+const dbs = [
   {
     ...memDbConfig,
   },
@@ -171,8 +171,6 @@ if (process.env.DYNAMODB_URL) {
     }
   );
 }
-
-dbs = dbs.reverse();
 
 tap.before(async () => {
   for (const idx in dbs) {
