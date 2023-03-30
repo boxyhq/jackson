@@ -27,8 +27,6 @@ const ConfirmationModal = (props: Props) => {
     overrideDeleteButton = false,
   } = props;
 
-  console.log({ dataTestId });
-
   const { t } = useTranslation('common');
 
   const buttonText = actionButtonText || t('delete');
