@@ -1,11 +1,6 @@
 import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable } from '../../src/typings';
 import tap from 'tap';
 import DB from '../../src/db/db';
-import { exit } from 'process';
-
-process.env.DYNAMODB_URL = 'http://localhost:8000';
-process.env.AWS_ACCESS_KEY_ID = 'secret';
-process.env.AWS_SECRET_ACCESS_KEY = 'secret';
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
