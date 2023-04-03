@@ -16,7 +16,6 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
 import type { ApiError, ApiSuccess } from 'types';
-import { isConnectionActive } from '@lib/utils';
 import Badge from '@components/Badge';
 
 const ConnectionList = ({

@@ -3,7 +3,6 @@ import { errorToast, successToast } from '@components/Toaster';
 import { FC, useState } from 'react';
 import type { ApiResponse } from 'types';
 import { useTranslation } from 'next-i18next';
-import { isConnectionActive } from '@lib/utils';
 import { ConnectionToggle } from '@components/ConnectionToggle';
 
 interface Props {

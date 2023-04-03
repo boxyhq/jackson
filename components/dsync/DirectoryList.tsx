@@ -17,7 +17,6 @@ import usePaginate from '@lib/ui/hooks/usePaginate';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
-import { isConnectionActive } from '@lib/utils';
 import Badge from '@components/Badge';
 
 const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
