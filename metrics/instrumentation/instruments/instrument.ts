@@ -1,7 +1,7 @@
 import { incrementOtelCounter } from './counter';
 import { recordOtelHistogram } from './histogram';
 
-type operationParams = {
+type instrumentParams = {
   /** OTel meter name */
   meter: string;
   /** Function name being instrumented */
@@ -15,7 +15,7 @@ type operationParams = {
  *
  * @param operationParams
  */
-async function instrumentFunction({ meter, name, delegate }: operationParams) {
+async function instrument({ meter, name, delegate }: instrumentParams) {
   const start = process.hrtime();
 
   try {
@@ -35,4 +35,4 @@ async function instrumentFunction({ meter, name, delegate }: operationParams) {
   }
 }
 
-export { instrumentFunction };
+export { instrument };
