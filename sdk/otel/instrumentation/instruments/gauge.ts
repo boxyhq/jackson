@@ -1,0 +1,25 @@
+import type { Attributes, MetricOptions, ObservableGauge } from '@opentelemetry/api';
+import { acquireMeter } from '../meter';
+
+const gauges = {};
+
+type operationParams = {
+  meter: string;
+  name: string;
+  val: number;
+  gaugeOptions?: MetricOptions;
+  gaugeAttributes?: Attributes;
+};
+
+const observeOtelGauge = ({ meter, name, val, gaugeOptions, gaugeAttributes }: operationParams) => {
+  let gauge: ObservableGauge<Attributes> = gauges[name];
+  if (gauge === undefined) {
+    const _otelMeter = acquireMeter(meter);
+    gauge = gauges[name] = _otelMeter.createObservableGauge(name, gaugeOptions);
+  }
+  gauge.addCallback((result) => {
+    result.observe(val, gaugeAttributes);
+  });
+};
+
+export { observeOtelGauge };
