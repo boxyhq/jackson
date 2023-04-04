@@ -1,0 +1,22 @@
+{
+  "name": "@boxyhq/opentelemetry-instrumentation",
+  "version": "0.0.0",
+  "description": "Internal SDK for Otel instrumentation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boxyhq/jackson.git"
+  },
+  "keywords": [
+    "otel"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/boxyhq/jackson/issues"
+  },
+  "homepage": "https://github.com/boxyhq/jackson#readme"
+}
