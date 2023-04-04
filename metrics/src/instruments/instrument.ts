@@ -34,4 +34,34 @@ async function instrument({ meter, name, delegate }: instrumentParams) {
   }
 }
 
-export { instrument };
+/**
+ * Decorator that instruments a class method
+ */
+function instrumented(meter: string, target: any, key: string, descriptor?: PropertyDescriptor) {
+  if (descriptor === undefined) {
+    descriptor = Object.getOwnPropertyDescriptor(target, key);
+  }
+  if (descriptor === undefined) {
+    return descriptor;
+  }
+
+  const originalMethod = descriptor.value;
+  const klass = target.constructor.name;
+
+  // this needs to be a non-arrow function or we'll get the wrong `this`
+  function overrideMethod(...args) {
+    return instrument({
+      meter,
+      name: `${klass}.${key}`,
+      delegate: async () => {
+        return await originalMethod.apply(this, args);
+      },
+    });
+  }
+
+  descriptor.value = overrideMethod;
+
+  return descriptor;
+}
+
+export { instrument, instrumented };
