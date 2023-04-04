@@ -63,6 +63,7 @@ class DynamoDB implements DatabaseDriver {
           TableName: tableName,
         })
       );
+
       await this.client.send(
         new UpdateTimeToLiveCommand({
           TableName: tableName,
@@ -72,7 +73,15 @@ class DynamoDB implements DatabaseDriver {
           },
         })
       );
-
+    } catch (error: any) {
+      if (
+        !error?.message?.includes('Cannot create preexisting table') &&
+        !error?.message?.toLowerCase().includes('table already exists')
+      ) {
+        throw error;
+      }
+    }
+    try {
       await this.client.send(
         new CreateTableCommand({
           KeySchema: [
@@ -86,10 +95,6 @@ class DynamoDB implements DatabaseDriver {
             },
           ],
           AttributeDefinitions: [
-            {
-              AttributeName: 'namespace',
-              AttributeType: 'S',
-            },
             {
               AttributeName: 'key',
               AttributeType: 'S',
