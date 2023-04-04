@@ -141,7 +141,10 @@ class DynamoDB implements DatabaseDriver {
         })
       );
     } catch (error: any) {
-      if (!error?.message?.includes('Cannot create preexisting table')) {
+      if (
+        !error?.message?.includes('Cannot create preexisting table') &&
+        !error?.message?.toLowerCase().includes('table already exists')
+      ) {
         throw error;
       }
     }
