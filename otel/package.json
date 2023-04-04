@@ -1,18 +1,20 @@
 {
-  "name": "@boxyhq/opentelemetry-instrumentation",
+  "name": "@boxyhq/metrics",
   "version": "0.0.0",
-  "description": "Internal SDK for Otel instrumentation",
+  "description": "Internal SDK for OTel instrumentation",
   "main": "index.js",
+  "typings": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/boxyhq/jackson.git",
-    "directory": "sdk/otel"
+    "directory": "otel"
   },
   "keywords": [
-    "otel"
+    "otel",
+    "telemetry"
   ],
   "license": "Apache-2.0",
   "bugs": {

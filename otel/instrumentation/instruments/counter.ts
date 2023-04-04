@@ -6,7 +6,7 @@ const counters = {};
 type operationParams = {
   meter: string;
   name: string;
-  inc: number;
+  inc?: number;
   counterOptions?: MetricOptions;
   counterAttributes?: Attributes;
 };
