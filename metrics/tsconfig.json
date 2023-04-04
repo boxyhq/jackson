@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "dist",
     "allowJs": true,
     "skipLibCheck": true,
     "module": "CommonJS",

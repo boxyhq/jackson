@@ -17,7 +17,6 @@ type instrumentParams = {
  */
 async function instrument({ meter, name, delegate }: instrumentParams) {
   const start = process.hrtime();
-
   try {
     return await delegate();
   } catch (err) {

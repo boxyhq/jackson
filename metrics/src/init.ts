@@ -4,7 +4,7 @@ import { OTLPMetricExporter as OTLPMetricExporterGRPC } from '@opentelemetry/exp
 import { MeterProvider, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { Resource } from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
-import packageInfo from './package.json';
+import packageInfo from '../package.json';
 
 // Here we configure the exporter and also a global MeterProvider
 // https://opentelemetry.io/docs/instrumentation/js/instrumentation/#initialize-metrics

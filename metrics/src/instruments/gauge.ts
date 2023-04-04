@@ -1,5 +1,5 @@
 import type { Attributes, MetricOptions, ObservableGauge } from '@opentelemetry/api';
-import { acquireMeter } from '../meter';
+import { acquireMeter } from 'src/lib/meter';
 
 const gauges = {};
 
