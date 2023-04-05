@@ -11,13 +11,7 @@ type operationParams = {
   histogramAttributes?: Attributes;
 };
 
-const recordOtelHistogram = ({
-  meter,
-  name,
-  val,
-  histogramOptions,
-  histogramAttributes,
-}: operationParams) => {
+const recordHistogram = ({ meter, name, val, histogramOptions, histogramAttributes }: operationParams) => {
   let histogram: Histogram<Attributes> = histograms[name];
   if (histogram === undefined) {
     const _otelMeter = acquireMeter(meter);
@@ -26,4 +20,4 @@ const recordOtelHistogram = ({
   histogram.record(val, histogramAttributes);
 };
 
-export { recordOtelHistogram };
+export { recordHistogram };

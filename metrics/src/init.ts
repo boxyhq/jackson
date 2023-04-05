@@ -9,7 +9,7 @@ import packageInfo from '../package.json';
 // Here we configure the exporter and also a global MeterProvider
 // https://opentelemetry.io/docs/instrumentation/js/instrumentation/#initialize-metrics
 
-function initializeOtel() {
+function initializeMetrics() {
   if (process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT || process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
     const meterProvider = new MeterProvider({
       resource: new Resource({
@@ -44,4 +44,4 @@ function initializeOtel() {
   }
 }
 
-export { initializeOtel };
+export { initializeMetrics };

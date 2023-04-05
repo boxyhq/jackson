@@ -1,5 +1,5 @@
-import { incrementOtelCounter } from './counter';
-import { recordOtelHistogram } from './histogram';
+import { incrementCounter } from './counter';
+import { recordHistogram } from './histogram';
 
 type instrumentParams = {
   /** OTel meter name */
@@ -20,12 +20,12 @@ async function instrument({ meter, name, delegate }: instrumentParams) {
   try {
     return await delegate();
   } catch (err) {
-    incrementOtelCounter({ meter, name: 'function.errors', counterAttributes: { function: name } });
+    incrementCounter({ meter, name: 'function.errors', counterAttributes: { function: name } });
     throw err;
   } finally {
     const elapsed = process.hrtime(start);
     const elapsedNanos = elapsed[0] * 1000000000 + elapsed[1];
-    recordOtelHistogram({
+    recordHistogram({
       meter,
       name: 'function.executionTime',
       val: elapsedNanos,

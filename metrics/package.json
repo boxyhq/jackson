@@ -2,8 +2,8 @@
   "name": "@boxyhq/metrics",
   "version": "0.0.0",
   "description": "Internal SDK for OTel instrumentation",
-  "main": "index.js",
-  "typings": "",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p tsconfig.build.json"
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/boxyhq/jackson.git",
-    "directory": "otel"
+    "directory": "metrics"
   },
   "keywords": [
     "otel",

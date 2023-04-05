@@ -11,13 +11,7 @@ type operationParams = {
   counterAttributes?: Attributes;
 };
 
-const incrementOtelCounter = ({
-  meter,
-  name,
-  inc = 1,
-  counterOptions,
-  counterAttributes,
-}: operationParams) => {
+const incrementCounter = ({ meter, name, inc = 1, counterOptions, counterAttributes }: operationParams) => {
   let counter: Counter<Attributes> = counters[name];
   if (counter === undefined) {
     const _otelMeter = acquireMeter(meter);
@@ -26,4 +20,4 @@ const incrementOtelCounter = ({
   counter.add(inc, counterAttributes);
 };
 
-export { incrementOtelCounter };
+export { incrementCounter };

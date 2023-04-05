@@ -11,7 +11,7 @@ type operationParams = {
   gaugeAttributes?: Attributes;
 };
 
-const observeOtelGauge = ({ meter, name, val, gaugeOptions, gaugeAttributes }: operationParams) => {
+const observeGauge = ({ meter, name, val, gaugeOptions, gaugeAttributes }: operationParams) => {
   let gauge: ObservableGauge<Attributes> = gauges[name];
   if (gauge === undefined) {
     const _otelMeter = acquireMeter(meter);
@@ -22,4 +22,4 @@ const observeOtelGauge = ({ meter, name, val, gaugeOptions, gaugeAttributes }: o
   });
 };
 
-export { observeOtelGauge };
+export { observeGauge };

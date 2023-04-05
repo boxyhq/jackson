@@ -1,4 +1,4 @@
-export { incrementOtelCounter } from './counter';
-export { observeOtelGauge } from './gauge';
-export { recordOtelHistogram } from './histogram';
+export { incrementCounter } from './counter';
+export { observeGauge } from './gauge';
+export { recordHistogram } from './histogram';
 export { instrument, instrumented } from './instrument';
