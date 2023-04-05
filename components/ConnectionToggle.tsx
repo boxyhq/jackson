@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import ConfirmationModal from '@components/ConfirmationModal';
 
@@ -14,28 +14,28 @@ export const ConnectionToggle: FC<Props> = (props) => {
   const { onChange, connection } = props;
 
   const { t } = useTranslation('common');
-  const [active, setActive] = useState<boolean | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [active, setActive] = useState(connection.active);
+
+  useEffect(() => {
+    setActive(connection.active);
+  }, [connection]);
 
   const askForConfirmation = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setActive(e.target.checked);
     setModalVisible(true);
   };
 
   const onConfirm = () => {
     setModalVisible(false);
-
-    if (active !== null) {
-      onChange(active);
-    }
+    setActive(!active);
+    onChange(!active);
   };
 
   const onCancel = () => {
     setModalVisible(false);
-    setActive(null);
   };
 
-  const confirmationModalTitle = active ? t('activate_connection') : t('deactivate_connection');
+  const confirmationModalTitle = active ? t('deactivate_connection') : t('activate_connection');
 
   const confirmationModalDescription = {
     sso: {
@@ -46,17 +46,17 @@ export const ConnectionToggle: FC<Props> = (props) => {
       activate: t('activate_dsync_connection_description'),
       deactivate: t('deactivate_dsync_connection_description'),
     },
-  }[connection.type][active ? 'activate' : 'deactivate'];
+  }[connection.type][active ? 'deactivate' : 'activate'];
 
   return (
     <>
       <label className='label cursor-pointer'>
-        <span className='label-text mr-2'>{connection.active ? t('active') : t('inactive')}</span>
+        <span className='label-text mr-2'>{active ? t('active') : t('inactive')}</span>
         <input
           type='checkbox'
           className='toggle-success toggle'
           onChange={askForConfirmation}
-          checked={connection.active}
+          checked={active}
         />
       </label>
       <ConfirmationModal

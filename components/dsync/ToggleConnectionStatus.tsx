@@ -1,6 +1,6 @@
 import type { Directory } from '@boxyhq/saml-jackson';
 import { errorToast, successToast } from '@components/Toaster';
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import type { ApiResponse } from 'types';
 import { useTranslation } from 'next-i18next';
 import { ConnectionToggle } from '@components/ConnectionToggle';
@@ -14,14 +14,18 @@ export const ToggleConnectionStatus: FC<Props> = (props) => {
   const { connection, setupLinkToken } = props;
 
   const { t } = useTranslation('common');
-  const [status, setStatus] = useState(!connection.deactivated);
+  const [active, setActive] = useState(!connection.deactivated);
+
+  useEffect(() => {
+    setActive(!connection.deactivated);
+  }, [connection]);
 
   const updateConnectionStatus = async (active: boolean) => {
-    setStatus(active);
+    setActive(active);
 
     const body = {
       directoryId: connection.id,
-      deactivated: status,
+      deactivated: !active,
     };
 
     const actionUrl = setupLinkToken
@@ -52,7 +56,7 @@ export const ToggleConnectionStatus: FC<Props> = (props) => {
 
   return (
     <>
-      <ConnectionToggle connection={{ active: status, type: 'dsync' }} onChange={updateConnectionStatus} />
+      <ConnectionToggle connection={{ active, type: 'dsync' }} onChange={updateConnectionStatus} />
     </>
   );
 };

@@ -28,7 +28,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
 
   const [loading, setLoading] = useState(false);
   const [directoryUpdated, setDirectoryUpdated] = useState<FormState>(defaultFormState);
-  const { directory, isLoading, error } = useDirectory(directoryId, setupLinkToken);
+  const { directory, isLoading, isValidating, error } = useDirectory(directoryId, setupLinkToken);
 
   useEffect(() => {
     if (directory) {
@@ -43,7 +43,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
     }
   }, [directory]);
 
-  if (isLoading || !directory) {
+  if (isLoading || !directory || isValidating) {
     return <Loading />;
   }
 
