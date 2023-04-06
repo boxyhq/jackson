@@ -1,6 +1,5 @@
 import * as dbutils from '../db/utils';
-import * as metrics from '../opentelemetry/metrics';
-import { incrementCounter } from '@boxyhq/metrics';
+import { counters } from '../opentelemetry/metrics';
 import {
   GetConfigQuery,
   GetConnectionsQuery,
@@ -201,11 +200,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async createSAMLConnection(
     body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
   ): Promise<SAMLSSORecord> {
-    incrementCounter({
-      meter: metrics.METER,
-      name: metrics.COUNTERS.createConnection.metricName,
-      counterOptions: { description: metrics.COUNTERS.createConnection.metricDescription },
-    });
+    counters.createConnection.increment();
 
     const connection = await samlConnection.create(body, this.connectionStore);
 
@@ -224,11 +219,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async createOIDCConnection(
     body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
   ): Promise<OIDCSSORecord> {
-    incrementCounter({
-      meter: metrics.METER,
-      name: metrics.COUNTERS.createConnection.metricName,
-      counterOptions: { description: metrics.COUNTERS.createConnection.metricDescription },
-    });
+    counters.createConnection.increment();
 
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
@@ -520,11 +511,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const strategy = 'strategy' in body ? body.strategy : undefined;
     const entityId = 'entityId' in body ? body.entityId : undefined;
 
-    incrementCounter({
-      meter: metrics.METER,
-      name: metrics.COUNTERS.getConnections.metricName,
-      counterOptions: { description: metrics.COUNTERS.getConnections.metricDescription },
-    });
+    counters.getConnections.increment();
 
     if (entityId) {
       const connections = await this.connectionStore.getByIndex({
@@ -634,11 +621,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
 
-    incrementCounter({
-      meter: metrics.METER,
-      name: metrics.COUNTERS.getConnections.metricName,
-      counterOptions: { description: metrics.COUNTERS.getConnections.metricDescription },
-    });
+    counters.getConnections.increment();
 
     if (clientID) {
       const samlConfig = await this.connectionStore.get(clientID);
@@ -742,11 +725,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const product = 'product' in body ? body.product : undefined;
     const strategy = 'strategy' in body ? body.strategy : undefined;
 
-    incrementCounter({
-      meter: metrics.METER,
-      name: metrics.COUNTERS.deleteConnections.metricName,
-      counterOptions: { description: metrics.COUNTERS.deleteConnections.metricDescription },
-    });
+    counters.deleteConnections.increment();
 
     if (clientID && clientSecret) {
       const connection = await this.connectionStore.get(clientID);

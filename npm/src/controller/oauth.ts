@@ -32,7 +32,7 @@ import {
   getEncodedTenantProduct,
 } from './utils';
 
-import * as metrics from '../opentelemetry/metrics';
+import { counters } from '../opentelemetry/metrics';
 import { JacksonError } from './error';
 import * as allowed from './oauth/allowed';
 import * as codeVerifier from './oauth/code-verifier';
@@ -41,7 +41,6 @@ import { getDefaultCertificate } from '../saml/x509';
 import { SAMLHandler } from './saml-handler';
 import { extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
-import { incrementCounter } from '@boxyhq/metrics';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -99,11 +98,7 @@ export class OAuthController implements IOAuthController {
       requestedTenant = tenant;
       requestedProduct = product;
 
-      incrementCounter({
-        meter: metrics.METER,
-        name: metrics.COUNTERS.oauthAuthorize.metricName,
-        counterOptions: { description: metrics.COUNTERS.oauthAuthorize.metricDescription },
-      });
+      counters.oauthAuthorize.increment();
 
       if (!redirect_uri) {
         throw new JacksonError('Please specify a redirect URL.', 400);
@@ -864,11 +859,7 @@ export class OAuthController implements IOAuthController {
     const client_secret = 'client_secret' in body ? body.client_secret : undefined;
     const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
-    incrementCounter({
-      meter: metrics.METER,
-      name: metrics.COUNTERS.oauthToken.metricName,
-      counterOptions: { description: metrics.COUNTERS.oauthToken.metricDescription },
-    });
+    counters.oauthToken.increment();
 
     if (grant_type !== 'authorization_code') {
       throw new JacksonError('Unsupported grant_type', 400);
@@ -1041,11 +1032,7 @@ export class OAuthController implements IOAuthController {
   public async userInfo(token: string): Promise<Profile> {
     const rsp = await this.tokenStore.get(token);
 
-    incrementCounter({
-      meter: metrics.METER,
-      name: metrics.COUNTERS.oauthUserInfo.metricName,
-      counterOptions: { description: metrics.COUNTERS.oauthUserInfo.metricDescription },
-    });
+    counters.oauthUserInfo.increment();
 
     if (!rsp || !rsp.claims) {
       throw new JacksonError('Invalid token', 403);

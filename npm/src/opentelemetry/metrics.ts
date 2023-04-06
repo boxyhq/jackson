@@ -1,28 +1,54 @@
+import { incrementCounter } from '@boxyhq/metrics';
+
 export const METER = 'jackson';
 
-export const COUNTERS = {
+export const counters = {
   createConnection: {
-    metricName: 'jackson.connection.create',
-    metricDescription: 'Number of IdP connection create requests',
+    increment: () =>
+      incrementCounter({
+        meter: METER,
+        name: 'jackson.connection.create',
+        counterOptions: { description: 'Number of IdP connection create requests' },
+      }),
   },
   getConnections: {
-    metricName: 'jackson.connection.get',
-    metricDescription: 'Number of IdP connection get requests',
+    increment: () =>
+      incrementCounter({
+        meter: METER,
+        name: 'jackson.connection.get',
+        counterOptions: { description: 'Number of IdP connections get requests' },
+      }),
   },
   deleteConnections: {
-    metricName: 'jackson.connection.delete',
-    metricDescription: 'Number of IdP connections delete requests',
+    increment: () =>
+      incrementCounter({
+        meter: METER,
+        name: 'jackson.connection.delete',
+        counterOptions: { description: 'Number of IdP connections delete requests' },
+      }),
   },
   oauthAuthorize: {
-    metricName: 'jackson.oauth.authorize',
-    metricDescription: 'Number of oauth authorize requests',
+    increment: () =>
+      incrementCounter({
+        meter: METER,
+        name: 'jackson.oauth.authorize',
+        counterOptions: { description: 'Number of oauth authorize requests' },
+      }),
   },
   oauthToken: {
-    metricName: 'jackson.oauth.token',
-    metricDescription: 'Number of oauth token requests',
+    increment: () =>
+      incrementCounter({
+        meter: METER,
+        name: 'jackson.oauth.token',
+        counterOptions: { description: 'Number of oauth token requests' },
+      }),
   },
   oauthUserInfo: {
-    metricName: 'jackson.oauth.userinfo',
-    metricDescription: 'Number of oauth user info requests',
+    increment: () =>
+      incrementCounter({
+        meter: METER,
+        name: 'jackson.oauth.userinfo',
+        counterOptions: { description: 'Number of oauth user info requests' },
+      }),
   },
 };
