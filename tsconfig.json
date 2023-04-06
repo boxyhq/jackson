@@ -27,7 +27,7 @@
     }
   },
   "include": ["next-env.d.ts", "types/*.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "npm/typeorm.ts", "sdk", "metrics"],
+  "exclude": ["node_modules", "npm/typeorm.ts", "sdk"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
