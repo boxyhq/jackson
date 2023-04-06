@@ -98,7 +98,7 @@ export class OAuthController implements IOAuthController {
       requestedTenant = tenant;
       requestedProduct = product;
 
-      metrics.increment['oauthAuthorize']();
+      metrics.increment('oauthAuthorize');
 
       if (!redirect_uri) {
         throw new JacksonError('Please specify a redirect URL.', 400);
@@ -859,7 +859,7 @@ export class OAuthController implements IOAuthController {
     const client_secret = 'client_secret' in body ? body.client_secret : undefined;
     const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
-    metrics.increment['oauthToken']();
+    metrics.increment('oauthToken');
 
     if (grant_type !== 'authorization_code') {
       throw new JacksonError('Unsupported grant_type', 400);
@@ -1032,7 +1032,7 @@ export class OAuthController implements IOAuthController {
   public async userInfo(token: string): Promise<Profile> {
     const rsp = await this.tokenStore.get(token);
 
-    metrics.increment['oauthUserInfo']();
+    metrics.increment('oauthUserInfo');
 
     if (!rsp || !rsp.claims) {
       throw new JacksonError('Invalid token', 403);

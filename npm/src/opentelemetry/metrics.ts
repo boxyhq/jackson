@@ -2,7 +2,7 @@ import { incrementCounter } from '@boxyhq/metrics';
 
 const METER = 'jackson';
 
-export const increment = {
+const counters = {
   createConnection: () =>
     incrementCounter({
       meter: METER,
@@ -41,3 +41,12 @@ export const increment = {
       counterOptions: { description: 'Number of oauth user info requests' },
     }),
 };
+
+const increment = (action: keyof typeof counters) => {
+  const counterIncrement = counters[action];
+  if (typeof counterIncrement === 'function') {
+    counterIncrement();
+  }
+};
+
+export { increment };

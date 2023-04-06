@@ -200,7 +200,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async createSAMLConnection(
     body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
   ): Promise<SAMLSSORecord> {
-    metrics.increment['createConnection']();
+    metrics.increment('createConnection');
 
     const connection = await samlConnection.create(body, this.connectionStore);
 
@@ -219,7 +219,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async createOIDCConnection(
     body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
   ): Promise<OIDCSSORecord> {
-    metrics.increment['createConnection']();
+    metrics.increment('createConnection');
 
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
@@ -511,7 +511,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const strategy = 'strategy' in body ? body.strategy : undefined;
     const entityId = 'entityId' in body ? body.entityId : undefined;
 
-    metrics.increment['getConnections']();
+    metrics.increment('getConnections');
 
     if (entityId) {
       const connections = await this.connectionStore.getByIndex({
@@ -725,7 +725,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const product = 'product' in body ? body.product : undefined;
     const strategy = 'strategy' in body ? body.strategy : undefined;
 
-    metrics.increment['deleteConnections']();
+    metrics.increment('deleteConnections');
 
     if (clientID && clientSecret) {
       const connection = await this.connectionStore.get(clientID);
