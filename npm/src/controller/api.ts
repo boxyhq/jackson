@@ -1,5 +1,5 @@
 import * as dbutils from '../db/utils';
-import { counters } from '../opentelemetry/metrics';
+import * as metrics from '../opentelemetry/metrics';
 import {
   GetConfigQuery,
   GetConnectionsQuery,
@@ -200,7 +200,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async createSAMLConnection(
     body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
   ): Promise<SAMLSSORecord> {
-    counters.createConnection.increment();
+    metrics.increment['createConnection']();
 
     const connection = await samlConnection.create(body, this.connectionStore);
 
@@ -219,7 +219,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async createOIDCConnection(
     body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
   ): Promise<OIDCSSORecord> {
-    counters.createConnection.increment();
+    metrics.increment['createConnection']();
 
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
@@ -511,7 +511,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const strategy = 'strategy' in body ? body.strategy : undefined;
     const entityId = 'entityId' in body ? body.entityId : undefined;
 
-    counters.getConnections.increment();
+    metrics.increment['getConnections']();
 
     if (entityId) {
       const connections = await this.connectionStore.getByIndex({
@@ -621,7 +621,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
 
-    counters.getConnections.increment();
+    metrics.increment['getConnections']();
 
     if (clientID) {
       const samlConfig = await this.connectionStore.get(clientID);
@@ -725,7 +725,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const product = 'product' in body ? body.product : undefined;
     const strategy = 'strategy' in body ? body.strategy : undefined;
 
-    counters.deleteConnections.increment();
+    metrics.increment['deleteConnections']();
 
     if (clientID && clientSecret) {
       const connection = await this.connectionStore.get(clientID);
