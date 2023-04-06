@@ -621,7 +621,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
 
-    metrics.increment['getConnections']();
+    metrics.increment('getConnections');
 
     if (clientID) {
       const samlConfig = await this.connectionStore.get(clientID);
