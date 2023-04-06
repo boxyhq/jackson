@@ -1,5 +1,6 @@
 import * as dbutils from '../db/utils';
 import * as metrics from '../opentelemetry/metrics';
+import { incrementCounter } from '@boxyhq/metrics';
 import {
   GetConfigQuery,
   GetConnectionsQuery,
@@ -200,7 +201,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async createSAMLConnection(
     body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
   ): Promise<SAMLSSORecord> {
-    metrics.increment('createConnection');
+    incrementCounter({
+      meter: metrics.METER,
+      name: metrics.COUNTERS.createConnection.metricName,
+      counterOptions: { description: metrics.COUNTERS.createConnection.metricDescription },
+    });
 
     const connection = await samlConnection.create(body, this.connectionStore);
 
@@ -219,7 +224,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async createOIDCConnection(
     body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
   ): Promise<OIDCSSORecord> {
-    metrics.increment('createConnection');
+    incrementCounter({
+      meter: metrics.METER,
+      name: metrics.COUNTERS.createConnection.metricName,
+      counterOptions: { description: metrics.COUNTERS.createConnection.metricDescription },
+    });
 
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
@@ -511,7 +520,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const strategy = 'strategy' in body ? body.strategy : undefined;
     const entityId = 'entityId' in body ? body.entityId : undefined;
 
-    metrics.increment('getConnections');
+    incrementCounter({
+      meter: metrics.METER,
+      name: metrics.COUNTERS.getConnections.metricName,
+      counterOptions: { description: metrics.COUNTERS.getConnections.metricDescription },
+    });
 
     if (entityId) {
       const connections = await this.connectionStore.getByIndex({
@@ -621,7 +634,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const tenant = 'tenant' in body ? body.tenant : undefined;
     const product = 'product' in body ? body.product : undefined;
 
-    metrics.increment('getConnections');
+    incrementCounter({
+      meter: metrics.METER,
+      name: metrics.COUNTERS.getConnections.metricName,
+      counterOptions: { description: metrics.COUNTERS.getConnections.metricDescription },
+    });
 
     if (clientID) {
       const samlConfig = await this.connectionStore.get(clientID);
@@ -725,7 +742,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const product = 'product' in body ? body.product : undefined;
     const strategy = 'strategy' in body ? body.strategy : undefined;
 
-    metrics.increment('deleteConnections');
+    incrementCounter({
+      meter: metrics.METER,
+      name: metrics.COUNTERS.deleteConnections.metricName,
+      counterOptions: { description: metrics.COUNTERS.deleteConnections.metricDescription },
+    });
 
     if (clientID && clientSecret) {
       const connection = await this.connectionStore.get(clientID);

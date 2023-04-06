@@ -41,6 +41,7 @@ import { getDefaultCertificate } from '../saml/x509';
 import { SAMLHandler } from './saml-handler';
 import { extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
+import { incrementCounter } from '@boxyhq/metrics';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -98,7 +99,11 @@ export class OAuthController implements IOAuthController {
       requestedTenant = tenant;
       requestedProduct = product;
 
-      metrics.increment('oauthAuthorize');
+      incrementCounter({
+        meter: metrics.METER,
+        name: metrics.COUNTERS.oauthAuthorize.metricName,
+        counterOptions: { description: metrics.COUNTERS.oauthAuthorize.metricDescription },
+      });
 
       if (!redirect_uri) {
         throw new JacksonError('Please specify a redirect URL.', 400);
@@ -859,7 +864,11 @@ export class OAuthController implements IOAuthController {
     const client_secret = 'client_secret' in body ? body.client_secret : undefined;
     const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
-    metrics.increment('oauthToken');
+    incrementCounter({
+      meter: metrics.METER,
+      name: metrics.COUNTERS.oauthToken.metricName,
+      counterOptions: { description: metrics.COUNTERS.oauthToken.metricDescription },
+    });
 
     if (grant_type !== 'authorization_code') {
       throw new JacksonError('Unsupported grant_type', 400);
@@ -1032,7 +1041,11 @@ export class OAuthController implements IOAuthController {
   public async userInfo(token: string): Promise<Profile> {
     const rsp = await this.tokenStore.get(token);
 
-    metrics.increment('oauthUserInfo');
+    incrementCounter({
+      meter: metrics.METER,
+      name: metrics.COUNTERS.oauthUserInfo.metricName,
+      counterOptions: { description: metrics.COUNTERS.oauthUserInfo.metricDescription },
+    });
 
     if (!rsp || !rsp.claims) {
       throw new JacksonError('Invalid token', 403);
