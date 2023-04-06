@@ -1,8 +1,0 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-.vscode
-.nyc_output
-_config
-dist
-.DS_Store
-node_modules
