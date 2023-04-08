@@ -45,7 +45,7 @@
     "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)"
   },
   "dependencies": {
-    "@boxyhq/metrics": "0.1.0-beta.4",
+    "@boxyhq/metrics": "0.1.0",
     "@boxyhq/react-ui": "file:sdk/ui/react",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.16",
