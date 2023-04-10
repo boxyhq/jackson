@@ -15,20 +15,23 @@ const ConnectionEditPage: NextPage = () => {
 
   const { id } = router.query as { id: string };
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLSSORecord | OIDCSSORecord>, ApiError>(
-    id ? `/api/admin/connections/${id}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    }
-  );
+  const { data, error, isLoading, isValidating } = useSWR<
+    ApiSuccess<SAMLSSORecord | OIDCSSORecord>,
+    ApiError
+  >(id ? `/api/admin/connections/${id}` : null, fetcher, {
+    revalidateOnFocus: false,
+  });
 
-  if (isLoading) {
+  if (isLoading || isValidating) {
     return <Loading />;
   }
 
   if (error) {
     errorToast(error.message);
+    return null;
+  }
+
+  if (!data?.data) {
     return null;
   }
 

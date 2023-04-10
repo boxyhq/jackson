@@ -1,6 +1,7 @@
 import { IDirectorySyncController, DirectoryType, Directory } from '../../src/typings';
 import tap from 'tap';
 import { jacksonOptions } from '../utils';
+import { isConnectionActive } from '../../src/controller/utils';
 
 let directorySync: IDirectorySyncController;
 
@@ -338,6 +339,39 @@ tap.test('directories.', async (t) => {
 
     t.ok(directories);
     t.match(directories?.length, 2);
+  });
+
+  t.test('Activate and deactivate the connection', async (t) => {
+    const { data: directory } = await directorySync.directories.create(directoryPayload);
+
+    if (!directory) {
+      t.fail("Couldn't create a directory");
+      return;
+    }
+
+    // Deactivate the connection
+    await directorySync.directories.update(directory.id, {
+      deactivated: true,
+    });
+
+    // Get the connection
+    const { data: directoryFetched } = await directorySync.directories.get(directory.id);
+
+    t.match(directoryFetched?.deactivated, true);
+    t.match(isConnectionActive(directoryFetched!), false);
+
+    // Activate the connection
+    await directorySync.directories.update(directory.id, {
+      deactivated: false,
+    });
+
+    // Get the connection
+    const { data: directoryFetched2 } = await directorySync.directories.get(directory.id);
+
+    t.match(directoryFetched2?.deactivated, false);
+    t.match(isConnectionActive(directoryFetched2!), true);
+
+    t.end();
   });
 
   t.end();

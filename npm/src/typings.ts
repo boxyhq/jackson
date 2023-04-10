@@ -67,6 +67,7 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     thumbprint?: string;
     validTo?: string;
   };
+  deactivated?: boolean;
 }
 
 export interface OIDCSSORecord extends SSOConnection {
@@ -79,6 +80,7 @@ export interface OIDCSSORecord extends SSOConnection {
     clientId?: string;
     clientSecret?: string;
   };
+  deactivated?: boolean;
 }
 
 export type ConnectionType = 'saml' | 'oidc';
@@ -105,6 +107,31 @@ export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | T
 export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
 export type DelConfigQuery = (ClientIDQuery & { clientSecret: string }) | Omit<TenantQuery, 'strategy'>;
 
+export type UpdateConnectionParams = TenantProduct & {
+  clientID: string;
+  clientSecret: string;
+  name?: string;
+  description?: string;
+  defaultRedirectUrl?: string;
+  redirectUrl?: string[] | string;
+  deactivated?: boolean;
+};
+
+export type UpdateSAMLConnectionParams = UpdateConnectionParams & {
+  encodedRawMetadata?: string;
+  metadataUrl?: string;
+  rawMetadata?: string;
+  forceAuthn?: boolean;
+  identifierFormat?: string;
+};
+
+export type UpdateOIDCConnectionParams = UpdateConnectionParams & {
+  oidcDiscoveryUrl?: string;
+  oidcMetadata?: IssuerMetadata;
+  oidcClientId?: string;
+  oidcClientSecret?: string;
+};
+
 export interface IConnectionAPIController {
   /**
    * @deprecated Use `createSAMLConnection` instead.
@@ -119,20 +146,9 @@ export interface IConnectionAPIController {
   /**
    * @deprecated Use `updateSAMLConnection` instead.
    */
-  updateConfig(body: SAMLSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
-  updateSAMLConnection(
-    body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
-      clientID: string;
-      clientSecret: string;
-    }
-  ): Promise<void>;
-  updateOIDCConnection(
-    body:
-      | (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
-          clientID: string;
-          clientSecret: string;
-        }
-  ): Promise<void>;
+  updateConfig(body: UpdateSAMLConnectionParams): Promise<void>;
+  updateSAMLConnection(body: UpdateSAMLConnectionParams): Promise<void>;
+  updateOIDCConnection(body: UpdateOIDCConnectionParams): Promise<void>;
   getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
   getIDPEntityID(body: GetIDPEntityIDBody): string;
   /**

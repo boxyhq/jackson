@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import type { Directory } from '@boxyhq/saml-jackson';
 import type { ApiResponse } from 'types';
@@ -8,43 +8,42 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
+import { ToggleConnectionStatus } from './ToggleConnectionStatus';
 import { DeleteDirectory } from './DeleteDirectory';
 
-type FormState = Pick<Directory, 'name' | 'log_webhook_events'> & {
-  webhook_url: string;
-  webhook_secret: string;
-};
+type FormState = Pick<Directory, 'name' | 'log_webhook_events' | 'webhook'>;
 
 const defaultFormState: FormState = {
   name: '',
-  webhook_url: '',
-  webhook_secret: '',
   log_webhook_events: false,
+  webhook: {
+    endpoint: '',
+    secret: '',
+  },
 };
 
 const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; setupLinkToken?: string }) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
-  const [directory, setDirectory] = React.useState<FormState>(defaultFormState);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const [directoryUpdated, setDirectoryUpdated] = useState<FormState>(defaultFormState);
+  const { directory, isLoading, isValidating, error } = useDirectory(directoryId, setupLinkToken);
 
-  const { directory: data, isLoading, error } = useDirectory(directoryId, setupLinkToken);
-
-  React.useEffect(() => {
-    if (data) {
-      const directory = data;
-
-      setDirectory({
+  useEffect(() => {
+    if (directory) {
+      setDirectoryUpdated({
         name: directory.name,
-        webhook_url: directory.webhook.endpoint,
-        webhook_secret: directory.webhook.secret,
         log_webhook_events: directory.log_webhook_events,
+        webhook: {
+          endpoint: directory.webhook?.endpoint,
+          secret: directory.webhook?.secret,
+        },
       });
     }
-  }, [data]);
+  }, [directory]);
 
-  if (isLoading) {
+  if (isLoading || !directory || isValidating) {
     return <Loading />;
   }
 
@@ -65,11 +64,11 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
     setLoading(true);
 
     const rawResponse = await fetch(putUrl, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(directory),
+      body: JSON.stringify(directoryUpdated),
     });
 
     setLoading(false);
@@ -91,8 +90,20 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
     const target = event.target as HTMLInputElement;
     const value = target.type === 'checkbox' ? target.checked : target.value;
 
-    setDirectory({
-      ...directory,
+    if (target.id === 'webhook.endpoint' || target.id === 'webhook.secret') {
+      setDirectoryUpdated({
+        ...directoryUpdated,
+        webhook: {
+          ...directoryUpdated.webhook,
+          [target.id.split('.')[1]]: value,
+        },
+      });
+
+      return;
+    }
+
+    setDirectoryUpdated({
+      ...directoryUpdated,
       [target.id]: value,
     });
   };
@@ -100,8 +111,11 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
   return (
     <div>
       <LinkBack href={backUrl} />
-      <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('update_directory')}</h2>
-      <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
+      <div className='flex items-center justify-between'>
+        <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('update_directory')}</h2>
+        <ToggleConnectionStatus connection={directory} setupLinkToken={setupLinkToken} />
+      </div>
+      <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
             <div className='form-control w-full'>
@@ -114,7 +128,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
                 className='input-bordered input w-full'
                 required
                 onChange={onChange}
-                value={directory.name}
+                value={directoryUpdated.name}
               />
             </div>
             <div className='form-control w-full'>
@@ -123,10 +137,10 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
               </label>
               <input
                 type='text'
-                id='webhook_url'
+                id='webhook.endpoint'
                 className='input-bordered input w-full'
                 onChange={onChange}
-                value={directory.webhook_url}
+                value={directoryUpdated.webhook.endpoint}
               />
             </div>
             <div className='form-control w-full'>
@@ -135,10 +149,10 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
               </label>
               <input
                 type='text'
-                id='webhook_secret'
+                id='webhook.secret'
                 className='input-bordered input w-full'
                 onChange={onChange}
-                value={directory.webhook_secret}
+                value={directoryUpdated.webhook.secret}
               />
             </div>
             <div className='form-control w-full py-2'>
@@ -146,7 +160,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
                 <input
                   id='log_webhook_events'
                   type='checkbox'
-                  checked={directory.log_webhook_events}
+                  checked={directoryUpdated.log_webhook_events}
                   onChange={onChange}
                   className='h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600'
                 />

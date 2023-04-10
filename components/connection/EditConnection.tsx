@@ -19,6 +19,8 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
 import { isObjectEmpty } from '@lib/ui/utils';
+import { ToggleConnectionStatus } from './ToggleConnectionStatus';
+import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 
 function getInitialState(connection, fieldCatalog: FieldCatalogItem[], connectionType) {
   const _state = {};
@@ -51,7 +53,7 @@ function getInitialState(connection, fieldCatalog: FieldCatalogItem[], connectio
 }
 
 type EditProps = {
-  connection?: Record<string, any>;
+  connection: SAMLSSORecord | OIDCSSORecord;
   setupLinkToken?: string;
   isSettingsView?: boolean;
 };
@@ -63,8 +65,10 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
   const { t } = useTranslation('common');
 
   const { id: connectionClientId } = router.query;
-  const connectionIsSAML = connection?.idpMetadata && typeof connection.idpMetadata === 'object';
-  const connectionIsOIDC = connection?.oidcProvider && typeof connection.oidcProvider === 'object';
+
+  const connectionIsSAML = 'idpMetadata' in connection && typeof connection.idpMetadata === 'object';
+  const connectionIsOIDC = 'oidcProvider' in connection && typeof connection.oidcProvider === 'object';
+
   // FORM LOGIC: SUBMIT
   const save = async (event) => {
     event.preventDefault();
@@ -171,9 +175,12 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
     <>
       <LinkBack href={backUrl} />
       <div>
-        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
-          {t('edit_sso_connection')}
-        </h2>
+        <div className='flex items-center justify-between'>
+          <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
+            {t('edit_sso_connection')}
+          </h2>
+          <ToggleConnectionStatus connection={connection} setupLinkToken={setupLinkToken} />
+        </div>
         <form onSubmit={save}>
           <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 lg:border-none lg:p-0'>
             <div className='flex flex-col gap-0 lg:flex-row lg:gap-4'>
@@ -217,7 +224,8 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
           description={t('confirmation_modal_description')}
           visible={delModalVisible}
           onConfirm={deleteConnection}
-          onCancel={toggleDelConfirm}></ConfirmationModal>
+          onCancel={toggleDelConfirm}
+        />
       </div>
     </>
   );

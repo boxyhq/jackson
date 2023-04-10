@@ -114,9 +114,11 @@ const Events: NextPage = () => {
                         <td className='px-6 py-3'>{event.created_at.toString()}</td>
                         <td className='px-6 py-3'>
                           {event.status_code === 200 ? (
-                            <Badge vairant='success'>200</Badge>
+                            <Badge color='success' size='md'>
+                              200
+                            </Badge>
                           ) : (
-                            <Badge vairant='error'>{`${event.status_code}`}</Badge>
+                            <Badge color='error' size='md'>{`${event.status_code}`}</Badge>
                           )}
                         </td>
                         <td className='px-6 py-3'>

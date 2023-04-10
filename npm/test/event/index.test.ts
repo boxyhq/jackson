@@ -5,6 +5,7 @@ import { jacksonOptions } from '../utils';
 import EventController from '../../src/event';
 import type {
   EventPayloadSchema,
+  EventType,
   IConnectionAPIController,
   IDirectorySyncController,
   SAMLSSOConnectionWithEncodedMetadata,
@@ -41,8 +42,7 @@ tap.test('should send sso.created event', async (t) => {
     metadataUrl: 'https://mocksaml.com/api/saml/metadata',
   } as SAMLSSOConnectionWithEncodedMetadata;
 
-  const eventType = 'sso.created' as const;
-
+  const eventType: EventType = 'sso.created';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -58,18 +58,105 @@ tap.test('should send sso.created event', async (t) => {
   assertCalledWith(notifySpy, [eventType, connection]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
+  await ssoConnectionController.deleteConnections({
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+  });
+
   t.end();
 });
 
-// TODO: Add test for sso.activated event
-tap.test('should send sso.activated event', async (t) => {
-  t.pass();
-  t.end();
-});
-
-// TODO: Add test for sso.deactivated event
 tap.test('should send sso.deactivated event', async (t) => {
-  t.pass();
+  const body = {
+    ...saml_connection,
+    metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+  } as SAMLSSOConnectionWithEncodedMetadata;
+
+  const connection = await ssoConnectionController.createSAMLConnection(body);
+
+  const eventType: EventType = 'sso.deactivated';
+  const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
+  const notifySpy = sinon.spy(EventController.prototype, 'notify');
+
+  // Deactivate the connection
+  await ssoConnectionController.updateSAMLConnection({
+    tenant: connection.tenant,
+    product: connection.product,
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+    deactivated: true,
+  });
+
+  // Get the connection again to get the updated data
+  const connections = await ssoConnectionController.getConnections({
+    tenant: connection.tenant,
+    product: connection.product,
+  });
+
+  const connectionUpdated = connections[0] as SAMLSSORecord;
+
+  const payload: EventPayloadSchema = {
+    event: eventType,
+    tenant: connection.tenant,
+    product: connection.product,
+    data: transformSAMLSSOConnection(connectionUpdated),
+  };
+
+  assertCalledWith(notifySpy, [eventType, connectionUpdated]);
+  assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await ssoConnectionController.deleteConnections({
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+  });
+
+  t.end();
+});
+
+tap.test('should send sso.activated event', async (t) => {
+  const body = {
+    ...saml_connection,
+    metadataUrl: 'https://mocksaml.com/api/saml/metadata',
+  } as SAMLSSOConnectionWithEncodedMetadata;
+
+  const connection = await ssoConnectionController.createSAMLConnection(body);
+
+  const eventType: EventType = 'sso.activated';
+  const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
+  const notifySpy = sinon.spy(EventController.prototype, 'notify');
+
+  // Aactivate the connection
+  await ssoConnectionController.updateSAMLConnection({
+    tenant: connection.tenant,
+    product: connection.product,
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+    deactivated: false,
+  });
+
+  // Get the connection again to get the updated data
+  const connections = await ssoConnectionController.getConnections({
+    tenant: connection.tenant,
+    product: connection.product,
+  });
+
+  const connectionUpdated = connections[0] as SAMLSSORecord;
+
+  const payload: EventPayloadSchema = {
+    event: eventType,
+    tenant: connection.tenant,
+    product: connection.product,
+    data: transformSAMLSSOConnection(connectionUpdated),
+  };
+
+  assertCalledWith(notifySpy, [eventType, connectionUpdated]);
+  assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await ssoConnectionController.deleteConnections({
+    clientID: connection.clientID,
+    clientSecret: connection.clientSecret,
+  });
+
   t.end();
 });
 
@@ -82,8 +169,7 @@ tap.test('should send sso.deleted event', async (t) => {
   // Create a connection
   await ssoConnectionController.createSAMLConnection(body);
 
-  const eventType = 'sso.deleted' as const;
-
+  const eventType: EventType = 'sso.deleted';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -114,8 +200,7 @@ tap.test('should send sso.deleted event', async (t) => {
 });
 
 tap.test('should send dsync.created event', async (t) => {
-  const eventType = 'dsync.created' as const;
-
+  const eventType: EventType = 'dsync.created';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -137,18 +222,74 @@ tap.test('should send dsync.created event', async (t) => {
   assertCalledWith(notifySpy, [eventType, connection]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
+  await directoryConnectionController.delete(connection.id);
+
   t.end();
 });
 
-// TODO: Add test for dsync.activated event
-tap.test('should send dsync.activated event', async (t) => {
-  t.pass();
-  t.end();
-});
-
-// TODO: Add test for dsync.deactivated event
 tap.test('should send dsync.deactivated event', async (t) => {
-  t.pass();
+  // Create a connection
+  const { data: connection, error } = await directoryConnectionController.create(getFakeDirectory());
+
+  if (!connection) {
+    t.fail('No connection was created');
+    throw error;
+  }
+
+  const eventType: EventType = 'dsync.deactivated';
+  const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
+  const notifySpy = sinon.spy(EventController.prototype, 'notify');
+
+  // Deactivate the connection
+  const { data: connectionUpdated } = await directoryConnectionController.update(connection.id, {
+    deactivated: true,
+  });
+
+  const payload: EventPayloadSchema = {
+    event: eventType,
+    tenant: connection.tenant,
+    product: connection.product,
+    data: transformDirectoryConnection(connectionUpdated!),
+  };
+
+  assertCalledWith(notifySpy, [eventType, connectionUpdated]);
+  assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await directoryConnectionController.delete(connection.id);
+
+  t.end();
+});
+
+tap.test('should send dsync.activated event', async (t) => {
+  // Create a connection
+  const { data: connection, error } = await directoryConnectionController.create(getFakeDirectory());
+
+  if (!connection) {
+    t.fail('No connection was created');
+    throw error;
+  }
+
+  const eventType: EventType = 'dsync.activated';
+  const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
+  const notifySpy = sinon.spy(EventController.prototype, 'notify');
+
+  // Activate the connection
+  const { data: connectionUpdated } = await directoryConnectionController.update(connection.id, {
+    deactivated: false,
+  });
+
+  const payload: EventPayloadSchema = {
+    event: eventType,
+    tenant: connection.tenant,
+    product: connection.product,
+    data: transformDirectoryConnection(connectionUpdated!),
+  };
+
+  assertCalledWith(notifySpy, [eventType, connectionUpdated]);
+  assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await directoryConnectionController.delete(connection.id);
+
   t.end();
 });
 
@@ -161,8 +302,7 @@ tap.test('should send dsync.deleted event', async (t) => {
     throw error;
   }
 
-  const eventType = 'dsync.deleted' as const;
-
+  const eventType: EventType = 'dsync.deleted';
   const sendWebhookEventSpy = sinon.spy(EventController.prototype, 'sendWebhookEvent');
   const notifySpy = sinon.spy(EventController.prototype, 'notify');
 
@@ -178,6 +318,8 @@ tap.test('should send dsync.deleted event', async (t) => {
 
   assertCalledWith(notifySpy, [eventType, connection]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
+
+  await directoryConnectionController.delete(connection.id);
 
   t.end();
 });

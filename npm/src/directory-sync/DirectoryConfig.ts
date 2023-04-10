@@ -12,7 +12,7 @@ import type {
   IEventController,
 } from '../typings';
 import * as dbutils from '../db/utils';
-import { createRandomSecret, validateTenantAndProduct } from '../controller/utils';
+import { createRandomSecret, isConnectionActive, validateTenantAndProduct } from '../controller/utils';
 import { apiError, JacksonError } from '../controller/error';
 import { storeNamespacePrefix } from '../controller/utils';
 import { randomUUID } from 'crypto';
@@ -141,7 +141,7 @@ export class DirectoryConfig {
 
       const { name, log_webhook_events, webhook, type } = param;
 
-      const directory = await this.store().get(id);
+      let directory: Directory = await this.store().get(id);
 
       if (name) {
         directory.name = name;
@@ -159,9 +159,23 @@ export class DirectoryConfig {
         directory.type = type;
       }
 
+      if ('deactivated' in param) {
+        directory['deactivated'] = param.deactivated;
+      }
+
       await this.store().put(id, { ...directory });
 
-      return { data: this.transform(directory), error: null };
+      directory = this.transform(directory);
+
+      if ('deactivated' in param) {
+        if (isConnectionActive(directory)) {
+          await this.eventController.notify('dsync.activated', directory);
+        } else {
+          await this.eventController.notify('dsync.deactivated', directory);
+        }
+      }
+
+      return { data: directory, error: null };
     } catch (err: any) {
       return apiError(err);
     }
@@ -259,6 +273,10 @@ export class DirectoryConfig {
     }
 
     directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+
+    if (!('deactivated' in directory)) {
+      directory.deactivated = false;
+    }
 
     return directory;
   }

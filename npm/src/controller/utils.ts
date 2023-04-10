@@ -13,6 +13,7 @@ import type {
   Profile,
   SAMLSSORecord,
   OIDCSSORecord,
+  Directory,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -310,7 +311,6 @@ export const findFriendlyProviderName = (providerName: string): keyof typeof wel
   return provider ? wellKnownProviders[provider] : null;
 };
 
-// Add friendlyProviderName to the connection
 export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSORecord>) => {
   if (connections.length === 0) {
     return connections;
@@ -324,6 +324,10 @@ export const transformConnection = (connection: SAMLSSORecord | OIDCSSORecord) =
     connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
   }
 
+  if (!('deactivated' in connection)) {
+    connection.deactivated = false;
+  }
+
   return connection;
 };
 
@@ -335,4 +339,12 @@ export const isLocalhost = (url: string) => {
     return false;
   }
   return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
+};
+
+export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
+  if ('deactivated' in connection) {
+    return connection.deactivated === false;
+  }
+
+  return true;
 };

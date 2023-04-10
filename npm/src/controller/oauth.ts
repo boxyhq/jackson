@@ -30,6 +30,8 @@ import {
   extractOIDCUserProfile,
   getScopeValues,
   getEncodedTenantProduct,
+  transformConnection,
+  isConnectionActive,
 } from './utils';
 
 import * as metrics from '../opentelemetry/metrics';
@@ -196,6 +198,10 @@ export class OAuthController implements IOAuthController {
         },
       });
       throw err;
+    }
+
+    if (!isConnectionActive(connection)) {
+      throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
     }
 
     const isMissingJWTKeysForOIDCFlow =
