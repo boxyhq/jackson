@@ -44,7 +44,7 @@ tap.test('directories.', async (t) => {
   });
 
   t.test('create()', async (t) => {
-    t.test('create a directory with all required params', async (t) => {
+    t.test('create a directory with all required params', async () => {
       const { data: directory } = await directorySync.directories.create(directoryPayload);
 
       tap.ok(directory);
@@ -55,11 +55,9 @@ tap.test('directories.', async (t) => {
       tap.strictSame(directory?.webhook.endpoint, directoryPayload.webhook_url);
       tap.strictSame(directory?.webhook.secret, directoryPayload.webhook_secret);
       tap.strictSame(directory?.log_webhook_events, false);
-
-      t.end();
     });
 
-    t.test('generate a name using tenant and product if name is not provided', async (t) => {
+    t.test('generate a name using tenant and product if name is not provided', async () => {
       const { data: directory } = await directorySync.directories.create({
         ...directoryPayload,
         name: undefined,
@@ -67,11 +65,9 @@ tap.test('directories.', async (t) => {
 
       tap.ok(directory);
       tap.strictSame(directory?.name, `scim-${tenant}-${product}`);
-
-      t.end();
     });
 
-    t.test('use generic-scim-v2 type if type is not provided', async (t) => {
+    t.test('use generic-scim-v2 type if type is not provided', async () => {
       const { data: directory } = await directorySync.directories.create({
         ...directoryPayload,
         type: undefined,
@@ -79,11 +75,9 @@ tap.test('directories.', async (t) => {
 
       tap.ok(directory);
       tap.strictSame(directory?.type, 'generic-scim-v2');
-
-      t.end();
     });
 
-    t.test('should not be able to create a directory without tenant or product', async (t) => {
+    t.test('should not be able to create a directory without tenant or product', async () => {
       const { data: directory, error } = await directorySync.directories.create({
         ...directoryPayload,
         tenant: '',
@@ -94,11 +88,9 @@ tap.test('directories.', async (t) => {
       tap.ok(error);
       tap.strictSame(error?.code, 400);
       tap.strictSame(error?.message, 'Missing required parameters.');
-
-      t.end();
     });
 
-    t.test('should not be able to create a directory with invalid type', async (t) => {
+    t.test('should not be able to create a directory with invalid type', async () => {
       const { data: directory, error } = await directorySync.directories.create({
         ...directoryPayload,
         type: 'invalid-type' as DirectoryType,
@@ -108,11 +100,9 @@ tap.test('directories.', async (t) => {
       tap.ok(error);
       tap.strictSame(error?.code, 400);
       tap.strictSame(error?.message, 'Invalid directory type.');
-
-      t.end();
     });
 
-    t.test('create multiple directories for same tenant and product', async (t) => {
+    t.test('create multiple directories for same tenant and product', async () => {
       const { data: directory1 } = await directorySync.directories.create({
         ...directoryPayload,
         name: 'Directory 1',
@@ -138,11 +128,7 @@ tap.test('directories.', async (t) => {
 
       tap.ok(directoriesFetched);
       tap.strictSame(directoriesFetched?.length, 2);
-
-      t.end();
     });
-
-    t.end();
   });
 
   t.test('get()', async (t) => {
@@ -165,8 +151,6 @@ tap.test('directories.', async (t) => {
       t.ok(directoryFetched);
       t.strictSame(directoryFetched, directory);
       t.match(directoryFetched?.id, directory.id);
-
-      t.end();
     });
 
     t.test('should not be able to get a directory that does not exist', async (t) => {
@@ -176,8 +160,6 @@ tap.test('directories.', async (t) => {
       t.ok(error);
       t.strictSame(error?.code, 404);
       t.strictSame(error?.message, 'Directory configuration not found.');
-
-      t.end();
     });
 
     t.test('should not be able to get a directory without an id', async (t) => {
@@ -187,11 +169,7 @@ tap.test('directories.', async (t) => {
       t.ok(error);
       t.strictSame(error?.code, 400);
       t.strictSame(error?.message, 'Missing required parameters.');
-
-      t.end();
     });
-
-    t.end();
   });
 
   t.test('getByTenantAndProduct()', async (t) => {
@@ -217,8 +195,6 @@ tap.test('directories.', async (t) => {
       t.ok(directoriesFetched);
       t.strictSame(directoriesFetched, [directory]);
       t.match(directoriesFetched?.length, 1);
-
-      t.end();
     });
 
     t.test('should not be able to get a directory that does not exist', async (t) => {
@@ -230,11 +206,7 @@ tap.test('directories.', async (t) => {
       t.ok(directoriesFetched);
       t.notOk(error);
       t.strictSame(directoriesFetched?.length, 0);
-
-      t.end();
     });
-
-    t.end();
   });
 
   t.test('update()', async (t) => {
@@ -284,8 +256,6 @@ tap.test('directories.', async (t) => {
       t.same(directoryFetched?.type, toUpdate.type);
       t.match(directoryFetched?.webhook.endpoint, toUpdate.webhook?.endpoint);
       t.match(directoryFetched?.webhook.secret, toUpdate.webhook?.secret);
-
-      t.end();
     });
 
     t.test('must provide a directory id', async (t) => {
@@ -296,11 +266,7 @@ tap.test('directories.', async (t) => {
       t.ok(error);
       t.same(error?.code, 400);
       t.same(error?.message, 'Missing required parameters.');
-
-      t.end();
     });
-
-    t.end();
   });
 
   t.test('delete()', async (t) => {
@@ -323,11 +289,7 @@ tap.test('directories.', async (t) => {
       const { data: directoryFetched } = await directorySync.directories.get(directory.id);
 
       t.notOk(directoryFetched);
-
-      t.end();
     });
-
-    t.end();
   });
 
   t.test('getAll()', async (t) => {
@@ -370,9 +332,5 @@ tap.test('directories.', async (t) => {
 
     t.match(directoryFetched2?.deactivated, false);
     t.match(isConnectionActive(directoryFetched2!), true);
-
-    t.end();
   });
-
-  t.end();
 });

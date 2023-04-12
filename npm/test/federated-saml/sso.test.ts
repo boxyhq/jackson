@@ -51,7 +51,7 @@ tap.before(async () => {
   });
 });
 
-tap.test('Federated SAML flow', async (t) => {
+tap.test('Federated SAML flow', async () => {
   const relayStateFromSP = 'sp-saml-request-relay-state';
 
   const requestXML = await fs.readFile(path.join(__dirname, '/data/request.xml'), 'utf8');
@@ -78,8 +78,6 @@ tap.test('Federated SAML flow', async (t) => {
     t.ok(response.redirectUrl, 'Should have a redirect URL');
     t.ok(response.redirectUrl?.includes('SAMLRequest'), 'Should have a SAMLRequest in the redirect URL');
     t.ok(response.redirectUrl?.includes('RelayState'), 'Should have a RelayState in the redirect URL');
-
-    t.end();
   });
 
   tap.test('Should be able to accept SAML Response from IdP and generate SAML Response for SP', async (t) => {
@@ -113,11 +111,7 @@ tap.test('Federated SAML flow', async (t) => {
     t.match(relayState, relayStateFromSP, 'Should have the same relay state as the one sent by SP');
 
     stubValidate.restore();
-
-    t.end();
   });
-
-  t.end();
 });
 
 tap.teardown(async () => {
