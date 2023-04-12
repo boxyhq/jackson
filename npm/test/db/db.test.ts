@@ -182,7 +182,7 @@ tap.teardown(async () => {
   process.exit(0);
 });
 
-tap.test('dbs', ({ end }) => {
+tap.test('dbs', async () => {
   for (const idx in connectionStores) {
     const connectionStore = connectionStores[idx];
     const ttlStore = ttlStores[idx];
@@ -192,7 +192,7 @@ tap.test('dbs', ({ end }) => {
       dbEngine += ': ' + dbs[idx].type;
     }
 
-    tap.test('put(): ' + dbEngine, async (t) => {
+    tap.test('put(): ' + dbEngine, async () => {
       await connectionStore.put(
         record1.id,
         record1,
@@ -222,8 +222,6 @@ tap.test('dbs', ({ end }) => {
           value: record2.name,
         }
       );
-
-      t.end();
     });
 
     tap.test('get(): ' + dbEngine, async (t) => {
@@ -232,8 +230,6 @@ tap.test('dbs', ({ end }) => {
 
       t.same(ret1, record1, 'unable to get record1');
       t.same(ret2, record2, 'unable to get record2');
-
-      t.end();
     });
 
     tap.test('getAll(): ' + dbEngine, async (t) => {
@@ -282,8 +278,6 @@ tap.test('dbs', ({ end }) => {
         1,
         "getAll pagination should get only 1 record, order doesn't matter"
       );
-
-      t.end();
     });
 
     tap.test('getByIndex(): ' + dbEngine, async (t) => {
@@ -340,8 +334,6 @@ tap.test('dbs', ({ end }) => {
           : [ret3.data[0], ret4.data[0]].sort((a, b) => a.id.localeCompare(b.id)),
         'getByIndex pagination for index "city" failed'
       );
-
-      t.end();
     });
 
     tap.test('delete(): ' + dbEngine, async (t) => {
@@ -373,8 +365,6 @@ tap.test('dbs', ({ end }) => {
 
       t.same(ret3.data, [], 'delete for record1 failed');
       t.same(ret4.data, [], 'delete for record2 failed');
-
-      t.end();
     });
 
     tap.test('ttl indexes: ' + dbEngine, async (t) => {
@@ -398,16 +388,12 @@ tap.test('dbs', ({ end }) => {
       } catch (err) {
         t.ok(err, 'got expected error');
       }
-
-      t.end();
     });
 
     tap.test('ttl put(): ' + dbEngine, async (t) => {
       await ttlStore.put(record1.id, record1);
 
       await ttlStore.put(record2.id, record2);
-
-      t.end();
     });
 
     tap.test('ttl get(): ' + dbEngine, async (t) => {
@@ -416,14 +402,11 @@ tap.test('dbs', ({ end }) => {
 
       t.same(ret1, record1, 'unable to get record1');
       t.same(ret2, record2, 'unable to get record2');
-
-      t.end();
     });
 
     tap.test('ttl expiry: ' + dbEngine, async (t) => {
       // mongo runs ttl task every 60 seconds
       if (dbEngine.startsWith('mongo')) {
-        t.end();
         return;
       }
 
@@ -434,8 +417,6 @@ tap.test('dbs', ({ end }) => {
 
       t.same(ret1, null, 'ttl for record1 failed');
       t.same(ret2, null, 'ttl for record2 failed');
-
-      t.end();
     });
 
     tap.test('deleteMany(): ' + dbEngine, async (t) => {
@@ -485,8 +466,6 @@ tap.test('dbs', ({ end }) => {
 
       t.same(ret3.data, []);
       t.same(ret4.data, []);
-
-      t.end();
     });
   }
 
@@ -518,9 +497,5 @@ tap.test('dbs', ({ end }) => {
     } catch (err) {
       t.ok(err, 'got expected error');
     }
-
-    t.end();
   });
-
-  end();
 });
