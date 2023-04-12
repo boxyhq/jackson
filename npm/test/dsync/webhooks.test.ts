@@ -66,8 +66,6 @@ tap.test('Webhook Events / ', async (t) => {
   t.test("Should be able to get the directory's webhook", async (t) => {
     t.match(directory.webhook.endpoint, webhook.endpoint);
     t.match(directory.webhook.secret, webhook.secret);
-
-    t.end();
   });
 
   t.test('Should not log events if the directory has no webhook', async (t) => {
@@ -111,8 +109,6 @@ tap.test('Webhook Events / ', async (t) => {
     await directorySync.directories.update(directory.id, {
       log_webhook_events: true,
     });
-
-    t.end();
   });
 
   t.test('Should be able to get an event by id', async (t) => {
@@ -124,8 +120,6 @@ tap.test('Webhook Events / ', async (t) => {
     const log = await directorySync.webhookLogs.get(logs[0].id);
 
     t.equal(log.id, logs[0].id);
-
-    t.end();
   });
 
   t.test('Should send user related events', async (t) => {
@@ -172,8 +166,6 @@ tap.test('Webhook Events / ', async (t) => {
     t.hasStrict(logs[2].data.raw, createdUser);
 
     await directorySync.users.deleteAll(directory.id);
-
-    t.end();
   });
 
   t.test('Should send group related events', async (t) => {
@@ -218,8 +210,6 @@ tap.test('Webhook Events / ', async (t) => {
     t.match(logs[2].event, 'group.created');
     t.match(logs[2].directory_id, directory.id);
     t.hasStrict(logs[2].data.raw, createdGroup);
-
-    t.end();
   });
 
   t.test('Should send group membership related events', async (t) => {
@@ -274,8 +264,6 @@ tap.test('Webhook Events / ', async (t) => {
 
     await directorySync.users.delete(createdUser.id);
     await directorySync.groups.delete(createdGroup.id);
-
-    t.end();
   });
 
   t.test('createSignatureString()', async (t) => {
@@ -305,9 +293,5 @@ tap.test('Webhook Events / ', async (t) => {
     const emptySignatureString = createSignatureString('', event);
 
     t.match(emptySignatureString, '');
-
-    t.end();
   });
-
-  t.end();
 });

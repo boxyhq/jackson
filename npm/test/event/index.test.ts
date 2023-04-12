@@ -36,7 +36,7 @@ const assertCalledWith = (spy: sinon.SinonSpy, args: any[]) => {
   spy.restore();
 };
 
-tap.test('should send sso.created event', async (t) => {
+tap.test('should send sso.created event', async () => {
   const body = {
     ...saml_connection,
     metadataUrl: 'https://mocksaml.com/api/saml/metadata',
@@ -62,11 +62,9 @@ tap.test('should send sso.created event', async (t) => {
     clientID: connection.clientID,
     clientSecret: connection.clientSecret,
   });
-
-  t.end();
 });
 
-tap.test('should send sso.deactivated event', async (t) => {
+tap.test('should send sso.deactivated event', async () => {
   const body = {
     ...saml_connection,
     metadataUrl: 'https://mocksaml.com/api/saml/metadata',
@@ -109,11 +107,9 @@ tap.test('should send sso.deactivated event', async (t) => {
     clientID: connection.clientID,
     clientSecret: connection.clientSecret,
   });
-
-  t.end();
 });
 
-tap.test('should send sso.activated event', async (t) => {
+tap.test('should send sso.activated event', async () => {
   const body = {
     ...saml_connection,
     metadataUrl: 'https://mocksaml.com/api/saml/metadata',
@@ -156,11 +152,9 @@ tap.test('should send sso.activated event', async (t) => {
     clientID: connection.clientID,
     clientSecret: connection.clientSecret,
   });
-
-  t.end();
 });
 
-tap.test('should send sso.deleted event', async (t) => {
+tap.test('should send sso.deleted event', async () => {
   const body = {
     ...saml_connection,
     metadataUrl: 'https://mocksaml.com/api/saml/metadata',
@@ -195,8 +189,6 @@ tap.test('should send sso.deleted event', async (t) => {
 
   assertCalledWith(notifySpy, [eventType, connection]);
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
-
-  t.end();
 });
 
 tap.test('should send dsync.created event', async (t) => {
@@ -223,8 +215,6 @@ tap.test('should send dsync.created event', async (t) => {
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
   await directoryConnectionController.delete(connection.id);
-
-  t.end();
 });
 
 tap.test('should send dsync.deactivated event', async (t) => {
@@ -256,8 +246,6 @@ tap.test('should send dsync.deactivated event', async (t) => {
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
   await directoryConnectionController.delete(connection.id);
-
-  t.end();
 });
 
 tap.test('should send dsync.activated event', async (t) => {
@@ -289,8 +277,6 @@ tap.test('should send dsync.activated event', async (t) => {
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
   await directoryConnectionController.delete(connection.id);
-
-  t.end();
 });
 
 tap.test('should send dsync.deleted event', async (t) => {
@@ -320,6 +306,4 @@ tap.test('should send dsync.deleted event', async (t) => {
   assertCalledWith(sendWebhookEventSpy, [jacksonOptions.webhook, payload]);
 
   await directoryConnectionController.delete(connection.id);
-
-  t.end();
 });
