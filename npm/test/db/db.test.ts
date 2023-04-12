@@ -415,6 +415,8 @@ tap.test('dbs', async () => {
       const ret1 = await ttlStore.get(record1.id);
       const ret2 = await ttlStore.get(record2.id);
 
+      console.log(`dbEngine,ret1,ret2`, ret1, ret2);
+
       t.same(ret1, null, 'ttl for record1 failed');
       t.same(ret2, null, 'ttl for record2 failed');
     });
