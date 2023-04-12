@@ -91,83 +91,83 @@ const dynamoDbConfig = <DatabaseOption>{
   },
 };
 
-const dbs = [
-  {
-    ...memDbConfig,
-  },
-  {
-    ...memDbConfig,
-    encryptionKey,
-  },
-  {
-    ...redisDbConfig,
-  },
-  {
-    ...redisDbConfig,
-    encryptionKey,
-  },
-  {
-    ...postgresDbConfig,
-  },
-  {
-    ...postgresDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mongoDbConfig,
-  },
-  {
-    ...mongoDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mysqlDbConfig,
-  },
-  {
-    ...mysqlDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mariadbDbConfig,
-  },
-  {
-    ...mariadbDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mssqlDbConfig,
-  },
-  {
-    ...mssqlDbConfig,
-    encryptionKey,
-  },
-];
-
-if (process.env.PLANETSCALE_URL) {
-  dbs.push(
-    {
-      ...planetscaleDbConfig,
-    },
-    {
-      ...planetscaleDbConfig,
-      encryptionKey,
-    }
-  );
-}
-
-if (process.env.DYNAMODB_URL) {
-  dbs.push(
-    {
-      ...dynamoDbConfig,
-    },
-    {
-      ...dynamoDbConfig,
-      encryptionKey,
-    }
-  );
-}
-
+let dbs;
 tap.before(async () => {
+  dbs = [
+    {
+      ...memDbConfig,
+    },
+    {
+      ...memDbConfig,
+      encryptionKey,
+    },
+    {
+      ...redisDbConfig,
+    },
+    {
+      ...redisDbConfig,
+      encryptionKey,
+    },
+    {
+      ...postgresDbConfig,
+    },
+    {
+      ...postgresDbConfig,
+      encryptionKey,
+    },
+    {
+      ...mongoDbConfig,
+    },
+    {
+      ...mongoDbConfig,
+      encryptionKey,
+    },
+    {
+      ...mysqlDbConfig,
+    },
+    {
+      ...mysqlDbConfig,
+      encryptionKey,
+    },
+    {
+      ...mariadbDbConfig,
+    },
+    {
+      ...mariadbDbConfig,
+      encryptionKey,
+    },
+    {
+      ...mssqlDbConfig,
+    },
+    {
+      ...mssqlDbConfig,
+      encryptionKey,
+    },
+  ];
+
+  if (process.env.PLANETSCALE_URL) {
+    dbs.push(
+      {
+        ...planetscaleDbConfig,
+      },
+      {
+        ...planetscaleDbConfig,
+        encryptionKey,
+      }
+    );
+  }
+
+  if (process.env.DYNAMODB_URL) {
+    dbs.push(
+      {
+        ...dynamoDbConfig,
+      },
+      {
+        ...dynamoDbConfig,
+        encryptionKey,
+      }
+    );
+  }
   for (const idx in dbs) {
     const opts = dbs[idx];
     const db = await DB.new(opts);
