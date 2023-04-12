@@ -28,8 +28,6 @@ tap.test('Federated SAML App', async (t) => {
     t.match(app.product, product);
     t.match(app.entityId, serviceProvider.entityId);
     t.match(app.acsUrl, serviceProvider.acsUrl);
-
-    t.end();
   });
 
   tap.test('Should be able to get the SAML Federation app by id', async (t) => {
@@ -37,8 +35,6 @@ tap.test('Federated SAML App', async (t) => {
 
     t.ok(response);
     t.match(response.id, app.id);
-
-    t.end();
   });
 
   tap.test('Should be able to get the SAML Federation app by entity id', async (t) => {
@@ -46,8 +42,6 @@ tap.test('Federated SAML App', async (t) => {
 
     t.ok(response);
     t.match(response.entityId, serviceProvider.entityId);
-
-    t.end();
   });
 
   tap.test('Should be able to update the SAML Federation app', async (t) => {
@@ -65,8 +59,6 @@ tap.test('Federated SAML App', async (t) => {
     t.ok(updatedApp);
     t.match(updatedApp.name, 'Updated App Name');
     t.match(updatedApp.acsUrl, 'https://twilio.com/saml/acsUrl/updated');
-
-    t.end();
   });
 
   tap.test('Should be able to update the app branding', async (t) => {
@@ -87,8 +79,6 @@ tap.test('Federated SAML App', async (t) => {
     t.match(updatedApp.logoUrl, 'https://company.com/logo.png');
     t.match(updatedApp.faviconUrl, 'https://company.com/favicon.ico');
     t.match(updatedApp.primaryColor, '#000000');
-
-    t.end();
   });
 
   tap.test('Should be able to get all SAML Federation apps', async (t) => {
@@ -96,8 +86,6 @@ tap.test('Federated SAML App', async (t) => {
 
     t.ok(response);
     t.ok(response.data.length === 1);
-
-    t.end();
   });
 
   tap.test('Should be able to delete the SAML Federation app', async (t) => {
@@ -106,11 +94,7 @@ tap.test('Federated SAML App', async (t) => {
     const allApps = await samlFederatedController.app.getAll({});
 
     t.ok(allApps.data.length === 0);
-
-    t.end();
   });
-
-  t.end();
 });
 
 tap.teardown(async () => {
