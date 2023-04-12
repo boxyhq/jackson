@@ -12,7 +12,7 @@ tap.before(async () => {
   samlFederatedController = jackson.samlFederatedController;
 });
 
-tap.test('Federated SAML App', async (t) => {
+tap.test('Federated SAML App', async () => {
   const app = await samlFederatedController.app.create({
     name: 'Test App',
     tenant,

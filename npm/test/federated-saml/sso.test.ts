@@ -51,7 +51,7 @@ tap.before(async () => {
   });
 });
 
-tap.test('Federated SAML flow', async (t) => {
+tap.test('Federated SAML flow', async () => {
   const relayStateFromSP = 'sp-saml-request-relay-state';
 
   const requestXML = await fs.readFile(path.join(__dirname, '/data/request.xml'), 'utf8');
