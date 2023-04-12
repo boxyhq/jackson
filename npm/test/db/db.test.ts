@@ -390,7 +390,7 @@ tap.test('dbs', async () => {
       }
     });
 
-    tap.test('ttl put(): ' + dbEngine, async (t) => {
+    tap.test('ttl put(): ' + dbEngine, async () => {
       await ttlStore.put(record1.id, record1);
 
       await ttlStore.put(record2.id, record2);
