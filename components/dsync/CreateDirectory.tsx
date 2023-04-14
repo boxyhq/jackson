@@ -8,7 +8,12 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';
 
-const CreateDirectory = ({ setupLinkToken }: { setupLinkToken?: string }) => {
+interface CreateDirectoryProps {
+  setupLinkToken?: string;
+  defaultWebhookEndpoint: string | undefined;
+}
+
+const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirectoryProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { providers } = useDirectoryProviders(setupLinkToken);
@@ -17,7 +22,7 @@ const CreateDirectory = ({ setupLinkToken }: { setupLinkToken?: string }) => {
     name: '',
     tenant: '',
     product: '',
-    webhook_url: '',
+    webhook_url: defaultWebhookEndpoint,
     webhook_secret: '',
     type: providers ? (Object.keys(providers).length > 0 ? Object.keys(providers)[0] : '') : '',
   });
@@ -140,6 +145,7 @@ const CreateDirectory = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                 id='webhook_url'
                 className='input-bordered input w-full'
                 onChange={onChange}
+                value={directory.webhook_url}
               />
             </div>
             <div className='form-control w-full'>

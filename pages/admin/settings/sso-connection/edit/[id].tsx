@@ -32,6 +32,10 @@ const EditSSOConnection: NextPage = () => {
     return null;
   }
 
+  if (!data?.data) {
+    return null;
+  }
+
   return <EditConnection connection={data?.data} isSettingsView />;
 };
 

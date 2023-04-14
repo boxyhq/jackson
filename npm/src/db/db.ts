@@ -107,6 +107,10 @@ class DB implements DatabaseDriver {
     return await this.db.delete(namespace, key);
   }
 
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    return await this.db.deleteMany(namespace, keys);
+  }
+
   store(namespace: string, ttl = 0): Storable {
     return store.new(namespace, this, ttl);
   }

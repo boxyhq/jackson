@@ -5,6 +5,7 @@ import {
   OIDCSSOConnectionWithMetadata,
   OIDCSSORecord,
   Storable,
+  UpdateOIDCConnectionParams,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
@@ -95,10 +96,7 @@ const oidc = {
   },
 
   update: async (
-    body: (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
-      clientID: string;
-      clientSecret: string;
-    },
+    body: UpdateOIDCConnectionParams,
     connectionStore: Storable,
     connectionsGetter: IConnectionAPIController['getConnections']
   ) => {
@@ -176,7 +174,7 @@ const oidc = {
       }
     }
 
-    const record = {
+    const record: OIDCSSORecord = {
       ..._savedConnection,
       name: name || name === '' ? name : _savedConnection.name,
       description: description || description === '' ? description : _savedConnection.description,
@@ -185,11 +183,17 @@ const oidc = {
       oidcProvider: oidcProvider ? oidcProvider : _savedConnection.oidcProvider,
     };
 
+    if ('deactivated' in body) {
+      record['deactivated'] = body.deactivated;
+    }
+
     await connectionStore.put(clientInfo?.clientID, record, {
       // secondary index on tenant + product
       name: IndexNames.TenantProduct,
       value: dbutils.keyFromParts(_savedConnection.tenant, _savedConnection.product),
     });
+
+    return record;
   },
 };
 

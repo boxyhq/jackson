@@ -6,6 +6,7 @@ export class Base {
   protected db: DatabaseStore;
   protected tenant: null | string = null;
   protected product: null | string = null;
+  protected bulkDeleteBatchSize = 500;
 
   constructor({ db }: { db: DatabaseStore }) {
     this.db = db;

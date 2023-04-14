@@ -157,6 +157,4 @@ tap.test('Directory groups membership / ', async (t) => {
 
   t.match(await directorySync.groups.isUserInGroup(group.id, user1.id), false);
   t.match(await directorySync.groups.isUserInGroup(group.id, user2.id), false);
-
-  t.end();
 });

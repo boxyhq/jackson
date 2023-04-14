@@ -4,6 +4,7 @@ import type { IssuerMetadata } from 'openid-client';
 export * from './ee/federated-saml/types';
 export * from './saml-tracer/types';
 export * from './directory-sync/types';
+export * from './event/types';
 
 interface SSOConnection {
   defaultRedirectUrl: string;
@@ -66,6 +67,7 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     thumbprint?: string;
     validTo?: string;
   };
+  deactivated?: boolean;
 }
 
 export interface OIDCSSORecord extends SSOConnection {
@@ -78,6 +80,7 @@ export interface OIDCSSORecord extends SSOConnection {
     clientId?: string;
     clientSecret?: string;
   };
+  deactivated?: boolean;
 }
 
 export type ConnectionType = 'saml' | 'oidc';
@@ -104,6 +107,31 @@ export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | T
 export type GetConfigQuery = ClientIDQuery | Omit<TenantQuery, 'strategy'>;
 export type DelConfigQuery = (ClientIDQuery & { clientSecret: string }) | Omit<TenantQuery, 'strategy'>;
 
+export type UpdateConnectionParams = TenantProduct & {
+  clientID: string;
+  clientSecret: string;
+  name?: string;
+  description?: string;
+  defaultRedirectUrl?: string;
+  redirectUrl?: string[] | string;
+  deactivated?: boolean;
+};
+
+export type UpdateSAMLConnectionParams = UpdateConnectionParams & {
+  encodedRawMetadata?: string;
+  metadataUrl?: string;
+  rawMetadata?: string;
+  forceAuthn?: boolean;
+  identifierFormat?: string;
+};
+
+export type UpdateOIDCConnectionParams = UpdateConnectionParams & {
+  oidcDiscoveryUrl?: string;
+  oidcMetadata?: IssuerMetadata;
+  oidcClientId?: string;
+  oidcClientSecret?: string;
+};
+
 export interface IConnectionAPIController {
   /**
    * @deprecated Use `createSAMLConnection` instead.
@@ -118,20 +146,9 @@ export interface IConnectionAPIController {
   /**
    * @deprecated Use `updateSAMLConnection` instead.
    */
-  updateConfig(body: SAMLSSOConnection & { clientID: string; clientSecret: string }): Promise<void>;
-  updateSAMLConnection(
-    body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
-      clientID: string;
-      clientSecret: string;
-    }
-  ): Promise<void>;
-  updateOIDCConnection(
-    body:
-      | (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
-          clientID: string;
-          clientSecret: string;
-        }
-  ): Promise<void>;
+  updateConfig(body: UpdateSAMLConnectionParams): Promise<void>;
+  updateSAMLConnection(body: UpdateSAMLConnectionParams): Promise<void>;
+  updateOIDCConnection(body: UpdateOIDCConnectionParams): Promise<void>;
   getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>>;
   getIDPEntityID(body: GetIDPEntityIDBody): string;
   /**
@@ -315,6 +332,7 @@ export interface DatabaseDriver {
     pageLimit?: number,
     pageToken?: string
   ): Promise<Records>;
+  deleteMany(namespace: string, keys: string[]): Promise<void>;
 }
 
 export interface Storable {
@@ -323,6 +341,7 @@ export interface Storable {
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
   getByIndex(idx: Index, pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
+  deleteMany(keys: string[]): Promise<void>;
 }
 
 export interface DatabaseStore {
@@ -390,6 +409,7 @@ export interface JacksonOption {
     host?: string;
     adminToken?: string;
   };
+  webhook?: Webhook;
 }
 
 export interface SLORequestParams {
@@ -503,4 +523,9 @@ export type AdminPortalBranding = {
   faviconUrl: string | null;
   primaryColor: string | null;
   companyName: string | null;
+};
+
+export type Webhook = {
+  endpoint: string;
+  secret: string;
 };

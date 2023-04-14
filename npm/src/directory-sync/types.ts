@@ -50,6 +50,7 @@ export type Directory = {
     endpoint: string;
     secret: string;
   };
+  deactivated?: boolean;
 };
 
 export type DirectorySyncGroupMember = { value: string; email?: string };
@@ -81,10 +82,12 @@ export interface DirectorySyncRequest {
   };
 }
 
+export type DirectorySyncEventData = User | Group | UserWithGroup;
+
 export interface DirectorySyncEvent {
   directory_id: Directory['id'];
   event: DirectorySyncEventType;
-  data: User | Group | (User & { group: Group });
+  data: DirectorySyncEventData;
   tenant: string;
   product: string;
 }
@@ -115,6 +118,8 @@ export type Group = {
   name: string;
   raw?: any;
 };
+
+export type UserWithGroup = User & { group: Group };
 
 export type PaginationParams = {
   pageOffset?: number;
@@ -152,4 +157,10 @@ export type GroupPatchOperation = {
         value: string;
         display?: string;
       }[];
+};
+
+export type GroupMembership = {
+  id: string;
+  group_id: string;
+  user_id: string;
 };

@@ -2,7 +2,6 @@ import type { IDirectorySyncController, JacksonOption } from './typings';
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
-import { init as metricsInit } from './opentelemetry/metrics';
 import { AdminController } from './controller/admin';
 import { ConnectionAPIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
@@ -18,6 +17,7 @@ import initFederatedSAML, { type ISAMLFederationController } from './ee/federate
 import checkLicense from './ee/common/checkLicense';
 import { BrandingController } from './ee/branding';
 import SAMLTracer from './saml-tracer';
+import EventController from './event';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -72,8 +72,6 @@ export const controllers = async (
 }> => {
   opts = defaultOpts(opts);
 
-  metricsInit();
-
   const db = await DB.new(opts.db);
 
   const connectionStore = db.store('saml:config');
@@ -86,8 +84,9 @@ export const controllers = async (
   const settingsStore = db.store('portal:settings');
 
   const samlTracer = new SAMLTracer({ db });
+  const eventController = new EventController({ opts });
 
-  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
+  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts, eventController });
   const adminController = new AdminController({ connectionStore, samlTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
@@ -122,7 +121,7 @@ export const controllers = async (
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSAMLConfig(opts);
-  const directorySyncController = await initDirectorySync({ db, opts });
+  const directorySyncController = await initDirectorySync({ db, opts, eventController });
 
   // Enterprise Features
   const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });

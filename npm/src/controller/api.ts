@@ -14,19 +14,24 @@ import {
   SAMLSSORecord,
   OIDCSSORecord,
   GetIDPEntityIDBody,
+  IEventController,
+  UpdateSAMLConnectionParams,
+  UpdateOIDCConnectionParams,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames, appID, transformConnections } from './utils';
+import { IndexNames, appID, transformConnections, transformConnection, isConnectionActive } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
 export class ConnectionAPIController implements IConnectionAPIController {
   private connectionStore: Storable;
   private opts: JacksonOption;
+  private eventController: IEventController;
 
-  constructor({ connectionStore, opts }) {
+  constructor({ connectionStore, opts, eventController }) {
     this.connectionStore = connectionStore;
     this.opts = opts;
+    this.eventController = eventController;
   }
 
   /**
@@ -199,7 +204,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
   ): Promise<SAMLSSORecord> {
     metrics.increment('createConnection');
 
-    return await samlConnection.create(body, this.connectionStore);
+    const connection = await samlConnection.create(body, this.connectionStore);
+
+    await this.eventController.notify('sso.created', connection);
+
+    return connection;
   }
 
   // For backwards compatibility
@@ -218,7 +227,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
 
-    return await oidcConnection.create(body, this.connectionStore);
+    const connection = await oidcConnection.create(body, this.connectionStore);
+
+    await this.eventController.notify('sso.created', connection);
+
+    return connection;
   }
 
   /**
@@ -368,13 +381,20 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       500:
    *         description: Please set OpenID response handler path (oidcPath) on Jackson
    */
-  public async updateSAMLConnection(
-    body: (SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata) & {
-      clientID: string;
-      clientSecret: string;
+  public async updateSAMLConnection(body: UpdateSAMLConnectionParams): Promise<void> {
+    const connection = await samlConnection.update(
+      body,
+      this.connectionStore,
+      this.getConnections.bind(this)
+    );
+
+    if ('deactivated' in body) {
+      if (isConnectionActive(connection)) {
+        await this.eventController.notify('sso.activated', connection);
+      } else {
+        await this.eventController.notify('sso.deactivated', connection);
+      }
     }
-  ): Promise<void> {
-    await samlConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
 
   // For backwards compatibility
@@ -384,17 +404,24 @@ export class ConnectionAPIController implements IConnectionAPIController {
     await this.updateSAMLConnection(...args);
   }
 
-  public async updateOIDCConnection(
-    body: (OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata) & {
-      clientID: string;
-      clientSecret: string;
-    }
-  ): Promise<void> {
+  public async updateOIDCConnection(body: UpdateOIDCConnectionParams): Promise<void> {
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
 
-    await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
+    const connection = await oidcConnection.update(
+      body,
+      this.connectionStore,
+      this.getConnections.bind(this)
+    );
+
+    if ('deactivated' in body) {
+      if (isConnectionActive(connection)) {
+        await this.eventController.notify('sso.activated', connection);
+      } else {
+        await this.eventController.notify('sso.deactivated', connection);
+      }
+    }
   }
 
   public getIDPEntityID(body: GetIDPEntityIDBody): string {
@@ -725,6 +752,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
       if (connection.clientSecret === clientSecret) {
         await this.connectionStore.delete(clientID);
+        await this.eventController.notify('sso.deleted', transformConnection(connection));
       } else {
         throw new JacksonError('clientSecret mismatch', 400);
       }
@@ -761,8 +789,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
           })
         : connections;
 
-      for (const conf of filteredConnections) {
+      for (const conf of transformConnections(filteredConnections)) {
         await this.connectionStore.delete(conf.clientID);
+        await this.eventController.notify('sso.deleted', conf);
       }
 
       return;

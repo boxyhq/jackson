@@ -50,8 +50,6 @@ tap.test('Directory groups / ', async (t) => {
     t.ok(createdGroup);
     t.hasStrict(createdGroup, groups[0]);
     t.ok('id' in createdGroup);
-
-    t.end();
   });
 
   t.test('Should be able to get the group by id', async (t) => {
@@ -63,8 +61,6 @@ tap.test('Directory groups / ', async (t) => {
     t.equal(status, 200);
     t.hasStrict(data, createdGroup);
     t.hasStrict(data, groups[0]);
-
-    t.end();
   });
 
   t.test('Should be able to get the group by displayName', async (t) => {
@@ -77,8 +73,6 @@ tap.test('Directory groups / ', async (t) => {
     t.hasStrict(data.Resources[0], createdGroup);
     t.hasStrict(data.Resources[0], groups[0]);
     t.equal(data.Resources.length, 1);
-
-    t.end();
   });
 
   t.test('Should be able to get all groups', async (t) => {
@@ -92,8 +86,6 @@ tap.test('Directory groups / ', async (t) => {
     t.hasStrict(data.Resources[0], groups[0]);
     t.equal(data.totalResults, 1);
     t.equal(data.Resources[0].members.length, 0);
-
-    t.end();
   });
 
   t.test('Should be able to update the group name', async (t) => {
@@ -112,8 +104,6 @@ tap.test('Directory groups / ', async (t) => {
     t.ok(data);
     t.equal(status, 200);
     t.equal(data.displayName, 'Developers Updated');
-
-    t.end();
   });
 
   t.test('Should be able to delete a group', async (t) => {
@@ -135,9 +125,5 @@ tap.test('Directory groups / ', async (t) => {
       t.equal(e.statusCode, 404);
       t.equal(e.message, `Group with id ${createdGroup.id} not found.`);
     }
-
-    t.end();
   });
-
-  t.end();
 });

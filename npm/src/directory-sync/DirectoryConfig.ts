@@ -6,23 +6,44 @@ import type {
   DirectoryType,
   ApiError,
   PaginationParams,
+  IUsers,
+  IGroups,
+  IWebhookEventsLogger,
+  IEventController,
 } from '../typings';
 import * as dbutils from '../db/utils';
-import { createRandomSecret, validateTenantAndProduct } from '../controller/utils';
+import { createRandomSecret, isConnectionActive, validateTenantAndProduct } from '../controller/utils';
 import { apiError, JacksonError } from '../controller/error';
 import { storeNamespacePrefix } from '../controller/utils';
 import { randomUUID } from 'crypto';
 import { IndexNames } from '../controller/utils';
 import { getDirectorySyncProviders } from './utils';
 
+type ConstructorParams = {
+  db: DatabaseStore;
+  opts: JacksonOption;
+  users: IUsers;
+  groups: IGroups;
+  logger: IWebhookEventsLogger;
+  eventController: IEventController;
+};
+
 export class DirectoryConfig {
   private _store: Storable | null = null;
   private opts: JacksonOption;
   private db: DatabaseStore;
+  private users: IUsers;
+  private groups: IGroups;
+  private logger: IWebhookEventsLogger;
+  private eventController: IEventController;
 
-  constructor({ db, opts }: { db: DatabaseStore; opts: JacksonOption }) {
+  constructor({ db, opts, users, groups, logger, eventController }: ConstructorParams) {
     this.opts = opts;
     this.db = db;
+    this.users = users;
+    this.groups = groups;
+    this.logger = logger;
+    this.eventController = eventController;
   }
 
   // Return the database store
@@ -31,14 +52,7 @@ export class DirectoryConfig {
   }
 
   // Create the configuration
-  public async create({
-    name,
-    tenant,
-    product,
-    webhook_url,
-    webhook_secret,
-    type = 'generic-scim-v2',
-  }: {
+  public async create(params: {
     name?: string;
     tenant: string;
     product: string;
@@ -47,6 +61,8 @@ export class DirectoryConfig {
     type?: DirectoryType;
   }): Promise<{ data: Directory | null; error: ApiError | null }> {
     try {
+      const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
+
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
       }
@@ -58,16 +74,13 @@ export class DirectoryConfig {
 
       validateTenantAndProduct(tenant, product);
 
-      if (!name) {
-        name = `scim-${tenant}-${product}`;
-      }
-
+      const directoryName = name || `scim-${tenant}-${product}`;
       const id = randomUUID();
       const hasWebhook = webhook_url && webhook_secret;
 
       const directory: Directory = {
         id,
-        name,
+        name: directoryName,
         tenant,
         product,
         type,
@@ -87,7 +100,11 @@ export class DirectoryConfig {
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      return { data: this.transform(directory), error: null };
+      const connection = this.transform(directory);
+
+      await this.eventController.notify('dsync.created', connection);
+
+      return { data: connection, error: null };
     } catch (err: any) {
       return apiError(err);
     }
@@ -124,7 +141,7 @@ export class DirectoryConfig {
 
       const { name, log_webhook_events, webhook, type } = param;
 
-      const directory = await this.store().get(id);
+      let directory: Directory = await this.store().get(id);
 
       if (name) {
         directory.name = name;
@@ -142,9 +159,23 @@ export class DirectoryConfig {
         directory.type = type;
       }
 
+      if ('deactivated' in param) {
+        directory['deactivated'] = param.deactivated;
+      }
+
       await this.store().put(id, { ...directory });
 
-      return { data: this.transform(directory), error: null };
+      directory = this.transform(directory);
+
+      if ('deactivated' in param) {
+        if (isConnectionActive(directory)) {
+          await this.eventController.notify('dsync.activated', directory);
+        } else {
+          await this.eventController.notify('dsync.deactivated', directory);
+        }
+      }
+
+      return { data: directory, error: null };
     } catch (err: any) {
       return apiError(err);
     }
@@ -160,12 +191,10 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const directories: Directory[] = (
-        await this.store().getByIndex({
-          name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(tenant, product),
-        })
-      ).data;
+      const { data: directories } = await this.store().getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
 
       const transformedDirectories = directories.map((directory) => this.transform(directory));
 
@@ -203,16 +232,38 @@ export class DirectoryConfig {
   }
 
   // Delete a configuration by id
-  public async delete(id: string): Promise<void> {
-    if (!id) {
-      throw new JacksonError('Missing required parameter.', 400);
+  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+    try {
+      if (!id) {
+        throw new JacksonError('Missing required parameter.', 400);
+      }
+
+      const { data: directory } = await this.get(id);
+
+      if (!directory) {
+        throw new JacksonError('Directory configuration not found.', 404);
+      }
+
+      const { tenant, product } = directory;
+
+      // Delete the configuration
+      await this.store().delete(id);
+
+      // Delete the groups
+      await this.groups.setTenantAndProduct(tenant, product).deleteAll(id);
+
+      // Delete the users
+      await this.users.setTenantAndProduct(tenant, product).deleteAll(id);
+
+      // Delete the webhook events
+      await this.logger.setTenantAndProduct(tenant, product).deleteAll(id);
+
+      await this.eventController.notify('dsync.deleted', directory);
+
+      return { data: null, error: null };
+    } catch (err: any) {
+      return apiError(err);
     }
-
-    // TODO: Delete the users and groups associated with the configuration
-
-    await this.store().delete(id);
-
-    return;
   }
 
   private transform(directory: Directory): Directory {
@@ -222,6 +273,10 @@ export class DirectoryConfig {
     }
 
     directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+
+    if (!('deactivated' in directory)) {
+      directory.deactivated = false;
+    }
 
     return directory;
   }

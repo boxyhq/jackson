@@ -55,8 +55,6 @@ tap.test('Directory users / ', async (t) => {
     t.equal(status, 200);
     t.hasStrict(data.Resources[0], createdUser);
     t.hasStrict(data.Resources[0], users[0]);
-
-    t.end();
   });
 
   t.test('Should be able to get the user by id', async (t) => {
@@ -65,8 +63,6 @@ tap.test('Directory users / ', async (t) => {
     t.ok(data);
     t.equal(status, 200);
     t.hasStrict(data, users[0]);
-
-    t.end();
   });
 
   t.test('Should be able to update the user using PUT request', async (t) => {
@@ -94,8 +90,6 @@ tap.test('Directory users / ', async (t) => {
     t.ok(user);
     t.hasStrict(user, toUpdate);
     t.match(user.city, toUpdate.city);
-
-    t.end();
   });
 
   t.test('Should be able to delete the user using PATCH request', async (t) => {
@@ -111,8 +105,6 @@ tap.test('Directory users / ', async (t) => {
     t.ok(data);
     t.equal(status, 200);
     t.hasStrict(data, toUpdate);
-
-    t.end();
   });
 
   t.test('should be able to update the user with multi-valued properties', async (t) => {
@@ -125,8 +117,6 @@ tap.test('Directory users / ', async (t) => {
     t.equal(data.active, false);
     t.equal(data.name.givenName, 'David');
     t.equal(data.name.familyName, 'Jones');
-
-    t.end();
   });
 
   t.test('Should be able to update the custom user attributes', async (t) => {
@@ -138,8 +128,6 @@ tap.test('Directory users / ', async (t) => {
     t.equal(status, 200);
     t.equal(data.companyName, 'BoxyHQ');
     t.equal(data.address.streetAddress, '123 Main St');
-
-    t.end();
   });
 
   t.test('Should be able to fetch all users', async (t) => {
@@ -151,8 +139,6 @@ tap.test('Directory users / ', async (t) => {
     t.equal(data.Resources.length, 1);
     t.hasStrict(data.Resources[0], users[0]);
     t.equal(data.totalResults, 1);
-
-    t.end();
   });
 
   t.test('Should be able to delete the user', async (t) => {
@@ -171,22 +157,16 @@ tap.test('Directory users / ', async (t) => {
 
     t.hasStrict(user.Resources, []);
     t.hasStrict(user.totalResults, 0);
-
-    t.end();
   });
 
-  t.test('Should be able to delete all users using clear() method', async (t) => {
+  t.test('Should be able to delete all users using deleteAll() method', async (t) => {
     directorySync.users.setTenantAndProduct(directory.tenant, directory.product);
 
-    await directorySync.users.clear();
+    await directorySync.users.deleteAll(directory.id);
 
     // Make sure all the user was deleted
     const { data: users } = await directorySync.users.getAll();
 
     t.equal(users?.length, 0);
-
-    t.end();
   });
-
-  t.end();
 });

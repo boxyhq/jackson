@@ -9,13 +9,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (method) {
     case 'GET':
-      return handleGET(req, res);
+      return await handleGET(req, res);
     case 'POST':
-      return handlePOST(req, res);
+      return await handlePOST(req, res);
     case 'PATCH':
-      return handlePATCH(req, res);
+      return await handlePATCH(req, res);
     case 'DELETE':
-      return handleDELETE(req, res);
+      return await handleDELETE(req, res);
     default:
       res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });

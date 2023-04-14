@@ -13,6 +13,7 @@ import type {
   Profile,
   SAMLSSORecord,
   OIDCSSORecord,
+  Directory,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -304,7 +305,7 @@ const wellKnownProviders = {
 } as const;
 
 // Find the friendly name of the provider from the entityID
-const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
+export const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
   const provider = Object.keys(wellKnownProviders).find((provider) => providerName.includes(provider));
 
   return provider ? wellKnownProviders[provider] : null;
@@ -315,14 +316,19 @@ export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSOR
     return connections;
   }
 
-  // Add friendlyProviderName to the connection
-  return connections.map((connection) => {
-    if ('idpMetadata' in connection) {
-      connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
-    }
+  return connections.map(transformConnection);
+};
 
-    return connection;
-  });
+export const transformConnection = (connection: SAMLSSORecord | OIDCSSORecord) => {
+  if ('idpMetadata' in connection) {
+    connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+  }
+
+  if (!('deactivated' in connection)) {
+    connection.deactivated = false;
+  }
+
+  return connection;
 };
 
 export const isLocalhost = (url: string) => {
@@ -333,4 +339,12 @@ export const isLocalhost = (url: string) => {
     return false;
   }
   return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
+};
+
+export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
+  if ('deactivated' in connection) {
+    return connection.deactivated === false;
+  }
+
+  return true;
 };
