@@ -1,0 +1,63 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    max-width: 28rem;
+  }
+  
+  .label {
+    margin-bottom: 0.375rem;
+  }
+  
+  .input {
+    font-family: inherit;
+    appearance: none;
+    background-color: #fff;
+    border-radius: 0.375rem;
+    border-width: 1px;
+    border-color: #ebedf0;
+    border-style: solid;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    margin-top: 1px;
+    outline: none;
+    margin-bottom: 1rem;
+  }
+  
+  .input:focus {
+    outline: 2px solid hsl(0 0% 20%/ 0.2);
+    outline-offset: 2px;
+  }
+  
+  .button {
+    cursor: pointer;
+    font-family: inherit;
+    background-image: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: 1px solid rgb(51, 51, 51);
+    color: currentColor;
+  }
+  
+  .button:disabled {
+    background: hsl(219 14% 28% / 0.2);
+    color: hsl(0 0% 20% / 0.2);
+    border-color: currentColor;
+    pointer-events: none;
+  }
+  
+  .button:hover:not(:disabled) {
+    background-color: hsl(0 0% 20%);
+    color: hsl(0 0% 100%);
+  }
+  
+  .button:focus-visible {
+    outline: 2px solid hsl(219 14% 22%);
+    outline-offset: 2px;
+  }
+  
+  .button:active:hover,
+  .button:active:focus {
+    transform: scale(0.95);
+  }
+  
