@@ -1,0 +1,101 @@
+.welcome {
+  font-size: 32px;
+  font-weight: 600;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #eaecef;
+  margin-bottom: 16px;
+}
+
+.hero-body{
+  /*border: 2px solid red;*/
+  padding: 0 40px;
+  width: 100vw;
+  font-size: 16px;
+  color: #24292e;
+}
+
+.title{
+  font-size: 20px;
+  padding-left: 13px;
+}
+
+.logo{
+  display: flex;
+}
+
+.boxyhq-link a{
+  color: #0366d6;
+  font-weight: 500;
+}
+
+.desciption {
+  font-size: 16px;
+}
+
+.installtion{
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #eaecef;
+}
+
+.installtion-instructions {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
+}
+
+.usage{
+  font-weight: 600;
+  font-size: 24px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #eaecef;
+}
+
+.sso-login-component{
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.sso-ways{
+  margin-bottom: 16px;
+}
+
+.value-preset {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.sso-identifier{
+  margin: 0;
+  padding: 2.7px 5.4px;
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.sso-identifier-light {
+  margin: 0;
+  padding: 2.7px 5.4px;
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
+}
+
+.prism-code {
+  font-family: initial;
+  font-size: 10px;
+}
+
+.end-para{
+  padding-top: 15px;
+  padding-bottom: 40px;
+}

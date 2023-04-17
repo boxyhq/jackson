@@ -10,7 +10,7 @@
       "
       v-bind="innerProps?.container"
     >
-      <template v-if="shouldRenderInput">
+      <template v-if="!this.ssoIdentifier">
         <label
           :for="InputId"
           :style="{
@@ -33,7 +33,7 @@
           :style="{
             ...styles?.input,
           }"
-          :aria-invalid="isError"
+          :aria-invalid="!!this.errMsg"
           :aria-describedby="ErrorSpanId"
           :class="
             _classStringToObject(
@@ -43,7 +43,7 @@
           v-bind="innerProps?.input"
         />
   
-        <template v-if="isError">
+        <template v-if="!!this.errMsg">
           <span :id="ErrorSpanId">{{ errMsg }}</span>
         </template>
       </template>
@@ -80,6 +80,11 @@
       ssoIdentifier: { default: "" },
      // onSubmit:  default: undefined ,
       styles: { default: undefined },
+      errorMessage: { default: {
+        error: {
+          message: "",
+        }
+      } },
       innerProps: { default: undefined },
       classNames: { default: undefined },
       inputLabel: { default: "Tenant" },
@@ -92,8 +97,6 @@
         ssoIdentifierState: "",
         errMsg: "",
         isProcessing: false,
-        shouldRenderInput: !this.ssoIdentifier,
-        isError: !!this.errMsg,
         cssClassAssembler,
         defaultClasses,
       };
@@ -118,20 +121,14 @@
       },
       onSubmitButton(event) {
         const that = this
-       // console.log(onSubmit)
-        // console.log(this)
         void (async function (e) {
           e.preventDefault();
-          // console.log(this.isProcessing)
           that.isProcessing = true;
-          const {
-            error: { message },
-          } = (that.$emit('onSubmit',that.ssoIdentifierState || that.ssoIdentifier)) || {
-            error: {},
-          };
+         (that.$emit('onSubmit',that.ssoIdentifierState || that.ssoIdentifier));
           that.isProcessing = false;
-          if (typeof message === "string" && message) {
-            that.errMsg = message;
+          const { error } = that.errorMessage
+          if (typeof error.message === "string" && error.message) {
+            that.errMsg = error.message;
           }
         })(event);
       },

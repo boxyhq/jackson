@@ -1,0 +1,20 @@
+/**
+ * 禁止换行, 文本溢出省略号显示 (一行)
+ */
+.ellipsis() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/**
+ * 文本溢出省略号显示 (多行)
+ * @param {number} lines 文本溢出行数
+ */
+.multi-ellipsis(@lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: @lines;
+  -webkit-box-orient: vertical;
+}
