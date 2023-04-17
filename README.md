@@ -15,10 +15,12 @@
 [![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,DB_ENCRYPTION_KEY,DB_TTL,DB_CLEANUP_LIMIT,JACKSON_API_KEYS,EXTERNAL_URL,IDP_ENABLED,SAML_AUDIENCE,CLIENT_SECRET_VERIFIER,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,SMTP_FROM,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXTAUTH_ACL&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.EXTERNAL_URL%20(Usually%20https%3A%2F%2F%3Cproject-name-from-above%3E.vercel.app)%20can%20be%20set%20after%20deployment%20from%20the%20project%20dashboard.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/deploy/env-variables>)
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-## Getting Started
+## Getting Started with SAML Jackson
+
+SAML Jackson can be used with any web application to integrate the **Single Sign-On (SSO) authentication.**
 
 There are two ways to integrate SAML Jackson with an application. Depending on your use case, you can choose either of them. <br>
-As a[ Separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) or [NPM Library](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service)
+As a[ separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) or [NPM library](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service)
 
 SAML/OIDC SSO service
 
