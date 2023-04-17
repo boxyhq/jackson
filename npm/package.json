@@ -60,7 +60,7 @@
     "redis": "4.6.5",
     "reflect-metadata": "0.1.13",
     "ripemd160": "2.0.2",
-    "typeorm": "0.3.14",
+    "typeorm": "0.3.15",
     "xml2js": "0.5.0",
     "xmlbuilder": "15.1.1"
   },
