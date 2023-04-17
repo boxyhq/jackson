@@ -54,7 +54,7 @@
     "vite": "4.2.1",
     "vite-pages-theme-doc": "4.1.0",
     "vite-plugin-css-injected-by-js": "3.1.0",
-    "vite-plugin-react-pages": "4.1.0"
+    "vite-plugin-react-pages": "4.1.1"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
