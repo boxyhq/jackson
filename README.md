@@ -105,8 +105,8 @@ Reach out to the maintainers at one of the following places:
 
 ## Community
 
-- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Community and BoxyHQ team)
-- [Twitter](https://twitter.com/BoxyHQ) (Get the news fast)
+- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Open-Source Community and BoxyHQ team)
+- [Twitter](https://twitter.com/BoxyHQ) (Follow us)
 
 ## Reporting Security Issues
 
