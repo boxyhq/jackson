@@ -1,8 +1,16 @@
 {
-  "name": "vue2",
-  "private": true,
+  "name": "@boxyhq/vue2-ui",
+  "description": "Vue2 UI components from BoxyHQ",
   "version": "0.0.0",
   "type": "module",
+  "keywords": [
+    "vue2",
+    "boxyhq",
+    "sso",
+    "enterprise-features"
+  ],
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
