@@ -9,8 +9,8 @@
     "sso",
     "enterprise-features"
   ],
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -23,6 +23,7 @@
     "vite": "^4.2.0"
   },
   "dependencies": {
-    "@vitejs/plugin-vue2": "^2.2.0"
+    "@vitejs/plugin-vue2": "^2.2.0",
+    "typescript": "^5.0.4"
   }
 }
