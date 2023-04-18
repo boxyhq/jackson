@@ -9,8 +9,8 @@
     "sso",
     "enterprise-features"
   ],
-  "main": "./src/index.js",
-  "module": "./src/index.js",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
