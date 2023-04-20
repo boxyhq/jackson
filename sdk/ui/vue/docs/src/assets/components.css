@@ -51,6 +51,7 @@
 }
 
 .btn-toggle {
+    cursor: pointer;
     margin: 1em 0 0.5em 0;
     background: #0070f3;
     color: #fff;
