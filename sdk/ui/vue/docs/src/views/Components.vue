@@ -1,6 +1,5 @@
 <script setup>
 import { Login } from '@boxyhq/vue3-ui';
-import Comp from '@/components/Components.vue';
 </script>
 
 <template>
