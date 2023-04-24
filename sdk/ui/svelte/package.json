@@ -1,21 +1,29 @@
 {
-	"name": "svelte",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-auto": "^2.0.0",
-		"@sveltejs/kit": "^1.5.0",
-		"svelte": "^3.54.0",
-		"svelte-check": "^3.0.1",
-		"typescript": "^5.0.0",
-		"vite": "^4.2.0"
-	},
-	"type": "module"
+  "name": "@boxyhq/svelte-ui",
+  "description": "Svelte UI components from BoxyHQ",
+  "version": "0.0.0",
+  "type": "module",
+  "keywords": [
+    "svelte",
+    "boxyhq",
+    "sso",
+    "enterprise-features"
+  ],
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^2.0.0",
+    "@sveltejs/kit": "^1.5.0",
+    "svelte": "^3.54.0",
+    "svelte-check": "^3.0.1",
+    "typescript": "^5.0.0",
+    "vite": "^4.2.0"
+  }
 }
