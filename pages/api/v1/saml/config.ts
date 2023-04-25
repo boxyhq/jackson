@@ -3,18 +3,43 @@
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { GetConfigQuery } from '@boxyhq/saml-jackson';
+import { sendAudit } from '@lib/retraced';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { connectionAPIController } = await jackson();
     if (req.method === 'POST') {
-      res.json(await connectionAPIController.config(req.body));
+      const connection = await connectionAPIController.config(req.body);
+
+      await sendAudit({
+        action: 'connection.sso.create',
+        crud: 'c',
+        req,
+      });
+
+      return res.json(connection);
     } else if (req.method === 'GET') {
       res.json(await connectionAPIController.getConfig(req.query as GetConfigQuery));
     } else if (req.method === 'PATCH') {
-      res.status(204).end(await connectionAPIController.updateConfig(req.body));
+      const connection = await connectionAPIController.updateConfig(req.body);
+
+      await sendAudit({
+        action: 'connection.sso.update',
+        crud: 'u',
+        req,
+      });
+
+      return res.status(204).end(connection);
     } else if (req.method === 'DELETE') {
-      res.status(204).end(await connectionAPIController.deleteConfig(req.body));
+      const connection = await connectionAPIController.deleteConfig(req.body);
+
+      await sendAudit({
+        action: 'connection.sso.delete',
+        crud: 'd',
+        req,
+      });
+
+      return res.status(204).end(connection);
     } else {
       throw { message: 'Method not allowed', statusCode: 405 };
     }

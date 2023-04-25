@@ -52,18 +52,14 @@ export const sendAudit = async (request: Request) => {
     cookieName: sessionName,
   });
 
-  if (!token || !token.email || !token.name) {
-    return;
-  }
-
   const group = {
     id: 'boxyhq-admin-portal',
     name: 'BoxyHQ Admin Portal',
   };
 
   const actor = {
-    id: token.email,
-    name: token.name,
+    id: token?.email || retracedOptions.apiKey,
+    name: token?.name || 'An unknown actor',
   };
 
   // TODO: Add IP address and Target to event

@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { sendAudit } from '@lib/retraced';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -55,6 +56,12 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   if (error) {
     return res.status(error.code).json({ error });
   }
+
+  await sendAudit({
+    action: 'connection.dsync.create',
+    crud: 'c',
+    req,
+  });
 
   return res.status(201).json({ data });
 };

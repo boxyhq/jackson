@@ -2,6 +2,7 @@ import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { GetConnectionsQuery } from '@boxyhq/saml-jackson';
+import { sendAudit } from '@lib/retraced';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -46,19 +47,17 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
 
-  // Create SAML connection
-  if (isSAML) {
-    const connection = await connectionAPIController.createSAMLConnection(req.body);
+  const connection = isSAML
+    ? await connectionAPIController.createSAMLConnection(req.body)
+    : await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
-    return res.json(connection);
-  }
+  await sendAudit({
+    action: 'connection.sso.create',
+    crud: 'c',
+    req,
+  });
 
-  // Create OIDC connection
-  if (isOIDC) {
-    const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
-
-    return res.json(connection);
-  }
+  return res.json(connection);
 };
 
 // Update a connection
@@ -71,19 +70,17 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
 
-  // Update SAML connection
-  if (isSAML) {
-    const connection = await connectionAPIController.updateSAMLConnection(req.body);
+  const connection = isSAML
+    ? await connectionAPIController.updateSAMLConnection(req.body)
+    : await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
-    return res.status(204).json(connection);
-  }
+  await sendAudit({
+    action: 'connection.sso.update',
+    crud: 'u',
+    req,
+  });
 
-  // Update OIDC connection
-  if (isOIDC) {
-    const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
-
-    return res.status(204).json(connection);
-  }
+  return res.status(204).json(connection);
 };
 
 // Delete a connection
@@ -91,6 +88,12 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
   await connectionAPIController.deleteConnections(req.body);
+
+  await sendAudit({
+    action: 'connection.sso.delete',
+    crud: 'd',
+    req,
+  });
 
   return res.status(204).end();
 };

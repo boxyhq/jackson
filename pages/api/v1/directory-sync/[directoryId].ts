@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { sendAudit } from '@lib/retraced';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -37,6 +38,12 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directoryId } = req.query as { directoryId: string };
 
   await directorySyncController.directories.delete(directoryId);
+
+  await sendAudit({
+    action: 'connection.dsync.delete',
+    crud: 'd',
+    req,
+  });
 
   return res.status(200).json({ data: {} });
 };
