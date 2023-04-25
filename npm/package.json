@@ -66,11 +66,11 @@
   },
   "devDependencies": {
     "@faker-js/faker": "7.6.0",
-    "@types/node": "18.15.11",
+    "@types/node": "18.16.0",
     "@types/sinon": "10.0.13",
     "@types/tap": "15.0.8",
     "cross-env": "7.0.3",
-    "sinon": "15.0.3",
+    "sinon": "15.0.4",
     "tap": "16.3.4",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
