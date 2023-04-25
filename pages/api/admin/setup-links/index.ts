@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { sendAudit } from '@lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -41,6 +42,12 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     regenerate,
   });
 
+  await sendAudit({
+    action: service === 'dsync' ? 'setuplink.dsync.create' : 'setuplink.sso.create',
+    crud: 'c',
+    req,
+  });
+
   return res.status(201).json({ data: setupLink });
 };
 
@@ -49,7 +56,15 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { setupID } = req.query as { setupID: string };
 
+  const setupLink = await setupLinkController.getById(setupID);
+
   await setupLinkController.remove(setupID);
+
+  await sendAudit({
+    action: setupLink.service === 'dsync' ? 'setuplink.dsync.delete' : 'setuplink.sso.delete',
+    crud: 'c',
+    req,
+  });
 
   return res.json({ data: {} });
 };
