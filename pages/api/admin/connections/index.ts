@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
-import { reportEvent } from '@lib/retraced';
+import { sendAudit } from '@lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -77,8 +77,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
       ? await connectionAPIController.createSAMLConnection(req.body)
       : await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
-    await reportEvent({
-      action: 'connection.sso.created',
+    await sendAudit({
+      action: 'connection.sso.create',
       crud: 'c',
       req,
     });
@@ -106,8 +106,8 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
       ? await connectionAPIController.updateSAMLConnection(req.body)
       : await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
-    await reportEvent({
-      action: 'connection.sso.updated',
+    await sendAudit({
+      action: 'connection.sso.update',
       crud: 'u',
       req,
     });
@@ -132,8 +132,8 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await connectionAPIController.deleteConnections({ clientID, clientSecret });
 
-    await reportEvent({
-      action: 'connection.sso.deleted',
+    await sendAudit({
+      action: 'connection.sso.delete',
       crud: 'd',
       req,
     });

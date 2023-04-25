@@ -1,5 +1,5 @@
 import type { NextApiRequest } from 'next';
-import type { Target } from '@retracedhq/retraced';
+import type { CRUD, Target } from '@retracedhq/retraced';
 
 export type AdminToken = {
   id: string;
@@ -39,14 +39,17 @@ export type Group = {
 export type Request = {
   action: AuditEventType;
   req: NextApiRequest;
-  crud: 'c' | 'r' | 'u' | 'd';
+  crud: CRUD;
   target?: Target;
+  source_ip?: string;
 };
 
 export type AuditEventType =
-  | 'connection.sso.created'
-  | 'connection.sso.updated'
-  | 'connection.sso.deleted'
-  | 'connection.dsync.created'
-  | 'connection.dsync.updated'
-  | 'connection.dsync.deleted';
+  | 'connection.sso.create'
+  | 'connection.sso.update'
+  | 'connection.sso.delete'
+  | 'connection.sso.read'
+  | 'connection.dsync.create'
+  | 'connection.dsync.update'
+  | 'connection.dsync.delete'
+  | 'connection.dsync.read';

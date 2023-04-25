@@ -40,7 +40,11 @@ export const getToken = async (req: NextApiRequest): Promise<AdminToken> => {
 };
 
 // Send an event to Retraced
-export const reportEvent = async (request: Request) => {
+export const sendAudit = async (request: Request) => {
+  if (!retracedOptions.hostUrl || !retracedOptions.apiKey || !retracedOptions.projectId) {
+    return;
+  }
+
   const { action, req, crud } = request;
 
   const token = await getNextAuthToken({
@@ -62,6 +66,7 @@ export const reportEvent = async (request: Request) => {
     name: token.name,
   };
 
+  // TODO: Add IP address and Target to event
   const event: Event = {
     action,
     crud,

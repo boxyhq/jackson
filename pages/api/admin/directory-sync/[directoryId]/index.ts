@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { reportEvent } from '@lib/retraced';
+import { sendAudit } from '@lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -27,8 +27,8 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.update(directoryId, req.body);
 
   if (data) {
-    await reportEvent({
-      action: 'connection.dsync.updated',
+    await sendAudit({
+      action: 'connection.dsync.update',
       crud: 'u',
       req,
     });
@@ -70,8 +70,8 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(error.code).json({ error });
   }
 
-  await reportEvent({
-    action: 'connection.dsync.deleted',
+  await sendAudit({
+    action: 'connection.dsync.delete',
     crud: 'd',
     req,
   });

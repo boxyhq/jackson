@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { DirectoryType } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
-import { reportEvent } from '@lib/retraced';
+import { sendAudit } from '@lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -32,8 +32,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (data) {
-    await reportEvent({
-      action: 'connection.dsync.created',
+    await sendAudit({
+      action: 'connection.dsync.create',
       crud: 'c',
       req,
     });
