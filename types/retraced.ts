@@ -48,8 +48,13 @@ export type AuditEventType =
   | 'connection.sso.create'
   | 'connection.sso.update'
   | 'connection.sso.delete'
-  | 'connection.sso.read'
   | 'connection.dsync.create'
   | 'connection.dsync.update'
   | 'connection.dsync.delete'
-  | 'connection.dsync.read';
+  | 'federation.saml.create'
+  | 'federation.saml.update'
+  | 'federation.saml.delete'
+  | 'setuplink.sso.create'
+  | 'setuplink.sso.delete'
+  | 'setuplink.dsync.create'
+  | 'setuplink.dsync.delete';
