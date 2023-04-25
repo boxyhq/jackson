@@ -57,4 +57,5 @@ export type AuditEventType =
   | 'setuplink.sso.create'
   | 'setuplink.sso.delete'
   | 'setuplink.dsync.create'
-  | 'setuplink.dsync.delete';
+  | 'setuplink.dsync.delete'
+  | 'settings.branding.update';

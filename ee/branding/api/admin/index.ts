@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { strings } from '@lib/strings';
+import { sendAudit } from '@lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { checkLicense } = await jackson();
@@ -37,8 +38,16 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { logoUrl, faviconUrl, companyName, primaryColor } = req.body;
 
+  const response = await brandingController?.update({ logoUrl, faviconUrl, companyName, primaryColor });
+
+  await sendAudit({
+    action: 'settings.branding.update',
+    crud: 'u',
+    req,
+  });
+
   return res.json({
-    data: await brandingController?.update({ logoUrl, faviconUrl, companyName, primaryColor }),
+    data: response,
   });
 };
 
