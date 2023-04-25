@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
+import { reportEvent } from '@lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -57,6 +58,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (paginatedConnectionList.pageToken) {
     res.setHeader('jackson-pagetoken', paginatedConnectionList.pageToken);
   }
+
   return res.json({ data: connections });
 };
 
@@ -71,19 +73,17 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    // Create SAML connection
-    if (isSAML) {
-      const connection = await connectionAPIController.createSAMLConnection(req.body);
+    const connection = isSAML
+      ? await connectionAPIController.createSAMLConnection(req.body)
+      : await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
-      return res.status(201).json({ data: connection });
-    }
+    await reportEvent({
+      action: 'connection.sso.created',
+      crud: 'c',
+      req,
+    });
 
-    // Create OIDC connection
-    if (isOIDC) {
-      const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
-
-      return res.status(201).json({ data: connection });
-    }
+    return res.status(201).json({ data: connection });
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
 
@@ -102,19 +102,17 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    // Update SAML connection
-    if (isSAML) {
-      const connection = await connectionAPIController.updateSAMLConnection(req.body);
+    const connection = isSAML
+      ? await connectionAPIController.updateSAMLConnection(req.body)
+      : await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
-      return res.status(200).json({ data: connection });
-    }
+    await reportEvent({
+      action: 'connection.sso.updated',
+      crud: 'u',
+      req,
+    });
 
-    // Update OIDC connection
-    if (isOIDC) {
-      const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
-
-      return res.status(200).json({ data: connection });
-    }
+    return res.status(200).json({ data: connection });
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
 
@@ -133,6 +131,12 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     await connectionAPIController.deleteConnections({ clientID, clientSecret });
+
+    await reportEvent({
+      action: 'connection.sso.deleted',
+      crud: 'd',
+      req,
+    });
 
     return res.status(200).json({ data: null });
   } catch (error: any) {
