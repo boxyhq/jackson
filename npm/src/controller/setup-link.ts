@@ -74,6 +74,21 @@ export class SetupLinkController {
     return setupLink;
   }
 
+  // Get a setup link by id
+  async getById(id: string) {
+    if (!id) {
+      throw new JacksonError('Missing setup link id', 400);
+    }
+
+    const setupLink: SetupLink = await this.setupLinkStore.get(id);
+
+    if (!setupLink) {
+      throw new JacksonError('Setup link is not found', 404);
+    }
+
+    return setupLink;
+  }
+
   // Get a setup link by token
   async getByToken(token: string): Promise<SetupLink> {
     if (!token) {
