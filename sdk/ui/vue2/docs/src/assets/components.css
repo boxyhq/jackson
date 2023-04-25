@@ -1,0 +1,63 @@
+.hero-body-components {
+    width: 100vw;
+    display: flex;
+    padding: 0 30px;
+}
+
+.body-components {
+   width: 100vw;
+}
+
+.hero-navbar {
+    width: 20vw;
+    border: 1px solid red;
+}
+
+.hero-body{
+    width: 80vw;
+}
+
+.hero{
+    /*border: 1px solid rgba(5, 5, 5, 0.1);
+        padding: 20px;
+    */
+    height: auto;
+    margin: 15px 0;
+}
+
+.login-default-styles, .login-with-failing-onsubmit, .login-without-input, .login-with-custom-styles {
+    border: 1px solid rgba(5, 5, 5, 0.1);
+    padding: 20px;
+    margin: 15px 0;
+}
+
+.login-default-styles h2, .login-with-failing-onsubmit h2, .login-without-input h2, .login-with-custom-styles h2 {
+    font-size: 16px;
+}
+
+.hero-title {
+    margin: 10px 0;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid #eaecef;
+}
+
+.hero-description {
+    padding-bottom: 0.4em;
+    border-bottom: 1px dashed #eaecef;  
+}
+
+.hide {
+    display: none;
+}
+
+.btn-toggle {
+    cursor: pointer;
+    margin: 1em 0 0.5em 0;
+    background: #0070f3;
+    color: #fff;
+    padding: 0.5rem 0.7rem;
+    border-radius: 5px;
+    border: 1px solid #0070f3;
+    font-weight: 500;
+    font-size: 1rem;
+}
