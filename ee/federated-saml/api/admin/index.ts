@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { strings } from '@lib/strings';
+import { sendAudit } from '@lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { checkLicense } = await jackson();
@@ -45,6 +46,12 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     product,
     acsUrl,
     entityId,
+  });
+
+  await sendAudit({
+    action: 'federation.saml.create',
+    crud: 'c',
+    req,
   });
 
   return res.status(201).json({ data: app });

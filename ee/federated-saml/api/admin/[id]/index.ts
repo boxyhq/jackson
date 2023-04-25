@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { strings } from '@lib/strings';
+import { sendAudit } from '@lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { checkLicense } = await jackson();
@@ -75,6 +76,12 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
       primaryColor,
     });
 
+    await sendAudit({
+      action: 'federation.saml.update',
+      crud: 'u',
+      req,
+    });
+
     return res.status(200).json({ data: updatedApp });
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
@@ -93,6 +100,12 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     await samlFederatedController.app.delete(id);
+
+    await sendAudit({
+      action: 'federation.saml.delete',
+      crud: 'd',
+      req,
+    });
 
     return res.status(200).json({ data: {} });
   } catch (error: any) {
