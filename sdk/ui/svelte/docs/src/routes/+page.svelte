@@ -83,13 +83,6 @@
       'Open Sans', 'Helvetica Neue', sans-serif;
   }
 
-  .greet {
-    background: red;
-    color: white;
-    padding: 10px 15px;
-    margin: 20px;
-  }
-
   .title {
     font-weight: 600;
     font-size: 32px;
