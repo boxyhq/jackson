@@ -1,18 +1,10 @@
 import axios from 'axios';
 import type { NextApiRequest } from 'next';
 import { getToken as getNextAuthToken } from 'next-auth/jwt';
-import * as Retraced from '@retracedhq/retraced';
-import type { Event } from '@retracedhq/retraced';
 
-import type { AdminToken, Request } from 'types/retraced';
+import type { AdminToken } from 'types/retraced';
 import { retracedOptions } from './env';
 import { sessionName } from './constants';
-
-export const retracedClient = new Retraced.Client({
-  endpoint: retracedOptions.hostUrl,
-  apiKey: `${retracedOptions.apiKey}`,
-  projectId: `${retracedOptions.projectId}`,
-});
 
 export const getToken = async (req: NextApiRequest): Promise<AdminToken> => {
   const token = await getNextAuthToken({
@@ -37,38 +29,4 @@ export const getToken = async (req: NextApiRequest): Promise<AdminToken> => {
   );
 
   return data.adminToken;
-};
-
-// Send an event to Retraced
-export const sendAudit = async (request: Request) => {
-  if (!retracedOptions.hostUrl || !retracedOptions.apiKey || !retracedOptions.projectId) {
-    return;
-  }
-
-  const { action, req, crud } = request;
-
-  const token = await getNextAuthToken({
-    req,
-    cookieName: sessionName,
-  });
-
-  const group = {
-    id: 'boxyhq-admin-portal',
-    name: 'BoxyHQ Admin Portal',
-  };
-
-  const actor = {
-    id: token?.email || retracedOptions.apiKey,
-    name: token?.name || 'An unknown actor',
-  };
-
-  // TODO: Add IP address and Target to event
-  const event: Event = {
-    action,
-    crud,
-    group,
-    actor,
-  };
-
-  return await retracedClient.reportEvent(event);
 };

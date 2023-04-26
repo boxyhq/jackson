@@ -2,7 +2,7 @@ import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { GetConnectionsQuery } from '@boxyhq/saml-jackson';
-import { sendAudit } from '@lib/retraced';
+import { sendAudit } from '@ee/audit-log/lib/retraced';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;

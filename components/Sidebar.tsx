@@ -123,11 +123,11 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           text: 'Single Sign-On',
           active: asPath.includes('/admin/settings/sso-connection'),
         },
-        // {
-        //   href: '/admin/settings/audit-log',
-        //   text: 'Audit Log',
-        //   active: asPath.includes('/admin/settings/audit-log'),
-        // },
+        {
+          href: '/admin/settings/audit-log',
+          text: 'Audit Log',
+          active: asPath.includes('/admin/settings/audit-log'),
+        },
         {
           href: '/admin/settings/branding',
           text: 'Branding',
