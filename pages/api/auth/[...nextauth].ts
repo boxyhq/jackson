@@ -7,6 +7,7 @@ import jackson from '@lib/jackson';
 import { validateEmailWithACL } from '@lib/utils';
 import { jacksonOptions as env } from '@lib/env';
 import { sessionName } from '@lib/constants';
+import { sendAudit } from '@ee/audit-log/lib/retraced';
 
 export default NextAuth({
   theme: {
@@ -168,4 +169,16 @@ export default NextAuth({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   adapter: Adapter(),
+  events: {
+    async signIn({ user }) {
+      await sendAudit({
+        action: 'admin.auth.login',
+        crud: 'c',
+        actor: {
+          id: `${user.email}`,
+          name: `${user.name}`,
+        },
+      });
+    },
+  },
 });
