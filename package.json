@@ -70,7 +70,7 @@
     "react-i18next": "12.2.0",
     "react-syntax-highlighter": "15.5.0",
     "sharp": "0.32.0",
-    "swr": "2.1.2"
+    "swr": "2.1.4"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
