@@ -1,5 +1,5 @@
 import type { NextApiRequest } from 'next';
-import type { CRUD, Target } from '@retracedhq/retraced';
+import type { Actor, CRUD, Target } from '@retracedhq/retraced';
 
 export type AdminToken = {
   id: string;
@@ -38,8 +38,9 @@ export type Group = {
 
 export type Request = {
   action: AuditEventType;
-  req: NextApiRequest;
   crud: CRUD;
+  req?: NextApiRequest;
+  actor?: Actor;
   target?: Target;
   source_ip?: string;
 };
@@ -58,4 +59,6 @@ export type AuditEventType =
   | 'setuplink.sso.delete'
   | 'setuplink.dsync.create'
   | 'setuplink.dsync.delete'
-  | 'settings.branding.update';
+  | 'settings.branding.update'
+  | 'retraced.project.create'
+  | 'admin.auth.login';
