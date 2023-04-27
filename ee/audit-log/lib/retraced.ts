@@ -1,6 +1,7 @@
 import { getToken as getNextAuthToken } from 'next-auth/jwt';
 import * as Retraced from '@retracedhq/retraced';
 import type { Event } from '@retracedhq/retraced';
+import type { NextApiRequest } from 'next';
 
 import jackson from '@lib/jackson';
 import type { Request } from 'types/retraced';
@@ -21,7 +22,7 @@ export const retracedClient = new Retraced.Client({
 });
 
 // Find the actor for the event from the request
-const findActor = async (req: Request['req']) => {
+const findActor = async (req: NextApiRequest) => {
   const token = await getNextAuthToken({
     req,
     cookieName: sessionName,
@@ -40,7 +41,7 @@ const findActor = async (req: Request['req']) => {
 };
 
 // Get a viewer token for the current user to access the logs viewer
-export const getViewerToken = async (req: Request['req']) => {
+export const getViewerToken = async (req: NextApiRequest) => {
   const token = await getNextAuthToken({
     req,
     cookieName: sessionName,
@@ -65,13 +66,13 @@ export const sendAudit = async (request: Request) => {
     return;
   }
 
-  const { action, req, crud } = request;
+  const { action, crud, req, actor } = request;
 
   // TODO: Add IP address and Target to event
   const event: Event = {
     action,
     crud,
-    actor: await findActor(req),
+    actor: req ? await findActor(req) : actor,
     group: adminPortalGroup,
   };
 
