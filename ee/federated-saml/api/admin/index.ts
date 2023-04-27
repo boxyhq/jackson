@@ -49,7 +49,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   await sendAudit({
-    action: 'federation.saml.create',
+    action: 'federation.app.create',
     crud: 'c',
     req,
   });
@@ -71,6 +71,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (apps.pageToken) {
     res.setHeader('jackson-pagetoken', apps.pageToken);
   }
+
+  await sendAudit({
+    action: 'federation.app.view',
+    crud: 'r',
+    req,
+  });
 
   return res.json({ data: apps.data });
 };

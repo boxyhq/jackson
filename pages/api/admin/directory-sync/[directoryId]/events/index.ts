@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { sendAudit } from '@ee/audit-log/lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -43,6 +44,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     pageOffset,
     pageLimit,
     directoryId,
+  });
+
+  await sendAudit({
+    action: 'dsync.event.view',
+    crud: 'r',
+    req,
   });
 
   return res.status(200).json({ data: events });

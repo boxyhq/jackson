@@ -41,6 +41,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     const app = await samlFederatedController.app.get(id);
     const metadata = await samlFederatedController.app.getMetadata();
 
+    await sendAudit({
+      action: 'federation.app.view',
+      crud: 'r',
+      req,
+    });
+
     return res.status(200).json({
       data: {
         ...app,
@@ -77,7 +83,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     await sendAudit({
-      action: 'federation.saml.update',
+      action: 'federation.app.update',
       crud: 'u',
       req,
     });
@@ -102,7 +108,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     await samlFederatedController.app.delete(id);
 
     await sendAudit({
-      action: 'federation.saml.delete',
+      action: 'federation.app.delete',
       crud: 'd',
       req,
     });

@@ -28,7 +28,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (data) {
     await sendAudit({
-      action: 'connection.dsync.update',
+      action: 'dsync.connection.update',
       crud: 'u',
       req,
     });
@@ -48,6 +48,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directoryId } = req.query as { directoryId: string };
 
   const { data, error } = await directorySyncController.directories.get(directoryId);
+
+  await sendAudit({
+    action: 'dsync.connection.view',
+    crud: 'r',
+    req,
+  });
 
   if (data) {
     return res.status(200).json({ data });
@@ -71,7 +77,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   await sendAudit({
-    action: 'connection.dsync.delete',
+    action: 'dsync.connection.delete',
     crud: 'd',
     req,
   });

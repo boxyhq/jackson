@@ -43,7 +43,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   await sendAudit({
-    action: service === 'dsync' ? 'setuplink.dsync.create' : 'setuplink.sso.create',
+    action: service === 'dsync' ? 'dsync.setuplink.create' : 'sso.setuplink.create',
     crud: 'c',
     req,
   });
@@ -61,7 +61,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   await setupLinkController.remove(setupID);
 
   await sendAudit({
-    action: setupLink.service === 'dsync' ? 'setuplink.dsync.delete' : 'setuplink.sso.delete',
+    action: setupLink.service === 'dsync' ? 'dsync.setuplink.delete' : 'sso.setuplink.delete',
     crud: 'c',
     req,
   });
@@ -93,6 +93,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (token) {
     const setupLink = await setupLinkController.getByToken(token);
 
+    await sendAudit({
+      action: setupLink.service === 'dsync' ? 'dsync.setuplink.view' : 'sso.setuplink.view',
+      crud: 'r',
+      req,
+    });
+
     return res.json({ data: setupLink });
   }
 
@@ -108,6 +114,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     if (setupLinksPaginated.pageToken) {
       res.setHeader('jackson-pagetoken', setupLinksPaginated.pageToken);
     }
+
+    await sendAudit({
+      action: service === 'dsync' ? 'dsync.setuplink.view' : 'sso.setuplink.view',
+      crud: 'r',
+      req,
+    });
+
     return res.json({ data: setupLinksPaginated.data });
   }
 };

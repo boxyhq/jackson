@@ -68,6 +68,12 @@ const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     );
 
+    await sendAudit({
+      action: 'retraced.project.view',
+      crud: 'r',
+      req,
+    });
+
     return res.status(200).json({
       data,
     });

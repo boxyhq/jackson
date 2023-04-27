@@ -4,6 +4,7 @@ import axios from 'axios';
 import type { Project } from 'types/retraced';
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
+import { sendAudit } from '@ee/audit-log/lib/retraced';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -33,6 +34,12 @@ const getProject = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     }
   );
+
+  await sendAudit({
+    action: 'retraced.project.view',
+    crud: 'r',
+    req,
+  });
 
   return res.status(201).json({
     data,

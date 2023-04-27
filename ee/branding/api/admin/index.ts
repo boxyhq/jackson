@@ -41,7 +41,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const response = await brandingController?.update({ logoUrl, faviconUrl, companyName, primaryColor });
 
   await sendAudit({
-    action: 'settings.branding.update',
+    action: 'admin.branding.update',
     crud: 'u',
     req,
   });

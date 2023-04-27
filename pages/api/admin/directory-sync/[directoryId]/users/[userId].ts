@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { sendAudit } from '@ee/audit-log/lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -28,6 +29,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: user, error } = await directorySyncController.users
     .with(directory.tenant, directory.product)
     .get(userId);
+
+  await sendAudit({
+    action: 'dsync.user.view',
+    crud: 'r',
+    req,
+  });
 
   if (error) {
     return res.status(400).json({ error });

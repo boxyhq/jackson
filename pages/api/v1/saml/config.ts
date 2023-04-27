@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const connection = await connectionAPIController.config(req.body);
 
       await sendAudit({
-        action: 'connection.sso.create',
+        action: 'sso.connection.create',
         crud: 'c',
         req,
       });
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const connection = await connectionAPIController.updateConfig(req.body);
 
       await sendAudit({
-        action: 'connection.sso.update',
+        action: 'sso.connection.update',
         crud: 'u',
         req,
       });
@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const connection = await connectionAPIController.deleteConfig(req.body);
 
       await sendAudit({
-        action: 'connection.sso.delete',
+        action: 'sso.connection.delete',
         crud: 'd',
         req,
       });

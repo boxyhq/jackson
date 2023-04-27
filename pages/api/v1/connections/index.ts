@@ -52,7 +52,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     : await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
   await sendAudit({
-    action: 'connection.sso.create',
+    action: 'sso.connection.create',
     crud: 'c',
     req,
   });
@@ -75,7 +75,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     : await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
   await sendAudit({
-    action: 'connection.sso.update',
+    action: 'sso.connection.update',
     crud: 'u',
     req,
   });
@@ -90,7 +90,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   await connectionAPIController.deleteConnections(req.body);
 
   await sendAudit({
-    action: 'connection.sso.delete',
+    action: 'sso.connection.delete',
     crud: 'd',
     req,
   });

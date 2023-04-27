@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import type { IAdminController } from '@boxyhq/saml-jackson';
+import { sendAudit } from '@ee/audit-log/lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -30,6 +31,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminControl
   if (!trace) {
     return res.status(404).json({ error: { message: 'Trace not found.' } });
   }
+
+  await sendAudit({
+    action: 'saml.tracer.view',
+    crud: 'r',
+    req,
+  });
 
   return res.json({ data: trace });
 };
