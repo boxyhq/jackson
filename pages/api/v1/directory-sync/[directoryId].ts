@@ -42,7 +42,6 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   await sendAudit({
     action: 'dsync.connection.delete',
     crud: 'd',
-    req,
   });
 
   return res.status(200).json({ data: {} });

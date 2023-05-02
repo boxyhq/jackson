@@ -21,25 +21,6 @@ export const retracedClient = new Retraced.Client({
   projectId: `${retracedOptions.projectId}`,
 });
 
-// Find the actor for the event from the request
-const findActor = async (req: NextApiRequest) => {
-  const token = await getNextAuthToken({
-    req,
-    cookieName: sessionName,
-  });
-
-  if (!token || !token.email || !token.name) {
-    return {
-      id: 'An unknown actor',
-    };
-  }
-
-  return {
-    id: token.email,
-    name: token.name,
-  };
-};
-
 // Get a viewer token for the current user to access the logs viewer
 export const getViewerToken = async (req: NextApiRequest) => {
   const token = await getNextAuthToken({
@@ -52,6 +33,23 @@ export const getViewerToken = async (req: NextApiRequest) => {
   }
 
   return await retracedClient.getViewerToken(adminPortalGroup.id, token.email, true);
+};
+
+// Find the actor for the event from the request
+const findActorFromRequest = async (req: NextApiRequest): Promise<Retraced.Actor | null> => {
+  const token = await getNextAuthToken({
+    req,
+    cookieName: sessionName,
+  });
+
+  if (token && token.email && token.name) {
+    return {
+      id: token.email,
+      name: token.name,
+    };
+  }
+
+  return null;
 };
 
 // Send an event to Retraced
@@ -72,9 +70,22 @@ export const sendAudit = async (request: Request) => {
   const event: Event = {
     action,
     crud,
-    actor: req ? await findActor(req) : actor,
     group: adminPortalGroup,
   };
+
+  let requestActor: Retraced.Actor | null = null;
+
+  if (req) {
+    requestActor = await findActorFromRequest(req);
+  } else if (actor) {
+    requestActor = { ...actor };
+  }
+
+  if (requestActor) {
+    event['actor'] = requestActor;
+  } else {
+    event['is_anonymous'] = true;
+  }
 
   return await retracedClient.reportEvent(event);
 };

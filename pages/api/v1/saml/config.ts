@@ -14,7 +14,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await sendAudit({
         action: 'sso.connection.create',
         crud: 'c',
-        req,
       });
 
       return res.json(connection);
@@ -26,7 +25,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await sendAudit({
         action: 'sso.connection.update',
         crud: 'u',
-        req,
       });
 
       return res.status(204).end(connection);
@@ -36,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await sendAudit({
         action: 'sso.connection.delete',
         crud: 'd',
-        req,
       });
 
       return res.status(204).end(connection);

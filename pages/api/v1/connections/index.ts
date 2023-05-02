@@ -54,7 +54,6 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   await sendAudit({
     action: 'sso.connection.create',
     crud: 'c',
-    req,
   });
 
   return res.json(connection);
@@ -77,7 +76,6 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   await sendAudit({
     action: 'sso.connection.update',
     crud: 'u',
-    req,
   });
 
   return res.status(204).json(connection);
@@ -92,7 +90,6 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   await sendAudit({
     action: 'sso.connection.delete',
     crud: 'd',
-    req,
   });
 
   return res.status(204).end();

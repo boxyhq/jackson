@@ -60,7 +60,6 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   await sendAudit({
     action: 'dsync.connection.create',
     crud: 'c',
-    req,
   });
 
   return res.status(201).json({ data });
