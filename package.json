@@ -89,7 +89,7 @@
     "eslint-config-prettier": "8.8.0",
     "mkdirp": "3.0.0",
     "postcss": "8.4.23",
-    "prettier": "2.8.7",
+    "prettier": "2.8.8",
     "prettier-plugin-tailwindcss": "0.2.7",
     "swagger-jsdoc": "6.2.8",
     "tailwindcss": "3.3.1",
