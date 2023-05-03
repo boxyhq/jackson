@@ -70,7 +70,7 @@
     "react-i18next": "12.2.0",
     "react-syntax-highlighter": "15.5.0",
     "sharp": "0.32.0",
-    "swr": "2.1.4"
+    "swr": "2.1.5"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
@@ -84,7 +84,7 @@
     "autoprefixer": "10.4.14",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
-    "eslint": "8.38.0",
+    "eslint": "8.39.0",
     "eslint-config-next": "13.3.0",
     "eslint-config-prettier": "8.8.0",
     "mkdirp": "3.0.0",
