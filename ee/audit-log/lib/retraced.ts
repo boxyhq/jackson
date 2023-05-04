@@ -30,7 +30,9 @@ export const getViewerToken = async (req: NextApiRequest) => {
   try {
     return await retracedClient.getViewerToken(adminPortalGroup.id, token.email, true);
   } catch (err: any) {
-    throw new Error('Unable to get viewer token from Retraced. Please try again later.');
+    throw new Error(
+      'Unable to get viewer token from Retraced. Please check your environment variables and try again.'
+    );
   }
 };
 

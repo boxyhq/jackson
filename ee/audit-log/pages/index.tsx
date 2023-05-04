@@ -30,7 +30,11 @@ const AuditLog = () => {
   }
 
   if (error) {
-    return <Alert message={error.message} type='warning' />;
+    return (
+      <LicenseRequired>
+        <Alert message={error.message} type='error' />
+      </LicenseRequired>
+    );
   }
 
   if (!data) {
