@@ -57,7 +57,7 @@
     "classnames": "2.3.2",
     "cors": "2.8.5",
     "daisyui": "2.51.5",
-    "i18next": "22.4.14",
+    "i18next": "22.4.15",
     "micromatch": "4.0.5",
     "next": "13.3.0",
     "next-auth": "4.22.0",
@@ -70,7 +70,7 @@
     "react-i18next": "12.2.0",
     "react-syntax-highlighter": "15.5.0",
     "sharp": "0.32.0",
-    "swr": "2.1.4"
+    "swr": "2.1.5"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
@@ -84,12 +84,12 @@
     "autoprefixer": "10.4.14",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
-    "eslint": "8.38.0",
+    "eslint": "8.39.0",
     "eslint-config-next": "13.3.0",
     "eslint-config-prettier": "8.8.0",
     "mkdirp": "3.0.0",
     "postcss": "8.4.23",
-    "prettier": "2.8.7",
+    "prettier": "2.8.8",
     "prettier-plugin-tailwindcss": "0.2.7",
     "swagger-jsdoc": "6.2.8",
     "tailwindcss": "3.3.1",
