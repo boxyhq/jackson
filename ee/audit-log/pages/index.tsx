@@ -1,6 +1,11 @@
 import dynamic from 'next/dynamic';
+import useSWR from 'swr';
 
 import LicenseRequired from '@components/LicenseRequired';
+import Alert from '@components/Alert';
+import Loading from '@components/Loading';
+import { fetcher } from '@lib/ui/utils';
+import type { ApiError } from 'types';
 
 interface RetracedEventsBrowserProps {
   host: string;
@@ -17,8 +22,22 @@ const RetracedEventsBrowser = dynamic<RetracedEventsBrowserProps>(() => import('
   ssr: false,
 });
 
-const AuditLog = (props: AuditLogProps) => {
-  const { viewerToken, retracedHostUrl } = props;
+const AuditLog = () => {
+  const { data, error, isLoading } = useSWR<AuditLogProps, ApiError>('/api/admin/audit-log', fetcher);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <Alert message={error.message} type='warning' />;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const { viewerToken, retracedHostUrl } = data;
 
   return (
     <LicenseRequired>
