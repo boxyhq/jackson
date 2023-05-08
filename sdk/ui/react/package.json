@@ -41,7 +41,7 @@
   "devDependencies": {
     "@mdx-js/react": "2.3.0",
     "@rollup/plugin-typescript": "11.1.0",
-    "@types/node": "18.16.3",
+    "@types/node": "20.1.0",
     "@types/react": "18.2.0",
     "@types/react-router-dom": "5.3.3",
     "@vitejs/plugin-react": "4.0.0",
