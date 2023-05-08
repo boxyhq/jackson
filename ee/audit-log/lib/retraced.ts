@@ -54,6 +54,7 @@ export const sendAudit = async (request: Request) => {
       action,
       crud,
       group: adminPortalGroup,
+      created: new Date(),
     };
 
     let requestActor: Retraced.Actor | null = null;
