@@ -23,7 +23,9 @@ const RetracedEventsBrowser = dynamic<RetracedEventsBrowserProps>(() => import('
 });
 
 const AuditLog = () => {
-  const { data, error, isLoading } = useSWR<AuditLogProps, ApiError>('/api/admin/audit-log', fetcher);
+  const { data, error, isLoading } = useSWR<AuditLogProps, ApiError>('/api/admin/audit-log', fetcher, {
+    revalidateOnFocus: false,
+  });
 
   if (isLoading) {
     return <Loading />;
