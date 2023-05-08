@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'POST') {
       const connection = await connectionAPIController.config(req.body);
 
-      await sendAudit({
+      sendAudit({
         action: 'sso.connection.create',
         crud: 'c',
       });
@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else if (req.method === 'PATCH') {
       const connection = await connectionAPIController.updateConfig(req.body);
 
-      await sendAudit({
+      sendAudit({
         action: 'sso.connection.update',
         crud: 'u',
       });
@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else if (req.method === 'DELETE') {
       const connection = await connectionAPIController.deleteConfig(req.body);
 
-      await sendAudit({
+      sendAudit({
         action: 'sso.connection.delete',
         crud: 'd',
       });

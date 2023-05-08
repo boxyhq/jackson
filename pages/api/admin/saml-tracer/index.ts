@@ -35,7 +35,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminControl
     res.setHeader('jackson-pagetoken', tracesPaginated.pageToken);
   }
 
-  await sendAudit({
+  sendAudit({
     action: 'saml.tracer.view',
     crud: 'r',
     req,

@@ -46,7 +46,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     directoryId,
   });
 
-  await sendAudit({
+  sendAudit({
     action: 'dsync.event.view',
     crud: 'r',
     req,

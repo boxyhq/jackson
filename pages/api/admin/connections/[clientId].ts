@@ -26,7 +26,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const connections = await connectionAPIController.getConnections({ clientID: clientId });
 
-    await sendAudit({
+    sendAudit({
       action: 'sso.connection.view',
       crud: 'r',
       req,

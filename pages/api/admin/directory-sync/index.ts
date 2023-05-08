@@ -32,7 +32,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (data) {
-    await sendAudit({
+    sendAudit({
       action: 'dsync.connection.create',
       crud: 'c',
       req,
@@ -68,7 +68,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('jackson-pagetoken', nextPageToken);
   }
 
-  await sendAudit({
+  sendAudit({
     action: 'dsync.connection.view',
     crud: 'r',
     req,

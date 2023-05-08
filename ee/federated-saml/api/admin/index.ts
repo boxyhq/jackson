@@ -48,7 +48,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     entityId,
   });
 
-  await sendAudit({
+  sendAudit({
     action: 'federation.app.create',
     crud: 'c',
     req,
@@ -72,7 +72,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('jackson-pagetoken', apps.pageToken);
   }
 
-  await sendAudit({
+  sendAudit({
     action: 'federation.app.view',
     crud: 'r',
     req,

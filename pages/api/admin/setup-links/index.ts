@@ -42,7 +42,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     regenerate,
   });
 
-  await sendAudit({
+  sendAudit({
     action: service === 'dsync' ? 'dsync.setuplink.create' : 'sso.setuplink.create',
     crud: 'c',
     req,
@@ -60,7 +60,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await setupLinkController.remove(setupID);
 
-  await sendAudit({
+  sendAudit({
     action: setupLink.service === 'dsync' ? 'dsync.setuplink.delete' : 'sso.setuplink.delete',
     crud: 'c',
     req,
@@ -93,7 +93,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (token) {
     const setupLink = await setupLinkController.getByToken(token);
 
-    await sendAudit({
+    sendAudit({
       action: setupLink.service === 'dsync' ? 'dsync.setuplink.view' : 'sso.setuplink.view',
       crud: 'r',
       req,
@@ -115,7 +115,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
       res.setHeader('jackson-pagetoken', setupLinksPaginated.pageToken);
     }
 
-    await sendAudit({
+    sendAudit({
       action: service === 'dsync' ? 'dsync.setuplink.view' : 'sso.setuplink.view',
       crud: 'r',
       req,

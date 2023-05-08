@@ -32,7 +32,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminControl
     return res.status(404).json({ error: { message: 'Trace not found.' } });
   }
 
-  await sendAudit({
+  sendAudit({
     action: 'saml.tracer.view',
     crud: 'r',
     req,

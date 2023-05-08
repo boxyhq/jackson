@@ -57,7 +57,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(error.code).json({ error });
   }
 
-  await sendAudit({
+  sendAudit({
     action: 'dsync.connection.create',
     crud: 'c',
   });

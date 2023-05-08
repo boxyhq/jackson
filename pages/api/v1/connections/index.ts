@@ -51,7 +51,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     ? await connectionAPIController.createSAMLConnection(req.body)
     : await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
-  await sendAudit({
+  sendAudit({
     action: 'sso.connection.create',
     crud: 'c',
   });
@@ -73,7 +73,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     ? await connectionAPIController.updateSAMLConnection(req.body)
     : await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
-  await sendAudit({
+  sendAudit({
     action: 'sso.connection.update',
     crud: 'u',
   });
@@ -87,7 +87,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await connectionAPIController.deleteConnections(req.body);
 
-  await sendAudit({
+  sendAudit({
     action: 'sso.connection.delete',
     crud: 'd',
   });

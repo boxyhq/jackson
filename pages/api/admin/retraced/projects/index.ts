@@ -39,7 +39,7 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   );
 
-  await sendAudit({
+  sendAudit({
     action: 'retraced.project.create',
     crud: 'c',
     req,
@@ -68,7 +68,7 @@ const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     );
 
-    await sendAudit({
+    sendAudit({
       action: 'retraced.project.view',
       crud: 'r',
       req,

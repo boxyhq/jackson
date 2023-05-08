@@ -30,7 +30,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     .with(directory.tenant, directory.product)
     .get(userId);
 
-  await sendAudit({
+  sendAudit({
     action: 'dsync.user.view',
     crud: 'r',
     req,

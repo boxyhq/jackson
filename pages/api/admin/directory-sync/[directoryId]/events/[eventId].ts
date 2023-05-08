@@ -38,7 +38,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     .with(directory.tenant, directory.product)
     .get(eventId);
 
-  await sendAudit({
+  sendAudit({
     action: 'dsync.event.view',
     crud: 'r',
     req,

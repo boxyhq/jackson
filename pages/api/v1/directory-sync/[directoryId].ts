@@ -39,7 +39,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await directorySyncController.directories.delete(directoryId);
 
-  await sendAudit({
+  sendAudit({
     action: 'dsync.connection.delete',
     crud: 'd',
   });

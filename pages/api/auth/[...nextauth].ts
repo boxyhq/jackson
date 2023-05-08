@@ -171,7 +171,7 @@ export default NextAuth({
   adapter: Adapter(),
   events: {
     async signIn({ user }) {
-      await sendAudit({
+      sendAudit({
         action: 'admin.auth.login',
         crud: 'c',
         actor: {
