@@ -83,7 +83,7 @@
     "@types/react": "18.0.33",
     "@typescript-eslint/eslint-plugin": "5.57.1",
     "@typescript-eslint/parser": "5.57.1",
-    "autoprefixer": "^10.4.14",
+    "autoprefixer": "10.4.14",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
     "eslint": "8.38.0",
@@ -94,7 +94,7 @@
     "prettier": "2.8.7",
     "prettier-plugin-tailwindcss": "0.2.7",
     "swagger-jsdoc": "6.2.8",
-    "tailwindcss": "^3.3.1",
+    "tailwindcss": "^3.3.2",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.0.4"
