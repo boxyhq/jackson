@@ -21,3 +21,19 @@ export const extractAuthToken = (req): string | null => {
 
   return parts.length > 1 ? parts[1] : null;
 };
+
+export const redactApiKey = (apiKey: string | null) => {
+  if (!apiKey) {
+    throw new Error('API key must be provided');
+  }
+
+  const redactLength = Math.floor(apiKey.length / 3);
+
+  if (redactLength === 0) {
+    throw new Error('API key is too short to redact');
+  }
+
+  const redactedPart = '*'.repeat(redactLength);
+
+  return apiKey.substring(0, apiKey.length - redactLength) + redactedPart;
+};

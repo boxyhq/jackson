@@ -4,16 +4,24 @@ import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { GetConfigQuery } from '@boxyhq/saml-jackson';
 import { sendAudit } from '@ee/audit-log/lib/retraced';
+import { extractAuthToken, redactApiKey } from '@lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { connectionAPIController } = await jackson();
+
+    const actor = {
+      id: redactApiKey(extractAuthToken(req)),
+      name: 'API key',
+    };
+
     if (req.method === 'POST') {
       const connection = await connectionAPIController.config(req.body);
 
       sendAudit({
         action: 'sso.connection.create',
         crud: 'c',
+        actor,
       });
 
       return res.json(connection);
@@ -25,6 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       sendAudit({
         action: 'sso.connection.update',
         crud: 'u',
+        actor,
       });
 
       return res.status(204).end(connection);
@@ -34,6 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       sendAudit({
         action: 'sso.connection.delete',
         crud: 'd',
+        actor,
       });
 
       return res.status(204).end(connection);

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { sendAudit } from '@ee/audit-log/lib/retraced';
+import { extractAuthToken, redactApiKey } from '@lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -42,6 +43,10 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   sendAudit({
     action: 'dsync.connection.delete',
     crud: 'd',
+    actor: {
+      id: redactApiKey(extractAuthToken(req)),
+      name: 'API key',
+    },
   });
 
   return res.status(200).json({ data: {} });

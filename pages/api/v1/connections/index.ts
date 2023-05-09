@@ -3,6 +3,7 @@ import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { GetConnectionsQuery } from '@boxyhq/saml-jackson';
 import { sendAudit } from '@ee/audit-log/lib/retraced';
+import { extractAuthToken, redactApiKey } from '@lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -54,6 +55,10 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   sendAudit({
     action: 'sso.connection.create',
     crud: 'c',
+    actor: {
+      id: redactApiKey(extractAuthToken(req)),
+      name: 'API key',
+    },
   });
 
   return res.json(connection);
@@ -76,6 +81,10 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   sendAudit({
     action: 'sso.connection.update',
     crud: 'u',
+    actor: {
+      id: redactApiKey(extractAuthToken(req)),
+      name: 'API key',
+    },
   });
 
   return res.status(204).json(connection);
@@ -90,6 +99,10 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   sendAudit({
     action: 'sso.connection.delete',
     crud: 'd',
+    actor: {
+      id: redactApiKey(extractAuthToken(req)),
+      name: 'API key',
+    },
   });
 
   return res.status(204).end();

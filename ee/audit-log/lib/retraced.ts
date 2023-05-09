@@ -71,6 +71,8 @@ export const sendAudit = async (request: Request) => {
       event['is_anonymous'] = true;
     }
 
+    console.log(event);
+
     return await retracedClient.reportEvent(event);
   } catch (err: any) {
     //
