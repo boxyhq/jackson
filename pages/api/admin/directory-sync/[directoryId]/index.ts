@@ -49,12 +49,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
-  sendAudit({
-    action: 'dsync.connection.view',
-    crud: 'r',
-    req,
-  });
-
   if (data) {
     return res.status(200).json({ data });
   }

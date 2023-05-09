@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { sendAudit } from '@ee/audit-log/lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -25,12 +24,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const connections = await connectionAPIController.getConnections({ clientID: clientId });
-
-    sendAudit({
-      action: 'sso.connection.view',
-      crud: 'r',
-      req,
-    });
 
     return res.json({ data: connections[0] });
   } catch (error: any) {

@@ -59,12 +59,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('jackson-pagetoken', paginatedConnectionList.pageToken);
   }
 
-  sendAudit({
-    action: 'sso.connection.view',
-    crud: 'r',
-    req,
-  });
-
   return res.json({ data: connections });
 };
 

@@ -50,33 +50,24 @@ export type AuditEventType =
   | 'sso.connection.create'
   | 'sso.connection.update'
   | 'sso.connection.delete'
-  | 'sso.connection.view'
   | 'sso.setuplink.create'
   | 'sso.setuplink.delete'
-  | 'sso.setuplink.view'
 
   // Directory Sync
   | 'dsync.connection.create'
   | 'dsync.connection.update'
   | 'dsync.connection.delete'
-  | 'dsync.connection.view'
   | 'dsync.setuplink.create'
   | 'dsync.setuplink.delete'
-  | 'dsync.setuplink.view'
 
   // Federated SAML
   | 'federation.app.create'
   | 'federation.app.update'
   | 'federation.app.delete'
-  | 'federation.app.view'
-
-  // SAML Tracer
-  | 'saml.tracer.view'
-
-  // Retraced
-  | 'retraced.project.create'
-  | 'retraced.project.view'
 
   // Admin
   | 'admin.branding.update'
-  | 'admin.auth.login';
+  | 'admin.auth.login'
+
+  // Retraced
+  | 'retraced.project.create';

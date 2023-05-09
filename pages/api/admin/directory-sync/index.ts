@@ -68,12 +68,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('jackson-pagetoken', nextPageToken);
   }
 
-  sendAudit({
-    action: 'dsync.connection.view',
-    crud: 'r',
-    req,
-  });
-
   if (data) {
     return res.status(200).json({ data });
   }

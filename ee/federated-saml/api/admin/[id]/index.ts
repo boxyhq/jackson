@@ -41,12 +41,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     const app = await samlFederatedController.app.get(id);
     const metadata = await samlFederatedController.app.getMetadata();
 
-    sendAudit({
-      action: 'federation.app.view',
-      crud: 'r',
-      req,
-    });
-
     return res.status(200).json({
       data: {
         ...app,

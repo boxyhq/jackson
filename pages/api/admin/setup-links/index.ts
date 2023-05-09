@@ -93,12 +93,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (token) {
     const setupLink = await setupLinkController.getByToken(token);
 
-    sendAudit({
-      action: setupLink.service === 'dsync' ? 'dsync.setuplink.view' : 'sso.setuplink.view',
-      crud: 'r',
-      req,
-    });
-
     return res.json({ data: setupLink });
   }
 
@@ -114,12 +108,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     if (setupLinksPaginated.pageToken) {
       res.setHeader('jackson-pagetoken', setupLinksPaginated.pageToken);
     }
-
-    sendAudit({
-      action: service === 'dsync' ? 'dsync.setuplink.view' : 'sso.setuplink.view',
-      crud: 'r',
-      req,
-    });
 
     return res.json({ data: setupLinksPaginated.data });
   }
