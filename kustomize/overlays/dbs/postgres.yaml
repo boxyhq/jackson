@@ -30,17 +30,17 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:14.2
+          image: postgres:13
           imagePullPolicy: IfNotPresent
           env:
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
             - name: POSTGRES_USER
               value: postgres
-            # - name: POSTGRES_PASSWORD
-            # value: ''
-            # - name: POSTGRES_DB
-            #   value: postgres
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_DB
+              value: postgres
           ports:
             - name: postgres
               containerPort: 5432
@@ -68,17 +68,17 @@ spec:
             timeoutSeconds: 1
             periodSeconds: 10
           volumeMounts:
-            - name: jackson-datadir
+            - name: jackson-postgres-data
               mountPath: /var/lib/postgresql/data
 
       volumes:
-        - name: jackson-datadir
+        - name: jackson-postgres-data
           persistentVolumeClaim:
-            claimName: jackson-datadir
+            claimName: jackson-postgres-data
 
   volumeClaimTemplates:
     - metadata:
-        name: jackson-datadir
+        name: jackson-postgres-data
       spec:
         accessModes:
           - 'ReadWriteOnce'
