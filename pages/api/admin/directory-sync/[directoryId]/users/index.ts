@@ -33,12 +33,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     .with(directory.tenant, directory.product)
     .getAll({ pageOffset, pageLimit, directoryId });
 
-  sendAudit({
-    action: 'dsync.user.view',
-    crud: 'r',
-    req,
-  });
-
   if (error) {
     return res.status(error.code).json({ error });
   }

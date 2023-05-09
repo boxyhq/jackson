@@ -63,9 +63,6 @@ export type AuditEventType =
   | 'dsync.setuplink.create'
   | 'dsync.setuplink.delete'
   | 'dsync.setuplink.view'
-  | 'dsync.user.view'
-  | 'dsync.group.view'
-  | 'dsync.event.view'
 
   // Federated SAML
   | 'federation.app.create'
