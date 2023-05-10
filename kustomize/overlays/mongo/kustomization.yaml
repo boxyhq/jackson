@@ -2,7 +2,7 @@
 bases:
   - ../../base
   - ../../base/services
-  - ../dbs
+  - ../dbs/mongo
 
 resources:
   - ./secrets.yaml

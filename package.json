@@ -27,6 +27,8 @@
     "mariadb": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql npm run dev",
     "mssql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mssql DB_URL='sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!' npm run dev",
     "dynamodb": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=dynamodb DB_URL='http://localhost:8000' npm run dev",
+    "skaffold:postgres": "skaffold dev -f skaffold-postgres.yaml --status-check=false --force=true",
+    "skaffold:mongo": "skaffold dev -f skaffold-mongo.yaml --status-check=false --force=true",
     "start": "next start -p 5225",
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
     "redis": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=redis DB_TYPE=redis DB_URL=redis://localhost:6379/redis npm run dev",

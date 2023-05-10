@@ -12,4 +12,4 @@ build:
 manifests:
   kustomize:
     paths:
-      - ./kustomize/overlays/dev
+      - ./kustomize/overlays/postgres
