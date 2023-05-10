@@ -41,20 +41,20 @@
   "devDependencies": {
     "@mdx-js/react": "2.3.0",
     "@rollup/plugin-typescript": "11.1.0",
-    "@types/node": "18.15.11",
-    "@types/react": "18.0.33",
+    "@types/node": "20.1.0",
+    "@types/react": "18.2.0",
     "@types/react-router-dom": "5.3.3",
-    "@vitejs/plugin-react": "3.1.0",
+    "@vitejs/plugin-react": "4.0.0",
     "autoprefixer": "10.4.14",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.10.0",
+    "react-router-dom": "6.11.1",
     "rimraf": "5.0.0",
     "serve": "14.2.0",
-    "vite": "4.2.1",
-    "vite-pages-theme-doc": "4.1.0",
+    "vite": "4.3.5",
+    "vite-pages-theme-doc": "4.1.4",
     "vite-plugin-css-injected-by-js": "3.1.0",
-    "vite-plugin-react-pages": "4.1.0"
+    "vite-plugin-react-pages": "4.1.1"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
