@@ -27,7 +27,7 @@ let oidcDiscoveryController: IOidcDiscoveryController;
 let spConfig: ISPSAMLConfig;
 let samlFederatedController: ISAMLFederationController;
 let checkLicense: () => Promise<boolean>;
-let brandingController: IBrandingController | null;
+let brandingController: IBrandingController;
 
 const g = global as any;
 
