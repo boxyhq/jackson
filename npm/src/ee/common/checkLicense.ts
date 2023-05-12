@@ -10,7 +10,10 @@ const checkLicense = async (license: string | undefined): Promise<boolean> => {
 
 export const throwIfInvalidLicense = async (license: string | undefined): Promise<void> => {
   if (!(await checkLicense(license))) {
-    throw new JacksonError('Please add a valid license to use this feature.', 403);
+    throw new JacksonError(
+      'Enterprise License not found. This is an enterprise feature, please add a valid license to use this feature.',
+      403
+    );
   }
 };
 
