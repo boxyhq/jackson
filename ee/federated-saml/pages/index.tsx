@@ -8,7 +8,6 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import EmptyState from '@components/EmptyState';
 import LicenseRequired from '@components/LicenseRequired';
-import { errorToast } from '@components/Toaster';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
@@ -17,12 +16,14 @@ import { IconButton } from '@components/IconButton';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import router from 'next/router';
+import Alert from '@components/Alert';
 
 const AppsList: NextPage = () => {
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
 
   let getAppsUrl = `/api/admin/federated-saml?offset=${paginate.offset}&limit=${pageLimit}`;
+
   // Use the (next)pageToken mapped to the previous page offset to get the current page
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
@@ -31,12 +32,12 @@ const AppsList: NextPage = () => {
   const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp[]>, ApiError>(getAppsUrl, fetcher);
 
   const nextPageToken = data?.pageToken;
+
   // store the nextPageToken against the pageOffset
   useEffect(() => {
     if (nextPageToken) {
       setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
@@ -44,8 +45,11 @@ const AppsList: NextPage = () => {
   }
 
   if (error) {
-    errorToast(error.message);
-    return null;
+    return (
+      <LicenseRequired>
+        <Alert type='error' message={error.message} />
+      </LicenseRequired>
+    );
   }
 
   const apps = data?.data || [];
