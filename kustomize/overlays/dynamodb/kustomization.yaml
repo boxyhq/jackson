@@ -1,0 +1,18 @@
+---
+bases:
+  - ../../base
+  - ../../base/services
+  - ../dbs/dynamodb
+
+resources:
+  - ./secrets.yaml
+
+patches:
+  - ./jackson-service.yaml
+
+commonLabels:
+  retraceddev: '1'
+
+images:
+  - name: boxyhq/jackson
+    newTag: 1.7.4
