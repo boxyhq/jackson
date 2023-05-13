@@ -67,7 +67,7 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: ISAMLFederationController;
-  brandingController: IBrandingController | null;
+  brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
