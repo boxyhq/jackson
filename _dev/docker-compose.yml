@@ -20,7 +20,6 @@ services:
     restart: always
   mysql:
     image: mysql:8.0.31
-    platform: linux/amd64
     ports:
       - 3307:3306
     restart: always

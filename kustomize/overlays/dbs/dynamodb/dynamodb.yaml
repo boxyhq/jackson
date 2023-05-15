@@ -31,13 +31,13 @@ spec:
         - name: dynamodb
           image: amazon/dynamodb-local:latest
           imagePullPolicy: IfNotPresent
-          # command:
-          #   - java
-          #   - -jar
-          #   - DynamoDBLocal.jar
-          #   - -sharedDb
-          #   - -dbPath
-          #   - ./data
+          command:
+            - java
+            - -jar
+            - DynamoDBLocal.jar
+            - -sharedDb
+            - -dbPath
+            - ./data
           ports:
             - name: dynamodb
               containerPort: 8000

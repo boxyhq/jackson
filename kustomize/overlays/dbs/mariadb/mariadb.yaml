@@ -33,9 +33,9 @@ spec:
           image: mariadb:10.10.2
           imagePullPolicy: IfNotPresent
           env:
-            - name: MYSQL_DATABASE
+            - name: MARIADB_DATABASE
               value: mysql
-            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            - name: MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
               value: 'yes'
           ports:
             - name: mariadb
