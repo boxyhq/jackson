@@ -1,15 +1,20 @@
-import type { Storable, AdminPortalBranding } from '../../typings';
+import type { Storable, AdminPortalBranding, JacksonOption } from '../../typings';
+import { throwIfInvalidLicense } from '../common/checkLicense';
 
 export class BrandingController {
   private store: Storable;
   private storeKey = 'branding';
+  private opts: JacksonOption;
 
-  constructor({ store }: { store: Storable }) {
+  constructor({ store, opts }: { store: Storable; opts: JacksonOption }) {
     this.store = store;
+    this.opts = opts;
   }
 
   // Get branding
   public async get() {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     const branding: AdminPortalBranding = await this.store.get(this.storeKey);
 
     const defaultBranding = {
@@ -24,6 +29,8 @@ export class BrandingController {
 
   // Update branding
   public async update(params: Partial<AdminPortalBranding>) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     const { logoUrl, faviconUrl, companyName, primaryColor } = params;
 
     const currentBranding = await this.get();

@@ -3,27 +3,32 @@ import saml from '@boxyhq/saml20';
 import { App } from './app';
 import { JacksonError } from '../../controller/error';
 import { SAMLHandler } from '../../controller/saml-handler';
-import type { SAMLSSORecord, SAMLTracerInstance } from '../../typings';
+import type { JacksonOption, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
 import { extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage } from '../../controller/utils';
+import { throwIfInvalidLicense } from '../common/checkLicense';
 
 export class SSO {
   private app: App;
   private samlHandler: SAMLHandler;
   private samlTracer: SAMLTracerInstance;
+  private opts: JacksonOption;
 
   constructor({
     app,
     samlHandler,
     samlTracer,
+    opts,
   }: {
     app: App;
     samlHandler: SAMLHandler;
     samlTracer: SAMLTracerInstance;
+    opts: JacksonOption;
   }) {
     this.app = app;
     this.samlHandler = samlHandler;
     this.samlTracer = samlTracer;
+    this.opts = opts;
   }
 
   // Accept the SAML Request from Service Provider, and create a new SAML Request to be sent to Identity Provider
@@ -36,6 +41,8 @@ export class SSO {
     relayState: string;
     idp_hint?: string;
   }) => {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     let connection: SAMLSSORecord | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest, app;
     try {

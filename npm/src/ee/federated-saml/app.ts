@@ -4,6 +4,7 @@ import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
+import { throwIfInvalidLicense } from '../common/checkLicense';
 
 type NewAppParams = Pick<SAMLFederationApp, 'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId'>;
 
@@ -18,6 +19,8 @@ export class App {
 
   // Create a new SAML Federation app for the tenant and product
   public async create({ name, tenant, product, acsUrl, entityId }: NewAppParams) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     if (!tenant || !product || !acsUrl || !entityId || !name) {
       throw new JacksonError(
         'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
@@ -51,6 +54,8 @@ export class App {
 
   // Get an app by tenant and product
   public async get(id: string) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     if (!id) {
       throw new JacksonError('Missing required parameters. Required parameters are: id', 400);
     }
@@ -66,6 +71,8 @@ export class App {
 
   // Get the app by SP EntityId
   public async getByEntityId(entityId: string) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     if (!entityId) {
       throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
     }
@@ -86,6 +93,8 @@ export class App {
 
   // Update the app
   public async update(id: string, params: Partial<Omit<SAMLFederationApp, 'id'>>) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     const { acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor } = params;
 
     if (!id) {
@@ -126,6 +135,8 @@ export class App {
     pageLimit?: number;
     pageToken?: string;
   }) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     const apps = (await this.store.getAll(pageOffset, pageLimit, pageToken)) as Records<SAMLFederationApp>;
 
     return apps;
@@ -133,6 +144,8 @@ export class App {
 
   // Delete the app
   public async delete(id: string): Promise<void> {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     if (!id) {
       throw new JacksonError('Missing required parameters. Required parameters are: id', 400);
     }
