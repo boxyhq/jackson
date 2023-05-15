@@ -67,7 +67,7 @@
     "react": "18.2.0",
     "react-daisyui": "3.1.2",
     "react-dom": "18.2.0",
-    "react-i18next": "12.2.0",
+    "react-i18next": "12.2.2",
     "react-syntax-highlighter": "15.5.0",
     "sharp": "0.32.1",
     "swr": "2.1.5"
