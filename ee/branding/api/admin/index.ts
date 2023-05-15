@@ -1,27 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+
 import jackson from '@lib/jackson';
-import { strings } from '@lib/strings';
 import { sendAudit } from '@ee/audit-log/lib/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { checkLicense } = await jackson();
-
-  if (!(await checkLicense())) {
-    return res.status(404).json({
-      error: {
-        message: strings['enterise_license_not_found'],
-      },
-    });
-  }
-
   const { method } = req;
 
   try {
     switch (method) {
       case 'POST':
-        return handlePOST(req, res);
+        return await handlePOST(req, res);
       case 'GET':
-        return handleGET(req, res);
+        return await handleGET(req, res);
       default:
         res.setHeader('Allow', 'POST, GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -38,7 +28,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { logoUrl, faviconUrl, companyName, primaryColor } = req.body;
 
-  const response = await brandingController?.update({ logoUrl, faviconUrl, companyName, primaryColor });
+  const response = await brandingController.update({ logoUrl, faviconUrl, companyName, primaryColor });
 
   sendAudit({
     action: 'admin.branding.update',
@@ -54,7 +44,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { brandingController } = await jackson();
 
-  return res.json({ data: await brandingController?.get() });
+  return res.json({ data: await brandingController.get() });
 };
 
 export default handler;

@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import type { Directory } from '@boxyhq/saml-jackson';
@@ -24,8 +24,16 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
     product: '',
     webhook_url: defaultWebhookEndpoint,
     webhook_secret: '',
-    type: providers ? (Object.keys(providers).length > 0 ? Object.keys(providers)[0] : '') : '',
+    type: '',
   });
+
+  useEffect(() => {
+    if (providers && Object.keys(providers).length > 0) {
+      setDirectory((directory) => {
+        return { ...directory, type: Object.keys(providers)[0] };
+      });
+    }
+  }, [providers]);
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

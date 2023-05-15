@@ -26,7 +26,7 @@ export class AdminController implements IAdminController {
     )) as Records<SAMLSSORecord | OIDCSSORecord>;
 
     if (!connectionList || !connectionList.length) {
-      return [];
+      return { data: [] };
     }
 
     return { data: transformConnections(connectionList), pageToken: nextPageToken };
@@ -40,7 +40,7 @@ export class AdminController implements IAdminController {
     )) as Records<Trace>;
 
     if (!traces || !traces.length) {
-      return [];
+      return { data: [] };
     }
 
     return { data: traces, pageToken: nextPageToken };

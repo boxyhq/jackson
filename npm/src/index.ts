@@ -125,7 +125,7 @@ export const controllers = async (
 
   // Enterprise Features
   const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
-  const brandingController = new BrandingController({ store: settingsStore });
+  const brandingController = new BrandingController({ store: settingsStore, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
