@@ -1,16 +1,9 @@
 import { NgModule } from '@angular/core';
 import { AngularUiComponent } from './angular-ui.component';
 
-
-
 @NgModule({
-  declarations: [
-    AngularUiComponent
-  ],
-  imports: [
-  ],
-  exports: [
-    AngularUiComponent
-  ]
+  declarations: [],
+  imports: [AngularUiComponent],
+  exports: [AngularUiComponent],
 })
-export class AngularUiModule { }
+export class AngularUiModule {}
