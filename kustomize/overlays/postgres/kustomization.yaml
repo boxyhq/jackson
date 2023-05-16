@@ -11,7 +11,7 @@ patches:
   - ./jackson-service.yaml
 
 commonLabels:
-  retraceddev: '1'
+  jacksondev: '1'
 
 images:
   - name: boxyhq/jackson

@@ -41,15 +41,15 @@ spec:
           ports:
             - name: dynamodb
               containerPort: 8000
-          readinessProbe:
-            exec:
-              command:
-                - curl
-                - -f
-                - http://localhost:8000/shell/
-            initialDelaySeconds: 5
-            timeoutSeconds: 1
-            periodSeconds: 10
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #       - curl
+          #       - -f
+          #       - http://localhost:8000/shell/
+          #   initialDelaySeconds: 5
+          #   timeoutSeconds: 1
+          #   periodSeconds: 10
           volumeMounts:
             - name: jackson-dynamodb-data
               mountPath: /home/dynamodblocal/data
