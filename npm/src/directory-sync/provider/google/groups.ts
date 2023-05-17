@@ -1,7 +1,7 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
-import type { GroupSyncInterface } from '../groupSync';
+import type { IGroupSync } from '../types';
 import type { Directory, IDirectoryConfig, Group } from '../../../typings';
 
 interface GoogleGroupsParams {
@@ -9,7 +9,7 @@ interface GoogleGroupsParams {
   directories: IDirectoryConfig;
 }
 
-export class GoogleGroup implements GroupSyncInterface {
+export class GoogleGroup implements IGroupSync {
   private directories: IDirectoryConfig;
   private authClient: OAuth2Client;
 

@@ -1,23 +1,43 @@
 import { sendEvent } from '../events';
+import type { IGroupSync } from './types';
 import type { Directory, EventCallback, IDirectoryConfig, IGroups, Group } from '../../typings';
-
-export interface GroupSyncInterface {
-  getDirectories(): Promise<Directory[]>;
-  getGroups(directory: Directory): Promise<Group[]>;
-}
 
 interface GroupSyncParams {
   groups: IGroups;
+  provider: IGroupSync;
   directories: IDirectoryConfig;
   callback?: EventCallback | undefined;
-  provider: GroupSyncInterface;
 }
+
+// Find if a group is updated by comparing the name
+const isGroupUpdated = (existingGroup: Group, groupFromProvider: Group) => {
+  return existingGroup.name !== groupFromProvider.name;
+};
+
+// Compare existing groups with groups from provider and find the groups that were deleted
+const compareAndFindDeletedGroups = (existingGroup: Group[], groupFromProvider: Group[]) => {
+  const deletedGroups: Group[] = [];
+
+  if (existingGroup.length === 0) {
+    return deletedGroups;
+  }
+
+  const groupFromProviderIds = groupFromProvider.map((group) => group.id);
+
+  for (const group of existingGroup) {
+    if (!groupFromProviderIds.includes(group.id)) {
+      deletedGroups.push(group);
+    }
+  }
+
+  return deletedGroups;
+};
 
 export class SyncGroup {
   private groups: IGroups;
+  private provider: IGroupSync;
   private directories: IDirectoryConfig;
   private callback: EventCallback | undefined;
-  private provider: GroupSyncInterface;
 
   constructor({ directories, groups, callback, provider }: GroupSyncParams) {
     this.groups = groups;
@@ -46,13 +66,13 @@ export class SyncGroup {
 
       // New group found, create it
       if (!existingGroup) {
-        await this.createGroup(directory, group);
+        await this.create(directory, group);
         continue;
       }
 
       // Group info is updated, update it
-      if (this.isGroupUpdated(existingGroup, group)) {
-        await this.updateGroup(directory, group);
+      if (isGroupUpdated(existingGroup, group)) {
+        await this.update(directory, group);
         continue;
       }
     }
@@ -64,35 +84,11 @@ export class SyncGroup {
       return;
     }
 
-    await this.deleteGroups(directory, this.compareAndFindDeletedGroups(existingGroups, groups));
-  }
-
-  // Find if a group is updated by comparing the name
-  isGroupUpdated(existingGroup: Group, groupFromProvider: Group) {
-    return existingGroup.name !== groupFromProvider.name;
-  }
-
-  // Compare existing groups with groups from provider and find the groups that were deleted
-  compareAndFindDeletedGroups(existingGroup: Group[], groupFromProvider: Group[]) {
-    const deletedGroups: Group[] = [];
-
-    if (existingGroup.length === 0) {
-      return deletedGroups;
-    }
-
-    const groupFromProviderIds = groupFromProvider.map((group) => group.id);
-
-    for (const group of existingGroup) {
-      if (!groupFromProviderIds.includes(group.id)) {
-        deletedGroups.push(group);
-      }
-    }
-
-    return deletedGroups;
+    await this.delete(directory, compareAndFindDeletedGroups(existingGroups, groups));
   }
 
   // Create a group in the directory
-  async createGroup(directory: Directory, group: Group) {
+  async create(directory: Directory, group: Group) {
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
     await this.groups.create({
@@ -106,7 +102,7 @@ export class SyncGroup {
   }
 
   // Update a group in the directory
-  async updateGroup(directory: Directory, group: Group) {
+  async update(directory: Directory, group: Group) {
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
     await this.groups.update(group.id, {
@@ -118,7 +114,7 @@ export class SyncGroup {
   }
 
   // Delete groups from the directory
-  async deleteGroups(directory: Directory, groupsToBeRemoved: Group[]) {
+  async delete(directory: Directory, groupsToBeRemoved: Group[]) {
     if (groupsToBeRemoved.length === 0) {
       return;
     }
