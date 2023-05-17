@@ -1,15 +1,15 @@
 import { OAuth2Client } from 'google-auth-library';
 
 import type { IDirectoryConfig, JacksonOption } from '../../../typings';
-import { GoogleGroup } from './groups';
+import { GoogleProvider } from './provider';
 import { GoogleAuth } from './oauth';
 
-interface GoogleProviderParams {
+interface GetGoogleProviderParams {
   directories: IDirectoryConfig;
   opts: JacksonOption;
 }
 
-export const getGogleProvider = (params: GoogleProviderParams) => {
+export const getGogleProvider = (params: GetGoogleProviderParams) => {
   const { directories, opts } = params;
   const { dsync } = opts;
 
@@ -33,6 +33,6 @@ export const getGogleProvider = (params: GoogleProviderParams) => {
 
   return {
     auth: new GoogleAuth({ directories, authClient }),
-    group: new GoogleGroup({ directories, authClient }),
+    provider: new GoogleProvider({ directories, authClient }),
   };
 };

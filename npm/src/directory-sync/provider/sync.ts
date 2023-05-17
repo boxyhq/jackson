@@ -15,20 +15,15 @@ export const sync = (params: SyncParams) => {
   const googleProvider = getGogleProvider({ directories, opts });
 
   // Add new providers here
-  const providers = [googleProvider.group];
+  const providers = [googleProvider.provider];
 
-  const syncGroup = async () => {
+  const start = async () => {
     for (const provider of providers) {
       new SyncGroup({ groups, directories, callback, provider }).sync();
     }
   };
 
-  const syncUser = async () => {
-    //
-  };
-
   return {
-    syncUser,
-    syncGroup,
+    start,
   };
 };

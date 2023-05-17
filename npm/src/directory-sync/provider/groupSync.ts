@@ -1,49 +1,25 @@
 import { sendEvent } from '../events';
-import type { IGroupSync } from './types';
-import type { Directory, EventCallback, IDirectoryConfig, IGroups, Group } from '../../typings';
+import type { IDirectoryProvider } from './types';
+import type { Directory, EventCallback, IDirectoryConfig, IGroups, Group, User } from '../../typings';
 
 interface GroupSyncParams {
   groups: IGroups;
-  provider: IGroupSync;
+  provider: IDirectoryProvider;
   directories: IDirectoryConfig;
   callback?: EventCallback | undefined;
 }
 
-// Find if a group is updated by comparing the name
-const isGroupUpdated = (existingGroup: Group, groupFromProvider: Group) => {
-  return existingGroup.name !== groupFromProvider.name;
-};
-
-// Compare existing groups with groups from provider and find the groups that were deleted
-const compareAndFindDeletedGroups = (existingGroup: Group[], groupFromProvider: Group[]) => {
-  const deletedGroups: Group[] = [];
-
-  if (existingGroup.length === 0) {
-    return deletedGroups;
-  }
-
-  const groupFromProviderIds = groupFromProvider.map((group) => group.id);
-
-  for (const group of existingGroup) {
-    if (!groupFromProviderIds.includes(group.id)) {
-      deletedGroups.push(group);
-    }
-  }
-
-  return deletedGroups;
-};
-
 export class SyncGroup {
   private groups: IGroups;
-  private provider: IGroupSync;
+  private provider: IDirectoryProvider;
   private directories: IDirectoryConfig;
   private callback: EventCallback | undefined;
 
   constructor({ directories, groups, callback, provider }: GroupSyncParams) {
     this.groups = groups;
-    this.directories = directories;
     this.callback = callback;
     this.provider = provider;
+    this.directories = directories;
   }
 
   // Do the sync
@@ -126,4 +102,43 @@ export class SyncGroup {
       await sendEvent('group.deleted', { directory, group }, this.callback);
     }
   }
+
+  // Add a user to a group
+  async addUserToGroup(directory: Directory, group: Group, user: User) {
+    //
+  }
+
+  // Remove a user from a group
+  async removeUserFromGroup(directory: Directory, group: Group, user: User) {
+    //
+  }
+
+  // Get all users in a group
+  async getUsersInGroup(directory: Directory, group: Group) {
+    //
+  }
 }
+
+// Find if a group is updated by comparing the name
+const isGroupUpdated = (existingGroup: Group, groupFromProvider: Group) => {
+  return existingGroup.name !== groupFromProvider.name;
+};
+
+// Compare existing groups with groups from provider and find the groups that were deleted
+const compareAndFindDeletedGroups = (existingGroup: Group[], groupFromProvider: Group[]) => {
+  const deletedGroups: Group[] = [];
+
+  if (existingGroup.length === 0) {
+    return deletedGroups;
+  }
+
+  const groupFromProviderIds = groupFromProvider.map((group) => group.id);
+
+  for (const group of existingGroup) {
+    if (!groupFromProviderIds.includes(group.id)) {
+      deletedGroups.push(group);
+    }
+  }
+
+  return deletedGroups;
+};

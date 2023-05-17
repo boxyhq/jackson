@@ -1,15 +1,15 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
-import type { IGroupSync } from '../types';
-import type { Directory, IDirectoryConfig, Group } from '../../../typings';
+import type { IDirectoryProvider } from '../types';
+import type { Directory, IDirectoryConfig, Group, User } from '../../../typings';
 
 interface GoogleGroupsParams {
   authClient: OAuth2Client;
   directories: IDirectoryConfig;
 }
 
-export class GoogleGroup implements IGroupSync {
+export class GoogleProvider implements IDirectoryProvider {
   private directories: IDirectoryConfig;
   private authClient: OAuth2Client;
 
@@ -46,5 +46,13 @@ export class GoogleGroup implements IGroupSync {
     const groups = response.data.groups || [];
 
     return groups as Group[];
+  }
+
+  async getUsers(directory: Directory) {
+    return [] as User[];
+  }
+
+  async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
+    return [] as User[];
   }
 }
