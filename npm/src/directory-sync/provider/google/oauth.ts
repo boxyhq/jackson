@@ -29,15 +29,15 @@ export class GoogleAuth {
     const { directoryId } = params;
 
     try {
-      const { data: directory } = await this.directories.get(directoryId);
+      // const { data: directory } = await this.directories.get(directoryId);
 
-      if (!directory) {
-        throw new JacksonError('Directory not found', 400);
-      }
+      // if (!directory) {
+      //   throw new JacksonError('Directory not found', 400);
+      // }
 
-      if (directory.type !== 'google-scim-v2') {
-        throw new JacksonError('Directory is not a Google Directory', 400);
-      }
+      // if (directory.type !== 'google-scim-v2') {
+      //   throw new JacksonError('Directory is not a Google Directory', 400);
+      // }
 
       const response = this.authClient.generateAuthUrl({
         access_type: 'offline',
@@ -61,11 +61,11 @@ export class GoogleAuth {
     const { directoryId, code } = params;
 
     try {
-      const { data: directory } = await this.directories.get(directoryId);
+      // const { data: directory } = await this.directories.get(directoryId);
 
-      if (!directory) {
-        throw new JacksonError('Directory not found', 400);
-      }
+      // if (!directory) {
+      //   throw new JacksonError('Directory not found', 400);
+      // }
 
       const { tokens } = await this.authClient.getToken(code);
 

@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { directorySyncController } = await jackson();
 
-    const { data, error } = await directorySyncController.google.oauth.generateAuthorizationUrl({
+    const { data, error } = await directorySyncController.google.auth.generateAuthorizationUrl({
       directoryId: `b5e61332-9563-4b00-84db-78969ff0e1c3`,
     });
 

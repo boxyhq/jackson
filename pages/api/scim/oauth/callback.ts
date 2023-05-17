@@ -24,7 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { directorySyncController } = await jackson();
 
     // Fetch the access token and refresh token from the authorization code
-    const tokenResponse = await directorySyncController.google.oauth.getAccessToken({
+    const tokenResponse = await directorySyncController.google.auth.getAccessToken({
       directoryId,
       code,
     });
@@ -33,16 +33,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       throw tokenResponse.error;
     }
 
-    // Set the access token and refresh token for the directory
-    const response = await directorySyncController.google.oauth.setToken({
-      directoryId,
-      accessToken: tokenResponse.data.access_token,
-      refreshToken: tokenResponse.data.refresh_token,
-    });
+    return res.send(tokenResponse);
 
-    if (response.error) {
-      throw response.error;
-    }
+    // Set the access token and refresh token for the directory
+    // const response = await directorySyncController.google.auth.setToken({
+    //   directoryId,
+    //   accessToken: tokenResponse.data.access_token,
+    //   refreshToken: tokenResponse.data.refresh_token,
+    // });
+
+    // if (response.error) {
+    //   throw response.error;
+    // }
 
     return res.send('Authorized done successfully. You may close this window.');
   } catch (error: any) {
