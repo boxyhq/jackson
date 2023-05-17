@@ -10,8 +10,9 @@ interface GoogleGroupsParams {
 }
 
 export class GoogleProvider implements IDirectoryProvider {
-  private directories: IDirectoryConfig;
+  name = 'google';
   private authClient: OAuth2Client;
+  private directories: IDirectoryConfig;
 
   constructor({ directories, authClient }: GoogleGroupsParams) {
     this.directories = directories;
@@ -49,10 +50,12 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   async getUsers(directory: Directory) {
+    console.log('getUsers', directory);
     return [] as User[];
   }
 
   async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
+    console.log('getUsersInGroup', directory, group);
     return [] as User[];
   }
 }

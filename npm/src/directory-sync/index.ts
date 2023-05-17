@@ -11,11 +11,13 @@ import { getGogleProvider } from './provider/google';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
 
-const directorySync = async (params: {
+interface DirectorySyncParams {
   db: DatabaseStore;
   opts: JacksonOption;
   eventController: IEventController;
-}) => {
+}
+
+const directorySync = async (params: DirectorySyncParams) => {
   const { db, opts, eventController } = params;
 
   const users = new Users({ db });
@@ -41,7 +43,9 @@ const directorySync = async (params: {
     providers: () => {
       return getDirectorySyncProviders();
     },
-    sync: sync({ directories, groups, opts }),
+    sync: async () => {
+      return await sync({ directories, groups, opts });
+    },
     google: googleProvider,
   };
 };

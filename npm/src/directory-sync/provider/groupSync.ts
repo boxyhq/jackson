@@ -12,14 +12,12 @@ interface GroupSyncParams {
 export class SyncGroup {
   private groups: IGroups;
   private provider: IDirectoryProvider;
-  private directories: IDirectoryConfig;
   private callback: EventCallback | undefined;
 
-  constructor({ directories, groups, callback, provider }: GroupSyncParams) {
+  constructor({ groups, callback, provider }: GroupSyncParams) {
     this.groups = groups;
     this.callback = callback;
     this.provider = provider;
-    this.directories = directories;
   }
 
   // Do the sync
@@ -33,9 +31,11 @@ export class SyncGroup {
 
   // Sync groups from Google to the directory
   async syncGroup(directory: Directory) {
-    const groups = await this.provider.getGroups(directory);
+    console.info(`Running the group sync for ${directory.name}`);
 
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
+
+    const groups = await this.provider.getGroups(directory);
 
     for (const group of groups) {
       const { data: existingGroup } = await this.groups.get(group.id);
@@ -65,6 +65,8 @@ export class SyncGroup {
 
   // Create a group in the directory
   async create(directory: Directory, group: Group) {
+    console.info(`Creating group ${group.name} in ${directory.name}`);
+
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
     await this.groups.create({
@@ -79,6 +81,8 @@ export class SyncGroup {
 
   // Update a group in the directory
   async update(directory: Directory, group: Group) {
+    console.info(`Updating group ${group.name} in ${directory.name}`);
+
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
     await this.groups.update(group.id, {
@@ -98,6 +102,7 @@ export class SyncGroup {
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
     for (const group of groupsToBeRemoved) {
+      console.info(`Deleting group ${group.name} in ${directory.name}`);
       await this.groups.delete(group.id);
       await sendEvent('group.deleted', { directory, group }, this.callback);
     }
@@ -105,17 +110,19 @@ export class SyncGroup {
 
   // Add a user to a group
   async addUserToGroup(directory: Directory, group: Group, user: User) {
-    //
+    console.log('addUserToGroup', directory, group, user);
   }
 
   // Remove a user from a group
+  // @eslint-disable-next-line @typescript-eslint/no-unused-vars
   async removeUserFromGroup(directory: Directory, group: Group, user: User) {
-    //
+    console.log('removeUserFromGroup', directory, group, user);
   }
 
   // Get all users in a group
+  // @eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getUsersInGroup(directory: Directory, group: Group) {
-    //
+    console.log('getUsersInGroup', directory, group);
   }
 }
 

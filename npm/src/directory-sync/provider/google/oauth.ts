@@ -35,7 +35,7 @@ export class GoogleAuth {
         throw new JacksonError('Directory not found', 400);
       }
 
-      if (directory.type !== 'google-scim-v2') {
+      if (directory.type !== 'google-api') {
         throw new JacksonError('Directory is not a Google Directory', 400);
       }
 

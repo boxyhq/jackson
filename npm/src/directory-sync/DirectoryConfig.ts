@@ -94,6 +94,7 @@ export class DirectoryConfig {
           endpoint: hasWebhook ? webhook_url : '',
           secret: hasWebhook ? webhook_secret : '',
         },
+        domain: domain || '',
       };
 
       await this.store().put(id, directory, {

@@ -31,7 +31,7 @@ export enum DirectorySyncProviders {
   'okta-scim-v2' = 'Okta SCIM v2.0',
   'jumpcloud-scim-v2' = 'JumpCloud v2.0',
   'generic-scim-v2' = 'SCIM Generic v2.0',
-  'google-scim-v2' = 'Google SCIM v2.0',
+  'google-api' = 'Google',
 }
 
 export type DirectoryType = keyof typeof DirectorySyncProviders;

@@ -10,7 +10,7 @@ const directoryPayload = {
   tenant: 'boxyhq',
   product: 'saml-jackson-google',
   name: 'Google Directory',
-  type: 'google-scim-v2' as DirectoryType,
+  type: 'google-api' as DirectoryType,
   webhook_url: 'https://example.com',
   webhook_secret: 'secret',
 };

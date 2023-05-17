@@ -9,21 +9,19 @@ interface SyncParams {
   callback?: EventCallback | undefined;
 }
 
-export const sync = (params: SyncParams) => {
+export const sync = async (params: SyncParams) => {
   const { groups, opts, directories, callback } = params;
 
   const googleProvider = getGogleProvider({ directories, opts });
 
   // Add new providers here
   const providers = [googleProvider.provider];
+  const promises = [] as Promise<any>[];
 
-  const start = async () => {
-    for (const provider of providers) {
-      new SyncGroup({ groups, directories, callback, provider }).sync();
-    }
-  };
+  for (const provider of providers) {
+    console.info(`Running the sync for ${provider.name}`);
+    promises.push(new SyncGroup({ groups, directories, callback, provider }).sync());
+  }
 
-  return {
-    start,
-  };
+  await Promise.all(promises);
 };
