@@ -49,6 +49,7 @@ const DEFAULT_VALUES = {
         [class]="cssClassAssembler(classNames?.button)">
         {{ buttonText || DEFAULT_VALUES.buttonText }}
       </button>
+      
     </div>
   `,
   standalone: true,
@@ -66,6 +67,8 @@ export class AngularUiComponent {
   @Input() inputLabel: any;
   @Input() placeholder: any;
   @Input() buttonText: any;
+  // 
+  @Input() errorMessage: any;
 
   @Output() onSubmit = new EventEmitter();
 
@@ -109,7 +112,10 @@ export class AngularUiComponent {
     void (async function (e) {
       e.preventDefault();
       // console.log(e);
+      console.log(that.classNames)
+      console.log(cssClassAssembler(that.classNames?.input))
 
+      // void returns undefined so cant destructure as we do in react
       that.isProcessing = true;
       that.onSubmit.emit(
         that.ssoIdentifierState || that.ssoIdentifier || DEFAULT_VALUES.defaultSsoIdentifier
