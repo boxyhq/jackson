@@ -9,17 +9,17 @@ const scope = [
 ];
 
 interface GoogleAuthParams {
-  auth2Client: OAuth2Client;
+  authClient: OAuth2Client;
   directories: IDirectoryConfig;
 }
 
 export class GoogleAuth {
-  private auth2Client: OAuth2Client;
+  private authClient: OAuth2Client;
   private directories: IDirectoryConfig;
 
-  constructor({ auth2Client, directories }: GoogleAuthParams) {
+  constructor({ authClient, directories }: GoogleAuthParams) {
     this.directories = directories;
-    this.auth2Client = auth2Client;
+    this.authClient = authClient;
   }
 
   // Generate the Google API authorization URL
@@ -39,7 +39,7 @@ export class GoogleAuth {
         throw new JacksonError('Directory is not a Google Directory', 400);
       }
 
-      const response = this.auth2Client.generateAuthUrl({
+      const response = this.authClient.generateAuthUrl({
         access_type: 'offline',
         prompt: 'consent',
         scope,
@@ -67,7 +67,7 @@ export class GoogleAuth {
         throw new JacksonError('Directory not found', 400);
       }
 
-      const { tokens } = await this.auth2Client.getToken(code);
+      const { tokens } = await this.authClient.getToken(code);
 
       return { data: tokens, error: null };
     } catch (error: any) {

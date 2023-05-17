@@ -1,14 +1,15 @@
-import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
-import { DirectoryConfig } from './DirectoryConfig';
-import { DirectoryUsers } from './DirectoryUsers';
-import { DirectoryGroups } from './DirectoryGroups';
 import { Users } from './Users';
 import { Groups } from './Groups';
-import { getDirectorySyncProviders } from './utils';
+import { sync } from './provider/sync';
 import { RequestHandler } from './request';
 import { handleEventCallback } from './events';
+import { DirectoryUsers } from './DirectoryUsers';
+import { DirectoryGroups } from './DirectoryGroups';
+import { DirectoryConfig } from './DirectoryConfig';
+import { getDirectorySyncProviders } from './utils';
+import { getGogleProvider } from './provider/google';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
-import initGoogleProvider from './provider/google';
+import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
 
 const directorySync = async (params: {
   db: DatabaseStore;
@@ -26,11 +27,7 @@ const directorySync = async (params: {
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
 
   // Other Directory Providers
-  const googleProvider = initGoogleProvider({ users, groups, directories, opts });
-
-  const sync = async () => {
-    await googleProvider.groups.sync();
-  };
+  const googleProvider = getGogleProvider({ directories, opts });
 
   return {
     users,
@@ -44,8 +41,8 @@ const directorySync = async (params: {
     providers: () => {
       return getDirectorySyncProviders();
     },
+    sync: sync({ directories, groups, opts }),
     google: googleProvider,
-    sync,
   };
 };
 

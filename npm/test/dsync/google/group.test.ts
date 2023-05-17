@@ -37,7 +37,7 @@ tap.before(async () => {
 
 tap.test('Google Groups', async (t) => {
   t.test('fetch groups', async (t) => {
-    const response = await directorySyncController.sync();
+    // const response = await directorySyncController.sync();
 
     // const { data: updatedDirectory } = await directorySyncController.google.oauth.setToken({
     //   directoryId: directory.id,
