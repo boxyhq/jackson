@@ -410,6 +410,13 @@ export interface JacksonOption {
     adminToken?: string;
   };
   webhook?: Webhook;
+  dsync?: {
+    google?: {
+      clientId: string;
+      clientSecret: string;
+      callbackUrl: string;
+    };
+  };
 }
 
 export interface SLORequestParams {

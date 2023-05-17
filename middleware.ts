@@ -14,6 +14,7 @@ const unAuthenticatedApiRoutes = [
   '/api/logout/**',
   '/api/oauth/**',
   '/api/scim/v2.0/**',
+  '/api/scim/oauth/**',
   '/api/well-known/**',
   '/api/setup/**',
   '/api/branding',

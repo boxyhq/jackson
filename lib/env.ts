@@ -78,6 +78,13 @@ const jacksonOptions: JacksonOption = {
     endpoint: process.env.WEBHOOK_URL || '',
     secret: process.env.WEBHOOK_SECRET || '',
   },
+  dsync: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      callbackUrl: process.env.GOOGLE_REDIRECT_URI || '',
+    },
+  },
 };
 
 const adminPortalSSODefaults = {

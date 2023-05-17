@@ -8,6 +8,7 @@ import { getDirectorySyncProviders } from './utils';
 import { RequestHandler } from './request';
 import { handleEventCallback } from './events';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
+import initGoogleProvider from './provider/google';
 
 const directorySync = async (params: {
   db: DatabaseStore;
@@ -24,6 +25,13 @@ const directorySync = async (params: {
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
 
+  // Other Directory Providers
+  const googleProvider = initGoogleProvider({ users, groups, directories, opts });
+
+  const sync = async () => {
+    await googleProvider.groups.sync();
+  };
+
   return {
     users,
     groups,
@@ -36,6 +44,8 @@ const directorySync = async (params: {
     providers: () => {
       return getDirectorySyncProviders();
     },
+    google: googleProvider,
+    sync,
   };
 };
 

@@ -5,6 +5,7 @@ import { DirectoryUsers } from './DirectoryUsers';
 import { Users } from './Users';
 import { Groups } from './Groups';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
+import { ApiError } from '../typings';
 
 export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
 export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
@@ -30,6 +31,7 @@ export enum DirectorySyncProviders {
   'okta-scim-v2' = 'Okta SCIM v2.0',
   'jumpcloud-scim-v2' = 'JumpCloud v2.0',
   'generic-scim-v2' = 'SCIM Generic v2.0',
+  'google-scim-v2' = 'Google SCIM v2.0',
 }
 
 export type DirectoryType = keyof typeof DirectorySyncProviders;
@@ -51,6 +53,11 @@ export type Directory = {
     secret: string;
   };
   deactivated?: boolean;
+  domain?: string;
+  googleAuth?: {
+    access_token: string;
+    refresh_token: string;
+  };
 };
 
 export type DirectorySyncGroupMember = { value: string; email?: string };
@@ -164,3 +171,5 @@ export type GroupMembership = {
   group_id: string;
   user_id: string;
 };
+
+export type Response<T> = { data: T; error: null } | { data: null; error: ApiError };

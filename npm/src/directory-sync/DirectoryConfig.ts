@@ -59,9 +59,10 @@ export class DirectoryConfig {
     webhook_url?: string;
     webhook_secret?: string;
     type?: DirectoryType;
+    domain?: string;
   }): Promise<{ data: Directory | null; error: ApiError | null }> {
     try {
-      const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
+      const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2', domain } = params;
 
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -139,7 +140,7 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const { name, log_webhook_events, webhook, type } = param;
+      const { name, log_webhook_events, webhook, type, domain, googleAuth } = param;
 
       let directory: Directory = await this.store().get(id);
 
@@ -161,6 +162,14 @@ export class DirectoryConfig {
 
       if ('deactivated' in param) {
         directory['deactivated'] = param.deactivated;
+      }
+
+      if (googleAuth) {
+        directory.googleAuth = googleAuth;
+      }
+
+      if (domain) {
+        directory.domain = domain;
       }
 
       await this.store().put(id, { ...directory });

@@ -18,13 +18,15 @@ export class Groups extends Base {
     directoryId,
     name,
     raw,
+    externalId,
   }: {
     directoryId: string;
     name: string;
     raw: any;
+    externalId?: string;
   }): Promise<{ data: Group | null; error: ApiError | null }> {
     try {
-      const id = this.createId();
+      const id = externalId ? externalId : this.createId();
 
       raw['id'] = id;
 
