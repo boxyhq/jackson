@@ -2,15 +2,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import '~prismjs/themes/prism';
+/* // @import "~prismjs/themes/prism-tomorrow";
+// @import "~prismjs/themes/prism-solarizedlight";
+// @import "~prismjs/themes/prism"; */
 
-.trial {
-    background: 'red';
-    color: 'white';
-    font-size:'40px'
+.btn {
+  background: #0070f3 !important;
+  color: #fff !important;
+  padding: 0.5rem 1rem !important;
+  cursor: pointer !important;
+  border-radius: 5px !important;
+  border: 1px solid #0070f3 !important;
+  font-weight: 500 !important;
+  font-size: 1rem !important;
+  transition: box-shadow 0.15s ease !important;
 }
 
-.inp-custom {
-    background-color: red !important;
-    color: white;
-    font-size: 30px;
+.btn:focus-visible {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 3px #0070f3 !important;
+}
+
+.btn:disabled {
+  opacity: 0.6 !important;
+  pointer-events: none !important;
+}
+
+.inp {
+  border-radius: 5px !important;
+  appearance: none !important;
+  height: 40px !important;
+  padding: 0 12px !important;
+  border: 1px solid #f5f5f5 !important;
+  margin-bottom: 1rem !important;
+  outline: none !important;
+}
+
+.inp:focus {
+  border-color: #666 !important;
 }
