@@ -13,7 +13,7 @@ const DEFAULT_VALUES = {
 };
 
 @Component({
-  selector: 'lib-angular-ui',
+  selector: 'sso-login',
   template: `
     <div [ngStyle]="styles?.container" [class]="cssClassAssembler(classNames?.container)">
       <ng-container *ngIf="shouldRenderInput">
@@ -49,14 +49,13 @@ const DEFAULT_VALUES = {
         [class]="cssClassAssembler(classNames?.button)">
         {{ buttonText || DEFAULT_VALUES.buttonText }}
       </button>
-      
     </div>
   `,
   standalone: true,
   styleUrls: ['./angular-ui.component.css'],
   imports: [CommonModule],
 })
-export class AngularUiComponent {
+export class LoginComponent {
   DEFAULT_VALUES = DEFAULT_VALUES;
   cssClassAssembler = cssClassAssembler;
 
@@ -67,7 +66,8 @@ export class AngularUiComponent {
   @Input() inputLabel: any;
   @Input() placeholder: any;
   @Input() buttonText: any;
-  // 
+  // Error message to be dispalyed
+  // if onSubmit fails
   @Input() errorMessage: any;
 
   @Output() onSubmit = new EventEmitter();
@@ -103,17 +103,8 @@ export class AngularUiComponent {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
 
-    // that.onSubmit.emit(
-    //   that.ssoIdentifierState ||
-    //     that.ssoIdentifier ||
-    //     DEFAULT_VALUES.defaultSsoIdentifier
-    // );
-
     void (async function (e) {
       e.preventDefault();
-      // console.log(e);
-      console.log(that.classNames)
-      console.log(cssClassAssembler(that.classNames?.input))
 
       // void returns undefined so cant destructure as we do in react
       that.isProcessing = true;
@@ -121,19 +112,13 @@ export class AngularUiComponent {
         that.ssoIdentifierState || that.ssoIdentifier || DEFAULT_VALUES.defaultSsoIdentifier
       );
 
-      // const {
-      //   error: { message },
-      // } = (await this.onSubmit.emit(
-      //   that.ssoIdentifierState ||
-      //     that.ssoIdentifier ||
-      //     DEFAULT_VALUES.defaultSsoIdentifier
-      // )) || {
-      //   error: {},
-      // };
+      const {
+        error: { message },
+      } = that.errorMessage;
       that.isProcessing = false;
-      // if (typeof message === 'string' && message) {
-      //   that.errMsg = message;
-      // }
+      if (typeof message === 'string' && message) {
+        that.errMsg = message;
+      }
     })(event);
   }
 }
