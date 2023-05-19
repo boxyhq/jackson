@@ -3,24 +3,22 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AngularUiComponent } from '@boxyhq/angular-ui';
+import { LoginComponent } from '@boxyhq/angular-ui';
 import { HomeComponent } from './home/home.component';
 import { ComponentsComponent } from './components/components.component';
-import { NavbarComponent } from './navbar/navbar.component'
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AngularUiComponent,
+    LoginComponent,
     HomeComponent,
     ComponentsComponent,
-    NavbarComponent
+    NavbarComponent,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
