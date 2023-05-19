@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { AngularUiComponent } from './angular-ui.component';
+import { LoginComponent } from './angular-ui.component';
 
 @NgModule({
   declarations: [],
-  imports: [AngularUiComponent],
-  exports: [AngularUiComponent],
+  imports: [LoginComponent],
+  exports: [LoginComponent],
 })
 export class AngularUiModule {}
