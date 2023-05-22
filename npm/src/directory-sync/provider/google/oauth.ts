@@ -4,7 +4,6 @@ import { JacksonError, apiError } from '../../../controller/error';
 import type { IDirectoryConfig, Directory, Response } from '../../types';
 
 const scope = [
-  'https://www.googleapis.com/auth/admin.directory.user',
   'https://www.googleapis.com/auth/admin.directory.user.readonly',
   'https://www.googleapis.com/auth/admin.directory.group.readonly',
   'https://www.googleapis.com/auth/admin.directory.group.member.readonly',
@@ -33,13 +32,13 @@ export class GoogleAuth {
     try {
       const { data: directory } = await this.directories.get(directoryId);
 
-      if (!directory) {
-        throw new JacksonError('Directory not found', 400);
-      }
+      // if (!directory) {
+      //   throw new JacksonError('Directory not found', 400);
+      // }
 
-      if (directory.type !== 'google-api') {
-        throw new JacksonError('Directory is not a Google Directory', 400);
-      }
+      // if (directory.type !== 'google-api') {
+      //   throw new JacksonError('Directory is not a Google Directory', 400);
+      // }
 
       const response = this.authClient.generateAuthUrl({
         access_type: 'offline',
@@ -65,9 +64,9 @@ export class GoogleAuth {
     try {
       const { data: directory } = await this.directories.get(directoryId);
 
-      if (!directory) {
-        throw new JacksonError('Directory not found', 400);
-      }
+      // if (!directory) {
+      //   throw new JacksonError('Directory not found', 400);
+      // }
 
       const { tokens } = await this.authClient.getToken(code);
 

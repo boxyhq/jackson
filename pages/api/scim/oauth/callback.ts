@@ -34,15 +34,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // Set the access token and refresh token for the directory
-    const response = await directorySyncController.google.auth.setToken({
-      directoryId,
-      accessToken: tokenResponse.data.access_token,
-      refreshToken: tokenResponse.data.refresh_token,
-    });
+    // const response = await directorySyncController.google.auth.setToken({
+    //   directoryId,
+    //   accessToken: tokenResponse.data.access_token,
+    //   refreshToken: tokenResponse.data.refresh_token,
+    // });
 
-    if (response.error) {
-      throw response.error;
-    }
+    // if (response.error) {
+    //   throw response.error;
+    // }
+
+    return res.send(tokenResponse);
 
     return res.send('Authorized done successfully. You may close this window.');
   } catch (error: any) {
