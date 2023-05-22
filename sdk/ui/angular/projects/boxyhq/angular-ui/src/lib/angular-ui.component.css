@@ -64,12 +64,3 @@ button:active:hover,
 button:active:focus {
   transform: scale(0.95);
 }
-
-.btn {
-  background-color: pink;
-  font-size: 18px;
-  color: white;
-  border: none;
-  font-weight: bold;
-  margin: 0 0 0 15px;
-}
