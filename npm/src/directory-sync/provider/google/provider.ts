@@ -49,13 +49,26 @@ export class GoogleProvider implements IDirectoryProvider {
     return groups as Group[];
   }
 
-  async getUsers(directory: Directory) {
-    console.log('getUsers', directory);
-    return [] as User[];
+  async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
+    this.authClient.setCredentials({
+      access_token: directory.googleAuth?.access_token,
+      refresh_token: directory.googleAuth?.refresh_token,
+    });
+
+    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
+
+    const response = await googleAdmin.members.list({
+      groupKey: group.id,
+      maxResults: 200,
+    });
+
+    const members = response.data.members || [];
+
+    return members as User[];
   }
 
-  async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
-    console.log('getUsersInGroup', directory, group);
+  async getUsers(directory: Directory) {
+    console.log('getUsers', directory);
     return [] as User[];
   }
 }

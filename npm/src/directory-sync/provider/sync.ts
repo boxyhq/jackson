@@ -16,12 +16,9 @@ export const sync = async (params: SyncParams) => {
 
   // Add new providers here
   const providers = [googleProvider.provider];
-  const promises = [] as Promise<any>[];
 
   for (const provider of providers) {
     console.info(`Running the sync for ${provider.name}`);
-    promises.push(new SyncGroup({ groups, directories, callback, provider }).sync());
+    await new SyncGroup({ groups, directories, callback, provider }).sync();
   }
-
-  await Promise.all(promises);
 };

@@ -4,6 +4,8 @@ import { JacksonError, apiError } from '../../../controller/error';
 import type { IDirectoryConfig, Directory, Response } from '../../types';
 
 const scope = [
+  'https://www.googleapis.com/auth/admin.directory.user',
+  'https://www.googleapis.com/auth/admin.directory.user.readonly',
   'https://www.googleapis.com/auth/admin.directory.group.readonly',
   'https://www.googleapis.com/auth/admin.directory.group.member.readonly',
 ];

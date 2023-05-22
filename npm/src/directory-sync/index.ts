@@ -44,7 +44,12 @@ const directorySync = async (params: DirectorySyncParams) => {
       return getDirectorySyncProviders();
     },
     sync: async () => {
-      return await sync({ directories, groups, opts });
+      return await sync({
+        directories,
+        groups,
+        opts,
+        callback: await handleEventCallback(directories, logger),
+      });
     },
     google: googleProvider,
   };

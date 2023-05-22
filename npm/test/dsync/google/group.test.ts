@@ -1,7 +1,7 @@
 import tap from 'tap';
 
 import { jacksonOptions } from '../../utils';
-import { IDirectorySyncController, DirectoryType } from '../../../src/typings';
+import { IDirectorySyncController, DirectoryType, Directory } from '../../../src/typings';
 
 let directorySyncController: IDirectorySyncController;
 
@@ -11,6 +11,9 @@ const directoryPayload = {
   name: 'Directory 1',
   type: 'google-api' as DirectoryType,
   domain: 'boxyhq.com',
+  webhook_url: 'https://webhook.site/55e98582-e92b-4e1b-a661-4e88a2b23d95',
+  webhook_secret: '123',
+  deactivated: false,
 };
 
 tap.before(async () => {

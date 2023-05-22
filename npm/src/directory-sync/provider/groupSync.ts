@@ -26,6 +26,7 @@ export class SyncGroup {
 
     for (const directory of directories) {
       await this.syncGroup(directory);
+      await this.syncGroupMembers(directory);
     }
   }
 
@@ -63,10 +64,24 @@ export class SyncGroup {
     await this.delete(directory, compareAndFindDeletedGroups(existingGroups, groups));
   }
 
+  // Sync group members from Google to the directory
+  async syncGroupMembers(directory: Directory) {
+    const groups = await this.provider.getGroups(directory);
+
+    for (const group of groups) {
+      if (group.name !== 'Staff') {
+        continue;
+      }
+
+      const members = await this.provider.getUsersInGroup(directory, group);
+      console.log(`Got ${members.length} members in ${group.name} group`);
+
+      console.log('members', members);
+    }
+  }
+
   // Create a group in the directory
   async create(directory: Directory, group: Group) {
-    console.info(`Creating group ${group.name} in ${directory.name}`);
-
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
     await this.groups.create({
@@ -77,6 +92,8 @@ export class SyncGroup {
     });
 
     await sendEvent('group.created', { directory, group }, this.callback);
+
+    console.info(`Created group ${group.name} in ${directory.name}`);
   }
 
   // Update a group in the directory
