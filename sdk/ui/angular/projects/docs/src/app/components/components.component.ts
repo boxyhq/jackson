@@ -16,6 +16,7 @@ import Prism from 'prismjs';
           [styles]="customStyles"
           [classNames]="customStyleClasses"
           [inputLabel]="'Team domain*'"
+          [isProcessing]="isProcessing"
           [placeholder]="'contoso@boxyhq.com'"
           [buttonText]="'Login with SSO'"></sso-login>
         <h1 class="mb-2 mt-4 border-b-[1px] border-[#eaecef] pb-[0.5em]">Login with custom styling</h1>
@@ -41,7 +42,8 @@ import Prism from 'prismjs';
         <sso-login
           [styles]="defaultStylesCode"
           [inputLabel]="'Team domain*'"
-          [classNames]="componentClassnames"
+          [isProcessing]="isProcessing"
+          [classNames]="{ input: 'input-custom' }"
           [placeholder]="'contoso@boxyhq.com'"
           [buttonText]="'Login with SSO'"></sso-login>
         <h1 class="mb-2 mt-4 border-b-[1px] border-[#eaecef] pb-[0.5em]">
@@ -71,6 +73,7 @@ import Prism from 'prismjs';
           [ssoIdentifier]="'some-sso-identifier'"
           [classNames]="componentClassnames"
           [styles]="defaultStylesCode"
+          [isProcessing]="isProcessing"
           [buttonText]="'SIGN IN WITH SSO'"></sso-login>
         <h1 class="mb-2 mt-4 border-b-[1px] border-[#eaecef] pb-[0.5em]">
           Login Component without input display
@@ -96,6 +99,9 @@ import Prism from 'prismjs';
         <sso-login
           [classNames]="componentClassnames"
           [styles]="onsubmitFailStylesCode"
+          (onSubmit)="setFailing()"
+          [isProcessing]="isProcessing"
+          (clearInput)="clearErrorMessage()"
           [inputLabel]="'Team domain*'"
           [placeholder]="'contoso@boxyhq.com'"
           [errorMessage]="errorMessage"
@@ -157,11 +163,14 @@ export class ComponentsComponent {
     },
   };
 
+  // Try not to set error msg manually and instead set it at time of onSubmit
   errorMessage = {
     error: {
-      message: 'Invalid team domain',
+      message: null,
     },
   };
+
+  isProcessing = false;
 
   defaultStylesCode = {
     container: {
@@ -191,6 +200,20 @@ export class ComponentsComponent {
   displayDeafaultStyle = true;
   displayLoginWithouInput = true;
   displayFailingOnSubmit = true;
+
+  setFailing = async () => {
+    this.isProcessing = true;
+
+    setTimeout(() => {
+      //set error message
+      this.errorMessage.error.message = 'Invalid team domain';
+      this.isProcessing = false;
+    }, 500);
+  };
+
+  clearErrorMessage = async () => {
+    this.errorMessage.error.message = '';
+  };
 
   toggleButton(propValue, propName) {
     if (propName === 'displayCustomStyle') {
