@@ -48,7 +48,7 @@
     "@boxyhq/metrics": "0.2.2",
     "@boxyhq/react-ui": "file:sdk/ui/react",
     "@boxyhq/saml-jackson": "file:npm",
-    "@heroicons/react": "2.0.17",
+    "@heroicons/react": "2.0.18",
     "@retracedhq/logs-viewer": "2.4.6",
     "@retracedhq/retraced": "0.6.3",
     "@tailwindcss/typography": "0.5.9",
