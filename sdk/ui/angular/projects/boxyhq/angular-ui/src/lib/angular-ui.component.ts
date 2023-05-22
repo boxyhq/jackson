@@ -35,8 +35,8 @@ const DEFAULT_VALUES = {
             [attr.aria-invalid]="isError"
             [attr.aria-describedby]="ErrorSpanId" />
 
-          <ng-container *ngIf="isError">
-            <span [attr.id]="ErrorSpanId">{{ errMsg }}</span>
+          <ng-container *ngIf="!!errorMessage">
+            <span [attr.id]="ErrorSpanId">{{ errorMessage.error.message }}</span>
           </ng-container>
         </ng-container>
       </ng-container>
@@ -66,15 +66,17 @@ export class LoginComponent {
   @Input() inputLabel: any;
   @Input() placeholder: any;
   @Input() buttonText: any;
+  @Input() isProcessing: any;
   // Error message to be dispalyed
   // if onSubmit fails
   @Input() errorMessage: any;
 
   @Output() onSubmit = new EventEmitter();
+  // Event handler to clear input if present in onChange
+  @Output() clearInput = new EventEmitter();
 
   ssoIdentifierState = '';
   errMsg = '';
-  isProcessing = false;
   get isError() {
     return !!this.errMsg;
   }
@@ -97,6 +99,11 @@ export class LoginComponent {
   }
   handleChange(e) {
     this.errMsg = '';
+    // Check if there's any error message present
+    // and clear if any
+    if (this.errorMessage && this.errorMessage.error.message !== null) {
+      this.errorMessage.error.message = '';
+    }
     this.ssoIdentifierState = e.currentTarget.value;
   }
   onSubmitButton(event) {
@@ -111,14 +118,7 @@ export class LoginComponent {
       that.onSubmit.emit(
         that.ssoIdentifierState || that.ssoIdentifier || DEFAULT_VALUES.defaultSsoIdentifier
       );
-
-      const {
-        error: { message },
-      } = that.errorMessage;
       that.isProcessing = false;
-      if (typeof message === 'string' && message) {
-        that.errMsg = message;
-      }
     })(event);
   }
 }
