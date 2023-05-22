@@ -41,3 +41,7 @@
 .inp:focus {
   border-color: #666 !important;
 }
+
+.input-custom {
+  background-color: red;
+}
