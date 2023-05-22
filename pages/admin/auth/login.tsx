@@ -109,15 +109,13 @@ const Login = ({
     <>
       <div className='flex min-h-screen flex-col items-center justify-center'>
         <div className='flex flex-col px-4 sm:mx-auto sm:w-full sm:max-w-[480px]'>
-          <div className='mt-4 border py-8 px-6 text-left shadow-md'>
+          <div className='mt-4 border px-6 py-8 text-left shadow-md'>
             <div className='space-y-3'>
               <div className='flex justify-center'>
                 <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
               </div>
               <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin Portal</h2>
-              <p className='text-center text-sm text-gray-600'>
-                {t('enterprise_readiness_for_b2b_saas_straight_out_of_the_box')}
-              </p>
+              <p className='text-center text-sm text-gray-600'>{t('boxyhq_tagline')}</p>
             </div>
 
             {(isEmailPasswordEnabled || isMagicLinkEnabled) && (
