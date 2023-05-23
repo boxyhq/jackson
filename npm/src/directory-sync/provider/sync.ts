@@ -20,8 +20,6 @@ export const sync = async (params: SyncParams) => {
   const providers = [googleProvider.provider];
 
   for (const provider of providers) {
-    console.info(`Running the sync for ${provider.name}`);
-
     await new SyncUsers({ users, directories, provider, requestHandler }).sync();
     await new SyncGroups({ groups, directories, provider }).sync();
   }

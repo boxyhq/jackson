@@ -1,5 +1,3 @@
-import EventEmitter from 'events';
-
 import type {
   DirectorySyncEventType,
   Directory,
@@ -14,17 +12,6 @@ import { sendPayloadToWebhook } from '../event/webhook';
 import { transformEventPayload } from './transform';
 import { isConnectionActive } from '../controller/utils';
 
-class DSyncEventEmitter extends EventEmitter {
-  //
-}
-
-export const dsyncEventEmitter = new DSyncEventEmitter();
-
-// Listen for events
-// dsyncEventEmitter.on('dsync.events', (event) => {
-//   console.log(event);
-// });
-
 export const sendEvent = async (
   event: DirectorySyncEventType,
   payload: { directory: Directory; group?: Group | null; user?: User | null },
@@ -35,8 +22,6 @@ export const sendEvent = async (
   }
 
   const eventTransformed = transformEventPayload(event, payload);
-
-  dsyncEventEmitter.emit('dsync.events', eventTransformed);
 
   return callback ? await callback(eventTransformed) : Promise.resolve();
 };

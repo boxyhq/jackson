@@ -1,8 +1,8 @@
 import { OAuth2Client } from 'google-auth-library';
 
-import type { IDirectoryConfig, JacksonOption } from '../../../typings';
-import { GoogleProvider } from './provider';
 import { GoogleAuth } from './oauth';
+import { GoogleProvider } from './provider';
+import type { IDirectoryConfig, JacksonOption } from '../../../typings';
 
 interface GetGoogleProviderParams {
   directories: IDirectoryConfig;

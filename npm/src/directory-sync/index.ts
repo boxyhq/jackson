@@ -2,13 +2,13 @@ import { Users } from './Users';
 import { Groups } from './Groups';
 import { sync } from './provider/sync';
 import { RequestHandler } from './request';
-import { dsyncEventEmitter, handleEventCallback } from './events';
 import { DirectoryUsers } from './DirectoryUsers';
 import { DirectoryGroups } from './DirectoryGroups';
 import { DirectoryConfig } from './DirectoryConfig';
 import { getDirectorySyncProviders } from './utils';
 import { getGogleProvider } from './provider/google';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
+import { handleEventCallback } from './events';
 import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
 
 interface DirectorySyncParams {
@@ -53,15 +53,14 @@ const directorySync = async (params: DirectorySyncParams) => {
     directories,
     webhookLogs: logger,
     requests: requestHandler,
-    events: dsyncEventEmitter,
     providers: getProviders,
     sync: syncDirectories,
     directoryProviders: {
       google: googleProvider,
     },
-    // events: {
-    //   callback: await handleEventCallback(directories, logger),
-    // },
+    events: {
+      callback: await handleEventCallback(directories, logger),
+    },
   };
 };
 

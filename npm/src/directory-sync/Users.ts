@@ -3,14 +3,15 @@ import { apiError, JacksonError } from '../controller/error';
 import { Base } from './Base';
 import { keyFromParts } from '../db/utils';
 
-type CreateUserPayload = {
+interface CreateUserParams {
   directoryId: string;
   first_name: string;
   last_name: string;
   email: string;
   active: boolean;
   raw: any;
-};
+  id?: string;
+}
 
 const indexNames = {
   directoryIdUsername: 'directoryIdUsername',
@@ -23,28 +24,23 @@ export class Users extends Base {
   }
 
   // Create a new user
-  public async create({
-    directoryId,
-    first_name,
-    last_name,
-    email,
-    active,
-    raw,
-  }: CreateUserPayload): Promise<{ data: User | null; error: ApiError | null }> {
+  public async create(params: CreateUserParams): Promise<{ data: User | null; error: ApiError | null }> {
+    const { directoryId, first_name, last_name, email, active, raw, id: userId } = params;
+
+    const id = userId || this.createId();
+
+    raw['id'] = id;
+
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      active,
+      raw,
+    };
+
     try {
-      const id = this.createId();
-
-      raw['id'] = id;
-
-      const user = {
-        id,
-        first_name,
-        last_name,
-        email,
-        active,
-        raw,
-      };
-
       await this.store('users').put(
         id,
         user,

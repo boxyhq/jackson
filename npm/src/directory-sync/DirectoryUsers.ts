@@ -23,10 +23,11 @@ export class DirectoryUsers {
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
-    const { first_name, last_name, email, active } = extractStandardUserAttributes(body);
+    const { id, first_name, last_name, email, active } = extractStandardUserAttributes(body);
 
     const { data: user } = await this.users.create({
       directoryId: directory.id,
+      id,
       first_name,
       last_name,
       email,

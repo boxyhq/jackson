@@ -26,13 +26,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   const { status, data } = await directorySyncController.requests.handle(
-    request
-    // directorySyncController.events.callback
+    request,
+    directorySyncController.events.callback
   );
-
-  directorySyncController.events.on('dsync.events', (event) => {
-    console.log(`Next.js received events`, event);
-  });
 
   return res.status(status).json(data);
 }

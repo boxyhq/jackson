@@ -94,9 +94,10 @@ export class GoogleAuth {
       }
 
       const { data } = await this.directories.update(directoryId, {
-        googleAuth: {
+        google: {
           access_token: accessToken,
           refresh_token: refreshToken,
+          domain: '',
         },
       });
 

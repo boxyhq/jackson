@@ -15,6 +15,12 @@ interface SyncUserParams {
   requestHandler: IRequestHandler;
 }
 
+interface HandleRequestParams {
+  method: string;
+  body: any;
+  resourceId: string | undefined;
+}
+
 export class SyncUsers {
   private users: IUsers;
   private provider: IDirectoryProvider;
@@ -42,42 +48,54 @@ export class SyncUsers {
 
     const users = await this.provider.getUsers(directory);
 
+    // delete users[0];
+
     for (const user of users) {
       const { data: existingUser } = await this.users.get(user.id);
 
-      // New user
       if (!existingUser) {
-        await this.requestHandler.handle(createNewUserRequestPayload(directory, user));
+        await this.createUser(directory, user);
+      } else if (isUserUpdated(existingUser, user)) {
+        await this.updateUser(directory, user);
       }
     }
   }
+
+  // New user found, create it
+  async createUser(directory: Directory, user: User) {
+    await this.handleRequest(directory, {
+      method: 'POST',
+      body: toSCIMPayload(user),
+      resourceId: undefined,
+    });
+  }
+
+  // User found, update it if needed
+  async updateUser(directory: Directory, user: User) {
+    await this.handleRequest(directory, {
+      method: 'PUT',
+      body: toSCIMPayload(user),
+      resourceId: user.id,
+    });
+  }
+
+  // Call the request handler
+  async handleRequest(directory: Directory, payload: HandleRequestParams) {
+    const request: DirectorySyncRequest = {
+      query: {},
+      body: payload.body,
+      resourceType: 'users',
+      method: payload.method,
+      directoryId: directory.id,
+      apiSecret: directory.scim.secret,
+      resourceId: payload.resourceId,
+    };
+
+    console.info(`New request for ${directory.name} - ${payload.method} - ${payload.resourceId}`);
+
+    await this.requestHandler.handle(request);
+  }
 }
-
-// export interface DirectorySyncRequest {
-//   method: string; //'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
-//   body: any | undefined;
-//   directoryId: Directory['id'];
-//   resourceType: string; //'users' | 'groups';
-//   resourceId: string | undefined;
-//   apiSecret: string | null;
-//   query: {
-//     count?: number;
-//     startIndex?: number;
-//     filter?: string;
-//   };
-// }
-
-const createNewUserRequestPayload = (directory: Directory, user: User): DirectorySyncRequest => {
-  return {
-    method: 'POST',
-    body: toSCIMPayload(user),
-    directoryId: directory.id,
-    resourceType: 'users',
-    resourceId: undefined,
-    query: {},
-    apiSecret: directory.scim.secret,
-  };
-};
 
 // Map to SCIM payload
 const toSCIMPayload = (user: User) => {
@@ -95,7 +113,34 @@ const toSCIMPayload = (user: User) => {
         type: 'work',
       },
     ],
-    externalId: user.id,
+    userId: user.id,
     active: user.active,
   };
 };
+
+const isUserUpdated = (existingUser: User, userFromProvider: User) => {
+  return (
+    existingUser.first_name !== userFromProvider.first_name ||
+    existingUser.last_name !== userFromProvider.last_name ||
+    existingUser.email !== userFromProvider.email ||
+    existingUser.active !== userFromProvider.active
+  );
+};
+
+// const compareAndFindDeletedUsers = (existingUsers: User[], usersFromProvider: User[]) => {
+//   const deletedGroups: Group[] = [];
+
+//   if (existingGroup.length === 0) {
+//     return deletedGroups;
+//   }
+
+//   const groupFromProviderIds = groupFromProvider.map((group) => group.id);
+
+//   for (const group of existingGroup) {
+//     if (!groupFromProviderIds.includes(group.id)) {
+//       deletedGroups.push(group);
+//     }
+//   }
+
+//   return deletedGroups;
+// };

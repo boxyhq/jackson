@@ -10,7 +10,6 @@ interface GoogleGroupsParams {
 }
 
 export class GoogleProvider implements IDirectoryProvider {
-  name = 'google';
   private authClient: OAuth2Client;
   private directories: IDirectoryConfig;
 
@@ -27,20 +26,22 @@ export class GoogleProvider implements IDirectoryProvider {
     }
 
     return directories.filter((directory) => {
-      return directory.googleAuth?.access_token && directory.googleAuth.refresh_token && directory.domain;
+      return (
+        directory.google?.access_token && directory.google.refresh_token && directory.google.domain !== ''
+      );
     });
   }
 
   async getGroups(directory: Directory) {
     this.authClient.setCredentials({
-      access_token: directory.googleAuth?.access_token,
-      refresh_token: directory.googleAuth?.refresh_token,
+      access_token: directory.google?.access_token,
+      refresh_token: directory.google?.refresh_token,
     });
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
 
     const response = await googleAdmin.groups.list({
-      domain: directory.domain,
+      domain: directory.google?.domain,
       maxResults: 100,
     });
 
@@ -51,8 +52,8 @@ export class GoogleProvider implements IDirectoryProvider {
 
   async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
     this.authClient.setCredentials({
-      access_token: directory.googleAuth?.access_token,
-      refresh_token: directory.googleAuth?.refresh_token,
+      access_token: directory.google?.access_token,
+      refresh_token: directory.google?.refresh_token,
     });
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
@@ -69,14 +70,14 @@ export class GoogleProvider implements IDirectoryProvider {
 
   async getUsers(directory: Directory) {
     this.authClient.setCredentials({
-      access_token: directory.googleAuth?.access_token,
-      refresh_token: directory.googleAuth?.refresh_token,
+      access_token: directory.google?.access_token,
+      refresh_token: directory.google?.refresh_token,
     });
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
 
     const response = await googleAdmin.users.list({
-      domain: directory.domain,
+      domain: directory.google?.domain,
       maxResults: 200,
     });
 

@@ -55,8 +55,8 @@ export type Directory = {
     secret: string;
   };
   deactivated?: boolean;
-  domain?: string;
-  googleAuth?: {
+  google?: {
+    domain: string;
     access_token: string;
     refresh_token: string;
   };

@@ -96,11 +96,12 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
 
 // Extract standard attributes from the user body
 const extractStandardUserAttributes = (body: any) => {
-  const { name, emails, userName, active } = body as {
+  const { name, emails, userName, active, userId } = body as {
     name?: { givenName: string; familyName: string };
     emails?: { value: string }[];
     userName: string;
     active: boolean;
+    userId?: string;
   };
 
   return {
@@ -108,6 +109,7 @@ const extractStandardUserAttributes = (body: any) => {
     last_name: name && 'familyName' in name ? name.familyName : '',
     email: emails && emails.length > 0 ? emails[0].value : userName,
     active: active || true,
+    id: userId, // For non-SCIM providers, the id will exist in the body
   };
 };
 
