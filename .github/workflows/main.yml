@@ -451,12 +451,3 @@ jobs:
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  publish_sdk:
-    needs: [ci, build]
-    name: Publish SDK for React
-    uses: ./.github/workflows/sdk.yml
-    with:
-      npmversion: ${{ needs.ci.outputs.NPM_VERSION }}
-      publishtag: ${{ needs.ci.outputs.PUBLISH_TAG }}
-    secrets: inherit
