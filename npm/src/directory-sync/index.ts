@@ -1,12 +1,12 @@
 import { Users } from './Users';
 import { Groups } from './Groups';
-import { sync } from './provider/sync';
+import { sync } from './providers/sync';
 import { RequestHandler } from './request';
 import { DirectoryUsers } from './DirectoryUsers';
 import { DirectoryGroups } from './DirectoryGroups';
 import { DirectoryConfig } from './DirectoryConfig';
 import { getDirectorySyncProviders } from './utils';
-import { getGogleProvider } from './provider/google';
+import { getGogleProvider } from './providers/google';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 import { handleEventCallback } from './events';
 import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
@@ -40,7 +40,9 @@ const directorySync = async (params: DirectorySyncParams) => {
   };
 
   // Other Directory Providers
-  const googleProvider = getGogleProvider({ directories, opts });
+  const directoryProviders = {
+    google: getGogleProvider({ directories, opts }),
+  };
 
   // Fetch the supported providers
   const getProviders = () => {
@@ -55,9 +57,7 @@ const directorySync = async (params: DirectorySyncParams) => {
     requests: requestHandler,
     providers: getProviders,
     sync: syncDirectories,
-    directoryProviders: {
-      google: googleProvider,
-    },
+    directoryProviders,
     events: {
       callback: await handleEventCallback(directories, logger),
     },

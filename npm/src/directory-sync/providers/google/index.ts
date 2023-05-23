@@ -1,17 +1,23 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
+import { GoogleAuth } from './oauth';
 import type { IDirectoryProvider } from '../types';
-import type { Directory, IDirectoryConfig, Group, User } from '../../../typings';
+import type { Directory, IDirectoryConfig, Group, User, JacksonOption } from '../../../typings';
+
+interface GetGoogleProviderParams {
+  directories: IDirectoryConfig;
+  opts: JacksonOption;
+}
 
 interface GoogleGroupsParams {
   authClient: OAuth2Client;
   directories: IDirectoryConfig;
 }
 
-export class GoogleProvider implements IDirectoryProvider {
-  private authClient: OAuth2Client;
-  private directories: IDirectoryConfig;
+class GoogleProvider implements IDirectoryProvider {
+  authClient: OAuth2Client;
+  directories: IDirectoryConfig;
 
   constructor({ directories, authClient }: GoogleGroupsParams) {
     this.directories = directories;
@@ -97,3 +103,32 @@ export class GoogleProvider implements IDirectoryProvider {
     });
   }
 }
+
+// Initialize Google Provider
+export const getGogleProvider = (params: GetGoogleProviderParams) => {
+  const { directories, opts } = params;
+  const { dsync } = opts;
+
+  if (!dsync?.google?.clientId) {
+    throw new Error('Google Provider: Missing Google Client ID');
+  }
+
+  if (!dsync?.google?.clientSecret) {
+    throw new Error('Google Provider: Missing Google Client Secret');
+  }
+
+  if (!dsync?.google?.callbackUrl) {
+    throw new Error('Google Provider: Missing Google Callback URL');
+  }
+
+  const authClient = new OAuth2Client(
+    dsync.google.clientId,
+    dsync.google.clientSecret,
+    dsync.google.callbackUrl
+  );
+
+  return {
+    auth: new GoogleAuth({ directories, authClient }),
+    provider: new GoogleProvider({ directories, authClient }),
+  };
+};
