@@ -1,24 +1,28 @@
-import { SyncGroup } from './groupSync';
+import { SyncUsers } from './sync-users';
+import { SyncGroups } from './sync-groups';
 import { getGogleProvider } from './google';
-import type { EventCallback, IDirectoryConfig, IGroups, JacksonOption } from '../../typings';
+import type { IDirectoryConfig, IGroups, IUsers, JacksonOption, IRequestHandler } from '../../typings';
 
 interface SyncParams {
+  users: IUsers;
   groups: IGroups;
   opts: JacksonOption;
   directories: IDirectoryConfig;
-  callback?: EventCallback | undefined;
+  requestHandler: IRequestHandler;
 }
 
 export const sync = async (params: SyncParams) => {
-  const { groups, opts, directories, callback } = params;
-
-  const googleProvider = getGogleProvider({ directories, opts });
+  const { users, groups, opts, directories, requestHandler } = params;
 
   // Add new providers here
+  const googleProvider = getGogleProvider({ directories, opts });
+
   const providers = [googleProvider.provider];
 
   for (const provider of providers) {
     console.info(`Running the sync for ${provider.name}`);
-    await new SyncGroup({ groups, directories, callback, provider }).sync();
+
+    await new SyncUsers({ users, directories, provider, requestHandler }).sync();
+    await new SyncGroups({ groups, directories, provider }).sync();
   }
 };

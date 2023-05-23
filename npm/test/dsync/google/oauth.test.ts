@@ -59,7 +59,7 @@ tap.test('Google Directory', async (t) => {
         redirect_uri: `GOOGLE_REDIRECT_URI`,
         state: JSON.stringify({ directoryId: directory.id }),
         scope:
-          'https://www.googleapis.com/auth/admin.directory.group.readonly https://www.googleapis.com/auth/admin.directory.group.member.readonly',
+          'https://www.googleapis.com/auth/admin.directory.user.readonly https://www.googleapis.com/auth/admin.directory.group.readonly https://www.googleapis.com/auth/admin.directory.group.member.readonly',
       }
     );
 

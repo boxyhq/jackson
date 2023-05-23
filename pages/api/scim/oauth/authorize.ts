@@ -14,20 +14,36 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const { directorySyncController } = await jackson();
+    const { directoryProviders } = directorySyncController;
 
-    const { data, error } = await directorySyncController.google.auth.generateAuthorizationUrl({
-      directoryId: `b5e61332-9563-4b00-84db-78969ff0e1c3`,
-    });
+    const { directoryId } = req.query as { directoryId: string };
 
-    if (error) {
-      throw error;
+    const { data: directory, error: directoryError } = await directorySyncController.directories.get(
+      directoryId
+    );
+
+    if (!directoryError) {
+      throw directoryError;
     }
 
-    console.log(data.authorizationUrl);
+    // Provider: Google
+    if (directory?.type === 'google') {
+      const { data, error } = await directoryProviders.google.auth.generateAuthorizationUrl({
+        directoryId,
+      });
 
-    return res.redirect(data.authorizationUrl).end();
+      if (error) {
+        throw error;
+      }
+
+      return res.redirect(data.authorizationUrl).end();
+    }
+
+    throw new Error('Directory type not supported.');
   } catch (error: any) {
-    return res.status(error.statusCode || 500).json({ error });
+    const { message, statusCode = 500 } = error;
+
+    return res.status(statusCode).json({ error: { message } });
   }
 };
 

@@ -2,7 +2,7 @@ import { Users } from './Users';
 import { Groups } from './Groups';
 import { sync } from './provider/sync';
 import { RequestHandler } from './request';
-import { handleEventCallback } from './events';
+import { dsyncEventEmitter, handleEventCallback } from './events';
 import { DirectoryUsers } from './DirectoryUsers';
 import { DirectoryGroups } from './DirectoryGroups';
 import { DirectoryConfig } from './DirectoryConfig';
@@ -27,31 +27,41 @@ const directorySync = async (params: DirectorySyncParams) => {
 
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
+  const requestHandler = new RequestHandler(directoryUsers, directoryGroups);
+
+  const syncDirectories = async () => {
+    return await sync({
+      directories,
+      users,
+      groups,
+      opts,
+      requestHandler,
+    });
+  };
 
   // Other Directory Providers
   const googleProvider = getGogleProvider({ directories, opts });
+
+  // Fetch the supported providers
+  const getProviders = () => {
+    return getDirectorySyncProviders();
+  };
 
   return {
     users,
     groups,
     directories,
     webhookLogs: logger,
-    requests: new RequestHandler(directoryUsers, directoryGroups),
-    events: {
-      callback: await handleEventCallback(directories, logger),
+    requests: requestHandler,
+    events: dsyncEventEmitter,
+    providers: getProviders,
+    sync: syncDirectories,
+    directoryProviders: {
+      google: googleProvider,
     },
-    providers: () => {
-      return getDirectorySyncProviders();
-    },
-    sync: async () => {
-      return await sync({
-        directories,
-        groups,
-        opts,
-        callback: await handleEventCallback(directories, logger),
-      });
-    },
-    google: googleProvider,
+    // events: {
+    //   callback: await handleEventCallback(directories, logger),
+    // },
   };
 };
 

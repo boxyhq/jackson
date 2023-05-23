@@ -6,6 +6,7 @@ import { Users } from './Users';
 import { Groups } from './Groups';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
 import { ApiError } from '../typings';
+import { RequestHandler } from './request';
 
 export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
 export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
@@ -14,6 +15,7 @@ export type IDirectoryUsers = InstanceType<typeof DirectoryUsers>;
 export type IUsers = InstanceType<typeof Users>;
 export type IGroups = InstanceType<typeof Groups>;
 export type IWebhookEventsLogger = InstanceType<typeof WebhookEventsLogger>;
+export type IRequestHandler = InstanceType<typeof RequestHandler>;
 
 export type DirectorySyncEventType =
   | 'user.created'
@@ -31,7 +33,7 @@ export enum DirectorySyncProviders {
   'okta-scim-v2' = 'Okta SCIM v2.0',
   'jumpcloud-scim-v2' = 'JumpCloud v2.0',
   'generic-scim-v2' = 'SCIM Generic v2.0',
-  'google-api' = 'Google',
+  'google' = 'Google',
 }
 
 export type DirectoryType = keyof typeof DirectorySyncProviders;

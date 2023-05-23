@@ -30,15 +30,15 @@ export class GoogleAuth {
     const { directoryId } = params;
 
     try {
-      const { data: directory } = await this.directories.get(directoryId);
+      const { data: directory, error } = await this.directories.get(directoryId);
 
-      // if (!directory) {
-      //   throw new JacksonError('Directory not found', 400);
-      // }
+      if (error) {
+        throw error;
+      }
 
-      // if (directory.type !== 'google-api') {
-      //   throw new JacksonError('Directory is not a Google Directory', 400);
-      // }
+      if (directory?.type !== 'google') {
+        throw new JacksonError('Directory is not a Google Directory', 400);
+      }
 
       const response = this.authClient.generateAuthUrl({
         access_type: 'offline',
@@ -62,11 +62,11 @@ export class GoogleAuth {
     const { directoryId, code } = params;
 
     try {
-      const { data: directory } = await this.directories.get(directoryId);
+      const { error } = await this.directories.get(directoryId);
 
-      // if (!directory) {
-      //   throw new JacksonError('Directory not found', 400);
-      // }
+      if (error) {
+        throw error;
+      }
 
       const { tokens } = await this.authClient.getToken(code);
 
@@ -85,14 +85,12 @@ export class GoogleAuth {
     const { directoryId, accessToken, refreshToken } = params;
 
     try {
-      if (!accessToken || !refreshToken) {
-        throw new JacksonError('Missing required parameters', 400);
+      if (!accessToken) {
+        throw new JacksonError(`Access token is required`, 400);
       }
 
-      const { data: directory } = await this.directories.get(directoryId);
-
-      if (!directory) {
-        throw new JacksonError('Directory not found', 400);
+      if (!refreshToken) {
+        throw new JacksonError(`Refresh token is required`, 400);
       }
 
       const { data } = await this.directories.update(directoryId, {

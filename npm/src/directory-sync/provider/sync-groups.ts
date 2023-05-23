@@ -9,7 +9,7 @@ interface GroupSyncParams {
   callback?: EventCallback | undefined;
 }
 
-export class SyncGroup {
+export class SyncGroups {
   private groups: IGroups;
   private provider: IDirectoryProvider;
   private callback: EventCallback | undefined;
@@ -22,6 +22,7 @@ export class SyncGroup {
 
   // Do the sync
   async sync() {
+    return;
     const directories = await this.provider.getDirectories();
 
     for (const directory of directories) {

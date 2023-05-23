@@ -68,7 +68,31 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   async getUsers(directory: Directory) {
-    console.log('getUsers', directory);
-    return [] as User[];
+    this.authClient.setCredentials({
+      access_token: directory.googleAuth?.access_token,
+      refresh_token: directory.googleAuth?.refresh_token,
+    });
+
+    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
+
+    const response = await googleAdmin.users.list({
+      domain: directory.domain,
+      maxResults: 200,
+    });
+
+    if (!response.data.users) {
+      return [];
+    }
+
+    return response.data.users.map((user) => {
+      return {
+        id: user.id,
+        email: user.primaryEmail,
+        first_name: user.name?.givenName,
+        last_name: user.name?.familyName,
+        active: !user.suspended,
+        raw: user,
+      } as User;
+    });
   }
 }
