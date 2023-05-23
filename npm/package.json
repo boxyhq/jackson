@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.332.0",
-    "@aws-sdk/credential-providers": "3.312.0",
+    "@aws-sdk/credential-providers": "3.335.0",
     "@aws-sdk/util-dynamodb": "3.332.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.2",
@@ -65,12 +65,12 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "7.6.0",
-    "@types/node": "20.1.4",
+    "@faker-js/faker": "8.0.1",
+    "@types/node": "20.2.3",
     "@types/sinon": "10.0.15",
     "@types/tap": "15.0.8",
     "cross-env": "7.0.3",
-    "sinon": "15.0.4",
+    "sinon": "15.1.0",
     "tap": "16.3.4",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
