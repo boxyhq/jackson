@@ -9,7 +9,7 @@ const directoryPayload = {
   tenant: 'boxyhq-1',
   product: 'saml-jackson-google',
   name: 'Directory 1',
-  type: 'google-api' as DirectoryType,
+  type: 'google' as DirectoryType,
   domain: 'boxyhq.com',
   webhook_url: 'https://webhook.site/55e98582-e92b-4e1b-a661-4e88a2b23d95',
   webhook_secret: '123',
@@ -38,7 +38,7 @@ tap.before(async () => {
     throw new Error('Failed to create directory');
   }
 
-  await directorySyncController.google.auth.setToken({
+  await directorySyncController.directoryProviders.google.auth.setToken({
     directoryId: data.id,
     accessToken: `${process.env.ACCESS_TOKEN}`,
     refreshToken: `${process.env.REFRESH_TOKEN}`,
