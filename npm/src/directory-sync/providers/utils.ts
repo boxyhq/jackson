@@ -63,27 +63,27 @@ export const isGroupUpdated = (existingGroup: Group, groupFromProvider: Group) =
   return getObjectHash(existingGroup.raw) !== getObjectHash(groupFromProvider.raw);
 };
 
-const compareAndFindDeletedGroups = (existingGroup: Group[], groupFromProvider: Group[]) => {
-  const deletedGroups: Group[] = [];
+// const compareAndFindDeletedGroups = (existingGroup: Group[], groupFromProvider: Group[]) => {
+//   const deletedGroups: Group[] = [];
 
-  if (existingGroup.length === 0) {
-    return deletedGroups;
-  }
+//   if (existingGroup.length === 0) {
+//     return deletedGroups;
+//   }
 
-  const groupFromProviderIds = groupFromProvider.map((group) => group.id);
+//   const groupFromProviderIds = groupFromProvider.map((group) => group.id);
 
-  for (const group of existingGroup) {
-    if (!groupFromProviderIds.includes(group.id)) {
-      deletedGroups.push(group);
-    }
-  }
+//   for (const group of existingGroup) {
+//     if (!groupFromProviderIds.includes(group.id)) {
+//       deletedGroups.push(group);
+//     }
+//   }
 
-  return deletedGroups;
-};
+//   return deletedGroups;
+// };
 
-const compareAndFindDeletedUsers = (existingUsers: User[], usersFromProvider: User[]) => {
-  //
-};
+// const compareAndFindDeletedUsers = (existingUsers: User[], usersFromProvider: User[]) => {
+//   //
+// };
 
 const normalizeObject = (obj: any) => {
   if (_.isArray(obj)) {
