@@ -21,6 +21,25 @@ interface HandleRequestParams {
   resourceId: string | undefined;
 }
 
+interface SCIMUserSchema {
+  schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'];
+  userName: string;
+  name: {
+    givenName: string;
+    familyName: string;
+  };
+  emails: [
+    {
+      primary: boolean;
+      value: string;
+      type: string;
+    }
+  ];
+  userId: string;
+  active: boolean;
+  [key: string]: any;
+}
+
 export class SyncUsers {
   private users: IUsers;
   private provider: IDirectoryProvider;
@@ -101,7 +120,7 @@ export class SyncUsers {
 }
 
 // Map to SCIM payload
-const toSCIMPayload = (user: User) => {
+const toSCIMPayload = (user: User): SCIMUserSchema => {
   return {
     ...user.raw,
     schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
