@@ -1,4 +1,5 @@
-import type { IDirectoryProvider } from './types';
+import _ from 'lodash';
+
 import type {
   Directory,
   IDirectoryConfig,
@@ -7,6 +8,8 @@ import type {
   IRequestHandler,
   DirectorySyncRequest,
 } from '../../typings';
+import type { IDirectoryProvider } from './types';
+import { isUserUpdated, toUserSCIMPayload } from './utils';
 
 interface SyncUserParams {
   users: IUsers;
@@ -21,25 +24,6 @@ interface HandleRequestParams {
   resourceId: string | undefined;
 }
 
-interface SCIMUserSchema {
-  schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'];
-  userName: string;
-  name: {
-    givenName: string;
-    familyName: string;
-  };
-  emails: [
-    {
-      primary: boolean;
-      value: string;
-      type: string;
-    }
-  ];
-  userId: string;
-  active: boolean;
-  [key: string]: any;
-}
-
 export class SyncUsers {
   private users: IUsers;
   private provider: IDirectoryProvider;
@@ -51,7 +35,6 @@ export class SyncUsers {
     this.requestHandler = requestHandler;
   }
 
-  // Do the sync
   async sync() {
     const directories = await this.provider.getDirectories();
 
@@ -60,7 +43,6 @@ export class SyncUsers {
     }
   }
 
-  // Sync users for a directory
   async syncUserForDirectory(directory: Directory) {
     console.info(`Running the user sync for ${directory.name}`);
 
@@ -71,38 +53,37 @@ export class SyncUsers {
     for (const user of users) {
       const { data: existingUser } = await this.users.get(user.id);
 
-      // New user found, create it
       if (!existingUser) {
         await this.createUser(directory, user);
-      }
-
-      // User info is updated, update it
-      else if (isUserUpdated(existingUser, user)) {
+      } else if (isUserUpdated(existingUser, user)) {
         await this.updateUser(directory, user);
       }
     }
   }
 
-  // New user found, create it
   async createUser(directory: Directory, user: User) {
+    console.info(`Creating user ${user.first_name} in ${directory.name}`);
+
     await this.handleRequest(directory, {
       method: 'POST',
-      body: toSCIMPayload(user),
+      body: toUserSCIMPayload(user),
       resourceId: undefined,
     });
   }
 
-  // User found, update it if needed
   async updateUser(directory: Directory, user: User) {
+    console.info(`Updating user ${user.first_name} in ${directory.name}`);
+
     await this.handleRequest(directory, {
       method: 'PUT',
-      body: toSCIMPayload(user),
+      body: toUserSCIMPayload(user),
       resourceId: user.id,
     });
   }
 
-  // Call the request handler
   async handleRequest(directory: Directory, payload: HandleRequestParams) {
+    console.info(`New user request for ${directory.name} - ${payload.method} - ${payload.resourceId}`);
+
     const request: DirectorySyncRequest = {
       query: {},
       body: payload.body,
@@ -113,57 +94,6 @@ export class SyncUsers {
       resourceId: payload.resourceId,
     };
 
-    console.info(`New request for ${directory.name} - ${payload.method} - ${payload.resourceId}`);
-
     await this.requestHandler.handle(request);
   }
 }
-
-// Map to SCIM payload
-const toSCIMPayload = (user: User): SCIMUserSchema => {
-  return {
-    ...user.raw,
-    schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
-    userName: user.email,
-    name: {
-      givenName: user.first_name,
-      familyName: user.last_name,
-    },
-    emails: [
-      {
-        primary: true,
-        value: user.email,
-        type: 'work',
-      },
-    ],
-    userId: user.id,
-    active: user.active,
-  };
-};
-
-const isUserUpdated = (existingUser: User, userFromProvider: User) => {
-  return (
-    existingUser.first_name !== userFromProvider.first_name ||
-    existingUser.last_name !== userFromProvider.last_name ||
-    existingUser.email !== userFromProvider.email ||
-    existingUser.active !== userFromProvider.active
-  );
-};
-
-// const compareAndFindDeletedUsers = (existingUsers: User[], usersFromProvider: User[]) => {
-//   const deletedGroups: Group[] = [];
-
-//   if (existingGroup.length === 0) {
-//     return deletedGroups;
-//   }
-
-//   const groupFromProviderIds = groupFromProvider.map((group) => group.id);
-
-//   for (const group of existingGroup) {
-//     if (!groupFromProviderIds.includes(group.id)) {
-//       deletedGroups.push(group);
-//     }
-//   }
-
-//   return deletedGroups;
-// };

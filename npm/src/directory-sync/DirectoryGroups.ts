@@ -40,8 +40,8 @@ export class DirectoryGroups {
     const { data: group } = await this.groups.create({
       directoryId: directory.id,
       name: displayName,
-      raw: { ...body, members: [] },
       id: groupId,
+      raw: 'rawAttributes' in body ? body.rawAttributes : { ...body, members: [] },
     });
 
     await sendEvent('group.created', { directory, group }, this.callback);
@@ -172,10 +172,7 @@ export class DirectoryGroups {
 
     const { data: updatedGroup, error } = await this.groups.update(group.id, {
       name: displayName,
-      raw: {
-        ...group.raw,
-        ...body,
-      },
+      raw: 'rawAttributes' in body ? body.rawAttributes : { ...group.raw, ...body },
     });
 
     if (error || !updatedGroup) {

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
@@ -56,6 +57,8 @@ class GoogleProvider implements IDirectoryProvider {
     }
 
     return response.data.groups.map((group) => {
+      delete group.etag;
+
       return {
         id: group.id,
         name: group.name,
@@ -82,6 +85,10 @@ class GoogleProvider implements IDirectoryProvider {
     }
 
     return response.data.users.map((user) => {
+      delete user.etag;
+      delete user.lastLoginTime;
+      delete user.thumbnailPhotoEtag;
+
       return {
         id: user.id,
         email: user.primaryEmail,

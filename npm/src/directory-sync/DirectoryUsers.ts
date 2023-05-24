@@ -32,7 +32,7 @@ export class DirectoryUsers {
       last_name,
       email,
       active,
-      raw: body,
+      raw: 'rawAttributes' in body ? body.rawAttributes : body,
     });
 
     await sendEvent('user.created', { directory, user }, this.callback);
@@ -58,7 +58,7 @@ export class DirectoryUsers {
       last_name: name.familyName,
       email: emails[0].value,
       active,
-      raw: body,
+      raw: 'rawAttributes' in body ? body.rawAttributes : body,
     });
 
     await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
