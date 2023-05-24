@@ -21,6 +21,6 @@ export const sync = async (params: SyncParams) => {
 
   for (const provider of providers) {
     await new SyncUsers({ users, directories, provider, requestHandler }).sync();
-    await new SyncGroups({ groups, directories, provider }).sync();
+    await new SyncGroups({ groups, directories, provider, requestHandler }).sync();
   }
 };

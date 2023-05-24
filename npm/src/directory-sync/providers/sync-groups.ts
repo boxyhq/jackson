@@ -1,33 +1,46 @@
 import { sendEvent } from '../events';
 import type { IDirectoryProvider } from './types';
-import type { Directory, EventCallback, IDirectoryConfig, IGroups, Group, User } from '../../typings';
+import type {
+  Directory,
+  EventCallback,
+  IDirectoryConfig,
+  IGroups,
+  Group,
+  User,
+  IRequestHandler,
+  DirectorySyncRequest,
+} from '../../typings';
 
-interface GroupSyncParams {
+interface SyncGroupsParams {
   groups: IGroups;
   provider: IDirectoryProvider;
   directories: IDirectoryConfig;
-  callback?: EventCallback | undefined;
+  requestHandler: IRequestHandler;
+}
+
+interface HandleRequestParams {
+  method: string;
+  body: any;
+  resourceId: string | undefined;
 }
 
 export class SyncGroups {
   private groups: IGroups;
   private provider: IDirectoryProvider;
-  private callback: EventCallback | undefined;
+  private requestHandler: IRequestHandler;
 
-  constructor({ groups, callback, provider }: GroupSyncParams) {
+  constructor({ groups, requestHandler, provider }: SyncGroupsParams) {
     this.groups = groups;
-    this.callback = callback;
     this.provider = provider;
+    this.requestHandler = requestHandler;
   }
 
   // Do the sync
   async sync() {
-    return;
     const directories = await this.provider.getDirectories();
 
     for (const directory of directories) {
       await this.syncGroup(directory);
-      await this.syncGroupMembers(directory);
     }
   }
 
@@ -44,105 +57,97 @@ export class SyncGroups {
 
       // New group found, create it
       if (!existingGroup) {
-        await this.create(directory, group);
-        continue;
+        await this.createGroup(directory, group);
       }
 
       // Group info is updated, update it
-      if (isGroupUpdated(existingGroup, group)) {
-        await this.update(directory, group);
-        continue;
+      else if (isGroupUpdated(existingGroup, group)) {
+        await this.updateGroup(directory, group);
       }
-    }
-
-    // Let's check if any groups were deleted
-    const { data: existingGroups } = await this.groups.getAll({});
-
-    if (!existingGroups) {
-      return;
-    }
-
-    await this.delete(directory, compareAndFindDeletedGroups(existingGroups, groups));
-  }
-
-  // Sync group members from Google to the directory
-  async syncGroupMembers(directory: Directory) {
-    const groups = await this.provider.getGroups(directory);
-
-    for (const group of groups) {
-      if (group.name !== 'Staff') {
-        continue;
-      }
-
-      const members = await this.provider.getUsersInGroup(directory, group);
-      console.log(`Got ${members.length} members in ${group.name} group`);
-
-      console.log('members', members);
     }
   }
 
   // Create a group in the directory
-  async create(directory: Directory, group: Group) {
-    this.groups.setTenantAndProduct(directory.tenant, directory.product);
+  async createGroup(directory: Directory, group: Group) {
+    console.info(`Creating group ${group.name} in ${directory.name}`);
 
-    await this.groups.create({
-      directoryId: directory.id,
-      name: group.name,
-      externalId: group.id,
-      raw: group,
+    await this.handleRequest(directory, {
+      method: 'POST',
+      body: toSCIMPayload(group),
+      resourceId: undefined,
     });
-
-    await sendEvent('group.created', { directory, group }, this.callback);
-
-    console.info(`Created group ${group.name} in ${directory.name}`);
   }
 
   // Update a group in the directory
-  async update(directory: Directory, group: Group) {
+  async updateGroup(directory: Directory, group: Group) {
     console.info(`Updating group ${group.name} in ${directory.name}`);
 
-    this.groups.setTenantAndProduct(directory.tenant, directory.product);
-
-    await this.groups.update(group.id, {
-      name: group.name,
-      raw: group,
+    await this.handleRequest(directory, {
+      method: 'PUT',
+      body: toSCIMPayload(group),
+      resourceId: group.id,
     });
-
-    await sendEvent('group.updated', { directory, group }, this.callback);
   }
 
-  // Delete groups from the directory
-  async delete(directory: Directory, groupsToBeRemoved: Group[]) {
-    if (groupsToBeRemoved.length === 0) {
-      return;
-    }
+  // Call the request handler
+  async handleRequest(directory: Directory, payload: HandleRequestParams) {
+    const request: DirectorySyncRequest = {
+      query: {},
+      body: payload.body,
+      resourceType: 'groups',
+      method: payload.method,
+      directoryId: directory.id,
+      apiSecret: directory.scim.secret,
+      resourceId: payload.resourceId,
+    };
 
-    this.groups.setTenantAndProduct(directory.tenant, directory.product);
+    console.info(`New request for ${directory.name} - ${payload.method} - ${payload.resourceId}`);
 
-    for (const group of groupsToBeRemoved) {
-      console.info(`Deleting group ${group.name} in ${directory.name}`);
-      await this.groups.delete(group.id);
-      await sendEvent('group.deleted', { directory, group }, this.callback);
-    }
+    await this.requestHandler.handle(request);
   }
 
-  // Add a user to a group
-  async addUserToGroup(directory: Directory, group: Group, user: User) {
-    console.log('addUserToGroup', directory, group, user);
-  }
+  // // Delete groups from the directory
+  // async delete(directory: Directory, groupsToBeRemoved: Group[]) {
+  //   if (groupsToBeRemoved.length === 0) {
+  //     return;
+  //   }
 
-  // Remove a user from a group
-  // @eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async removeUserFromGroup(directory: Directory, group: Group, user: User) {
-    console.log('removeUserFromGroup', directory, group, user);
-  }
+  //   this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
-  // Get all users in a group
-  // @eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getUsersInGroup(directory: Directory, group: Group) {
-    console.log('getUsersInGroup', directory, group);
-  }
+  //   for (const group of groupsToBeRemoved) {
+  //     console.info(`Deleting group ${group.name} in ${directory.name}`);
+  //     await this.groups.delete(group.id);
+  //     await sendEvent('group.deleted', { directory, group }, this.callback);
+  //   }
+  // }
+
+  // // Sync group members from Google to the directory
+  // async syncGroupMembers(directory: Directory) {
+  //   const groups = await this.provider.getGroups(directory);
+
+  //   for (const group of groups) {
+  //     if (group.name !== 'Staff') {
+  //       continue;
+  //     }
+
+  //     const members = await this.provider.getUsersInGroup(directory, group);
+  //     console.log(`Got ${members.length} members in ${group.name} group`);
+
+  //     console.log('members', members);
+  //   }
+  // }
 }
+
+// Map to SCIM payload
+const toSCIMPayload = (group: Group) => {
+  return {
+    ...group.raw,
+    schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+    displayName: group.name,
+    groupId: group.id,
+    members: [],
+  };
+};
 
 // Find if a group is updated by comparing the name
 const isGroupUpdated = (existingGroup: Group, groupFromProvider: Group) => {

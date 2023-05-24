@@ -3,6 +3,11 @@ import { apiError, JacksonError } from '../controller/error';
 import { Base } from './Base';
 import { keyFromParts } from '../db/utils';
 
+const indexNames = {
+  directoryIdUsername: 'directoryIdUsername',
+  directoryId: 'directoryId',
+};
+
 interface CreateUserParams {
   directoryId: string;
   first_name: string;
@@ -12,11 +17,6 @@ interface CreateUserParams {
   raw: any;
   id?: string;
 }
-
-const indexNames = {
-  directoryIdUsername: 'directoryIdUsername',
-  directoryId: 'directoryId',
-};
 
 export class Users extends Base {
   constructor({ db }: { db: DatabaseStore }) {

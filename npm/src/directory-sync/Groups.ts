@@ -8,34 +8,33 @@ const indexNames = {
   directoryId: 'directoryId',
 };
 
+interface CreateGroupParams {
+  directoryId: string;
+  name: string;
+  raw: any;
+  id?: string;
+}
+
 export class Groups extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
   }
 
   // Create a new group
-  public async create({
-    directoryId,
-    name,
-    raw,
-    externalId,
-  }: {
-    directoryId: string;
-    name: string;
-    raw: any;
-    externalId?: string;
-  }): Promise<{ data: Group | null; error: ApiError | null }> {
+  public async create(params: CreateGroupParams): Promise<{ data: Group | null; error: ApiError | null }> {
+    const { directoryId, name, raw, id: groupId } = params;
+
+    const id = groupId || this.createId();
+
+    raw['id'] = id;
+
+    const group: Group = {
+      id,
+      name,
+      raw,
+    };
+
     try {
-      const id = externalId ? externalId : this.createId();
-
-      raw['id'] = id;
-
-      const group: Group = {
-        id,
-        name,
-        raw,
-      };
-
       await this.store('groups').put(
         id,
         group,

@@ -35,12 +35,13 @@ export class DirectoryGroups {
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
-    const { displayName } = body as { displayName: string };
+    const { displayName, groupId } = body as { displayName: string; groupId?: string };
 
     const { data: group } = await this.groups.create({
       directoryId: directory.id,
       name: displayName,
       raw: { ...body, members: [] },
+      id: groupId,
     });
 
     await sendEvent('group.created', { directory, group }, this.callback);

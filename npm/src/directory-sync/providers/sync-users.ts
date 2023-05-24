@@ -37,25 +37,28 @@ export class SyncUsers {
     const directories = await this.provider.getDirectories();
 
     for (const directory of directories) {
-      console.info(`Running the user sync for ${directory.name}`);
       await this.syncUserForDirectory(directory);
     }
   }
 
   // Sync users for a directory
   async syncUserForDirectory(directory: Directory) {
+    console.info(`Running the user sync for ${directory.name}`);
+
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
     const users = await this.provider.getUsers(directory);
 
-    // delete users[0];
-
     for (const user of users) {
       const { data: existingUser } = await this.users.get(user.id);
 
+      // New user found, create it
       if (!existingUser) {
         await this.createUser(directory, user);
-      } else if (isUserUpdated(existingUser, user)) {
+      }
+
+      // User info is updated, update it
+      else if (isUserUpdated(existingUser, user)) {
         await this.updateUser(directory, user);
       }
     }

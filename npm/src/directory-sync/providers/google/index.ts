@@ -51,27 +51,17 @@ class GoogleProvider implements IDirectoryProvider {
       maxResults: 100,
     });
 
-    const groups = response.data.groups || [];
+    if (!response.data.groups) {
+      return [];
+    }
 
-    return groups as Group[];
-  }
-
-  async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
-    this.authClient.setCredentials({
-      access_token: directory.google?.access_token,
-      refresh_token: directory.google?.refresh_token,
+    return response.data.groups.map((group) => {
+      return {
+        id: group.id,
+        name: group.name,
+        raw: group,
+      } as Group;
     });
-
-    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
-
-    const response = await googleAdmin.members.list({
-      groupKey: group.id,
-      maxResults: 200,
-    });
-
-    const members = response.data.members || [];
-
-    return members as User[];
   }
 
   async getUsers(directory: Directory) {
@@ -101,6 +91,24 @@ class GoogleProvider implements IDirectoryProvider {
         raw: user,
       } as User;
     });
+  }
+
+  async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
+    this.authClient.setCredentials({
+      access_token: directory.google?.access_token,
+      refresh_token: directory.google?.refresh_token,
+    });
+
+    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
+
+    const response = await googleAdmin.members.list({
+      groupKey: group.id,
+      maxResults: 200,
+    });
+
+    const members = response.data.members || [];
+
+    return members as User[];
   }
 }
 
