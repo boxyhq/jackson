@@ -1,12 +1,9 @@
-import { sendEvent } from '../events';
 import type { IDirectoryProvider } from './types';
 import type {
   Directory,
-  EventCallback,
   IDirectoryConfig,
   IGroups,
   Group,
-  User,
   IRequestHandler,
   DirectorySyncRequest,
 } from '../../typings';
@@ -22,6 +19,13 @@ interface HandleRequestParams {
   method: string;
   body: any;
   resourceId: string | undefined;
+}
+
+interface SCIMGroupSchema {
+  schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'];
+  displayName: string;
+  groupId: string;
+  [key: string]: any;
 }
 
 export class SyncGroups {
@@ -139,13 +143,12 @@ export class SyncGroups {
 }
 
 // Map to SCIM payload
-const toSCIMPayload = (group: Group) => {
+const toSCIMPayload = (group: Group): SCIMGroupSchema => {
   return {
     ...group.raw,
     schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
     displayName: group.name,
     groupId: group.id,
-    members: [],
   };
 };
 
