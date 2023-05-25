@@ -9,7 +9,7 @@ import type {
   DirectorySyncRequest,
 } from '../../typings';
 import type { IDirectoryProvider } from './types';
-import { isUserUpdated, toUserSCIMPayload } from './utils';
+import { compareAndFindDeletedUsers, isUserUpdated, toUserSCIMPayload } from './utils';
 
 interface SyncUserParams {
   users: IUsers;
@@ -48,15 +48,28 @@ export class SyncUsers {
 
     const users = await this.provider.getUsers(directory);
 
+    if (!users || users.length === 0) {
+      return;
+    }
+
+    const userFieldsToExcludeWhenCompare = this.provider.userFieldsToExcludeWhenCompare;
+
+    // Create or update users
     for (const user of users) {
       const { data: existingUser } = await this.users.get(user.id);
 
       if (!existingUser) {
         await this.createUser(directory, user);
-      } else if (isUserUpdated(existingUser, user)) {
+      } else if (isUserUpdated(existingUser, user, userFieldsToExcludeWhenCompare)) {
         await this.updateUser(directory, user);
       }
     }
+
+    // Delete users that are not in the directory anymore
+    // TODO: Add pagination
+    const { data: existingUsers } = await this.users.getAll({ directoryId: directory.id });
+
+    await this.deleteUsers(directory, compareAndFindDeletedUsers(existingUsers, users));
   }
 
   async createUser(directory: Directory, user: User) {
@@ -73,6 +86,16 @@ export class SyncUsers {
       body: toUserSCIMPayload(user),
       resourceId: user.id,
     });
+  }
+
+  async deleteUsers(directory: Directory, users: User[]) {
+    for (const user of users) {
+      await this.handleRequest(directory, {
+        method: 'DELETE',
+        body: toUserSCIMPayload(user),
+        resourceId: user.id,
+      });
+    }
   }
 
   async handleRequest(directory: Directory, payload: HandleRequestParams) {

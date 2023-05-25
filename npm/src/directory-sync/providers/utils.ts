@@ -56,14 +56,25 @@ export const toUserSCIMPayload = (user: User): SCIMUserSchema => {
   };
 };
 
-export const isUserUpdated = (existingUser: User, userFromProvider: User) => {
+export const isUserUpdated = (
+  existingUser: User,
+  userFromProvider: User,
+  ignoreFields: string[] | undefined
+) => {
+  if (ignoreFields && ignoreFields.length > 0) {
+    ignoreFields.forEach((field) => {
+      _.unset(existingUser.raw, field);
+      _.unset(userFromProvider.raw, field);
+    });
+  }
+
   return getObjectHash(existingUser.raw) !== getObjectHash(userFromProvider.raw);
 };
 
 export const isGroupUpdated = (
   existingGroup: Group,
   groupFromProvider: Group,
-  ignoreFields: IDirectoryProvider['groupFieldsToExcludeWhenCompare']
+  ignoreFields: string[] | undefined
 ) => {
   if (ignoreFields && ignoreFields.length > 0) {
     ignoreFields.forEach((field) => {
@@ -87,9 +98,17 @@ export const compareAndFindDeletedGroups = (existingGroups: Group[] | null, grou
   return groupsToDelete;
 };
 
-// const compareAndFindDeletedUsers = (existingUsers: User[], usersFromProvider: User[]) => {
-//   //
-// };
+export const compareAndFindDeletedUsers = (existingUsers: User[] | null, users: User[]) => {
+  if (!existingUsers || existingUsers.length === 0) {
+    return [];
+  }
+
+  const usersToDelete = existingUsers.filter((existingUser) => {
+    return !users.some((user) => user.id === existingUser.id);
+  });
+
+  return usersToDelete;
+};
 
 const normalizeObject = (obj: any) => {
   if (_.isArray(obj)) {

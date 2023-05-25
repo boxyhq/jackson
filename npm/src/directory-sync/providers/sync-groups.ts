@@ -64,11 +64,10 @@ export class SyncGroups {
     }
 
     // Delete groups that are not in the directory anymore
+    // TODO: Add pagination
     const { data: existingGroups } = await this.groups.getAll({ directoryId: directory.id });
 
-    const groupsToDelete = compareAndFindDeletedGroups(existingGroups, groups);
-
-    await this.deleteGroups(directory, groupsToDelete);
+    await this.deleteGroups(directory, compareAndFindDeletedGroups(existingGroups, groups));
   }
 
   async createGroup(directory: Directory, group: Group) {

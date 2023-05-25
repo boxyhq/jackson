@@ -20,6 +20,7 @@ class GoogleProvider implements IDirectoryProvider {
   authClient: OAuth2Client;
   directories: IDirectoryConfig;
   groupFieldsToExcludeWhenCompare = ['etag'];
+  userFieldsToExcludeWhenCompare = ['etag', 'lastLoginTime', 'thumbnailPhotoEtag'];
 
   constructor({ directories, authClient }: GoogleGroupsParams) {
     this.directories = directories;
@@ -48,13 +49,13 @@ class GoogleProvider implements IDirectoryProvider {
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
 
-    let nextPageToken: string | undefined | null = null;
-
     const allGroups: Group[] = [];
     const query = {
       maxResults: 200,
       domain: directory.google?.domain,
     };
+
+    let nextPageToken: string | undefined | null = null;
 
     do {
       if (nextPageToken) {
@@ -91,29 +92,42 @@ class GoogleProvider implements IDirectoryProvider {
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
 
-    const response = await googleAdmin.users.list({
+    const allUsers: User[] = [];
+    const query = {
+      maxResults: 1,
       domain: directory.google?.domain,
-      maxResults: 200,
-    });
+    };
 
-    if (!response.data.users) {
-      return [];
-    }
+    let nextPageToken: string | undefined | null = null;
 
-    return response.data.users.map((user) => {
-      delete user.etag;
-      delete user.lastLoginTime;
-      delete user.thumbnailPhotoEtag;
+    do {
+      if (nextPageToken) {
+        query['pageToken'] = nextPageToken;
+      }
 
-      return {
-        id: user.id,
-        email: user.primaryEmail,
-        first_name: user.name?.givenName,
-        last_name: user.name?.familyName,
-        active: !user.suspended,
-        raw: user,
-      } as User;
-    });
+      const response = await googleAdmin.users.list(query);
+
+      if (!response.data.users) {
+        break;
+      }
+
+      const users = response.data.users.map((user) => {
+        return {
+          id: user.id as string,
+          email: user.primaryEmail as string,
+          first_name: user.name?.givenName as string,
+          last_name: user.name?.familyName as string,
+          active: !user.suspended,
+          raw: user,
+        };
+      });
+
+      allUsers.push(...users);
+
+      nextPageToken = response.data.nextPageToken;
+    } while (nextPageToken);
+
+    return allUsers;
   }
 
   async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
