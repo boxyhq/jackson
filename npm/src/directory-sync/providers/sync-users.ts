@@ -52,21 +52,18 @@ export class SyncUsers {
       return;
     }
 
-    const userFieldsToExcludeWhenCompare = this.provider.userFieldsToExcludeWhenCompare;
-
     // Create or update users
     for (const user of users) {
       const { data: existingUser } = await this.users.get(user.id);
 
       if (!existingUser) {
         await this.createUser(directory, user);
-      } else if (isUserUpdated(existingUser, user, userFieldsToExcludeWhenCompare)) {
+      } else if (isUserUpdated(existingUser, user, this.provider.userFieldsToExcludeWhenCompare)) {
         await this.updateUser(directory, user);
       }
     }
 
     // Delete users that are not in the directory anymore
-    // TODO: Add pagination
     const { data: existingUsers } = await this.users.getAll({ directoryId: directory.id });
 
     await this.deleteUsers(directory, compareAndFindDeletedUsers(existingUsers, users));

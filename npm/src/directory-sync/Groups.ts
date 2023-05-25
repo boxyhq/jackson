@@ -180,10 +180,7 @@ export class Groups extends Base {
     params: PaginationParams & {
       directoryId?: string;
     }
-  ): Promise<{
-    data: Group[] | null;
-    error: ApiError | null;
-  }> {
+  ): Promise<{ data: Group[] | null; error: ApiError | null }> {
     const { pageOffset, pageLimit, directoryId } = params;
 
     try {

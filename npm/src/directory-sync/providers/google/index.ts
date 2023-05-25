@@ -4,7 +4,7 @@ import { OAuth2Client } from 'google-auth-library';
 
 import { GoogleAuth } from './oauth';
 import type { IDirectoryProvider } from '../types';
-import type { Directory, IDirectoryConfig, Group, User, JacksonOption } from '../../../typings';
+import type { Directory, IDirectoryConfig, Group, User, JacksonOption, GroupMember } from '../../../typings';
 
 interface GetGoogleProviderParams {
   directories: IDirectoryConfig;
@@ -94,7 +94,7 @@ class GoogleProvider implements IDirectoryProvider {
 
     const allUsers: User[] = [];
     const query = {
-      maxResults: 1,
+      maxResults: 200,
       domain: directory.google?.domain,
     };
 
@@ -130,7 +130,7 @@ class GoogleProvider implements IDirectoryProvider {
     return allUsers;
   }
 
-  async getUsersInGroup(directory: Directory, group: Group): Promise<User[]> {
+  async getGroupMembers(directory: Directory, group: Group) {
     this.authClient.setCredentials({
       access_token: directory.google?.access_token,
       refresh_token: directory.google?.refresh_token,
@@ -138,14 +138,39 @@ class GoogleProvider implements IDirectoryProvider {
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
 
-    const response = await googleAdmin.members.list({
+    const allMembers: GroupMember[] = [];
+    const query = {
+      maxResults: 1,
       groupKey: group.id,
-      maxResults: 200,
-    });
+      domain: directory.google?.domain,
+    };
 
-    const members = response.data.members || [];
+    let nextPageToken: string | undefined | null = null;
 
-    return members as User[];
+    do {
+      if (nextPageToken) {
+        query['pageToken'] = nextPageToken;
+      }
+
+      const response = await googleAdmin.members.list(query);
+
+      if (!response.data.members) {
+        break;
+      }
+
+      const members = response.data.members.map((user) => {
+        return {
+          id: user.id as string,
+          raw: user,
+        };
+      });
+
+      allMembers.push(...members);
+
+      nextPageToken = response.data.nextPageToken;
+    } while (nextPageToken);
+
+    return allMembers;
   }
 }
 

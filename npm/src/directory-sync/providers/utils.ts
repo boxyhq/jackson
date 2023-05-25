@@ -2,41 +2,8 @@ import _ from 'lodash';
 import crypto from 'crypto';
 
 import type { User, Group } from '../../typings';
-import { IDirectoryProvider } from './types';
 
-interface SCIMUserSchema {
-  userName: string;
-  name: {
-    givenName: string;
-    familyName: string;
-  };
-  emails: [
-    {
-      primary: boolean;
-      value: string;
-      type: string;
-    }
-  ];
-  userId: string;
-  active: boolean;
-  rawAttributes: any;
-}
-
-interface SCIMGroupSchema {
-  displayName: string;
-  groupId: string;
-  rawAttributes: any;
-}
-
-export const toGroupSCIMPayload = (group: Group): SCIMGroupSchema => {
-  return {
-    displayName: group.name,
-    groupId: group.id,
-    rawAttributes: group.raw,
-  };
-};
-
-export const toUserSCIMPayload = (user: User): SCIMUserSchema => {
+export const toUserSCIMPayload = (user: User) => {
   return {
     userName: user.email,
     name: {
@@ -53,6 +20,32 @@ export const toUserSCIMPayload = (user: User): SCIMUserSchema => {
     userId: user.id,
     active: user.active,
     rawAttributes: user.raw,
+  };
+};
+
+export const toGroupSCIMPayload = (group: Group) => {
+  return {
+    displayName: group.name,
+    groupId: group.id,
+    rawAttributes: group.raw,
+  };
+};
+
+export const toGroupMembershipSCIMPayload = (memberIds: string[]) => {
+  const memberValues = memberIds.map((memberId) => {
+    return {
+      value: memberId,
+    };
+  });
+
+  return {
+    Operations: [
+      {
+        op: 'add',
+        path: 'members',
+        value: memberValues,
+      },
+    ],
   };
 };
 
@@ -108,6 +101,14 @@ export const compareAndFindDeletedUsers = (existingUsers: User[] | null, users: 
   });
 
   return usersToDelete;
+};
+
+export const compareAndFindDeletedMembers = (idsFromDB: string[], idsFromProvider: string[]) => {
+  return idsFromDB.filter((userId) => !idsFromProvider.includes(userId));
+};
+
+export const compareAndFindNewMembers = (idsFromDB: string[], idsFromProvider: string[]) => {
+  return idsFromProvider.filter((userId) => !idsFromDB.includes(userId));
 };
 
 const normalizeObject = (obj: any) => {

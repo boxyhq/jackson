@@ -128,6 +128,11 @@ export type Group = {
   raw?: any;
 };
 
+export type GroupMember = {
+  id: string;
+  raw?: any;
+};
+
 export type UserWithGroup = User & { group: Group };
 
 export type PaginationParams = {

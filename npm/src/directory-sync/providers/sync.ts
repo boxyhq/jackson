@@ -1,7 +1,9 @@
 import { SyncUsers } from './sync-users';
 import { SyncGroups } from './sync-groups';
-import { getGogleProvider } from './google';
+import { SyncGroupMembers } from './sync-group-members';
 import type { IDirectoryConfig, IGroups, IUsers, JacksonOption, IRequestHandler } from '../../typings';
+
+import { getGogleProvider } from './google';
 
 interface SyncParams {
   users: IUsers;
@@ -22,5 +24,6 @@ export const sync = async (params: SyncParams) => {
   for (const provider of providers) {
     await new SyncUsers({ users, directories, provider, requestHandler }).sync();
     await new SyncGroups({ groups, directories, provider, requestHandler }).sync();
+    await new SyncGroupMembers({ groups, directories, provider, requestHandler }).sync();
   }
 };

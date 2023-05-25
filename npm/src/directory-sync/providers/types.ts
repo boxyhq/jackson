@@ -1,4 +1,4 @@
-import type { Directory, Group, User } from '../../typings';
+import type { Directory, Group, GroupMember, User } from '../../typings';
 
 export interface IDirectoryProvider {
   /**
@@ -30,9 +30,9 @@ export interface IDirectoryProvider {
   getUsers(directory: Directory): Promise<User[]>;
 
   /**
-   * Get all users for a group
+   * Get all members of a group
    * @param directory
    * @param group
    */
-  getUsersInGroup(directory: Directory, group: Group): Promise<User[]>;
+  getGroupMembers(directory: Directory, group: Group): Promise<GroupMember[]>;
 }
