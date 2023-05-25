@@ -44,8 +44,6 @@ tap.before(async () => {
     accessToken: `${process.env.ACCESS_TOKEN}`,
     refreshToken: `${process.env.REFRESH_TOKEN}`,
   });
-
-  // directory = data;
 });
 
 tap.test('Google Groups', async (t) => {
