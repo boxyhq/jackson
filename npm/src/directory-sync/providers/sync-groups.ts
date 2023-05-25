@@ -7,7 +7,7 @@ import type {
   IRequestHandler,
   DirectorySyncRequest,
 } from '../../typings';
-import { isGroupUpdated, toGroupSCIMPayload } from './utils';
+import { compareAndFindDeletedGroups, isGroupUpdated, toGroupSCIMPayload } from './utils';
 
 interface SyncGroupsParams {
   groups: IGroups;
@@ -42,12 +42,15 @@ export class SyncGroups {
   }
 
   async syncGroup(directory: Directory) {
-    console.info(`Running the group sync for ${directory.name}`);
-
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
 
     const groups = await this.provider.getGroups(directory);
 
+    if (!groups || groups.length === 0) {
+      return;
+    }
+
+    // Create or update groups
     for (const group of groups) {
       const { data: existingGroup } = await this.groups.get(group.id);
 
@@ -57,11 +60,16 @@ export class SyncGroups {
         await this.updateGroup(directory, group);
       }
     }
+
+    // Delete groups that are not in the directory anymore
+    const { data: existingGroups } = await this.groups.getAll({ directoryId: directory.id });
+
+    const groupsToDelete = compareAndFindDeletedGroups(existingGroups, groups);
+
+    await this.deleteGroups(directory, groupsToDelete);
   }
 
   async createGroup(directory: Directory, group: Group) {
-    console.info(`Creating group ${group.name} in ${directory.name}`);
-
     await this.handleRequest(directory, {
       method: 'POST',
       body: toGroupSCIMPayload(group),
@@ -70,8 +78,6 @@ export class SyncGroups {
   }
 
   async updateGroup(directory: Directory, group: Group) {
-    console.info(`Updating group ${group.name} in ${directory.name}`);
-
     await this.handleRequest(directory, {
       method: 'PUT',
       body: toGroupSCIMPayload(group),
@@ -79,9 +85,17 @@ export class SyncGroups {
     });
   }
 
-  async handleRequest(directory: Directory, payload: HandleRequestParams) {
-    console.info(`New group request for ${directory.name} - ${payload.method} - ${payload.resourceId}`);
+  async deleteGroups(directory: Directory, groups: Group[]) {
+    for (const group of groups) {
+      await this.handleRequest(directory, {
+        method: 'DELETE',
+        body: toGroupSCIMPayload(group),
+        resourceId: group.id,
+      });
+    }
+  }
 
+  async handleRequest(directory: Directory, payload: HandleRequestParams) {
     const request: DirectorySyncRequest = {
       query: {},
       body: payload.body,

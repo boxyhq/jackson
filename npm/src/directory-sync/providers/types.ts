@@ -1,5 +1,12 @@
 import type { Directory, Group, User } from '../../typings';
 
+export interface Options {
+  /**
+   * Token to specify next page in the list
+   */
+  nextPageToken?: string | null;
+}
+
 export interface IDirectoryProvider {
   /**
    * Get all directories for the provider
@@ -9,6 +16,7 @@ export interface IDirectoryProvider {
   /**
    * Get all groups for a directory
    * @param directory
+   * @param options
    */
   getGroups(directory: Directory): Promise<Group[]>;
 

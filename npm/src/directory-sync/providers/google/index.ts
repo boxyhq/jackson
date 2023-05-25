@@ -3,7 +3,7 @@ import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
 import { GoogleAuth } from './oauth';
-import type { IDirectoryProvider } from '../types';
+import type { IDirectoryProvider, Options } from '../types';
 import type { Directory, IDirectoryConfig, Group, User, JacksonOption } from '../../../typings';
 
 interface GetGoogleProviderParams {
@@ -47,24 +47,45 @@ class GoogleProvider implements IDirectoryProvider {
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
 
-    const response = await googleAdmin.groups.list({
+    const allGroups: Group[] = [];
+    const query = {
+      maxResults: 5,
       domain: directory.google?.domain,
-      maxResults: 100,
-    });
+    };
 
-    if (!response.data.groups) {
-      return [];
+    let nextPageToken: string | undefined = undefined;
+
+    while (true) {
+      if (nextPageToken) {
+        query['pageToken'] = nextPageToken;
+      }
+
+      const response = await googleAdmin.groups.list(query);
+
+      if (!response.data.groups) {
+        break;
+      }
+
+      const groups: Group[] = response.data.groups.map((group) => {
+        delete group.etag;
+
+        return {
+          id: group.id as string,
+          name: group.name as string,
+          raw: group,
+        };
+      });
+
+      allGroups.push(...groups);
+
+      if (!response.data.nextPageToken) {
+        break;
+      }
+
+      nextPageToken = response.data.nextPageToken;
     }
 
-    return response.data.groups.map((group) => {
-      delete group.etag;
-
-      return {
-        id: group.id,
-        name: group.name,
-        raw: group,
-      } as Group;
-    });
+    return allGroups;
   }
 
   async getUsers(directory: Directory) {

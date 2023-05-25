@@ -63,23 +63,17 @@ export const isGroupUpdated = (existingGroup: Group, groupFromProvider: Group) =
   return getObjectHash(existingGroup.raw) !== getObjectHash(groupFromProvider.raw);
 };
 
-// const compareAndFindDeletedGroups = (existingGroup: Group[], groupFromProvider: Group[]) => {
-//   const deletedGroups: Group[] = [];
+export const compareAndFindDeletedGroups = (existingGroups: Group[] | null, groups: Group[]) => {
+  if (!existingGroups || existingGroups.length === 0) {
+    return [];
+  }
 
-//   if (existingGroup.length === 0) {
-//     return deletedGroups;
-//   }
+  const groupsToDelete = existingGroups.filter((existingGroup) => {
+    return !groups.some((group) => group.id === existingGroup.id);
+  });
 
-//   const groupFromProviderIds = groupFromProvider.map((group) => group.id);
-
-//   for (const group of existingGroup) {
-//     if (!groupFromProviderIds.includes(group.id)) {
-//       deletedGroups.push(group);
-//     }
-//   }
-
-//   return deletedGroups;
-// };
+  return groupsToDelete;
+};
 
 // const compareAndFindDeletedUsers = (existingUsers: User[], usersFromProvider: User[]) => {
 //   //
