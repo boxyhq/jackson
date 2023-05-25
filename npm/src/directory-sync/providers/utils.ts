@@ -2,6 +2,7 @@ import _ from 'lodash';
 import crypto from 'crypto';
 
 import type { User, Group } from '../../typings';
+import { IDirectoryProvider } from './types';
 
 interface SCIMUserSchema {
   userName: string;
@@ -59,7 +60,18 @@ export const isUserUpdated = (existingUser: User, userFromProvider: User) => {
   return getObjectHash(existingUser.raw) !== getObjectHash(userFromProvider.raw);
 };
 
-export const isGroupUpdated = (existingGroup: Group, groupFromProvider: Group) => {
+export const isGroupUpdated = (
+  existingGroup: Group,
+  groupFromProvider: Group,
+  ignoreFields: IDirectoryProvider['groupFieldsToExcludeWhenCompare']
+) => {
+  if (ignoreFields && ignoreFields.length > 0) {
+    ignoreFields.forEach((field) => {
+      _.unset(existingGroup.raw, field);
+      _.unset(groupFromProvider.raw, field);
+    });
+  }
+
   return getObjectHash(existingGroup.raw) !== getObjectHash(groupFromProvider.raw);
 };
 

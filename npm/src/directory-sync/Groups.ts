@@ -77,15 +77,15 @@ export class Groups extends Base {
       raw: any;
     }
   ): Promise<{ data: Group | null; error: ApiError | null }> {
+    const { name, raw } = param;
+
+    const group: Group = {
+      id,
+      name,
+      raw,
+    };
+
     try {
-      const { name, raw } = param;
-
-      const group: Group = {
-        id,
-        name,
-        raw,
-      };
-
       await this.store('groups').put(id, group);
 
       return { data: group, error: null };

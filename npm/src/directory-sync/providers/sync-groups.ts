@@ -50,13 +50,15 @@ export class SyncGroups {
       return;
     }
 
+    const groupFieldsToExcludeWhenCompare = this.provider.groupFieldsToExcludeWhenCompare;
+
     // Create or update groups
     for (const group of groups) {
       const { data: existingGroup } = await this.groups.get(group.id);
 
       if (!existingGroup) {
         await this.createGroup(directory, group);
-      } else if (isGroupUpdated(existingGroup, group)) {
+      } else if (isGroupUpdated(existingGroup, group, groupFieldsToExcludeWhenCompare)) {
         await this.updateGroup(directory, group);
       }
     }
@@ -105,6 +107,8 @@ export class SyncGroups {
       apiSecret: directory.scim.secret,
       resourceId: payload.resourceId,
     };
+
+    console.info(`Group request: ${payload.method} / ${payload.resourceId}`);
 
     await this.requestHandler.handle(request);
   }

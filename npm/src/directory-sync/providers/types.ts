@@ -1,13 +1,16 @@
 import type { Directory, Group, User } from '../../typings';
 
-export interface Options {
-  /**
-   * Token to specify next page in the list
-   */
-  nextPageToken?: string | null;
-}
-
 export interface IDirectoryProvider {
+  /**
+   * Fields to exclude from the user payload while comparing the user to find if it is updated
+   */
+  userFieldsToExcludeWhenCompare?: string[];
+
+  /**
+   * Fields to exclude from the group payload while comparing the group to find if it is updated
+   */
+  groupFieldsToExcludeWhenCompare?: string[];
+
   /**
    * Get all directories for the provider
    */

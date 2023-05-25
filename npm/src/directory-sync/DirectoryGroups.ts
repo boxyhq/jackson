@@ -137,12 +137,7 @@ export class DirectoryGroups {
   }
 
   public async update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
-    const { displayName } = body;
-
-    // Update group name
-    const updatedGroup = await this.updateDisplayName(directory, group, {
-      displayName,
-    });
+    const updatedGroup = await this.updateDisplayName(directory, group, body);
 
     return {
       status: 200,
@@ -168,10 +163,8 @@ export class DirectoryGroups {
 
   // Update group displayName
   public async updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group> {
-    const { displayName } = body;
-
     const { data: updatedGroup, error } = await this.groups.update(group.id, {
-      name: displayName,
+      name: body.displayName,
       raw: 'rawAttributes' in body ? body.rawAttributes : { ...group.raw, ...body },
     });
 

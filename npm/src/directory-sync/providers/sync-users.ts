@@ -44,8 +44,6 @@ export class SyncUsers {
   }
 
   async syncUserForDirectory(directory: Directory) {
-    console.info(`Running the user sync for ${directory.name}`);
-
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
     const users = await this.provider.getUsers(directory);
@@ -62,8 +60,6 @@ export class SyncUsers {
   }
 
   async createUser(directory: Directory, user: User) {
-    console.info(`Creating user ${user.first_name} in ${directory.name}`);
-
     await this.handleRequest(directory, {
       method: 'POST',
       body: toUserSCIMPayload(user),
@@ -72,8 +68,6 @@ export class SyncUsers {
   }
 
   async updateUser(directory: Directory, user: User) {
-    console.info(`Updating user ${user.first_name} in ${directory.name}`);
-
     await this.handleRequest(directory, {
       method: 'PUT',
       body: toUserSCIMPayload(user),
@@ -82,8 +76,6 @@ export class SyncUsers {
   }
 
   async handleRequest(directory: Directory, payload: HandleRequestParams) {
-    console.info(`New user request for ${directory.name} - ${payload.method} - ${payload.resourceId}`);
-
     const request: DirectorySyncRequest = {
       query: {},
       body: payload.body,
@@ -93,6 +85,8 @@ export class SyncUsers {
       apiSecret: directory.scim.secret,
       resourceId: payload.resourceId,
     };
+
+    console.info(`User request: ${payload.method} / ${payload.resourceId}`);
 
     await this.requestHandler.handle(request);
   }

@@ -3,7 +3,7 @@ import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
 import { GoogleAuth } from './oauth';
-import type { IDirectoryProvider, Options } from '../types';
+import type { IDirectoryProvider } from '../types';
 import type { Directory, IDirectoryConfig, Group, User, JacksonOption } from '../../../typings';
 
 interface GetGoogleProviderParams {
@@ -19,6 +19,7 @@ interface GoogleGroupsParams {
 class GoogleProvider implements IDirectoryProvider {
   authClient: OAuth2Client;
   directories: IDirectoryConfig;
+  groupFieldsToExcludeWhenCompare = ['etag'];
 
   constructor({ directories, authClient }: GoogleGroupsParams) {
     this.directories = directories;
@@ -47,15 +48,15 @@ class GoogleProvider implements IDirectoryProvider {
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
 
+    let nextPageToken: string | undefined | null = null;
+
     const allGroups: Group[] = [];
     const query = {
-      maxResults: 5,
+      maxResults: 200,
       domain: directory.google?.domain,
     };
 
-    let nextPageToken: string | undefined = undefined;
-
-    while (true) {
+    do {
       if (nextPageToken) {
         query['pageToken'] = nextPageToken;
       }
@@ -67,8 +68,6 @@ class GoogleProvider implements IDirectoryProvider {
       }
 
       const groups: Group[] = response.data.groups.map((group) => {
-        delete group.etag;
-
         return {
           id: group.id as string,
           name: group.name as string,
@@ -78,12 +77,8 @@ class GoogleProvider implements IDirectoryProvider {
 
       allGroups.push(...groups);
 
-      if (!response.data.nextPageToken) {
-        break;
-      }
-
       nextPageToken = response.data.nextPageToken;
-    }
+    } while (nextPageToken);
 
     return allGroups;
   }
