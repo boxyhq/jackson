@@ -1,6 +1,6 @@
-import { SyncUsers } from './sync-users';
-import { SyncGroups } from './sync-groups';
-import { SyncGroupMembers } from './sync-group-members';
+import { SyncUsers } from './syncUsers';
+import { SyncGroups } from './syncGroups';
+import { SyncGroupMembers } from './syncGroupMembers';
 import type { IDirectoryConfig, IGroups, IUsers, JacksonOption, IRequestHandler } from '../../typings';
 
 import { getGogleProvider } from './google';
