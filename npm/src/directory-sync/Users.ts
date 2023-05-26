@@ -27,20 +27,20 @@ export class Users extends Base {
   public async create(params: CreateUserParams): Promise<{ data: User | null; error: ApiError | null }> {
     const { directoryId, first_name, last_name, email, active, raw, id: userId } = params;
 
-    const id = userId || this.createId();
-
-    raw['id'] = id;
-
-    const user = {
-      id,
-      first_name,
-      last_name,
-      email,
-      active,
-      raw,
-    };
-
     try {
+      const id = userId || this.createId();
+
+      raw['id'] = id;
+
+      const user = {
+        id,
+        first_name,
+        last_name,
+        email,
+        active,
+        raw,
+      };
+
       await this.store('users').put(
         id,
         user,

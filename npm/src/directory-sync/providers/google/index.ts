@@ -28,9 +28,11 @@ class GoogleProvider implements IDirectoryProvider {
   }
 
   async getDirectories() {
-    const { data: directories } = await this.directories.getAll();
+    const { data: directories } = await this.directories.getByProvider({
+      provider: 'google',
+    });
 
-    if (!directories) {
+    if (!directories || directories.length === 0) {
       return [];
     }
 

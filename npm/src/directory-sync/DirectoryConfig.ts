@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import type {
   Storable,
   Directory,
@@ -15,7 +17,6 @@ import * as dbutils from '../db/utils';
 import { createRandomSecret, isConnectionActive, validateTenantAndProduct } from '../controller/utils';
 import { apiError, JacksonError } from '../controller/error';
 import { storeNamespacePrefix } from '../controller/utils';
-import { randomUUID } from 'crypto';
 import { IndexNames } from '../controller/utils';
 import { getDirectorySyncProviders } from './utils';
 
@@ -26,6 +27,13 @@ type ConstructorParams = {
   groups: IGroups;
   logger: IWebhookEventsLogger;
   eventController: IEventController;
+};
+
+type GetByTypeParams = {
+  provider: DirectoryType;
+  pageOffset?: number;
+  pageLimit?: number;
+  pageToken?: string;
 };
 
 export class DirectoryConfig {
@@ -95,10 +103,22 @@ export class DirectoryConfig {
         },
       };
 
-      await this.store().put(id, directory, {
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      const indexes = [
+        {
+          name: IndexNames.TenantProduct as string,
+          value: dbutils.keyFromParts(tenant, product),
+        },
+      ];
+
+      // Secondary indexes on the non-scim directories
+      if (type === 'google') {
+        indexes.push({
+          name: storeNamespacePrefix.dsync.providers,
+          value: type,
+        });
+      }
+
+      await this.store().put(id, directory, ...indexes);
 
       const connection = this.transform(directory);
 
@@ -265,6 +285,37 @@ export class DirectoryConfig {
       await this.eventController.notify('dsync.deleted', directory);
 
       return { data: null, error: null };
+    } catch (err: any) {
+      return apiError(err);
+    }
+  }
+
+  // Get the connections by directory provider
+  public async getByProvider(params: GetByTypeParams): Promise<{
+    data: Directory[] | null;
+    error: ApiError | null;
+    pageToken?: string;
+  }> {
+    const { provider, pageOffset, pageLimit, pageToken } = params;
+
+    const index = {
+      name: storeNamespacePrefix.dsync.providers,
+      value: provider,
+    };
+
+    try {
+      const { data: directories, pageToken: nextPageToken } = await this.store().getByIndex(
+        index,
+        pageOffset,
+        pageLimit,
+        pageToken
+      );
+
+      return {
+        data: directories.map((directory) => this.transform(directory)),
+        pageToken: nextPageToken,
+        error: null,
+      };
     } catch (err: any) {
       return apiError(err);
     }

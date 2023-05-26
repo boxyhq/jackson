@@ -333,4 +333,37 @@ tap.test('directories.', async (t) => {
     t.match(directoryFetched2?.deactivated, false);
     t.match(isConnectionActive(directoryFetched2!), true);
   });
+
+  t.test('Fetch the non-scim directories by directory provider', async (t) => {
+    // Create a google directory
+    const { data: firstDirectory } = await directorySync.directories.create({
+      ...directoryPayload,
+      name: 'Google Directory 1',
+      type: 'google' as DirectoryType,
+    });
+
+    // Create an Okta directory
+    await directorySync.directories.create({
+      ...directoryPayload,
+      name: 'Okta Directory 1',
+      type: 'okta-scim-v2' as DirectoryType,
+    });
+
+    // Create another Google directory
+    const { data: secondDirectory } = await directorySync.directories.create({
+      ...directoryPayload,
+      name: 'Google Directory 2',
+      type: 'google' as DirectoryType,
+    });
+
+    // Fetch all the directories of type google
+    const { data: googleDirectoryFetched } = await directorySync.directories.getByProvider({
+      provider: 'google',
+    });
+
+    t.ok(googleDirectoryFetched);
+    t.match(googleDirectoryFetched?.length, 2);
+    t.match(googleDirectoryFetched?.[1].id, firstDirectory?.id);
+    t.match(googleDirectoryFetched?.[0].id, secondDirectory?.id);
+  });
 });
