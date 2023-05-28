@@ -70,7 +70,7 @@ export type DirectorySyncResponse = {
 };
 
 export interface DirectorySyncRequestHandler {
-  handle(request: DirectorySyncRequest, callback?: EventCallback): Promise<DirectorySyncResponse>;
+  handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
 }
 
 export interface Events {
@@ -99,10 +99,6 @@ export interface DirectorySyncEvent {
   data: DirectorySyncEventData;
   tenant: string;
   product: string;
-}
-
-export interface EventCallback {
-  (event: DirectorySyncEvent): Promise<void>;
 }
 
 export interface WebhookEventLog extends DirectorySyncEvent {

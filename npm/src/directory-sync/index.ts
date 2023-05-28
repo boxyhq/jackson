@@ -20,12 +20,20 @@ interface DirectorySyncParams {
 const directorySync = async (params: DirectorySyncParams) => {
   const { db, opts, eventController } = params;
 
+  const internalCallback = async (event: string, payload: any) => {
+    console.log('Within Jackson Event: ', event, payload);
+  };
+
+  const callback = opts.callback || internalCallback;
+
+  console.log('From Directory Sync: Event callback', callback);
+
   const users = new Users({ db });
   const groups = new Groups({ db });
   const logger = new WebhookEventsLogger({ db });
   const directories = new DirectoryConfig({ db, opts, users, groups, logger, eventController });
 
-  const directoryUsers = new DirectoryUsers({ directories, users });
+  const directoryUsers = new DirectoryUsers({ directories, users, callback });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
   const requestHandler = new RequestHandler(directoryUsers, directoryGroups);
 
@@ -58,9 +66,9 @@ const directorySync = async (params: DirectorySyncParams) => {
     providers: getProviders,
     sync: syncDirectories,
     directoryProviders,
-    events: {
-      callback: await handleEventCallback(directories, logger),
-    },
+    // events: {
+    //   callback: await handleEventCallback(directories, logger),
+    // },
   };
 };
 

@@ -147,6 +147,8 @@ export const controllers = async (
 
   console.info(`Using engine: ${opts.db.engine}.${type}`);
 
+  console.log(`From Index: Events callback`, opts.callback);
+
   return {
     spConfig,
     apiController: connectionAPIController,

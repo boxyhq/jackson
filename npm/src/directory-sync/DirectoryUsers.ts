@@ -8,18 +8,27 @@ import type {
   IDirectoryConfig,
   IUsers,
   UserPatchOperation,
+  JacksonOption,
 } from '../typings';
 import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
 import { sendEvent } from './events';
+import { transformEventPayload } from './transform';
+
+interface DirectoryUsersParams {
+  directories: IDirectoryConfig;
+  users: IUsers;
+  callback?: JacksonOption['callback'];
+}
 
 export class DirectoryUsers {
   private directories: IDirectoryConfig;
   private users: IUsers;
-  private callback: EventCallback | undefined;
+  private callback: JacksonOption['callback'];
 
-  constructor({ directories, users }: { directories: IDirectoryConfig; users: IUsers }) {
+  constructor({ directories, users, callback }: DirectoryUsersParams) {
     this.directories = directories;
     this.users = users;
+    this.callback = callback;
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
@@ -35,7 +44,11 @@ export class DirectoryUsers {
       raw: 'rawAttributes' in body ? body.rawAttributes : body,
     });
 
-    await sendEvent('user.created', { directory, user }, this.callback);
+    const eventPayload = transformEventPayload('user.created', { directory, user });
+
+    await this.callback?.('user.created', eventPayload);
+
+    // await sendEvent('user.created', { directory, user }, this.callback);
 
     return {
       status: 201,
@@ -186,7 +199,7 @@ export class DirectoryUsers {
       return this.respondWithError({ code: 401, message: 'Unauthorized' });
     }
 
-    this.callback = callback;
+    // this.callback = callback;
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
     // Get the user
