@@ -477,7 +477,6 @@ export interface ISPSAMLConfig {
     publicKeyString: string;
   }>;
   toMarkdown(): string;
-  toHTML(): string;
   toXMLMetadata(boolean?): Promise<string>;
 }
 
