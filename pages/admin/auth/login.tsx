@@ -9,7 +9,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toaster';
 import { ButtonOutline } from '@components/ButtonOutline';
 import Loading from '@components/Loading';
-import { Login as SSOLogin } from '@boxyhq/react-ui';
+import { Login as SSOLogin } from '@boxyhq/react-ui/sso';
 import { adminPortalSSODefaults } from '@lib/env';
 
 const Login = ({
