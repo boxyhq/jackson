@@ -3,7 +3,7 @@ import lodash from 'lodash';
 import type { User } from '../typings';
 import { DirectorySyncProviders, UserPatchOperation, GroupPatchOperation } from '../typings';
 
-const parseGroupOperation = (operation: GroupPatchOperation) => {
+export const parseGroupOperation = (operation: GroupPatchOperation) => {
   const { op, path, value } = operation;
 
   if (path === 'members') {
@@ -46,7 +46,7 @@ const parseGroupOperation = (operation: GroupPatchOperation) => {
 
 // List of directory sync providers
 // TODO: Fix the return type
-const getDirectorySyncProviders = (): { [K: string]: string } => {
+export const getDirectorySyncProviders = (): { [K: string]: string } => {
   return Object.entries(DirectorySyncProviders).reduce((acc, [key, value]) => {
     acc[key] = value;
     return acc;
@@ -54,7 +54,7 @@ const getDirectorySyncProviders = (): { [K: string]: string } => {
 };
 
 // Parse the PATCH request body and return the user attributes (both standard and custom)
-const parseUserPatchRequest = (operation: UserPatchOperation) => {
+export const parseUserPatchRequest = (operation: UserPatchOperation) => {
   const { value, path } = operation;
 
   const attributes: Partial<User> = {};
@@ -96,7 +96,7 @@ const parseUserPatchRequest = (operation: UserPatchOperation) => {
 };
 
 // Extract standard attributes from the user body
-const extractStandardUserAttributes = (body: any) => {
+export const extractStandardUserAttributes = (body: any) => {
   const { name, emails, userName, active, userId } = body as {
     name?: { givenName: string; familyName: string };
     emails?: { value: string }[];
@@ -115,7 +115,7 @@ const extractStandardUserAttributes = (body: any) => {
 };
 
 // Update raw user attributes
-const updateRawUserAttributes = (raw, attributes) => {
+export const updateRawUserAttributes = (raw, attributes) => {
   const keys = Object.keys(attributes);
 
   if (keys.length === 0) {
@@ -127,12 +127,4 @@ const updateRawUserAttributes = (raw, attributes) => {
   }
 
   return raw;
-};
-
-export {
-  parseGroupOperation,
-  getDirectorySyncProviders,
-  parseUserPatchRequest,
-  extractStandardUserAttributes,
-  updateRawUserAttributes,
 };
