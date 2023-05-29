@@ -1,8 +1,7 @@
 import tap from 'tap';
-import lodash from 'lodash';
 
 import { jacksonOptions } from '../../utils';
-import { IDirectorySyncController, DirectoryType, Directory } from '../../../src/typings';
+import { IDirectorySyncController, DirectoryType } from '../../../src/typings';
 
 let directorySyncController: IDirectorySyncController;
 
@@ -18,18 +17,7 @@ const directoryPayload = {
 };
 
 tap.before(async () => {
-  const jacksonOptionsWithGoogle = {
-    ...jacksonOptions,
-    dsync: {
-      google: {
-        clientId: `${process.env.GOOGLE_CLIENT_ID}`,
-        clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
-        callbackUrl: `${process.env.GOOGLE_REDIRECT_URI}`,
-      },
-    },
-  };
-
-  const jackson = await (await import('../../../src/index')).default(jacksonOptionsWithGoogle);
+  const jackson = await (await import('../../../src/index')).default(jacksonOptions);
 
   directorySyncController = jackson.directorySyncController;
 

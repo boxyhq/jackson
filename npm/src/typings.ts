@@ -411,10 +411,12 @@ export interface JacksonOption {
   };
   webhook?: Webhook;
   dsync?: {
-    google?: {
-      clientId: string;
-      clientSecret: string;
-      callbackUrl: string;
+    providers: {
+      google: {
+        clientId: string;
+        clientSecret: string;
+        callbackUrl: string;
+      };
     };
   };
 

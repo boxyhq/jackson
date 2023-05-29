@@ -79,10 +79,12 @@ const jacksonOptions: JacksonOption = {
     secret: process.env.WEBHOOK_SECRET || '',
   },
   dsync: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackUrl: process.env.GOOGLE_REDIRECT_URI || '',
+    providers: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID || '',
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+        callbackUrl: process.env.GOOGLE_REDIRECT_URI || '',
+      },
     },
   },
 };

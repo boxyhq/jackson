@@ -37,10 +37,12 @@ const jacksonOptions = <JacksonOption>{
   boxyhqLicenseKey: 'dummy-license',
   noAnalytics: true,
   dsync: {
-    google: {
-      clientId: 'GOOGLE_CLIENT_ID',
-      clientSecret: 'GOOGLE_CLIENT_SECRET',
-      callbackUrl: 'GOOGLE_REDIRECT_URI',
+    providers: {
+      google: {
+        clientId: 'GOOGLE_CLIENT_ID',
+        clientSecret: 'GOOGLE_CLIENT_SECRET',
+        callbackUrl: 'GOOGLE_REDIRECT_URI',
+      },
     },
   },
 };
