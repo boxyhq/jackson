@@ -1,6 +1,6 @@
 import lodash from 'lodash';
 
-import type { User } from '../typings';
+import type { DirectoryType, User } from '../typings';
 import { DirectorySyncProviders, UserPatchOperation, GroupPatchOperation } from '../typings';
 
 export const parseGroupOperation = (operation: GroupPatchOperation) => {
@@ -127,4 +127,8 @@ export const updateRawUserAttributes = (raw, attributes) => {
   }
 
   return raw;
+};
+
+export const isSCIMEnabledProvider = (type: DirectoryType) => {
+  return type !== 'google';
 };

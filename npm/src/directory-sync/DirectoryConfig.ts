@@ -18,7 +18,7 @@ import { createRandomSecret, isConnectionActive, validateTenantAndProduct } from
 import { apiError, JacksonError } from '../controller/error';
 import { storeNamespacePrefix } from '../controller/utils';
 import { IndexNames } from '../controller/utils';
-import { getDirectorySyncProviders } from './utils';
+import { getDirectorySyncProviders, isSCIMEnabledProvider } from './utils';
 
 type ConstructorParams = {
   db: DatabaseStore;
@@ -85,6 +85,7 @@ export class DirectoryConfig {
       const directoryName = name || `scim-${tenant}-${product}`;
       const id = randomUUID();
       const hasWebhook = webhook_url && webhook_secret;
+      const isSCIMProvider = isSCIMEnabledProvider(type);
 
       const directory: Directory = {
         id,
@@ -93,14 +94,19 @@ export class DirectoryConfig {
         product,
         type,
         log_webhook_events: false,
-        scim: {
-          path: `${this.opts.scimPath}/${id}`,
-          secret: await createRandomSecret(16),
-        },
         webhook: {
           endpoint: hasWebhook ? webhook_url : '',
           secret: hasWebhook ? webhook_secret : '',
         },
+        scim: isSCIMProvider
+          ? {
+              path: `${this.opts.scimPath}/${id}`,
+              secret: await createRandomSecret(16),
+            }
+          : {
+              path: '',
+              secret: '',
+            },
       };
 
       const indexes = [
@@ -110,8 +116,8 @@ export class DirectoryConfig {
         },
       ];
 
-      // Secondary indexes on the non-scim directories
-      if (type === 'google') {
+      // Add secondary index for Non-SCIM providers
+      if (!isSCIMProvider) {
         indexes.push({
           name: storeNamespacePrefix.dsync.providers,
           value: type,
@@ -322,12 +328,15 @@ export class DirectoryConfig {
   }
 
   private transform(directory: Directory): Directory {
-    // Add the flag to ensure SCIM compliance when using Azure AD
-    if (directory.type === 'azure-scim-v2') {
-      directory.scim.path = `${directory.scim.path}/?aadOptscim062020`;
-    }
+    if (directory.scim.path) {
+      // Add the flag to ensure SCIM compliance when using Azure AD
+      if (directory.type === 'azure-scim-v2') {
+        directory.scim.path = `${directory.scim.path}/?aadOptscim062020`;
+      }
 
-    directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+      // Construct the SCIM endpoint
+      directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+    }
 
     if (!('deactivated' in directory)) {
       directory.deactivated = false;

@@ -71,14 +71,16 @@ const DirectoryInfo = ({ directoryId, setupLinkToken }: { directoryId: string; s
             )}
           </dl>
         </div>
-        <div className='mt-4 space-y-4 rounded border p-6'>
-          <div className='form-control'>
-            <InputWithCopyButton text={directory.scim.endpoint as string} label={t('scim_endpoint')} />
+        {directory.scim.endpoint && directory.scim.secret && (
+          <div className='mt-4 space-y-4 rounded border p-6'>
+            <div className='form-control'>
+              <InputWithCopyButton text={directory.scim.endpoint as string} label={t('scim_endpoint')} />
+            </div>
+            <div className='form-control'>
+              <InputWithCopyButton text={directory.scim.secret} label={t('scim_token')} />
+            </div>
           </div>
-          <div className='form-control'>
-            <InputWithCopyButton text={directory.scim.secret} label={t('scim_token')} />
-          </div>
-        </div>
+        )}
       </div>
     </>
   );
