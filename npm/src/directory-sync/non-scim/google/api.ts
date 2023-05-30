@@ -1,28 +1,27 @@
-import _ from 'lodash';
 import { google } from 'googleapis';
-import { OAuth2Client } from 'google-auth-library';
+import type { OAuth2Client } from 'google-auth-library';
 
-import { GoogleAuth } from './oauth';
-import type { IDirectoryProvider } from '../types';
-import type { Directory, IDirectoryConfig, Group, User, JacksonOption, GroupMember } from '../../../typings';
+import type {
+  Directory,
+  IDirectoryConfig,
+  Group,
+  User,
+  GroupMember,
+  IDirectoryProvider,
+} from '../../../typings';
 
-interface GetGoogleProviderParams {
-  directories: IDirectoryConfig;
-  opts: JacksonOption;
-}
-
-interface GoogleGroupsParams {
+interface GoogleProviderParams {
   authClient: OAuth2Client;
   directories: IDirectoryConfig;
 }
 
-class GoogleProvider implements IDirectoryProvider {
+export class GoogleProvider implements IDirectoryProvider {
   authClient: OAuth2Client;
   directories: IDirectoryConfig;
   groupFieldsToExcludeWhenCompare = ['etag'];
   userFieldsToExcludeWhenCompare = ['etag', 'lastLoginTime', 'thumbnailPhotoEtag'];
 
-  constructor({ directories, authClient }: GoogleGroupsParams) {
+  constructor({ directories, authClient }: GoogleProviderParams) {
     this.directories = directories;
     this.authClient = authClient;
   }
@@ -175,21 +174,3 @@ class GoogleProvider implements IDirectoryProvider {
     return allMembers;
   }
 }
-
-// Initialize Google Provider
-export const getGogleProvider = (params: GetGoogleProviderParams) => {
-  const { directories, opts } = params;
-
-  const googleProvider = opts.dsync?.providers.google;
-
-  const authClient = new OAuth2Client(
-    googleProvider?.clientId,
-    googleProvider?.clientSecret,
-    googleProvider?.callbackUrl
-  );
-
-  return {
-    auth: new GoogleAuth({ directories, authClient }),
-    provider: new GoogleProvider({ directories, authClient }),
-  };
-};

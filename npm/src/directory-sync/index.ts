@@ -1,15 +1,16 @@
 import { Users } from './Users';
 import { Groups } from './Groups';
-import { sync } from './providers/sync';
 import { RequestHandler } from './request';
 import { DirectoryUsers } from './DirectoryUsers';
 import { DirectoryGroups } from './DirectoryGroups';
 import { DirectoryConfig } from './DirectoryConfig';
 import { getDirectorySyncProviders } from './utils';
-import { getGogleProvider } from './providers/google';
 import { WebhookEventsLogger } from './WebhookEventsLogger';
-import { handleEventCallback } from './events';
 import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
+import { newGoogleProvider } from './non-scim/google';
+import { SyncUsers } from './non-scim/syncUsers';
+import { SyncGroups } from './non-scim/syncGroups';
+import { SyncGroupMembers } from './non-scim/syncGroupMembers';
 
 interface DirectorySyncParams {
   db: DatabaseStore;
@@ -26,8 +27,6 @@ const directorySync = async (params: DirectorySyncParams) => {
 
   const callback = opts.callback || internalCallback;
 
-  console.log('From Directory Sync: Event callback', callback);
-
   const users = new Users({ db });
   const groups = new Groups({ db });
   const logger = new WebhookEventsLogger({ db });
@@ -37,24 +36,26 @@ const directorySync = async (params: DirectorySyncParams) => {
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
   const requestHandler = new RequestHandler(directoryUsers, directoryGroups);
 
-  const syncDirectories = async () => {
-    return await sync({
-      directories,
-      users,
-      groups,
-      opts,
-      requestHandler,
-    });
-  };
-
-  // Other Directory Providers
-  const directoryProviders = {
-    google: getGogleProvider({ directories, opts }),
-  };
-
   // Fetch the supported providers
   const getProviders = () => {
     return getDirectorySyncProviders();
+  };
+
+  // Non-SCIM directory providers
+  const googleProvider = newGoogleProvider({ directories, opts });
+  const providers = [googleProvider.directory];
+
+  const sync = async () => {
+    for (const provider of providers) {
+      await new SyncUsers({ users, directories, provider, requestHandler }).sync();
+      await new SyncGroups({ groups, directories, provider, requestHandler }).sync();
+      await new SyncGroupMembers({ groups, directories, provider, requestHandler }).sync();
+    }
+  };
+
+  const nonSCIM = {
+    google: googleProvider.oauth,
+    sync,
   };
 
   return {
@@ -64,11 +65,7 @@ const directorySync = async (params: DirectorySyncParams) => {
     webhookLogs: logger,
     requests: requestHandler,
     providers: getProviders,
-    sync: syncDirectories,
-    directoryProviders,
-    // events: {
-    //   callback: await handleEventCallback(directories, logger),
-    // },
+    ...nonSCIM,
   };
 };
 

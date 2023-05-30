@@ -366,4 +366,17 @@ tap.test('directories.', async (t) => {
     t.match(googleDirectoryFetched?.[1].id, firstDirectory?.id);
     t.match(googleDirectoryFetched?.[0].id, secondDirectory?.id);
   });
+
+  t.test('The SCIM endpoint should be empty for non-scim provider', async (t) => {
+    const { data: directoryCreated } = await directorySync.directories.create({
+      ...directoryPayload,
+      tenant: 'acme',
+      type: 'google' as DirectoryType,
+    });
+
+    console.log(directoryCreated);
+
+    t.ok(directoryCreated);
+    t.match(directoryCreated?.scim, null);
+  });
 });

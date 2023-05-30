@@ -1,7 +1,7 @@
-import type { Credentials, OAuth2Client } from 'google-auth-library';
+import { OAuth2Client, Credentials } from 'google-auth-library';
 
 import { JacksonError, apiError } from '../../../controller/error';
-import type { IDirectoryConfig, Directory, Response } from '../../types';
+import type { Directory, IDirectoryConfig, JacksonOption, Response } from '../../../typings';
 
 const scope = [
   'https://www.googleapis.com/auth/admin.directory.user.readonly',
@@ -18,12 +18,12 @@ export class GoogleAuth {
   private authClient: OAuth2Client;
   private directories: IDirectoryConfig;
 
-  constructor({ authClient, directories }: GoogleAuthParams) {
+  constructor({ directories, authClient }: GoogleAuthParams) {
     this.directories = directories;
     this.authClient = authClient;
   }
 
-  // Generate the Google API authorization URL
+  // Generate the Google authorization URL
   async generateAuthorizationUrl(params: {
     directoryId: string;
   }): Promise<Response<{ authorizationUrl: string }>> {
@@ -40,7 +40,7 @@ export class GoogleAuth {
         throw new JacksonError('Directory is not a Google Directory', 400);
       }
 
-      const response = this.authClient.generateAuthUrl({
+      const authorizationUrl = this.authClient.generateAuthUrl({
         access_type: 'offline',
         prompt: 'consent',
         scope,
@@ -48,7 +48,7 @@ export class GoogleAuth {
       });
 
       const data = {
-        authorizationUrl: response,
+        authorizationUrl,
       };
 
       return { data, error: null };
