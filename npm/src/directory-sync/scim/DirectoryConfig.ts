@@ -12,12 +12,12 @@ import type {
   IGroups,
   IWebhookEventsLogger,
   IEventController,
-} from '../typings';
-import * as dbutils from '../db/utils';
-import { createRandomSecret, isConnectionActive, validateTenantAndProduct } from '../controller/utils';
-import { apiError, JacksonError } from '../controller/error';
-import { storeNamespacePrefix } from '../controller/utils';
-import { IndexNames } from '../controller/utils';
+} from '../../typings';
+import * as dbutils from '../../db/utils';
+import { createRandomSecret, isConnectionActive, validateTenantAndProduct } from '../../controller/utils';
+import { apiError, JacksonError } from '../../controller/error';
+import { storeNamespacePrefix } from '../../controller/utils';
+import { IndexNames } from '../../controller/utils';
 import { getDirectorySyncProviders, isSCIMEnabledProvider } from './utils';
 
 type ConstructorParams = {

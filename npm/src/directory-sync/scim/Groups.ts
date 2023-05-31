@@ -1,6 +1,8 @@
-import type { Group, DatabaseStore, ApiError, PaginationParams, GroupMembership } from '../typings';
-import * as dbutils from '../db/utils';
-import { apiError, JacksonError } from '../controller/error';
+import { randomUUID } from 'crypto';
+
+import type { Group, DatabaseStore, ApiError, PaginationParams, GroupMembership } from '../../typings';
+import * as dbutils from '../../db/utils';
+import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
 
 const indexNames = {
@@ -24,7 +26,7 @@ export class Groups extends Base {
   public async create(params: CreateGroupParams): Promise<{ data: Group | null; error: ApiError | null }> {
     const { directoryId, name, raw, id: groupId } = params;
 
-    const id = groupId || this.createId();
+    const id = groupId || randomUUID();
 
     raw['id'] = id;
 

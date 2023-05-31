@@ -420,14 +420,6 @@ export interface JacksonOption {
       };
     };
   };
-
-  /**
-   * Register a callback function to be called when an event occurs.
-   * @param event
-   * @param payload
-   * @returns
-   */
-  callback?: EventCallback;
 }
 
 export type EventCallback = (event: string, payload: any) => Promise<void>;

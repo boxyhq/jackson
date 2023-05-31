@@ -1,10 +1,12 @@
+import { randomUUID } from 'crypto';
+
 import type {
   Directory,
   DatabaseStore,
   WebhookEventLog,
   DirectorySyncEvent,
   PaginationParams,
-} from '../typings';
+} from '../../typings';
 import { Base } from './Base';
 
 type GetAllParams = PaginationParams & {
@@ -17,7 +19,7 @@ export class WebhookEventsLogger extends Base {
   }
 
   public async log(directory: Directory, event: DirectorySyncEvent, status: number) {
-    const id = this.createId();
+    const id = randomUUID();
 
     const log: WebhookEventLog = {
       ...event,
@@ -40,7 +42,7 @@ export class WebhookEventsLogger extends Base {
     return await this.store('logs').get(id);
   }
 
-  public async getAll(params: GetAllParams = {}) {
+  public async getAll(params: GetAllParams) {
     const { pageOffset, pageLimit, directoryId } = params;
 
     let eventLogs: WebhookEventLog[] = [];

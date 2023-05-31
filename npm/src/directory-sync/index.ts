@@ -21,12 +21,6 @@ interface DirectorySyncParams {
 const directorySync = async (params: DirectorySyncParams) => {
   const { db, opts, eventController } = params;
 
-  const internalCallback = async (event: string, payload: any) => {
-    console.log('Within Jackson Event: ', event, payload);
-  };
-
-  const callback = opts.callback || internalCallback;
-
   const users = new Users({ db });
   const groups = new Groups({ db });
   const logger = new WebhookEventsLogger({ db });

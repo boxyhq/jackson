@@ -1,7 +1,9 @@
-import type { User, DatabaseStore, ApiError, PaginationParams } from '../typings';
-import { apiError, JacksonError } from '../controller/error';
+import { randomUUID } from 'crypto';
+
+import type { User, DatabaseStore, ApiError, PaginationParams } from '../../typings';
+import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
-import { keyFromParts } from '../db/utils';
+import { keyFromParts } from '../../db/utils';
 
 const indexNames = {
   directoryIdUsername: 'directoryIdUsername',
@@ -28,7 +30,7 @@ export class Users extends Base {
     const { directoryId, first_name, last_name, email, active, raw, id: userId } = params;
 
     try {
-      const id = userId || this.createId();
+      const id = userId || randomUUID();
 
       raw['id'] = id;
 
