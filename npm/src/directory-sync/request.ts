@@ -9,13 +9,13 @@ import type {
 export class RequestHandler {
   constructor(private directoryUsers: IDirectoryUsers, private directoryGroups: IDirectoryGroups) {}
 
-  async handle(request: DirectorySyncRequest, callback?: EventCallback): Promise<DirectorySyncResponse> {
+  async handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
     const resourceType = request.resourceType.toLowerCase();
 
     if (resourceType === 'users') {
-      return await this.directoryUsers.handleRequest(request, callback);
+      return await this.directoryUsers.handleRequest(request);
     } else if (resourceType === 'groups') {
-      return await this.directoryGroups.handleRequest(request, callback);
+      return await this.directoryGroups.handleRequest(request);
     }
 
     return { status: 404, data: {} };

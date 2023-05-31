@@ -1,10 +1,10 @@
 import directorySync from '.';
-import { DirectoryConfig } from './DirectoryConfig';
-import { DirectoryGroups } from './DirectoryGroups';
-import { DirectoryUsers } from './DirectoryUsers';
-import { Users } from './Users';
-import { Groups } from './Groups';
-import { WebhookEventsLogger } from './WebhookEventsLogger';
+import { DirectoryConfig } from './scim/DirectoryConfig';
+import { DirectoryGroups } from './scim/DirectoryGroups';
+import { DirectoryUsers } from './scim/DirectoryUsers';
+import { Users } from './scim/Users';
+import { Groups } from './scim/Groups';
+import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { ApiError } from '../typings';
 import { RequestHandler } from './request';
 

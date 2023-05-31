@@ -1,5 +1,5 @@
-import type { Storable, DatabaseStore } from '../typings';
-import { storeNamespacePrefix } from '../controller/utils';
+import type { Storable, DatabaseStore } from '../../typings';
+import { storeNamespacePrefix } from '../../controller/utils';
 import { randomUUID } from 'crypto';
 
 export class Base {
