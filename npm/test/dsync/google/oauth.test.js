@@ -30,7 +30,7 @@ tap.before(async () => {
 
 tap.test('Google Directory', async (t) => {
   t.test('generate the Google API authorization URL', async (t) => {
-    const result = await directorySyncController.directoryProviders.google.auth.generateAuthorizationUrl({
+    const result = await directorySyncController google.auth.generateAuthorizationUrl({
       directoryId: directory.id,
     });
 

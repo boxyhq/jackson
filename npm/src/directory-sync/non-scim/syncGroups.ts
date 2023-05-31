@@ -16,11 +16,7 @@ interface SyncGroupsParams {
   requestHandler: IRequestHandler;
 }
 
-interface HandleRequestParams {
-  method: string;
-  body: any;
-  resourceId: string | undefined;
-}
+type HandleRequestParams = Pick<DirectorySyncRequest, 'method' | 'body' | 'resourceId'>;
 
 export class SyncGroups {
   private groups: IGroups;

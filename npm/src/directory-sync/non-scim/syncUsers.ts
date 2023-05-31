@@ -18,11 +18,7 @@ interface SyncUserParams {
   requestHandler: IRequestHandler;
 }
 
-interface HandleRequestParams {
-  method: string;
-  body: any;
-  resourceId: string | undefined;
-}
+type HandleRequestParams = Pick<DirectorySyncRequest, 'method' | 'body' | 'resourceId'>;
 
 export class SyncUsers {
   private users: IUsers;

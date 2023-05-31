@@ -42,7 +42,7 @@ export class WebhookEventsLogger extends Base {
     return await this.store('logs').get(id);
   }
 
-  public async getAll(params: GetAllParams) {
+  public async getAll(params: GetAllParams = {}) {
     const { pageOffset, pageLimit, directoryId } = params;
 
     let eventLogs: WebhookEventLog[] = [];

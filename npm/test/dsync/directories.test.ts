@@ -374,9 +374,8 @@ tap.test('directories.', async (t) => {
       type: 'google' as DirectoryType,
     });
 
-    console.log(directoryCreated);
-
     t.ok(directoryCreated);
-    t.match(directoryCreated?.scim, null);
+    t.match(directoryCreated?.scim.path, '');
+    t.match(directoryCreated?.scim.secret, '');
   });
 });
