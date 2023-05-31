@@ -1,24 +1,23 @@
-import { Users } from './scim/Users';
-import { Groups } from './scim/Groups';
-import { RequestHandler } from './request';
+import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
+import { DirectoryConfig } from './scim/DirectoryConfig';
 import { DirectoryUsers } from './scim/DirectoryUsers';
 import { DirectoryGroups } from './scim/DirectoryGroups';
-import { DirectoryConfig } from './scim/DirectoryConfig';
+import { Users } from './scim/Users';
+import { Groups } from './scim/Groups';
 import { getDirectorySyncProviders } from './scim/utils';
+import { RequestHandler } from './request';
+import { handleEventCallback } from './scim/events';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
-import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
 import { newGoogleProvider } from './non-scim/google';
 import { SyncUsers } from './non-scim/syncUsers';
 import { SyncGroups } from './non-scim/syncGroups';
 import { SyncGroupMembers } from './non-scim/syncGroupMembers';
 
-interface DirectorySyncParams {
+const directorySync = async (params: {
   db: DatabaseStore;
   opts: JacksonOption;
   eventController: IEventController;
-}
-
-const directorySync = async (params: DirectorySyncParams) => {
+}) => {
   const { db, opts, eventController } = params;
 
   const users = new Users({ db });
@@ -59,6 +58,9 @@ const directorySync = async (params: DirectorySyncParams) => {
     webhookLogs: logger,
     requests: requestHandler,
     providers: getProviders,
+    events: {
+      callback: await handleEventCallback(directories, logger),
+    },
     ...nonSCIM,
   };
 };

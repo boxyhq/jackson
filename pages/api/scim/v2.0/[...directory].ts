@@ -13,10 +13,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Handle the SCIM API requests
   const request: DirectorySyncRequest = {
     body: bodyParser(req),
-    method,
+    method: method as DirectorySyncRequest['method'],
     directoryId,
     resourceId,
-    resourceType: path,
+    resourceType: path as DirectorySyncRequest['resourceType'],
     apiSecret: extractAuthToken(req),
     query: {
       count: query.count ? parseInt(query.count as string) : undefined,
@@ -25,7 +25,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   };
 
-  const { status, data } = await directorySyncController.requests.handle(request);
+  const { status, data } = await directorySyncController.requests.handle(
+    request,
+    directorySyncController.events.callback
+  );
 
   return res.status(status).json(data);
 }
