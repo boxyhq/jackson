@@ -11,7 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   };
 
   try {
-    await directorySyncController.sync(callback);
+    await directorySyncController.sync(directorySyncController.events.callback);
 
     return res.status(200).json({ message: 'Sync completed' });
   } catch (e: any) {
