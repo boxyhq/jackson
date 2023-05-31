@@ -1,6 +1,5 @@
 import _ from 'lodash';
 
-import type { IDirectoryProvider } from './types';
 import type {
   Directory,
   IDirectoryConfig,
@@ -8,6 +7,8 @@ import type {
   Group,
   IRequestHandler,
   DirectorySyncRequest,
+  EventCallback,
+  IDirectoryProvider,
 } from '../../typings';
 import {
   compareAndFindDeletedMembers,
@@ -20,6 +21,7 @@ interface SyncGroupMembersParams {
   provider: IDirectoryProvider;
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
+  callback: EventCallback;
 }
 
 type HandleRequestParams = Pick<DirectorySyncRequest, 'method' | 'body' | 'resourceId'>;
@@ -28,11 +30,13 @@ export class SyncGroupMembers {
   private groups: IGroups;
   private provider: IDirectoryProvider;
   private requestHandler: IRequestHandler;
+  private callback: EventCallback;
 
-  constructor({ groups, requestHandler, provider }: SyncGroupMembersParams) {
+  constructor({ groups, requestHandler, provider, callback }: SyncGroupMembersParams) {
     this.groups = groups;
     this.provider = provider;
     this.requestHandler = requestHandler;
+    this.callback = callback;
   }
 
   async sync() {
@@ -101,6 +105,6 @@ export class SyncGroupMembers {
 
     console.info(`Group membership request: ${payload.method} / ${payload.resourceId}`);
 
-    await this.requestHandler.handle(request);
+    await this.requestHandler.handle(request, this.callback);
   }
 }

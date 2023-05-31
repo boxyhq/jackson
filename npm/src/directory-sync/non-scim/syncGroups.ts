@@ -1,4 +1,3 @@
-import type { IDirectoryProvider } from './types';
 import type {
   Directory,
   IDirectoryConfig,
@@ -6,6 +5,8 @@ import type {
   Group,
   IRequestHandler,
   DirectorySyncRequest,
+  EventCallback,
+  IDirectoryProvider,
 } from '../../typings';
 import { compareAndFindDeletedGroups, isGroupUpdated, toGroupSCIMPayload } from './utils';
 
@@ -14,6 +15,7 @@ interface SyncGroupsParams {
   provider: IDirectoryProvider;
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
+  callback: EventCallback;
 }
 
 type HandleRequestParams = Pick<DirectorySyncRequest, 'method' | 'body' | 'resourceId'>;
@@ -22,11 +24,13 @@ export class SyncGroups {
   private groups: IGroups;
   private provider: IDirectoryProvider;
   private requestHandler: IRequestHandler;
+  private callback: EventCallback;
 
-  constructor({ groups, requestHandler, provider }: SyncGroupsParams) {
+  constructor({ groups, callback, requestHandler, provider }: SyncGroupsParams) {
     this.groups = groups;
     this.provider = provider;
     this.requestHandler = requestHandler;
+    this.callback = callback;
   }
 
   async sync() {
@@ -102,6 +106,6 @@ export class SyncGroups {
 
     console.info(`Group request: ${payload.method} / ${payload.resourceId}`);
 
-    await this.requestHandler.handle(request);
+    await this.requestHandler.handle(request, this.callback);
   }
 }

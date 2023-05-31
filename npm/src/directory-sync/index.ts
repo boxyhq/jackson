@@ -1,4 +1,4 @@
-import type { DatabaseStore, JacksonOption, IEventController } from '../typings';
+import type { DatabaseStore, JacksonOption, IEventController, EventCallback } from '../typings';
 import { DirectoryConfig } from './scim/DirectoryConfig';
 import { DirectoryUsers } from './scim/DirectoryUsers';
 import { DirectoryGroups } from './scim/DirectoryGroups';
@@ -9,9 +9,7 @@ import { RequestHandler } from './request';
 import { handleEventCallback } from './scim/events';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { newGoogleProvider } from './non-scim/google';
-import { SyncUsers } from './non-scim/syncUsers';
-import { SyncGroups } from './non-scim/syncGroups';
-import { SyncGroupMembers } from './non-scim/syncGroupMembers';
+import { startSync } from './non-scim';
 
 const directorySync = async (params: {
   db: DatabaseStore;
@@ -36,19 +34,12 @@ const directorySync = async (params: {
 
   // Non-SCIM directory providers
   const googleProvider = newGoogleProvider({ directories, opts });
-  const providers = [googleProvider.directory];
-
-  const sync = async () => {
-    for (const provider of providers) {
-      await new SyncUsers({ users, directories, provider, requestHandler }).sync();
-      await new SyncGroups({ groups, directories, provider, requestHandler }).sync();
-      await new SyncGroupMembers({ groups, directories, provider, requestHandler }).sync();
-    }
-  };
 
   const nonSCIM = {
     google: googleProvider.oauth,
-    sync,
+    sync: async (callback: EventCallback) => {
+      return await startSync({ users, groups, opts, directories, requestHandler }, callback);
+    },
   };
 
   return {

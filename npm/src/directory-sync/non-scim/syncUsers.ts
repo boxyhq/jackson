@@ -7,6 +7,7 @@ import type {
   IUsers,
   IRequestHandler,
   DirectorySyncRequest,
+  EventCallback,
 } from '../../typings';
 import type { IDirectoryProvider } from './types';
 import { compareAndFindDeletedUsers, isUserUpdated, toUserSCIMPayload } from './utils';
@@ -16,19 +17,22 @@ interface SyncUserParams {
   provider: IDirectoryProvider;
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
+  callback: EventCallback;
 }
 
 type HandleRequestParams = Pick<DirectorySyncRequest, 'method' | 'body' | 'resourceId'>;
 
 export class SyncUsers {
   private users: IUsers;
+  private callback: EventCallback;
   private provider: IDirectoryProvider;
   private requestHandler: IRequestHandler;
 
-  constructor({ users, requestHandler, provider }: SyncUserParams) {
+  constructor({ users, callback, provider, requestHandler }: SyncUserParams) {
     this.users = users;
     this.provider = provider;
     this.requestHandler = requestHandler;
+    this.callback = callback;
   }
 
   async sync() {
@@ -104,6 +108,6 @@ export class SyncUsers {
 
     console.info(`User request: ${payload.method} / ${payload.resourceId}`);
 
-    await this.requestHandler.handle(request);
+    await this.requestHandler.handle(request, this.callback);
   }
 }
