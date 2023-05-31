@@ -20,21 +20,14 @@ import { storeNamespacePrefix } from '../../controller/utils';
 import { IndexNames } from '../../controller/utils';
 import { getDirectorySyncProviders, isSCIMEnabledProvider } from './utils';
 
-type ConstructorParams = {
+interface DirectoryConfigParams {
   db: DatabaseStore;
   opts: JacksonOption;
   users: IUsers;
   groups: IGroups;
   logger: IWebhookEventsLogger;
   eventController: IEventController;
-};
-
-type GetByTypeParams = {
-  provider: DirectoryType;
-  pageOffset?: number;
-  pageLimit?: number;
-  pageToken?: string;
-};
+}
 
 export class DirectoryConfig {
   private _store: Storable | null = null;
@@ -45,7 +38,7 @@ export class DirectoryConfig {
   private logger: IWebhookEventsLogger;
   private eventController: IEventController;
 
-  constructor({ db, opts, users, groups, logger, eventController }: ConstructorParams) {
+  constructor({ db, opts, users, groups, logger, eventController }: DirectoryConfigParams) {
     this.opts = opts;
     this.db = db;
     this.users = users;
@@ -297,7 +290,12 @@ export class DirectoryConfig {
   }
 
   // Get the connections by directory provider
-  public async getByProvider(params: GetByTypeParams): Promise<{
+  public async getByProvider(params: {
+    provider: DirectoryType;
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }): Promise<{
     data: Directory[] | null;
     error: ApiError | null;
     pageToken?: string;

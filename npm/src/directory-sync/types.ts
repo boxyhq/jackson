@@ -69,10 +69,6 @@ export type DirectorySyncResponse = {
   data?: any;
 };
 
-export interface DirectorySyncRequestHandler {
-  handle(request: DirectorySyncRequest): Promise<DirectorySyncResponse>;
-}
-
 export interface Events {
   handle(event: DirectorySyncEvent): Promise<void>;
 }
