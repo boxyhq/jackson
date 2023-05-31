@@ -422,8 +422,6 @@ export interface JacksonOption {
   };
 }
 
-export type EventCallback = (event: string, payload: any) => Promise<void>;
-
 export interface SLORequestParams {
   nameId: string;
   tenant: string;

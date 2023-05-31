@@ -4,14 +4,13 @@ import type {
   DirectorySyncRequest,
   User,
   ApiError,
+  EventCallback,
   IDirectoryConfig,
   IUsers,
   UserPatchOperation,
-  JacksonOption,
 } from '../../typings';
-import { sendEvent } from './events';
-import { transformEventPayload } from './transform';
 import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
+import { sendEvent } from './events';
 
 interface DirectoryUsersParams {
   directories: IDirectoryConfig;
@@ -21,6 +20,7 @@ interface DirectoryUsersParams {
 export class DirectoryUsers {
   private directories: IDirectoryConfig;
   private users: IUsers;
+  private callback: EventCallback | undefined;
 
   constructor({ directories, users }: DirectoryUsersParams) {
     this.directories = directories;
@@ -40,7 +40,7 @@ export class DirectoryUsers {
       raw: 'rawAttributes' in body ? body.rawAttributes : body,
     });
 
-    // await sendEvent('user.created', { directory, user }, this.callback);
+    await sendEvent('user.created', { directory, user }, this.callback);
 
     return {
       status: 201,
@@ -66,7 +66,7 @@ export class DirectoryUsers {
       raw: 'rawAttributes' in body ? body.rawAttributes : body,
     });
 
-    //await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
+    await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
 
     return {
       status: 200,
@@ -104,7 +104,7 @@ export class DirectoryUsers {
       raw: updateRawUserAttributes(user.raw, rawAttributes),
     });
 
-    //await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
+    await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);
 
     return {
       status: 200,
@@ -115,7 +115,7 @@ export class DirectoryUsers {
   public async delete(directory: Directory, user: User): Promise<DirectorySyncResponse> {
     await this.users.delete(user.id);
 
-    //await sendEvent('user.deleted', { directory, user }, this.callback);
+    await sendEvent('user.deleted', { directory, user }, this.callback);
 
     return {
       status: 200,
@@ -171,7 +171,10 @@ export class DirectoryUsers {
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
+  public async handleRequest(
+    request: DirectorySyncRequest,
+    callback?: EventCallback
+  ): Promise<DirectorySyncResponse> {
     const { body, query, resourceId: userId, directoryId, apiSecret } = request;
 
     const method = request.method.toUpperCase();
@@ -188,6 +191,7 @@ export class DirectoryUsers {
       return this.respondWithError({ code: 401, message: 'Unauthorized' });
     }
 
+    this.callback = callback;
     this.users.setTenantAndProduct(directory.tenant, directory.product);
 
     // Get the user

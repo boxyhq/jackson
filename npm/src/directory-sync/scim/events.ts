@@ -12,47 +12,51 @@ import { sendPayloadToWebhook } from '../../event/webhook';
 import { transformEventPayload } from './transform';
 import { isConnectionActive } from '../../controller/utils';
 
+type Payload = { directory: Directory; group?: Group | null; user?: User | null };
+
 export const sendEvent = async (
   event: DirectorySyncEventType,
-  payload: { directory: Directory; group?: Group | null; user?: User | null },
+  payload: Payload,
   callback?: EventCallback
 ) => {
   if (!isConnectionActive(payload.directory)) {
     return;
   }
 
-  const eventTransformed = transformEventPayload(event, payload);
+  if (!callback) {
+    return;
+  }
 
-  return callback ? await callback(eventTransformed) : Promise.resolve();
+  await callback(transformEventPayload(event, payload));
 };
 
-// export const handleEventCallback = async (
-//   directories: IDirectoryConfig,
-//   webhookEventsLogger: IWebhookEventsLogger
-// ) => {
-//   return async (event: DirectorySyncEvent) => {
-//     const { tenant, product, directory_id: directoryId } = event;
+export const handleEventCallback = async (
+  directories: IDirectoryConfig,
+  webhookEventsLogger: IWebhookEventsLogger
+) => {
+  return async (event: DirectorySyncEvent) => {
+    const { tenant, product, directory_id: directoryId } = event;
 
-//     const { data: directory } = await directories.get(directoryId);
+    const { data: directory } = await directories.get(directoryId);
 
-//     if (!directory) {
-//       return;
-//     }
+    if (!directory) {
+      return;
+    }
 
-//     if (!directory.webhook.endpoint || !directory.webhook.secret) {
-//       return;
-//     }
+    if (!directory.webhook.endpoint || !directory.webhook.secret) {
+      return;
+    }
 
-//     let status = 200;
+    let status = 200;
 
-//     try {
-//       await sendPayloadToWebhook(directory.webhook, event);
-//     } catch (err: any) {
-//       status = err.response ? err.response.status : 500;
-//     }
+    try {
+      await sendPayloadToWebhook(directory.webhook, event);
+    } catch (err: any) {
+      status = err.response ? err.response.status : 500;
+    }
 
-//     if (directory.log_webhook_events) {
-//       await webhookEventsLogger.setTenantAndProduct(tenant, product).log(directory, event, status);
-//     }
-//   };
-// };
+    if (directory.log_webhook_events) {
+      await webhookEventsLogger.setTenantAndProduct(tenant, product).log(directory, event, status);
+    }
+  };
+};

@@ -78,10 +78,10 @@ export interface Events {
 }
 
 export interface DirectorySyncRequest {
-  method: string; //'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
+  method: 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
   body: any | undefined;
   directoryId: Directory['id'];
-  resourceType: string; //'users' | 'groups';
+  resourceType: 'users' | 'groups';
   resourceId: string | undefined;
   apiSecret: string | null;
   query: {
@@ -176,3 +176,5 @@ export type GroupMembership = {
 };
 
 export type Response<T> = { data: T; error: null } | { data: null; error: ApiError };
+
+export type EventCallback = (event: DirectorySyncEvent) => Promise<void>;

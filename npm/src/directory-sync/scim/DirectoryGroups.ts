@@ -5,13 +5,14 @@ import type {
   DirectorySyncGroupMember,
   DirectorySyncRequest,
   ApiError,
+  EventCallback,
   IDirectoryConfig,
   IUsers,
   IGroups,
   GroupPatchOperation,
 } from '../../typings';
-import { sendEvent } from './events';
 import { parseGroupOperation } from './utils';
+import { sendEvent } from './events';
 
 interface DirectoryGroupsParams {
   directories: IDirectoryConfig;
@@ -23,6 +24,7 @@ export class DirectoryGroups {
   private directories: IDirectoryConfig;
   private users: IUsers;
   private groups: IGroups;
+  private callback: EventCallback | undefined;
 
   constructor({ directories, users, groups }: DirectoryGroupsParams) {
     this.directories = directories;
@@ -40,7 +42,7 @@ export class DirectoryGroups {
       raw: 'rawAttributes' in body ? body.rawAttributes : { ...body, members: [] },
     });
 
-    // await sendEvent('group.created', { directory, group }, this.callback);
+    await sendEvent('group.created', { directory, group }, this.callback);
 
     return {
       status: 201,
@@ -149,7 +151,7 @@ export class DirectoryGroups {
   public async delete(directory: Directory, group: Group): Promise<DirectorySyncResponse> {
     await this.groups.delete(group.id);
 
-    // await sendEvent('group.deleted', { directory, group }, this.callback);
+    await sendEvent('group.deleted', { directory, group }, this.callback);
 
     return {
       status: 200,
@@ -168,7 +170,7 @@ export class DirectoryGroups {
       throw error;
     }
 
-    // await sendEvent('group.updated', { directory, group: updatedGroup }, this.callback);
+    await sendEvent('group.updated', { directory, group: updatedGroup }, this.callback);
 
     return updatedGroup;
   }
@@ -189,7 +191,7 @@ export class DirectoryGroups {
 
       const { data: user } = await this.users.get(member.value);
 
-      // await sendEvent('group.user_added', { directory, group, user }, this.callback);
+      await sendEvent('group.user_added', { directory, group, user }, this.callback);
     }
   }
 
@@ -209,7 +211,7 @@ export class DirectoryGroups {
 
       // User may not exist in the directory, so we need to check if the user exists
       if (user) {
-        // await sendEvent('group.user_removed', { directory, group, user }, this.callback);
+        await sendEvent('group.user_removed', { directory, group, user }, this.callback);
       }
     }
   }
@@ -222,7 +224,10 @@ export class DirectoryGroups {
   }
 
   // Handle the request from the Identity Provider and route it to the appropriate method
-  public async handleRequest(request: DirectorySyncRequest): Promise<DirectorySyncResponse> {
+  public async handleRequest(
+    request: DirectorySyncRequest,
+    callback?: EventCallback
+  ): Promise<DirectorySyncResponse> {
     const { body, query, resourceId: groupId, directoryId, apiSecret } = request;
 
     const method = request.method.toUpperCase();
@@ -238,6 +243,8 @@ export class DirectoryGroups {
     if (directory.scim.secret != apiSecret) {
       return this.respondWithError({ code: 401, message: 'Unauthorized' });
     }
+
+    this.callback = callback;
 
     this.users.setTenantAndProduct(directory.tenant, directory.product);
     this.groups.setTenantAndProduct(directory.tenant, directory.product);
