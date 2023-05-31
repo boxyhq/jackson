@@ -14,7 +14,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const { directorySyncController } = await jackson();
-    const { directoryProviders } = directorySyncController;
 
     const { directoryId } = req.query as { directoryId: string };
 
@@ -28,7 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Provider: Google
     if (directory?.type === 'google') {
-      const { data, error } = await directoryProviders.google.auth.generateAuthorizationUrl({
+      const { data, error } = await directorySyncController.google.generateAuthorizationUrl({
         directoryId,
       });
 

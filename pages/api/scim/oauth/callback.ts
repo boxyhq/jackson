@@ -24,7 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { directorySyncController } = await jackson();
 
     // Fetch the access token and refresh token from the authorization code
-    const tokenResponse = await directorySyncController.directoryProviders.google.auth.getAccessToken({
+    const tokenResponse = await directorySyncController.google.getAccessToken({
       directoryId,
       code,
     });
@@ -34,7 +34,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // Set the access token and refresh token for the directory
-    const response = await directorySyncController.directoryProviders.google.auth.setToken({
+    const response = await directorySyncController.google.setToken({
       directoryId,
       accessToken: tokenResponse.data.access_token,
       refreshToken: tokenResponse.data.refresh_token,
