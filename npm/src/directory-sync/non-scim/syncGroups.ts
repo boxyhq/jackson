@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import type {
   Directory,
   IDirectoryConfig,
@@ -68,7 +70,7 @@ export class SyncGroups {
   }
 
   async createGroup(directory: Directory, group: Group) {
-    console.info(`Creating group: ${group.name}`);
+    console.info('Creating group: ', _.pick(group, ['id', 'name']));
 
     await this.handleRequest(directory, {
       method: 'POST',
@@ -78,7 +80,7 @@ export class SyncGroups {
   }
 
   async updateGroup(directory: Directory, group: Group) {
-    console.info(`Updating group: ${group.name}`);
+    console.info('Updating group: ', _.pick(group, ['id', 'name']));
 
     await this.handleRequest(directory, {
       method: 'PUT',
@@ -89,7 +91,7 @@ export class SyncGroups {
 
   async deleteGroups(directory: Directory, groups: Group[]) {
     for (const group of groups) {
-      console.info(`Deleting group: ${group.name}`);
+      console.info('Deleting group: ', _.pick(group, ['id', 'name']));
 
       await this.handleRequest(directory, {
         method: 'DELETE',
@@ -109,8 +111,6 @@ export class SyncGroups {
       apiSecret: directory.scim.secret,
       resourceId: payload.resourceId,
     };
-
-    console.info(`Group request: ${payload.method} / ${payload.resourceId}`);
 
     await this.requestHandler.handle(request, this.callback);
   }

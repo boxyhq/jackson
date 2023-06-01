@@ -5,7 +5,6 @@ export * from './ee/federated-saml/types';
 export * from './saml-tracer/types';
 export * from './directory-sync/types';
 export * from './event/types';
-export * from './directory-sync/non-scim/types';
 
 interface SSOConnection {
   defaultRedirectUrl: string;

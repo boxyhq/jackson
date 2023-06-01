@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import type { OAuth2Client } from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 
 import type {
   Directory,
@@ -8,22 +8,40 @@ import type {
   User,
   GroupMember,
   IDirectoryProvider,
+  JacksonOption,
 } from '../../../typings';
 
 interface GoogleProviderParams {
-  authClient: OAuth2Client;
+  opts: JacksonOption;
   directories: IDirectoryConfig;
 }
 
 export class GoogleProvider implements IDirectoryProvider {
-  authClient: OAuth2Client;
+  opts: JacksonOption;
   directories: IDirectoryConfig;
   groupFieldsToExcludeWhenCompare = ['etag'];
   userFieldsToExcludeWhenCompare = ['etag', 'lastLoginTime', 'thumbnailPhotoEtag'];
 
-  constructor({ directories, authClient }: GoogleProviderParams) {
+  constructor({ directories, opts }: GoogleProviderParams) {
+    this.opts = opts;
     this.directories = directories;
-    this.authClient = authClient;
+  }
+
+  createOAuth2Client(directory: Directory) {
+    const googleProvider = this.opts.dsync?.providers.google;
+
+    const authClient = new OAuth2Client(
+      googleProvider?.clientId,
+      googleProvider?.clientSecret,
+      googleProvider?.callbackUrl
+    );
+
+    authClient.setCredentials({
+      access_token: directory.google?.access_token,
+      refresh_token: directory.google?.refresh_token,
+    });
+
+    return authClient;
   }
 
   async getDirectories() {
@@ -43,12 +61,7 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   async getGroups(directory: Directory) {
-    this.authClient.setCredentials({
-      access_token: directory.google?.access_token,
-      refresh_token: directory.google?.refresh_token,
-    });
-
-    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
+    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
 
     const allGroups: Group[] = [];
     const query = {
@@ -86,12 +99,7 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   async getUsers(directory: Directory) {
-    this.authClient.setCredentials({
-      access_token: directory.google?.access_token,
-      refresh_token: directory.google?.refresh_token,
-    });
-
-    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
+    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
 
     const allUsers: User[] = [];
     const query = {
@@ -132,16 +140,11 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   async getGroupMembers(directory: Directory, group: Group) {
-    this.authClient.setCredentials({
-      access_token: directory.google?.access_token,
-      refresh_token: directory.google?.refresh_token,
-    });
-
-    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.authClient });
+    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
 
     const allMembers: GroupMember[] = [];
     const query = {
-      maxResults: 1,
+      maxResults: 200,
       groupKey: group.id,
       domain: directory.google?.domain,
     };

@@ -12,12 +12,17 @@ import type {
   IGroups,
   IWebhookEventsLogger,
   IEventController,
+  Response,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
-import { createRandomSecret, isConnectionActive, validateTenantAndProduct } from '../../controller/utils';
+import {
+  createRandomSecret,
+  isConnectionActive,
+  validateTenantAndProduct,
+  storeNamespacePrefix,
+  IndexNames,
+} from '../../controller/utils';
 import { apiError, JacksonError } from '../../controller/error';
-import { storeNamespacePrefix } from '../../controller/utils';
-import { IndexNames } from '../../controller/utils';
 import { getDirectorySyncProviders, isSCIMEnabledProvider } from './utils';
 
 interface DirectoryConfigParams {
@@ -60,7 +65,7 @@ export class DirectoryConfig {
     webhook_url?: string;
     webhook_secret?: string;
     type?: DirectoryType;
-  }): Promise<{ data: Directory | null; error: ApiError | null }> {
+  }): Promise<Response<Directory>> {
     try {
       const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
 
@@ -130,7 +135,7 @@ export class DirectoryConfig {
   }
 
   // Get the configuration by id
-  public async get(id: string): Promise<{ data: Directory | null; error: ApiError | null }> {
+  public async get(id: string): Promise<Response<Directory>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -152,7 +157,7 @@ export class DirectoryConfig {
   public async update(
     id: string,
     param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim'>
-  ): Promise<{ data: Directory | null; error: ApiError | null }> {
+  ): Promise<Response<Directory>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -205,10 +210,7 @@ export class DirectoryConfig {
   }
 
   // Get the configuration by tenant and product
-  public async getByTenantAndProduct(
-    tenant: string,
-    product: string
-  ): Promise<{ data: Directory[] | null; error: ApiError | null }> {
+  public async getByTenantAndProduct(tenant: string, product: string): Promise<Response<Directory[]>> {
     try {
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);

@@ -70,7 +70,7 @@ export class SyncUsers {
   }
 
   async createUser(directory: Directory, user: User) {
-    console.info('Creating a new user', _.pick(user, ['id', 'email']));
+    console.info('Creating user: ', _.pick(user, ['id', 'email']));
 
     await this.handleRequest(directory, {
       method: 'POST',
@@ -80,7 +80,7 @@ export class SyncUsers {
   }
 
   async updateUser(directory: Directory, user: User) {
-    console.info('Updating an existing user', _.pick(user, ['id', 'email']));
+    console.info('Updating user: ', _.pick(user, ['id', 'email']));
 
     await this.handleRequest(directory, {
       method: 'PUT',
@@ -91,7 +91,7 @@ export class SyncUsers {
 
   async deleteUsers(directory: Directory, users: User[]) {
     for (const user of users) {
-      console.info('Deleting an existing user', _.pick(user, ['id', 'email']));
+      console.info('Deleting user: ', _.pick(user, ['id', 'email']));
 
       await this.handleRequest(directory, {
         method: 'DELETE',

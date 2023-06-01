@@ -26,7 +26,15 @@ export const startSync = async (params: SyncParams, callback: EventCallback) => 
 
   const { directory: provider } = newGoogleProvider({ directories, opts });
 
+  const startTime = Date.now();
+
+  console.info('Starting the sync process');
+
   await new SyncUsers({ users, directories, provider, requestHandler, callback }).sync();
   await new SyncGroups({ groups, directories, provider, requestHandler, callback }).sync();
   await new SyncGroupMembers({ groups, directories, provider, requestHandler, callback }).sync();
+
+  const endTime = Date.now();
+
+  console.info(`Sync process completed in ${(endTime - startTime) / 1000} seconds`);
 };

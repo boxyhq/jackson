@@ -10,17 +10,34 @@ const scope = [
 ];
 
 interface GoogleAuthParams {
-  authClient: OAuth2Client;
+  opts: JacksonOption;
   directories: IDirectoryConfig;
 }
 
 export class GoogleAuth {
-  private authClient: OAuth2Client;
+  private opts: JacksonOption;
   private directories: IDirectoryConfig;
 
-  constructor({ directories, authClient }: GoogleAuthParams) {
+  constructor({ directories, opts }: GoogleAuthParams) {
+    this.opts = opts;
     this.directories = directories;
-    this.authClient = authClient;
+  }
+
+  createOAuth2Client(directory: Directory) {
+    const googleProvider = this.opts.dsync?.providers.google;
+
+    const authClient = new OAuth2Client(
+      googleProvider?.clientId,
+      googleProvider?.clientSecret,
+      googleProvider?.callbackUrl
+    );
+
+    authClient.setCredentials({
+      access_token: directory.google?.access_token,
+      refresh_token: directory.google?.refresh_token,
+    });
+
+    return authClient;
   }
 
   // Generate the Google authorization URL
@@ -40,7 +57,9 @@ export class GoogleAuth {
         throw new JacksonError('Directory is not a Google Directory', 400);
       }
 
-      const authorizationUrl = this.authClient.generateAuthUrl({
+      const oauth2Client = this.createOAuth2Client(directory);
+
+      const authorizationUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         prompt: 'consent',
         scope,
@@ -62,13 +81,15 @@ export class GoogleAuth {
     const { directoryId, code } = params;
 
     try {
-      const { error } = await this.directories.get(directoryId);
+      const { data: directory, error } = await this.directories.get(directoryId);
 
       if (error) {
         throw error;
       }
 
-      const { tokens } = await this.authClient.getToken(code);
+      const oauth2Client = this.createOAuth2Client(directory);
+
+      const { tokens } = await oauth2Client.getToken(code);
 
       return { data: tokens, error: null };
     } catch (error: any) {

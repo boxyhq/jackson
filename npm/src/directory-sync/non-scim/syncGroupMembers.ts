@@ -77,7 +77,7 @@ export class SyncGroupMembers {
   }
 
   async addMembers(directory: Directory, group: Group, memberIds: string[]) {
-    console.info('Adding members to group', memberIds);
+    console.info('Adding members to group: ', _.pick(group, ['id', 'email']));
 
     await this.handleRequest(directory, {
       method: 'PATCH',
@@ -87,7 +87,7 @@ export class SyncGroupMembers {
   }
 
   async deleteMembers(directory: Directory, group: Group, memberIds: string[]) {
-    console.info('Deleting members from group', memberIds);
+    console.info('Removing members from group: ', _.pick(group, ['id', 'email']));
 
     await this.handleRequest(directory, {
       method: 'PATCH',
@@ -106,8 +106,6 @@ export class SyncGroupMembers {
       apiSecret: directory.scim.secret,
       resourceId: payload.resourceId,
     };
-
-    console.info(`Group membership request: ${payload.method} / ${payload.resourceId}`);
 
     await this.requestHandler.handle(request, this.callback);
   }

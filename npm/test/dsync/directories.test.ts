@@ -187,7 +187,7 @@ tap.test('directories.', async (t) => {
     });
 
     t.test('get a directory by tenant and product', async (t) => {
-      const { data: directoriesFetched } = await directorySync.directories.getByTenantAndProduct(
+      const { data: directoriesFetched, error } = await directorySync.directories.getByTenantAndProduct(
         tenant,
         product
       );
