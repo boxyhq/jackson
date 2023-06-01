@@ -38,7 +38,10 @@ const directorySync = async (params: {
   const nonSCIM = {
     google: googleProvider.oauth,
     sync: async (callback: EventCallback) => {
-      return await startSync({ users, groups, opts, directories, requestHandler }, callback);
+      return await startSync(
+        { userController: users, groupController: groups, opts, directories, requestHandler },
+        callback
+      );
     },
   };
 

@@ -12,8 +12,8 @@ import { SyncGroups } from './syncGroups';
 import { SyncGroupMembers } from './syncGroupMembers';
 
 interface SyncParams {
-  users: IUsers;
-  groups: IGroups;
+  userController: IUsers;
+  groupController: IGroups;
   opts: JacksonOption;
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
@@ -22,7 +22,7 @@ interface SyncParams {
 // Method to start the directory sync process
 // This method will be called by the directory sync cron job
 export const startSync = async (params: SyncParams, callback: EventCallback) => {
-  const { users, groups, opts, directories, requestHandler } = params;
+  const { userController, groupController, opts, directories, requestHandler } = params;
 
   const { directory: provider } = newGoogleProvider({ directories, opts });
 
@@ -30,9 +30,29 @@ export const startSync = async (params: SyncParams, callback: EventCallback) => 
 
   console.info('Starting the sync process');
 
-  await new SyncUsers({ users, directories, provider, requestHandler, callback }).sync();
-  await new SyncGroups({ groups, directories, provider, requestHandler, callback }).sync();
-  await new SyncGroupMembers({ groups, directories, provider, requestHandler, callback }).sync();
+  const allDirectories = await provider.getDirectories();
+
+  if (allDirectories.length === 0) {
+    console.info('No directories found. Skipping the sync process');
+    return;
+  }
+
+  for (const directory of allDirectories) {
+    console.info(`Syncing directory ${directory.id}`);
+
+    const params = {
+      directory,
+      userController,
+      groupController,
+      provider,
+      requestHandler,
+      callback,
+    };
+
+    await new SyncUsers(params).sync();
+    await new SyncGroups(params).sync();
+    await new SyncGroupMembers(params).sync();
+  }
 
   const endTime = Date.now();
 

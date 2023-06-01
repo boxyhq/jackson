@@ -2,7 +2,6 @@ import _ from 'lodash';
 
 import type {
   Directory,
-  IDirectoryConfig,
   User,
   IUsers,
   IRequestHandler,
@@ -13,56 +12,83 @@ import type {
 import { compareAndFindDeletedUsers, isUserUpdated, toUserSCIMPayload } from './utils';
 
 interface SyncUserParams {
-  users: IUsers;
-  provider: IDirectoryProvider;
-  directories: IDirectoryConfig;
-  requestHandler: IRequestHandler;
+  directory: Directory;
+  userController: IUsers;
   callback: EventCallback;
+  provider: IDirectoryProvider;
+  requestHandler: IRequestHandler;
 }
 
 type HandleRequestParams = Pick<DirectorySyncRequest, 'method' | 'body' | 'resourceId'>;
 
 export class SyncUsers {
-  private users: IUsers;
+  private directory: Directory;
+  private userController: IUsers;
   private callback: EventCallback;
   private provider: IDirectoryProvider;
   private requestHandler: IRequestHandler;
 
-  constructor({ users, callback, provider, requestHandler }: SyncUserParams) {
-    this.users = users;
-    this.provider = provider;
-    this.requestHandler = requestHandler;
+  constructor({ directory, userController, callback, provider, requestHandler }: SyncUserParams) {
     this.callback = callback;
+    this.provider = provider;
+    this.directory = directory;
+    this.requestHandler = requestHandler;
+    this.userController = userController;
   }
 
   async sync() {
-    const directories = await this.provider.getDirectories();
+    console.log(`Syncing users for directory ${this.directory.id}`);
 
-    for (const directory of directories) {
-      await this.syncUserForDirectory(directory);
-    }
-  }
+    this.userController.setTenantAndProduct(this.directory.tenant, this.directory.product);
 
-  async syncUserForDirectory(directory: Directory) {
-    this.users.setTenantAndProduct(directory.tenant, directory.product);
-
-    const users = await this.provider.getUsers(directory);
+    const users = await this.provider.getUsers(this.directory);
 
     // Create or update users
     for (const user of users) {
-      const { data: existingUser } = await this.users.get(user.id);
+      const { data: existingUser } = await this.userController.get(user.id);
 
       if (!existingUser) {
-        await this.createUser(directory, user);
+        await this.createUser(this.directory, user);
       } else if (isUserUpdated(existingUser, user, this.provider.userFieldsToExcludeWhenCompare)) {
-        await this.updateUser(directory, user);
+        await this.updateUser(this.directory, user);
       }
     }
 
     // Delete users that are not in the directory anymore
-    const { data: existingUsers } = await this.users.getAll({ directoryId: directory.id });
+    const existingUsers = await this.getAllExistingUsers(this.directory);
 
-    await this.deleteUsers(directory, compareAndFindDeletedUsers(existingUsers, users));
+    await this.deleteUsers(this.directory, compareAndFindDeletedUsers(existingUsers, users));
+  }
+
+  // Get all the existing users from the Jackson store
+  async getAllExistingUsers(directory: Directory) {
+    this.userController.setTenantAndProduct(directory.tenant, directory.product);
+
+    const existingUsers: User[] = [];
+    const pageLimit = 500;
+    let pageOffset = 0;
+
+    while (true) {
+      const { data: users } = await this.userController.getAll({
+        directoryId: directory.id,
+        pageOffset,
+        pageLimit,
+      });
+
+      if (!users || users.length === 0) {
+        break;
+      }
+
+      existingUsers.push(...users);
+
+      if (users.length < pageLimit) {
+        break;
+      }
+
+      pageOffset += pageLimit;
+    }
+
+    return existingUsers;
   }
 
   async createUser(directory: Directory, user: User) {

@@ -2,7 +2,6 @@ import _ from 'lodash';
 
 import type {
   Directory,
-  IDirectoryConfig,
   IGroups,
   Group,
   IRequestHandler,
@@ -17,48 +16,44 @@ import {
 } from './utils';
 
 interface SyncGroupMembersParams {
-  groups: IGroups;
+  groupController: IGroups;
   provider: IDirectoryProvider;
-  directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
   callback: EventCallback;
+  directory: Directory;
 }
 
 type HandleRequestParams = Pick<DirectorySyncRequest, 'method' | 'body' | 'resourceId'>;
 
 export class SyncGroupMembers {
-  private groups: IGroups;
+  private groupController: IGroups;
   private provider: IDirectoryProvider;
   private requestHandler: IRequestHandler;
   private callback: EventCallback;
+  private directory: Directory;
 
-  constructor({ groups, requestHandler, provider, callback }: SyncGroupMembersParams) {
-    this.groups = groups;
+  constructor({ directory, groupController, requestHandler, provider, callback }: SyncGroupMembersParams) {
+    this.groupController = groupController;
     this.provider = provider;
     this.requestHandler = requestHandler;
     this.callback = callback;
+    this.directory = directory;
   }
 
   async sync() {
-    const directories = await this.provider.getDirectories();
+    console.log(`Syncing members for directory ${this.directory.id}`);
 
-    for (const directory of directories) {
-      await this.syncMembers(directory);
-    }
-  }
+    this.groupController.setTenantAndProduct(this.directory.tenant, this.directory.product);
 
-  async syncMembers(directory: Directory) {
-    this.groups.setTenantAndProduct(directory.tenant, directory.product);
-
-    const groups = await this.provider.getGroups(directory);
+    const groups = await this.provider.getGroups(this.directory);
 
     if (!groups || groups.length === 0) {
       return;
     }
 
     for (const group of groups) {
-      const membersFromProvider = await this.provider.getGroupMembers(directory, group);
-      const membersFromDB = await this.groups.getAllUsers(group.id);
+      const membersFromProvider = await this.provider.getGroupMembers(this.directory, group);
+      const membersFromDB = await this.groupController.getAllUsers(group.id);
 
       const idsFromDB = _.map(membersFromDB, 'user_id');
       const idsFromProvider = _.map(membersFromProvider, 'id');
@@ -67,11 +62,11 @@ export class SyncGroupMembers {
       const newMembers = compareAndFindNewMembers(idsFromDB, idsFromProvider);
 
       if (deletedMembers && deletedMembers.length > 0) {
-        await this.deleteMembers(directory, group, deletedMembers);
+        await this.deleteMembers(this.directory, group, deletedMembers);
       }
 
       if (newMembers && newMembers.length > 0) {
-        await this.addMembers(directory, group, newMembers);
+        await this.addMembers(this.directory, group, newMembers);
       }
     }
   }

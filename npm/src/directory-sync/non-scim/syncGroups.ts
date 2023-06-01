@@ -2,7 +2,6 @@ import _ from 'lodash';
 
 import type {
   Directory,
-  IDirectoryConfig,
   IGroups,
   Group,
   IRequestHandler,
@@ -13,56 +12,52 @@ import type {
 import { compareAndFindDeletedGroups, isGroupUpdated, toGroupSCIMPayload } from './utils';
 
 interface SyncGroupsParams {
-  groups: IGroups;
+  groupController: IGroups;
   provider: IDirectoryProvider;
-  directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
   callback: EventCallback;
+  directory: Directory;
 }
 
 type HandleRequestParams = Pick<DirectorySyncRequest, 'method' | 'body' | 'resourceId'>;
 
 export class SyncGroups {
-  private groups: IGroups;
+  private groupController: IGroups;
   private provider: IDirectoryProvider;
   private requestHandler: IRequestHandler;
   private callback: EventCallback;
+  private directory: Directory;
 
-  constructor({ groups, callback, requestHandler, provider }: SyncGroupsParams) {
-    this.groups = groups;
+  constructor({ directory, groupController, callback, requestHandler, provider }: SyncGroupsParams) {
+    this.groupController = groupController;
     this.provider = provider;
     this.requestHandler = requestHandler;
     this.callback = callback;
+    this.directory = directory;
   }
 
   async sync() {
-    const directories = await this.provider.getDirectories();
+    console.log(`Syncing groups for directory ${this.directory.id}`);
 
-    for (const directory of directories) {
-      await this.syncGroup(directory);
-    }
-  }
+    this.groupController.setTenantAndProduct(this.directory.tenant, this.directory.product);
 
-  async syncGroup(directory: Directory) {
-    this.groups.setTenantAndProduct(directory.tenant, directory.product);
-
-    const groups = await this.provider.getGroups(directory);
+    const groups = await this.provider.getGroups(this.directory);
 
     // Create or update groups
     for (const group of groups) {
-      const { data: existingGroup } = await this.groups.get(group.id);
+      const { data: existingGroup } = await this.groupController.get(group.id);
 
       if (!existingGroup) {
-        await this.createGroup(directory, group);
+        await this.createGroup(this.directory, group);
       } else if (isGroupUpdated(existingGroup, group, this.provider.groupFieldsToExcludeWhenCompare)) {
-        await this.updateGroup(directory, group);
+        await this.updateGroup(this.directory, group);
       }
     }
 
     // Delete groups that are not in the directory anymore
-    const { data: existingGroups } = await this.groups.getAll({ directoryId: directory.id });
+    const { data: existingGroups } = await this.groupController.getAll({ directoryId: this.directory.id });
 
-    await this.deleteGroups(directory, compareAndFindDeletedGroups(existingGroups, groups));
+    await this.deleteGroups(this.directory, compareAndFindDeletedGroups(existingGroups, groups));
   }
 
   async createGroup(directory: Directory, group: Group) {
