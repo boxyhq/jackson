@@ -163,47 +163,34 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const { name, log_webhook_events, webhook, type, google } = param;
+      const { name, log_webhook_events, webhook, type, deactivated, google } = param;
 
-      let directory: Directory = await this.store().get(id);
+      const directory: Directory = await this.store().get(id);
 
-      if (name) {
-        directory.name = name;
-      }
+      let updatedDirectory: Directory = {
+        ...directory,
+        name: name || directory.name,
+        webhook: webhook || directory.webhook,
+        type: type || directory.type,
+        google: google || directory.google,
+        deactivated: deactivated !== undefined ? deactivated : directory.deactivated,
+        log_webhook_events:
+          log_webhook_events !== undefined ? log_webhook_events : directory.log_webhook_events,
+      };
 
-      if (log_webhook_events !== undefined) {
-        directory.log_webhook_events = log_webhook_events;
-      }
+      await this.store().put(id, updatedDirectory);
 
-      if (webhook) {
-        directory.webhook = webhook;
-      }
-
-      if (type) {
-        directory.type = type;
-      }
-
-      if ('deactivated' in param) {
-        directory['deactivated'] = param.deactivated;
-      }
-
-      if (google) {
-        directory.google = google;
-      }
-
-      await this.store().put(id, { ...directory });
-
-      directory = this.transform(directory);
+      updatedDirectory = this.transform(updatedDirectory);
 
       if ('deactivated' in param) {
-        if (isConnectionActive(directory)) {
-          await this.eventController.notify('dsync.activated', directory);
+        if (isConnectionActive(updatedDirectory)) {
+          await this.eventController.notify('dsync.activated', updatedDirectory);
         } else {
-          await this.eventController.notify('dsync.deactivated', directory);
+          await this.eventController.notify('dsync.deactivated', updatedDirectory);
         }
       }
 
-      return { data: directory, error: null };
+      return { data: updatedDirectory, error: null };
     } catch (err: any) {
       return apiError(err);
     }
