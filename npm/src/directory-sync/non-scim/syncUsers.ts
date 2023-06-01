@@ -48,29 +48,30 @@ export class SyncUsers {
       const { data: existingUser } = await this.userController.get(user.id);
 
       if (!existingUser) {
-        await this.createUser(this.directory, user);
+        await this.createUser(user);
       } else if (isUserUpdated(existingUser, user, this.provider.userFieldsToExcludeWhenCompare)) {
-        await this.updateUser(this.directory, user);
+        await this.updateUser(user);
       }
     }
 
     // Delete users that are not in the directory anymore
-    const existingUsers = await this.getAllExistingUsers(this.directory);
+    const existingUsers = await this.getAllExistingUsers();
+    const usersToDelete = compareAndFindDeletedUsers(existingUsers, users);
 
-    await this.deleteUsers(this.directory, compareAndFindDeletedUsers(existingUsers, users));
+    await this.deleteUsers(usersToDelete);
   }
 
   // Get all the existing users from the Jackson store
-  async getAllExistingUsers(directory: Directory) {
-    this.userController.setTenantAndProduct(directory.tenant, directory.product);
+  async getAllExistingUsers() {
+    this.userController.setTenantAndProduct(this.directory.tenant, this.directory.product);
 
     const existingUsers: User[] = [];
-    const pageLimit = 500;
+    const pageLimit = 1;
     let pageOffset = 0;
 
     while (true) {
       const { data: users } = await this.userController.getAll({
-        directoryId: directory.id,
+        directoryId: this.directory.id,
         pageOffset,
         pageLimit,
       });
@@ -91,31 +92,31 @@ export class SyncUsers {
     return existingUsers;
   }
 
-  async createUser(directory: Directory, user: User) {
+  async createUser(user: User) {
     console.info('Creating user: ', _.pick(user, ['id', 'email']));
 
-    await this.handleRequest(directory, {
+    await this.handleRequest({
       method: 'POST',
       body: toUserSCIMPayload(user),
       resourceId: undefined,
     });
   }
 
-  async updateUser(directory: Directory, user: User) {
+  async updateUser(user: User) {
     console.info('Updating user: ', _.pick(user, ['id', 'email']));
 
-    await this.handleRequest(directory, {
+    await this.handleRequest({
       method: 'PUT',
       body: toUserSCIMPayload(user),
       resourceId: user.id,
     });
   }
 
-  async deleteUsers(directory: Directory, users: User[]) {
+  async deleteUsers(users: User[]) {
     for (const user of users) {
       console.info('Deleting user: ', _.pick(user, ['id', 'email']));
 
-      await this.handleRequest(directory, {
+      await this.handleRequest({
         method: 'DELETE',
         body: toUserSCIMPayload(user),
         resourceId: user.id,
@@ -123,14 +124,14 @@ export class SyncUsers {
     }
   }
 
-  async handleRequest(directory: Directory, payload: HandleRequestParams) {
+  async handleRequest(payload: HandleRequestParams) {
     const request: DirectorySyncRequest = {
       query: {},
       body: payload.body,
       resourceType: 'users',
       method: payload.method,
-      directoryId: directory.id,
-      apiSecret: directory.scim.secret,
+      directoryId: this.directory.id,
+      apiSecret: this.directory.scim.secret,
       resourceId: payload.resourceId,
     };
 

@@ -62,43 +62,43 @@ export class SyncGroupMembers {
       const newMembers = compareAndFindNewMembers(idsFromDB, idsFromProvider);
 
       if (deletedMembers && deletedMembers.length > 0) {
-        await this.deleteMembers(this.directory, group, deletedMembers);
+        await this.deleteMembers(group, deletedMembers);
       }
 
       if (newMembers && newMembers.length > 0) {
-        await this.addMembers(this.directory, group, newMembers);
+        await this.addMembers(group, newMembers);
       }
     }
   }
 
-  async addMembers(directory: Directory, group: Group, memberIds: string[]) {
+  async addMembers(group: Group, memberIds: string[]) {
     console.info('Adding members to group: ', _.pick(group, ['id', 'email']));
 
-    await this.handleRequest(directory, {
+    await this.handleRequest({
       method: 'PATCH',
       body: toGroupMembershipSCIMPayload(memberIds),
       resourceId: group.id,
     });
   }
 
-  async deleteMembers(directory: Directory, group: Group, memberIds: string[]) {
+  async deleteMembers(group: Group, memberIds: string[]) {
     console.info('Removing members from group: ', _.pick(group, ['id', 'email']));
 
-    await this.handleRequest(directory, {
+    await this.handleRequest({
       method: 'PATCH',
       body: toGroupMembershipSCIMPayload(memberIds),
       resourceId: group.id,
     });
   }
 
-  async handleRequest(directory: Directory, payload: HandleRequestParams) {
+  async handleRequest(payload: HandleRequestParams) {
     const request: DirectorySyncRequest = {
       query: {},
       body: payload.body,
       resourceType: 'groups',
       method: payload.method,
-      directoryId: directory.id,
-      apiSecret: directory.scim.secret,
+      directoryId: this.directory.id,
+      apiSecret: this.directory.scim.secret,
       resourceId: payload.resourceId,
     };
 
