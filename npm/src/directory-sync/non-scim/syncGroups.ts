@@ -68,6 +68,8 @@ export class SyncGroups {
   }
 
   async createGroup(directory: Directory, group: Group) {
+    console.info(`Creating group: ${group.name}`);
+
     await this.handleRequest(directory, {
       method: 'POST',
       body: toGroupSCIMPayload(group),
@@ -76,6 +78,8 @@ export class SyncGroups {
   }
 
   async updateGroup(directory: Directory, group: Group) {
+    console.info(`Updating group: ${group.name}`);
+
     await this.handleRequest(directory, {
       method: 'PUT',
       body: toGroupSCIMPayload(group),
@@ -85,6 +89,8 @@ export class SyncGroups {
 
   async deleteGroups(directory: Directory, groups: Group[]) {
     for (const group of groups) {
+      console.info(`Deleting group: ${group.name}`);
+
       await this.handleRequest(directory, {
         method: 'DELETE',
         body: toGroupSCIMPayload(group),

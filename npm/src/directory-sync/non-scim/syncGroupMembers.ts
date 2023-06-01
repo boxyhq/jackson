@@ -77,6 +77,8 @@ export class SyncGroupMembers {
   }
 
   async addMembers(directory: Directory, group: Group, memberIds: string[]) {
+    console.info('Adding members to group', memberIds);
+
     await this.handleRequest(directory, {
       method: 'PATCH',
       body: toGroupMembershipSCIMPayload(memberIds),
@@ -85,6 +87,8 @@ export class SyncGroupMembers {
   }
 
   async deleteMembers(directory: Directory, group: Group, memberIds: string[]) {
+    console.info('Deleting members from group', memberIds);
+
     await this.handleRequest(directory, {
       method: 'PATCH',
       body: toGroupMembershipSCIMPayload(memberIds),

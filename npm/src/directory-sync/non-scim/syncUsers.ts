@@ -70,6 +70,8 @@ export class SyncUsers {
   }
 
   async createUser(directory: Directory, user: User) {
+    console.info('Creating a new user', _.pick(user, ['id', 'email']));
+
     await this.handleRequest(directory, {
       method: 'POST',
       body: toUserSCIMPayload(user),
@@ -78,6 +80,8 @@ export class SyncUsers {
   }
 
   async updateUser(directory: Directory, user: User) {
+    console.info('Updating an existing user', _.pick(user, ['id', 'email']));
+
     await this.handleRequest(directory, {
       method: 'PUT',
       body: toUserSCIMPayload(user),
@@ -87,6 +91,8 @@ export class SyncUsers {
 
   async deleteUsers(directory: Directory, users: User[]) {
     for (const user of users) {
+      console.info('Deleting an existing user', _.pick(user, ['id', 'email']));
+
       await this.handleRequest(directory, {
         method: 'DELETE',
         body: toUserSCIMPayload(user),
@@ -105,8 +111,6 @@ export class SyncUsers {
       apiSecret: directory.scim.secret,
       resourceId: payload.resourceId,
     };
-
-    console.info(`User request: ${payload.method} / ${payload.resourceId}`);
 
     await this.requestHandler.handle(request, this.callback);
   }
