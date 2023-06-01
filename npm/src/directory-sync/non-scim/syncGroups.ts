@@ -48,10 +48,6 @@ export class SyncGroups {
 
     const groups = await this.provider.getGroups(directory);
 
-    if (!groups || groups.length === 0) {
-      return;
-    }
-
     // Create or update groups
     for (const group of groups) {
       const { data: existingGroup } = await this.groups.get(group.id);

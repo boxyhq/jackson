@@ -48,10 +48,6 @@ export class SyncUsers {
 
     const users = await this.provider.getUsers(directory);
 
-    if (!users || users.length === 0) {
-      return;
-    }
-
     // Create or update users
     for (const user of users) {
       const { data: existingUser } = await this.users.get(user.id);
