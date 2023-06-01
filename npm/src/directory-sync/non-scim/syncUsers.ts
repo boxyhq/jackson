@@ -8,8 +8,8 @@ import type {
   IRequestHandler,
   DirectorySyncRequest,
   EventCallback,
+  IDirectoryProvider,
 } from '../../typings';
-import type { IDirectoryProvider } from './types';
 import { compareAndFindDeletedUsers, isUserUpdated, toUserSCIMPayload } from './utils';
 
 interface SyncUserParams {
