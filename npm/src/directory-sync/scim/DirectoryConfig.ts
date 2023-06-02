@@ -6,7 +6,6 @@ import type {
   JacksonOption,
   DatabaseStore,
   DirectoryType,
-  ApiError,
   PaginationParams,
   IUsers,
   IGroups,
@@ -156,14 +155,14 @@ export class DirectoryConfig {
   // Update the configuration. Partial updates are supported
   public async update(
     id: string,
-    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim'>
+    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim' | 'type'>
   ): Promise<Response<Directory>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const { name, log_webhook_events, webhook, type, deactivated, google } = param;
+      const { name, log_webhook_events, webhook, deactivated, google } = param;
 
       const directory: Directory = await this.store().get(id);
 
@@ -171,7 +170,6 @@ export class DirectoryConfig {
         ...directory,
         name: name || directory.name,
         webhook: webhook || directory.webhook,
-        type: type || directory.type,
         google: google || directory.google,
         deactivated: deactivated !== undefined ? deactivated : directory.deactivated,
         log_webhook_events:
@@ -216,12 +214,12 @@ export class DirectoryConfig {
     }
   }
 
-  // Get all configurations
-  public async getAll({ pageOffset, pageLimit, pageToken }: PaginationParams = {}): Promise<{
-    data: Directory[] | null;
-    pageToken?: string;
-    error: ApiError | null;
-  }> {
+  // Get directory connections with pagination
+  public async getAll(
+    params: PaginationParams = {}
+  ): Promise<Response<Directory[]> & { pageToken?: string }> {
+    const { pageOffset, pageLimit, pageToken } = params;
+
     try {
       const { data: directories, pageToken: nextPageToken } = await this.store().getAll(
         pageOffset,
@@ -244,7 +242,7 @@ export class DirectoryConfig {
   }
 
   // Delete a configuration by id
-  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+  public async delete(id: string): Promise<Response<null>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameter.', 400);
@@ -284,11 +282,7 @@ export class DirectoryConfig {
     pageOffset?: number;
     pageLimit?: number;
     pageToken?: string;
-  }): Promise<{
-    data: Directory[] | null;
-    error: ApiError | null;
-    pageToken?: string;
-  }> {
+  }): Promise<Response<Directory[]> & { pageToken?: string }> {
     const { provider, pageOffset, pageLimit, pageToken } = params;
 
     const index = {

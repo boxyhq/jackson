@@ -165,7 +165,9 @@ tap.test('Directory users / ', async (t) => {
     await directorySync.users.deleteAll(directory.id);
 
     // Make sure all the user was deleted
-    const { data: users } = await directorySync.users.getAll();
+    const { data: users } = await directorySync.users.getAll({
+      directoryId: directory.id,
+    });
 
     t.equal(users?.length, 0);
   });

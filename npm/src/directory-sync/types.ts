@@ -130,7 +130,7 @@ export type UserWithGroup = User & { group: Group };
 export type PaginationParams = {
   pageOffset?: number;
   pageLimit?: number;
-  nextPageToken?: string | null;
+  pageToken?: string;
   hasNextPage?: boolean;
 };
 

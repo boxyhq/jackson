@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import type { User, DatabaseStore, ApiError, PaginationParams, Response } from '../../typings';
+import type { User, DatabaseStore, PaginationParams, Response } from '../../typings';
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
 import { keyFromParts } from '../../db/utils';
@@ -29,20 +29,20 @@ export class Users extends Base {
   public async create(params: CreateUserParams): Promise<Response<User>> {
     const { directoryId, first_name, last_name, email, active, raw, id: userId } = params;
 
+    const id = userId || randomUUID();
+
+    raw['id'] = id;
+
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      active,
+      raw,
+    };
+
     try {
-      const id = userId || randomUUID();
-
-      raw['id'] = id;
-
-      const user = {
-        id,
-        first_name,
-        last_name,
-        email,
-        active,
-        raw,
-      };
-
       await this.store('users').put(
         id,
         user,
@@ -88,20 +88,20 @@ export class Users extends Base {
       raw: object;
     }
   ): Promise<Response<User>> {
+    const { first_name, last_name, email, active, raw } = param;
+
+    raw['id'] = id;
+
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      active,
+      raw,
+    };
+
     try {
-      const { first_name, last_name, email, active, raw } = param;
-
-      raw['id'] = id;
-
-      const user = {
-        id,
-        first_name,
-        last_name,
-        email,
-        active,
-        raw,
-      };
-
       await this.store('users').put(id, user);
 
       return { data: user, error: null };

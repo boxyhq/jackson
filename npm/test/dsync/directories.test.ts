@@ -208,7 +208,6 @@ tap.test('directories.', async (t) => {
       t.strictSame(directoriesFetched?.length, 0);
     });
   });
-
   t.test('update()', async (t) => {
     let directory: Directory;
 
@@ -231,7 +230,6 @@ tap.test('directories.', async (t) => {
           secret: 'secret',
         },
         log_webhook_events: true,
-        type: 'azure-scim-v2' as DirectoryType,
       };
 
       const { data: updatedDirectory } = await directorySync.directories.update(directory.id, {
@@ -242,7 +240,6 @@ tap.test('directories.', async (t) => {
       t.same(directory.id, updatedDirectory?.id);
       t.same(updatedDirectory?.name, toUpdate.name);
       t.same(updatedDirectory?.log_webhook_events, toUpdate.log_webhook_events);
-      t.same(updatedDirectory?.type, toUpdate.type);
       t.match(updatedDirectory?.webhook.endpoint, toUpdate.webhook?.endpoint);
       t.match(updatedDirectory?.webhook.secret, toUpdate.webhook?.secret);
 
@@ -253,7 +250,6 @@ tap.test('directories.', async (t) => {
       t.same(directoryFetched?.id, updatedDirectory?.id);
       t.same(directoryFetched?.name, toUpdate.name);
       t.same(directoryFetched?.log_webhook_events, toUpdate.log_webhook_events);
-      t.same(directoryFetched?.type, toUpdate.type);
       t.match(directoryFetched?.webhook.endpoint, toUpdate.webhook?.endpoint);
       t.match(directoryFetched?.webhook.secret, toUpdate.webhook?.secret);
     });

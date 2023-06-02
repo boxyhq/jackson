@@ -5,7 +5,6 @@ import type {
   Directory,
   IDirectoryConfig,
   Group,
-  User,
   GroupMember,
   IDirectoryProvider,
   JacksonOption,
@@ -67,8 +66,8 @@ export class GoogleProvider implements IDirectoryProvider {
       domain: directory.google?.domain,
     };
 
-    if (options?.nextPageToken) {
-      query['pageToken'] = options.nextPageToken;
+    if (options?.pageToken) {
+      query['pageToken'] = options.pageToken;
     }
 
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
@@ -110,8 +109,8 @@ export class GoogleProvider implements IDirectoryProvider {
       domain: directory.google?.domain,
     };
 
-    if (options?.nextPageToken) {
-      query['pageToken'] = options.nextPageToken;
+    if (options?.pageToken) {
+      query['pageToken'] = options.pageToken;
     }
 
     const response = await googleAdmin.groups.list(query);
@@ -134,7 +133,7 @@ export class GoogleProvider implements IDirectoryProvider {
     return {
       data: groups,
       metadata: {
-        nextPageToken: response.data.nextPageToken,
+        pageToken: response.data.nextPageToken as string,
         hasNextPage: !!response.data.nextPageToken,
       },
     };

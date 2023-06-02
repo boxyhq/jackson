@@ -1,13 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import type {
-  Group,
-  DatabaseStore,
-  ApiError,
-  PaginationParams,
-  Response,
-  GroupMembership,
-} from '../../typings';
+import type { Group, DatabaseStore, PaginationParams, Response, GroupMembership } from '../../typings';
 import * as dbutils from '../../db/utils';
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
