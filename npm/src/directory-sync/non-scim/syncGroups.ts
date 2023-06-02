@@ -80,7 +80,7 @@ export class SyncGroups {
     const pageLimit = 500;
     let pageOffset = 0;
 
-    while (true) {
+    while (true as boolean) {
       const { data: groups } = await this.groupController
         .setTenantAndProduct(this.directory.tenant, this.directory.product)
         .getAll({

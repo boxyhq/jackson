@@ -80,7 +80,7 @@ export class SyncUsers {
     const pageLimit = 500;
     let pageOffset = 0;
 
-    while (true) {
+    while (true as boolean) {
       const { data: users } = await this.userController
         .setTenantAndProduct(this.directory.tenant, this.directory.product)
         .getAll({

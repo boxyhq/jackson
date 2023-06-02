@@ -81,7 +81,7 @@ export class SyncGroupMembers {
     const pageLimit = 500;
     let pageOffset = 0;
 
-    while (true) {
+    while (true as boolean) {
       const { data: members } = await this.groupController
         .setTenantAndProduct(this.directory.tenant, this.directory.product)
         .getGroupMembers({
