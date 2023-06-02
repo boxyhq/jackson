@@ -37,19 +37,23 @@ export const startSync = async (params: SyncParams, callback: EventCallback) => 
     return;
   }
 
-  for (const directory of allDirectories) {
-    const params = {
-      directory,
-      userController,
-      groupController,
-      provider,
-      requestHandler,
-      callback,
-    };
+  try {
+    for (const directory of allDirectories) {
+      const params = {
+        directory,
+        userController,
+        groupController,
+        provider,
+        requestHandler,
+        callback,
+      };
 
-    await new SyncUsers(params).sync();
-    await new SyncGroups(params).sync();
-    await new SyncGroupMembers(params).sync();
+      await new SyncUsers(params).sync();
+      await new SyncGroups(params).sync();
+      await new SyncGroupMembers(params).sync();
+    }
+  } catch (e: any) {
+    console.error(e);
   }
 
   const endTime = Date.now();

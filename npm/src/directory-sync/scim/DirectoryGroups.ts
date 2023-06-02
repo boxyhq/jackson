@@ -80,7 +80,7 @@ export class DirectoryGroups {
       groups = data;
     } else {
       // Fetch all the existing group
-      const { data } = await this.groups.getAll({ pageOffset: undefined, pageLimit: undefined });
+      const { data } = await this.groups.getAll({ directoryId, pageOffset: undefined, pageLimit: undefined });
 
       groups = data;
     }

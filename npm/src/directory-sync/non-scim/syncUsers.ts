@@ -8,6 +8,7 @@ import type {
   DirectorySyncRequest,
   EventCallback,
   IDirectoryProvider,
+  PaginationParams,
 } from '../../typings';
 import { compareAndFindDeletedUsers, isUserUpdated, toUserSCIMPayload } from './utils';
 
@@ -37,42 +38,56 @@ export class SyncUsers {
   }
 
   async sync() {
-    this.userController.setTenantAndProduct(this.directory.tenant, this.directory.product);
+    const usersFromProvider: User[] = [];
+    let nextPageOption: PaginationParams | null = null;
 
-    const users = await this.provider.getUsers(this.directory);
+    do {
+      const { data: users, metadata } = await this.provider.getUsers(this.directory, nextPageOption);
 
-    // Create or update users
-    for (const user of users) {
-      const { data: existingUser } = await this.userController.get(user.id);
-
-      if (!existingUser) {
-        await this.createUser(user);
-      } else if (isUserUpdated(existingUser, user, this.provider.userFieldsToExcludeWhenCompare)) {
-        await this.updateUser(user);
+      if (users.length === 0) {
+        break;
       }
-    }
+
+      // Create or update users
+      for (const user of users) {
+        const { data: existingUser } = await this.userController
+          .setTenantAndProduct(this.directory.tenant, this.directory.product)
+          .get(user.id);
+
+        if (!existingUser) {
+          await this.createUser(user);
+        } else if (isUserUpdated(existingUser, user, this.provider.userFieldsToExcludeWhenCompare)) {
+          await this.updateUser(user);
+        }
+      }
+
+      // Store users to compare and delete later
+      usersFromProvider.push(...users);
+
+      nextPageOption = metadata;
+    } while (nextPageOption && nextPageOption.hasNextPage);
 
     // Delete users that are not in the directory anymore
     const existingUsers = await this.getAllExistingUsers();
-    const usersToDelete = compareAndFindDeletedUsers(existingUsers, users);
+    const usersToDelete = compareAndFindDeletedUsers(existingUsers, usersFromProvider);
 
     await this.deleteUsers(usersToDelete);
   }
 
   // Get all the existing users from the Jackson store
   async getAllExistingUsers() {
-    this.userController.setTenantAndProduct(this.directory.tenant, this.directory.product);
-
     const existingUsers: User[] = [];
-    const pageLimit = 1;
+    const pageLimit = 500;
     let pageOffset = 0;
 
     while (true) {
-      const { data: users } = await this.userController.getAll({
-        directoryId: this.directory.id,
-        pageOffset,
-        pageLimit,
-      });
+      const { data: users } = await this.userController
+        .setTenantAndProduct(this.directory.tenant, this.directory.product)
+        .getAll({
+          directoryId: this.directory.id,
+          pageOffset,
+          pageLimit,
+        });
 
       if (!users || users.length === 0) {
         break;

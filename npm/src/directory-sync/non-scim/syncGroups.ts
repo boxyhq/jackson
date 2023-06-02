@@ -8,6 +8,7 @@ import type {
   DirectorySyncRequest,
   EventCallback,
   IDirectoryProvider,
+  PaginationParams,
 } from '../../typings';
 import { compareAndFindDeletedGroups, isGroupUpdated, toGroupSCIMPayload } from './utils';
 
@@ -37,42 +38,56 @@ export class SyncGroups {
   }
 
   async sync() {
-    this.groupController.setTenantAndProduct(this.directory.tenant, this.directory.product);
+    const groupsFromProvider: Group[] = [];
+    let nextPageOption: PaginationParams | null = null;
 
-    const groups = await this.provider.getGroups(this.directory);
+    do {
+      const { data: groups, metadata } = await this.provider.getGroups(this.directory, nextPageOption);
 
-    // Create or update groups
-    for (const group of groups) {
-      const { data: existingGroup } = await this.groupController.get(group.id);
-
-      if (!existingGroup) {
-        await this.createGroup(group);
-      } else if (isGroupUpdated(existingGroup, group, this.provider.groupFieldsToExcludeWhenCompare)) {
-        await this.updateGroup(group);
+      if (!groups || groups.length === 0) {
+        break;
       }
-    }
 
-    // Delete groups that are not in the directory anymore
+      // Create or update groups
+      for (const group of groups) {
+        const { data: existingGroup } = await this.groupController
+          .setTenantAndProduct(this.directory.tenant, this.directory.product)
+          .get(group.id);
+
+        if (!existingGroup) {
+          await this.createGroup(group);
+        } else if (isGroupUpdated(existingGroup, group, this.provider.groupFieldsToExcludeWhenCompare)) {
+          await this.updateGroup(group);
+        }
+      }
+
+      // Store groups to compare and delete later
+      groupsFromProvider.push(...groups);
+
+      nextPageOption = metadata;
+    } while (nextPageOption && nextPageOption.hasNextPage);
+
+    // Delete users that are not in the directory anymore
     const existingGroups = await this.getAllExistingGroups();
-    const groupsToDelete = compareAndFindDeletedGroups(existingGroups, groups);
+    const groupsToDelete = compareAndFindDeletedGroups(existingGroups, groupsFromProvider);
 
     await this.deleteGroups(groupsToDelete);
   }
 
   // Get all the existing groups from the Jackson store
   async getAllExistingGroups() {
-    this.groupController.setTenantAndProduct(this.directory.tenant, this.directory.product);
-
     const existingGroups: Group[] = [];
     const pageLimit = 500;
     let pageOffset = 0;
 
     while (true) {
-      const { data: groups } = await this.groupController.getAll({
-        directoryId: this.directory.id,
-        pageOffset,
-        pageLimit,
-      });
+      const { data: groups } = await this.groupController
+        .setTenantAndProduct(this.directory.tenant, this.directory.product)
+        .getAll({
+          directoryId: this.directory.id,
+          pageOffset,
+          pageLimit,
+        });
 
       if (!groups || groups.length === 0) {
         break;

@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import type { User, DatabaseStore, ApiError, PaginationParams } from '../../typings';
+import type { User, DatabaseStore, ApiError, PaginationParams, Response } from '../../typings';
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
 import { keyFromParts } from '../../db/utils';
@@ -26,7 +26,7 @@ export class Users extends Base {
   }
 
   // Create a new user
-  public async create(params: CreateUserParams): Promise<{ data: User | null; error: ApiError | null }> {
+  public async create(params: CreateUserParams): Promise<Response<User>> {
     const { directoryId, first_name, last_name, email, active, raw, id: userId } = params;
 
     try {
@@ -63,7 +63,7 @@ export class Users extends Base {
   }
 
   // Get a user by id
-  public async get(id: string): Promise<{ data: User | null; error: ApiError | null }> {
+  public async get(id: string): Promise<Response<User>> {
     try {
       const user = await this.store('users').get(id);
 
@@ -87,7 +87,7 @@ export class Users extends Base {
       active: boolean;
       raw: object;
     }
-  ): Promise<{ data: User | null; error: ApiError | null }> {
+  ): Promise<Response<User>> {
     try {
       const { first_name, last_name, email, active, raw } = param;
 
@@ -111,7 +111,7 @@ export class Users extends Base {
   }
 
   // Delete a user by id
-  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+  public async delete(id: string): Promise<Response<null>> {
     try {
       const { data, error } = await this.get(id);
 
@@ -128,17 +128,12 @@ export class Users extends Base {
   }
 
   // Search users by userName
-  public async search(
-    userName: string,
-    directoryId: string
-  ): Promise<{ data: User[] | null; error: ApiError | null }> {
+  public async search(userName: string, directoryId: string): Promise<Response<User[]>> {
     try {
-      const users = (
-        await this.store('users').getByIndex({
-          name: indexNames.directoryIdUsername,
-          value: keyFromParts(directoryId, userName),
-        })
-      ).data;
+      const { data: users } = await this.store('users').getByIndex({
+        name: indexNames.directoryIdUsername,
+        value: keyFromParts(directoryId, userName),
+      });
 
       return { data: users, error: null };
     } catch (err: any) {
@@ -146,35 +141,19 @@ export class Users extends Base {
     }
   }
 
-  // Get all users in a directory
-  public async getAll({
-    pageOffset,
-    pageLimit,
-    directoryId,
-  }: PaginationParams & {
-    directoryId?: string;
-  } = {}): Promise<{
-    data: User[] | null;
-    error: ApiError | null;
-  }> {
-    try {
-      let users: User[] = [];
+  // Get all users in a directory paginated
+  public async getAll(params: { directoryId: string } & PaginationParams): Promise<Response<User[]>> {
+    const { pageOffset, pageLimit, directoryId } = params;
 
-      // Filter by directoryId
-      if (directoryId) {
-        users = (
-          await this.store('users').getByIndex(
-            {
-              name: indexNames.directoryId,
-              value: directoryId,
-            },
-            pageOffset,
-            pageLimit
-          )
-        ).data as User[];
-      } else {
-        users = (await this.store('users').getAll(pageOffset, pageLimit)).data;
-      }
+    try {
+      const { data: users } = await this.store('users').getByIndex(
+        {
+          name: indexNames.directoryId,
+          value: directoryId,
+        },
+        pageOffset,
+        pageLimit
+      );
 
       return { data: users, error: null };
     } catch (err: any) {
@@ -183,7 +162,7 @@ export class Users extends Base {
   }
 
   // Delete all users from a directory
-  async deleteAll(directoryId: string): Promise<void> {
+  async deleteAll(directoryId: string) {
     const index = {
       name: indexNames.directoryId,
       value: directoryId,

@@ -130,7 +130,8 @@ export type UserWithGroup = User & { group: Group };
 export type PaginationParams = {
   pageOffset?: number;
   pageLimit?: number;
-  pageToken?: string;
+  nextPageToken?: string | null;
+  hasNextPage?: boolean;
 };
 
 export type UserPatchOperation = {
@@ -192,17 +193,24 @@ export interface IDirectoryProvider {
   getDirectories(): Promise<Directory[]>;
 
   /**
+   * Get all users for a directory
+   * @param directory
+   * @param options
+   */
+  getUsers(
+    directory: Directory,
+    options: PaginationParams | null
+  ): Promise<{ data: User[]; metadata: PaginationParams | null }>;
+
+  /**
    * Get all groups for a directory
    * @param directory
    * @param options
    */
-  getGroups(directory: Directory): Promise<Group[]>;
-
-  /**
-   * Get all users for a directory
-   * @param directory
-   */
-  getUsers(directory: Directory): Promise<User[]>;
+  getGroups(
+    directory: Directory,
+    options: PaginationParams | null
+  ): Promise<{ data: Group[]; metadata: PaginationParams | null }>;
 
   /**
    * Get all members of a group

@@ -8,6 +8,8 @@ import type {
   DirectorySyncRequest,
   EventCallback,
   IDirectoryProvider,
+  PaginationParams,
+  GroupMembership,
 } from '../../typings';
 import {
   compareAndFindDeletedMembers,
@@ -41,32 +43,67 @@ export class SyncGroupMembers {
   }
 
   async sync() {
-    this.groupController.setTenantAndProduct(this.directory.tenant, this.directory.product);
+    let nextPageOption: PaginationParams | null = null;
 
-    const groups = await this.provider.getGroups(this.directory);
+    do {
+      const { data: groups, metadata } = await this.provider.getGroups(this.directory, nextPageOption);
 
-    if (!groups || groups.length === 0) {
-      return;
-    }
-
-    for (const group of groups) {
-      const membersFromProvider = await this.provider.getGroupMembers(this.directory, group);
-      const membersFromDB = await this.groupController.getAllUsers(group.id);
-
-      const idsFromDB = _.map(membersFromDB, 'user_id');
-      const idsFromProvider = _.map(membersFromProvider, 'id');
-
-      const deletedMembers = compareAndFindDeletedMembers(idsFromDB, idsFromProvider);
-      const newMembers = compareAndFindNewMembers(idsFromDB, idsFromProvider);
-
-      if (deletedMembers && deletedMembers.length > 0) {
-        await this.deleteMembers(group, deletedMembers);
+      if (!groups || groups.length === 0) {
+        break;
       }
 
-      if (newMembers && newMembers.length > 0) {
-        await this.addMembers(group, newMembers);
+      for (const group of groups) {
+        const membersFromDB = await this.getAllExistingMembers(group);
+        const membersFromProvider = await this.provider.getGroupMembers(this.directory, group);
+
+        const idsFromDB = _.map(membersFromDB, 'user_id');
+        const idsFromProvider = _.map(membersFromProvider, 'id');
+
+        const deletedMembers = compareAndFindDeletedMembers(idsFromDB, idsFromProvider);
+        const newMembers = compareAndFindNewMembers(idsFromDB, idsFromProvider);
+
+        if (deletedMembers && deletedMembers.length > 0) {
+          await this.deleteMembers(group, deletedMembers);
+        }
+
+        if (newMembers && newMembers.length > 0) {
+          await this.addMembers(group, newMembers);
+        }
       }
+
+      nextPageOption = metadata;
+    } while (nextPageOption && nextPageOption.hasNextPage);
+  }
+
+  // Get all existing members for a group from the Jackson store
+  async getAllExistingMembers(group: Group) {
+    const existingMembers: GroupMembership['user_id'][] = [];
+    const pageLimit = 500;
+    let pageOffset = 0;
+
+    while (true) {
+      const { data: members } = await this.groupController
+        .setTenantAndProduct(this.directory.tenant, this.directory.product)
+        .getGroupMembers({
+          groupId: group.id,
+          pageOffset,
+          pageLimit,
+        });
+
+      if (!members || members.length === 0) {
+        break;
+      }
+
+      existingMembers.push(...members);
+
+      if (members.length < pageLimit) {
+        break;
+      }
+
+      pageOffset += pageLimit;
     }
+
+    return existingMembers;
   }
 
   async addMembers(group: Group, memberIds: string[]) {

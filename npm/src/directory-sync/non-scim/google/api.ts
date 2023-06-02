@@ -9,6 +9,7 @@ import type {
   GroupMember,
   IDirectoryProvider,
   JacksonOption,
+  PaginationParams,
 } from '../../../typings';
 
 interface GoogleProviderParams {
@@ -60,83 +61,83 @@ export class GoogleProvider implements IDirectoryProvider {
     });
   }
 
-  async getGroups(directory: Directory) {
-    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
-
-    const allGroups: Group[] = [];
+  async getUsers(directory: Directory, options: PaginationParams | null) {
     const query = {
       maxResults: 200,
       domain: directory.google?.domain,
     };
 
-    let nextPageToken: string | undefined | null = null;
+    if (options?.nextPageToken) {
+      query['pageToken'] = options.nextPageToken;
+    }
 
-    do {
-      if (nextPageToken) {
-        query['pageToken'] = nextPageToken;
-      }
+    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
 
-      const response = await googleAdmin.groups.list(query);
+    const response = await googleAdmin.users.list(query);
 
-      if (!response.data.groups) {
-        break;
-      }
+    if (!response.data.users) {
+      return {
+        data: [],
+        metadata: null,
+      };
+    }
 
-      const groups: Group[] = response.data.groups.map((group) => {
-        return {
-          id: group.id as string,
-          name: group.name as string,
-          raw: group,
-        };
-      });
+    const users = response.data.users.map((user) => {
+      return {
+        id: user.id as string,
+        email: user.primaryEmail as string,
+        first_name: user.name?.givenName as string,
+        last_name: user.name?.familyName as string,
+        active: !user.suspended,
+        raw: user,
+      };
+    });
 
-      allGroups.push(...groups);
-
-      nextPageToken = response.data.nextPageToken;
-    } while (nextPageToken);
-
-    return allGroups;
+    return {
+      data: users,
+      metadata: {
+        nextPageToken: response.data.nextPageToken,
+        hasNextPage: !!response.data.nextPageToken,
+      },
+    };
   }
 
-  async getUsers(directory: Directory) {
+  async getGroups(directory: Directory, options: PaginationParams | null) {
     const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
 
-    const allUsers: User[] = [];
     const query = {
       maxResults: 200,
       domain: directory.google?.domain,
     };
 
-    let nextPageToken: string | undefined | null = null;
+    if (options?.nextPageToken) {
+      query['pageToken'] = options.nextPageToken;
+    }
 
-    do {
-      if (nextPageToken) {
-        query['pageToken'] = nextPageToken;
-      }
+    const response = await googleAdmin.groups.list(query);
 
-      const response = await googleAdmin.users.list(query);
+    if (!response.data.groups) {
+      return {
+        data: [],
+        metadata: null,
+      };
+    }
 
-      if (!response.data.users) {
-        break;
-      }
+    const groups = response.data.groups.map((group) => {
+      return {
+        id: group.id as string,
+        name: group.name as string,
+        raw: group,
+      };
+    });
 
-      const users = response.data.users.map((user) => {
-        return {
-          id: user.id as string,
-          email: user.primaryEmail as string,
-          first_name: user.name?.givenName as string,
-          last_name: user.name?.familyName as string,
-          active: !user.suspended,
-          raw: user,
-        };
-      });
-
-      allUsers.push(...users);
-
-      nextPageToken = response.data.nextPageToken;
-    } while (nextPageToken);
-
-    return allUsers;
+    return {
+      data: groups,
+      metadata: {
+        nextPageToken: response.data.nextPageToken,
+        hasNextPage: !!response.data.nextPageToken,
+      },
+    };
   }
 
   async getGroupMembers(directory: Directory, group: Group) {
