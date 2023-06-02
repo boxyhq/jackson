@@ -21,12 +21,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       directoryId
     );
 
-    if (!directoryError) {
+    if (directoryError) {
       throw directoryError;
     }
 
     // Provider: Google
-    if (directory?.type === 'google') {
+    if (directory.type === 'google') {
       const { data, error } = await directorySyncController.google.generateAuthorizationUrl({
         directoryId,
       });

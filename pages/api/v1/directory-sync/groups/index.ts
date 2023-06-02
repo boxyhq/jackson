@@ -20,7 +20,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { tenant, product, directoryId, offset, limit } = req.query as {
     tenant: string;
     product: string;
-    directoryId?: string;
+    directoryId: string;
     offset?: string;
     limit?: string;
   };
