@@ -37,8 +37,6 @@ export class SyncGroups {
   }
 
   async sync() {
-    console.log(`Syncing groups for directory ${this.directory.id}`);
-
     this.groupController.setTenantAndProduct(this.directory.tenant, this.directory.product);
 
     const groups = await this.provider.getGroups(this.directory);
@@ -93,8 +91,6 @@ export class SyncGroups {
   }
 
   async createGroup(group: Group) {
-    console.info('Creating group: ', _.pick(group, ['id', 'name']));
-
     await this.handleRequest({
       method: 'POST',
       body: toGroupSCIMPayload(group),
@@ -103,8 +99,6 @@ export class SyncGroups {
   }
 
   async updateGroup(group: Group) {
-    console.info('Updating group: ', _.pick(group, ['id', 'name']));
-
     await this.handleRequest({
       method: 'PUT',
       body: toGroupSCIMPayload(group),
@@ -114,8 +108,6 @@ export class SyncGroups {
 
   async deleteGroups(groups: Group[]) {
     for (const group of groups) {
-      console.info('Deleting group: ', _.pick(group, ['id', 'name']));
-
       await this.handleRequest({
         method: 'DELETE',
         body: toGroupSCIMPayload(group),

@@ -37,8 +37,6 @@ export class SyncUsers {
   }
 
   async sync() {
-    console.log(`Syncing users for directory ${this.directory.id}`);
-
     this.userController.setTenantAndProduct(this.directory.tenant, this.directory.product);
 
     const users = await this.provider.getUsers(this.directory);
@@ -93,8 +91,6 @@ export class SyncUsers {
   }
 
   async createUser(user: User) {
-    console.info('Creating user: ', _.pick(user, ['id', 'email']));
-
     await this.handleRequest({
       method: 'POST',
       body: toUserSCIMPayload(user),
@@ -103,8 +99,6 @@ export class SyncUsers {
   }
 
   async updateUser(user: User) {
-    console.info('Updating user: ', _.pick(user, ['id', 'email']));
-
     await this.handleRequest({
       method: 'PUT',
       body: toUserSCIMPayload(user),
@@ -114,8 +108,6 @@ export class SyncUsers {
 
   async deleteUsers(users: User[]) {
     for (const user of users) {
-      console.info('Deleting user: ', _.pick(user, ['id', 'email']));
-
       await this.handleRequest({
         method: 'DELETE',
         body: toUserSCIMPayload(user),

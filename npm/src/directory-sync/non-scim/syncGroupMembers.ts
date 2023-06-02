@@ -41,8 +41,6 @@ export class SyncGroupMembers {
   }
 
   async sync() {
-    console.log(`Syncing members for directory ${this.directory.id}`);
-
     this.groupController.setTenantAndProduct(this.directory.tenant, this.directory.product);
 
     const groups = await this.provider.getGroups(this.directory);
@@ -72,8 +70,6 @@ export class SyncGroupMembers {
   }
 
   async addMembers(group: Group, memberIds: string[]) {
-    console.info('Adding members to group: ', _.pick(group, ['id', 'email']));
-
     await this.handleRequest({
       method: 'PATCH',
       body: toGroupMembershipSCIMPayload(memberIds),
@@ -82,8 +78,6 @@ export class SyncGroupMembers {
   }
 
   async deleteMembers(group: Group, memberIds: string[]) {
-    console.info('Removing members from group: ', _.pick(group, ['id', 'email']));
-
     await this.handleRequest({
       method: 'PATCH',
       body: toGroupMembershipSCIMPayload(memberIds),

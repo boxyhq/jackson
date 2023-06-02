@@ -6,10 +6,6 @@ import jackson from '@lib/jackson';
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const callback = async (event: DirectorySyncEvent) => {
-    console.log(event.event, event.tenant);
-  };
-
   try {
     await directorySyncController.sync(directorySyncController.events.callback);
 

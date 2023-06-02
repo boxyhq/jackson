@@ -38,8 +38,6 @@ export const startSync = async (params: SyncParams, callback: EventCallback) => 
   }
 
   for (const directory of allDirectories) {
-    console.info(`Syncing directory ${directory.id}`);
-
     const params = {
       directory,
       userController,
