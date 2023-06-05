@@ -10,7 +10,7 @@ import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';
 
 interface CreateDirectoryProps {
   setupLinkToken?: string;
-  defaultWebhookEndpoint: string | null;
+  defaultWebhookEndpoint: string | undefined;
 }
 
 type UnSavedDirectory = Omit<Directory, 'id' | 'log_webhook_events' | 'scim' | 'deactivated' | 'webhook'> & {
