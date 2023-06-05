@@ -46,7 +46,7 @@
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.2",
     "googleapis": "118.0.0",
-    "@boxyhq/saml20": "1.2.0",
+    "@boxyhq/saml20": "1.2.1",
     "axios": "1.4.0",
     "jose": "4.14.4",
     "lodash": "4.17.21",
