@@ -37,8 +37,8 @@ export class GoogleProvider implements IDirectoryProvider {
     );
 
     authClient.setCredentials({
-      access_token: directory.google?.access_token,
-      refresh_token: directory.google?.refresh_token,
+      access_token: directory.google_access_token,
+      refresh_token: directory.google_refresh_token,
     });
 
     return authClient;
@@ -55,7 +55,7 @@ export class GoogleProvider implements IDirectoryProvider {
 
     return directories.filter((directory) => {
       return (
-        directory.google?.access_token && directory.google.refresh_token && directory.google.domain !== ''
+        directory.google_access_token && directory.google_refresh_token && directory.google_domain !== ''
       );
     });
   }
@@ -63,7 +63,7 @@ export class GoogleProvider implements IDirectoryProvider {
   async getUsers(directory: Directory, options: PaginationParams | null) {
     const query = {
       maxResults: 200,
-      domain: directory.google?.domain,
+      domain: directory.google_domain,
     };
 
     if (options?.pageToken) {
@@ -106,7 +106,7 @@ export class GoogleProvider implements IDirectoryProvider {
 
     const query = {
       maxResults: 200,
-      domain: directory.google?.domain,
+      domain: directory.google_domain,
     };
 
     if (options?.pageToken) {
@@ -146,7 +146,7 @@ export class GoogleProvider implements IDirectoryProvider {
     const query = {
       maxResults: 200,
       groupKey: group.id,
-      domain: directory.google?.domain,
+      domain: directory.google_domain,
     };
 
     let nextPageToken: string | undefined | null = null;

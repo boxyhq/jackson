@@ -33,8 +33,8 @@ export class GoogleAuth {
     );
 
     authClient.setCredentials({
-      access_token: directory.google?.access_token,
-      refresh_token: directory.google?.refresh_token,
+      access_token: directory.google_access_token,
+      refresh_token: directory.google_refresh_token,
     });
 
     return authClient;
@@ -115,11 +115,8 @@ export class GoogleAuth {
       }
 
       const { data } = await this.directories.update(directoryId, {
-        google: {
-          access_token: accessToken,
-          refresh_token: refreshToken,
-          domain: '',
-        },
+        google_access_token: accessToken,
+        google_refresh_token: refreshToken,
       });
 
       if (!data) {

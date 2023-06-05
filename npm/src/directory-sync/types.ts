@@ -55,11 +55,9 @@ export type Directory = {
     secret: string;
   };
   deactivated?: boolean;
-  google?: {
-    domain: string;
-    access_token: string;
-    refresh_token: string;
-  };
+  google_domain?: string;
+  google_access_token?: string;
+  google_refresh_token?: string;
 };
 
 export type DirectorySyncGroupMember = { value: string; email?: string };

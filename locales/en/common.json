@@ -206,5 +206,6 @@
   "yes_proceed": "Yes, proceed",
   "delete_this_directory": "Delete this directory connection?",
   "delete_this_directory_desc": "This action cannot be undone. This will permanently delete the directory connection, users, and groups.",
-  "directory_connection_deleted_successfully": "Directory connection deleted successfully"
+  "directory_connection_deleted_successfully": "Directory connection deleted successfully",
+  "directory_domain": "Directory Domain"
 }

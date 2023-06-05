@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import type { Directory } from '@boxyhq/saml-jackson';
@@ -10,30 +10,34 @@ import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';
 
 interface CreateDirectoryProps {
   setupLinkToken?: string;
-  defaultWebhookEndpoint: string | undefined;
+  defaultWebhookEndpoint: string | null;
 }
+
+type UnSavedDirectory = Omit<Directory, 'id' | 'log_webhook_events' | 'scim' | 'deactivated' | 'webhook'> & {
+  webhook_url: string;
+  webhook_secret: string;
+};
+
+const defaultDirectory: UnSavedDirectory = {
+  name: '',
+  tenant: '',
+  product: '',
+  webhook_url: '',
+  webhook_secret: '',
+  type: 'azure-scim-v2',
+  google_domain: '',
+};
 
 const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirectoryProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { providers } = useDirectoryProviders(setupLinkToken);
   const [loading, setLoading] = useState(false);
-  const [directory, setDirectory] = useState({
-    name: '',
-    tenant: '',
-    product: '',
-    webhook_url: defaultWebhookEndpoint,
-    webhook_secret: '',
-    type: '',
+  const [showDomain, setShowDomain] = useState(false);
+  const [directory, setDirectory] = useState<UnSavedDirectory>({
+    ...defaultDirectory,
+    webhook_url: defaultWebhookEndpoint || '',
   });
-
-  useEffect(() => {
-    if (providers && Object.keys(providers).length > 0) {
-      setDirectory((directory) => {
-        return { ...directory, type: Object.keys(providers)[0] };
-      });
-    }
-  }, [providers]);
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -78,6 +82,11 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
       ...directory,
       [target.id]: target.value,
     });
+
+    // Ask for domain if google is selected
+    if (target.id === 'type') {
+      target.value === 'google' ? setShowDomain(true) : setShowDomain(false);
+    }
   };
 
   const backUrl = setupLinkToken ? `/setup/${setupLinkToken}/directory-sync` : '/admin/directory-sync';
@@ -116,6 +125,22 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                   })}
               </select>
             </div>
+            {showDomain && (
+              <div className='form-control w-full'>
+                <label className='label'>
+                  <span className='label-text'>{t('directory_domain')}</span>
+                </label>
+                <input
+                  type='text'
+                  id='google_domain'
+                  className='input-bordered input w-full'
+                  onChange={onChange}
+                  value={directory.google_domain}
+                  pattern='^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$'
+                  title='Please enter a valid domain (e.g: boxyhq.com)'
+                />
+              </div>
+            )}
             {!setupLinkToken && (
               <>
                 <div className='form-control w-full'>

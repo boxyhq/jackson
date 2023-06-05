@@ -30,7 +30,7 @@ tap.before(async () => {
 
 tap.test('Google Directory', async (t) => {
   t.test('generate the Google API authorization URL', async (t) => {
-    const result = await directorySyncController google.auth.generateAuthorizationUrl({
+    const result = await directorySyncController.google.generateAuthorizationUrl({
       directoryId: directory.id,
     });
 
@@ -67,21 +67,21 @@ tap.test('Google Directory', async (t) => {
   });
 
   t.test('set access token and refresh token', async (t) => {
-    const { data: updatedDirectory } = await directorySyncController.directoryProviders.google.auth.setToken({
+    const { data: updatedDirectory } = await directorySyncController.google.setToken({
       directoryId: directory.id,
       accessToken: 'ACCESS_TOKEN',
       refreshToken: 'REFRESH_TOKEN',
     });
 
     t.ok(updatedDirectory);
-    t.strictSame(updatedDirectory?.google?.access_token, 'ACCESS_TOKEN');
-    t.strictSame(updatedDirectory?.google?.refresh_token, 'REFRESH_TOKEN');
+    t.strictSame(updatedDirectory?.google_access_token, 'ACCESS_TOKEN');
+    t.strictSame(updatedDirectory?.google_refresh_token, 'REFRESH_TOKEN');
 
     const { data: directoryFetched } = await directorySyncController.directories.get(directory.id);
 
     t.ok(directoryFetched);
-    t.strictSame(directoryFetched?.google?.access_token, 'ACCESS_TOKEN');
-    t.strictSame(directoryFetched?.google?.refresh_token, 'REFRESH_TOKEN');
+    t.strictSame(directoryFetched?.google_access_token, 'ACCESS_TOKEN');
+    t.strictSame(directoryFetched?.google_refresh_token, 'REFRESH_TOKEN');
 
     t.end();
   });

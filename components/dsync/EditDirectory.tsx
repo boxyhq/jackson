@@ -11,7 +11,7 @@ import useDirectory from '@lib/ui/hooks/useDirectory';
 import { ToggleConnectionStatus } from './ToggleConnectionStatus';
 import { DeleteDirectory } from './DeleteDirectory';
 
-type FormState = Pick<Directory, 'name' | 'log_webhook_events' | 'webhook'>;
+type FormState = Pick<Directory, 'name' | 'log_webhook_events' | 'webhook' | 'google_domain'>;
 
 const defaultFormState: FormState = {
   name: '',
@@ -20,6 +20,7 @@ const defaultFormState: FormState = {
     endpoint: '',
     secret: '',
   },
+  google_domain: '',
 };
 
 const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; setupLinkToken?: string }) => {
@@ -39,6 +40,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
           endpoint: directory.webhook?.endpoint,
           secret: directory.webhook?.secret,
         },
+        google_domain: directory.google_domain,
       });
     }
   }, [directory]);
@@ -131,6 +133,20 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
                 value={directoryUpdated.name}
               />
             </div>
+            {directory.type === 'google' && (
+              <div className='form-control w-full'>
+                <label className='label'>
+                  <span className='label-text'>{t('directory_domain')}</span>
+                </label>
+                <input
+                  type='text'
+                  id='google_domain'
+                  className='input-bordered input w-full'
+                  onChange={onChange}
+                  value={directoryUpdated.google_domain}
+                />
+              </div>
+            )}
             <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('webhook_url')}</span>

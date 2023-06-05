@@ -64,9 +64,22 @@ export class DirectoryConfig {
     webhook_url?: string;
     webhook_secret?: string;
     type?: DirectoryType;
+    google_domain?: string;
+    google_access_token?: string;
+    google_refresh_token?: string;
   }): Promise<Response<Directory>> {
     try {
-      const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
+      const {
+        name,
+        tenant,
+        product,
+        webhook_url,
+        webhook_secret,
+        type = 'generic-scim-v2',
+        google_domain,
+        google_access_token,
+        google_refresh_token,
+      } = params;
 
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -84,7 +97,7 @@ export class DirectoryConfig {
       const hasWebhook = webhook_url && webhook_secret;
       const isSCIMProvider = isSCIMEnabledProvider(type);
 
-      const directory: Directory = {
+      let directory: Directory = {
         id,
         name: directoryName,
         tenant,
@@ -105,6 +118,15 @@ export class DirectoryConfig {
               secret: '',
             },
       };
+
+      if (type === 'google') {
+        directory = {
+          ...directory,
+          google_domain: google_domain || '',
+          google_access_token: google_access_token || '',
+          google_refresh_token: google_refresh_token || '',
+        };
+      }
 
       const indexes = [
         {
@@ -162,7 +184,15 @@ export class DirectoryConfig {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const { name, log_webhook_events, webhook, deactivated, google } = param;
+      const {
+        name,
+        log_webhook_events,
+        webhook,
+        deactivated,
+        google_domain,
+        google_access_token,
+        google_refresh_token,
+      } = param;
 
       const directory: Directory = await this.store().get(id);
 
@@ -170,10 +200,12 @@ export class DirectoryConfig {
         ...directory,
         name: name || directory.name,
         webhook: webhook || directory.webhook,
-        google: google || directory.google,
         deactivated: deactivated !== undefined ? deactivated : directory.deactivated,
         log_webhook_events:
           log_webhook_events !== undefined ? log_webhook_events : directory.log_webhook_events,
+        google_domain: google_domain || directory.google_domain,
+        google_access_token: google_access_token || directory.google_access_token,
+        google_refresh_token: google_refresh_token || directory.google_refresh_token,
       };
 
       await this.store().put(id, updatedDirectory);
