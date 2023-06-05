@@ -101,3 +101,5 @@ export { retraced as retracedOptions };
 export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
+
+export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';

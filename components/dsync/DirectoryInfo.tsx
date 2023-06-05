@@ -6,6 +6,7 @@ import React from 'react';
 import useDirectory from '@lib/ui/hooks/useDirectory';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
+import { dsyncGoogleAuthURL } from '@lib/env';
 
 const DirectoryInfo = ({ directoryId, setupLinkToken }: { directoryId: string; setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
@@ -79,6 +80,14 @@ const DirectoryInfo = ({ directoryId, setupLinkToken }: { directoryId: string; s
             <div className='form-control'>
               <InputWithCopyButton text={directory.scim.secret} label={t('scim_token')} />
             </div>
+          </div>
+        )}
+        {directory.type === 'google' && (
+          <div className='form-control mt-10'>
+            <InputWithCopyButton
+              text={`${dsyncGoogleAuthURL}?directoryId=${directory.id}`}
+              label={t('dsync_google_auth_url')}
+            />
           </div>
         )}
       </div>

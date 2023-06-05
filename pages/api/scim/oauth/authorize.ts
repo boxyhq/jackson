@@ -12,33 +12,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ error: { message: `Method ${method} Not Allowed` } });
   }
 
+  const { directoryId } = req.query as { directoryId: string };
+
   try {
     const { directorySyncController } = await jackson();
 
-    const { directoryId } = req.query as { directoryId: string };
+    const { data, error } = await directorySyncController.google.generateAuthorizationUrl({
+      directoryId,
+    });
 
-    const { data: directory, error: directoryError } = await directorySyncController.directories.get(
-      directoryId
-    );
-
-    if (directoryError) {
-      throw directoryError;
+    if (error) {
+      throw error;
     }
 
-    // Provider: Google
-    if (directory.type === 'google') {
-      const { data, error } = await directorySyncController.google.generateAuthorizationUrl({
-        directoryId,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      return res.redirect(data.authorizationUrl).end();
-    }
-
-    throw new Error('Directory type not supported.');
+    return res.redirect(data.authorizationUrl).end();
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
 
