@@ -374,4 +374,36 @@ tap.test('directories.', async (t) => {
     t.match(directoryCreated?.scim.path, '');
     t.match(directoryCreated?.scim.secret, '');
   });
+
+  t.test('Should be able to update the Google credentials', async (t) => {
+    const { data: directory } = await directorySync.directories.create({
+      ...directoryPayload,
+      tenant: 'acme',
+      type: 'google' as DirectoryType,
+    });
+
+    if (!directory) {
+      t.fail("Couldn't create a directory");
+      return;
+    }
+
+    const { data: directoryUpdated } = await directorySync.directories.update(directory.id, {
+      google_access_token: 'access_token',
+      google_refresh_token: 'refresh_token',
+      google_domain: 'acme.com',
+    });
+
+    t.ok(directoryUpdated);
+    t.match(directoryUpdated?.google_access_token, 'access_token');
+    t.match(directoryUpdated?.google_refresh_token, 'refresh_token');
+    t.match(directoryUpdated?.google_domain, 'acme.com');
+
+    // Check that the directory was updated
+    const { data: directoryFetched } = await directorySync.directories.get(directory.id);
+
+    t.ok(directoryFetched);
+    t.match(directoryFetched?.google_access_token, 'access_token');
+    t.match(directoryFetched?.google_refresh_token, 'refresh_token');
+    t.match(directoryFetched?.google_domain, 'acme.com');
+  });
 });

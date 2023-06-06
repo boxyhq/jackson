@@ -29,6 +29,10 @@ const map = {
   'test/federated-saml/app.test.ts': ['src/ee/federated-saml/app.ts'],
   'test/federated-saml/sso.test.ts': ['src/ee/federated-saml/sso.ts'],
   'test/event/index.test.ts': ['src/event/*'],
+  'test/dsync/google/oauth.test.ts': [
+    'src/directory-sync/non-scim/google/oauth.ts',
+    'src/directory-sync/non-scim/google/index.ts',
+  ],
 };
 
 module.exports = (testFile) => {

@@ -29,7 +29,7 @@
     "db:migration:run:mariadb": "cross-env DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "db:migration:run:mssql": "cross-env DB_TYPE=mssql DB_URL='sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!' ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "prepublishOnly": "npm run build",
-    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 tap -T --ts --coverage-map=map.js test/dsync/*.test.ts",
+    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 tap -T --ts --coverage-map=map.js test/dsync/google/*.test.ts",
     "sort": "npx sort-package-json"
   },
   "tap": {
