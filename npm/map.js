@@ -32,6 +32,16 @@ const map = {
   'test/dsync/google/oauth.test.ts': [
     'src/directory-sync/non-scim/google/oauth.ts',
     'src/directory-sync/non-scim/google/index.ts',
+    'src/directory-sync/non-scim/utils.ts',
+  ],
+  'test/dsync/google/api.test.ts': [
+    'src/directory-sync/non-scim/google/api.ts',
+    'src/directory-sync/non-scim/google/index.ts',
+    'src/directory-sync/non-scim/syncUsers.ts',
+    'src/directory-sync/non-scim/syncGroups.ts',
+    'src/directory-sync/non-scim/syncGroupsMembers.ts',
+    'src/directory-sync/non-scim/utils.ts',
+    'src/directory-sync/non-scim/index.ts',
   ],
 };
 

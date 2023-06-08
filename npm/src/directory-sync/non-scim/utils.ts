@@ -54,14 +54,17 @@ export const isUserUpdated = (
   userFromProvider: User,
   ignoreFields: string[] | undefined
 ) => {
+  const copyOfExistingUser = _.cloneDeep(existingUser);
+  const copyOfUserFromProvider = _.cloneDeep(userFromProvider);
+
   if (ignoreFields && ignoreFields.length > 0) {
     ignoreFields.forEach((field) => {
-      _.unset(existingUser.raw, field);
-      _.unset(userFromProvider.raw, field);
+      _.unset(copyOfExistingUser.raw, field);
+      _.unset(copyOfUserFromProvider.raw, field);
     });
   }
 
-  return getObjectHash(existingUser.raw) !== getObjectHash(userFromProvider.raw);
+  return getObjectHash(copyOfExistingUser.raw) !== getObjectHash(copyOfUserFromProvider.raw);
 };
 
 export const isGroupUpdated = (
@@ -69,14 +72,17 @@ export const isGroupUpdated = (
   groupFromProvider: Group,
   ignoreFields: string[] | undefined
 ) => {
+  const copyOfExistingGroup = _.cloneDeep(existingGroup);
+  const copyOfGroupFromProvider = _.cloneDeep(groupFromProvider);
+
   if (ignoreFields && ignoreFields.length > 0) {
     ignoreFields.forEach((field) => {
-      _.unset(existingGroup.raw, field);
-      _.unset(groupFromProvider.raw, field);
+      _.unset(copyOfExistingGroup.raw, field);
+      _.unset(copyOfGroupFromProvider.raw, field);
     });
   }
 
-  return getObjectHash(existingGroup.raw) !== getObjectHash(groupFromProvider.raw);
+  return getObjectHash(copyOfExistingGroup.raw) !== getObjectHash(copyOfGroupFromProvider.raw);
 };
 
 export const compareAndFindDeletedGroups = (existingGroups: Group[] | null, groups: Group[]) => {
