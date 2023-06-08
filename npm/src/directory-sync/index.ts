@@ -32,18 +32,7 @@ const directorySync = async (params: {
     return getDirectorySyncProviders();
   };
 
-  // Non-SCIM directory providers
   const googleProvider = newGoogleProvider({ directories, opts });
-
-  const nonSCIM = {
-    google: googleProvider.oauth,
-    sync: async (callback: EventCallback) => {
-      return await startSync(
-        { userController: users, groupController: groups, opts, directories, requestHandler },
-        callback
-      );
-    },
-  };
 
   return {
     users,
@@ -55,7 +44,13 @@ const directorySync = async (params: {
     events: {
       callback: await handleEventCallback(directories, logger),
     },
-    ...nonSCIM,
+    google: googleProvider.oauth,
+    sync: async (callback: EventCallback) => {
+      return await startSync(
+        { userController: users, groupController: groups, opts, directories, requestHandler },
+        callback
+      );
+    },
   };
 };
 

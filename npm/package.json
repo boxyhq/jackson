@@ -45,9 +45,9 @@
     "@aws-sdk/util-dynamodb": "3.341.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.2",
-    "googleapis": "118.0.0",
     "@boxyhq/saml20": "1.2.1",
     "axios": "1.4.0",
+    "googleapis": "118.0.0",
     "jose": "4.14.4",
     "lodash": "4.17.21",
     "mixpanel": "0.17.0",
@@ -66,16 +66,17 @@
   },
   "devDependencies": {
     "@faker-js/faker": "8.0.2",
+    "@types/lodash": "4.14.194",
     "@types/node": "20.2.5",
     "@types/sinon": "10.0.15",
     "@types/tap": "15.0.8",
     "cross-env": "7.0.3",
+    "nock": "13.3.1",
     "sinon": "15.1.0",
     "tap": "16.3.4",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.0.4",
-    "@types/lodash": "4.14.194"
+    "typescript": "5.0.4"
   },
   "engines": {
     "node": ">=16",

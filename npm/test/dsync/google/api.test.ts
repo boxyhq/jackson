@@ -1,4 +1,6 @@
 import tap from 'tap';
+import nock from 'nock';
+import type { DirectorySyncEvent } from '@boxyhq/saml-jackson';
 
 import { jacksonOptions } from '../../utils';
 import { IDirectorySyncController, DirectoryType, Directory } from '../../../src/typings';
@@ -11,18 +13,77 @@ const directoryPayload = {
   product: 'saml-jackson-google',
   name: 'Google Directory',
   type: 'google' as DirectoryType,
-  webhook_url: 'https://example.com',
-  webhook_secret: 'secret',
+  google_domain: 'boxyhq.com',
+  google_access_token: 'access_token',
+  google_refresh_token: 'refresh_token',
+};
+
+const users = [
+  {
+    id: '100',
+    primaryEmail: 'elizabeth@example.com',
+    name: {
+      givenName: 'Elizabeth',
+      familyName: 'Smith',
+    },
+    suspended: false,
+    password: 'password',
+    hashFunction: 'SHA-1',
+    changePasswordAtNextLogin: false,
+    ipWhitelisted: false,
+    emails: [
+      {
+        address: 'liz@example.com',
+        type: 'home',
+        customType: '',
+        primary: true,
+      },
+    ],
+  },
+  {
+    id: '200',
+    primaryEmail: 'john@example.com',
+    name: {
+      givenName: 'John',
+      familyName: 'Doe',
+    },
+    suspended: false,
+    password: 'password',
+    hashFunction: 'SHA-1',
+    changePasswordAtNextLogin: false,
+    ipWhitelisted: false,
+    emails: [
+      {
+        address: 'john@example.com',
+        type: 'home',
+        customType: '',
+        primary: true,
+      },
+    ],
+  },
+];
+
+// Mock /admin/directory/v1/users
+const mockUsers = (users: any[]) => {
+  const server = nock('https://admin.googleapis.com')
+    .get('/admin/directory/v1/users')
+    .query({
+      maxResults: 200,
+      domain: 'boxyhq.com',
+    })
+    .reply(200, { users });
+
+  return server;
 };
 
 tap.before(async () => {
   directorySyncController = (await (await import('../../../src/index')).default(jacksonOptions))
     .directorySyncController;
 
-  const { data } = await directorySyncController.directories.create(directoryPayload);
+  const { data, error } = await directorySyncController.directories.create(directoryPayload);
 
-  if (!data) {
-    throw new Error('Failed to create directory');
+  if (error) {
+    throw error;
   }
 
   directory = data;
@@ -32,65 +93,100 @@ tap.teardown(async () => {
   process.exit(0);
 });
 
-tap.test('generate the Google API authorization URL', async (t) => {
-  const result = await directorySyncController.google.generateAuthorizationUrl({
-    directoryId: directory.id,
+// Create 2 new users
+tap.test('New user should be created and trigger `user.created` event', async (t) => {
+  const events: DirectorySyncEvent[] = [];
+
+  const server = mockUsers(users);
+
+  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+    events.push(event);
   });
 
-  t.ok(result);
-  t.strictSame(result.error, null);
+  server.done();
 
-  const parsedUrl = new URL(result.data?.authorizationUrl || '');
+  t.strictSame(events.length, 2);
 
-  t.strictSame(parsedUrl.origin, 'https://accounts.google.com');
-  t.strictSame(parsedUrl.pathname, '/o/oauth2/v2/auth');
-  t.strictSame(
-    {
-      access_type: parsedUrl.searchParams.get('access_type'),
-      prompt: parsedUrl.searchParams.get('prompt'),
-      response_type: parsedUrl.searchParams.get('response_type'),
-      client_id: parsedUrl.searchParams.get('client_id'),
-      redirect_uri: parsedUrl.searchParams.get('redirect_uri'),
-      scope: parsedUrl.searchParams.get('scope'),
-      state: parsedUrl.searchParams.get('state'),
-    },
-    {
-      access_type: 'offline',
-      prompt: 'consent',
-      response_type: 'code',
-      client_id: 'GOOGLE_CLIENT_ID',
-      redirect_uri: `GOOGLE_REDIRECT_URI`,
-      state: JSON.stringify({ directoryId: directory.id }),
-      scope:
-        'https://www.googleapis.com/auth/admin.directory.user.readonly https://www.googleapis.com/auth/admin.directory.group.readonly https://www.googleapis.com/auth/admin.directory.group.member.readonly',
-    }
-  );
+  t.strictSame(events[0].event, 'user.created');
+  t.strictSame(events[0].data.raw, users[0]);
+
+  t.strictSame(events[1].event, 'user.created');
+  t.strictSame(events[1].data.raw, users[1]);
+
+  // Check that the users were created in the database
+  const { data: usersFetched } = await directorySyncController.users
+    .setTenantAndProduct(directory.tenant, directory.product)
+    .getAll({
+      directoryId: directory.id,
+    });
+
+  t.strictSame(usersFetched?.length, 2);
+
+  const firstUser = usersFetched?.find((user) => user.id === users[0].id);
+  const secondUser = usersFetched?.find((user) => user.id === users[1].id);
+
+  t.ok(firstUser);
+  t.strictSame(firstUser?.email, users[0].primaryEmail);
+
+  t.ok(secondUser);
+  t.strictSame(secondUser?.email, users[1].primaryEmail);
 
   t.end();
 });
 
-tap.test('set access token and refresh token', async (t) => {
-  const { data: updatedDirectory } = await directorySyncController.google.setToken({
-    directoryId: directory.id,
-    accessToken: 'ACCESS_TOKEN',
-    refreshToken: 'REFRESH_TOKEN',
+// Update the first user only
+tap.test('Existing user should be updated and trigger `user.updated` event', async (t) => {
+  const events: DirectorySyncEvent[] = [];
+
+  // Update the user's name
+  users[0].name.givenName = 'Liz';
+
+  const server = mockUsers(users);
+
+  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+    events.push(event);
   });
 
-  t.ok(updatedDirectory);
-  t.strictSame(updatedDirectory?.google_access_token, 'ACCESS_TOKEN');
-  t.strictSame(updatedDirectory?.google_refresh_token, 'REFRESH_TOKEN');
+  server.done();
 
-  const { data: directoryFetched } = await directorySyncController.directories.get(directory.id);
+  t.strictSame(events.length, 1);
 
-  t.ok(directoryFetched);
-  t.strictSame(directoryFetched?.google_access_token, 'ACCESS_TOKEN');
-  t.strictSame(directoryFetched?.google_refresh_token, 'REFRESH_TOKEN');
+  t.strictSame(events[0].event, 'user.updated');
+  t.strictSame(events[0].data.raw, users[0]);
+
+  // Check that the user was updated in the database
+  const { data: userFetched } = await directorySyncController.users
+    .setTenantAndProduct(directory.tenant, directory.product)
+    .get(users[0].id);
+
+  t.ok(userFetched);
+  t.strictSame(userFetched?.first_name, 'Liz');
 
   t.end();
 });
 
-// Unit test to fetch the list of users from Google Directory using `googleapis` library.
+// Delete the second user only
+tap.test('Existing user should be deleted and trigger `user.deleted` event', async (t) => {
+  const events: DirectorySyncEvent[] = [];
 
-tap.test('fetch the list of users from Google Directory', async (t) => {
-  // Mock the `googleapis` library.
+  const server = mockUsers([users[0]]);
+
+  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+    events.push(event);
+  });
+
+  server.done();
+
+  t.strictSame(events.length, 1);
+  t.strictSame(events[0].event, 'user.deleted');
+  t.strictSame(events[0].data.raw, users[1]);
+
+  // Check that the user was deleted from the database
+  const { data: userFetched } = await directorySyncController.users
+    .setTenantAndProduct(directory.tenant, directory.product)
+    .get(users[1].id);
+
+  t.strictSame(userFetched, null);
+
+  t.end();
 });
