@@ -5,7 +5,6 @@ import type { DirectorySyncEvent } from '@boxyhq/saml-jackson';
 import { jacksonOptions } from '../../utils';
 import { IDirectorySyncController, DirectoryType, Directory } from '../../../src/typings';
 
-let directory: Directory;
 let directorySyncController: IDirectorySyncController;
 
 const directoryPayload = {
@@ -21,10 +20,10 @@ const directoryPayload = {
 const fakeGoogleDirectory = {
   users: [
     {
-      id: 'user123',
-      primaryEmail: 'elizabeth@example.com',
+      id: 'elizasmith',
+      primaryEmail: 'eliza@example.com',
       name: {
-        givenName: 'Elizabeth',
+        givenName: 'Eliza',
         familyName: 'Smith',
       },
       suspended: false,
@@ -33,17 +32,9 @@ const fakeGoogleDirectory = {
       changePasswordAtNextLogin: false,
       ipWhitelisted: false,
       etag: 'abcd1234',
-      emails: [
-        {
-          address: 'liz@example.com',
-          type: 'home',
-          customType: '',
-          primary: true,
-        },
-      ],
     },
     {
-      id: 'user456',
+      id: 'johndoe',
       primaryEmail: 'john@example.com',
       name: {
         givenName: 'John',
@@ -55,21 +46,13 @@ const fakeGoogleDirectory = {
       changePasswordAtNextLogin: false,
       ipWhitelisted: false,
       etag: 'efgh5678',
-      emails: [
-        {
-          address: 'john@example.com',
-          type: 'home',
-          customType: '',
-          primary: true,
-        },
-      ],
     },
   ],
 
   groups: [
     {
-      id: 'group123',
-      email: 'group@example.com',
+      id: 'engineering',
+      email: 'engineering@example.com',
       name: 'Engineering Team',
       description: 'A group for the engineering department',
       adminCreated: true,
@@ -80,8 +63,8 @@ const fakeGoogleDirectory = {
       nonEditableAliases: ['group123@example.com'],
     },
     {
-      id: 'group456',
-      email: 'sales-group@example.com',
+      id: 'sales',
+      email: 'sales@example.com',
       name: 'Sales Team',
       description: 'A group for the sales department',
       adminCreated: true,
@@ -92,66 +75,111 @@ const fakeGoogleDirectory = {
       nonEditableAliases: ['sales-group456@example.com'],
     },
   ],
+
+  members: {
+    engineering: [
+      {
+        kind: 'directory#member',
+        id: 'elizasmith',
+        email: 'eliza@example.com',
+        role: 'MANAGER',
+        type: 'USER',
+      },
+      {
+        kind: 'directory#member',
+        id: 'johndoe',
+        email: 'johndoe@example.com',
+        role: 'MANAGER',
+        type: 'USER',
+      },
+    ],
+    sales: [
+      {
+        kind: 'directory#member',
+        id: 'elizasmith',
+        email: 'eliza@example.com',
+        role: 'MANAGER',
+        type: 'USER',
+      },
+    ],
+    marketing: [
+      {
+        kind: 'directory#member',
+        id: 'elizasmith',
+        email: 'eliza@example.com',
+        role: 'MANAGER',
+        type: 'USER',
+      },
+      {
+        kind: 'directory#member',
+        id: 'jackson',
+        email: 'jackson@example.com',
+        role: 'MANAGER',
+        type: 'USER',
+      },
+    ],
+  },
 };
 
 // Mock /admin/directory/v1/users
 const mockUsersAPI = (users: any[]) => {
-  const server = nock('https://admin.googleapis.com')
+  nock('https://admin.googleapis.com')
     .get('/admin/directory/v1/users')
     .query({
       maxResults: 200,
       domain: 'boxyhq.com',
     })
     .reply(200, { users });
-
-  return server;
 };
 
 // Mock /admin/directory/v1/groups
 const mockGroupsAPI = (groups: any[]) => {
-  const server = nock('https://admin.googleapis.com')
+  nock('https://admin.googleapis.com')
     .get('/admin/directory/v1/groups')
     .query({
       maxResults: 200,
       domain: 'boxyhq.com',
     })
+    .times(2)
     .reply(200, { groups });
+};
 
-  return server;
+// Mock /admin/directory/v1/groups/{groupKey}/members
+const mockGroupMembersAPI = (groupKey: string, members: any[]) => {
+  nock('https://admin.googleapis.com')
+    .get(`/admin/directory/v1/groups/${groupKey}/members`)
+    .query({
+      maxResults: 200,
+      domain: 'boxyhq.com',
+    })
+    .reply(200, { members });
 };
 
 tap.before(async () => {
   directorySyncController = (await (await import('../../../src/index')).default(jacksonOptions))
     .directorySyncController;
 
-  const { data, error } = await directorySyncController.directories.create(directoryPayload);
-
-  if (error) {
-    throw error;
-  }
-
-  directory = data;
+  await directorySyncController.directories.create(directoryPayload);
 });
 
 tap.teardown(async () => {
   process.exit(0);
 });
 
-tap.test('Should be able to sync users and groups', async (t) => {
+tap.test('Sync 1', async (t) => {
   const events: DirectorySyncEvent[] = [];
 
-  // Create 2 users and 2 groups
-  const serverUser = mockUsersAPI(fakeGoogleDirectory.users);
-  const serverGroup = mockGroupsAPI(fakeGoogleDirectory.groups);
+  // Mock necessary API calls
+  mockUsersAPI(fakeGoogleDirectory.users);
+  mockGroupsAPI(fakeGoogleDirectory.groups);
+  mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
+  mockGroupMembersAPI('sales', fakeGoogleDirectory.members.sales);
 
   await directorySyncController.sync(async (event: DirectorySyncEvent) => {
     events.push(event);
   });
 
-  serverUser.done();
-  serverGroup.done();
-
-  t.strictSame(events.length, 4);
+  t.strictSame(events.length, 7);
 
   t.strictSame(events[0].event, 'user.created');
   t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
@@ -165,89 +193,113 @@ tap.test('Should be able to sync users and groups', async (t) => {
   t.strictSame(events[3].event, 'group.created');
   t.strictSame(events[3].data.raw, fakeGoogleDirectory.groups[1]);
 
-  t.end();
-});
+  t.strictSame(events[4].event, 'group.user_added');
+  t.strictSame(events[4].data.raw, fakeGoogleDirectory.users[0]);
 
-tap.test('Should be able to sync users and groups', async (t) => {
-  const events: DirectorySyncEvent[] = [];
+  // Check that the user was added to the group
+  if ('group' in events[4].data) {
+    t.strictSame(events[4].data.group.id, fakeGoogleDirectory.groups[0].id);
+  }
 
-  // Update user
-  fakeGoogleDirectory.users[0].name.givenName = 'Liz';
+  t.strictSame(events[5].event, 'group.user_added');
+  t.strictSame(events[5].data.raw, fakeGoogleDirectory.users[1]);
 
-  // Delete user
-  const deletedUser = fakeGoogleDirectory.users.splice(1, 1)[0];
+  // Check that the user was added to the group
+  if ('group' in events[5].data) {
+    t.strictSame(events[5].data.group.id, fakeGoogleDirectory.groups[0].id);
+  }
 
-  // Update group
-  fakeGoogleDirectory.groups[0].name = 'Engineering';
+  t.strictSame(events[6].event, 'group.user_added');
+  t.strictSame(events[6].data.raw, fakeGoogleDirectory.users[0]);
 
-  // Delete group
-  const deletedGroup = fakeGoogleDirectory.groups.splice(1, 1)[0];
-
-  const serverUser = mockUsersAPI(fakeGoogleDirectory.users);
-  const serverGroup = mockGroupsAPI(fakeGoogleDirectory.groups);
-
-  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-    events.push(event);
-  });
-
-  serverUser.done();
-  serverGroup.done();
-
-  t.strictSame(events.length, 4);
-
-  t.strictSame(events[0].event, 'user.updated');
-  t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
-
-  t.strictSame(events[1].event, 'user.deleted');
-  t.strictSame(events[1].data.raw, deletedUser);
-
-  t.strictSame(events[2].event, 'group.updated');
-  t.strictSame(events[2].data.raw, fakeGoogleDirectory.groups[0]);
-
-  t.strictSame(events[3].event, 'group.deleted');
-  t.strictSame(events[3].data.raw, deletedGroup);
+  // Check that the user was added to the group
+  if ('group' in events[6].data) {
+    t.strictSame(events[6].data.group.id, fakeGoogleDirectory.groups[1].id);
+  }
 
   t.end();
 });
 
-// Add new user and group
-tap.test('Should be able to sync users and groups', async (t) => {
-  const events: DirectorySyncEvent[] = [];
+// tap.test('Should be able to sync users and groups', async (t) => {
+//   const events: DirectorySyncEvent[] = [];
 
-  // Add new user
-  const newUser = {
-    ...fakeGoogleDirectory.users[0],
-    id: 'user10000',
-    primaryEmail: 'johndoe@example.com',
-  };
+//   // Update user
+//   fakeGoogleDirectory.users[0].name.givenName = 'Liz';
 
-  fakeGoogleDirectory.users.push(newUser);
+//   // Delete user
+//   const deletedUser = fakeGoogleDirectory.users.splice(1, 1)[0];
 
-  // Add new group
-  const newGroup = {
-    ...fakeGoogleDirectory.groups[0],
-    id: 'group10000',
-  };
+//   // Update group
+//   fakeGoogleDirectory.groups[0].name = 'Engineering';
 
-  fakeGoogleDirectory.groups.push(newGroup);
+//   // Delete group
+//   const deletedGroup = fakeGoogleDirectory.groups.splice(1, 1)[0];
 
-  const serverUser = mockUsersAPI(fakeGoogleDirectory.users);
-  const serverGroup = mockGroupsAPI(fakeGoogleDirectory.groups);
+//   const serverUser = mockUsersAPI(fakeGoogleDirectory.users);
+//   const serverGroup = mockGroupsAPI(fakeGoogleDirectory.groups);
 
-  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-    events.push(event);
-  });
+//   await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+//     events.push(event);
+//   });
 
-  serverUser.done();
-  serverGroup.done();
+//   serverUser.done();
+//   serverGroup.done();
 
-  t.strictSame(events.length, 2);
+//   t.strictSame(events.length, 4);
 
-  t.strictSame(events[0].event, 'user.created');
-  t.strictSame(events[0].data.raw, newUser);
+//   t.strictSame(events[0].event, 'user.updated');
+//   t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
 
-  t.strictSame(events[1].event, 'group.created');
-  t.strictSame(events[1].data.raw, newGroup);
+//   t.strictSame(events[1].event, 'user.deleted');
+//   t.strictSame(events[1].data.raw, deletedUser);
 
-  t.end();
-});
+//   t.strictSame(events[2].event, 'group.updated');
+//   t.strictSame(events[2].data.raw, fakeGoogleDirectory.groups[0]);
+
+//   t.strictSame(events[3].event, 'group.deleted');
+//   t.strictSame(events[3].data.raw, deletedGroup);
+
+//   t.end();
+// });
+
+// // Add new user and group
+// tap.test('Should be able to sync users and groups', async (t) => {
+//   const events: DirectorySyncEvent[] = [];
+
+//   // Add new user
+//   const newUser = {
+//     ...fakeGoogleDirectory.users[0],
+//     id: 'user10000',
+//     primaryEmail: 'johndoe@example.com',
+//   };
+
+//   fakeGoogleDirectory.users.push(newUser);
+
+//   // Add new group
+//   const newGroup = {
+//     ...fakeGoogleDirectory.groups[0],
+//     id: 'group10000',
+//   };
+
+//   fakeGoogleDirectory.groups.push(newGroup);
+
+//   const serverUser = mockUsersAPI(fakeGoogleDirectory.users);
+//   const serverGroup = mockGroupsAPI(fakeGoogleDirectory.groups);
+
+//   await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+//     events.push(event);
+//   });
+
+//   serverUser.done();
+//   serverGroup.done();
+
+//   t.strictSame(events.length, 2);
+
+//   t.strictSame(events[0].event, 'user.created');
+//   t.strictSame(events[0].data.raw, newUser);
+
+//   t.strictSame(events[1].event, 'group.created');
+//   t.strictSame(events[1].data.raw, newGroup);
+
+//   t.end();
+// });

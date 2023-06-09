@@ -109,7 +109,7 @@ export class SyncGroupMembers {
   async addMembers(group: Group, memberIds: string[]) {
     await this.handleRequest({
       method: 'PATCH',
-      body: toGroupMembershipSCIMPayload(memberIds),
+      body: toGroupMembershipSCIMPayload(memberIds, 'add'),
       resourceId: group.id,
     });
   }
@@ -117,7 +117,7 @@ export class SyncGroupMembers {
   async deleteMembers(group: Group, memberIds: string[]) {
     await this.handleRequest({
       method: 'PATCH',
-      body: toGroupMembershipSCIMPayload(memberIds),
+      body: toGroupMembershipSCIMPayload(memberIds, 'remove'),
       resourceId: group.id,
     });
   }
