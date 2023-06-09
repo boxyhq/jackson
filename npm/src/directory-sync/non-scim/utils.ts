@@ -31,7 +31,7 @@ export const toGroupSCIMPayload = (group: Group) => {
   };
 };
 
-export const toGroupMembershipSCIMPayload = (memberIds: string[]) => {
+export const toGroupMembershipSCIMPayload = (memberIds: string[], operation: 'add' | 'remove') => {
   const memberValues = memberIds.map((memberId) => {
     return {
       value: memberId,
@@ -41,7 +41,7 @@ export const toGroupMembershipSCIMPayload = (memberIds: string[]) => {
   return {
     Operations: [
       {
-        op: 'add',
+        op: operation,
         path: 'members',
         value: memberValues,
       },

@@ -50,7 +50,7 @@ export const startSync = async (params: SyncParams, callback: EventCallback) => 
 
       await new SyncUsers(params).sync();
       await new SyncGroups(params).sync();
-      // await new SyncGroupMembers(params).sync();
+      await new SyncGroupMembers(params).sync();
     }
   } catch (e: any) {
     console.error(e);
