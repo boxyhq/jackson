@@ -179,21 +179,28 @@ tap.test('Sync 1', async (t) => {
     events.push(event);
   });
 
+  nock.cleanAll();
+
   t.strictSame(events.length, 7);
 
   t.strictSame(events[0].event, 'user.created');
+  t.strictSame(events[0].data.id, fakeGoogleDirectory.users[0].id);
   t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
 
   t.strictSame(events[1].event, 'user.created');
+  t.strictSame(events[1].data.id, fakeGoogleDirectory.users[1].id);
   t.strictSame(events[1].data.raw, fakeGoogleDirectory.users[1]);
 
   t.strictSame(events[2].event, 'group.created');
+  t.strictSame(events[2].data.id, fakeGoogleDirectory.groups[0].id);
   t.strictSame(events[2].data.raw, fakeGoogleDirectory.groups[0]);
 
   t.strictSame(events[3].event, 'group.created');
+  t.strictSame(events[3].data.id, fakeGoogleDirectory.groups[1].id);
   t.strictSame(events[3].data.raw, fakeGoogleDirectory.groups[1]);
 
   t.strictSame(events[4].event, 'group.user_added');
+  t.strictSame(events[4].data.id, fakeGoogleDirectory.users[0].id);
   t.strictSame(events[4].data.raw, fakeGoogleDirectory.users[0]);
 
   // Check that the user was added to the group
@@ -202,6 +209,7 @@ tap.test('Sync 1', async (t) => {
   }
 
   t.strictSame(events[5].event, 'group.user_added');
+  t.strictSame(events[5].data.id, fakeGoogleDirectory.users[1].id);
   t.strictSame(events[5].data.raw, fakeGoogleDirectory.users[1]);
 
   // Check that the user was added to the group
@@ -210,6 +218,7 @@ tap.test('Sync 1', async (t) => {
   }
 
   t.strictSame(events[6].event, 'group.user_added');
+  t.strictSame(events[6].data.id, fakeGoogleDirectory.users[0].id);
   t.strictSame(events[6].data.raw, fakeGoogleDirectory.users[0]);
 
   // Check that the user was added to the group
@@ -220,47 +229,38 @@ tap.test('Sync 1', async (t) => {
   t.end();
 });
 
-// tap.test('Should be able to sync users and groups', async (t) => {
-//   const events: DirectorySyncEvent[] = [];
+tap.test('Sync 2', async (t) => {
+  const events: DirectorySyncEvent[] = [];
 
-//   // Update user
-//   fakeGoogleDirectory.users[0].name.givenName = 'Liz';
+  // Update user
+  fakeGoogleDirectory.users[0].name.givenName = 'Eliza Updated';
 
-//   // Delete user
-//   const deletedUser = fakeGoogleDirectory.users.splice(1, 1)[0];
+  // Update group
+  fakeGoogleDirectory.groups[0].name = 'Engineering Updated';
 
-//   // Update group
-//   fakeGoogleDirectory.groups[0].name = 'Engineering';
+  mockUsersAPI(fakeGoogleDirectory.users);
+  mockGroupsAPI(fakeGoogleDirectory.groups);
+  mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
+  mockGroupMembersAPI('sales', fakeGoogleDirectory.members.sales);
 
-//   // Delete group
-//   const deletedGroup = fakeGoogleDirectory.groups.splice(1, 1)[0];
+  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+    events.push(event);
+  });
 
-//   const serverUser = mockUsersAPI(fakeGoogleDirectory.users);
-//   const serverGroup = mockGroupsAPI(fakeGoogleDirectory.groups);
+  nock.cleanAll();
 
-//   await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-//     events.push(event);
-//   });
+  t.strictSame(events.length, 2);
 
-//   serverUser.done();
-//   serverGroup.done();
+  t.strictSame(events[0].event, 'user.updated');
+  t.strictSame(events[0].data.id, fakeGoogleDirectory.users[0].id);
+  t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
 
-//   t.strictSame(events.length, 4);
+  t.strictSame(events[1].event, 'group.updated');
+  t.strictSame(events[1].data.id, fakeGoogleDirectory.groups[0].id);
+  t.strictSame(events[1].data.raw, fakeGoogleDirectory.groups[0]);
 
-//   t.strictSame(events[0].event, 'user.updated');
-//   t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
-
-//   t.strictSame(events[1].event, 'user.deleted');
-//   t.strictSame(events[1].data.raw, deletedUser);
-
-//   t.strictSame(events[2].event, 'group.updated');
-//   t.strictSame(events[2].data.raw, fakeGoogleDirectory.groups[0]);
-
-//   t.strictSame(events[3].event, 'group.deleted');
-//   t.strictSame(events[3].data.raw, deletedGroup);
-
-//   t.end();
-// });
+  t.end();
+});
 
 // // Add new user and group
 // tap.test('Should be able to sync users and groups', async (t) => {
