@@ -9,6 +9,10 @@ import type {
 } from '../../typings';
 import { Base } from './Base';
 
+type GetAllParams = PaginationParams & {
+  directoryId?: string;
+};
+
 export class WebhookEventsLogger extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
@@ -39,17 +43,21 @@ export class WebhookEventsLogger extends Base {
   }
 
   // Get the event logs for a directory paginated
-  public async getAll(params: { directoryId: string } & PaginationParams) {
+  public async getAll(params: GetAllParams = {}) {
     const { pageOffset, pageLimit, directoryId } = params;
 
-    const { data: eventLogs } = await this.store('logs').getByIndex(
-      {
+    let eventLogs: WebhookEventLog[] = [];
+
+    if (directoryId) {
+      const index = {
         name: 'directoryId',
         value: directoryId,
-      },
-      pageOffset,
-      pageLimit
-    );
+      };
+
+      eventLogs = (await this.store('logs').getByIndex(index, pageOffset, pageLimit)).data;
+    } else {
+      eventLogs = (await this.store('logs').getAll(pageOffset, pageLimit)).data;
+    }
 
     return eventLogs;
   }

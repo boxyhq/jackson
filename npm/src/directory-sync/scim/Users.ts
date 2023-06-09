@@ -141,19 +141,32 @@ export class Users extends Base {
     }
   }
 
-  // Get all users in a directory paginated
-  public async getAll(params: { directoryId: string } & PaginationParams): Promise<Response<User[]>> {
-    const { pageOffset, pageLimit, directoryId } = params;
-
+  // Get all users in a directory
+  public async getAll({
+    pageOffset,
+    pageLimit,
+    directoryId,
+  }: PaginationParams & {
+    directoryId?: string;
+  } = {}): Promise<Response<User[]>> {
     try {
-      const { data: users } = await this.store('users').getByIndex(
-        {
-          name: indexNames.directoryId,
-          value: directoryId,
-        },
-        pageOffset,
-        pageLimit
-      );
+      let users: User[] = [];
+
+      // Filter by directoryId
+      if (directoryId) {
+        users = (
+          await this.store('users').getByIndex(
+            {
+              name: indexNames.directoryId,
+              value: directoryId,
+            },
+            pageOffset,
+            pageLimit
+          )
+        ).data as User[];
+      } else {
+        users = (await this.store('users').getAll(pageOffset, pageLimit)).data;
+      }
 
       return { data: users, error: null };
     } catch (err: any) {

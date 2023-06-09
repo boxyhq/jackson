@@ -1,7 +1,7 @@
 import tap from 'tap';
 
-import { jacksonOptions } from '../../utils';
-import { IDirectorySyncController, DirectoryType, Directory } from '../../../src/typings';
+import { jacksonOptions } from '../utils';
+import { IDirectorySyncController, DirectoryType, Directory } from '../../src/typings';
 
 let directory: Directory;
 let directorySyncController: IDirectorySyncController;
@@ -17,7 +17,7 @@ const directoryPayload = {
 };
 
 tap.before(async () => {
-  directorySyncController = (await (await import('../../../src/index')).default(jacksonOptions))
+  directorySyncController = (await (await import('../../src/index')).default(jacksonOptions))
     .directorySyncController;
 
   const { data, error } = await directorySyncController.directories.create(directoryPayload);

@@ -160,19 +160,28 @@ export class Groups extends Base {
     }
   }
 
-  // Get all groups in a directory paginated
-  public async getAll(params: { directoryId: string } & PaginationParams): Promise<Response<Group[]>> {
+  // Get all groups in a directory
+  public async getAll(
+    params: PaginationParams & {
+      directoryId?: string;
+    }
+  ): Promise<Response<Group[]>> {
     const { pageOffset, pageLimit, directoryId } = params;
 
     try {
-      const { data: groups } = await this.store('groups').getByIndex(
-        {
+      let groups: Group[] = [];
+
+      // Filter by directoryId
+      if (directoryId) {
+        const index = {
           name: indexNames.directoryId,
           value: directoryId,
-        },
-        pageOffset,
-        pageLimit
-      );
+        };
+
+        groups = (await this.store('groups').getByIndex(index, pageOffset, pageLimit)).data;
+      } else {
+        groups = (await this.store('groups').getAll(pageOffset, pageLimit)).data;
+      }
 
       return { data: groups, error: null };
     } catch (err: any) {

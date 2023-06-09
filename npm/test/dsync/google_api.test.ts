@@ -2,8 +2,8 @@ import tap from 'tap';
 import nock from 'nock';
 import type { DirectorySyncEvent } from '@boxyhq/saml-jackson';
 
-import { jacksonOptions } from '../../utils';
-import { IDirectorySyncController, DirectoryType, Directory } from '../../../src/typings';
+import { jacksonOptions } from '../utils';
+import { IDirectorySyncController, DirectoryType, Directory } from '../../src/typings';
 
 let directorySyncController: IDirectorySyncController;
 
@@ -149,7 +149,7 @@ const mockGroupMembersAPI = (groupKey: string, members: any[]) => {
 };
 
 tap.before(async () => {
-  directorySyncController = (await (await import('../../../src/index')).default(jacksonOptions))
+  directorySyncController = (await (await import('../../src/index')).default(jacksonOptions))
     .directorySyncController;
 
   await directorySyncController.directories.create(directoryPayload);

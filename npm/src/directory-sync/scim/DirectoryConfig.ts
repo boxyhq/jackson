@@ -308,6 +308,24 @@ export class DirectoryConfig {
     }
   }
 
+  private transform(directory: Directory): Directory {
+    if (directory.scim.path) {
+      // Add the flag to ensure SCIM compliance when using Azure AD
+      if (directory.type === 'azure-scim-v2') {
+        directory.scim.path = `${directory.scim.path}/?aadOptscim062020`;
+      }
+
+      // Construct the SCIM endpoint
+      directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+    }
+
+    if (!('deactivated' in directory)) {
+      directory.deactivated = false;
+    }
+
+    return directory;
+  }
+
   // Get the connections by directory provider
   public async getByProvider(params: {
     provider: DirectoryType;
@@ -338,23 +356,5 @@ export class DirectoryConfig {
     } catch (err: any) {
       return apiError(err);
     }
-  }
-
-  private transform(directory: Directory): Directory {
-    if (directory.scim.path) {
-      // Add the flag to ensure SCIM compliance when using Azure AD
-      if (directory.type === 'azure-scim-v2') {
-        directory.scim.path = `${directory.scim.path}/?aadOptscim062020`;
-      }
-
-      // Construct the SCIM endpoint
-      directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
-    }
-
-    if (!('deactivated' in directory)) {
-      directory.deactivated = false;
-    }
-
-    return directory;
   }
 }

@@ -72,10 +72,10 @@ export interface Events {
 }
 
 export interface DirectorySyncRequest {
-  method: 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
+  method: string; //'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
   body: any | undefined;
   directoryId: Directory['id'];
-  resourceType: 'users' | 'groups';
+  resourceType: string; //'users' | 'groups';
   resourceId: string | undefined;
   apiSecret: string | null;
   query: {
