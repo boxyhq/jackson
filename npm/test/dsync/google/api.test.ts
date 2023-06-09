@@ -262,6 +262,43 @@ tap.test('Sync 2', async (t) => {
   t.end();
 });
 
+tap.test('Sync 3', async (t) => {
+  const events: DirectorySyncEvent[] = [];
+
+  // Delete the last user
+  const deleteUser = fakeGoogleDirectory.users.pop();
+
+  // Delete the last group
+  const deleteGroup = fakeGoogleDirectory.groups.pop();
+
+  // Clear the members
+  fakeGoogleDirectory.members.sales = [];
+
+  mockUsersAPI(fakeGoogleDirectory.users);
+  mockGroupsAPI(fakeGoogleDirectory.groups);
+  mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
+
+  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+    events.push(event);
+  });
+
+  nock.cleanAll();
+
+  t.strictSame(events.length, 2);
+
+  t.strictSame(events[0].event, 'user.deleted');
+  t.strictSame(events[0].data.id, deleteUser?.id);
+  t.strictSame(events[0].data.raw, deleteUser);
+
+  t.strictSame(events[1].event, 'group.deleted');
+  t.strictSame(events[1].data.id, deleteGroup?.id);
+  t.strictSame(events[1].data.raw, deleteGroup);
+
+  // console.log(fakeGoogleDirectory);
+
+  t.end();
+});
+
 // // Add new user and group
 // tap.test('Should be able to sync users and groups', async (t) => {
 //   const events: DirectorySyncEvent[] = [];
