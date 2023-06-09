@@ -103,13 +103,13 @@ const fakeGoogleDirectory = {
       },
     ],
     marketing: [
-      {
-        kind: 'directory#member',
-        id: 'elizasmith',
-        email: 'eliza@example.com',
-        role: 'MANAGER',
-        type: 'USER',
-      },
+      // {
+      //   kind: 'directory#member',
+      //   id: 'elizasmith',
+      //   email: 'eliza@example.com',
+      //   role: 'MANAGER',
+      //   type: 'USER',
+      // },
       {
         kind: 'directory#member',
         id: 'jackson',
@@ -294,7 +294,64 @@ tap.test('Sync 3', async (t) => {
   t.strictSame(events[1].data.id, deleteGroup?.id);
   t.strictSame(events[1].data.raw, deleteGroup);
 
-  // console.log(fakeGoogleDirectory);
+  t.end();
+});
+
+tap.test('Sync 4', async (t) => {
+  const events: DirectorySyncEvent[] = [];
+
+  // Add new user
+  const newUser = {
+    ...fakeGoogleDirectory.users[0],
+    id: 'jackson',
+    primaryEmail: 'jackson@example.com',
+    name: {
+      givenName: 'Jackson',
+      familyName: 'Smith',
+    },
+  };
+
+  // Add new group
+  const newGroup = {
+    ...fakeGoogleDirectory.groups[0],
+    id: 'marketing',
+    email: 'marketing@example.com',
+    name: 'Marketing Team',
+    description: 'A group for the marketing department',
+  };
+
+  fakeGoogleDirectory.users.push(newUser);
+  fakeGoogleDirectory.groups.push(newGroup);
+
+  mockUsersAPI(fakeGoogleDirectory.users);
+  mockGroupsAPI(fakeGoogleDirectory.groups);
+  mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
+  mockGroupMembersAPI('marketing', fakeGoogleDirectory.members.marketing);
+
+  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+    events.push(event);
+  });
+
+  nock.cleanAll();
+
+  t.strictSame(events.length, 3);
+
+  t.strictSame(events[0].event, 'user.created');
+  t.strictSame(events[0].data.id, newUser.id);
+  t.strictSame(events[0].data.raw, newUser);
+
+  t.strictSame(events[1].event, 'group.created');
+  t.strictSame(events[1].data.id, newGroup.id);
+  t.strictSame(events[1].data.raw, newGroup);
+
+  t.strictSame(events[2].event, 'group.user_added');
+  t.strictSame(events[2].data.id, newUser.id);
+  t.strictSame(events[2].data.raw, newUser);
+
+  // Check that the user was added to the group
+  if ('group' in events[2].data) {
+    t.strictSame(events[2].data.group.id, newGroup.id);
+  }
 
   t.end();
 });
