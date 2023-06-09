@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import { createDirectory, deleteDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
 import groups from '@boxyhq/saml-jackson/test/dsync/data/groups';
 import { createGroup } from '../../helpers/groups';
-import type { Directory } from '@boxyhq/saml-jackson';
 
 test.use({
   extraHTTPHeaders: {
@@ -11,11 +10,10 @@ test.use({
   },
 });
 
-let directory: Directory;
 const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-3' };
 
 test.beforeAll(async ({ request }) => {
-  directory = await createDirectory(request, {
+  const directory = await createDirectory(request, {
     ...directoryPayload,
     tenant,
   });
@@ -36,7 +34,6 @@ test.describe('GET /api/v1/directory-sync/groups', () => {
       params: {
         tenant,
         product,
-        directoryId: directory.id,
       },
     });
 
@@ -54,7 +51,6 @@ test.describe('GET /api/v1/directory-sync/groups/:id', () => {
       params: {
         tenant,
         product,
-        directoryId: directory.id,
       },
     });
 
