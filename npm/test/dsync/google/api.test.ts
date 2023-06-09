@@ -103,13 +103,6 @@ const fakeGoogleDirectory = {
       },
     ],
     marketing: [
-      // {
-      //   kind: 'directory#member',
-      //   id: 'elizasmith',
-      //   email: 'eliza@example.com',
-      //   role: 'MANAGER',
-      //   type: 'USER',
-      // },
       {
         kind: 'directory#member',
         id: 'jackson',
@@ -356,44 +349,51 @@ tap.test('Sync 4', async (t) => {
   t.end();
 });
 
-// // Add new user and group
-// tap.test('Should be able to sync users and groups', async (t) => {
-//   const events: DirectorySyncEvent[] = [];
+tap.test('Sync 5', async (t) => {
+  const events: DirectorySyncEvent[] = [];
 
-//   // Add new user
-//   const newUser = {
-//     ...fakeGoogleDirectory.users[0],
-//     id: 'user10000',
-//     primaryEmail: 'johndoe@example.com',
-//   };
+  // Remove elizasmith from the engineering group
+  fakeGoogleDirectory.members.engineering.shift();
 
-//   fakeGoogleDirectory.users.push(newUser);
+  // Add elizasmith to the marketing group
+  fakeGoogleDirectory.members.marketing.push({
+    kind: 'directory#member',
+    id: 'elizasmith',
+    email: 'eliza@example.com',
+    role: 'MANAGER',
+    type: 'USER',
+  });
 
-//   // Add new group
-//   const newGroup = {
-//     ...fakeGoogleDirectory.groups[0],
-//     id: 'group10000',
-//   };
+  mockUsersAPI(fakeGoogleDirectory.users);
+  mockGroupsAPI(fakeGoogleDirectory.groups);
+  mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
+  mockGroupMembersAPI('marketing', fakeGoogleDirectory.members.marketing);
 
-//   fakeGoogleDirectory.groups.push(newGroup);
+  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
+    events.push(event);
+  });
 
-//   const serverUser = mockUsersAPI(fakeGoogleDirectory.users);
-//   const serverGroup = mockGroupsAPI(fakeGoogleDirectory.groups);
+  nock.cleanAll();
 
-//   await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-//     events.push(event);
-//   });
+  t.strictSame(events.length, 2);
 
-//   serverUser.done();
-//   serverGroup.done();
+  t.strictSame(events[0].event, 'group.user_removed');
+  t.strictSame(events[0].data.id, fakeGoogleDirectory.users[0].id);
+  t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
 
-//   t.strictSame(events.length, 2);
+  // Check that the user was removed from the group
+  if ('group' in events[0].data) {
+    t.strictSame(events[0].data.group.id, fakeGoogleDirectory.groups[0].id);
+  }
 
-//   t.strictSame(events[0].event, 'user.created');
-//   t.strictSame(events[0].data.raw, newUser);
+  t.strictSame(events[1].event, 'group.user_added');
+  t.strictSame(events[1].data.id, fakeGoogleDirectory.users[0].id);
+  t.strictSame(events[1].data.raw, fakeGoogleDirectory.users[0]);
 
-//   t.strictSame(events[1].event, 'group.created');
-//   t.strictSame(events[1].data.raw, newGroup);
+  // Check that the user was added to the group
+  if ('group' in events[1].data) {
+    t.strictSame(events[1].data.group.id, fakeGoogleDirectory.groups[1].id);
+  }
 
-//   t.end();
-// });
+  t.end();
+});
