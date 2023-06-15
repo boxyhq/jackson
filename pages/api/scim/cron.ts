@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { DirectorySyncEvent } from '@boxyhq/saml-jackson';
 
 import jackson from '@lib/jackson';
 
