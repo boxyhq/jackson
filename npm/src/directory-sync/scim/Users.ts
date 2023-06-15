@@ -1,21 +1,24 @@
-import type { User, DatabaseStore, ApiError, PaginationParams } from '../typings';
-import { apiError, JacksonError } from '../controller/error';
-import { Base } from './Base';
-import { keyFromParts } from '../db/utils';
+import { randomUUID } from 'crypto';
 
-type CreateUserPayload = {
+import type { User, DatabaseStore, PaginationParams, Response } from '../../typings';
+import { apiError, JacksonError } from '../../controller/error';
+import { Base } from './Base';
+import { keyFromParts } from '../../db/utils';
+
+const indexNames = {
+  directoryIdUsername: 'directoryIdUsername',
+  directoryId: 'directoryId',
+};
+
+interface CreateUserParams {
   directoryId: string;
   first_name: string;
   last_name: string;
   email: string;
   active: boolean;
   raw: any;
-};
-
-const indexNames = {
-  directoryIdUsername: 'directoryIdUsername',
-  directoryId: 'directoryId',
-};
+  id?: string;
+}
 
 export class Users extends Base {
   constructor({ db }: { db: DatabaseStore }) {
@@ -23,28 +26,23 @@ export class Users extends Base {
   }
 
   // Create a new user
-  public async create({
-    directoryId,
-    first_name,
-    last_name,
-    email,
-    active,
-    raw,
-  }: CreateUserPayload): Promise<{ data: User | null; error: ApiError | null }> {
+  public async create(params: CreateUserParams): Promise<Response<User>> {
+    const { directoryId, first_name, last_name, email, active, raw, id: userId } = params;
+
+    const id = userId || randomUUID();
+
+    raw['id'] = id;
+
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      active,
+      raw,
+    };
+
     try {
-      const id = this.createId();
-
-      raw['id'] = id;
-
-      const user = {
-        id,
-        first_name,
-        last_name,
-        email,
-        active,
-        raw,
-      };
-
       await this.store('users').put(
         id,
         user,
@@ -65,7 +63,7 @@ export class Users extends Base {
   }
 
   // Get a user by id
-  public async get(id: string): Promise<{ data: User | null; error: ApiError | null }> {
+  public async get(id: string): Promise<Response<User>> {
     try {
       const user = await this.store('users').get(id);
 
@@ -89,21 +87,21 @@ export class Users extends Base {
       active: boolean;
       raw: object;
     }
-  ): Promise<{ data: User | null; error: ApiError | null }> {
+  ): Promise<Response<User>> {
+    const { first_name, last_name, email, active, raw } = param;
+
+    raw['id'] = id;
+
+    const user = {
+      id,
+      first_name,
+      last_name,
+      email,
+      active,
+      raw,
+    };
+
     try {
-      const { first_name, last_name, email, active, raw } = param;
-
-      raw['id'] = id;
-
-      const user = {
-        id,
-        first_name,
-        last_name,
-        email,
-        active,
-        raw,
-      };
-
       await this.store('users').put(id, user);
 
       return { data: user, error: null };
@@ -113,7 +111,7 @@ export class Users extends Base {
   }
 
   // Delete a user by id
-  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+  public async delete(id: string): Promise<Response<null>> {
     try {
       const { data, error } = await this.get(id);
 
@@ -130,17 +128,12 @@ export class Users extends Base {
   }
 
   // Search users by userName
-  public async search(
-    userName: string,
-    directoryId: string
-  ): Promise<{ data: User[] | null; error: ApiError | null }> {
+  public async search(userName: string, directoryId: string): Promise<Response<User[]>> {
     try {
-      const users = (
-        await this.store('users').getByIndex({
-          name: indexNames.directoryIdUsername,
-          value: keyFromParts(directoryId, userName),
-        })
-      ).data;
+      const { data: users } = await this.store('users').getByIndex({
+        name: indexNames.directoryIdUsername,
+        value: keyFromParts(directoryId, userName),
+      });
 
       return { data: users, error: null };
     } catch (err: any) {
@@ -155,10 +148,7 @@ export class Users extends Base {
     directoryId,
   }: PaginationParams & {
     directoryId?: string;
-  } = {}): Promise<{
-    data: User[] | null;
-    error: ApiError | null;
-  }> {
+  } = {}): Promise<Response<User[]>> {
     try {
       let users: User[] = [];
 
@@ -185,7 +175,7 @@ export class Users extends Base {
   }
 
   // Delete all users from a directory
-  async deleteAll(directoryId: string): Promise<void> {
+  async deleteAll(directoryId: string) {
     const index = {
       name: indexNames.directoryId,
       value: directoryId,

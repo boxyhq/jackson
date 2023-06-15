@@ -39,11 +39,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const events = await directorySyncController.webhookLogs.with(directory.tenant, directory.product).getAll({
-    pageOffset,
-    pageLimit,
-    directoryId,
-  });
+  const events = await directorySyncController.webhookLogs
+    .setTenantAndProduct(directory.tenant, directory.product)
+    .getAll({
+      pageOffset,
+      pageLimit,
+      directoryId,
+    });
 
   return res.status(200).json({ data: events });
 };
@@ -64,7 +66,9 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(404).json({ error: { message: 'Directory not found.' } });
   }
 
-  await directorySyncController.webhookLogs.with(directory.tenant, directory.product).deleteAll(directoryId);
+  await directorySyncController.webhookLogs
+    .setTenantAndProduct(directory.tenant, directory.product)
+    .deleteAll(directoryId);
 
   return res.status(200).json({ data: null });
 };

@@ -1,6 +1,8 @@
-import type { Group, DatabaseStore, ApiError, PaginationParams, GroupMembership } from '../typings';
-import * as dbutils from '../db/utils';
-import { apiError, JacksonError } from '../controller/error';
+import { randomUUID } from 'crypto';
+
+import type { Group, DatabaseStore, PaginationParams, Response, GroupMembership } from '../../typings';
+import * as dbutils from '../../db/utils';
+import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
 
 const indexNames = {
@@ -8,32 +10,33 @@ const indexNames = {
   directoryId: 'directoryId',
 };
 
+interface CreateGroupParams {
+  directoryId: string;
+  name: string;
+  raw: any;
+  id?: string;
+}
+
 export class Groups extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
   }
 
   // Create a new group
-  public async create({
-    directoryId,
-    name,
-    raw,
-  }: {
-    directoryId: string;
-    name: string;
-    raw: any;
-  }): Promise<{ data: Group | null; error: ApiError | null }> {
+  public async create(params: CreateGroupParams): Promise<Response<Group>> {
+    const { directoryId, name, raw, id: groupId } = params;
+
+    const id = groupId || randomUUID();
+
+    raw['id'] = id;
+
+    const group: Group = {
+      id,
+      name,
+      raw,
+    };
+
     try {
-      const id = this.createId();
-
-      raw['id'] = id;
-
-      const group: Group = {
-        id,
-        name,
-        raw,
-      };
-
       await this.store('groups').put(
         id,
         group,
@@ -54,7 +57,7 @@ export class Groups extends Base {
   }
 
   // Get a group by id
-  public async get(id: string): Promise<{ data: Group | null; error: ApiError | null }> {
+  public async get(id: string): Promise<Response<Group>> {
     try {
       const group = await this.store('groups').get(id);
 
@@ -75,16 +78,16 @@ export class Groups extends Base {
       name: string;
       raw: any;
     }
-  ): Promise<{ data: Group | null; error: ApiError | null }> {
+  ): Promise<Response<Group>> {
+    const { name, raw } = param;
+
+    const group: Group = {
+      id,
+      name,
+      raw,
+    };
+
     try {
-      const { name, raw } = param;
-
-      const group: Group = {
-        id,
-        name,
-        raw,
-      };
-
       await this.store('groups').put(id, group);
 
       return { data: group, error: null };
@@ -94,7 +97,7 @@ export class Groups extends Base {
   }
 
   // Delete a group by id
-  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+  public async delete(id: string): Promise<Response<null>> {
     try {
       const { data, error } = await this.get(id);
 
@@ -109,20 +112,6 @@ export class Groups extends Base {
     } catch (err: any) {
       return apiError(err);
     }
-  }
-
-  // Get all users in a group
-  public async getAllUsers(groupId: string): Promise<{ user_id: string }[]> {
-    const { data: users } = await this.store('members').getByIndex({
-      name: 'groupId',
-      value: groupId,
-    });
-
-    if (users.length === 0) {
-      return [];
-    }
-
-    return users;
   }
 
   // Add a user to a group
@@ -158,10 +147,7 @@ export class Groups extends Base {
   }
 
   // Search groups by displayName
-  public async search(
-    displayName: string,
-    directoryId: string
-  ): Promise<{ data: Group[] | null; error: ApiError | null }> {
+  public async search(displayName: string, directoryId: string): Promise<Response<Group[]>> {
     try {
       const { data: groups } = await this.store('groups').getByIndex({
         name: indexNames.directoryIdDisplayname,
@@ -179,10 +165,7 @@ export class Groups extends Base {
     params: PaginationParams & {
       directoryId?: string;
     }
-  ): Promise<{
-    data: Group[] | null;
-    error: ApiError | null;
-  }> {
+  ): Promise<Response<Group[]>> {
     const { pageOffset, pageLimit, directoryId } = params;
 
     try {
@@ -201,6 +184,32 @@ export class Groups extends Base {
       }
 
       return { data: groups, error: null };
+    } catch (err: any) {
+      return apiError(err);
+    }
+  }
+
+  /**
+   * Get members of a group paginated
+   * @param groupId
+   * @returns
+   */
+  public async getGroupMembers(
+    parmas: { groupId: string } & PaginationParams
+  ): Promise<Response<GroupMembership['user_id'][]>> {
+    const { groupId, pageOffset, pageLimit } = parmas;
+
+    try {
+      const { data: members } = await this.store('members').getByIndex(
+        {
+          name: 'groupId',
+          value: groupId,
+        },
+        pageOffset,
+        pageLimit
+      );
+
+      return { data: members, error: null };
     } catch (err: any) {
       return apiError(err);
     }

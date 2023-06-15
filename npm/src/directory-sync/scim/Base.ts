@@ -1,6 +1,5 @@
-import type { Storable, DatabaseStore } from '../typings';
-import { storeNamespacePrefix } from '../controller/utils';
-import { randomUUID } from 'crypto';
+import type { Storable, DatabaseStore } from '../../typings';
+import { storeNamespacePrefix } from '../../controller/utils';
 
 export class Base {
   protected db: DatabaseStore;
@@ -21,29 +20,11 @@ export class Base {
     return this.db.store(`${storeNamespacePrefix.dsync[type]}:${this.tenant}:${this.product}`);
   }
 
-  setTenant(tenant: string): this {
+  // Set the tenant and product
+  setTenantAndProduct(tenant: string, product: string): this {
     this.tenant = tenant;
-
-    return this;
-  }
-
-  setProduct(product: string): this {
     this.product = product;
 
     return this;
-  }
-
-  // Set the tenant and product
-  setTenantAndProduct(tenant: string, product: string): this {
-    return this.setTenant(tenant).setProduct(product);
-  }
-
-  // Set the tenant and product
-  with(tenant: string, product: string): this {
-    return this.setTenant(tenant).setProduct(product);
-  }
-
-  createId(): string {
-    return randomUUID();
   }
 }

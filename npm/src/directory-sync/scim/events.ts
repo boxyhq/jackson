@@ -7,23 +7,27 @@ import type {
   DirectorySyncEvent,
   IWebhookEventsLogger,
   IDirectoryConfig,
-} from '../typings';
-import { sendPayloadToWebhook } from '../event/webhook';
+} from '../../typings';
+import { sendPayloadToWebhook } from '../../event/webhook';
 import { transformEventPayload } from './transform';
-import { isConnectionActive } from '../controller/utils';
+import { isConnectionActive } from '../../controller/utils';
+
+type Payload = { directory: Directory; group?: Group | null; user?: User | null };
 
 export const sendEvent = async (
   event: DirectorySyncEventType,
-  payload: { directory: Directory; group?: Group | null; user?: User | null },
+  payload: Payload,
   callback?: EventCallback
 ) => {
   if (!isConnectionActive(payload.directory)) {
     return;
   }
 
-  const eventTransformed = transformEventPayload(event, payload);
+  if (!callback) {
+    return;
+  }
 
-  return callback ? await callback(eventTransformed) : Promise.resolve();
+  await callback(transformEventPayload(event, payload));
 };
 
 export const handleEventCallback = async (
