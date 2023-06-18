@@ -1,4 +1,4 @@
-import { Directory, DirectorySyncEvent, DirectorySyncEventType, Group, User } from '../typings';
+import { Directory, DirectorySyncEvent, DirectorySyncEventType, Group, User } from '../../typings';
 
 export const transformUser = (user: User): User => {
   return {

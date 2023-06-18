@@ -1,32 +1,37 @@
+import { randomUUID } from 'crypto';
+
 import type {
   Storable,
   Directory,
   JacksonOption,
   DatabaseStore,
   DirectoryType,
-  ApiError,
   PaginationParams,
   IUsers,
   IGroups,
   IWebhookEventsLogger,
   IEventController,
-} from '../typings';
-import * as dbutils from '../db/utils';
-import { createRandomSecret, isConnectionActive, validateTenantAndProduct } from '../controller/utils';
-import { apiError, JacksonError } from '../controller/error';
-import { storeNamespacePrefix } from '../controller/utils';
-import { randomUUID } from 'crypto';
-import { IndexNames } from '../controller/utils';
-import { getDirectorySyncProviders } from './utils';
+  Response,
+} from '../../typings';
+import * as dbutils from '../../db/utils';
+import {
+  createRandomSecret,
+  isConnectionActive,
+  validateTenantAndProduct,
+  storeNamespacePrefix,
+  IndexNames,
+} from '../../controller/utils';
+import { apiError, JacksonError } from '../../controller/error';
+import { getDirectorySyncProviders, isSCIMEnabledProvider } from './utils';
 
-type ConstructorParams = {
+interface DirectoryConfigParams {
   db: DatabaseStore;
   opts: JacksonOption;
   users: IUsers;
   groups: IGroups;
   logger: IWebhookEventsLogger;
   eventController: IEventController;
-};
+}
 
 export class DirectoryConfig {
   private _store: Storable | null = null;
@@ -37,7 +42,7 @@ export class DirectoryConfig {
   private logger: IWebhookEventsLogger;
   private eventController: IEventController;
 
-  constructor({ db, opts, users, groups, logger, eventController }: ConstructorParams) {
+  constructor({ db, opts, users, groups, logger, eventController }: DirectoryConfigParams) {
     this.opts = opts;
     this.db = db;
     this.users = users;
@@ -59,9 +64,22 @@ export class DirectoryConfig {
     webhook_url?: string;
     webhook_secret?: string;
     type?: DirectoryType;
-  }): Promise<{ data: Directory | null; error: ApiError | null }> {
+    google_domain?: string;
+    google_access_token?: string;
+    google_refresh_token?: string;
+  }): Promise<Response<Directory>> {
     try {
-      const { name, tenant, product, webhook_url, webhook_secret, type = 'generic-scim-v2' } = params;
+      const {
+        name,
+        tenant,
+        product,
+        webhook_url,
+        webhook_secret,
+        type = 'generic-scim-v2',
+        google_domain,
+        google_access_token,
+        google_refresh_token,
+      } = params;
 
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -77,28 +95,55 @@ export class DirectoryConfig {
       const directoryName = name || `scim-${tenant}-${product}`;
       const id = randomUUID();
       const hasWebhook = webhook_url && webhook_secret;
+      const isSCIMProvider = isSCIMEnabledProvider(type);
 
-      const directory: Directory = {
+      let directory: Directory = {
         id,
         name: directoryName,
         tenant,
         product,
         type,
         log_webhook_events: false,
-        scim: {
-          path: `${this.opts.scimPath}/${id}`,
-          secret: await createRandomSecret(16),
-        },
         webhook: {
           endpoint: hasWebhook ? webhook_url : '',
           secret: hasWebhook ? webhook_secret : '',
         },
+        scim: isSCIMProvider
+          ? {
+              path: `${this.opts.scimPath}/${id}`,
+              secret: await createRandomSecret(16),
+            }
+          : {
+              path: '',
+              secret: '',
+            },
       };
 
-      await this.store().put(id, directory, {
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      if (type === 'google') {
+        directory = {
+          ...directory,
+          google_domain: google_domain || '',
+          google_access_token: google_access_token || '',
+          google_refresh_token: google_refresh_token || '',
+        };
+      }
+
+      const indexes = [
+        {
+          name: IndexNames.TenantProduct as string,
+          value: dbutils.keyFromParts(tenant, product),
+        },
+      ];
+
+      // Add secondary index for Non-SCIM providers
+      if (!isSCIMProvider) {
+        indexes.push({
+          name: storeNamespacePrefix.dsync.providers,
+          value: type,
+        });
+      }
+
+      await this.store().put(id, directory, ...indexes);
 
       const connection = this.transform(directory);
 
@@ -111,7 +156,7 @@ export class DirectoryConfig {
   }
 
   // Get the configuration by id
-  public async get(id: string): Promise<{ data: Directory | null; error: ApiError | null }> {
+  public async get(id: string): Promise<Response<Directory>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -132,60 +177,57 @@ export class DirectoryConfig {
   // Update the configuration. Partial updates are supported
   public async update(
     id: string,
-    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim'>
-  ): Promise<{ data: Directory | null; error: ApiError | null }> {
+    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim' | 'type'>
+  ): Promise<Response<Directory>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const { name, log_webhook_events, webhook, type } = param;
+      const {
+        name,
+        log_webhook_events,
+        webhook,
+        deactivated,
+        google_domain,
+        google_access_token,
+        google_refresh_token,
+      } = param;
 
-      let directory: Directory = await this.store().get(id);
+      const directory: Directory = await this.store().get(id);
 
-      if (name) {
-        directory.name = name;
-      }
+      let updatedDirectory: Directory = {
+        ...directory,
+        name: name || directory.name,
+        webhook: webhook || directory.webhook,
+        deactivated: deactivated !== undefined ? deactivated : directory.deactivated,
+        log_webhook_events:
+          log_webhook_events !== undefined ? log_webhook_events : directory.log_webhook_events,
+        google_domain: google_domain || directory.google_domain,
+        google_access_token: google_access_token || directory.google_access_token,
+        google_refresh_token: google_refresh_token || directory.google_refresh_token,
+      };
 
-      if (log_webhook_events !== undefined) {
-        directory.log_webhook_events = log_webhook_events;
-      }
+      await this.store().put(id, updatedDirectory);
 
-      if (webhook) {
-        directory.webhook = webhook;
-      }
-
-      if (type) {
-        directory.type = type;
-      }
+      updatedDirectory = this.transform(updatedDirectory);
 
       if ('deactivated' in param) {
-        directory['deactivated'] = param.deactivated;
-      }
-
-      await this.store().put(id, { ...directory });
-
-      directory = this.transform(directory);
-
-      if ('deactivated' in param) {
-        if (isConnectionActive(directory)) {
-          await this.eventController.notify('dsync.activated', directory);
+        if (isConnectionActive(updatedDirectory)) {
+          await this.eventController.notify('dsync.activated', updatedDirectory);
         } else {
-          await this.eventController.notify('dsync.deactivated', directory);
+          await this.eventController.notify('dsync.deactivated', updatedDirectory);
         }
       }
 
-      return { data: directory, error: null };
+      return { data: updatedDirectory, error: null };
     } catch (err: any) {
       return apiError(err);
     }
   }
 
   // Get the configuration by tenant and product
-  public async getByTenantAndProduct(
-    tenant: string,
-    product: string
-  ): Promise<{ data: Directory[] | null; error: ApiError | null }> {
+  public async getByTenantAndProduct(tenant: string, product: string): Promise<Response<Directory[]>> {
     try {
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -204,12 +246,12 @@ export class DirectoryConfig {
     }
   }
 
-  // Get all configurations
-  public async getAll({ pageOffset, pageLimit, pageToken }: PaginationParams = {}): Promise<{
-    data: Directory[] | null;
-    pageToken?: string;
-    error: ApiError | null;
-  }> {
+  // Get directory connections with pagination
+  public async getAll(
+    params: PaginationParams = {}
+  ): Promise<Response<Directory[]> & { pageToken?: string }> {
+    const { pageOffset, pageLimit, pageToken } = params;
+
     try {
       const { data: directories, pageToken: nextPageToken } = await this.store().getAll(
         pageOffset,
@@ -232,7 +274,7 @@ export class DirectoryConfig {
   }
 
   // Delete a configuration by id
-  public async delete(id: string): Promise<{ data: null; error: ApiError | null }> {
+  public async delete(id: string): Promise<Response<null>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameter.', 400);
@@ -267,17 +309,52 @@ export class DirectoryConfig {
   }
 
   private transform(directory: Directory): Directory {
-    // Add the flag to ensure SCIM compliance when using Azure AD
-    if (directory.type === 'azure-scim-v2') {
-      directory.scim.path = `${directory.scim.path}/?aadOptscim062020`;
-    }
+    if (directory.scim.path) {
+      // Add the flag to ensure SCIM compliance when using Azure AD
+      if (directory.type === 'azure-scim-v2') {
+        directory.scim.path = `${directory.scim.path}/?aadOptscim062020`;
+      }
 
-    directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+      // Construct the SCIM endpoint
+      directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
+    }
 
     if (!('deactivated' in directory)) {
       directory.deactivated = false;
     }
 
     return directory;
+  }
+
+  // Get the connections by directory provider
+  public async getByProvider(params: {
+    provider: DirectoryType;
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }): Promise<Response<Directory[]> & { pageToken?: string }> {
+    const { provider, pageOffset, pageLimit, pageToken } = params;
+
+    const index = {
+      name: storeNamespacePrefix.dsync.providers,
+      value: provider,
+    };
+
+    try {
+      const { data: directories, pageToken: nextPageToken } = await this.store().getByIndex(
+        index,
+        pageOffset,
+        pageLimit,
+        pageToken
+      );
+
+      return {
+        data: directories.map((directory) => this.transform(directory)),
+        pageToken: nextPageToken,
+        error: null,
+      };
+    } catch (err: any) {
+      return apiError(err);
+    }
   }
 }

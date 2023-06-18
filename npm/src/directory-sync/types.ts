@@ -1,10 +1,12 @@
 import directorySync from '.';
-import { DirectoryConfig } from './DirectoryConfig';
-import { DirectoryGroups } from './DirectoryGroups';
-import { DirectoryUsers } from './DirectoryUsers';
-import { Users } from './Users';
-import { Groups } from './Groups';
-import { WebhookEventsLogger } from './WebhookEventsLogger';
+import { DirectoryConfig } from './scim/DirectoryConfig';
+import { DirectoryGroups } from './scim/DirectoryGroups';
+import { DirectoryUsers } from './scim/DirectoryUsers';
+import { Users } from './scim/Users';
+import { Groups } from './scim/Groups';
+import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
+import { ApiError } from '../typings';
+import { RequestHandler } from './request';
 
 export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
 export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
@@ -13,6 +15,7 @@ export type IDirectoryUsers = InstanceType<typeof DirectoryUsers>;
 export type IUsers = InstanceType<typeof Users>;
 export type IGroups = InstanceType<typeof Groups>;
 export type IWebhookEventsLogger = InstanceType<typeof WebhookEventsLogger>;
+export type IRequestHandler = InstanceType<typeof RequestHandler>;
 
 export type DirectorySyncEventType =
   | 'user.created'
@@ -29,7 +32,8 @@ export enum DirectorySyncProviders {
   'onelogin-scim-v2' = 'OneLogin SCIM v2.0',
   'okta-scim-v2' = 'Okta SCIM v2.0',
   'jumpcloud-scim-v2' = 'JumpCloud v2.0',
-  'generic-scim-v2' = 'SCIM Generic v2.0',
+  'generic-scim-v2' = 'Generic SCIM v2.0',
+  'google' = 'Google',
 }
 
 export type DirectoryType = keyof typeof DirectorySyncProviders;
@@ -51,6 +55,9 @@ export type Directory = {
     secret: string;
   };
   deactivated?: boolean;
+  google_domain?: string;
+  google_access_token?: string;
+  google_refresh_token?: string;
 };
 
 export type DirectorySyncGroupMember = { value: string; email?: string };
@@ -59,10 +66,6 @@ export type DirectorySyncResponse = {
   status: number;
   data?: any;
 };
-
-export interface DirectorySyncRequestHandler {
-  handle(request: DirectorySyncRequest, callback?: EventCallback): Promise<DirectorySyncResponse>;
-}
 
 export interface Events {
   handle(event: DirectorySyncEvent): Promise<void>;
@@ -92,10 +95,6 @@ export interface DirectorySyncEvent {
   product: string;
 }
 
-export interface EventCallback {
-  (event: DirectorySyncEvent): Promise<void>;
-}
-
 export interface WebhookEventLog extends DirectorySyncEvent {
   id: string;
   webhook_endpoint: string;
@@ -119,12 +118,18 @@ export type Group = {
   raw?: any;
 };
 
+export type GroupMember = {
+  id: string;
+  raw?: any;
+};
+
 export type UserWithGroup = User & { group: Group };
 
 export type PaginationParams = {
   pageOffset?: number;
   pageLimit?: number;
   pageToken?: string;
+  hasNextPage?: boolean;
 };
 
 export type UserPatchOperation = {
@@ -164,3 +169,51 @@ export type GroupMembership = {
   group_id: string;
   user_id: string;
 };
+
+export type Response<T> = { data: T; error: null } | { data: null; error: ApiError };
+
+export type EventCallback = (event: DirectorySyncEvent) => Promise<void>;
+
+export interface IDirectoryProvider {
+  /**
+   * Fields to exclude from the user payload while comparing the user to find if it is updated
+   */
+  userFieldsToExcludeWhenCompare?: string[];
+
+  /**
+   * Fields to exclude from the group payload while comparing the group to find if it is updated
+   */
+  groupFieldsToExcludeWhenCompare?: string[];
+
+  /**
+   * Get all directories for the provider
+   */
+  getDirectories(): Promise<Directory[]>;
+
+  /**
+   * Get all users for a directory
+   * @param directory
+   * @param options
+   */
+  getUsers(
+    directory: Directory,
+    options: PaginationParams | null
+  ): Promise<{ data: User[]; metadata: PaginationParams | null }>;
+
+  /**
+   * Get all groups for a directory
+   * @param directory
+   * @param options
+   */
+  getGroups(
+    directory: Directory,
+    options: PaginationParams | null
+  ): Promise<{ data: Group[]; metadata: PaginationParams | null }>;
+
+  /**
+   * Get all members of a group
+   * @param directory
+   * @param group
+   */
+  getGroupMembers(directory: Directory, group: Group): Promise<GroupMember[]>;
+}
