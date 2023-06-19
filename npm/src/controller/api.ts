@@ -804,7 +804,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     await this.deleteConnections({ ...body, strategy: 'saml' });
   }
 
-  // Get connections filtered by tenant
+  // Get connections by product
   public async getConnectionsByProduct(body: {
     product: string;
     pageOffset?: number;
