@@ -6,6 +6,7 @@ import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
 import loadConnection from '../../src/loadConnection';
 import {
+  IAdminController,
   IConnectionAPIController,
   SAMLSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
@@ -21,6 +22,7 @@ import { jacksonOptions } from '../utils';
 import { isConnectionActive } from '../../src/controller/utils';
 
 let connectionAPIController: IConnectionAPIController;
+let adminController: IAdminController;
 
 const CLIENT_ID_SAML = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
@@ -29,6 +31,7 @@ tap.before(async () => {
   const controller = await controllers(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
+  adminController = controller.adminController;
 });
 
 tap.teardown(async () => {
@@ -656,5 +659,18 @@ tap.test('controller/api', async (t) => {
       clientID,
       clientSecret,
     });
+  });
+
+  t.test('Should be able to fetch connections by product', async (t) => {
+    const connectionCreated = await connectionAPIController.createSAMLConnection(
+      saml_connection as SAMLSSOConnectionWithEncodedMetadata
+    );
+
+    const connections = await adminController.getConnectionsByProduct(connectionCreated.product);
+
+    t.ok(connections.data.length === 1);
+    t.ok(connections.data[0].product, connectionCreated.product);
+
+    t.end();
   });
 });
