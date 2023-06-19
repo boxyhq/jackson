@@ -7,7 +7,7 @@ import {
   Records,
   Trace,
 } from '../typings';
-import { transformConnections } from './utils';
+import { IndexNames, transformConnections } from './utils';
 
 export class AdminController implements IAdminController {
   private connectionStore: Storable;
@@ -50,5 +50,24 @@ export class AdminController implements IAdminController {
     const trace = await this.samlTracer.getByTraceId(traceId);
 
     return trace;
+  }
+
+  public async getConnectionsByProduct(
+    product: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string
+  ) {
+    const connections = await this.connectionStore.getByIndex(
+      {
+        name: IndexNames.Product,
+        value: product,
+      },
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
+
+    return { data: transformConnections(connections.data), pageToken };
   }
 }
