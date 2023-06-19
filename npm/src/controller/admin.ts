@@ -7,7 +7,7 @@ import {
   Records,
   Trace,
 } from '../typings';
-import { IndexNames, transformConnections } from './utils';
+import { transformConnections } from './utils';
 
 export class AdminController implements IAdminController {
   private connectionStore: Storable;
