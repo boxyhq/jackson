@@ -803,4 +803,30 @@ export class ConnectionAPIController implements IConnectionAPIController {
   public async deleteConfig(body: DelConnectionsQuery): Promise<void> {
     await this.deleteConnections({ ...body, strategy: 'saml' });
   }
+
+  // Get connections filtered by tenant
+  public async getConnectionsByProduct(body: {
+    product: string;
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }> {
+    const { product, pageOffset, pageLimit, pageToken } = body;
+
+    if (!product) {
+      throw new JacksonError('Please provide `product`.', 400);
+    }
+
+    const connections = await this.connectionStore.getByIndex(
+      {
+        name: IndexNames.Product,
+        value: product,
+      },
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
+
+    return { data: transformConnections(connections.data), pageToken };
+  }
 }

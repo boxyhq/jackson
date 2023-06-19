@@ -51,23 +51,4 @@ export class AdminController implements IAdminController {
 
     return trace;
   }
-
-  public async getConnectionsByProduct(
-    product: string,
-    pageOffset?: number,
-    pageLimit?: number,
-    pageToken?: string
-  ) {
-    const connections = await this.connectionStore.getByIndex(
-      {
-        name: IndexNames.Product,
-        value: product,
-      },
-      pageOffset,
-      pageLimit,
-      pageToken
-    );
-
-    return { data: transformConnections(connections.data), pageToken };
-  }
 }

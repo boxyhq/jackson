@@ -160,6 +160,12 @@ export interface IConnectionAPIController {
    * @deprecated Use `deleteConnections` instead.
    */
   deleteConfig(body: DelConfigQuery): Promise<void>;
+  getConnectionsByProduct(body: {
+    product: string;
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }>;
 }
 
 export interface IOAuthController {
@@ -176,7 +182,6 @@ export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string);
   getAllSAMLTraces(pageOffset: number, pageLimit: number, pageToken?: string);
   getSAMLTraceById(traceId: string);
-  getConnectionsByProduct(product: string, pageOffset?: number, pageLimit?: number, pageToken?: string);
 }
 
 export interface IHealthCheckController {

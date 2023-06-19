@@ -22,7 +22,6 @@ import { jacksonOptions } from '../utils';
 import { isConnectionActive } from '../../src/controller/utils';
 
 let connectionAPIController: IConnectionAPIController;
-let adminController: IAdminController;
 
 const CLIENT_ID_SAML = '75edb050796a0eb1cf2cfb0da7245f85bc50baa7';
 const PROVIDER = 'accounts.google.com';
@@ -31,7 +30,6 @@ tap.before(async () => {
   const controller = await controllers(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
-  adminController = controller.adminController;
 });
 
 tap.teardown(async () => {
@@ -666,7 +664,9 @@ tap.test('controller/api', async (t) => {
       saml_connection as SAMLSSOConnectionWithEncodedMetadata
     );
 
-    const connections = await adminController.getConnectionsByProduct(connectionCreated.product);
+    const connections = await connectionAPIController.getConnectionsByProduct({
+      product: connectionCreated.product,
+    });
 
     t.ok(connections.data.length === 1);
     t.ok(connections.data[0].product, connectionCreated.product);
