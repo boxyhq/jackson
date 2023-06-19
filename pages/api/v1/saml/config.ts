@@ -2,7 +2,7 @@
 
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { GetConfigQuery } from '@boxyhq/saml-jackson';
+import type { DelConnectionsQuery, GetConfigQuery } from '@boxyhq/saml-jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else if (req.method === 'PATCH') {
       res.status(204).end(await connectionAPIController.updateConfig(req.body));
     } else if (req.method === 'DELETE') {
-      res.status(204).end(await connectionAPIController.deleteConfig(req.body));
+      res.status(204).end(await connectionAPIController.deleteConfig(req.query as DelConnectionsQuery));
     } else {
       throw { message: 'Method not allowed', statusCode: 405 };
     }
