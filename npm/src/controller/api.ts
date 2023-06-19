@@ -668,27 +668,27 @@ export class ConnectionAPIController implements IConnectionAPIController {
    * parameters:
    *   clientIDDel:
    *     name: clientID
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Client ID
    *   clientSecretDel:
    *     name: clientSecret
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Client Secret
    *   tenantDel:
    *     name: tenant
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Tenant
    *   productDel:
    *     name: product
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Product
    *   strategyDel:
    *     name: strategy
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Strategy which can help to filter connections with tenant/product query
    * /api/v1/connections:
@@ -702,9 +702,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     summary: Delete SSO Connections
    *     operationId: delete-sso-connection
    *     tags: [Connections]
-   *     consumes:
-   *       - application/x-www-form-urlencoded
-   *       - application/json
    *     responses:
    *       '200':
    *         description: Success
