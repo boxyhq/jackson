@@ -26,6 +26,7 @@ export enum IndexNames {
   Service = 'service',
   OIDCProviderClientID = 'OIDCProviderClientID',
   SSOClientID = 'SSOClientID',
+  Product = 'product',
 }
 
 // The namespace prefix for the database store

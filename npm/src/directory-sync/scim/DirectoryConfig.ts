@@ -12,6 +12,7 @@ import type {
   IWebhookEventsLogger,
   IEventController,
   Response,
+  Index,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
@@ -31,6 +32,11 @@ interface DirectoryConfigParams {
   groups: IGroups;
   logger: IWebhookEventsLogger;
   eventController: IEventController;
+}
+
+interface FilterByParams extends PaginationParams {
+  product?: string;
+  provider?: DirectoryType;
 }
 
 export class DirectoryConfig {
@@ -128,10 +134,14 @@ export class DirectoryConfig {
         };
       }
 
-      const indexes = [
+      const indexes: Index[] = [
         {
-          name: IndexNames.TenantProduct as string,
+          name: IndexNames.TenantProduct,
           value: dbutils.keyFromParts(tenant, product),
+        },
+        {
+          name: IndexNames.Product,
+          value: product,
         },
       ];
 
@@ -326,21 +336,32 @@ export class DirectoryConfig {
     return directory;
   }
 
-  // Get the connections by directory provider
-  public async getByProvider(params: {
-    provider: DirectoryType;
-    pageOffset?: number;
-    pageLimit?: number;
-    pageToken?: string;
-  }): Promise<Response<Directory[]> & { pageToken?: string }> {
-    const { provider, pageOffset, pageLimit, pageToken } = params;
+  // Filter connections by product or provider
+  public async filterBy(
+    params: FilterByParams = {}
+  ): Promise<Response<Directory[]> & { pageToken?: string }> {
+    const { product, provider, pageOffset, pageLimit, pageToken } = params;
+    let index: Index | null = null;
 
-    const index = {
-      name: storeNamespacePrefix.dsync.providers,
-      value: provider,
-    };
+    if (product) {
+      // Filter by product
+      index = {
+        name: IndexNames.Product,
+        value: product,
+      };
+    } else if (provider) {
+      // Filter by provider
+      index = {
+        name: storeNamespacePrefix.dsync.providers,
+        value: provider,
+      };
+    }
 
     try {
+      if (!index) {
+        throw new JacksonError('Please provider a product or provider.', 400);
+      }
+
       const { data: directories, pageToken: nextPageToken } = await this.store().getByIndex(
         index,
         pageOffset,
