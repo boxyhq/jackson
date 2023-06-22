@@ -28,7 +28,13 @@ Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, a
 
 Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
 
-You can also try our hosted demo showcasing the SAML IdP login flow [here](https://mocksaml.com/saml/login).
+## Videos 
+- SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A)
+- SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
+
+## Demo
+- SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
+- SAML [demo flow](https://saml-demo.boxyhq.com/)
 
 ## Documentation
 

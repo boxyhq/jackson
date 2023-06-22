@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.9.11",
+  "version": "1.10.0",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.2",
-    "@boxyhq/react-ui": "2.0.0",
+    "@boxyhq/react-ui": "3.0.0",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.18",
     "@retracedhq/logs-viewer": "2.4.6",
@@ -78,12 +78,12 @@
     "@types/node": "20.3.1",
     "@types/react": "18.2.12",
     "@typescript-eslint/eslint-plugin": "5.59.7",
-    "@typescript-eslint/parser": "5.59.8",
+    "@typescript-eslint/parser": "5.59.11",
     "autoprefixer": "10.4.14",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
     "eslint": "8.41.0",
-    "eslint-config-next": "13.4.4",
+    "eslint-config-next": "13.4.6",
     "eslint-config-prettier": "8.8.0",
     "mkdirp": "3.0.1",
     "postcss": "8.4.24",
