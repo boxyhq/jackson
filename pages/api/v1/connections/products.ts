@@ -1,0 +1,41 @@
+import jackson from '@lib/jackson';
+import { NextApiRequest, NextApiResponse } from 'next';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { method } = req;
+
+  try {
+    switch (method) {
+      case 'GET':
+        return await handleGET(req, res);
+      default:
+        res.setHeader('Allow', 'GET');
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+    }
+  } catch (error: any) {
+    const { message, statusCode = 500 } = error;
+
+    return res.status(statusCode).json({ error: { message } });
+  }
+}
+
+// Get the connections filtered by the product
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { connectionAPIController } = await jackson();
+
+  const { product, pageOffset, pageLimit, pageToken } = req.query as {
+    product: string;
+    pageOffset: string;
+    pageLimit: string;
+    pageToken?: string;
+  };
+
+  const connections = await connectionAPIController.getConnectionsByProduct({
+    product,
+    pageOffset: parseInt(pageOffset),
+    pageLimit: parseInt(pageLimit),
+    pageToken,
+  });
+
+  return res.status(200).json(connections);
+};

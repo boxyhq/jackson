@@ -86,11 +86,20 @@ const oidc = {
 
     record.clientSecret = connectionClientSecret;
 
-    await connectionStore.put(record.clientID, record, {
-      // secondary index on tenant + product
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(tenant, product),
-    });
+    await connectionStore.put(
+      record.clientID,
+      record,
+      {
+        // secondary index on tenant + product
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      },
+      {
+        // secondary index on product
+        name: IndexNames.Product,
+        value: product,
+      }
+    );
 
     return record as OIDCSSORecord;
   },
@@ -187,11 +196,20 @@ const oidc = {
       record['deactivated'] = body.deactivated;
     }
 
-    await connectionStore.put(clientInfo?.clientID, record, {
-      // secondary index on tenant + product
-      name: IndexNames.TenantProduct,
-      value: dbutils.keyFromParts(_savedConnection.tenant, _savedConnection.product),
-    });
+    await connectionStore.put(
+      clientInfo?.clientID,
+      record,
+      {
+        // secondary index on tenant + product
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(_savedConnection.tenant, _savedConnection.product),
+      },
+      {
+        // secondary index on product
+        name: IndexNames.Product,
+        value: _savedConnection.product,
+      }
+    );
 
     return record;
   },

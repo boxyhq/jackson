@@ -208,6 +208,7 @@ tap.test('directories.', async (t) => {
       t.strictSame(directoriesFetched?.length, 0);
     });
   });
+
   t.test('update()', async (t) => {
     let directory: Directory;
 
@@ -353,7 +354,7 @@ tap.test('directories.', async (t) => {
     });
 
     // Fetch all the directories of type google
-    const { data: googleDirectoryFetched } = await directorySync.directories.getByProvider({
+    const { data: googleDirectoryFetched } = await directorySync.directories.filterBy({
       provider: 'google',
     });
 
@@ -405,5 +406,27 @@ tap.test('directories.', async (t) => {
     t.match(directoryFetched?.google_access_token, 'access_token');
     t.match(directoryFetched?.google_refresh_token, 'refresh_token');
     t.match(directoryFetched?.google_domain, 'acme.com');
+  });
+
+  t.test('Fetch all connections for a product', async (t) => {
+    await directorySync.directories.create({
+      ...directoryPayload,
+      tenant: 'first-tenant',
+      product: 'a-new-product',
+    });
+
+    const { data: directories, error } = await directorySync.directories.filterBy({
+      product: 'a-new-product',
+    });
+
+    if (error) {
+      t.fail(error.message);
+      return;
+    }
+
+    t.ok(directories);
+    t.match(directories.length, 1);
+    t.match(directories[0].tenant, 'first-tenant');
+    t.match(directories[0].product, 'a-new-product');
   });
 });

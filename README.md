@@ -1,6 +1,7 @@
 # SAML Jackson: Enterprise SSO made simple
 
 <p>
+    <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge"></a>
     <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="npm" ></a>
     <a href="https://hub.docker.com/r/boxyhq/jackson"><img src="https://img.shields.io/docker/pulls/boxyhq/jackson" alt="Docker pull"></a>
     <a href="https://github.com/boxyhq/jackson/stargazers"><img src="https://img.shields.io/github/stars/boxyhq/jackson" alt="Github stargazers"></a>
@@ -28,7 +29,13 @@ Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, a
 
 Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
 
-You can also try our hosted demo showcasing the SAML IdP login flow [here](https://mocksaml.com/saml/login).
+## Videos 
+- SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A)
+- SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
+
+## Demo
+- SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
+- SAML [demo flow](https://saml-demo.boxyhq.com/)
 
 ## Documentation
 

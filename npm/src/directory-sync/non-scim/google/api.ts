@@ -45,7 +45,7 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   async getDirectories() {
-    const { data: directories } = await this.directories.getByProvider({
+    const { data: directories } = await this.directories.filterBy({
       provider: 'google',
     });
 
