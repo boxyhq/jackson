@@ -163,6 +163,11 @@ const saml = {
         // secondary index on tenant + product
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
+      },
+      {
+        // secondary index on product
+        name: IndexNames.Product,
+        value: product,
       }
     );
 
@@ -281,6 +286,11 @@ const saml = {
         // secondary index on tenant + product
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(_savedConnection.tenant, _savedConnection.product),
+      },
+      {
+        // secondary index on product
+        name: IndexNames.Product,
+        value: _savedConnection.product,
       }
     );
 
