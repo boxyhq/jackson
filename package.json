@@ -72,7 +72,7 @@
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
-    "@playwright/test": "1.34.3",
+    "@playwright/test": "1.35.1",
     "@types/cors": "2.8.13",
     "@types/micromatch": "4.0.2",
     "@types/node": "20.3.1",
