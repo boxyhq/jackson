@@ -40,11 +40,11 @@
     "statements": 70
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.347.1",
+    "@aws-sdk/client-dynamodb": "3.359.0",
     "@aws-sdk/credential-providers": "3.359.0",
     "@aws-sdk/util-dynamodb": "3.351.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
-    "@boxyhq/metrics": "0.2.2",
+    "@boxyhq/metrics": "0.2.4",
     "@boxyhq/saml20": "1.2.1",
     "axios": "1.4.0",
     "googleapis": "118.0.0",
@@ -73,7 +73,7 @@
     "cross-env": "7.0.3",
     "nock": "13.3.1",
     "sinon": "15.1.2",
-    "tap": "16.3.6",
+    "tap": "16.3.7",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.1.3"
