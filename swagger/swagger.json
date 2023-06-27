@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.9.7",
+    "version": "1.9.11",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -443,10 +443,6 @@
         "operationId": "delete-sso-connection",
         "tags": [
           "Connections"
-        ],
-        "consumes": [
-          "application/x-www-form-urlencoded",
-          "application/json"
         ],
         "responses": {
           "200": {
@@ -894,31 +890,31 @@
     },
     "clientIDDel": {
       "name": "clientID",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Client ID"
     },
     "clientSecretDel": {
       "name": "clientSecret",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Client Secret"
     },
     "tenantDel": {
       "name": "tenant",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Tenant"
     },
     "productDel": {
       "name": "product",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Product"
     },
     "strategyDel": {
       "name": "strategy",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Strategy which can help to filter connections with tenant/product query"
     }

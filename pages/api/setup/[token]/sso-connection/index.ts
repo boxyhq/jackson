@@ -68,7 +68,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink
   const { connectionAPIController } = await jackson();
 
   const body = {
-    ...req.body,
+    ...req.query,
     tenant: setupLink.tenant,
     product: setupLink.product,
   };

@@ -77,7 +77,7 @@ export const deleteConnection = async (
   { tenant, product }: { tenant: string; product: string }
 ) => {
   const response = await request.delete('/api/v1/connections', {
-    data: {
+    params: {
       tenant,
       product,
     },
