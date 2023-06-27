@@ -10,7 +10,7 @@ async function globalSetup(config: FullConfig) {
   // Generate a link with email, unhashed token and callback url
   const params = new URLSearchParams({ callbackURL: baseURL || '', token: TOKEN, email: IDENTIFIER });
   const providerId = 'email';
-  const MAGIC_LINK = `${baseURL}/api/auth/callback/${providerId}?${params}`;
+  const MAGIC_LINK = `${baseURL}/api/auth/callback/${providerId}?${params.toString()}`;
   const browser = await chromium.launch();
   const page = await browser.newPage();
   await page.goto(MAGIC_LINK);
