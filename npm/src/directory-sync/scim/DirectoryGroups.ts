@@ -10,9 +10,15 @@ import type {
   IUsers,
   IGroups,
   GroupPatchOperation,
-} from '../typings';
+} from '../../typings';
 import { parseGroupOperation } from './utils';
 import { sendEvent } from './events';
+
+interface DirectoryGroupsParams {
+  directories: IDirectoryConfig;
+  users: IUsers;
+  groups: IGroups;
+}
 
 export class DirectoryGroups {
   private directories: IDirectoryConfig;
@@ -20,27 +26,20 @@ export class DirectoryGroups {
   private groups: IGroups;
   private callback: EventCallback | undefined;
 
-  constructor({
-    directories,
-    users,
-    groups,
-  }: {
-    directories: IDirectoryConfig;
-    users: IUsers;
-    groups: IGroups;
-  }) {
+  constructor({ directories, users, groups }: DirectoryGroupsParams) {
     this.directories = directories;
     this.users = users;
     this.groups = groups;
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
-    const { displayName } = body as { displayName: string };
+    const { displayName, groupId } = body as { displayName: string; groupId?: string };
 
     const { data: group } = await this.groups.create({
       directoryId: directory.id,
       name: displayName,
-      raw: { ...body, members: [] },
+      id: groupId,
+      raw: 'rawAttributes' in body ? body.rawAttributes : { ...body, members: [] },
     });
 
     await sendEvent('group.created', { directory, group }, this.callback);
@@ -81,7 +80,7 @@ export class DirectoryGroups {
       groups = data;
     } else {
       // Fetch all the existing group
-      const { data } = await this.groups.getAll({ pageOffset: undefined, pageLimit: undefined });
+      const { data } = await this.groups.getAll({ directoryId, pageOffset: undefined, pageLimit: undefined });
 
       groups = data;
     }
@@ -136,12 +135,7 @@ export class DirectoryGroups {
   }
 
   public async update(directory: Directory, group: Group, body: any): Promise<DirectorySyncResponse> {
-    const { displayName } = body;
-
-    // Update group name
-    const updatedGroup = await this.updateDisplayName(directory, group, {
-      displayName,
-    });
+    const updatedGroup = await this.updateDisplayName(directory, group, body);
 
     return {
       status: 200,
@@ -167,14 +161,9 @@ export class DirectoryGroups {
 
   // Update group displayName
   public async updateDisplayName(directory: Directory, group: Group, body: any): Promise<Group> {
-    const { displayName } = body;
-
     const { data: updatedGroup, error } = await this.groups.update(group.id, {
-      name: displayName,
-      raw: {
-        ...group.raw,
-        ...body,
-      },
+      name: body.displayName,
+      raw: 'rawAttributes' in body ? body.rawAttributes : { ...group.raw, ...body },
     });
 
     if (error || !updatedGroup) {

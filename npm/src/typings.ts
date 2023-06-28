@@ -160,6 +160,12 @@ export interface IConnectionAPIController {
    * @deprecated Use `deleteConnections` instead.
    */
   deleteConfig(body: DelConfigQuery): Promise<void>;
+  getConnectionsByProduct(body: {
+    product: string;
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }>;
 }
 
 export interface IOAuthController {
@@ -410,6 +416,15 @@ export interface JacksonOption {
     adminToken?: string;
   };
   webhook?: Webhook;
+  dsync?: {
+    providers: {
+      google: {
+        clientId: string;
+        clientSecret: string;
+        callbackUrl: string;
+      };
+    };
+  };
 }
 
 export interface SLORequestParams {

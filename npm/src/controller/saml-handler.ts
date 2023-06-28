@@ -110,7 +110,7 @@ export class SAMLHandler {
           ...originalParams,
         });
 
-        return { redirectUrl: `${url.toString()}?${params.toString()}` };
+        return { redirectUrl: `${url}?${params}` };
       }
 
       // IdP initiated flow
@@ -119,7 +119,7 @@ export class SAMLHandler {
           entityId,
         });
 
-        const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params.toString()}`, [
+        const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
           {
             name: 'SAMLResponse',
             value: originalParams.SAMLResponse,

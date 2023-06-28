@@ -1,7 +1,7 @@
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { GetConnectionsQuery } from '@boxyhq/saml-jackson';
+import type { DelConnectionsQuery, GetConnectionsQuery } from '@boxyhq/saml-jackson';
 import { sendAudit } from '@ee/audit-log/lib/retraced';
 import { extractAuthToken, redactApiKey } from '@lib/auth';
 
@@ -94,7 +94,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  await connectionAPIController.deleteConnections(req.body);
+  await connectionAPIController.deleteConnections(req.query as DelConnectionsQuery);
 
   sendAudit({
     action: 'sso.connection.delete',

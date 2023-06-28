@@ -8,30 +8,36 @@ import type {
   IDirectoryConfig,
   IUsers,
   UserPatchOperation,
-} from '../typings';
+} from '../../typings';
 import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
 import { sendEvent } from './events';
+
+interface DirectoryUsersParams {
+  directories: IDirectoryConfig;
+  users: IUsers;
+}
 
 export class DirectoryUsers {
   private directories: IDirectoryConfig;
   private users: IUsers;
   private callback: EventCallback | undefined;
 
-  constructor({ directories, users }: { directories: IDirectoryConfig; users: IUsers }) {
+  constructor({ directories, users }: DirectoryUsersParams) {
     this.directories = directories;
     this.users = users;
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
-    const { first_name, last_name, email, active } = extractStandardUserAttributes(body);
+    const { id, first_name, last_name, email, active } = extractStandardUserAttributes(body);
 
     const { data: user } = await this.users.create({
       directoryId: directory.id,
+      id,
       first_name,
       last_name,
       email,
       active,
-      raw: body,
+      raw: 'rawAttributes' in body ? body.rawAttributes : body,
     });
 
     await sendEvent('user.created', { directory, user }, this.callback);
@@ -57,7 +63,7 @@ export class DirectoryUsers {
       last_name: name.familyName,
       email: emails[0].value,
       active,
-      raw: body,
+      raw: 'rawAttributes' in body ? body.rawAttributes : body,
     });
 
     await sendEvent('user.updated', { directory, user: updatedUser }, this.callback);

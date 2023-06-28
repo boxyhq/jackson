@@ -20,7 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { name, tenant, product, type, webhook_url, webhook_secret } = req.body;
+  const { name, tenant, product, type, webhook_url, webhook_secret, google_domain } = req.body;
 
   const { data, error } = await directorySyncController.directories.create({
     name,
@@ -29,6 +29,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     type: type as DirectoryType,
     webhook_url,
     webhook_secret,
+    google_domain,
   });
 
   if (data) {

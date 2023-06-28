@@ -124,7 +124,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  const { clientID, clientSecret } = req.body as {
+  const { clientID, clientSecret } = req.query as {
     clientID: string;
     clientSecret: string;
   };

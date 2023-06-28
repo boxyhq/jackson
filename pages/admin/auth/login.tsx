@@ -41,7 +41,7 @@ const Login = ({
     return;
   }
 
-  const onSSOSubmit = async (ssoIdentifier: string) => {
+  const onSSOSubmit = async ({ ssoIdentifier }) => {
     await signIn('boxyhq-saml', undefined, { client_id: ssoIdentifier });
   };
 

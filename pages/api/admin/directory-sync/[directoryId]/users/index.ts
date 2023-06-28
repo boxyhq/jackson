@@ -30,7 +30,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const pageLimit = parseInt(limit);
 
   const { data: users, error } = await directorySyncController.users
-    .with(directory.tenant, directory.product)
+    .setTenantAndProduct(directory.tenant, directory.product)
     .getAll({ pageOffset, pageLimit, directoryId });
 
   if (error) {

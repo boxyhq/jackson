@@ -2,7 +2,7 @@
 
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { GetConfigQuery } from '@boxyhq/saml-jackson';
+import type { DelConnectionsQuery, GetConfigQuery } from '@boxyhq/saml-jackson';
 import { sendAudit } from '@ee/audit-log/lib/retraced';
 import { extractAuthToken, redactApiKey } from '@lib/auth';
 
@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       return res.status(204).end(connection);
     } else if (req.method === 'DELETE') {
-      const connection = await connectionAPIController.deleteConfig(req.body);
+      const connection = await connectionAPIController.deleteConfig(req.query as DelConnectionsQuery);
 
       sendAudit({
         action: 'sso.connection.delete',

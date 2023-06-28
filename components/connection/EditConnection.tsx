@@ -103,14 +103,16 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
   const [delModalVisible, setDelModalVisible] = useState(false);
   const toggleDelConfirm = () => setDelModalVisible(!delModalVisible);
   const deleteConnection = async () => {
+    const queryParams = new URLSearchParams({
+      clientID: connection.clientID,
+      clientSecret: connection.clientSecret,
+    });
     const res = await fetch(
-      setupLinkToken ? `/api/setup/${setupLinkToken}/sso-connection` : '/api/admin/connections',
+      setupLinkToken
+        ? `/api/setup/${setupLinkToken}/sso-connection?${queryParams}`
+        : `/api/admin/connections?${queryParams}`,
       {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ clientID: connection?.clientID, clientSecret: connection?.clientSecret }),
       }
     );
 

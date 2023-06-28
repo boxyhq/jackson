@@ -6,6 +6,7 @@ import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
 import loadConnection from '../../src/loadConnection';
 import {
+  IAdminController,
   IConnectionAPIController,
   SAMLSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
@@ -656,5 +657,20 @@ tap.test('controller/api', async (t) => {
       clientID,
       clientSecret,
     });
+  });
+
+  t.test('Should be able to fetch connections by product', async (t) => {
+    const connectionCreated = await connectionAPIController.createSAMLConnection(
+      saml_connection as SAMLSSOConnectionWithEncodedMetadata
+    );
+
+    const connections = await connectionAPIController.getConnectionsByProduct({
+      product: connectionCreated.product,
+    });
+
+    t.ok(connections.data.length === 1);
+    t.ok(connections.data[0].product, connectionCreated.product);
+
+    t.end();
   });
 });
