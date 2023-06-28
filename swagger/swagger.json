@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.9.11",
+    "version": "1.10.1",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -457,6 +457,31 @@
         }
       }
     },
+    "/api/v1/connections/product": {
+      "get": {
+        "summary": "Get SSO Connections by product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/productParamGet"
+          }
+        ],
+        "operationId": "get-connections-by-product",
+        "tags": [
+          "Connections"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200Get"
+          },
+          "400": {
+            "$ref": "#/responses/400Get"
+          },
+          "401": {
+            "$ref": "#/responses/401Get"
+          }
+        }
+      }
+    },
     "/oauth/token": {
       "post": {
         "summary": "Code exchange",
@@ -681,7 +706,7 @@
       }
     },
     "400Get": {
-      "description": "Please provide `clientID` or `tenant` and `product`."
+      "description": "Please provide a `product`."
     },
     "401Get": {
       "description": "Unauthorized"
@@ -874,7 +899,8 @@
       "in": "query",
       "name": "product",
       "type": "string",
-      "description": "Product"
+      "description": "Product",
+      "required": true
     },
     "clientIDParamGet": {
       "in": "query",
