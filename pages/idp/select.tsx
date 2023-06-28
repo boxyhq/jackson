@@ -176,9 +176,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     const params = new URLSearchParams(paramsToRelay).toString();
 
     const destination =
-      authFlow === 'saml'
-        ? `/api/federated-saml/sso?${params.toString()}`
-        : `/api/oauth/authorize?${params.toString()}`;
+      authFlow === 'saml' ? `/api/federated-saml/sso?${params}` : `/api/oauth/authorize?${params}`;
 
     return {
       redirect: {

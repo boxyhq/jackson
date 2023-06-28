@@ -109,7 +109,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
     });
     const res = await fetch(
       setupLinkToken
-        ? `/api/setup/${setupLinkToken}/sso-connection?${queryParams.toString()}`
+        ? `/api/setup/${setupLinkToken}/sso-connection?${queryParams}`
         : `/api/admin/connections?${queryParams}`,
       {
         method: 'DELETE',
