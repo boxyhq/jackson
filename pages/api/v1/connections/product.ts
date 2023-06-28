@@ -37,5 +37,5 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     pageToken,
   });
 
-  return res.status(200).json(connections);
+  return res.status(200).json(connections.data);
 };
