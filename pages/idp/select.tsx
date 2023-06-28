@@ -180,7 +180,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
 
     return {
       redirect: {
-        destination: destination,
+        destination,
         permanent: false,
       },
     };
