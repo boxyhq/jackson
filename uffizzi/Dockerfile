@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:18.14.0-alpine3.17
+ARG NODEJS_IMAGE=node:18.16.1-alpine3.18
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
@@ -35,7 +35,7 @@ RUN npm run build
 FROM $NODEJS_IMAGE AS runner
 WORKDIR /app
 
-ENV NODE_OPTIONS="--max-http-header-size=81920"
+ENV NODE_OPTIONS="--max-http-header-size=81920 --dns-result-order=ipv4first"
 
 
 ENV NODE_ENV production
@@ -61,8 +61,6 @@ EXPOSE 5225
 ENV PORT 5225
 
 CMD ["node", "server.js"]
-
-
 FROM runner AS uffizzi
 USER root
 COPY --from=builder /app/uffizzi/saml_config ./uffizzi/saml_config

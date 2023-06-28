@@ -9,6 +9,9 @@ export type SAMLFederationApp = {
   product: string;
   acsUrl: string;
   entityId: string;
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  primaryColor: string | null;
 };
 
 export type SAMLFederationAppWithMetadata = SAMLFederationApp & {

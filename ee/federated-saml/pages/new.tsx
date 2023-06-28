@@ -106,7 +106,7 @@ const NewApp: NextPage = () => {
                 placeholder='saml-jackson'
               />
             </div>
-            <div className='form-control'>
+            <div className='form-control w-full md:w-1/2'>
               <label className='label'>
                 <span className='label-text'>{t('acs_url')}</span>
               </label>
@@ -119,7 +119,7 @@ const NewApp: NextPage = () => {
                 placeholder='https://your-idp.com/saml/acs'
               />
             </div>
-            <div className='form-control'>
+            <div className='form-control w-full md:w-1/2'>
               <label className='label'>
                 <span className='label-text'>{t('entity_id')}</span>
               </label>

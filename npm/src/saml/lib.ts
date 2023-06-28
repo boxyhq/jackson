@@ -32,8 +32,8 @@ export const extractSAMLResponseAttributes = async (
 };
 
 export const extractSAMLRequestAttributes = async (samlRequest: string) => {
-  const decodeRequest = await decodeBase64(samlRequest, true);
-  const result = await parseXML(decodeRequest);
+  const decodedRequest = await decodeBase64(samlRequest, true);
+  const result = await parseXML(decodedRequest);
 
   const publicKey: string = result['samlp:AuthnRequest']['Signature']
     ? result['samlp:AuthnRequest']['Signature'][0]['KeyInfo'][0]['X509Data'][0]['X509Certificate'][0]
@@ -60,6 +60,7 @@ export const extractSAMLRequestAttributes = async (samlRequest: string) => {
     entityId,
     publicKey,
     providerName,
+    decodedRequest,
   };
 };
 

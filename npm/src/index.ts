@@ -2,7 +2,6 @@ import type { IDirectorySyncController, JacksonOption } from './typings';
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
-import { init as metricsInit } from './opentelemetry/metrics';
 import { AdminController } from './controller/admin';
 import { ConnectionAPIController } from './controller/api';
 import { OAuthController } from './controller/oauth';
@@ -16,6 +15,9 @@ import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
+import { BrandingController } from './ee/branding';
+import SAMLTracer from './saml-tracer';
+import EventController from './event';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -65,11 +67,10 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: ISAMLFederationController;
+  brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
-
-  metricsInit();
 
   const db = await DB.new(opts.db);
 
@@ -80,9 +81,13 @@ export const controllers = async (
   const healthCheckStore = db.store('_health:check');
   const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
+  const settingsStore = db.store('portal:settings');
 
-  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts });
-  const adminController = new AdminController({ connectionStore });
+  const samlTracer = new SAMLTracer({ db });
+  const eventController = new EventController({ opts });
+
+  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts, eventController });
+  const adminController = new AdminController({ connectionStore, samlTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore });
@@ -104,6 +109,7 @@ export const controllers = async (
     sessionStore,
     codeStore,
     tokenStore,
+    samlTracer,
     opts,
   });
 
@@ -115,8 +121,11 @@ export const controllers = async (
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSAMLConfig(opts);
-  const directorySyncController = await initDirectorySync({ db, opts });
-  const samlFederatedController = await initFederatedSAML({ db, opts });
+  const directorySyncController = await initDirectorySync({ db, opts, eventController });
+
+  // Enterprise Features
+  const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
+  const brandingController = new BrandingController({ store: settingsStore, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -124,7 +133,7 @@ export const controllers = async (
     const connections = await loadConnection(preLoadedConnection);
 
     for (const connection of connections) {
-      if ('oidcDiscoveryUrl' in connection) {
+      if ('oidcDiscoveryUrl' in connection || 'oidcMetadata' in connection) {
         await connectionAPIController.createOIDCConnection(connection);
       } else {
         await connectionAPIController.createSAMLConnection(connection);
@@ -150,6 +159,7 @@ export const controllers = async (
     directorySyncController,
     oidcDiscoveryController,
     samlFederatedController,
+    brandingController,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
     },
@@ -162,3 +172,4 @@ export * from './typings';
 export * from './ee/federated-saml/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
 export type ISetupLinkController = InstanceType<typeof SetupLinkController>;
+export type IBrandingController = InstanceType<typeof BrandingController>;

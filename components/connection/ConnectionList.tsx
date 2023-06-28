@@ -2,6 +2,7 @@ import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import EmptyState from '@components/EmptyState';
+import { useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
@@ -15,7 +16,7 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
 import type { ApiError, ApiSuccess } from 'types';
-import { Badge } from 'react-daisyui';
+import Badge from '@components/Badge';
 
 const ConnectionList = ({
   setupLinkToken,
@@ -27,15 +28,20 @@ const ConnectionList = ({
   isSettingsView?: boolean;
 }) => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
   const router = useRouter();
 
   const displayTenantProduct = setupLinkToken ? false : true;
-  const getConnectionsUrl = setupLinkToken
+  let getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
     ? `/api/admin/connections?isSystemSSO`
     : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
+
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    getConnectionsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  }
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`
     : isSettingsView
@@ -46,6 +52,14 @@ const ConnectionList = ({
     ApiSuccess<((SAMLSSORecord | OIDCSSORecord) & { isSystemSSO?: boolean })[]>,
     ApiError
   >(getConnectionsUrl, fetcher, { revalidateOnFocus: false });
+
+  const nextPageToken = data?.pageToken;
+  // store the nextPageToken against the pageOffset
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
     return <Loading />;
@@ -134,6 +148,9 @@ const ConnectionList = ({
                     {t('idp_type')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
+                    {t('status')}
+                  </th>
+                  <th scope='col' className='px-6 py-3'>
                     {t('actions')}
                   </th>
                 </tr>
@@ -151,12 +168,11 @@ const ConnectionList = ({
                         {connectionDisplayName(connection)}
                         {isSystemSSO && (
                           <Badge
-                            color='primary'
-                            variant='outline'
-                            size='sm'
-                            className='ml-1 uppercase'
-                            aria-label='is an sso connection for the admin portal'>
-                            System
+                            color='info'
+                            className='ml-2 uppercase'
+                            aria-label='is an sso connection for the admin portal'
+                            size='xs'>
+                            {t('system')}
                           </Badge>
                         )}
                       </td>
@@ -172,6 +188,17 @@ const ConnectionList = ({
                       )}
                       <td className='px-6 py-3'>
                         {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
+                      </td>
+                      <td className='px-6'>
+                        {connection.deactivated ? (
+                          <Badge color='warning' size='md'>
+                            {t('inactive')}
+                          </Badge>
+                        ) : (
+                          <Badge color='success' size='md'>
+                            {t('active')}
+                          </Badge>
+                        )}
                       </td>
                       <td className='px-6 py-3'>
                         <span className='inline-flex items-baseline'>

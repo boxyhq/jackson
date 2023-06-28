@@ -1,26 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { strings } from '@lib/strings';
+
 import jackson from '@lib/jackson';
+import { setErrorCookie } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { checkLicense } = await jackson();
+  try {
+    const { method } = req;
 
-  if (!(await checkLicense())) {
-    return res.status(404).json({
-      error: {
-        message: strings['enterise_license_not_found'],
-      },
-    });
-  }
-
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+    switch (method) {
+      case 'GET':
+        return await handleGET(req, res);
+      default:
+        res.setHeader('Allow', 'GET');
+        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+    }
+  } catch (err: any) {
+    console.error('authorize error:', err);
+    const { message, statusCode = 500 } = err;
+    // set error in cookie redirect to error page
+    setErrorCookie(res, { message, statusCode }, { path: '/error' });
+    res.redirect('/error');
   }
 }
 

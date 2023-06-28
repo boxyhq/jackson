@@ -6,6 +6,7 @@ import * as dbutils from '../../src/db/utils';
 import controllers from '../../src/index';
 import loadConnection from '../../src/loadConnection';
 import {
+  IAdminController,
   IConnectionAPIController,
   SAMLSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
@@ -18,6 +19,7 @@ import {
   saml_connection_invalid_sso_descriptor,
 } from './fixture';
 import { jacksonOptions } from '../utils';
+import { isConnectionActive } from '../../src/controller/utils';
 
 let connectionAPIController: IConnectionAPIController;
 
@@ -606,5 +608,69 @@ tap.test('controller/api', async (t) => {
         t.match(err.message, 'clientSecret mismatch');
       }
     });
+  });
+
+  t.test('Activate and deactivate the connection', async (t) => {
+    const connectionCreated = await connectionAPIController.createSAMLConnection(
+      saml_connection as SAMLSSOConnectionWithEncodedMetadata
+    );
+
+    const { clientID, clientSecret, tenant, product } = connectionCreated;
+
+    t.notOk('deactivated' in connectionCreated);
+
+    // Deactivate the connection
+    await connectionAPIController.updateSAMLConnection({
+      clientID,
+      clientSecret,
+      tenant,
+      product,
+      deactivated: true,
+    });
+
+    // Get the connection
+    const [connection] = await connectionAPIController.getConnections({
+      clientID,
+    });
+
+    t.match(connection.deactivated, true);
+    t.match(isConnectionActive(connection), false);
+
+    // Activate the connection
+    await connectionAPIController.updateSAMLConnection({
+      clientID,
+      clientSecret,
+      tenant,
+      product,
+      deactivated: false,
+    });
+
+    // Get the connection again
+    const [connectionActivated] = await connectionAPIController.getConnections({
+      clientID,
+    });
+
+    t.match(connectionActivated.deactivated, false);
+    t.match(isConnectionActive(connectionActivated), true);
+
+    await connectionAPIController.deleteConnections({
+      clientID,
+      clientSecret,
+    });
+  });
+
+  t.test('Should be able to fetch connections by product', async (t) => {
+    const connectionCreated = await connectionAPIController.createSAMLConnection(
+      saml_connection as SAMLSSOConnectionWithEncodedMetadata
+    );
+
+    const connections = await connectionAPIController.getConnectionsByProduct({
+      product: connectionCreated.product,
+    });
+
+    t.ok(connections.data.length === 1);
+    t.ok(connections.data[0].product, connectionCreated.product);
+
+    t.end();
   });
 });

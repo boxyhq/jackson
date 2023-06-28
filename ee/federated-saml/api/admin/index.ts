@@ -1,27 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { strings } from '@lib/strings';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { checkLicense } = await jackson();
-
-  if (!(await checkLicense())) {
-    return res.status(404).json({
-      error: {
-        message: strings['enterise_license_not_found'],
-      },
-    });
-  }
-
   const { method } = req;
 
   try {
     switch (method) {
       case 'POST':
-        return handlePOST(req, res);
+        return await handlePOST(req, res);
       case 'GET':
-        return handleGET(req, res);
+        return await handleGET(req, res);
       default:
         res.setHeader('Allow', 'POST, GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -54,14 +43,18 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { offset, limit } = req.query as { offset: string; limit: string };
+  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
 
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const apps = await samlFederatedController.app.getAll({ pageOffset, pageLimit });
+  const apps = await samlFederatedController.app.getAll({ pageOffset, pageLimit, pageToken });
 
-  return res.json({ data: apps });
+  if (apps.pageToken) {
+    res.setHeader('jackson-pagetoken', apps.pageToken);
+  }
+
+  return res.json({ data: apps.data });
 };
 
 export default handler;

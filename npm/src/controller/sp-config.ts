@@ -1,5 +1,4 @@
 import type { JacksonOption } from '../typings';
-import { marked } from 'marked';
 
 import saml20 from '@boxyhq/saml20';
 import xmlbuilder from 'xmlbuilder';
@@ -58,10 +57,6 @@ export class SPSAMLConfig {
       .replace('{{responseSigned}}', this.responseSigned)
       .replace('{{assertionSignature}}', this.assertionSignature)
       .replace('{{signatureAlgorithm}}', this.signatureAlgorithm);
-  }
-
-  public toHTML(): string {
-    return marked.parse(this.toMarkdown());
   }
 
   public async toXMLMetadata(encryption = false): Promise<string> {

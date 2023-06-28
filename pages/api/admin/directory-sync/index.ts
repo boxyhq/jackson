@@ -19,7 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { name, tenant, product, type, webhook_url, webhook_secret } = req.body;
+  const { name, tenant, product, type, webhook_url, webhook_secret, google_domain } = req.body;
 
   const { data, error } = await directorySyncController.directories.create({
     name,
@@ -28,6 +28,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     type: type as DirectoryType,
     webhook_url,
     webhook_secret,
+    google_domain,
   });
 
   if (data) {
@@ -42,12 +43,24 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { offset, limit } = req.query as { offset: string; limit: string };
+  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
 
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const { data, error } = await directorySyncController.directories.getAll({ pageOffset, pageLimit });
+  const {
+    data,
+    error,
+    pageToken: nextPageToken,
+  } = await directorySyncController.directories.getAll({
+    pageOffset,
+    pageLimit,
+    pageToken,
+  });
+
+  if (nextPageToken) {
+    res.setHeader('jackson-pagetoken', nextPageToken);
+  }
 
   if (data) {
     return res.status(200).json({ data });

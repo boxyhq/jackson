@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSidePropsContext } from 'next';
+import type { NextPage } from 'next';
 import CreateConnection from '@components/connection/CreateConnection';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -14,18 +14,11 @@ const ConnectionCreatePage: NextPage = () => {
   return <CreateConnection setupLinkToken={token} idpEntityID={idpEntityID} />;
 };
 
-export async function getStaticProps({ locale }: GetServerSidePropsContext) {
+export async function getServerSideProps({ locale }) {
   return {
     props: {
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+      ...(await serverSideTranslations(locale, ['common'])),
     },
-  };
-}
-
-export async function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: 'blocking',
   };
 }
 

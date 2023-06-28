@@ -1,7 +1,7 @@
 import jackson from '@lib/jackson';
-import { strategyChecker } from '@lib/utils';
+import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { GetConnectionsQuery } from '@boxyhq/saml-jackson';
+import type { DelConnectionsQuery, GetConnectionsQuery } from '@boxyhq/saml-jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -55,7 +55,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Create OIDC connection
   if (isOIDC) {
-    const connection = await connectionAPIController.createOIDCConnection(req.body);
+    const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
     return res.json(connection);
   }
@@ -80,7 +80,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Update OIDC connection
   if (isOIDC) {
-    const connection = await connectionAPIController.updateOIDCConnection(req.body);
+    const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
     return res.status(204).json(connection);
   }
@@ -90,7 +90,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  await connectionAPIController.deleteConnections(req.body);
+  await connectionAPIController.deleteConnections(req.query as DelConnectionsQuery);
 
   return res.status(204).end();
 };

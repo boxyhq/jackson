@@ -1,5 +1,5 @@
 import * as redis from 'redis';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index } from '../typings';
+import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records } from '../typings';
 import * as dbutils from './utils';
 
 class Redis implements DatabaseDriver {
@@ -36,7 +36,7 @@ class Redis implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
@@ -66,10 +66,16 @@ class Redis implements DatabaseDriver {
         }
       }
     }
-    return returnValue || [];
+    return { data: returnValue || [] };
   }
 
-  async getByIndex(namespace: string, idx: Index, pageOffset?: number, pageLimit?: number): Promise<any> {
+  async getByIndex(
+    namespace: string,
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string
+  ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
@@ -103,7 +109,7 @@ class Redis implements DatabaseDriver {
           }
         }
       }
-      return returnValue || [];
+      return { data: returnValue || [] };
     } else {
       const ret: string[] = [];
       for (const dbKey of dbKeys || []) {
@@ -111,7 +117,7 @@ class Redis implements DatabaseDriver {
           ret.push(await this.get(namespace, dbKey));
         }
       }
-      return ret;
+      return { data: ret };
     }
   }
 
@@ -162,6 +168,34 @@ class Redis implements DatabaseDriver {
     tx.del(idxKey);
 
     return await tx.exec();
+  }
+
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    if (keys.length === 0) {
+      return;
+    }
+
+    let tx = this.client.multi();
+
+    for (const key of keys) {
+      const k = dbutils.key(namespace, key);
+
+      tx = tx.del(k);
+
+      const idxKey = dbutils.keyFromParts(dbutils.indexPrefix, k);
+      const dbKeys = await this.client.sMembers(idxKey);
+
+      for (const dbKey of dbKeys || []) {
+        tx.sRem(dbutils.keyFromParts(dbutils.indexPrefix, dbKey), key);
+      }
+
+      tx.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), key);
+      tx.ZREM(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), key);
+
+      tx.del(idxKey);
+    }
+
+    await tx.exec();
   }
 }
 

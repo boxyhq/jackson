@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next';
 import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
+import Vault from '@components/logo/Vault';
 import { Cog8ToothIcon } from '@heroicons/react/24/outline';
 
 type SidebarProps = {
@@ -57,6 +58,11 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           text: t('saml_federation'),
           active: asPath.includes('/admin/federated-saml'),
         },
+        {
+          href: '/admin/saml-tracer',
+          text: t('saml_tracer'),
+          active: asPath.includes('/admin/saml-tracer'),
+        },
       ],
     },
     {
@@ -80,7 +86,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     },
     {
       href: '/admin/retraced',
-      text: 'Audit Logs',
+      text: t('audit_logs'),
       icon: AuditLogsLogo,
       current: asPath.includes('retraced'),
       active: asPath.includes('/admin/retraced'),
@@ -93,10 +99,36 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       ],
     },
     {
+      href: '/admin/terminus',
+      text: t('privacy_vault'),
+      icon: Vault,
+      current: asPath.includes('terminus'),
+      active: asPath.includes('/admin/terminus'),
+      items: [
+        {
+          href: '/admin/terminus',
+          text: t('Policies'),
+          active: asPath.includes('/admin/terminus'),
+        },
+      ],
+    },
+    {
       href: '/admin/settings',
       text: t('settings'),
       icon: Cog8ToothIcon,
       active: asPath.includes('/admin/settings'),
+      items: [
+        {
+          href: '/admin/settings/sso-connection',
+          text: 'Single Sign-On',
+          active: asPath.includes('/admin/settings/sso-connection'),
+        },
+        {
+          href: '/admin/settings/branding',
+          text: 'Branding',
+          active: asPath.includes('/admin/settings/branding'),
+        },
+      ],
     },
   ];
 

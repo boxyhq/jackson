@@ -29,6 +29,8 @@ jobs:
     outputs:
       NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
       PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
+      IMAGE_SUFFIX: ${{ steps.version.outputs.IMAGE_SUFFIX }}
+      IMAGE_PATH: ${{ steps.version.outputs.IMAGE_PATH }}
     env:
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       NEXTAUTH_URL: http://localhost:5225
@@ -43,8 +45,11 @@ jobs:
       OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
+      DYNAMODB_URL: 'http://localhost:8000'
       BOXYHQ_NO_ANALYTICS: '1'
       IDP_ENABLED: true
+      AWS_ACCESS_KEY_ID: secret
+      AWS_SECRET_ACCESS_KEY: secret
     strategy:
       matrix:
         node-version: [18]
@@ -94,6 +99,10 @@ jobs:
         env:
           ACCEPT_EULA: 'Y'
           SA_PASSWORD: '123ABabc!'
+      dynamodb-local:
+        image: 'amazon/dynamodb-local:latest'
+        ports:
+          - '8000:8000'
       mocksaml:
         image: boxyhq/mock-saml:1.0.9
         ports:
@@ -156,6 +165,8 @@ jobs:
           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
 
           publishTag="latest"
+          imageSuffix=""
+          imagePath="${{ github.repository }}"
 
           if [[ "$GITHUB_REF" == *\/release ]]
           then
@@ -163,11 +174,15 @@ jobs:
           else
             echo "Dev branch"
             publishTag="beta"
+            imageSuffix="-beta"
+            imagePath="${{ github.repository }}-beta"
             JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
 
           echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
+          echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
+          echo "IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
 
         working-directory: ./npm
         env:
@@ -181,6 +196,7 @@ jobs:
         uses: actions/checkout@v3
 
       - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
+      - run: echo ${{ needs.ci.outputs.IMAGE_PATH }}
 
       - name: Get short SHA
         id: slug
@@ -211,7 +227,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ github.repository }}:${{ steps.slug.outputs.SHA7 }},${{ github.repository }}:${{ needs.ci.outputs.NPM_VERSION }}
+          tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         if: github.ref == 'refs/heads/release'
@@ -239,7 +255,7 @@ jobs:
 
       - name: Sign the image
         if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key ${{ github.repository }}:${{ steps.slug.outputs.SHA7 }} || true
+        run: cosign sign --key /tmp/cosign.key -y ${{ needs.ci.outputs.IMAGE_PATH }}@${{ steps.docker_build.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
@@ -317,7 +333,7 @@ jobs:
         if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: spdx
           artifact-name: docker_sbom.spdx
       - name: Publish report [Docker][SPDX]
@@ -329,7 +345,7 @@ jobs:
         if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ github.repository }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+          image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
           format: cyclonedx
           artifact-name: docker_sbom.cyclonedx
       - name: Publish report [Docker][CycloneDx]
@@ -357,28 +373,43 @@ jobs:
           mv docker_sbom.spdx "./_docker/sbom.spdx" || true
           mv docker_sbom.cyclonedx "./_docker/sbom.cyclonedx" || true
 
-      - name: ORAS Setup & Push SBOM reports to GitHub Container Registry
+      - name: ORAS Setup
         if: github.ref == 'refs/heads/release'
         run: |
-          ORAS_VERSION="0.8.1"
+          ORAS_VERSION="v0.8.1"
           ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
-          curl -LO "https://cdn.bundle.bar/clients/oras/${ORAS_VERSION}/${ORAS_FILENAME}"
+          curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/${ORAS_FILENAME}"
           mkdir oras_install
           tar -xvf "${ORAS_FILENAME}" -C oras_install
-          ./oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
-          cd _docker
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
-          cd ..
-          cd npm
-          ../oras_install/oras push ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*
-          cd ..
 
-      - name: Sign the sbom images
+      - name: Push SBOM reports to GitHub Container Registry & Sign the sbom images
         if: github.ref == 'refs/heads/release'
         run: |
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:service-${{ needs.ci.outputs.NPM_VERSION }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:docker-${{ needs.ci.outputs.NPM_VERSION }} || true
-          cosign sign --key /tmp/cosign.key ghcr.io/${{github.repository_owner}}/jackson/sbom:npm-${{ needs.ci.outputs.NPM_VERSION }} || true
+          result=$(./oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+          ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+          if [ -z "$ORAS_DIGEST" ]; then
+            echo "Error: ORAS_DIGEST is empty"
+            exit 1
+          fi
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+          cd _docker
+          result=$(../oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+          ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+          if [ -z "$ORAS_DIGEST" ]; then
+            echo "Error: ORAS_DIGEST is empty"
+            exit 1
+          fi
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+          cd ..
+          cd npm
+          result=$(../oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+          ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+          if [ -z "$ORAS_DIGEST" ]; then
+            echo "Error: ORAS_DIGEST is empty"
+            exit 1
+          fi
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+          cd ..
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
   publish:
@@ -420,12 +451,3 @@ jobs:
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  publish_sdk:
-    needs: [ci, build]
-    name: Publish SDK for React
-    uses: ./.github/workflows/sdk.yml
-    with:
-      npmversion: ${{ needs.ci.outputs.NPM_VERSION }}
-      publishtag: ${{ needs.ci.outputs.PUBLISH_TAG }}
-    secrets: inherit

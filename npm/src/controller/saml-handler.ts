@@ -43,6 +43,7 @@ export class SAMLHandler {
     product?: string;
     entityId?: string;
     idp_hint?: string;
+    samlFedAppId?: string;
   }): Promise<
     | {
         connection: SAMLSSORecord | OIDCSSORecord;
@@ -54,27 +55,34 @@ export class SAMLHandler {
         postForm: string;
       }
   > {
-    const { authFlow, originalParams, tenant, product, idp_hint, entityId } = params;
+    const { authFlow, originalParams, tenant, product, idp_hint, entityId, samlFedAppId = '' } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
 
     // Find SAML connections for the app
     if (tenant && product) {
-      connections = await this.connection.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      connections = (
+        await this.connection.getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
     }
 
     if (entityId) {
-      connections = await this.connection.getByIndex({
-        name: IndexNames.EntityID,
-        value: entityId,
-      });
+      connections = (
+        await this.connection.getByIndex({
+          name: IndexNames.EntityID,
+          value: entityId,
+        })
+      ).data;
     }
 
+    const noSSOConnectionErrMessage =
+      authFlow === 'oauth' ? 'No SSO connection found.' : 'No SAML connection found.';
+
     if (!connections || connections.length === 0) {
-      throw new JacksonError('No SAML connection found.', 404);
+      throw new JacksonError(noSSOConnectionErrMessage, 404);
     }
 
     // If an IdP is specified, find the connection for that IdP
@@ -82,7 +90,7 @@ export class SAMLHandler {
       const connection = connections.find((c) => c.clientID === idp_hint);
 
       if (!connection) {
-        throw new JacksonError('No SAML connection found.', 404);
+        throw new JacksonError(noSSOConnectionErrMessage, 404);
       }
 
       return { connection };
@@ -98,10 +106,11 @@ export class SAMLHandler {
           tenant,
           product,
           authFlow,
+          samlFedAppId,
           ...originalParams,
         });
 
-        return { redirectUrl: `${url.toString()}?${params.toString()}` };
+        return { redirectUrl: `${url}?${params}` };
       }
 
       // IdP initiated flow
@@ -110,7 +119,7 @@ export class SAMLHandler {
           entityId,
         });
 
-        const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params.toString()}`, [
+        const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
           {
             name: 'SAMLResponse',
             value: originalParams.SAMLResponse,
@@ -195,6 +204,7 @@ export class SAMLHandler {
 
       return { responseForm };
     } catch (err) {
+      // TODO: Instead send saml response with status code
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
   };

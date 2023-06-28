@@ -1,14 +1,15 @@
-import React from 'react';
+import { Badge as BaseBadge, BadgeProps } from 'react-daisyui';
 
-interface Props {
-  vairant?: 'info' | 'success' | 'warning' | 'error';
-  children: React.ReactNode;
-}
+const Badge = (props: BadgeProps) => {
+  const { children, className } = props;
 
-const Badge = (props: Props) => {
-  const { vairant = 'info', children } = props;
-
-  return <div className={`badge gap-2 badge-${vairant}`}>{children}</div>;
+  return (
+    <>
+      <BaseBadge {...props} className={`rounded-md py-2 text-white ${className}`}>
+        {children}
+      </BaseBadge>
+    </>
+  );
 };
 
 export default Badge;

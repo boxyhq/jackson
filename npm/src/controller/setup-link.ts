@@ -25,10 +25,12 @@ export class SetupLinkController {
     const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
     const token = crypto.randomBytes(24).toString('hex');
 
-    const existing: SetupLink[] = await this.setupLinkStore.getByIndex({
-      name: IndexNames.TenantProductService,
-      value: dbutils.keyFromParts(tenant, product, service),
-    });
+    const existing: SetupLink[] = (
+      await this.setupLinkStore.getByIndex({
+        name: IndexNames.TenantProductService,
+        value: dbutils.keyFromParts(tenant, product, service),
+      })
+    ).data;
 
     if (existing.length > 0 && !regenerate && !this.isExpired(existing[0])) {
       return existing[0];
@@ -78,10 +80,12 @@ export class SetupLinkController {
       throw new JacksonError('Missing setup link token', 400);
     }
 
-    const setupLink: SetupLink[] = await this.setupLinkStore.getByIndex({
-      name: IndexNames.SetupToken,
-      value: token,
-    });
+    const setupLink: SetupLink[] = (
+      await this.setupLinkStore.getByIndex({
+        name: IndexNames.SetupToken,
+        value: token,
+      })
+    ).data;
 
     if (!setupLink || setupLink.length === 0) {
       throw new JacksonError('Setup link is not found', 404);
@@ -95,21 +99,27 @@ export class SetupLinkController {
   }
 
   // Get setup links by service
-  async getByService(service: string, pageOffset?: number, pageLimit?: number): Promise<SetupLink[]> {
+  async getByService(
+    service: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string
+  ): Promise<{ data: SetupLink[]; pageToken?: string }> {
     if (!service) {
       throw new JacksonError('Missing service name', 400);
     }
 
-    const setupLinks = await this.setupLinkStore.getByIndex(
+    const { data: setupLinks, pageToken: nextPageToken } = await this.setupLinkStore.getByIndex(
       {
         name: IndexNames.Service,
         value: service,
       },
       pageOffset,
-      pageLimit
+      pageLimit,
+      pageToken
     );
 
-    return setupLinks;
+    return { data: setupLinks, pageToken: nextPageToken };
   }
 
   // Remove a setup link

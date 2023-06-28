@@ -5,6 +5,7 @@ import {
   SAMLSSOConnectionWithRawMetadata,
   SAMLSSORecord,
   Storable,
+  UpdateSAMLConnectionParams,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
 import {
@@ -18,17 +19,19 @@ import {
 } from '../utils';
 import saml20 from '@boxyhq/saml20';
 import { JacksonError } from '../error';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 async function fetchMetadata(resource: string) {
-  const response = await axios(resource, {
-    maxContentLength: 1000000,
-    maxBodyLength: 1000000,
-    timeout: 8000,
-  }).catch((error: AxiosError) => {
+  try {
+    const response = await axios(resource, {
+      maxContentLength: 1000000,
+      maxBodyLength: 1000000,
+      timeout: 8000,
+    });
+    return response.data;
+  } catch (error: any) {
     throw new JacksonError("Couldn't fetch XML data", error.response?.status || 400);
-  });
-  return response.data;
+  }
 }
 
 function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
@@ -119,10 +122,12 @@ const saml = {
 
     record.idpMetadata = idpMetadata;
 
-    const existing = await connectionStore.getByIndex({
-      name: IndexNames.EntityID,
-      value: idpMetadata.entityID,
-    });
+    const existing = (
+      await connectionStore.getByIndex({
+        name: IndexNames.EntityID,
+        value: idpMetadata.entityID,
+      })
+    ).data;
 
     if (existing.length > 0) {
       for (let i = 0; i < existing.length; i++) {
@@ -137,12 +142,9 @@ const saml = {
       }
     }
 
-    const exists = await connectionStore.getByIndex({
-      name: IndexNames.EntityID,
-      value: record.clientID,
-    });
+    const exists = await connectionStore.get(record.clientID);
 
-    if (exists.length > 0) {
+    if (exists) {
       connectionClientSecret = exists.clientSecret;
     } else {
       connectionClientSecret = crypto.randomBytes(24).toString('hex');
@@ -161,6 +163,11 @@ const saml = {
         // secondary index on tenant + product
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
+      },
+      {
+        // secondary index on product
+        name: IndexNames.Product,
+        value: product,
       }
     );
 
@@ -168,10 +175,7 @@ const saml = {
   },
 
   update: async (
-    body: (SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata) & {
-      clientID: string;
-      clientSecret: string;
-    },
+    body: UpdateSAMLConnectionParams,
     connectionStore: Storable,
     connectionsGetter: IConnectionAPIController['getConnections']
   ) => {
@@ -252,7 +256,7 @@ const saml = {
       }
     }
 
-    const record = {
+    const record: SAMLSSORecord = {
       ..._savedConnection,
       name: name || name === '' ? name : _savedConnection.name,
       description: description || description === '' ? description : _savedConnection.description,
@@ -260,8 +264,15 @@ const saml = {
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       forceAuthn,
-      identifierFormat: identifierFormat || _savedConnection.identifierFormat,
     };
+
+    if ('deactivated' in body) {
+      record['deactivated'] = body.deactivated;
+    }
+
+    if ('identifierFormat' in body) {
+      record['identifierFormat'] = body.identifierFormat;
+    }
 
     await connectionStore.put(
       clientInfo?.clientID,
@@ -275,8 +286,15 @@ const saml = {
         // secondary index on tenant + product
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(_savedConnection.tenant, _savedConnection.product),
+      },
+      {
+        // secondary index on product
+        name: IndexNames.Product,
+        value: _savedConnection.product,
       }
     );
+
+    return record;
   },
 };
 

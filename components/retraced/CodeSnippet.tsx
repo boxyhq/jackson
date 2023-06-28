@@ -9,7 +9,6 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
   const eventURL = `${baseUrl}/event`;
   const curlRequest = `curl -X POST -H "Content-Type: application/json" -H "Authorization: token=${token}" -d '{
   "action": "some.record.created",
-  "teamId": "boxyhq",
   "group": {
     "id": "dev",
     "name": "dev"

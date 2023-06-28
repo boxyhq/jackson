@@ -1,11 +1,14 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   saveConnection,
   fieldCatalogFilterByConnection,
   renderFieldList,
   useFieldCatalog,
+  excludeFallback,
   type AdminPortalSSODefaults,
+  type FormObj,
+  type FieldCatalogItem,
 } from './utils';
 import { mutate } from 'swr';
 import { ApiResponse } from 'types';
@@ -14,6 +17,26 @@ import { useTranslation } from 'next-i18next';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { InputWithCopyButton } from '@components/ClipboardButton';
+
+function getInitialState(connectionType, fieldCatalog: FieldCatalogItem[]) {
+  const _state = {};
+
+  fieldCatalog.forEach(({ key, type, members, fallback, attributes: { connection } }) => {
+    let value;
+    if (connection && connection !== connectionType) {
+      return;
+    }
+    /** By default those fields which do not have a fallback.activateCondition  will be excluded */
+    if (typeof fallback === 'object' && typeof fallback.activateCondition !== 'function') {
+      return;
+    }
+    if (type === 'object') {
+      value = getInitialState(connectionType, members as FieldCatalogItem[]);
+    }
+    _state[key] = value ? value : '';
+  });
+  return _state;
+}
 
 const CreateConnection = ({
   setupLinkToken,
@@ -87,9 +110,27 @@ const CreateConnection = ({
   };
 
   // STATE: FORM
-  const [formObj, setFormObj] = useState<Record<string, string>>(
-    isSettingsView ? { ...adminPortalSSODefaults } : {}
+  const [formObj, setFormObj] = useState<FormObj>(() =>
+    isSettingsView
+      ? { ...getInitialState(newConnectionType, fieldCatalog), ...adminPortalSSODefaults }
+      : { ...getInitialState(newConnectionType, fieldCatalog) }
   );
+  // Resync form state on save
+  useEffect(() => {
+    const _state = getInitialState(newConnectionType, fieldCatalog);
+    setFormObj(isSettingsView ? { ..._state, ...adminPortalSSODefaults } : _state);
+  }, [newConnectionType, fieldCatalog, isSettingsView, adminPortalSSODefaults]);
+
+  // HANDLER: Track fallback display
+  const activateFallback = (key, fallbackKey) => {
+    setFormObj((cur) => {
+      const temp = { ...cur };
+      delete temp[key];
+      const fallbackItem = fieldCatalog.find(({ key }) => key === fallbackKey);
+      const fallbackItemVal = fallbackItem?.type === 'object' ? {} : '';
+      return { ...temp, [fallbackKey]: fallbackItemVal };
+    });
+  };
 
   return (
     <>
@@ -105,39 +146,33 @@ const CreateConnection = ({
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_sso_connection')}
         </h2>
-        <div className='mb-4 flex'>
-          <div className='mr-2 py-3'>{t('select_type')}:</div>
-          <div className='flex flex-nowrap items-stretch justify-start gap-1 rounded-md border-2 border-dashed py-3'>
-            <div>
-              <input
-                type='radio'
-                name='connection'
-                value='saml'
-                className='peer sr-only'
-                checked={newConnectionType === 'saml'}
-                onChange={handleNewConnectionTypeChange}
-                id='saml-conn'
-              />
-              <label
-                htmlFor='saml-conn'
-                className='cursor-pointer rounded-md border-2 border-solid py-3 px-8 font-semibold hover:shadow-md peer-checked:border-secondary-focus peer-checked:bg-secondary peer-checked:text-white'>
-                {t('saml')}
+        <div className='mb-4 flex items-center'>
+          <div className='mr-2 py-3'>{t('select_sso_type')}:</div>
+          <div className='flex w-52'>
+            <div className='form-control'>
+              <label className='label mr-4 cursor-pointer'>
+                <input
+                  type='radio'
+                  name='connection'
+                  value='saml'
+                  className='radio-primary radio'
+                  checked={newConnectionType === 'saml'}
+                  onChange={handleNewConnectionTypeChange}
+                />
+                <span className='label-text ml-1'>{t('saml')}</span>
               </label>
             </div>
-            <div>
-              <input
-                type='radio'
-                name='connection'
-                value='oidc'
-                className='peer sr-only'
-                checked={newConnectionType === 'oidc'}
-                onChange={handleNewConnectionTypeChange}
-                id='oidc-conn'
-              />
-              <label
-                htmlFor='oidc-conn'
-                className='cursor-pointer rounded-md border-2 border-solid px-8 py-3 font-semibold hover:shadow-md peer-checked:bg-secondary peer-checked:text-white'>
-                {t('oidc')}
+            <div className='form-control'>
+              <label className='label mr-4 cursor-pointer' data-testid='sso-type-oidc'>
+                <input
+                  type='radio'
+                  name='connection'
+                  value='oidc'
+                  className='radio-primary radio'
+                  checked={newConnectionType === 'oidc'}
+                  onChange={handleNewConnectionTypeChange}
+                />
+                <span className='label-text ml-1'>{t('oidc')}</span>
               </label>
             </div>
           </div>
@@ -147,7 +182,8 @@ const CreateConnection = ({
             {fieldCatalog
               .filter(fieldCatalogFilterByConnection(newConnectionType))
               .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
-              .map(renderFieldList({ formObj, setFormObj }))}
+              .filter(excludeFallback(formObj))
+              .map(renderFieldList({ formObj, setFormObj, activateFallback }))}
             <div className='flex'>
               <ButtonPrimary loading={loading} data-testid='submit-form-create-sso'>
                 {t('save_changes')}

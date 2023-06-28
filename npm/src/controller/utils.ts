@@ -6,11 +6,14 @@ import * as dbutils from '../db/utils';
 import type {
   ConnectionType,
   OAuthErrorHandlerParams,
-  OIDCSSOConnection,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
+  OIDCSSOConnectionWithDiscoveryUrl,
+  OIDCSSOConnectionWithMetadata,
   Profile,
   SAMLSSORecord,
+  OIDCSSORecord,
+  Directory,
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
@@ -22,6 +25,8 @@ export enum IndexNames {
   TenantProductService = 'tenantProductService',
   Service = 'service',
   OIDCProviderClientID = 'OIDCProviderClientID',
+  SSOClientID = 'SSOClientID',
+  Product = 'product',
 }
 
 // The namespace prefix for the database store
@@ -32,6 +37,7 @@ export const storeNamespacePrefix = {
     users: 'dsync:users',
     groups: 'dsync:groups',
     members: 'dsync:members',
+    providers: 'dsync:providers',
   },
   saml: {
     config: 'saml:config',
@@ -104,13 +110,18 @@ export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
 };
 
 export const validateSSOConnection = (
-  body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata | OIDCSSOConnection,
+  body:
+    | SAMLSSOConnectionWithRawMetadata
+    | SAMLSSOConnectionWithEncodedMetadata
+    | OIDCSSOConnectionWithDiscoveryUrl
+    | OIDCSSOConnectionWithMetadata,
   strategy: ConnectionType
 ): void => {
   const { defaultRedirectUrl, redirectUrl, tenant, product, description } = body;
   const encodedRawMetadata = 'encodedRawMetadata' in body ? body.encodedRawMetadata : undefined;
   const rawMetadata = 'rawMetadata' in body ? body.rawMetadata : undefined;
   const oidcDiscoveryUrl = 'oidcDiscoveryUrl' in body ? body.oidcDiscoveryUrl : undefined;
+  const oidcMetadata = 'oidcMetadata' in body ? body.oidcMetadata : undefined;
   const oidcClientId = 'oidcClientId' in body ? body.oidcClientId : undefined;
   const oidcClientSecret = 'oidcClientSecret' in body ? body.oidcClientSecret : undefined;
   const metadataUrl = 'metadataUrl' in body ? body.metadataUrl : undefined;
@@ -131,8 +142,32 @@ export const validateSSOConnection = (
     if (!oidcClientSecret) {
       throw new JacksonError('Please provide the clientSecret from OpenID Provider', 400);
     }
-    if (!oidcDiscoveryUrl) {
-      throw new JacksonError('Please provide the discoveryUrl for the OpenID Provider', 400);
+    if (!oidcDiscoveryUrl && !oidcMetadata) {
+      throw new JacksonError(
+        'Please provide the discoveryUrl or issuer metadata for the OpenID Provider',
+        400
+      );
+    }
+    if (!oidcDiscoveryUrl && oidcMetadata) {
+      const { issuer, authorization_endpoint, token_endpoint, userinfo_endpoint, jwks_uri } = oidcMetadata;
+      if (!issuer) {
+        throw new JacksonError('"issuer" missing in the metadata for the OpenID Provider', 400);
+      }
+      if (!authorization_endpoint) {
+        throw new JacksonError(
+          '"authorization_endpoint" missing in the metadata for the OpenID Provider',
+          400
+        );
+      }
+      if (!token_endpoint) {
+        throw new JacksonError('"token_endpoint" missing in the metadata for the OpenID Provider', 400);
+      }
+      if (!userinfo_endpoint) {
+        throw new JacksonError('"userinfo_endpoint" missing in the metadata for the OpenID Provider', 400);
+      }
+      if (!jwks_uri) {
+        throw new JacksonError('"jwks_uri" missing in the metadata for the OpenID Provider', 400);
+      }
     }
   }
 
@@ -272,25 +307,30 @@ const wellKnownProviders = {
 } as const;
 
 // Find the friendly name of the provider from the entityID
-const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
+export const findFriendlyProviderName = (providerName: string): keyof typeof wellKnownProviders | 'null' => {
   const provider = Object.keys(wellKnownProviders).find((provider) => providerName.includes(provider));
 
   return provider ? wellKnownProviders[provider] : null;
 };
 
-export const transformConnections = (connections: SAMLSSORecord[]) => {
+export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSORecord>) => {
   if (connections.length === 0) {
     return connections;
   }
 
-  // Add friendlyProviderName to the connection
-  return connections.map((connection) => {
-    if ('idpMetadata' in connection) {
-      connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
-    }
+  return connections.map(transformConnection);
+};
 
-    return connection;
-  });
+export const transformConnection = (connection: SAMLSSORecord | OIDCSSORecord) => {
+  if ('idpMetadata' in connection) {
+    connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+  }
+
+  if (!('deactivated' in connection)) {
+    connection.deactivated = false;
+  }
+
+  return connection;
 };
 
 export const isLocalhost = (url: string) => {
@@ -301,4 +341,12 @@ export const isLocalhost = (url: string) => {
     return false;
   }
   return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
+};
+
+export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
+  if ('deactivated' in connection) {
+    return connection.deactivated === false;
+  }
+
+  return true;
 };

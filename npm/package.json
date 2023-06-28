@@ -32,7 +32,7 @@
     "db:migration:revert:mongo": "migrate-mongo down",
     "db:migration:run:mssql": "cross-env DB_TYPE=mssql DB_URL='sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!' ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "prepublishOnly": "npm run build",
-    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 tap --ts --timeout=100 --coverage-map=map.js test/**/*.test.ts",
+    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 tap -T --ts --coverage-map=map.js test/**/*.test.ts",
     "sort": "npx sort-package-json"
   },
   "tap": {
@@ -43,39 +43,47 @@
     "statements": 70
   },
   "dependencies": {
-    "@boxyhq/saml20": "1.1.3",
-    "@opentelemetry/api": "1.4.0",
-    "@aws-sdk/credential-providers": "3.272.0",
-    "axios": "1.3.3",
-    "jose": "4.12.0",
-    "marked": "4.2.12",
+    "@aws-sdk/client-dynamodb": "3.360.0",
+    "@aws-sdk/credential-providers": "3.360.0",
+    "@aws-sdk/util-dynamodb": "3.360.0",
+    "@boxyhq/error-code-mnemonic": "0.1.1",
+    "@boxyhq/metrics": "0.2.4",
+    "@boxyhq/saml20": "1.2.1",
+    "axios": "1.4.0",
+    "encoding": "0.1.13",
+    "googleapis": "118.0.0",
+    "jose": "4.14.4",
+    "lodash": "4.17.21",
     "mixpanel": "0.17.0",
-    "mongodb": "5.0.1",
+    "mongodb": "5.6.0",
     "mssql": "9.1.1",
-    "mysql2": "3.1.2",
+    "mysql2": "3.4.0",
     "node-forge": "1.3.1",
-    "openid-client": "5.4.0",
-    "pg": "8.9.0",
-    "redis": "4.6.4",
+    "openid-client": "5.4.2",
+    "pg": "8.10.0",
+    "redis": "4.6.7",
     "reflect-metadata": "0.1.13",
     "ripemd160": "2.0.2",
-    "typeorm": "0.3.12",
-    "xml2js": "0.4.23",
+    "typeorm": "0.3.16",
+    "xml2js": "0.6.0",
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "7.6.0",
-    "@types/node": "18.14.0",
-    "@types/sinon": "10.0.13",
+    "@faker-js/faker": "8.0.2",
+    "@types/lodash": "4.14.195",
+    "@types/node": "20.3.1",
+    "@types/sinon": "10.0.15",
     "@types/tap": "15.0.8",
     "cross-env": "7.0.3",
-    "sinon": "15.0.1",
-    "tap": "16.3.4",
+    "nock": "13.3.1",
+    "sinon": "15.2.0",
+    "tap": "16.3.7",
     "ts-node": "10.9.1",
-    "tsconfig-paths": "4.1.2",
-    "typescript": "4.9.5"
+    "tsconfig-paths": "4.2.0",
+    "typescript": "5.1.5"
   },
   "engines": {
-    "node": ">=14.18.1 <=18.x"
+    "node": ">=16",
+    "npm": ">=8"
   }
 }

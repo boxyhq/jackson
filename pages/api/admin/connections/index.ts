@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { strategyChecker } from '@lib/utils';
+import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -9,13 +9,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (method) {
     case 'GET':
-      return handleGET(req, res);
+      return await handleGET(req, res);
     case 'POST':
-      return handlePOST(req, res);
+      return await handlePOST(req, res);
     case 'PATCH':
-      return handlePATCH(req, res);
+      return await handlePATCH(req, res);
     case 'DELETE':
-      return handleDELETE(req, res);
+      return await handleDELETE(req, res);
     default:
       res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -26,25 +26,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController, connectionAPIController } = await jackson();
 
-  const { pageOffset, pageLimit, isSystemSSO } = req.query as {
+  const { pageOffset, pageLimit, isSystemSSO, pageToken } = req.query as {
     pageOffset: string;
     pageLimit: string;
     isSystemSSO?: string; // if present will be '' else undefined
+    pageToken?: string;
   };
 
   const { tenant: adminPortalSSOTenant, product: adminPortalSSOProduct } = adminPortalSSODefaults;
 
+  const paginatedConnectionList = await adminController.getAllConnection(
+    +(pageOffset || 0),
+    +(pageLimit || 0),
+    pageToken
+  );
+
   const connections =
     isSystemSSO === undefined
-      ? (await adminController.getAllConnection(+(pageOffset || 0), +(pageLimit || 0)))?.map((conn) => ({
+      ? // For the Connections list under Enterprise SSO, `isSystemSSO` flag added to show system sso badge
+        paginatedConnectionList?.data?.map((conn) => ({
           ...conn,
           isSystemSSO: adminPortalSSOTenant === conn.tenant && adminPortalSSOProduct === conn.product,
         }))
-      : await connectionAPIController.getConnections({
+      : // For settings view, pagination not done for now as the system connections are expected to be a few
+        await connectionAPIController.getConnections({
           tenant: adminPortalSSOTenant,
           product: adminPortalSSOProduct,
         });
 
+  if (paginatedConnectionList.pageToken) {
+    res.setHeader('jackson-pagetoken', paginatedConnectionList.pageToken);
+  }
   return res.json({ data: connections });
 };
 
@@ -68,7 +80,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Create OIDC connection
     if (isOIDC) {
-      const connection = await connectionAPIController.createOIDCConnection(req.body);
+      const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
       return res.status(201).json({ data: connection });
     }
@@ -99,7 +111,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Update OIDC connection
     if (isOIDC) {
-      const connection = await connectionAPIController.updateOIDCConnection(req.body);
+      const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
       return res.status(200).json({ data: connection });
     }
@@ -114,7 +126,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  const { clientID, clientSecret } = req.body as {
+  const { clientID, clientSecret } = req.query as {
     clientID: string;
     clientSecret: string;
   };

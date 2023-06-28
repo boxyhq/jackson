@@ -36,7 +36,7 @@ export async function getServerSideProps({ locale }) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
-      host: retracedOptions.externalUrl,
+      host: retracedOptions.externalUrl || null,
     },
   };
 }

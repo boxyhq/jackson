@@ -23,6 +23,12 @@ const retraced = {
   adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
 };
 
+// Terminus
+const terminus = {
+  hostUrl: process.env.TERMINUS_PROXY_HOST_URL,
+  adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
+};
+
 const db: DatabaseOption = {
   engine: process.env.DB_ENGINE ? <DatabaseEngine>process.env.DB_ENGINE : undefined,
   url: process.env.DB_URL || process.env.DATABASE_URL,
@@ -32,6 +38,11 @@ const db: DatabaseOption = {
   encryptionKey: process.env.DB_ENCRYPTION_KEY,
   pageLimit: process.env.DB_PAGE_LIMIT ? Number(process.env.DB_PAGE_LIMIT) : undefined,
   ssl,
+  dynamodb: {
+    region: process.env.DB_DYNAMODB_REGION,
+    readCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_RCUS) : undefined,
+    writeCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_WCUS) : undefined,
+  },
 };
 
 const jacksonOptions: JacksonOption = {
@@ -62,6 +73,20 @@ const jacksonOptions: JacksonOption = {
     process.env.DO_NOT_TRACK === 'true' ||
     process.env.BOXYHQ_NO_ANALYTICS === '1' ||
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
+  terminus,
+  webhook: {
+    endpoint: process.env.WEBHOOK_URL || '',
+    secret: process.env.WEBHOOK_SECRET || '',
+  },
+  dsync: {
+    providers: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID || '',
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+        callbackUrl: process.env.GOOGLE_REDIRECT_URI || '',
+      },
+    },
+  },
 };
 
 const adminPortalSSODefaults = {
@@ -73,5 +98,8 @@ const adminPortalSSODefaults = {
 
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
+export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
+
+export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';

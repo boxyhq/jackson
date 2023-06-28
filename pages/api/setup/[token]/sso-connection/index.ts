@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { strategyChecker } from '@lib/utils';
+import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import type { SetupLink } from '@boxyhq/saml-jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -56,7 +56,9 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
   if (isSAML) {
     return res.status(201).json({ data: await connectionAPIController.createSAMLConnection(body) });
   } else if (isOIDC) {
-    return res.status(201).json({ data: await connectionAPIController.createOIDCConnection(body) });
+    return res
+      .status(201)
+      .json({ data: await connectionAPIController.createOIDCConnection(oidcMetadataParse(body)) });
   } else {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
@@ -66,7 +68,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink
   const { connectionAPIController } = await jackson();
 
   const body = {
-    ...req.body,
+    ...req.query,
     tenant: setupLink.tenant,
     product: setupLink.product,
   };
@@ -89,7 +91,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink:
   if (isSAML) {
     res.json({ data: await connectionAPIController.updateSAMLConnection(body) });
   } else if (isOIDC) {
-    res.json({ data: await connectionAPIController.updateOIDCConnection(body) });
+    res.json({ data: await connectionAPIController.updateOIDCConnection(oidcMetadataParse(body)) });
   } else {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }

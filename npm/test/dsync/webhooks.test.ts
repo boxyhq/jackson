@@ -7,8 +7,8 @@ import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
 import { jacksonOptions } from '../utils';
 import sinon from 'sinon';
-import axios from 'axios';
-import { createSignatureString } from '../../src/directory-sync/utils';
+import axios from '../../src/event/axios';
+import { createSignatureString } from '../../src/event/webhook';
 
 let directorySync: IDirectorySyncController;
 let directory: Directory;
@@ -60,14 +60,12 @@ tap.teardown(async () => {
 
 tap.test('Webhook Events / ', async (t) => {
   tap.afterEach(async () => {
-    await directorySync.webhookLogs.clear();
+    await directorySync.webhookLogs.deleteAll(directory.id);
   });
 
   t.test("Should be able to get the directory's webhook", async (t) => {
     t.match(directory.webhook.endpoint, webhook.endpoint);
     t.match(directory.webhook.secret, webhook.secret);
-
-    t.end();
   });
 
   t.test('Should not log events if the directory has no webhook', async (t) => {
@@ -81,7 +79,7 @@ tap.test('Webhook Events / ', async (t) => {
     // Create a user
     await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    const events = await directorySync.webhookLogs.getAll({});
+    const events = await directorySync.webhookLogs.getAll();
 
     t.equal(events.length, 0);
 
@@ -103,7 +101,7 @@ tap.test('Webhook Events / ', async (t) => {
     // Create a user
     await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    const events = await directorySync.webhookLogs.getAll({});
+    const events = await directorySync.webhookLogs.getAll();
 
     t.equal(events.length, 0);
 
@@ -111,21 +109,17 @@ tap.test('Webhook Events / ', async (t) => {
     await directorySync.directories.update(directory.id, {
       log_webhook_events: true,
     });
-
-    t.end();
   });
 
   t.test('Should be able to get an event by id', async (t) => {
     // Create a user
     await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    const logs = await directorySync.webhookLogs.getAll({});
+    const logs = await directorySync.webhookLogs.getAll();
 
     const log = await directorySync.webhookLogs.get(logs[0].id);
 
     t.equal(log.id, logs[0].id);
-
-    t.end();
   });
 
   t.test('Should send user related events', async (t) => {
@@ -154,7 +148,7 @@ tap.test('Webhook Events / ', async (t) => {
     mock.verify();
     mock.restore();
 
-    const logs = await directorySync.webhookLogs.getAll({});
+    const logs = await directorySync.webhookLogs.getAll();
 
     t.ok(logs);
     t.equal(logs.length, 3);
@@ -171,9 +165,7 @@ tap.test('Webhook Events / ', async (t) => {
     t.match(logs[2].directory_id, directory.id);
     t.hasStrict(logs[2].data.raw, createdUser);
 
-    await directorySync.users.clear();
-
-    t.end();
+    await directorySync.users.deleteAll(directory.id);
   });
 
   t.test('Should send group related events', async (t) => {
@@ -202,7 +194,7 @@ tap.test('Webhook Events / ', async (t) => {
     mock.verify();
     mock.restore();
 
-    const logs = await directorySync.webhookLogs.getAll({});
+    const logs = await directorySync.webhookLogs.getAll();
 
     t.ok(logs);
     t.equal(logs.length, 3);
@@ -218,8 +210,6 @@ tap.test('Webhook Events / ', async (t) => {
     t.match(logs[2].event, 'group.created');
     t.match(logs[2].directory_id, directory.id);
     t.hasStrict(logs[2].data.raw, createdGroup);
-
-    t.end();
   });
 
   t.test('Should send group membership related events', async (t) => {
@@ -259,7 +249,7 @@ tap.test('Webhook Events / ', async (t) => {
     mock.verify();
     mock.restore();
 
-    const logs = await directorySync.webhookLogs.getAll({});
+    const logs = await directorySync.webhookLogs.getAll();
 
     t.ok(logs);
     t.equal(logs.length, 4);
@@ -274,8 +264,6 @@ tap.test('Webhook Events / ', async (t) => {
 
     await directorySync.users.delete(createdUser.id);
     await directorySync.groups.delete(createdGroup.id);
-
-    t.end();
   });
 
   t.test('createSignatureString()', async (t) => {
@@ -294,7 +282,7 @@ tap.test('Webhook Events / ', async (t) => {
       },
     };
 
-    const signatureString = await createSignatureString(directory.webhook.secret, event);
+    const signatureString = createSignatureString(directory.webhook.secret, event);
     const parts = signatureString.split(',');
 
     t.ok(signatureString);
@@ -302,12 +290,8 @@ tap.test('Webhook Events / ', async (t) => {
     t.ok(parts[1].match(/^s=[0-9a-f]/));
 
     // Empty secret should create an empty signature
-    const emptySignatureString = await createSignatureString('', event);
+    const emptySignatureString = createSignatureString('', event);
 
     t.match(emptySignatureString, '');
-
-    t.end();
   });
-
-  t.end();
 });

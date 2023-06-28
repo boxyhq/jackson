@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import type { AdminPortalBranding, SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
@@ -20,13 +20,16 @@ const UpdateApp: NextPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [app, setApp] = useState<SAMLFederationApp>({
+  const [app, setApp] = useState<SAMLFederationApp & Omit<AdminPortalBranding, 'companyName'>>({
     id: '',
     name: '',
     tenant: '',
     product: '',
     acsUrl: '',
     entityId: '',
+    logoUrl: '',
+    faviconUrl: '',
+    primaryColor: '',
   });
 
   const { id } = router.query as { id: string };
@@ -103,7 +106,7 @@ const UpdateApp: NextPage = () => {
       </div>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
-          <div className='flex flex-col space-y-3'>
+          <div className='space-y-3'>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
                 <span className='label-text'>{t('tenant')}</span>
@@ -129,7 +132,7 @@ const UpdateApp: NextPage = () => {
                 value={app.name}
               />
             </div>
-            <div className='form-control'>
+            <div className='form-control w-full md:w-1/2'>
               <label className='label'>
                 <span className='label-text'>{t('acs_url')}</span>
               </label>
@@ -142,7 +145,7 @@ const UpdateApp: NextPage = () => {
                 value={app.acsUrl}
               />
             </div>
-            <div className='form-control'>
+            <div className='form-control w-full md:w-1/2'>
               <label className='label'>
                 <span className='label-text'>{t('entity_id')}</span>
               </label>
@@ -154,6 +157,53 @@ const UpdateApp: NextPage = () => {
                 onChange={onChange}
                 value={app.entityId}
               />
+            </div>
+            <div className='pt-4'>
+              <p className='text-base leading-6 text-gray-500'>
+                You can customize the look and feel Identity Provider selection page by setting following
+                options:
+              </p>
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>{t('branding_logo_url_label')}</span>
+              </label>
+              <input
+                type='url'
+                id='logoUrl'
+                className='input-bordered input'
+                onChange={onChange}
+                placeholder='https://company.com/logo.png'
+                value={app.logoUrl || ''}
+              />
+              <label className='label'>
+                <span className='label-text-alt'>{t('branding_logo_url_alt')}</span>
+              </label>
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>{t('branding_favicon_url_label')}</span>
+              </label>
+              <input
+                type='url'
+                id='faviconUrl'
+                className='input-bordered input'
+                onChange={onChange}
+                placeholder='https://company.com/favicon.ico'
+                value={app.faviconUrl || ''}
+              />
+              <label className='label'>
+                <span className='label-text-alt'>{t('branding_favicon_url_alt')}</span>
+              </label>
+            </div>
+            <div className='form-control'>
+              <label className='label'>
+                <span className='label-text'>{t('branding_primary_color_label')}</span>
+              </label>
+              <input type='color' id='primaryColor' onChange={onChange} value={app.primaryColor || ''} />
+              <label className='label'>
+                <span className='label-text-alt'>{t('branding_primary_color_alt')}</span>
+              </label>
             </div>
             <div>
               <ButtonPrimary type='submit' loading={loading}>

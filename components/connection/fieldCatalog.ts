@@ -2,8 +2,12 @@
  * Edit view will have extra fields to render parsed metadata and other attributes.
  * All fields are editable unless they have `editable` set to false.
  * All fields are required unless they have `required` set to false.
- * `accessor` only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
+ * `accessor` - only used to set initial state and retrieve saved value. Useful when key is different from retrieved payload.
+ * `fallback` - use this key to activate a fallback catalog item that will take in the values. The fallback will be activated
+ *  by means of a switch control in the UI that allows us to deactivate the fallback catalog item and revert to the main field.
  */
+
+import type { FieldCatalogItem } from './utils';
 
 export const getCommonFields = ({
   isEditView,
@@ -11,13 +15,13 @@ export const getCommonFields = ({
 }: {
   isEditView?: boolean;
   isSettingsView?: boolean;
-}) => [
+}): FieldCatalogItem[] => [
   {
     key: 'name',
     label: 'Name',
     type: 'text',
     placeholder: 'MyApp',
-    attributes: { required: false, hideInSetupView: true },
+    attributes: { required: false, hideInSetupView: true, 'data-testid': 'name' },
   },
   {
     key: 'description',
@@ -71,35 +75,112 @@ export const getCommonFields = ({
     attributes: { hideInSetupView: true, editable: !isSettingsView },
   },
   {
-    key: 'oidcDiscoveryUrl',
-    label: 'Well-known URL of OpenId Provider',
-    type: 'url',
-    placeholder: 'https://example.com/.well-known/openid-configuration',
-    attributes: isEditView
-      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.discoveryUrl, hideInSetupView: false }
-      : { connection: 'oidc', hideInSetupView: false },
-  },
-  {
     key: 'oidcClientId',
     label: 'Client ID [OIDC Provider]',
     type: 'text',
     placeholder: '',
-    attributes: isEditView
-      ? {
-          connection: 'oidc',
-          accessor: (o) => o?.oidcProvider?.clientId,
-          hideInSetupView: false,
-        }
-      : { connection: 'oidc', hideInSetupView: false },
+    attributes: {
+      'data-testid': 'oidcClientId',
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.clientId,
+      hideInSetupView: false,
+    },
   },
   {
     key: 'oidcClientSecret',
     label: 'Client Secret [OIDC Provider]',
     type: 'text',
     placeholder: '',
-    attributes: isEditView
-      ? { connection: 'oidc', accessor: (o) => o?.oidcProvider?.clientSecret, hideInSetupView: false }
-      : { connection: 'oidc', hideInSetupView: false },
+    attributes: {
+      'data-testid': 'oidcClientSecret',
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.clientSecret,
+      hideInSetupView: false,
+    },
+  },
+  {
+    key: 'oidcDiscoveryUrl',
+    label: 'Well-known URL of OpenID Provider',
+    type: 'url',
+    placeholder: 'https://example.com/.well-known/openid-configuration',
+    attributes: {
+      'data-testid': 'oidcDiscoveryUrl',
+      connection: 'oidc',
+      accessor: (o) => o?.oidcProvider?.discoveryUrl,
+      hideInSetupView: false,
+    },
+    fallback: {
+      key: 'oidcMetadata',
+      activateCondition: (fieldValue) => !fieldValue,
+      switch: {
+        label: 'Missing the discovery URL? Click here to set the individual attributes',
+        'data-testid': 'oidcDiscoveryUrl-fallback-switch',
+      },
+    },
+  },
+  {
+    key: 'oidcMetadata',
+    type: 'object',
+    members: [
+      {
+        key: 'issuer',
+        label: 'Issuer',
+        type: 'url',
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.issuer,
+          hideInSetupView: false,
+          'data-testid': 'issuer',
+        },
+      },
+      {
+        key: 'authorization_endpoint',
+        label: 'Authorization Endpoint',
+        type: 'url',
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.authorization_endpoint,
+          hideInSetupView: false,
+          'data-testid': 'authorization_endpoint',
+        },
+      },
+      {
+        key: 'token_endpoint',
+        label: 'Token endpoint',
+        type: 'url',
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.token_endpoint,
+          hideInSetupView: false,
+          'data-testid': 'token_endpoint',
+        },
+      },
+      {
+        key: 'jwks_uri',
+        label: 'JWKS URI',
+        type: 'url',
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.jwks_uri,
+          hideInSetupView: false,
+          'data-testid': 'jwks_uri',
+        },
+      },
+      {
+        key: 'userinfo_endpoint',
+        label: 'UserInfo endpoint',
+        type: 'url',
+        attributes: {
+          accessor: (o) => o?.oidcProvider?.metadata?.userinfo_endpoint,
+          hideInSetupView: false,
+          'data-testid': 'userinfo_endpoint',
+        },
+      },
+    ],
+    attributes: { connection: 'oidc', hideInSetupView: false },
+    fallback: {
+      key: 'oidcDiscoveryUrl',
+      switch: {
+        label: 'Have a discovery URL? Click here to set it',
+        'data-testid': 'oidcMetadata-fallback-switch',
+      },
+    },
   },
   {
     key: 'rawMetadata',
@@ -122,6 +203,7 @@ export const getCommonFields = ({
       required: false,
       connection: 'saml',
       hideInSetupView: false,
+      'data-testid': 'metadataUrl',
     },
   },
   {
@@ -132,7 +214,7 @@ export const getCommonFields = ({
   },
 ];
 
-export const EditViewOnlyFields = [
+export const EditViewOnlyFields: FieldCatalogItem[] = [
   {
     key: 'idpMetadata',
     label: 'IdP Metadata',

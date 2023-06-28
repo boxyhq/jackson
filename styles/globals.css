@@ -24,7 +24,7 @@ a {
 }
 
 @layer base {
-  input {
+  input:not([type='radio']):not([type='checkbox']) {
     @apply rounded !important;
   }
 }

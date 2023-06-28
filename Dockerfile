@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:18.14.0-alpine3.17
+ARG NODEJS_IMAGE=node:18.16.1-alpine3.18
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
@@ -10,11 +10,8 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
-COPY sdk/ui/react sdk/ui/react
 COPY bootstrap.sh bootstrap.sh
 RUN npm run custom-install
-
-
 
 # Rebuild the source code only when needed
 FROM base AS builder

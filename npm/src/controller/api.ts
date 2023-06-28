@@ -8,24 +8,30 @@ import {
   Storable,
   SAMLSSOConnectionWithEncodedMetadata,
   SAMLSSOConnectionWithRawMetadata,
-  OIDCSSOConnection,
+  OIDCSSOConnectionWithDiscoveryUrl,
+  OIDCSSOConnectionWithMetadata,
   JacksonOption,
   SAMLSSORecord,
   OIDCSSORecord,
   GetIDPEntityIDBody,
+  IEventController,
+  UpdateSAMLConnectionParams,
+  UpdateOIDCConnectionParams,
 } from '../typings';
 import { JacksonError } from './error';
-import { IndexNames, appID, transformConnections } from './utils';
+import { IndexNames, appID, transformConnections, transformConnection, isConnectionActive } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
 
 export class ConnectionAPIController implements IConnectionAPIController {
   private connectionStore: Storable;
   private opts: JacksonOption;
+  private eventController: IEventController;
 
-  constructor({ connectionStore, opts }) {
+  constructor({ connectionStore, opts, eventController }) {
     this.connectionStore = connectionStore;
     this.opts = opts;
+    this.eventController = eventController;
   }
 
   /**
@@ -112,6 +118,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: well-known URL where the OpenID Provider configuration is exposed
    *     in: formData
    *     type: string
+   *   oidcMetadataPost:
+   *     name: oidcMetadata
+   *     description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
+   *     in: formData
+   *     type: string
    *   oidcClientIdPost:
    *     name: oidcClientId
    *     description: clientId of the application set up on the OpenID Provider
@@ -175,6 +186,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
    *      - $ref: '#/parameters/oidcDiscoveryUrlPost'
+   *      - $ref: '#/parameters/oidcMetadataPost'
    *      - $ref: '#/parameters/oidcClientIdPost'
    *      - $ref: '#/parameters/oidcClientSecretPost'
    *     responses:
@@ -192,7 +204,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
   ): Promise<SAMLSSORecord> {
     metrics.increment('createConnection');
 
-    return await samlConnection.create(body, this.connectionStore);
+    const connection = await samlConnection.create(body, this.connectionStore);
+
+    await this.eventController.notify('sso.created', connection);
+
+    return connection;
   }
 
   // For backwards compatibility
@@ -202,14 +218,20 @@ export class ConnectionAPIController implements IConnectionAPIController {
     return this.createSAMLConnection(...args);
   }
 
-  public async createOIDCConnection(body: OIDCSSOConnection): Promise<OIDCSSORecord> {
+  public async createOIDCConnection(
+    body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata
+  ): Promise<OIDCSSORecord> {
     metrics.increment('createConnection');
 
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
 
-    return await oidcConnection.create(body, this.connectionStore);
+    const connection = await oidcConnection.create(body, this.connectionStore);
+
+    await this.eventController.notify('sso.created', connection);
+
+    return connection;
   }
 
   /**
@@ -258,6 +280,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   oidcDiscoveryUrlPatch:
    *     name: oidcDiscoveryUrl
    *     description: well-known URL where the OpenID Provider configuration is exposed
+   *     in: formData
+   *     type: string
+   *   oidcMetadataPatch:
+   *     name: oidcMetadata
+   *     description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
    *     in: formData
    *     type: string
    *   oidcClientIdPatch:
@@ -337,6 +364,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/rawMetadataParamPatch'
    *       - $ref: '#/parameters/metadataUrlParamPatch'
    *       - $ref: '#/parameters/oidcDiscoveryUrlPatch'
+   *       - $ref: '#/parameters/oidcMetadataPatch'
    *       - $ref: '#/parameters/oidcClientIdPatch'
    *       - $ref: '#/parameters/oidcClientSecretPatch'
    *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
@@ -353,13 +381,20 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       500:
    *         description: Please set OpenID response handler path (oidcPath) on Jackson
    */
-  public async updateSAMLConnection(
-    body: (SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata) & {
-      clientID: string;
-      clientSecret: string;
+  public async updateSAMLConnection(body: UpdateSAMLConnectionParams): Promise<void> {
+    const connection = await samlConnection.update(
+      body,
+      this.connectionStore,
+      this.getConnections.bind(this)
+    );
+
+    if ('deactivated' in body) {
+      if (isConnectionActive(connection)) {
+        await this.eventController.notify('sso.activated', connection);
+      } else {
+        await this.eventController.notify('sso.deactivated', connection);
+      }
     }
-  ): Promise<void> {
-    await samlConnection.update(body, this.connectionStore, this.getConnections.bind(this));
   }
 
   // For backwards compatibility
@@ -369,14 +404,24 @@ export class ConnectionAPIController implements IConnectionAPIController {
     await this.updateSAMLConnection(...args);
   }
 
-  public async updateOIDCConnection(
-    body: OIDCSSOConnection & { clientID: string; clientSecret: string }
-  ): Promise<void> {
+  public async updateOIDCConnection(body: UpdateOIDCConnectionParams): Promise<void> {
     if (!this.opts.oidcPath) {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
 
-    await oidcConnection.update(body, this.connectionStore, this.getConnections.bind(this));
+    const connection = await oidcConnection.update(
+      body,
+      this.connectionStore,
+      this.getConnections.bind(this)
+    );
+
+    if ('deactivated' in body) {
+      if (isConnectionActive(connection)) {
+        await this.eventController.notify('sso.activated', connection);
+      } else {
+        await this.eventController.notify('sso.deactivated', connection);
+      }
+    }
   }
 
   public getIDPEntityID(body: GetIDPEntityIDBody): string {
@@ -494,7 +539,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
         return [];
       }
 
-      return transformConnections(connections);
+      return transformConnections(connections.data);
     }
 
     if (clientID) {
@@ -513,13 +558,13 @@ export class ConnectionAPIController implements IConnectionAPIController {
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!connections || !connections.length) {
+      if (!connections || !connections.data.length) {
         return [];
       }
 
       // filter if strategy is passed
       const filteredConnections = strategy
-        ? connections.filter((connection) => {
+        ? connections.data.filter((connection) => {
             if (strategy === 'saml') {
               if (connection.idpMetadata) {
                 return true;
@@ -532,7 +577,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
             }
             return false;
           })
-        : connections;
+        : connections.data;
 
       if (!filteredConnections.length) {
         return [];
@@ -601,10 +646,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     if (tenant && product) {
-      const samlConfigs = await this.connectionStore.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      const samlConfigs = (
+        await this.connectionStore.getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
 
       if (!samlConfigs || !samlConfigs.length) {
         return {};
@@ -621,27 +668,27 @@ export class ConnectionAPIController implements IConnectionAPIController {
    * parameters:
    *   clientIDDel:
    *     name: clientID
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Client ID
    *   clientSecretDel:
    *     name: clientSecret
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Client Secret
    *   tenantDel:
    *     name: tenant
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Tenant
    *   productDel:
    *     name: product
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Product
    *   strategyDel:
    *     name: strategy
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Strategy which can help to filter connections with tenant/product query
    * /api/v1/connections:
@@ -655,9 +702,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     summary: Delete SSO Connections
    *     operationId: delete-sso-connection
    *     tags: [Connections]
-   *     consumes:
-   *       - application/x-www-form-urlencoded
-   *       - application/json
    *     responses:
    *       '200':
    *         description: Success
@@ -705,6 +749,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
       if (connection.clientSecret === clientSecret) {
         await this.connectionStore.delete(clientID);
+        await this.eventController.notify('sso.deleted', transformConnection(connection));
       } else {
         throw new JacksonError('clientSecret mismatch', 400);
       }
@@ -713,10 +758,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
     }
 
     if (tenant && product) {
-      const connections = await this.connectionStore.getByIndex({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      });
+      const connections = (
+        await this.connectionStore.getByIndex({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      ).data;
 
       if (!connections || !connections.length) {
         return;
@@ -739,8 +786,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
           })
         : connections;
 
-      for (const conf of filteredConnections) {
+      for (const conf of transformConnections(filteredConnections)) {
         await this.connectionStore.delete(conf.clientID);
+        await this.eventController.notify('sso.deleted', conf);
       }
 
       return;
@@ -751,5 +799,99 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
   public async deleteConfig(body: DelConnectionsQuery): Promise<void> {
     await this.deleteConnections({ ...body, strategy: 'saml' });
+  }
+
+  /**
+   * @swagger
+   * parameters:
+   *  productParamGet:
+   *     in: query
+   *     name: product
+   *     type: string
+   *     description: Product
+   *     required: true
+   * definitions:
+   *   Connection:
+   *      type: object
+   *      properties:
+   *        clientID:
+   *          type: string
+   *          description: Connection clientID
+   *        clientSecret:
+   *          type: string
+   *          description: Connection clientSecret
+   *        name:
+   *          type: string
+   *          description: Connection name
+   *        description:
+   *          type: string
+   *          description: Connection description
+   *        redirectUrl:
+   *          type: string
+   *          description: A list of allowed redirect URLs
+   *        defaultRedirectUrl:
+   *          type: string
+   *          description: The redirect URL to use in the IdP login flow
+   *        tenant:
+   *          type: string
+   *          description: Connection tenant
+   *        product:
+   *          type: string
+   *          description: Connection product
+   *        idpMetadata:
+   *          type: object
+   *          description: SAML IdP metadata
+   *        oidcProvider:
+   *          type: object
+   *          description: OIDC IdP metadata
+   * responses:
+   *   '200Get':
+   *     description: Success
+   *     schema:
+   *       type: array
+   *       items:
+   *         $ref: '#/definitions/Connection'
+   *   '400Get':
+   *     description: Please provide a `product`.
+   *   '401Get':
+   *     description: Unauthorized
+   * /api/v1/connections/product:
+   *   get:
+   *     summary: Get SSO Connections by product
+   *     parameters:
+   *       - $ref: '#/parameters/productParamGet'
+   *     operationId: get-connections-by-product
+   *     tags: [Connections]
+   *     responses:
+   *      '200':
+   *        $ref: '#/responses/200Get'
+   *      '400':
+   *        $ref: '#/responses/400Get'
+   *      '401':
+   *        $ref: '#/responses/401Get'
+   */
+  public async getConnectionsByProduct(body: {
+    product: string;
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }> {
+    const { product, pageOffset, pageLimit, pageToken } = body;
+
+    if (!product) {
+      throw new JacksonError('Please provide a `product`.', 400);
+    }
+
+    const connections = await this.connectionStore.getByIndex(
+      {
+        name: IndexNames.Product,
+        value: product,
+      },
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
+
+    return { data: transformConnections(connections.data), pageToken };
   }
 }

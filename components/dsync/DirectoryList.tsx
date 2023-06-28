@@ -3,6 +3,7 @@ import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
+import { useEffect } from 'react';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { useTranslation } from 'next-i18next';
 import { LinkPrimary } from '@components/LinkPrimary';
@@ -16,10 +17,11 @@ import usePaginate from '@lib/ui/hooks/usePaginate';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
+import Badge from '@components/Badge';
 
 const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
   const router = useRouter();
 
   const displayTenantProduct = setupLinkToken ? false : true;
@@ -32,10 +34,25 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
 
   const { providers, isLoading: isLoadingProviders } = useDirectoryProviders(setupLinkToken);
 
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
+  let getDirectoriesUrlPaginated = `${getDirectoriesUrl}?offset=${paginate.offset}&limit=${pageLimit}`;
+
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    getDirectoriesUrlPaginated += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  }
+
   const { data, error, isLoading } = useSWR<ApiSuccess<Directory[]>, ApiError>(
-    `${getDirectoriesUrl}?offset=${paginate.offset}&limit=${pageLimit}`,
+    getDirectoriesUrlPaginated,
     fetcher
   );
+
+  const nextPageToken = data?.pageToken;
+
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading || isLoadingProviders) {
     return <Loading />;
@@ -90,6 +107,9 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                     {t('type')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
+                    {t('status')}
+                  </th>
+                  <th scope='col' className='px-6 py-3'>
                     {t('actions')}
                   </th>
                 </tr>
@@ -111,6 +131,17 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                           </>
                         )}
                         <td className='px-6'>{providers && providers[directory.type]}</td>
+                        <td className='px-6'>
+                          {directory.deactivated ? (
+                            <Badge color='warning' size='md'>
+                              {t('inactive')}
+                            </Badge>
+                          ) : (
+                            <Badge color='success' size='md'>
+                              {t('active')}
+                            </Badge>
+                          )}
+                        </td>
                         <td className='px-6'>
                           <span className='inline-flex items-baseline'>
                             <IconButton

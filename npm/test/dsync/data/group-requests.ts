@@ -1,4 +1,4 @@
-import type { DirectorySyncRequest, Directory } from '../../../src/typings';
+import type { DirectorySyncRequest, Directory, Group } from '../../../src/typings';
 
 const requests = {
   // Create a group
@@ -94,6 +94,29 @@ const requests = {
     };
   },
 
+  updateName: (directory: Directory, groupId: string, group: any): DirectorySyncRequest => {
+    return {
+      method: 'PATCH',
+      directoryId: directory.id,
+      body: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'replace',
+            value: {
+              id: groupId,
+              displayName: group.displayName,
+            },
+          },
+        ],
+      },
+      resourceType: 'groups',
+      resourceId: groupId,
+      apiSecret: directory.scim.secret,
+      query: {},
+    };
+  },
+
   addMembers: (directory: Directory, groupId: string, members: any): DirectorySyncRequest => {
     return {
       method: 'PATCH',
@@ -140,29 +163,25 @@ const requests = {
       query: {},
     };
   },
+};
 
-  updateName: (directory: Directory, groupId: string, group: any): DirectorySyncRequest => {
-    return {
-      method: 'PATCH',
-      directoryId: directory.id,
-      body: {
-        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
-        Operations: [
-          {
-            op: 'replace',
-            value: {
-              id: groupId,
-              displayName: group.displayName,
-            },
-          },
-        ],
-      },
-      resourceType: 'groups',
-      resourceId: groupId,
-      apiSecret: directory.scim.secret,
-      query: {},
-    };
-  },
+export const createGroupMembershipRequest = (
+  directory: Directory,
+  group: Group,
+  operations: any
+): DirectorySyncRequest => {
+  return {
+    body: {
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+      Operations: operations,
+    },
+    method: 'PATCH',
+    directoryId: directory.id,
+    apiSecret: directory.scim.secret,
+    resourceId: group.id,
+    resourceType: 'groups',
+    query: {},
+  };
 };
 
 export default requests;

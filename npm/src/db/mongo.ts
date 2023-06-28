@@ -1,5 +1,5 @@
 import { Collection, Db, MongoClient, UpdateOptions } from 'mongodb';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index } from '../typings';
+import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records } from '../typings';
 import * as dbutils from './utils';
 
 type _Document = {
@@ -22,8 +22,13 @@ class Mongo implements DatabaseDriver {
 
   async init(): Promise<Mongo> {
     const dbUrl = this.options.url as string;
-    this.client = new MongoClient(dbUrl);
-    await this.client.connect();
+    try {
+      this.client = new MongoClient(dbUrl);
+      await this.client.connect();
+    } catch (err) {
+      console.error(`error connecting to engine: ${this.options.engine}, db: ${err}`);
+      throw err;
+    }
 
     this.db = this.client.db();
     this.collection = this.db.collection('jacksonStore');
@@ -45,18 +50,24 @@ class Mongo implements DatabaseDriver {
     return null;
   }
 
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number): Promise<unknown[]> {
+  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const docs = await this.collection
-    .find({ namespace: namespace }, { sort: { createdAt: -1 }, skip: pageOffset, limit: pageLimit })
+      .find({ namespace: namespace }, { sort: { createdAt: -1 }, skip: pageOffset, limit: pageLimit })
       .toArray();
 
     if (docs) {
-      return docs.map(({ value }) => value);
+      return { data: docs.map(({ value }) => value) };
     }
-    return [];
+    return { data: [] };
   }
 
-  async getByIndex(namespace: string, idx: Index, offset?: number, limit?: number): Promise<any> {
+  async getByIndex(
+    namespace: string,
+    idx: Index,
+    offset?: number,
+    limit?: number,
+    _?: string
+  ): Promise<Records> {
     const docs =
       dbutils.isNumeric(offset) && dbutils.isNumeric(limit)
         ? await this.collection
@@ -78,7 +89,7 @@ class Mongo implements DatabaseDriver {
       ret.push(doc.value);
     }
 
-    return ret;
+    return { data: ret };
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
@@ -116,6 +127,18 @@ class Mongo implements DatabaseDriver {
   async delete(namespace: string, key: string): Promise<any> {
     return await this.collection.deleteOne({
       _id: dbutils.key(namespace, key) as any,
+    });
+  }
+
+  async deleteMany(namespace: string, keys: string[]): Promise<void> {
+    if (keys.length === 0) {
+      return;
+    }
+
+    const dbKeys = keys.map((key) => dbutils.key(namespace, key)) as any[];
+
+    await this.collection.deleteMany({
+      _id: { $in: dbKeys },
     });
   }
 }

@@ -1,10 +1,18 @@
 import { SSO } from './sso';
 import { App } from './app';
-import type { JacksonOption } from '../../typings';
+import type { JacksonOption, SAMLTracerInstance } from '../../typings';
 import { SAMLHandler } from '../../controller/saml-handler';
 
 // This is the main entry point for the SAML Federation module
-const SAMLFederation = async ({ db, opts }: { db; opts: JacksonOption }) => {
+const SAMLFederation = async ({
+  db,
+  opts,
+  samlTracer,
+}: {
+  db;
+  opts: JacksonOption;
+  samlTracer: SAMLTracerInstance;
+}) => {
   const appStore = db.store('samlfed:apps');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const connectionStore = db.store('saml:config');
@@ -16,7 +24,7 @@ const SAMLFederation = async ({ db, opts }: { db; opts: JacksonOption }) => {
   });
 
   const app = new App({ store: appStore, opts });
-  const sso = new SSO({ app, samlHandler });
+  const sso = new SSO({ app, samlHandler, samlTracer, opts });
 
   const response = {
     app,
