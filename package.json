@@ -78,7 +78,7 @@
     "@types/node": "20.3.1",
     "@types/react": "18.2.12",
     "@typescript-eslint/eslint-plugin": "5.59.7",
-    "@typescript-eslint/parser": "5.59.11",
+    "@typescript-eslint/parser": "5.60.1",
     "autoprefixer": "10.4.14",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
