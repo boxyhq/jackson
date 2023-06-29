@@ -1,6 +1,5 @@
 module.exports = {
   async up(db, client) {
-
         const collection = db.collection('jacksonStore');
         const response = await collection.distinct('_id', {});
         const searchTerm = ':';

@@ -35,6 +35,7 @@ class Mongo implements DatabaseDriver {
 
     await this.collection.createIndex({ indexes: 1 });
     await this.collection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 1 });
+    await this.collection.createIndex({ namespace: 1 });
 
     return this;
   }
