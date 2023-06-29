@@ -10,7 +10,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
-COPY bootstrap.sh bootstrap.sh
+COPY migrate.sh migrate.sh
 RUN npm run custom-install
 
 # Rebuild the source code only when needed
@@ -19,7 +19,7 @@ WORKDIR /app
 
 COPY --from=deps /app/npm ./npm
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/bootstrap.sh ./bootstrap.sh
+COPY --from=deps /app/migrate.sh ./migrate.sh
 COPY . .
 
 
@@ -49,9 +49,9 @@ COPY --from=builder /app/public ./public
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/bootstrap.sh ./bootstrap.sh
+COPY --from=builder --chown=nextjs:nodejs /app/migrate.sh ./migrate.sh
 COPY --from=builder /app/npm ./npm
-RUN chmod +x bootstrap.sh
+RUN chmod +x migrate.sh
 RUN npm install -g ts-node migrate-mongo
 
 USER nextjs
@@ -59,4 +59,5 @@ USER nextjs
 EXPOSE 5225
 
 ENV PORT 5225
-CMD ["/bin/sh", "bootstrap.sh"]
+
+CMD ["node", "server.js"]
