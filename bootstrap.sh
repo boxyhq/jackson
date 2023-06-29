@@ -5,7 +5,6 @@ then
     echo "Initiating Migration..."
 
     cd ./npm
-    # && ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts
     if [ "$DB_ENGINE" = "mongo" ]
     then
         migrate-mongo up

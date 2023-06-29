@@ -4,13 +4,12 @@ export class msNamespace1688036519383 implements MigrationInterface {
     name = 'msNamespace1688036519383'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        const columns = await queryRunner.query(`SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='jackson_store';`);
-        if (columns.filter((c) => c.COLUMN_NAME === "namespace").length === 0) {
-            await queryRunner.query(`ALTER TABLE \`jackson_store\` ADD \`namespace\` varchar(64) NULL`);
-        }
+        await queryRunner.query(`ALTER TABLE \`jackson_store\` ADD \`namespace\` varchar(64) NULL`);
+        await queryRunner.query(`CREATE INDEX \`_jackson_store_namespace\` ON \`jackson_store\` (\`namespace\`)`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`DROP INDEX \`_jackson_store_namespace\` ON \`jackson_store\``);
         await queryRunner.query(`ALTER TABLE \`jackson_store\` DROP COLUMN \`namespace\``);
     }
 
