@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class msNamespace1647805358887 implements MigrationInterface {
-    name = 'msNamespace1647805358887'
+export class msNamespace1688036519383 implements MigrationInterface {
+    name = 'msNamespace1688036519383'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const columns = await queryRunner.query(`SELECT * FROM information_schema.columns WHERE table_name = 'jackson_store';`);
