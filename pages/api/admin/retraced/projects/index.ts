@@ -10,9 +10,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   switch (method) {
     case 'GET':
-      return getProjects(req, res);
+      return await getProjects(req, res);
     case 'POST':
-      return createProject(req, res);
+      return await createProject(req, res);
     default:
       res.setHeader('Allow', 'GET, POST');
       res.status(405).json({

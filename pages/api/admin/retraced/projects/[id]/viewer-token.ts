@@ -8,7 +8,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   switch (method) {
     case 'GET':
-      return getViewerToken(req, res);
+      return await getViewerToken(req, res);
     default:
       res.setHeader('Allow', 'GET');
       res.status(405).json({
