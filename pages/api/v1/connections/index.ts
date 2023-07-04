@@ -92,5 +92,6 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await connectionAPIController.deleteConnections(req.query as DelConnectionsQuery);
 
-  return res.status(204).end();
+  res.status(204).end();
+  return;
 };
