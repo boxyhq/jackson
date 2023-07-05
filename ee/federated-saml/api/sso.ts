@@ -40,5 +40,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     idp_hint,
   });
 
-  return res.redirect(redirectUrl);
+  res.redirect(redirectUrl);
+  return;
 };

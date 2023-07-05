@@ -7,9 +7,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   switch (method) {
     case 'GET':
-      return getModel(req, res);
+      return await getModel(req, res);
     case 'POST':
-      return saveModel(req, res);
+      return await saveModel(req, res);
     default:
       res.setHeader('Allow', 'GET');
       res.status(405).json({
