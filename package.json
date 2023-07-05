@@ -12,7 +12,6 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "build": "next build",
     "dev": "cross-env JACKSON_API_KEYS=secret IDP_ENABLED=true next dev -p 5225",
     "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
     "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
@@ -40,7 +39,9 @@
     "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'",
     "postcustom-install": "npm run prebuild",
     "postinstall": "npm run prebuild",
-    "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)"
+    "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)",
+    "build": "next build",
+    "postbuild": "(cp -R public .next/standalone && cp -R .next/static .next/standalone/.next) || (xcopy \\public \\.next/standalone && xcopy \\.next\\static \\.next\\standalone\\.next)"
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.4",
