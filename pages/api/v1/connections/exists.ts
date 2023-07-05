@@ -29,6 +29,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (connections.length === 0) {
     return res.status(404).send({});
   } else {
-    return res.status(204).end();
+    res.status(204).end();
+    return;
   }
 };
