@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.10.1",
+    "version": "1.11.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -140,6 +140,9 @@
           },
           {
             "$ref": "#/parameters/productParamPatch"
+          },
+          {
+            "$ref": "#/parameters/deactivatedParamPatch"
           }
         ],
         "responses": {
@@ -197,7 +200,8 @@
                 "name": "Hoppscotch-SP",
                 "description": "SP for hoppscotch.io",
                 "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943"
+                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+                "deactivated": false
               }
             }
           },
@@ -372,6 +376,9 @@
           },
           {
             "$ref": "#/parameters/productParamPatch"
+          },
+          {
+            "$ref": "#/parameters/deactivatedParamPatch"
           }
         ],
         "responses": {
@@ -643,7 +650,8 @@
         "name": "Hoppscotch-SP",
         "description": "SP for hoppscotch.io",
         "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-        "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943"
+        "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+        "deactivated": false
       },
       "properties": {
         "clientID": {
@@ -685,6 +693,10 @@
         "oidcProvider": {
           "type": "object",
           "description": "OIDC IdP metadata"
+        },
+        "deactivated": {
+          "type": "boolean",
+          "description": "Connection status"
         }
       }
     },
@@ -888,6 +900,13 @@
       "in": "formData",
       "required": true,
       "type": "string"
+    },
+    "deactivatedParamPatch": {
+      "name": "deactivated",
+      "description": "Connection status",
+      "in": "formData",
+      "required": false,
+      "type": "boolean"
     },
     "tenantParamGet": {
       "in": "query",
