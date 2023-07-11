@@ -174,6 +174,7 @@ tap.test('[OIDCProvider]', async (t) => {
       });
       t.ok(
         fakeCb.calledWithMatch(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           jacksonOptions.externalUrl + jacksonOptions.oidcPath,
           { code: oidc_response.code },
