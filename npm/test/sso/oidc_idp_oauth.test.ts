@@ -166,7 +166,7 @@ tap.test('[OIDCProvider]', async (t) => {
         () =>
           ({
             Client: FakeOidcClient,
-          } as any)
+          }) as any
       );
       const { redirect_url } = await oauthController.oidcAuthzResponse({
         ...oidc_response,
@@ -174,6 +174,7 @@ tap.test('[OIDCProvider]', async (t) => {
       });
       t.ok(
         fakeCb.calledWithMatch(
+          // @ts-ignore
           jacksonOptions.externalUrl + jacksonOptions.oidcPath,
           { code: oidc_response.code },
           { code_verifier: context.codeVerifier }
