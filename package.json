@@ -41,7 +41,7 @@
     "postinstall": "npm run prebuild",
     "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)",
     "build": "next build",
-    "postbuild": "(cp -R public .next/standalone && cp -R .next/static .next/standalone/.next) || (copy -recurse \\public \\.next/standalone && copy -recurse \\.next\\static \\.next\\standalone\\.next)"
+    "postbuild": "(cp -R public .next/standalone && cp -R .next/static .next/standalone/.next) || (copy -recurse .\\public .\\.next/standalone && copy -recurse .\\.next\\static .\\.next\\standalone\\.next)"
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.4",
