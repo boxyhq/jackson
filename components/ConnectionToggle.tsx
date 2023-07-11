@@ -21,7 +21,7 @@ export const ConnectionToggle: FC<Props> = (props) => {
     setActive(connection.active);
   }, [connection]);
 
-  const askForConfirmation = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const askForConfirmation = () => {
     setModalVisible(true);
   };
 

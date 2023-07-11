@@ -77,7 +77,7 @@ function BlocklyComponent(props) {
       return;
     }
 
-    const { initialXml, children, ...rest } = props;
+    const { initialXml, ...rest } = props;
     primaryWorkspace.current = Blockly.inject(blocklyDiv.current as any, {
       toolbox: toolbox.current,
       readOnly: false,
