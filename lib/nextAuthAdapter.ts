@@ -22,7 +22,7 @@ export default function Adapter() {
     async createUser(user) {
       return user;
     },
-    async getUser(id) {
+    async getUser() {
       return;
     },
     async getUserByEmail(email) {
@@ -36,7 +36,7 @@ export default function Adapter() {
           } as AdapterUser)
         : null;
     },
-    async getUserByAccount({ providerAccountId, provider }) {
+    async getUserByAccount() {
       return;
     },
     async updateUser(user: AdapterUser) {
@@ -53,26 +53,26 @@ export default function Adapter() {
       } as AdapterUser;
     },
     // will be required in a future release, but are not yet invoked
-    async deleteUser(userId) {
+    async deleteUser() {
       return;
     },
-    async linkAccount(account) {
+    async linkAccount() {
       return;
     },
     // will be required in a future release, but are not yet invoked
-    async unlinkAccount({ providerAccountId, provider }) {
+    async unlinkAccount() {
       return;
     },
-    async createSession({ sessionToken, userId, expires }) {
+    async createSession() {
       return;
     },
-    async getSessionAndUser(sessionToken) {
+    async getSessionAndUser() {
       return;
     },
-    async updateSession({ sessionToken }) {
+    async updateSession() {
       return;
     },
-    async deleteSession(sessionToken) {
+    async deleteSession() {
       return;
     },
     async createVerificationToken(data: VerificationToken) {

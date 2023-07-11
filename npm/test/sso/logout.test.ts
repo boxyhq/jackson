@@ -111,7 +111,7 @@ tap.test('LogoutController -> createRequest', async (t) => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(sessionId);
+    sinon.stub(crypto, 'randomBytes').returns(sessionId);
 
     await logoutController.createRequest({
       ...body,

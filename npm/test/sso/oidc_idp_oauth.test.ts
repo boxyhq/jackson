@@ -149,7 +149,7 @@ tap.test('[OIDCProvider]', async (t) => {
           family_name: 'samuel',
         }),
       };
-      const fakeCb = sinon.fake(async (..._args) => TOKEN_SET);
+      const fakeCb = sinon.fake(async () => TOKEN_SET);
       function FakeOidcClient(this: any) {
         this.callback = fakeCb;
         this.userinfo = async () => ({

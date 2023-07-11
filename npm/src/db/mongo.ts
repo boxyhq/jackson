@@ -49,6 +49,7 @@ class Mongo implements DatabaseDriver {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const _namespaceMatch = new RegExp(`^${namespace}:.*`);
     const docs = await this.collection
@@ -66,6 +67,7 @@ class Mongo implements DatabaseDriver {
     idx: Index,
     offset?: number,
     limit?: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string
   ): Promise<Records> {
     const docs =
