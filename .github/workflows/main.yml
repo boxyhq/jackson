@@ -151,6 +151,7 @@ jobs:
           EOF
       - run: npm run custom-install
       - run: npm run lint
+      - run: npm run build
       - run: npm run test
         working-directory: ./npm
       - name: Install playwright browser dependencies
