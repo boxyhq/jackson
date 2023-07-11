@@ -188,7 +188,6 @@ const saml = {
       description,
       forceAuthn = false,
       metadataUrl,
-      identifierFormat,
       ...clientInfo
     } = body;
 

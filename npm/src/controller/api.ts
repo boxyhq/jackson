@@ -59,6 +59,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *            "description": "SP for hoppscotch.io",
    *            "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
    *            "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *            "deactivated": false
    *          }
    *    validationErrorsPost:
    *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
@@ -319,6 +320,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: formData
    *     required: true
    *     type: string
+   *   deactivatedParamPatch:
+   *     name: deactivated
+   *     description: Connection status
+   *     in: formData
+   *     required: false
+   *     type: boolean
    * /api/v1/saml/config:
    *   patch:
    *     summary: Update SAML Config
@@ -340,6 +347,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/redirectUrlParamPatch'
    *       - $ref: '#/parameters/tenantParamPatch'
    *       - $ref: '#/parameters/productParamPatch'
+   *       - $ref: '#/parameters/deactivatedParamPatch'
    *     responses:
    *       204:
    *         description: Success
@@ -371,6 +379,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/redirectUrlParamPatch'
    *       - $ref: '#/parameters/tenantParamPatch'
    *       - $ref: '#/parameters/productParamPatch'
+   *       - $ref: '#/parameters/deactivatedParamPatch'
    *     responses:
    *       204:
    *         description: Success
@@ -491,6 +500,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        oidcProvider:
    *          type: object
    *          description: OIDC IdP metadata
+   *        deactivated:
+   *          type: boolean
+   *          description: Connection status
    * responses:
    *   '200Get':
    *     description: Success
@@ -626,6 +638,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                "description": "SP for hoppscotch.io",
    *                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
    *                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *                "deactivated": false
    *            }
    *      '400':
    *        $ref: '#/responses/400Get'

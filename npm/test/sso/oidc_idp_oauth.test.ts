@@ -149,7 +149,7 @@ tap.test('[OIDCProvider]', async (t) => {
           family_name: 'samuel',
         }),
       };
-      const fakeCb = sinon.fake(async (..._args) => TOKEN_SET);
+      const fakeCb = sinon.fake(async () => TOKEN_SET);
       function FakeOidcClient(this: any) {
         this.callback = fakeCb;
         this.userinfo = async () => ({
@@ -166,7 +166,7 @@ tap.test('[OIDCProvider]', async (t) => {
         () =>
           ({
             Client: FakeOidcClient,
-          } as any)
+          }) as any
       );
       const { redirect_url } = await oauthController.oidcAuthzResponse({
         ...oidc_response,
@@ -174,6 +174,8 @@ tap.test('[OIDCProvider]', async (t) => {
       });
       t.ok(
         fakeCb.calledWithMatch(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           jacksonOptions.externalUrl + jacksonOptions.oidcPath,
           { code: oidc_response.code },
           { code_verifier: context.codeVerifier }
