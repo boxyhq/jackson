@@ -1,8 +1,27 @@
-import { SetupLink, SetupLinkCreatePayload, Storable } from '../typings';
+import {
+  SetupLink,
+  SetupLinkCreatePayload,
+  Storable,
+  PaginationParams,
+  SetupLinkService,
+  Index,
+} from '../typings';
 import * as dbutils from '../db/utils';
 import { IndexNames, validateTenantAndProduct, validateRedirectUrl, extractRedirectUrls } from './utils';
 import crypto from 'crypto';
 import { JacksonError } from './error';
+
+interface FilterByParams extends PaginationParams {
+  service?: SetupLinkService;
+  product?: string;
+  tenant?: string;
+}
+
+const throwIfInvalidService = (service: string) => {
+  if (!['sso', 'dsync'].includes(service)) {
+    throw new JacksonError('Invalid service provided. Supported values are: sso, dsync', 400);
+  }
+};
 
 export class SetupLinkController {
   setupLinkStore: Storable;
@@ -22,9 +41,7 @@ export class SetupLinkController {
       validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
     }
 
-    if (!['sso', 'dsync'].includes(service)) {
-      throw new JacksonError('Invalid service type. Please use either sso or dsync', 400);
-    }
+    throwIfInvalidService(service);
 
     const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
     const token = crypto.randomBytes(24).toString('hex');
@@ -72,6 +89,10 @@ export class SetupLinkController {
       {
         name: IndexNames.Service,
         value: service,
+      },
+      {
+        name: IndexNames.Product,
+        value: product,
       }
     );
 
@@ -103,28 +124,28 @@ export class SetupLinkController {
   }
 
   // Get setup links by service
-  async getByService(
-    service: string,
-    pageOffset?: number,
-    pageLimit?: number,
-    pageToken?: string
-  ): Promise<{ data: SetupLink[]; pageToken?: string }> {
-    if (!service) {
-      throw new JacksonError('Missing service name', 400);
-    }
+  // async getByService(
+  //   service: string,
+  //   pageOffset?: number,
+  //   pageLimit?: number,
+  //   pageToken?: string
+  // ): Promise<{ data: SetupLink[]; pageToken?: string }> {
+  //   if (!service) {
+  //     throw new JacksonError('Missing service name', 400);
+  //   }
 
-    const { data: setupLinks, pageToken: nextPageToken } = await this.setupLinkStore.getByIndex(
-      {
-        name: IndexNames.Service,
-        value: service,
-      },
-      pageOffset,
-      pageLimit,
-      pageToken
-    );
+  //   const { data: setupLinks, pageToken: nextPageToken } = await this.setupLinkStore.getByIndex(
+  //     {
+  //       name: IndexNames.Service,
+  //       value: service,
+  //     },
+  //     pageOffset,
+  //     pageLimit,
+  //     pageToken
+  //   );
 
-    return { data: setupLinks, pageToken: nextPageToken };
-  }
+  //   return { data: setupLinks, pageToken: nextPageToken };
+  // }
 
   // Remove a setup link
   async remove(key: string): Promise<boolean> {
@@ -140,5 +161,65 @@ export class SetupLinkController {
   // Check if a setup link is expired or not
   isExpired(setupLink: SetupLink): boolean {
     return setupLink.validTill < +new Date();
+  }
+
+  async filterBy(params: FilterByParams): Promise<{ data: SetupLink[]; pageToken?: string }> {
+    const { tenant, product, service, pageOffset, pageLimit, pageToken } = params;
+
+    let index: Index | null = null;
+
+    // By service
+    if (tenant && product && service) {
+      index = {
+        name: IndexNames.TenantProductService,
+        value: dbutils.keyFromParts(tenant, product, service),
+      };
+    }
+
+    // By product
+    else if (service) {
+      throwIfInvalidService(service);
+
+      index = {
+        name: IndexNames.Service,
+        value: service,
+      };
+    }
+
+    // By tenant + product + service combination
+    else if (product) {
+      index = {
+        name: IndexNames.Product,
+        value: product,
+      };
+    }
+
+    if (!index) {
+      throw new JacksonError('Please provide either service or product to filter setup links', 400);
+    }
+
+    const { data: setupLinks, pageToken: nextPageToken } = await this.setupLinkStore.getByIndex(
+      index,
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
+
+    return { data: setupLinks, pageToken: nextPageToken };
+  }
+
+  // Get a setup link by id
+  async get(id: string): Promise<SetupLink> {
+    if (!id) {
+      throw new JacksonError('Missing setup link id', 400);
+    }
+
+    const setupLink = await this.setupLinkStore.get(id);
+
+    if (!setupLink) {
+      throw new JacksonError('Setup link is not found', 404);
+    }
+
+    return setupLink;
   }
 }
