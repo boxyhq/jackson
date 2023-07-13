@@ -22,6 +22,10 @@ export class SetupLinkController {
       validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
     }
 
+    if (!['sso', 'dsync'].includes(service)) {
+      throw new JacksonError('Invalid service type. Please use either sso or dsync', 400);
+    }
+
     const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
     const token = crypto.randomBytes(24).toString('hex');
 
