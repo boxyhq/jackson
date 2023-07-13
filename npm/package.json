@@ -48,7 +48,7 @@
     "@boxyhq/saml20": "1.2.2",
     "axios": "1.4.0",
     "encoding": "0.1.13",
-    "googleapis": "121.0.0",
+    "googleapis": "122.0.0",
     "jose": "4.14.4",
     "lodash": "4.17.21",
     "mixpanel": "0.17.0",
@@ -68,7 +68,7 @@
   "devDependencies": {
     "@faker-js/faker": "8.0.2",
     "@types/lodash": "4.14.195",
-    "@types/node": "20.4.1",
+    "@types/node": "20.4.2",
     "@types/sinon": "10.0.15",
     "@types/tap": "15.0.8",
     "cross-env": "7.0.3",
