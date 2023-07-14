@@ -1,7 +1,7 @@
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { GetConnectionsQuery } from '@boxyhq/saml-jackson';
+import type { DelConnectionsQuery, GetConnectionsQuery } from '@boxyhq/saml-jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -90,7 +90,8 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  await connectionAPIController.deleteConnections(req.body);
+  await connectionAPIController.deleteConnections(req.query as DelConnectionsQuery);
 
-  return res.status(204).end();
+  res.status(204).end();
+  return;
 };

@@ -27,7 +27,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (redirect_url) {
-      return res.redirect(302, redirect_url);
+      res.redirect(302, redirect_url);
+      return;
     }
 
     if (app_select_form) {
@@ -44,6 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
 
-    return res.redirect('/error');
+    res.redirect('/error');
+    return;
   }
 }

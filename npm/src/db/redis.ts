@@ -36,6 +36,7 @@ class Redis implements DatabaseDriver {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
@@ -44,7 +45,7 @@ class Redis implements DatabaseDriver {
     const keyArray: string[] = [];
     let count = 0;
     take += skip;
-    for await (const { score, value } of this.client.zScanIterator(
+    for await (const { value } of this.client.zScanIterator(
       dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
       Math.min(take, 1000)
     )) {
@@ -74,6 +75,7 @@ class Redis implements DatabaseDriver {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string
   ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
@@ -86,7 +88,7 @@ class Redis implements DatabaseDriver {
     const idxKey = dbutils.keyForIndex(namespace, idx);
     const dbKeys = await this.client.sMembers(dbutils.keyFromParts(dbutils.indexPrefix, idxKey));
     if (!offsetAndLimitValueCheck) {
-      for await (const { _, value } of this.client.zScanIterator(
+      for await (const { value } of this.client.zScanIterator(
         dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
         count + 1
       )) {

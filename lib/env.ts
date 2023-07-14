@@ -78,6 +78,15 @@ const jacksonOptions: JacksonOption = {
     endpoint: process.env.WEBHOOK_URL || '',
     secret: process.env.WEBHOOK_SECRET || '',
   },
+  dsync: {
+    providers: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID || '',
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+        callbackUrl: process.env.GOOGLE_REDIRECT_URI || '',
+      },
+    },
+  },
 };
 
 const adminPortalSSODefaults = {
@@ -92,3 +101,5 @@ export { retraced as retracedOptions };
 export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
+
+export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';

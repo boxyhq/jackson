@@ -26,7 +26,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const { data: user, error } = await directorySyncController.users
-    .with(directory.tenant, directory.product)
+    .setTenantAndProduct(directory.tenant, directory.product)
     .get(userId);
 
   if (error) {

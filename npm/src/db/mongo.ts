@@ -21,8 +21,13 @@ class Mongo implements DatabaseDriver {
 
   async init(): Promise<Mongo> {
     const dbUrl = this.options.url as string;
-    this.client = new MongoClient(dbUrl);
-    await this.client.connect();
+    try {
+      this.client = new MongoClient(dbUrl);
+      await this.client.connect();
+    } catch (err) {
+      console.error(`error connecting to engine: ${this.options.engine}, db: ${err}`);
+      throw err;
+    }
 
     this.db = this.client.db();
     this.collection = this.db.collection('jacksonStore');
@@ -44,6 +49,7 @@ class Mongo implements DatabaseDriver {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const _namespaceMatch = new RegExp(`^${namespace}:.*`);
     const docs = await this.collection
@@ -61,6 +67,7 @@ class Mongo implements DatabaseDriver {
     idx: Index,
     offset?: number,
     limit?: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string
   ): Promise<Records> {
     const docs =

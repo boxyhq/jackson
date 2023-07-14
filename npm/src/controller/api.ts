@@ -59,6 +59,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *            "description": "SP for hoppscotch.io",
    *            "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
    *            "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *            "deactivated": false
    *          }
    *    validationErrorsPost:
    *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
@@ -319,6 +320,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: formData
    *     required: true
    *     type: string
+   *   deactivatedParamPatch:
+   *     name: deactivated
+   *     description: Connection status
+   *     in: formData
+   *     required: false
+   *     type: boolean
    * /api/v1/saml/config:
    *   patch:
    *     summary: Update SAML Config
@@ -340,6 +347,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/redirectUrlParamPatch'
    *       - $ref: '#/parameters/tenantParamPatch'
    *       - $ref: '#/parameters/productParamPatch'
+   *       - $ref: '#/parameters/deactivatedParamPatch'
    *     responses:
    *       204:
    *         description: Success
@@ -371,6 +379,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/redirectUrlParamPatch'
    *       - $ref: '#/parameters/tenantParamPatch'
    *       - $ref: '#/parameters/productParamPatch'
+   *       - $ref: '#/parameters/deactivatedParamPatch'
    *     responses:
    *       204:
    *         description: Success
@@ -491,6 +500,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        oidcProvider:
    *          type: object
    *          description: OIDC IdP metadata
+   *        deactivated:
+   *          type: boolean
+   *          description: Connection status
    * responses:
    *   '200Get':
    *     description: Success
@@ -626,6 +638,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                "description": "SP for hoppscotch.io",
    *                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
    *                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+   *                "deactivated": false
    *            }
    *      '400':
    *        $ref: '#/responses/400Get'
@@ -668,27 +681,27 @@ export class ConnectionAPIController implements IConnectionAPIController {
    * parameters:
    *   clientIDDel:
    *     name: clientID
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Client ID
    *   clientSecretDel:
    *     name: clientSecret
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Client Secret
    *   tenantDel:
    *     name: tenant
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Tenant
    *   productDel:
    *     name: product
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Product
    *   strategyDel:
    *     name: strategy
-   *     in: formData
+   *     in: query
    *     type: string
    *     description: Strategy which can help to filter connections with tenant/product query
    * /api/v1/connections:
@@ -702,9 +715,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     summary: Delete SSO Connections
    *     operationId: delete-sso-connection
    *     tags: [Connections]
-   *     consumes:
-   *       - application/x-www-form-urlencoded
-   *       - application/json
    *     responses:
    *       '200':
    *         description: Success
@@ -802,5 +812,99 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
   public async deleteConfig(body: DelConnectionsQuery): Promise<void> {
     await this.deleteConnections({ ...body, strategy: 'saml' });
+  }
+
+  /**
+   * @swagger
+   * parameters:
+   *  productParamGet:
+   *     in: query
+   *     name: product
+   *     type: string
+   *     description: Product
+   *     required: true
+   * definitions:
+   *   Connection:
+   *      type: object
+   *      properties:
+   *        clientID:
+   *          type: string
+   *          description: Connection clientID
+   *        clientSecret:
+   *          type: string
+   *          description: Connection clientSecret
+   *        name:
+   *          type: string
+   *          description: Connection name
+   *        description:
+   *          type: string
+   *          description: Connection description
+   *        redirectUrl:
+   *          type: string
+   *          description: A list of allowed redirect URLs
+   *        defaultRedirectUrl:
+   *          type: string
+   *          description: The redirect URL to use in the IdP login flow
+   *        tenant:
+   *          type: string
+   *          description: Connection tenant
+   *        product:
+   *          type: string
+   *          description: Connection product
+   *        idpMetadata:
+   *          type: object
+   *          description: SAML IdP metadata
+   *        oidcProvider:
+   *          type: object
+   *          description: OIDC IdP metadata
+   * responses:
+   *   '200Get':
+   *     description: Success
+   *     schema:
+   *       type: array
+   *       items:
+   *         $ref: '#/definitions/Connection'
+   *   '400Get':
+   *     description: Please provide a `product`.
+   *   '401Get':
+   *     description: Unauthorized
+   * /api/v1/connections/product:
+   *   get:
+   *     summary: Get SSO Connections by product
+   *     parameters:
+   *       - $ref: '#/parameters/productParamGet'
+   *     operationId: get-connections-by-product
+   *     tags: [Connections]
+   *     responses:
+   *      '200':
+   *        $ref: '#/responses/200Get'
+   *      '400':
+   *        $ref: '#/responses/400Get'
+   *      '401':
+   *        $ref: '#/responses/401Get'
+   */
+  public async getConnectionsByProduct(body: {
+    product: string;
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }> {
+    const { product, pageOffset, pageLimit, pageToken } = body;
+
+    if (!product) {
+      throw new JacksonError('Please provide a `product`.', 400);
+    }
+
+    const connections = await this.connectionStore.getByIndex(
+      {
+        name: IndexNames.Product,
+        value: product,
+      },
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
+
+    return { data: transformConnections(connections.data), pageToken };
   }
 }

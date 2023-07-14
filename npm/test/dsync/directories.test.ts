@@ -231,7 +231,6 @@ tap.test('directories.', async (t) => {
           secret: 'secret',
         },
         log_webhook_events: true,
-        type: 'azure-scim-v2' as DirectoryType,
       };
 
       const { data: updatedDirectory } = await directorySync.directories.update(directory.id, {
@@ -242,7 +241,6 @@ tap.test('directories.', async (t) => {
       t.same(directory.id, updatedDirectory?.id);
       t.same(updatedDirectory?.name, toUpdate.name);
       t.same(updatedDirectory?.log_webhook_events, toUpdate.log_webhook_events);
-      t.same(updatedDirectory?.type, toUpdate.type);
       t.match(updatedDirectory?.webhook.endpoint, toUpdate.webhook?.endpoint);
       t.match(updatedDirectory?.webhook.secret, toUpdate.webhook?.secret);
 
@@ -253,7 +251,6 @@ tap.test('directories.', async (t) => {
       t.same(directoryFetched?.id, updatedDirectory?.id);
       t.same(directoryFetched?.name, toUpdate.name);
       t.same(directoryFetched?.log_webhook_events, toUpdate.log_webhook_events);
-      t.same(directoryFetched?.type, toUpdate.type);
       t.match(directoryFetched?.webhook.endpoint, toUpdate.webhook?.endpoint);
       t.match(directoryFetched?.webhook.secret, toUpdate.webhook?.secret);
     });
@@ -332,5 +329,104 @@ tap.test('directories.', async (t) => {
 
     t.match(directoryFetched2?.deactivated, false);
     t.match(isConnectionActive(directoryFetched2!), true);
+  });
+
+  t.test('Fetch the non-scim directories by directory provider', async (t) => {
+    // Create a google directory
+    const { data: firstDirectory } = await directorySync.directories.create({
+      ...directoryPayload,
+      name: 'Google Directory 1',
+      type: 'google' as DirectoryType,
+    });
+
+    // Create an Okta directory
+    await directorySync.directories.create({
+      ...directoryPayload,
+      name: 'Okta Directory 1',
+      type: 'okta-scim-v2' as DirectoryType,
+    });
+
+    // Create another Google directory
+    const { data: secondDirectory } = await directorySync.directories.create({
+      ...directoryPayload,
+      name: 'Google Directory 2',
+      type: 'google' as DirectoryType,
+    });
+
+    // Fetch all the directories of type google
+    const { data: googleDirectoryFetched } = await directorySync.directories.filterBy({
+      provider: 'google',
+    });
+
+    t.ok(googleDirectoryFetched);
+    t.match(googleDirectoryFetched?.length, 2);
+    t.match(googleDirectoryFetched?.[1].id, firstDirectory?.id);
+    t.match(googleDirectoryFetched?.[0].id, secondDirectory?.id);
+  });
+
+  t.test('The SCIM endpoint should be empty for non-scim provider', async (t) => {
+    const { data: directoryCreated } = await directorySync.directories.create({
+      ...directoryPayload,
+      tenant: 'acme',
+      type: 'google' as DirectoryType,
+    });
+
+    t.ok(directoryCreated);
+    t.match(directoryCreated?.scim.path, '');
+    t.match(directoryCreated?.scim.secret, '');
+  });
+
+  t.test('Should be able to update the Google credentials', async (t) => {
+    const { data: directory } = await directorySync.directories.create({
+      ...directoryPayload,
+      tenant: 'acme',
+      type: 'google' as DirectoryType,
+    });
+
+    if (!directory) {
+      t.fail("Couldn't create a directory");
+      return;
+    }
+
+    const { data: directoryUpdated } = await directorySync.directories.update(directory.id, {
+      google_access_token: 'access_token',
+      google_refresh_token: 'refresh_token',
+      google_domain: 'acme.com',
+    });
+
+    t.ok(directoryUpdated);
+    t.match(directoryUpdated?.google_access_token, 'access_token');
+    t.match(directoryUpdated?.google_refresh_token, 'refresh_token');
+    t.match(directoryUpdated?.google_domain, 'acme.com');
+
+    // Check that the directory was updated
+    const { data: directoryFetched } = await directorySync.directories.get(directory.id);
+
+    t.ok(directoryFetched);
+    t.match(directoryFetched?.google_access_token, 'access_token');
+    t.match(directoryFetched?.google_refresh_token, 'refresh_token');
+    t.match(directoryFetched?.google_domain, 'acme.com');
+  });
+
+  t.test('Fetch all connections for a product', async (t) => {
+    await directorySync.directories.create({
+      ...directoryPayload,
+      tenant: 'first-tenant',
+      product: 'a-new-product',
+    });
+
+    const { data: directories, error } = await directorySync.directories.filterBy({
+      product: 'a-new-product',
+    });
+
+    if (error) {
+      t.fail(error.message);
+      return;
+    }
+
+    t.ok(directories);
+    t.match(directories.length, 1);
+    t.match(directories[0].tenant, 'first-tenant');
+    t.match(directories[0].product, 'a-new-product');
   });
 });

@@ -26,6 +26,7 @@ export enum IndexNames {
   Service = 'service',
   OIDCProviderClientID = 'OIDCProviderClientID',
   SSOClientID = 'SSOClientID',
+  Product = 'product',
 }
 
 // The namespace prefix for the database store
@@ -36,6 +37,7 @@ export const storeNamespacePrefix = {
     users: 'dsync:users',
     groups: 'dsync:groups',
     members: 'dsync:members',
+    providers: 'dsync:providers',
   },
   saml: {
     config: 'saml:config',

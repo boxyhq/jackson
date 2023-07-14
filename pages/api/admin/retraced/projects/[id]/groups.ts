@@ -9,7 +9,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   switch (method) {
     case 'GET':
-      return getGroups(req, res);
+      return await getGroups(req, res);
     default:
       res.setHeader('Allow', 'GET');
       res.status(405).json({

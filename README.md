@@ -1,6 +1,7 @@
 # SAML Jackson: Enterprise SSO made simple
 
 <p>
+    <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge"></a>
     <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="npm" ></a>
     <a href="https://hub.docker.com/r/boxyhq/jackson"><img src="https://img.shields.io/docker/pulls/boxyhq/jackson" alt="Docker pull"></a>
     <a href="https://github.com/boxyhq/jackson/stargazers"><img src="https://img.shields.io/github/stars/boxyhq/jackson" alt="Github stargazers"></a>
@@ -28,7 +29,13 @@ Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, a
 
 Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
 
-You can also try our hosted demo showcasing the SAML IdP login flow [here](https://mocksaml.com/saml/login).
+## Videos 
+- SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A)
+- SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
+
+## Demo
+- SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
+- SAML [demo flow](https://saml-demo.boxyhq.com/)
 
 ## Documentation
 
@@ -58,17 +65,6 @@ We support SBOM reports, refer [here](https://boxyhq.com/docs/jackson/sbom) for 
 
 We support container image verification using cosign, refer [here](https://boxyhq.com/docs/jackson/container-signing) for more details.
 
-## Contributing
-
-Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
-
-Please try to create bug reports that are:
-
-- _Reproducible._ Include steps to reproduce the problem.
-- _Specific._ Include as much detail as possible: which version, what environment, etc.
-- _Unique._ Do not duplicate existing opened issues.
-- _Scoped to a Single Bug._ One bug per report.
-
 ### Development Setup
 
 #### Database
@@ -87,7 +83,6 @@ npm run custom-install
 # Start the server
 npm run dev
 ```
-
 #### End-to-End (E2E) tests
 
 Create a `.env.test.local` file and populate the values. To execute the tests run:
@@ -95,6 +90,16 @@ Create a `.env.test.local` file and populate the values. To execute the tests ru
 ```zsh
 npm run test:e2e
 ```
+## Contributing
+
+Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
+
+Please try to create bug reports that are:
+
+- _Reproducible._ Include steps to reproduce the problem.
+- _Specific._ Include as much detail as possible: which version, what environment, etc.
+- _Unique._ Do not duplicate existing opened issues.
+- _Scoped to a Single Bug._ One bug per report.
 
 ## Support
 
@@ -107,6 +112,7 @@ Reach out to the maintainers at one of the following places:
 
 - [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Open-Source Community and BoxyHQ team)
 - [Twitter](https://twitter.com/BoxyHQ) (Follow us)
+- [Youtube](https://www.youtube.com/@boxyhq) (Watch community events and tutorials)
 
 ## Reporting Security Issues
 

@@ -182,7 +182,7 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
       startIndex: 1,
       totalResults: 2,
       itemsPerPage: 2,
-      Resources: [
+      Resources: expect.arrayContaining([
         {
           ...groups[1],
           id: expect.any(String),
@@ -191,7 +191,7 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
           ...groups[0],
           id: expect.any(String),
         },
-      ],
+      ]),
     });
   });
 

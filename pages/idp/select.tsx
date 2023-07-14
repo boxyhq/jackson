@@ -85,7 +85,7 @@ const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORec
                 onClick={() => {
                   connectionSelected(connection.clientID);
                 }}>
-                <div className='flex items-center gap-2 py-3 px-3'>
+                <div className='flex items-center gap-2 px-3 py-3'>
                   <div className='placeholder avatar'>
                     <div className='w-8 rounded-full bg-primary text-white'>
                       <span className='text-lg font-bold'>{name.charAt(0).toUpperCase()}</span>
@@ -134,7 +134,7 @@ const AppSelector = ({
           {connections.map((connection) => {
             return (
               <li key={connection.clientID} className='rounded bg-gray-100'>
-                <div className='flex items-center gap-2 py-3 px-3'>
+                <div className='flex items-center gap-2 px-3 py-3'>
                   <input
                     type='radio'
                     name='idp_hint'
@@ -175,14 +175,12 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   if (idp_hint) {
     const params = new URLSearchParams(paramsToRelay).toString();
 
-    const destinations = {
-      saml: `/api/federated-saml/sso?${params}`,
-      oauth: `/api/oauth/authorize?${params}`,
-    };
+    const destination =
+      authFlow === 'saml' ? `/api/federated-saml/sso?${params}` : `/api/oauth/authorize?${params}`;
 
     return {
       redirect: {
-        destination: destinations[authFlow],
+        destination,
         permanent: false,
       },
     };

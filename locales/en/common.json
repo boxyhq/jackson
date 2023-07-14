@@ -25,7 +25,7 @@
   "edit_sso_connection": "Edit SSO Connection",
   "email": "Email",
   "enable_webhook_events_logging": "Enable Webhook events logging",
-  "enterprise_readiness_for_b2b_saas_straight_out_of_the_box": "Enterprise readiness for B2B SaaS, straight out of the box.",
+  "boxyhq_tagline": "Security Building Blocks for Developers.",
   "enterprise_sso": "Enterprise SSO",
   "error": "Error",
   "success": "Success",
@@ -206,5 +206,7 @@
   "yes_proceed": "Yes, proceed",
   "delete_this_directory": "Delete this directory connection?",
   "delete_this_directory_desc": "This action cannot be undone. This will permanently delete the directory connection, users, and groups.",
-  "directory_connection_deleted_successfully": "Directory connection deleted successfully"
+  "directory_connection_deleted_successfully": "Directory connection deleted successfully",
+  "directory_domain": "Directory Domain",
+  "dsync_google_auth_url": "The URL that you will need to authorize the application to access your Google Directory."
 }

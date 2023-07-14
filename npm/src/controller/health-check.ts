@@ -20,7 +20,7 @@ export class HealthCheckController implements IHealthCheckController {
     status: number;
   }> {
     try {
-      if (!g.isJacksonReady) {
+      if (!g.jacksonInstance) {
         return {
           status: 503,
         };

@@ -24,7 +24,7 @@ const SAMLFederation = async ({
   });
 
   const app = new App({ store: appStore, opts });
-  const sso = new SSO({ app, samlHandler, samlTracer });
+  const sso = new SSO({ app, samlHandler, samlTracer, opts });
 
   const response = {
     app,

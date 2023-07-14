@@ -34,7 +34,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const event = await directorySyncController.webhookLogs
-    .with(directory.tenant, directory.product)
+    .setTenantAndProduct(directory.tenant, directory.product)
     .get(eventId);
 
   return res.status(200).json({ data: event });

@@ -51,6 +51,7 @@ class Mem implements DatabaseDriver {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const returnValue: string[] = [];
@@ -92,6 +93,7 @@ class Mem implements DatabaseDriver {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string
   ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);

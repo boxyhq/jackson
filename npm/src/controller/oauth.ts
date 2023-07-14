@@ -30,7 +30,6 @@ import {
   extractOIDCUserProfile,
   getScopeValues,
   getEncodedTenantProduct,
-  transformConnection,
   isConnectionActive,
 } from './utils';
 

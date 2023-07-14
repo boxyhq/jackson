@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.9.6",
+    "version": "1.11.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -140,6 +140,9 @@
           },
           {
             "$ref": "#/parameters/productParamPatch"
+          },
+          {
+            "$ref": "#/parameters/deactivatedParamPatch"
           }
         ],
         "responses": {
@@ -197,7 +200,8 @@
                 "name": "Hoppscotch-SP",
                 "description": "SP for hoppscotch.io",
                 "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943"
+                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+                "deactivated": false
               }
             }
           },
@@ -372,6 +376,9 @@
           },
           {
             "$ref": "#/parameters/productParamPatch"
+          },
+          {
+            "$ref": "#/parameters/deactivatedParamPatch"
           }
         ],
         "responses": {
@@ -444,10 +451,6 @@
         "tags": [
           "Connections"
         ],
-        "consumes": [
-          "application/x-www-form-urlencoded",
-          "application/json"
-        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -457,6 +460,31 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/connections/product": {
+      "get": {
+        "summary": "Get SSO Connections by product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/productParamGet"
+          }
+        ],
+        "operationId": "get-connections-by-product",
+        "tags": [
+          "Connections"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200Get"
+          },
+          "400": {
+            "$ref": "#/responses/400Get"
+          },
+          "401": {
+            "$ref": "#/responses/401Get"
           }
         }
       }
@@ -622,7 +650,8 @@
         "name": "Hoppscotch-SP",
         "description": "SP for hoppscotch.io",
         "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-        "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943"
+        "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
+        "deactivated": false
       },
       "properties": {
         "clientID": {
@@ -664,6 +693,10 @@
         "oidcProvider": {
           "type": "object",
           "description": "OIDC IdP metadata"
+        },
+        "deactivated": {
+          "type": "boolean",
+          "description": "Connection status"
         }
       }
     },
@@ -685,7 +718,7 @@
       }
     },
     "400Get": {
-      "description": "Please provide `clientID` or `tenant` and `product`."
+      "description": "Please provide a `product`."
     },
     "401Get": {
       "description": "Unauthorized"
@@ -868,6 +901,13 @@
       "required": true,
       "type": "string"
     },
+    "deactivatedParamPatch": {
+      "name": "deactivated",
+      "description": "Connection status",
+      "in": "formData",
+      "required": false,
+      "type": "boolean"
+    },
     "tenantParamGet": {
       "in": "query",
       "name": "tenant",
@@ -878,7 +918,8 @@
       "in": "query",
       "name": "product",
       "type": "string",
-      "description": "Product"
+      "description": "Product",
+      "required": true
     },
     "clientIDParamGet": {
       "in": "query",
@@ -894,31 +935,31 @@
     },
     "clientIDDel": {
       "name": "clientID",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Client ID"
     },
     "clientSecretDel": {
       "name": "clientSecret",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Client Secret"
     },
     "tenantDel": {
       "name": "tenant",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Tenant"
     },
     "productDel": {
       "name": "product",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Product"
     },
     "strategyDel": {
       "name": "strategy",
-      "in": "formData",
+      "in": "query",
       "type": "string",
       "description": "Strategy which can help to filter connections with tenant/product query"
     }

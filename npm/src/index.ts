@@ -67,7 +67,7 @@ export const controllers = async (
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSAMLConfig;
   samlFederatedController: ISAMLFederationController;
-  brandingController: IBrandingController | null;
+  brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
 }> => {
   opts = defaultOpts(opts);
@@ -125,9 +125,7 @@ export const controllers = async (
 
   // Enterprise Features
   const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
-  const brandingController = (await checkLicense(opts.boxyhqLicenseKey))
-    ? new BrandingController({ store: settingsStore })
-    : null;
+  const brandingController = new BrandingController({ store: settingsStore, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
