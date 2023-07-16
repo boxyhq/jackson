@@ -88,7 +88,7 @@
     "mkdirp": "3.0.1",
     "postcss": "8.4.26",
     "prettier": "3.0.0",
-    "prettier-plugin-tailwindcss": "0.4.0",
+    "prettier-plugin-tailwindcss": "0.4.1",
     "swagger-jsdoc": "6.2.8",
     "tailwindcss": "3.3.3",
     "ts-node": "10.9.1",
