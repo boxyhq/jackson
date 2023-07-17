@@ -44,6 +44,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     service,
   });
 
+  // Expecting only one setup link per tenant + product + service combination
   res.json({ data: setupLinks[0] });
 };
 

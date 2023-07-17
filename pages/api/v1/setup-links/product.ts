@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { SetupLinkService } from '@boxyhq/saml-jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -25,8 +24,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
+  const { product, pageOffset, pageLimit, pageToken } = req.query as {
+    product: string;
+    pageOffset: string;
+    pageLimit: string;
+    pageToken?: string;
+  };
+
+  if (!product) {
+    throw new Error('Please provide a product');
+  }
+
   const setupLinks = await setupLinkController.filterBy({
-    ...req.query,
+    product,
+    pageOffset: parseInt(pageOffset),
+    pageLimit: parseInt(pageLimit),
+    pageToken,
   });
 
   res.json(setupLinks);
