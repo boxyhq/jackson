@@ -625,6 +625,137 @@
           }
         }
       }
+    },
+    "/api/v1/setup-links": {
+      "post": {
+        "summary": "Create a new Setup Link",
+        "operationId": "create-setup-link",
+        "tags": [
+          "Setup Link"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/serviceParamPost"
+          },
+          {
+            "$ref": "#/parameters/tenantParamPost"
+          },
+          {
+            "$ref": "#/parameters/productParamPost"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SetupLink"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get the Setup Link for a tenant and product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/serviceParamGet"
+          },
+          {
+            "$ref": "#/parameters/tenantParamGet"
+          },
+          {
+            "$ref": "#/parameters/productParamGet"
+          }
+        ],
+        "operationId": "set-setup-link-by-tenant-product-service",
+        "tags": [
+          "Setup Link"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SetupLink"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/setup-links/{id}": {
+      "delete": {
+        "summary": "Delete a Setup Link by ID",
+        "parameters": [
+          {
+            "$ref": "#/parameters/setupLinkId"
+          }
+        ],
+        "operationId": "delete-setup-link",
+        "tags": [
+          "Setup Link"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "example": {
+                "data": {}
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get the Setup Link by ID",
+        "parameters": [
+          {
+            "$ref": "#/parameters/idParamGet"
+          }
+        ],
+        "operationId": "get-setup-link-by-id",
+        "tags": [
+          "Setup Link"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SetupLink"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/setup-links/product": {
+      "get": {
+        "summary": "Get the Setup Links for a product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/productParamGet"
+          }
+        ],
+        "operationId": "set-setup-link-by-product",
+        "tags": [
+          "Setup Link"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SetupLink"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -705,6 +836,45 @@
     },
     "validationErrorsPatch": {
       "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata"
+    },
+    "SetupLink": {
+      "type": "object",
+      "properties": {
+        "setupID": {
+          "type": "string",
+          "description": "Setup link ID"
+        },
+        "tenant": {
+          "type": "string",
+          "description": "Tenant"
+        },
+        "product": {
+          "type": "string",
+          "description": "Product"
+        },
+        "service": {
+          "type": "string",
+          "description": "Service name (sso or dsync)"
+        },
+        "validTill": {
+          "type": "string",
+          "description": "Valid till timestamp"
+        },
+        "url": {
+          "type": "string",
+          "description": "Setup link URL"
+        }
+      },
+      "example": {
+        "data": {
+          "setupID": "0689f76f7b5aa22f00381a124cb4b153fc1a8c08",
+          "tenant": "acme",
+          "product": "my-app",
+          "service": "sso",
+          "validTill": 1689849146690,
+          "url": "http://localhost:5225/setup/0b96a483ebfe0af0b561dda35a96647074d944631ff9e070"
+        }
+      }
     }
   },
   "responses": {
@@ -912,7 +1082,8 @@
       "in": "query",
       "name": "tenant",
       "type": "string",
-      "description": "Tenant"
+      "description": "Tenant",
+      "required": true
     },
     "productParamGet": {
       "in": "query",
@@ -962,6 +1133,34 @@
       "in": "query",
       "type": "string",
       "description": "Strategy which can help to filter connections with tenant/product query"
+    },
+    "serviceParamPost": {
+      "name": "service",
+      "description": "Service name (sso or dsync)",
+      "in": "formData",
+      "required": true,
+      "type": "string"
+    },
+    "setupLinkId": {
+      "name": "id",
+      "description": "Setup link ID",
+      "in": "path",
+      "required": true,
+      "type": "string"
+    },
+    "serviceParamGet": {
+      "name": "service",
+      "description": "Service name (sso or dsync)",
+      "in": "query",
+      "required": true,
+      "type": "string"
+    },
+    "idParamGet": {
+      "name": "id",
+      "description": "Setup Link ID",
+      "in": "path",
+      "required": true,
+      "type": "string"
     }
   },
   "tags": []
