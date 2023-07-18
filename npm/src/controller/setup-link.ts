@@ -170,8 +170,8 @@ export class SetupLinkController {
         value: service,
       },
       {
-        name: IndexNames.Product,
-        value: product,
+        name: IndexNames.ProductService,
+        value: dbutils.keyFromParts(product, service),
       }
     );
 
@@ -306,21 +306,19 @@ export class SetupLinkController {
       };
     }
 
-    // By product
-    else if (service) {
-      throwIfInvalidService(service);
-
+    // By product + service
+    else if (product && service) {
       index = {
-        name: IndexNames.Service,
-        value: service,
+        name: IndexNames.ProductService,
+        value: dbutils.keyFromParts(product, service),
       };
     }
 
-    // By tenant + product + service combination
-    else if (product) {
+    // By service
+    else if (service) {
       index = {
-        name: IndexNames.Product,
-        value: product,
+        name: IndexNames.Service,
+        value: service,
       };
     }
 
