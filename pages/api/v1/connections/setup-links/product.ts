@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
 
-const service = 'sso';
+const service: SetupLinkService = 'sso';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {

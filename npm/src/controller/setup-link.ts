@@ -333,6 +333,10 @@ export class SetupLinkController {
       pageToken
     );
 
+    if (index.name === IndexNames.TenantProductService && setupLinks.length === 0) {
+      throw new JacksonError('Setup link is not found', 404);
+    }
+
     return { data: setupLinks, pageToken: nextPageToken };
   }
 

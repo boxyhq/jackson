@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
+
+const service: SetupLinkService = 'dsync';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -37,6 +40,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const setupLinks = await setupLinkController.filterBy({
     product,
+    service,
     pageOffset: parseInt(pageOffset),
     pageLimit: parseInt(pageLimit),
     pageToken,

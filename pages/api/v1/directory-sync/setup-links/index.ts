@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import jackson from '@lib/jackson';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
+import jackson from '@lib/jackson';
+
+const service: SetupLinkService = 'dsync';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -28,14 +30,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { tenant, product, service } = req.query as {
+  const { tenant, product } = req.query as {
     tenant: string;
     product: string;
-    service: SetupLinkService;
   };
 
-  if (!tenant || !product || !service) {
-    throw new Error('Must provide tenant, product, and service');
+  if (!tenant || !product) {
+    throw new Error('Must provide a tenant and product');
   }
 
   const { data: setupLinks } = await setupLinkController.filterBy({
@@ -52,7 +53,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const setupLink = await setupLinkController.create(req.body);
+  const setupLink = await setupLinkController.create({
+    ...req.body,
+    service,
+  });
 
   res.status(201).json({ data: setupLink });
 };
