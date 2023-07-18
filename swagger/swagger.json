@@ -256,7 +256,7 @@
         "summary": "Create SSO connection",
         "operationId": "create-sso-connection",
         "tags": [
-          "Connections"
+          "Single Sign On | Connections"
         ],
         "produces": [
           "application/json"
@@ -325,7 +325,7 @@
         "summary": "Update SSO Connection",
         "operationId": "update-sso-connection",
         "tags": [
-          "Connections"
+          "Single Sign On | Connections"
         ],
         "consumes": [
           "application/json",
@@ -414,7 +414,7 @@
         ],
         "operationId": "get-connections",
         "tags": [
-          "Connections"
+          "Single Sign On | Connections"
         ],
         "responses": {
           "200": {
@@ -449,7 +449,7 @@
         "summary": "Delete SSO Connections",
         "operationId": "delete-sso-connection",
         "tags": [
-          "Connections"
+          "Single Sign On | Connections"
         ],
         "responses": {
           "200": {
@@ -474,7 +474,7 @@
         ],
         "operationId": "get-connections-by-product",
         "tags": [
-          "Connections"
+          "Single Sign On | Connections"
         ],
         "responses": {
           "200": {
@@ -626,12 +626,12 @@
         }
       }
     },
-    "/api/v1/setup-links": {
+    "/api/v1/connections/setup-links": {
       "post": {
-        "summary": "Create a new Setup Link",
-        "operationId": "create-setup-link",
+        "summary": "Create a Setup Link",
+        "operationId": "create-setup-link-sso",
         "tags": [
-          "Setup Link"
+          "Single Sign On | Setup Links"
         ],
         "produces": [
           "application/json"
@@ -641,9 +641,6 @@
           "application/json"
         ],
         "parameters": [
-          {
-            "$ref": "#/parameters/serviceParamPost"
-          },
           {
             "$ref": "#/parameters/tenantParamPost"
           },
@@ -661,11 +658,8 @@
         }
       },
       "get": {
-        "summary": "Get the Setup Link for a tenant and product",
+        "summary": "Get the Setup Link by tenant and product",
         "parameters": [
-          {
-            "$ref": "#/parameters/serviceParamGet"
-          },
           {
             "$ref": "#/parameters/tenantParamGet"
           },
@@ -673,9 +667,9 @@
             "$ref": "#/parameters/productParamGet"
           }
         ],
-        "operationId": "set-setup-link-by-tenant-product-service",
+        "operationId": "get-setup-link-sso-by-tenant-product",
         "tags": [
-          "Setup Link"
+          "Single Sign On | Setup Links"
         ],
         "responses": {
           "200": {
@@ -687,17 +681,72 @@
         }
       }
     },
-    "/api/v1/setup-links/{id}": {
+    "/api/v1/directory-sync/setup-links": {
+      "post": {
+        "summary": "Create a Setup Link",
+        "operationId": "create-setup-link-dsync",
+        "tags": [
+          "Directory Sync | Setup Links"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenantParamPost"
+          },
+          {
+            "$ref": "#/parameters/productParamPost"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SetupLink"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get the Setup Link by tenant and product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenantParamGet"
+          },
+          {
+            "$ref": "#/parameters/productParamGet"
+          }
+        ],
+        "operationId": "get-setup-link-dsync-by-tenant-product",
+        "tags": [
+          "Directory Sync | Setup Links"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SetupLink"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connections/setup-links/{id}": {
       "delete": {
-        "summary": "Delete a Setup Link by ID",
+        "summary": "Delete the Setup Link by ID",
         "parameters": [
           {
             "$ref": "#/parameters/setupLinkId"
           }
         ],
-        "operationId": "delete-setup-link",
+        "operationId": "delete-setup-link-sso",
         "tags": [
-          "Setup Link"
+          "Single Sign On | Setup Links"
         ],
         "responses": {
           "200": {
@@ -718,9 +767,9 @@
             "$ref": "#/parameters/idParamGet"
           }
         ],
-        "operationId": "get-setup-link-by-id",
+        "operationId": "get-setup-link-sso-by-id",
         "tags": [
-          "Setup Link"
+          "Single Sign On | Setup Links"
         ],
         "responses": {
           "200": {
@@ -732,17 +781,87 @@
         }
       }
     },
-    "/api/v1/setup-links/product": {
+    "/api/v1/directory-sync/setup-links/{id}": {
+      "delete": {
+        "summary": "Delete the Setup Link by ID",
+        "parameters": [
+          {
+            "$ref": "#/parameters/setupLinkId"
+          }
+        ],
+        "operationId": "delete-setup-link-dsync",
+        "tags": [
+          "Directory Sync | Setup Links"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "example": {
+                "data": {}
+              }
+            }
+          }
+        }
+      },
       "get": {
-        "summary": "Get the Setup Links for a product",
+        "summary": "Get the Setup Link by ID",
+        "parameters": [
+          {
+            "$ref": "#/parameters/idParamGet"
+          }
+        ],
+        "operationId": "get-setup-link-sync-by-id",
+        "tags": [
+          "Directory Sync | Setup Links"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SetupLink"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connections/setup-links/product": {
+      "get": {
+        "summary": "Get the Setup Links by product",
         "parameters": [
           {
             "$ref": "#/parameters/productParamGet"
           }
         ],
-        "operationId": "set-setup-link-by-product",
+        "operationId": "get-setup-link-sso-by-product",
         "tags": [
-          "Setup Link"
+          "Single Sign On | Setup Links"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SetupLink"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/directory-sync/setup-links/product": {
+      "get": {
+        "summary": "Get the Setup Links by product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/productParamGet"
+          }
+        ],
+        "operationId": "get-setup-link-dsync-by-product",
+        "tags": [
+          "Directory Sync | Setup Links"
         ],
         "responses": {
           "200": {
@@ -851,10 +970,6 @@
         "product": {
           "type": "string",
           "description": "Product"
-        },
-        "service": {
-          "type": "string",
-          "description": "Service name (sso or dsync)"
         },
         "validTill": {
           "type": "string",
@@ -1134,24 +1249,10 @@
       "type": "string",
       "description": "Strategy which can help to filter connections with tenant/product query"
     },
-    "serviceParamPost": {
-      "name": "service",
-      "description": "Service name (sso or dsync)",
-      "in": "formData",
-      "required": true,
-      "type": "string"
-    },
     "setupLinkId": {
       "name": "id",
       "description": "Setup link ID",
       "in": "path",
-      "required": true,
-      "type": "string"
-    },
-    "serviceParamGet": {
-      "name": "service",
-      "description": "Service name (sso or dsync)",
-      "in": "query",
       "required": true,
       "type": "string"
     },
