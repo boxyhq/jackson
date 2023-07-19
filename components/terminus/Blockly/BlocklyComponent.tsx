@@ -39,8 +39,8 @@ function BlocklyComponent(props) {
     const cueModel = generateModel(primaryWorkspace.current);
 
     const body = {
-      cue_schema: Buffer.from(cueModel).toString('base64'),
-      blockly_schema: Buffer.from(domToPretty).toString('base64'),
+      cue_schema: cueModel,
+      blockly_schema: domToPretty,
     };
 
     const requestOptions = {
@@ -66,7 +66,7 @@ function BlocklyComponent(props) {
     const response = await rsp.json();
 
     (primaryWorkspace.current! as any).clear();
-    const textToDom = Blockly.utils.xml.textToDom(Buffer.from(response.data, 'base64').toString());
+    const textToDom = Blockly.utils.xml.textToDom(response.data);
     Blockly.Xml.domToWorkspace(textToDom, primaryWorkspace.current! as any);
 
     setRetrieveModalVisible(false);
