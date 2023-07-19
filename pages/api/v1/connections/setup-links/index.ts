@@ -13,8 +13,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'POST':
         await handlePOST(req, res);
         break;
+      case 'DELETE':
+        await handleDELETE(req, res);
+        break;
       default:
-        res.setHeader('Allow', 'GET, POST');
+        res.setHeader('Allow', 'GET, POST, DELETE');
         res.status(405).json({
           error: { message: `Method ${req.method} Not Allowed` },
         });
@@ -26,27 +29,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Get the setup link by tenant + product + service
+// Get the setup link by ID or (tenant + product + service) combination
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { tenant, product } = req.query as {
+  const { id, tenant, product } = req.query as {
+    id: string;
     tenant: string;
     product: string;
   };
 
-  if (!tenant || !product) {
-    throw new Error('Must provide a tenant and product');
+  // Get by id
+  if (id) {
+    const setupLink = await setupLinkController.get(id);
+
+    res.json({ data: setupLink });
   }
 
-  const { data: setupLinks } = await setupLinkController.filterBy({
-    tenant,
-    product,
-    service,
-  });
+  // Get by tenant + product
+  if (tenant && product) {
+    const { data: setupLinks } = await setupLinkController.filterBy({
+      tenant,
+      product,
+      service,
+    });
 
-  // Expecting only one setup link per tenant + product + service combination
-  res.json({ data: setupLinks[0] });
+    res.json({ data: setupLinks[0] });
+  }
 };
 
 // Create a setup link
@@ -59,4 +68,23 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   res.status(201).json({ data: setupLink });
+};
+
+// Delete a setup link by ID or (tenant + product + service) combination
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { setupLinkController } = await jackson();
+
+  const { id, tenant, product } = req.query as {
+    id: string;
+    tenant: string;
+    product: string;
+  };
+
+  if (id) {
+    await setupLinkController.remove({ id });
+  } else if (service && tenant && product) {
+    await setupLinkController.remove({ service, tenant, product });
+  }
+
+  res.json({ data: {} });
 };

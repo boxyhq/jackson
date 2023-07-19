@@ -49,7 +49,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { setupID } = req.query as { setupID: string };
 
-  await setupLinkController.remove(setupID);
+  await setupLinkController.remove({ id: setupID });
 
   return res.json({ data: {} });
 };

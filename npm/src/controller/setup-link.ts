@@ -13,9 +13,19 @@ import { JacksonError } from './error';
 
 interface FilterByParams extends PaginationParams {
   service?: SetupLinkService;
-  product?: string;
   tenant?: string;
+  product?: string;
 }
+
+export type RemoveSetupLinkParams =
+  | {
+      id: string;
+    }
+  | {
+      service: SetupLinkService;
+      tenant: string;
+      product: string;
+    };
 
 const throwIfInvalidService = (service: string) => {
   if (!['sso', 'dsync'].includes(service)) {
@@ -84,7 +94,7 @@ export class SetupLinkController {
    * /api/v1/connections/setup-links:
    *   post:
    *    summary: Create a Setup Link
-   *    operationId: create-setup-link-sso
+   *    operationId: create-sso-setup-link
    *    tags: [Single Sign On | Setup Links]
    *    produces:
    *      - application/json
@@ -102,7 +112,7 @@ export class SetupLinkController {
    * /api/v1/directory-sync/setup-links:
    *   post:
    *    summary: Create a Setup Link
-   *    operationId: create-setup-link-dsync
+   *    operationId: create-dsync-setup-link
    *    tags: [Directory Sync | Setup Links]
    *    produces:
    *      - application/json
@@ -216,15 +226,17 @@ export class SetupLinkController {
    *   setupLinkId:
    *     name: id
    *     description: Setup link ID
-   *     in: path
-   *     required: true
+   *     in: query
+   *     required: false
    *     type: string
-   * /api/v1/connections/setup-links/{id}:
+   * /api/v1/connections/setup-links:
    *   delete:
-   *     summary: Delete the Setup Link by ID
+   *     summary: Delete the Setup Link
    *     parameters:
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/setupLinkId'
-   *     operationId: delete-setup-link-sso
+   *     operationId: delete-sso-setup-link
    *     tags: [Single Sign On | Setup Links]
    *     responses:
    *      200:
@@ -235,12 +247,14 @@ export class SetupLinkController {
    *           {
    *             data: {}
    *           }
-   * /api/v1/directory-sync/setup-links/{id}:
+   * /api/v1/directory-sync/setup-links:
    *   delete:
-   *     summary: Delete the Setup Link by ID
+   *     summary: Delete the Setup Link
    *     parameters:
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/setupLinkId'
-   *     operationId: delete-setup-link-dsync
+   *     operationId: delete-dsync-setup-link
    *     tags: [Directory Sync | Setup Links]
    *     responses:
    *      200:
@@ -252,14 +266,21 @@ export class SetupLinkController {
    *             data: {}
    *           }
    */
-  async remove(key: string): Promise<boolean> {
-    if (!key) {
-      throw new JacksonError('Missing setup link key', 400);
+  async remove(params: RemoveSetupLinkParams) {
+    if ('id' in params) {
+      await this.setupLinkStore.delete(params.id);
+      return;
     }
 
-    await this.setupLinkStore.delete(key);
+    if ('service' in params && 'tenant' in params && 'product' in params) {
+      const setupLinks = await this.filterBy({
+        service: params.service,
+        tenant: params.tenant,
+        product: params.product,
+      });
 
-    return true;
+      await this.remove(setupLinks[0].id);
+    }
   }
 
   // Check if a setup link is expired or not
@@ -282,25 +303,12 @@ export class SetupLinkController {
    *     in: query
    *     required: true
    *     type: string
-   * /api/v1/connections/setup-links:
-   *   get:
-   *     summary: Get the Setup Link by tenant and product
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *     operationId: get-setup-link-sso-by-tenant-product
-   *     tags: [Single Sign On | Setup Links]
-   *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/SetupLink'
    * /api/v1/connections/setup-links/product:
    *   get:
    *     summary: Get the Setup Links by product
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
-   *     operationId: get-setup-link-sso-by-product
+   *     operationId: get-sso-setup-link-by-product
    *     tags: [Single Sign On | Setup Links]
    *     responses:
    *      200:
@@ -309,25 +317,12 @@ export class SetupLinkController {
    *          type: array
    *          items:
    *            $ref:  '#/definitions/SetupLink'
-   * /api/v1/directory-sync/setup-links:
-   *   get:
-   *     summary: Get the Setup Link by tenant and product
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *     operationId: get-setup-link-dsync-by-tenant-product
-   *     tags: [Directory Sync | Setup Links]
-   *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/SetupLink'
    * /api/v1/directory-sync/setup-links/product:
    *   get:
    *     summary: Get the Setup Links by product
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
-   *     operationId: get-setup-link-dsync-by-product
+   *     operationId: get-dsync-setup-link-by-product
    *     tags: [Directory Sync | Setup Links]
    *     responses:
    *      200:
@@ -390,27 +385,31 @@ export class SetupLinkController {
    *   idParamGet:
    *     name: id
    *     description: Setup Link ID
-   *     in: path
-   *     required: true
+   *     in: query
+   *     required: false
    *     type: string
-   * /api/v1/connections/setup-links/{id}:
+   * /api/v1/connections/setup-links:
    *   get:
-   *     summary: Get the Setup Link by ID
+   *     summary: Get the Setup Link
    *     parameters:
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/idParamGet'
-   *     operationId: get-setup-link-sso-by-id
+   *     operationId: get-sso-setup-link
    *     tags: [Single Sign On | Setup Links]
    *     responses:
    *      200:
    *        description: Success
    *        schema:
    *          $ref:  '#/definitions/SetupLink'
-   * /api/v1/directory-sync/setup-links/{id}:
+   * /api/v1/directory-sync/setup-links:
    *   get:
-   *     summary: Get the Setup Link by ID
+   *     summary: Get the Setup Link
    *     parameters:
+   *       - $ref: '#/parameters/tenantParamGet'
+   *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/idParamGet'
-   *     operationId: get-setup-link-sync-by-id
+   *     operationId: get-dsync-setup-link
    *     tags: [Directory Sync | Setup Links]
    *     responses:
    *      200:

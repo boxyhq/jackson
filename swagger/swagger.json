@@ -15,7 +15,6 @@
     }
   },
   "host": "localhost:5225",
-  "basePath": "/",
   "schemes": [
     "http",
     "https"
@@ -629,7 +628,7 @@
     "/api/v1/connections/setup-links": {
       "post": {
         "summary": "Create a Setup Link",
-        "operationId": "create-setup-link-sso",
+        "operationId": "create-sso-setup-link",
         "tags": [
           "Single Sign On | Setup Links"
         ],
@@ -657,17 +656,49 @@
           }
         }
       },
-      "get": {
-        "summary": "Get the Setup Link by tenant and product",
+      "delete": {
+        "summary": "Delete the Setup Link",
         "parameters": [
           {
             "$ref": "#/parameters/tenantParamGet"
           },
           {
             "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/setupLinkId"
           }
         ],
-        "operationId": "get-setup-link-sso-by-tenant-product",
+        "operationId": "delete-sso-setup-link",
+        "tags": [
+          "Single Sign On | Setup Links"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "example": {
+                "data": {}
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get the Setup Link",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenantParamGet"
+          },
+          {
+            "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/idParamGet"
+          }
+        ],
+        "operationId": "get-sso-setup-link",
         "tags": [
           "Single Sign On | Setup Links"
         ],
@@ -684,7 +715,7 @@
     "/api/v1/directory-sync/setup-links": {
       "post": {
         "summary": "Create a Setup Link",
-        "operationId": "create-setup-link-dsync",
+        "operationId": "create-dsync-setup-link",
         "tags": [
           "Directory Sync | Setup Links"
         ],
@@ -712,84 +743,20 @@
           }
         }
       },
-      "get": {
-        "summary": "Get the Setup Link by tenant and product",
+      "delete": {
+        "summary": "Delete the Setup Link",
         "parameters": [
           {
             "$ref": "#/parameters/tenantParamGet"
           },
           {
             "$ref": "#/parameters/productParamGet"
-          }
-        ],
-        "operationId": "get-setup-link-dsync-by-tenant-product",
-        "tags": [
-          "Directory Sync | Setup Links"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/SetupLink"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/connections/setup-links/{id}": {
-      "delete": {
-        "summary": "Delete the Setup Link by ID",
-        "parameters": [
+          },
           {
             "$ref": "#/parameters/setupLinkId"
           }
         ],
-        "operationId": "delete-setup-link-sso",
-        "tags": [
-          "Single Sign On | Setup Links"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "type": "object",
-              "example": {
-                "data": {}
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "Get the Setup Link by ID",
-        "parameters": [
-          {
-            "$ref": "#/parameters/idParamGet"
-          }
-        ],
-        "operationId": "get-setup-link-sso-by-id",
-        "tags": [
-          "Single Sign On | Setup Links"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/SetupLink"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/directory-sync/setup-links/{id}": {
-      "delete": {
-        "summary": "Delete the Setup Link by ID",
-        "parameters": [
-          {
-            "$ref": "#/parameters/setupLinkId"
-          }
-        ],
-        "operationId": "delete-setup-link-dsync",
+        "operationId": "delete-dsync-setup-link",
         "tags": [
           "Directory Sync | Setup Links"
         ],
@@ -806,13 +773,19 @@
         }
       },
       "get": {
-        "summary": "Get the Setup Link by ID",
+        "summary": "Get the Setup Link",
         "parameters": [
+          {
+            "$ref": "#/parameters/tenantParamGet"
+          },
+          {
+            "$ref": "#/parameters/productParamGet"
+          },
           {
             "$ref": "#/parameters/idParamGet"
           }
         ],
-        "operationId": "get-setup-link-sync-by-id",
+        "operationId": "get-dsync-setup-link",
         "tags": [
           "Directory Sync | Setup Links"
         ],
@@ -834,7 +807,7 @@
             "$ref": "#/parameters/productParamGet"
           }
         ],
-        "operationId": "get-setup-link-sso-by-product",
+        "operationId": "get-sso-setup-link-by-product",
         "tags": [
           "Single Sign On | Setup Links"
         ],
@@ -859,7 +832,7 @@
             "$ref": "#/parameters/productParamGet"
           }
         ],
-        "operationId": "get-setup-link-dsync-by-product",
+        "operationId": "get-dsync-setup-link-by-product",
         "tags": [
           "Directory Sync | Setup Links"
         ],
@@ -1252,15 +1225,15 @@
     "setupLinkId": {
       "name": "id",
       "description": "Setup link ID",
-      "in": "path",
-      "required": true,
+      "in": "query",
+      "required": false,
       "type": "string"
     },
     "idParamGet": {
       "name": "id",
       "description": "Setup Link ID",
-      "in": "path",
-      "required": true,
+      "in": "query",
+      "required": false,
       "type": "string"
     }
   },
