@@ -273,13 +273,13 @@ export class SetupLinkController {
     }
 
     if ('service' in params && 'tenant' in params && 'product' in params) {
-      const setupLinks = await this.filterBy({
+      const { data: setupLinks } = await this.filterBy({
         service: params.service,
         tenant: params.tenant,
         product: params.product,
       });
 
-      await this.remove(setupLinks[0].id);
+      await this.remove({ id: setupLinks[0].setupID });
     }
   }
 
