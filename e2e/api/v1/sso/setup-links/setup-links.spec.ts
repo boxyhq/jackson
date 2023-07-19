@@ -146,7 +146,7 @@ test('get the setup links by product', async ({ request }) => {
     },
   });
 
-  let response = await request.get('/api/v1/connections/setup-links/product', {
+  const response = await request.get('/api/v1/connections/setup-links/product', {
     params: {
       product,
     },
