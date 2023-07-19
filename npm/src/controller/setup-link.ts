@@ -337,7 +337,7 @@ export class SetupLinkController {
 
     let index: Index | null = null;
 
-    // By service
+    // By tenant + product + service
     if (tenant && product && service) {
       index = {
         name: IndexNames.TenantProductService,
