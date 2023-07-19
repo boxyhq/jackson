@@ -40,7 +40,8 @@
     "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'",
     "postcustom-install": "npm run prebuild",
     "postinstall": "npm run prebuild",
-    "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)"
+    "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)",
+    "release": "git checkout release && git merge origin/main && release-it"
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.4",
@@ -89,6 +90,7 @@
     "postcss": "8.4.26",
     "prettier": "3.0.0",
     "prettier-plugin-tailwindcss": "0.4.1",
+    "release-it": "16.1.2",
     "swagger-jsdoc": "6.2.8",
     "tailwindcss": "3.3.3",
     "ts-node": "10.9.1",
