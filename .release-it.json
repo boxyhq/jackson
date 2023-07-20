@@ -30,7 +30,7 @@
   },
   "github": {
     "release": true,
-    "releaseName": "saml20 ${version}",
+    "releaseName": "Release v${version}",
     "releaseNotes": null,
     "autoGenerate": false,
     "preRelease": false,
