@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -41,7 +41,8 @@
     "postinstall": "npm run prebuild",
     "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)",
     "build": "next build",
-    "postbuild": "(cp -R public .next/standalone && cp -R .next/static .next/standalone/.next) || (copy -recurse .\\public .\\.next/standalone && copy -recurse .\\.next\\static .\\.next\\standalone\\.next)"
+    "postbuild": "(cp -R public .next/standalone && cp -R .next/static .next/standalone/.next) || (copy -recurse .\\public .\\.next/standalone && copy -recurse .\\.next\\static .\\.next\\standalone\\.next)",
+    "release": "git checkout release && git merge origin/main && release-it"
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.4",
@@ -59,9 +60,9 @@
     "i18next": "22.5.1",
     "micromatch": "4.0.5",
     "next": "13.4.10",
-    "next-auth": "4.22.1",
+    "next-auth": "4.22.3",
     "next-i18next": "13.3.0",
-    "nodemailer": "6.9.3",
+    "nodemailer": "6.9.4",
     "raw-body": "2.5.2",
     "react": "18.2.0",
     "react-daisyui": "4.0.0",
@@ -90,6 +91,7 @@
     "postcss": "8.4.26",
     "prettier": "3.0.0",
     "prettier-plugin-tailwindcss": "0.4.1",
+    "release-it": "16.1.2",
     "swagger-jsdoc": "6.2.8",
     "tailwindcss": "3.3.3",
     "ts-node": "10.9.1",
