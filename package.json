@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.4",
-    "@boxyhq/react-ui": "3.0.0",
+    "@boxyhq/react-ui": "3.1.0",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.18",
     "@retracedhq/logs-viewer": "2.5.0",
@@ -68,7 +68,7 @@
     "react-dom": "18.2.0",
     "react-i18next": "12.3.1",
     "react-syntax-highlighter": "15.5.0",
-    "sharp": "0.32.3",
+    "sharp": "0.32.4",
     "swr": "2.2.0"
   },
   "devDependencies": {
@@ -87,7 +87,7 @@
     "eslint-config-next": "13.4.11",
     "eslint-config-prettier": "8.8.0",
     "mkdirp": "3.0.1",
-    "postcss": "8.4.26",
+    "postcss": "8.4.27",
     "prettier": "3.0.0",
     "prettier-plugin-tailwindcss": "0.4.1",
     "release-it": "16.1.3",
