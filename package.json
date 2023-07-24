@@ -87,7 +87,7 @@
     "eslint-config-next": "13.4.11",
     "eslint-config-prettier": "8.8.0",
     "mkdirp": "3.0.1",
-    "postcss": "8.4.26",
+    "postcss": "8.4.27",
     "prettier": "3.0.0",
     "prettier-plugin-tailwindcss": "0.4.1",
     "release-it": "16.1.3",
