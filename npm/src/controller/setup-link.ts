@@ -91,6 +91,18 @@ export class SetupLinkController {
    *     in: formData
    *     required: true
    *     type: string
+   *   defaultRedirectUrlParamPost:
+   *     name: defaultRedirectUrl
+   *     description: The redirect URL to use in the IdP login flow
+   *     in: formData
+   *     type: string
+   *     required: true
+   *   redirectUrlParamPost:
+   *     name: redirectUrl
+   *     description: JSON encoded array containing a list of allowed redirect URLs
+   *     in: formData
+   *     type: string
+   *     required: true
    * /api/v1/connections/setup-links:
    *   post:
    *    summary: Create a Setup Link
@@ -104,6 +116,8 @@ export class SetupLinkController {
    *    parameters:
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
+   *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
+   *      - $ref: '#/parameters/redirectUrlParamPost'
    *    responses:
    *      200:
    *        description: Success
