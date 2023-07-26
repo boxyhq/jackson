@@ -80,28 +80,8 @@ module.exports = {
         destination: '/admin/settings/sso-connection',
       },
       {
-        source: '/api/v1/sso',
-        destination: '/api/v1/connections',
-      },
-      {
-        source: '/api/v1/sso/product',
-        destination: '/api/v1/connections/product',
-      },
-      {
-        source: '/api/v1/sso/exists',
-        destination: '/api/v1/connections/exists',
-      },
-      {
-        source: '/api/v1/dsync',
-        destination: '/api/v1/directory-sync',
-      },
-      {
-        source: '/api/v1/dsync/product',
-        destination: '/api/v1/directory-sync/product',
-      },
-      {
-        source: '/api/v1/dsync/:directoryId',
-        destination: '/api/v1/directory-sync/:directoryId',
+        source: '/api/v1/connections/:path*',
+        destination: '/api/v1/sso/:path*',
       },
     ];
   },
