@@ -48,7 +48,7 @@ test.describe('POST /api/v1/directory-sync', () => {
     ];
 
     for (const testCase of testCases) {
-      const response = await request.post('/api/v1/directory-sync', {
+      const response = await request.post('/api/v1/dsync', {
         data: testCase.data,
       });
 
@@ -71,7 +71,7 @@ test.describe('GET /api/v1/directory-sync', () => {
   test('should be able to get a directory by ID', async ({ request }) => {
     const directory = await getDirectory(request, { tenant, product });
 
-    const response = await request.get(`/api/v1/directory-sync/${directory[0].id}`);
+    const response = await request.get(`/api/v1/dsync/${directory[0].id}`);
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
