@@ -28,7 +28,7 @@ test.afterAll(async ({ request }) => {
   await deleteDirectory(request, directory.id);
 });
 
-test.describe('POST /api/v1/directory-sync', () => {
+test.describe('POST /api/v1/dsync', () => {
   test('should not be able to create a directory if params are invalid', async ({ request }) => {
     const testCases = [
       {
@@ -61,7 +61,7 @@ test.describe('POST /api/v1/directory-sync', () => {
   });
 });
 
-test.describe('GET /api/v1/directory-sync', () => {
+test.describe('GET /api/v1/dsync', () => {
   test('should be able to get a directory by tenant and product', async ({ request }) => {
     const directory = await getDirectory(request, { tenant, product });
 
