@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.11.0",
+    "version": "1.11.1",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -34,13 +34,55 @@
   ],
   "swagger": "2.0",
   "paths": {
-    "/api/v1/saml/config": {
+    "/api/v1/dsync": {
       "post": {
-        "summary": "Create SAML config",
-        "operationId": "create-saml-config",
-        "deprecated": true,
+        "summary": "Create a directory connection",
+        "parameters": [
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "description": "Name",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "webhook_url",
+            "description": "Webhook URL",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "webhook_secret",
+            "description": "Webhook secret",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "description": "Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "tags": [
-          "SAML Config - Deprecated"
+          "Directory Sync | Connections"
         ],
         "produces": [
           "application/json"
@@ -49,214 +91,30 @@
           "application/x-www-form-urlencoded",
           "application/json"
         ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/nameParamPost"
-          },
-          {
-            "$ref": "#/parameters/descriptionParamPost"
-          },
-          {
-            "$ref": "#/parameters/encodedRawMetadataParamPost"
-          },
-          {
-            "$ref": "#/parameters/rawMetadataParamPost"
-          },
-          {
-            "$ref": "#/parameters/metadataUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/defaultRedirectUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/redirectUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/tenantParamPost"
-          },
-          {
-            "$ref": "#/parameters/productParamPost"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Connection"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Directory"
+              }
             }
-          },
-          "400": {
-            "$ref": "#/definitions/validationErrorsPost"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Please set OpenID response handler path (oidcPath) on Jackson"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update SAML Config",
-        "operationId": "update-saml-config",
-        "tags": [
-          "SAML Config - Deprecated"
-        ],
-        "deprecated": true,
-        "consumes": [
-          "application/json",
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/clientIDParamPatch"
-          },
-          {
-            "$ref": "#/parameters/clientSecretParamPatch"
-          },
-          {
-            "$ref": "#/parameters/nameParamPatch"
-          },
-          {
-            "$ref": "#/parameters/descriptionParamPatch"
-          },
-          {
-            "$ref": "#/parameters/encodedRawMetadataParamPatch"
-          },
-          {
-            "$ref": "#/parameters/rawMetadataParamPatch"
-          },
-          {
-            "$ref": "#/parameters/metadataUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/defaultRedirectUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/redirectUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/tenantParamPatch"
-          },
-          {
-            "$ref": "#/parameters/productParamPatch"
-          },
-          {
-            "$ref": "#/parameters/deactivatedParamPatch"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Success"
-          },
-          "400": {
-            "$ref": "#/definitions/validationErrorsPatch"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       },
       "get": {
-        "summary": "Get SAML Config",
-        "operationId": "get-saml-config",
-        "tags": [
-          "SAML Config - Deprecated"
-        ],
-        "deprecated": true,
+        "summary": "Get a directory connection by tenant and product",
         "parameters": [
           {
-            "$ref": "#/parameters/tenantParamGet"
+            "$ref": "#/parameters/tenant"
           },
           {
-            "$ref": "#/parameters/productParamGet"
-          },
-          {
-            "$ref": "#/parameters/clientIDParamGet"
+            "$ref": "#/parameters/product"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "type": "object",
-              "example": {
-                "idpMetadata": {
-                  "sso": {
-                    "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-                    "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-                  },
-                  "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-                  "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-                  "loginType": "idp",
-                  "provider": "okta.com"
-                },
-                "defaultRedirectUrl": "https://hoppscotch.io/",
-                "redirectUrl": [
-                  "https://hoppscotch.io/"
-                ],
-                "tenant": "hoppscotch.io",
-                "product": "API Engine",
-                "name": "Hoppscotch-SP",
-                "description": "SP for hoppscotch.io",
-                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-                "deactivated": false
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/responses/400Get"
-          },
-          "401": {
-            "$ref": "#/responses/401Get"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete SAML Config",
-        "operationId": "delete-saml-config",
         "tags": [
-          "SAML Config - Deprecated"
-        ],
-        "deprecated": true,
-        "consumes": [
-          "application/x-www-form-urlencoded",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/clientIDDel"
-          },
-          {
-            "$ref": "#/parameters/clientSecretDel"
-          },
-          {
-            "$ref": "#/parameters/tenantDel"
-          },
-          {
-            "$ref": "#/parameters/productDel"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/api/v1/connections": {
-      "post": {
-        "summary": "Create SSO connection",
-        "operationId": "create-sso-connection",
-        "tags": [
-          "Connections"
+          "Directory Sync | Connections"
         ],
         "produces": [
           "application/json"
@@ -265,361 +123,91 @@
           "application/x-www-form-urlencoded",
           "application/json"
         ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/nameParamPost"
-          },
-          {
-            "$ref": "#/parameters/descriptionParamPost"
-          },
-          {
-            "$ref": "#/parameters/encodedRawMetadataParamPost"
-          },
-          {
-            "$ref": "#/parameters/rawMetadataParamPost"
-          },
-          {
-            "$ref": "#/parameters/metadataUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/defaultRedirectUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/redirectUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/tenantParamPost"
-          },
-          {
-            "$ref": "#/parameters/productParamPost"
-          },
-          {
-            "$ref": "#/parameters/oidcDiscoveryUrlPost"
-          },
-          {
-            "$ref": "#/parameters/oidcMetadataPost"
-          },
-          {
-            "$ref": "#/parameters/oidcClientIdPost"
-          },
-          {
-            "$ref": "#/parameters/oidcClientSecretPost"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Connection"
-            }
-          },
-          "400": {
-            "$ref": "#/definitions/validationErrorsPost"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update SSO Connection",
-        "operationId": "update-sso-connection",
-        "tags": [
-          "Connections"
-        ],
-        "consumes": [
-          "application/json",
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/clientIDParamPatch"
-          },
-          {
-            "$ref": "#/parameters/clientSecretParamPatch"
-          },
-          {
-            "$ref": "#/parameters/nameParamPatch"
-          },
-          {
-            "$ref": "#/parameters/descriptionParamPatch"
-          },
-          {
-            "$ref": "#/parameters/encodedRawMetadataParamPatch"
-          },
-          {
-            "$ref": "#/parameters/rawMetadataParamPatch"
-          },
-          {
-            "$ref": "#/parameters/metadataUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/oidcDiscoveryUrlPatch"
-          },
-          {
-            "$ref": "#/parameters/oidcMetadataPatch"
-          },
-          {
-            "$ref": "#/parameters/oidcClientIdPatch"
-          },
-          {
-            "$ref": "#/parameters/oidcClientSecretPatch"
-          },
-          {
-            "$ref": "#/parameters/defaultRedirectUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/redirectUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/tenantParamPatch"
-          },
-          {
-            "$ref": "#/parameters/productParamPatch"
-          },
-          {
-            "$ref": "#/parameters/deactivatedParamPatch"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Success"
-          },
-          "400": {
-            "$ref": "#/definitions/validationErrorsPatch"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Please set OpenID response handler path (oidcPath) on Jackson"
-          }
-        }
-      },
-      "get": {
-        "summary": "Get SSO Connections",
-        "parameters": [
-          {
-            "$ref": "#/parameters/tenantParamGet"
-          },
-          {
-            "$ref": "#/parameters/productParamGet"
-          },
-          {
-            "$ref": "#/parameters/clientIDParamGet"
-          },
-          {
-            "$ref": "#/parameters/strategyParamGet"
-          }
-        ],
-        "operationId": "get-connections",
-        "tags": [
-          "Connections"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/200Get"
-          },
-          "400": {
-            "$ref": "#/responses/400Get"
-          },
-          "401": {
-            "$ref": "#/responses/401Get"
-          }
-        }
-      },
-      "delete": {
-        "parameters": [
-          {
-            "$ref": "#/parameters/clientIDDel"
-          },
-          {
-            "$ref": "#/parameters/clientSecretDel"
-          },
-          {
-            "$ref": "#/parameters/tenantDel"
-          },
-          {
-            "$ref": "#/parameters/productDel"
-          },
-          {
-            "$ref": "#/parameters/strategyDel"
-          }
-        ],
-        "summary": "Delete SSO Connections",
-        "operationId": "delete-sso-connection",
-        "tags": [
-          "Connections"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/api/v1/connections/product": {
-      "get": {
-        "summary": "Get SSO Connections by product",
-        "parameters": [
-          {
-            "$ref": "#/parameters/productParamGet"
-          }
-        ],
-        "operationId": "get-connections-by-product",
-        "tags": [
-          "Connections"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/200Get"
-          },
-          "400": {
-            "$ref": "#/responses/400Get"
-          },
-          "401": {
-            "$ref": "#/responses/401Get"
-          }
-        }
-      }
-    },
-    "/oauth/token": {
-      "post": {
-        "summary": "Code exchange",
-        "operationId": "oauth-code-exchange",
-        "tags": [
-          "OAuth"
-        ],
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "name": "grant_type",
-            "in": "formData",
-            "type": "string",
-            "description": "Grant type should be 'authorization_code'",
-            "default": "authorization_code",
-            "required": true
-          },
-          {
-            "name": "client_id",
-            "in": "formData",
-            "type": "string",
-            "description": "Use the client_id returned by the SAML connection API",
-            "required": true
-          },
-          {
-            "name": "client_secret",
-            "in": "formData",
-            "type": "string",
-            "description": "Use the client_secret returned by the SAML connection API",
-            "required": true
-          },
-          {
-            "name": "code_verifier",
-            "in": "formData",
-            "type": "string",
-            "description": "code_verifier against the code_challenge in the authz request (relevant to PKCE flow)"
-          },
-          {
-            "name": "redirect_uri",
-            "in": "formData",
-            "type": "string",
-            "description": "Redirect URI",
-            "required": true
-          },
-          {
-            "name": "code",
-            "in": "formData",
-            "type": "string",
-            "description": "Code",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "access_token": {
-                  "type": "string"
-                },
-                "token_type": {
-                  "type": "string"
-                },
-                "expires_in": {
-                  "type": "string"
-                }
-              },
-              "example": {
-                "access_token": "8958e13053832b5af58fdf2ee83f35f5d013dc74",
-                "token_type": "bearer",
-                "expires_in": 300
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Directory"
               }
             }
           }
         }
       }
     },
-    "/oauth/userinfo": {
+    "/api/v1/dsync/{id}": {
       "get": {
-        "summary": "Get profile",
-        "operationId": "oauth-get-profile",
+        "summary": "Get a directory connection by id",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Directory ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "tags": [
-          "OAuth"
+          "Directory Sync | Connections"
+        ],
+        "produces": [
+          "application/json"
         ],
         "responses": {
           "200": {
             "description": "Success",
             "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "firstName": {
-                  "type": "string"
-                },
-                "lastName": {
-                  "type": "string"
-                },
-                "roles": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "groups": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "raw": {
-                  "type": "object"
-                },
-                "requested": {
-                  "type": "object"
-                }
-              },
-              "example": {
-                "id": "32b5af58fdf",
-                "email": "jackson@coolstartup.com",
-                "firstName": "SAML",
-                "lastName": "Jackson",
-                "raw": {},
-                "requested": {}
+              "$ref": "#/definitions/Directory"
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a directory connection by id",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Directory ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync | Connections"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/product": {
+      "get": {
+        "summary": "Get directory connections by product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/product"
+          }
+        ],
+        "tags": [
+          "Directory Sync | Connections"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Directory"
               }
             }
           }
@@ -628,340 +216,85 @@
     }
   },
   "definitions": {
-    "Connection": {
+    "Directory": {
       "type": "object",
-      "example": {
-        "idpMetadata": {
-          "sso": {
-            "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml",
-            "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml"
-          },
-          "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-          "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-          "loginType": "idp",
-          "provider": "okta.com"
-        },
-        "defaultRedirectUrl": "https://hoppscotch.io/",
-        "redirectUrl": [
-          "https://hoppscotch.io/"
-        ],
-        "tenant": "hoppscotch.io",
-        "product": "API Engine",
-        "name": "Hoppscotch-SP",
-        "description": "SP for hoppscotch.io",
-        "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-        "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-        "deactivated": false
-      },
       "properties": {
-        "clientID": {
+        "id": {
           "type": "string",
-          "description": "Connection clientID"
-        },
-        "clientSecret": {
-          "type": "string",
-          "description": "Connection clientSecret"
+          "description": "Directory ID"
         },
         "name": {
           "type": "string",
-          "description": "Connection name"
-        },
-        "description": {
-          "type": "string",
-          "description": "Connection description"
-        },
-        "redirectUrl": {
-          "type": "string",
-          "description": "A list of allowed redirect URLs"
-        },
-        "defaultRedirectUrl": {
-          "type": "string",
-          "description": "The redirect URL to use in the IdP login flow"
+          "description": "name"
         },
         "tenant": {
           "type": "string",
-          "description": "Connection tenant"
+          "description": "Tenant"
         },
         "product": {
           "type": "string",
-          "description": "Connection product"
+          "description": "Product"
         },
-        "idpMetadata": {
-          "type": "object",
-          "description": "SAML IdP metadata"
-        },
-        "oidcProvider": {
-          "type": "object",
-          "description": "OIDC IdP metadata"
+        "type": {
+          "type": "string",
+          "description": "Directory provider"
         },
         "deactivated": {
           "type": "boolean",
-          "description": "Connection status"
+          "description": "Status"
+        },
+        "log_webhook_events": {
+          "type": "boolean",
+          "description": "If true, webhook requests will be logged"
+        },
+        "scim": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "SCIM path"
+            },
+            "endpoint": {
+              "type": "string",
+              "description": "SCIM url"
+            },
+            "secret": {
+              "type": "string",
+              "description": "SCIM secret"
+            }
+          }
+        },
+        "webhook": {
+          "type": "object",
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "description": "Webhook url"
+            },
+            "secret": {
+              "type": "string",
+              "description": "Webhook secret"
+            }
+          }
         }
       }
-    },
-    "validationErrorsPost": {
-      "description": "Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider"
-    },
-    "validationErrorsPatch": {
-      "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata"
     }
   },
-  "responses": {
-    "200Get": {
-      "description": "Success",
-      "schema": {
-        "type": "array",
-        "items": {
-          "$ref": "#/definitions/Connection"
-        }
-      }
-    },
-    "400Get": {
-      "description": "Please provide a `product`."
-    },
-    "401Get": {
-      "description": "Unauthorized"
-    }
-  },
+  "responses": {},
   "parameters": {
-    "nameParamPost": {
-      "name": "name",
-      "description": "Name/identifier for the connection",
-      "type": "string",
-      "in": "formData"
-    },
-    "descriptionParamPost": {
-      "name": "description",
-      "description": "A short description for the connection not more than 100 characters",
-      "type": "string",
-      "in": "formData"
-    },
-    "encodedRawMetadataParamPost": {
-      "name": "encodedRawMetadata",
-      "description": "Base64 encoding of the XML metadata",
-      "in": "formData",
-      "type": "string"
-    },
-    "rawMetadataParamPost": {
-      "name": "rawMetadata",
-      "description": "Raw XML metadata",
-      "in": "formData",
-      "type": "string"
-    },
-    "metadataUrlParamPost": {
-      "name": "metadataUrl",
-      "description": "URL containing raw XML metadata",
-      "in": "formData",
-      "type": "string"
-    },
-    "defaultRedirectUrlParamPost": {
-      "name": "defaultRedirectUrl",
-      "description": "The redirect URL to use in the IdP login flow",
-      "in": "formData",
-      "required": true,
-      "type": "string"
-    },
-    "redirectUrlParamPost": {
-      "name": "redirectUrl",
-      "description": "JSON encoded array containing a list of allowed redirect URLs",
-      "in": "formData",
-      "required": true,
-      "type": "string"
-    },
-    "tenantParamPost": {
+    "tenant": {
       "name": "tenant",
       "description": "Tenant",
-      "in": "formData",
+      "in": "query",
       "required": true,
       "type": "string"
     },
-    "productParamPost": {
+    "product": {
       "name": "product",
       "description": "Product",
-      "in": "formData",
+      "in": "query",
       "required": true,
       "type": "string"
-    },
-    "oidcDiscoveryUrlPost": {
-      "name": "oidcDiscoveryUrl",
-      "description": "well-known URL where the OpenID Provider configuration is exposed",
-      "in": "formData",
-      "type": "string"
-    },
-    "oidcMetadataPost": {
-      "name": "oidcMetadata",
-      "description": "metadata (JSON) for the OpenID Provider in the absence of discoveryUrl",
-      "in": "formData",
-      "type": "string"
-    },
-    "oidcClientIdPost": {
-      "name": "oidcClientId",
-      "description": "clientId of the application set up on the OpenID Provider",
-      "in": "formData",
-      "type": "string"
-    },
-    "oidcClientSecretPost": {
-      "name": "oidcClientSecret",
-      "description": "clientSecret of the application set up on the OpenID Provider",
-      "in": "formData",
-      "type": "string"
-    },
-    "clientIDParamPatch": {
-      "name": "clientID",
-      "description": "Client ID for the connection",
-      "type": "string",
-      "in": "formData",
-      "required": true
-    },
-    "clientSecretParamPatch": {
-      "name": "clientSecret",
-      "description": "Client Secret for the connection",
-      "type": "string",
-      "in": "formData",
-      "required": true
-    },
-    "nameParamPatch": {
-      "name": "name",
-      "description": "Name/identifier for the connection",
-      "type": "string",
-      "in": "formData"
-    },
-    "descriptionParamPatch": {
-      "name": "description",
-      "description": "A short description for the connection not more than 100 characters",
-      "type": "string",
-      "in": "formData"
-    },
-    "encodedRawMetadataParamPatch": {
-      "name": "encodedRawMetadata",
-      "description": "Base64 encoding of the XML metadata",
-      "in": "formData",
-      "type": "string"
-    },
-    "rawMetadataParamPatch": {
-      "name": "rawMetadata",
-      "description": "Raw XML metadata",
-      "in": "formData",
-      "type": "string"
-    },
-    "metadataUrlParamPatch": {
-      "name": "metadataUrl",
-      "description": "URL containing raw XML metadata",
-      "in": "formData",
-      "type": "string"
-    },
-    "oidcDiscoveryUrlPatch": {
-      "name": "oidcDiscoveryUrl",
-      "description": "well-known URL where the OpenID Provider configuration is exposed",
-      "in": "formData",
-      "type": "string"
-    },
-    "oidcMetadataPatch": {
-      "name": "oidcMetadata",
-      "description": "metadata (JSON) for the OpenID Provider in the absence of discoveryUrl",
-      "in": "formData",
-      "type": "string"
-    },
-    "oidcClientIdPatch": {
-      "name": "oidcClientId",
-      "description": "clientId of the application set up on the OpenID Provider",
-      "in": "formData",
-      "type": "string"
-    },
-    "oidcClientSecretPatch": {
-      "name": "oidcClientSecret",
-      "description": "clientSecret of the application set up on the OpenID Provider",
-      "in": "formData",
-      "type": "string"
-    },
-    "defaultRedirectUrlParamPatch": {
-      "name": "defaultRedirectUrl",
-      "description": "The redirect URL to use in the IdP login flow",
-      "in": "formData",
-      "type": "string"
-    },
-    "redirectUrlParamPatch": {
-      "name": "redirectUrl",
-      "description": "JSON encoded array containing a list of allowed redirect URLs",
-      "in": "formData",
-      "type": "string"
-    },
-    "tenantParamPatch": {
-      "name": "tenant",
-      "description": "Tenant",
-      "in": "formData",
-      "required": true,
-      "type": "string"
-    },
-    "productParamPatch": {
-      "name": "product",
-      "description": "Product",
-      "in": "formData",
-      "required": true,
-      "type": "string"
-    },
-    "deactivatedParamPatch": {
-      "name": "deactivated",
-      "description": "Connection status",
-      "in": "formData",
-      "required": false,
-      "type": "boolean"
-    },
-    "tenantParamGet": {
-      "in": "query",
-      "name": "tenant",
-      "type": "string",
-      "description": "Tenant"
-    },
-    "productParamGet": {
-      "in": "query",
-      "name": "product",
-      "type": "string",
-      "description": "Product",
-      "required": true
-    },
-    "clientIDParamGet": {
-      "in": "query",
-      "name": "clientID",
-      "type": "string",
-      "description": "Client ID"
-    },
-    "strategyParamGet": {
-      "in": "query",
-      "name": "strategy",
-      "type": "string",
-      "description": "Strategy which can help to filter connections with tenant/product query"
-    },
-    "clientIDDel": {
-      "name": "clientID",
-      "in": "query",
-      "type": "string",
-      "description": "Client ID"
-    },
-    "clientSecretDel": {
-      "name": "clientSecret",
-      "in": "query",
-      "type": "string",
-      "description": "Client Secret"
-    },
-    "tenantDel": {
-      "name": "tenant",
-      "in": "query",
-      "type": "string",
-      "description": "Tenant"
-    },
-    "productDel": {
-      "name": "product",
-      "in": "query",
-      "type": "string",
-      "description": "Product"
-    },
-    "strategyDel": {
-      "name": "strategy",
-      "in": "query",
-      "type": "string",
-      "description": "Strategy which can help to filter connections with tenant/product query"
     }
   },
   "tags": []

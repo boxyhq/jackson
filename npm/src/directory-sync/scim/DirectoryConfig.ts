@@ -39,6 +39,55 @@ interface FilterByParams extends PaginationParams {
   provider?: DirectoryType;
 }
 
+/**
+ * @swagger
+ * definitions:
+ *   Directory:
+ *      type: object
+ *      properties:
+ *        id:
+ *          type: string
+ *          description: Directory ID
+ *        name:
+ *          type: string
+ *          description: name
+ *        tenant:
+ *          type: string
+ *          description: Tenant
+ *        product:
+ *          type: string
+ *          description: Product
+ *        type:
+ *          type: string
+ *          description: Directory provider
+ *        deactivated:
+ *          type: boolean
+ *          description: Status
+ *        log_webhook_events:
+ *          type: boolean
+ *          description: If true, webhook requests will be logged
+ *        scim:
+ *         type: object
+ *         properties:
+ *           path:
+ *              type: string
+ *              description: SCIM path
+ *           endpoint:
+ *              type: string
+ *              description: SCIM url
+ *           secret:
+ *              type: string
+ *              description: SCIM secret
+ *        webhook:
+ *         type: object
+ *         properties:
+ *           endpoint:
+ *              type: string
+ *              description: Webhook url
+ *           secret:
+ *              type: string
+ *              description: Webhook secret
+ */
 export class DirectoryConfig {
   private _store: Storable | null = null;
   private opts: JacksonOption;
@@ -62,7 +111,73 @@ export class DirectoryConfig {
     return this._store || (this._store = this.db.store(storeNamespacePrefix.dsync.config));
   }
 
-  // Create the configuration
+  /**
+   * @swagger
+   * parameters:
+   *   tenant:
+   *     name: tenant
+   *     description: Tenant
+   *     in: query
+   *     required: true
+   *     type: string
+   *   product:
+   *     name: product
+   *     description: Product
+   *     in: query
+   *     required: true
+   *     type: string
+   */
+
+  /**
+   * @swagger
+   * /api/v1/dsync:
+   *   post:
+   *     summary: Create a directory connection
+   *     parameters:
+   *       - name: tenant
+   *         description: Tenant
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: product
+   *         description: Product
+   *         in: formData
+   *         required: true
+   *         type: string
+   *       - name: name
+   *         description: Name
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: webhook_url
+   *         description: Webhook URL
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: webhook_secret
+   *         description: Webhook secret
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: type
+   *         description: Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)
+   *         in: formData
+   *         required: false
+   *         type: string
+   *     tags: [Directory Sync | Connections]
+   *     produces:
+   *      - application/json
+   *     consumes:
+   *      - application/x-www-form-urlencoded
+   *      - application/json
+   *     responses:
+   *      200:
+   *        description: Success
+   *        schema:
+   *          type: array
+   *          items:
+   *            $ref:  '#/definitions/Directory'
+   */
   public async create(params: {
     name?: string;
     tenant: string;
@@ -165,7 +280,27 @@ export class DirectoryConfig {
     }
   }
 
-  // Get the configuration by id
+  /**
+   * @swagger
+   * /api/v1/dsync/{id}:
+   *   get:
+   *     summary: Get a directory connection by id
+   *     parameters:
+   *       - name: id
+   *         description: Directory ID
+   *         in: path
+   *         required: true
+   *         type: string
+   *     tags:
+   *       - Directory Sync | Connections
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       '200':
+   *         description: Success
+   *         schema:
+   *           $ref: '#/definitions/Directory'
+   */
   public async get(id: string): Promise<Response<Directory>> {
     try {
       if (!id) {
@@ -236,7 +371,28 @@ export class DirectoryConfig {
     }
   }
 
-  // Get the configuration by tenant and product
+  /**
+   * @swagger
+   * /api/v1/dsync:
+   *   get:
+   *     summary: Get a directory connection by tenant and product
+   *     parameters:
+   *       - $ref: '#/parameters/tenant'
+   *       - $ref: '#/parameters/product'
+   *     tags: [Directory Sync | Connections]
+   *     produces:
+   *      - application/json
+   *     consumes:
+   *      - application/x-www-form-urlencoded
+   *      - application/json
+   *     responses:
+   *      200:
+   *        description: Success
+   *        schema:
+   *          type: array
+   *          items:
+   *            $ref:  '#/definitions/Directory'
+   */
   public async getByTenantAndProduct(tenant: string, product: string): Promise<Response<Directory[]>> {
     try {
       if (!tenant || !product) {
@@ -283,7 +439,25 @@ export class DirectoryConfig {
     }
   }
 
-  // Delete a configuration by id
+  /**
+   * @swagger
+   * /api/v1/dsync/{id}:
+   *   delete:
+   *     summary: Delete a directory connection by id
+   *     parameters:
+   *       - name: id
+   *         description: Directory ID
+   *         in: path
+   *         required: true
+   *         type: string
+   *     tags:
+   *       - Directory Sync | Connections
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       '200':
+   *         description: Success
+   */
   public async delete(id: string): Promise<Response<null>> {
     try {
       if (!id) {
@@ -336,7 +510,25 @@ export class DirectoryConfig {
     return directory;
   }
 
-  // Filter connections by product or provider
+  /**
+   * @swagger
+   * /api/v1/dsync/product:
+   *   get:
+   *     summary: Get directory connections by product
+   *     parameters:
+   *      - $ref: '#/parameters/product'
+   *     tags:
+   *       - Directory Sync | Connections
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       '200':
+   *         description: Success
+   *         schema:
+   *           type: array
+   *           items:
+   *             $ref:  '#/definitions/Directory'
+   */
   public async filterBy(
     params: FilterByParams = {}
   ): Promise<Response<Directory[]> & { pageToken?: string }> {
