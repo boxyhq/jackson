@@ -256,7 +256,7 @@
         "summary": "Create SSO connection",
         "operationId": "create-sso-connection",
         "tags": [
-          "Single Sign On | Connections"
+          "Single Sign On"
         ],
         "produces": [
           "application/json"
@@ -325,7 +325,7 @@
         "summary": "Update SSO Connection",
         "operationId": "update-sso-connection",
         "tags": [
-          "Single Sign On | Connections"
+          "Single Sign On"
         ],
         "consumes": [
           "application/json",
@@ -414,7 +414,7 @@
         ],
         "operationId": "get-connections",
         "tags": [
-          "Single Sign On | Connections"
+          "Single Sign On"
         ],
         "responses": {
           "200": {
@@ -449,7 +449,7 @@
         "summary": "Delete SSO Connections",
         "operationId": "delete-sso-connection",
         "tags": [
-          "Single Sign On | Connections"
+          "Single Sign On"
         ],
         "responses": {
           "200": {
@@ -474,7 +474,7 @@
         ],
         "operationId": "get-connections-by-product",
         "tags": [
-          "Single Sign On | Connections"
+          "Single Sign On"
         ],
         "responses": {
           "200": {
@@ -631,7 +631,7 @@
         "summary": "Create a Setup Link",
         "operationId": "create-sso-setup-link",
         "tags": [
-          "Single Sign On | Setup Links"
+          "Setup Links | Single Sign On"
         ],
         "produces": [
           "application/json"
@@ -678,7 +678,7 @@
         ],
         "operationId": "delete-sso-setup-link",
         "tags": [
-          "Single Sign On | Setup Links"
+          "Setup Links | Single Sign On"
         ],
         "responses": {
           "200": {
@@ -707,7 +707,7 @@
         ],
         "operationId": "get-sso-setup-link",
         "tags": [
-          "Single Sign On | Setup Links"
+          "Setup Links | Single Sign On"
         ],
         "responses": {
           "200": {
@@ -724,7 +724,7 @@
         "summary": "Create a Setup Link",
         "operationId": "create-dsync-setup-link",
         "tags": [
-          "Directory Sync | Setup Links"
+          "Setup Links | Directory Sync"
         ],
         "produces": [
           "application/json"
@@ -765,7 +765,7 @@
         ],
         "operationId": "delete-dsync-setup-link",
         "tags": [
-          "Directory Sync | Setup Links"
+          "Setup Links | Directory Sync"
         ],
         "responses": {
           "200": {
@@ -794,7 +794,7 @@
         ],
         "operationId": "get-dsync-setup-link",
         "tags": [
-          "Directory Sync | Setup Links"
+          "Setup Links | Directory Sync"
         ],
         "responses": {
           "200": {
@@ -816,7 +816,7 @@
         ],
         "operationId": "get-sso-setup-link-by-product",
         "tags": [
-          "Single Sign On | Setup Links"
+          "Setup Links | Single Sign On"
         ],
         "responses": {
           "200": {
@@ -841,7 +841,7 @@
         ],
         "operationId": "get-dsync-setup-link-by-product",
         "tags": [
-          "Directory Sync | Setup Links"
+          "Setup Links | Directory Sync"
         ],
         "responses": {
           "200": {

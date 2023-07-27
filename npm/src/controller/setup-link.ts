@@ -107,7 +107,7 @@ export class SetupLinkController {
    *   post:
    *    summary: Create a Setup Link
    *    operationId: create-sso-setup-link
-   *    tags: [Single Sign On | Setup Links]
+   *    tags: [Setup Links | Single Sign On]
    *    produces:
    *      - application/json
    *    consumes:
@@ -127,7 +127,7 @@ export class SetupLinkController {
    *   post:
    *    summary: Create a Setup Link
    *    operationId: create-dsync-setup-link
-   *    tags: [Directory Sync | Setup Links]
+   *    tags: [Setup Links | Directory Sync]
    *    produces:
    *      - application/json
    *    consumes:
@@ -251,7 +251,7 @@ export class SetupLinkController {
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/setupLinkId'
    *     operationId: delete-sso-setup-link
-   *     tags: [Single Sign On | Setup Links]
+   *     tags: [Setup Links | Single Sign On]
    *     responses:
    *      200:
    *        description: Success
@@ -269,7 +269,7 @@ export class SetupLinkController {
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/setupLinkId'
    *     operationId: delete-dsync-setup-link
-   *     tags: [Directory Sync | Setup Links]
+   *     tags: [Setup Links | Directory Sync]
    *     responses:
    *      200:
    *        description: Success
@@ -323,7 +323,7 @@ export class SetupLinkController {
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
    *     operationId: get-sso-setup-link-by-product
-   *     tags: [Single Sign On | Setup Links]
+   *     tags: [Setup Links | Single Sign On]
    *     responses:
    *      200:
    *        description: Success
@@ -337,7 +337,7 @@ export class SetupLinkController {
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
    *     operationId: get-dsync-setup-link-by-product
-   *     tags: [Directory Sync | Setup Links]
+   *     tags: [Setup Links | Directory Sync]
    *     responses:
    *      200:
    *        description: Success
@@ -410,7 +410,7 @@ export class SetupLinkController {
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/idParamGet'
    *     operationId: get-sso-setup-link
-   *     tags: [Single Sign On | Setup Links]
+   *     tags: [Setup Links | Single Sign On]
    *     responses:
    *      200:
    *        description: Success
@@ -424,7 +424,7 @@ export class SetupLinkController {
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/idParamGet'
    *     operationId: get-dsync-setup-link
-   *     tags: [Directory Sync | Setup Links]
+   *     tags: [Setup Links | Directory Sync]
    *     responses:
    *      200:
    *        description: Success
