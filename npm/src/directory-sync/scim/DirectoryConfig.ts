@@ -126,6 +126,12 @@ export class DirectoryConfig {
    *     in: query
    *     required: true
    *     type: string
+   *   directoryId:
+   *     name: directory id
+   *     description: Directory ID
+   *     in: query
+   *     required: false
+   *     type: string
    */
 
   /**
@@ -164,7 +170,7 @@ export class DirectoryConfig {
    *         in: formData
    *         required: false
    *         type: string
-   *     tags: [Directory Sync | Connections]
+   *     tags: [Directory Sync]
    *     produces:
    *      - application/json
    *     consumes:
@@ -282,17 +288,17 @@ export class DirectoryConfig {
 
   /**
    * @swagger
-   * /api/v1/dsync/{id}:
+   * /api/v1/dsync/{directoryId}:
    *   get:
    *     summary: Get a directory connection by id
    *     parameters:
-   *       - name: id
+   *       - name: directoryId
    *         description: Directory ID
    *         in: path
    *         required: true
    *         type: string
    *     tags:
-   *       - Directory Sync | Connections
+   *       - Directory Sync
    *     produces:
    *       - application/json
    *     responses:
@@ -379,7 +385,7 @@ export class DirectoryConfig {
    *     parameters:
    *       - $ref: '#/parameters/tenant'
    *       - $ref: '#/parameters/product'
-   *     tags: [Directory Sync | Connections]
+   *     tags: [Directory Sync]
    *     produces:
    *      - application/json
    *     consumes:
@@ -441,17 +447,17 @@ export class DirectoryConfig {
 
   /**
    * @swagger
-   * /api/v1/dsync/{id}:
+   * /api/v1/dsync/{directoryId}:
    *   delete:
    *     summary: Delete a directory connection by id
    *     parameters:
-   *       - name: id
+   *       - name: directoryId
    *         description: Directory ID
    *         in: path
    *         required: true
    *         type: string
    *     tags:
-   *       - Directory Sync | Connections
+   *       - Directory Sync
    *     produces:
    *       - application/json
    *     responses:
@@ -518,7 +524,7 @@ export class DirectoryConfig {
    *     parameters:
    *      - $ref: '#/parameters/product'
    *     tags:
-   *       - Directory Sync | Connections
+   *       - Directory Sync
    *     produces:
    *       - application/json
    *     responses:
