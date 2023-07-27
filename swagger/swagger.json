@@ -82,7 +82,7 @@
           }
         ],
         "tags": [
-          "Directory Sync | Connections"
+          "Directory Sync"
         ],
         "produces": [
           "application/json"
@@ -114,7 +114,7 @@
           }
         ],
         "tags": [
-          "Directory Sync | Connections"
+          "Directory Sync"
         ],
         "produces": [
           "application/json"
@@ -136,12 +136,12 @@
         }
       }
     },
-    "/api/v1/dsync/{id}": {
+    "/api/v1/dsync/{directoryId}": {
       "get": {
         "summary": "Get a directory connection by id",
         "parameters": [
           {
-            "name": "id",
+            "name": "directoryId",
             "description": "Directory ID",
             "in": "path",
             "required": true,
@@ -149,7 +149,7 @@
           }
         ],
         "tags": [
-          "Directory Sync | Connections"
+          "Directory Sync"
         ],
         "produces": [
           "application/json"
@@ -167,7 +167,7 @@
         "summary": "Delete a directory connection by id",
         "parameters": [
           {
-            "name": "id",
+            "name": "directoryId",
             "description": "Directory ID",
             "in": "path",
             "required": true,
@@ -175,7 +175,7 @@
           }
         ],
         "tags": [
-          "Directory Sync | Connections"
+          "Directory Sync"
         ],
         "produces": [
           "application/json"
@@ -196,7 +196,7 @@
           }
         ],
         "tags": [
-          "Directory Sync | Connections"
+          "Directory Sync"
         ],
         "produces": [
           "application/json"
@@ -208,6 +208,140 @@
               "type": "array",
               "items": {
                 "$ref": "#/definitions/Directory"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/groups/{groupId}": {
+      "get": {
+        "summary": "Get group by id from a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "name": "groupId",
+            "description": "Group ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Group"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/groups": {
+      "get": {
+        "summary": "Get groups from a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/directoryId"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Group"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/users/{userId}": {
+      "get": {
+        "summary": "Get user by id from a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "name": "userId",
+            "description": "User ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/users": {
+      "get": {
+        "summary": "Get users from a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/directoryId"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
               }
             }
           }
@@ -278,6 +412,52 @@
           }
         }
       }
+    },
+    "Group": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Group ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Group name"
+        },
+        "raw": {
+          "type": "object",
+          "description": "Raw group attributes from the Identity Provider"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "User ID"
+        },
+        "first_name": {
+          "type": "string",
+          "description": "First name"
+        },
+        "last_name": {
+          "type": "string",
+          "description": "Last name"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address"
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Indicates whether the user is active or not"
+        },
+        "raw": {
+          "type": "object",
+          "description": "Raw user attributes from the Identity Provider"
+        }
+      }
     }
   },
   "responses": {},
@@ -294,6 +474,13 @@
       "description": "Product",
       "in": "query",
       "required": true,
+      "type": "string"
+    },
+    "directoryId": {
+      "name": "directory id",
+      "description": "Directory ID",
+      "in": "query",
+      "required": false,
       "type": "string"
     }
   },
