@@ -172,9 +172,9 @@ export function renderFieldList(args: {
     },
     fallback,
   }: FieldCatalogItem) => {
-    const disabled = editable === false;
+    const readOnly = editable === false;
     const value =
-      disabled && typeof formatForDisplay === 'function'
+      readOnly && typeof formatForDisplay === 'function'
         ? formatForDisplay(
             args.formObjParentKey ? args.formObj[args.formObjParentKey]?.[key] : args.formObj[key]
           )
@@ -257,7 +257,7 @@ export function renderFieldList(args: {
             placeholder={placeholder}
             value={(value as string) || ''}
             required={required}
-            disabled={disabled}
+            readOnly={readOnly}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
             className={
@@ -283,7 +283,7 @@ export function renderFieldList(args: {
               type={type}
               checked={!!value}
               required={required}
-              disabled={disabled}
+              readOnly={readOnly}
               maxLength={maxLength}
               onChange={getHandleChange(args.setFormObj, {
                 key: 'checked',
@@ -300,7 +300,7 @@ export function renderFieldList(args: {
             placeholder={placeholder}
             value={(value as string) || ''}
             required={required}
-            disabled={disabled}
+              readOnly={readOnly}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
             className={'input-bordered input w-full' + isHiddenClassName}
