@@ -12,7 +12,6 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "build": "next build",
     "dev": "cross-env JACKSON_API_KEYS=secret IDP_ENABLED=true next dev -p 5225",
     "dev-dbs": "docker-compose -f ./_dev/docker-compose.yml up -d",
     "dev-dbs-destroy": "docker-compose -f ./_dev/docker-compose.yml down --volumes --remove-orphans",
@@ -27,7 +26,7 @@
     "mariadb": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql npm run dev",
     "mssql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mssql DB_URL='sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!' npm run dev",
     "dynamodb": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=dynamodb DB_URL='http://localhost:8000' npm run dev",
-    "start": "next start -p 5225",
+    "start": "PORT=5225 NODE_OPTIONS=--dns-result-order=ipv4first node .next/standalone/server.js",
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
     "redis": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=redis DB_TYPE=redis DB_URL=redis://localhost:6379/redis npm run dev",
     "prepare": "npm run prepare:npm",
@@ -41,6 +40,8 @@
     "postcustom-install": "npm run prebuild",
     "postinstall": "npm run prebuild",
     "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)",
+    "build": "next build",
+    "postbuild": "(cp -R public .next/standalone && cp -R .next/static .next/standalone/.next) || (copy -recurse .\\public .\\.next/standalone && copy -recurse .\\.next\\static .\\.next\\standalone\\.next)",
     "release": "git checkout release && git merge origin/main && release-it"
   },
   "dependencies": {
