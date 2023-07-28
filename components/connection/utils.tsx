@@ -223,6 +223,7 @@ export function renderFieldList(args: {
               }>
               {label}
             </label>
+            {readOnly && type === 'password' && <CopyToClipboardButton text={value} />}
             {typeof fallback === 'object' &&
               (typeof fallback.activateCondition === 'function'
                 ? fallback.activateCondition(value)
@@ -296,21 +297,18 @@ export function renderFieldList(args: {
             />
           </>
         ) : (
-          <>
-            {readOnly && type === 'password' && <CopyToClipboardButton text={value} />}
-            <input
-              id={key}
-              type={type}
-              placeholder={placeholder}
-              value={(value as string) || ''}
-              required={required}
-              readOnly={readOnly}
-              maxLength={maxLength}
-              onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
-              className={'input-bordered input w-full' + isHiddenClassName + (readOnly ? ' bg-gray-50' : '')}
-              data-testid={dataTestId}
-            />
-          </>
+          <input
+            id={key}
+            type={type}
+            placeholder={placeholder}
+            value={(value as string) || ''}
+            required={required}
+            readOnly={readOnly}
+            maxLength={maxLength}
+            onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
+            className={'input-bordered input w-full' + isHiddenClassName + (readOnly ? ' bg-gray-50' : '')}
+            data-testid={dataTestId}
+          />
         )}
       </div>
     );
