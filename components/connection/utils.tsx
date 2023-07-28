@@ -1,6 +1,7 @@
 import { ButtonLink } from '@components/ButtonLink';
 import { Dispatch, FormEvent, SetStateAction, useMemo } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
+import { CopyToClipboardButton } from '@components/ClipboardButton';
 
 export const saveConnection = async ({
   formObj,
@@ -242,7 +243,7 @@ export function renderFieldList(args: {
         {type === 'pre' ? (
           <pre
             className={
-              'block w-full cursor-not-allowed overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500' +
+              'block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500' +
               isHiddenClassName +
               (typeof showWarning === 'function' && showWarning(args.formObj[key])
                 ? ' border-2 border-rose-500'
@@ -263,7 +264,8 @@ export function renderFieldList(args: {
             className={
               'textarea-bordered textarea h-24 w-full' +
               (isArray ? ' whitespace-pre' : '') +
-              isHiddenClassName
+              isHiddenClassName +
+              (readOnly ? ' bg-gray-50' : '')
             }
             rows={rows}
             data-testid={dataTestId}
@@ -294,18 +296,21 @@ export function renderFieldList(args: {
             />
           </>
         ) : (
-          <input
-            id={key}
-            type={type}
-            placeholder={placeholder}
-            value={(value as string) || ''}
-            required={required}
+          <>
+            {readOnly && type === 'password' && <CopyToClipboardButton text={value} />}
+            <input
+              id={key}
+              type={type}
+              placeholder={placeholder}
+              value={(value as string) || ''}
+              required={required}
               readOnly={readOnly}
-            maxLength={maxLength}
-            onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
-            className={'input-bordered input w-full' + isHiddenClassName}
-            data-testid={dataTestId}
-          />
+              maxLength={maxLength}
+              onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
+              className={'input-bordered input w-full' + isHiddenClassName + (readOnly ? ' bg-gray-50' : '')}
+              data-testid={dataTestId}
+            />
+          </>
         )}
       </div>
     );
