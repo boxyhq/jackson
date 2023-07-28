@@ -114,6 +114,10 @@ Reach out to the maintainers at one of the following places:
 - [Twitter](https://twitter.com/BoxyHQ) (Follow us)
 - [Youtube](https://www.youtube.com/@boxyhq) (Watch community events and tutorials)
 
+## Stargazers ⭐
+
+[![Stargazers repo roster for @boxyhq/jackson](https://reporoster.com/stars/notext/boxyhq/jackson)](https://github.com/boxyhq/jackson/stargazers)
+
 ## Reporting Security Issues
 
 [Responsible Disclosure](SECURITY.md)
