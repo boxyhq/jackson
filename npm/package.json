@@ -48,7 +48,7 @@
     "@boxyhq/saml20": "1.2.3",
     "axios": "1.4.0",
     "encoding": "0.1.13",
-    "googleapis": "122.0.0",
+    "googleapis": "123.0.0",
     "jose": "4.14.4",
     "lodash": "4.17.21",
     "mixpanel": "0.17.0",
