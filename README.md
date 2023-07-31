@@ -116,7 +116,7 @@ Reach out to the maintainers at one of the following places:
 
 ## Stargazers ⭐
 
-[![Stargazers repo roster for @boxyhq/jackson](https://reporoster.com/stars/notext/boxyhq/jackson)](https://github.com/boxyhq/jackson/stargazers)
+[![Stargazers repo roster for @boxyhq/jackson](https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?format=notext&user=boxyhq&repo=jackson)](https://github.com/boxyhq/jackson/stargazers)
 
 ## Reporting Security Issues
 
