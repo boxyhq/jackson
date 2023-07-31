@@ -89,7 +89,7 @@ export const getCommonFields = ({
   {
     key: 'oidcClientSecret',
     label: 'Client Secret [OIDC Provider]',
-    type: 'text',
+    type: 'password',
     placeholder: '',
     attributes: {
       'data-testid': 'oidcClientSecret',
