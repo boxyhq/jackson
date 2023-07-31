@@ -22,7 +22,7 @@ test.afterEach(async ({ request }) => {
   await deleteConnection(request, { tenant, product });
 });
 
-test.describe('POST /api/v1/connections', () => {
+test.describe('POST /api/v1/sso', () => {
   test('should be able to create a SSO Connection', async ({ request }) => {
     const response = await createConnection(request, newConnection);
 
@@ -70,7 +70,7 @@ test.describe('POST /api/v1/connections', () => {
     ];
 
     for (const testCase of testCases) {
-      const response = await request.post('/api/v1/connections', {
+      const response = await request.post('/api/v1/sso', {
         data: testCase.data,
       });
 
@@ -108,7 +108,7 @@ test.describe('POST /api/v1/connections', () => {
   });
 });
 
-test.describe('GET /api/v1/connections', () => {
+test.describe('GET /api/v1/sso', () => {
   const { tenant, product } = newConnection;
 
   test('should be able to get SSO Connections', async ({ request }) => {
@@ -122,7 +122,7 @@ test.describe('GET /api/v1/connections', () => {
   // TODO: Add test for invalid tenant and product
 });
 
-test.describe('PATCH /api/v1/connections', () => {
+test.describe('PATCH /api/v1/sso', () => {
   const { tenant, product } = newConnection;
 
   test('should be able to update a SSO Connection', async ({ request }) => {
@@ -131,7 +131,7 @@ test.describe('PATCH /api/v1/connections', () => {
     const connection = await getConnection(request, { tenant, product });
 
     // Update the connection
-    const response = await request.patch('/api/v1/connections', {
+    const response = await request.patch('/api/v1/sso', {
       data: {
         tenant,
         product,
@@ -165,7 +165,7 @@ test.describe('PATCH /api/v1/connections', () => {
   // TODO: Add test for invalid clientID and clientSecret
 });
 
-test.describe('DELETE /api/v1/connections', () => {
+test.describe('DELETE /api/v1/sso', () => {
   const { tenant, product } = newConnection;
 
   test('should be able to delete a SSO Connection', async ({ request }) => {
@@ -181,14 +181,14 @@ test.describe('DELETE /api/v1/connections', () => {
   });
 });
 
-test.describe('GET /api/v1/connections/exists', () => {
+test.describe('GET /api/v1/sso/exists', () => {
   const { tenant, product } = newConnection;
 
   test('should be able to check if a connection exists', async ({ request }) => {
     await createConnection(request, newConnection);
 
     // Fetch a connection that exists
-    let response = await request.get('/api/v1/connections/exists', {
+    let response = await request.get('/api/v1/sso/exists', {
       params: {
         tenant,
         product,
@@ -199,7 +199,7 @@ test.describe('GET /api/v1/connections/exists', () => {
     expect(response.status()).toBe(204);
 
     // Fetch a connection that does not exist
-    response = await request.get('/api/v1/connections/exists', {
+    response = await request.get('/api/v1/sso/exists', {
       params: {
         tenant: 'boxyhq',
         product: 'saml-jackson',
