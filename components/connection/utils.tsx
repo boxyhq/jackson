@@ -1,7 +1,10 @@
 import { ButtonLink } from '@components/ButtonLink';
-import { Dispatch, FormEvent, SetStateAction, useMemo } from 'react';
+import { Dispatch, FormEvent, SetStateAction, useMemo, useState } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { CopyToClipboardButton } from '@components/ClipboardButton';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { IconButton } from '@components/IconButton';
+import { useTranslation } from 'react-i18next';
 
 export const saveConnection = async ({
   formObj,
@@ -173,6 +176,8 @@ export function renderFieldList(args: {
     },
     fallback,
   }: FieldCatalogItem) => {
+    const { t } = useTranslation('common');
+    const [isSecretShown, setisSecretShown] = useState(false);
     const readOnly = editable === false;
     const value =
       readOnly && typeof formatForDisplay === 'function'
@@ -223,7 +228,19 @@ export function renderFieldList(args: {
               }>
               {label}
             </label>
-            {readOnly && type === 'password' && <CopyToClipboardButton text={value} />}
+            {readOnly && type === 'password' && (
+              <div className='flex'>
+                <IconButton
+                  tooltip={isSecretShown ? t('hide_secret') : t('show_secret')}
+                  Icon={isSecretShown ? EyeSlashIcon : EyeIcon}
+                  className='hover:text-primary mr-2'
+                  onClick={() => {
+                    setisSecretShown(!isSecretShown);
+                  }}
+                />
+                <CopyToClipboardButton text={value} />
+              </div>
+            )}
             {typeof fallback === 'object' &&
               (typeof fallback.activateCondition === 'function'
                 ? fallback.activateCondition(value)
@@ -299,7 +316,7 @@ export function renderFieldList(args: {
         ) : (
           <input
             id={key}
-            type={type}
+            type={type === 'password' && isSecretShown ? 'text' : type}
             placeholder={placeholder}
             value={(value as string) || ''}
             required={required}
