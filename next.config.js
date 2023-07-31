@@ -79,6 +79,14 @@ module.exports = {
         source: '/admin/settings',
         destination: '/admin/settings/sso-connection',
       },
+      {
+        source: '/api/v1/connections/:path*',
+        destination: '/api/v1/sso/:path*',
+      },
+      {
+        source: '/api/v1/directory-sync/:path*',
+        destination: '/api/v1/dsync/:path*',
+      },
     ];
   },
   images: {

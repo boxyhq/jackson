@@ -1,6 +1,10 @@
 import { ButtonLink } from '@components/ButtonLink';
-import { Dispatch, FormEvent, SetStateAction, useMemo } from 'react';
+import { Dispatch, FormEvent, SetStateAction, useMemo, useState } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
+import { CopyToClipboardButton } from '@components/ClipboardButton';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { IconButton } from '@components/IconButton';
+import { useTranslation } from 'react-i18next';
 
 export const saveConnection = async ({
   formObj,
@@ -146,6 +150,56 @@ export const useFieldCatalog = ({
   return fieldCatalog;
 };
 
+function SecretInputFormControl({
+  label,
+  value,
+  isHiddenClassName,
+  id,
+  placeholder,
+  required,
+  maxLength,
+  readOnly,
+  args,
+  dataTestId,
+}) {
+  const { t } = useTranslation('common');
+  const [isSecretShown, setisSecretShown] = useState(false);
+  return (
+    <div className='mb-6'>
+      <div className='flex items-center justify-between'>
+        <label
+          htmlFor={id}
+          className={'mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300' + isHiddenClassName}>
+          {label}
+        </label>
+        <div className='flex'>
+          <IconButton
+            tooltip={isSecretShown ? t('hide_secret') : t('show_secret')}
+            Icon={isSecretShown ? EyeSlashIcon : EyeIcon}
+            className='hover:text-primary mr-2'
+            onClick={() => {
+              setisSecretShown(!isSecretShown);
+            }}
+          />
+          <CopyToClipboardButton text={value} />
+        </div>
+      </div>
+      <input
+        id={id}
+        type={isSecretShown ? 'text' : 'password'}
+        placeholder={placeholder}
+        value={(value as string) || ''}
+        required={required}
+        readOnly={readOnly}
+        maxLength={maxLength}
+        onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
+        className={'input-bordered input w-full' + isHiddenClassName + (readOnly ? ' bg-gray-50' : '')}
+        data-testid={dataTestId}
+      />
+    </div>
+  );
+}
+
 export function renderFieldList(args: {
   isEditView?: boolean;
   formObj: FormObj;
@@ -172,9 +226,9 @@ export function renderFieldList(args: {
     },
     fallback,
   }: FieldCatalogItem) => {
-    const disabled = editable === false;
+    const readOnly = editable === false;
     const value =
-      disabled && typeof formatForDisplay === 'function'
+      readOnly && typeof formatForDisplay === 'function'
         ? formatForDisplay(
             args.formObjParentKey ? args.formObj[args.formObjParentKey]?.[key] : args.formObj[key]
           )
@@ -211,6 +265,24 @@ export function renderFieldList(args: {
     const isHiddenClassName =
       typeof isHidden === 'function' && isHidden(args.formObj[key]) == true ? ' hidden' : '';
 
+    if (type === 'password') {
+      return (
+        <SecretInputFormControl
+          key={key}
+          label={label}
+          value={value}
+          isHiddenClassName={isHiddenClassName}
+          id={key}
+          placeholder={placeholder}
+          required={required}
+          maxLength={maxLength}
+          readOnly={readOnly}
+          args={args}
+          dataTestId={dataTestId}
+        />
+      );
+    }
+
     return (
       <div className='mb-6 ' key={key}>
         {type !== 'checkbox' && (
@@ -242,7 +314,7 @@ export function renderFieldList(args: {
         {type === 'pre' ? (
           <pre
             className={
-              'block w-full cursor-not-allowed overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500' +
+              'block w-full overflow-auto rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500' +
               isHiddenClassName +
               (typeof showWarning === 'function' && showWarning(args.formObj[key])
                 ? ' border-2 border-rose-500'
@@ -257,13 +329,14 @@ export function renderFieldList(args: {
             placeholder={placeholder}
             value={(value as string) || ''}
             required={required}
-            disabled={disabled}
+            readOnly={readOnly}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
             className={
               'textarea-bordered textarea h-24 w-full' +
               (isArray ? ' whitespace-pre' : '') +
-              isHiddenClassName
+              isHiddenClassName +
+              (readOnly ? ' bg-gray-50' : '')
             }
             rows={rows}
             data-testid={dataTestId}
@@ -283,7 +356,7 @@ export function renderFieldList(args: {
               type={type}
               checked={!!value}
               required={required}
-              disabled={disabled}
+              readOnly={readOnly}
               maxLength={maxLength}
               onChange={getHandleChange(args.setFormObj, {
                 key: 'checked',
@@ -300,10 +373,10 @@ export function renderFieldList(args: {
             placeholder={placeholder}
             value={(value as string) || ''}
             required={required}
-            disabled={disabled}
+            readOnly={readOnly}
             maxLength={maxLength}
             onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
-            className={'input-bordered input w-full' + isHiddenClassName}
+            className={'input-bordered input w-full' + isHiddenClassName + (readOnly ? ' bg-gray-50' : '')}
             data-testid={dataTestId}
           />
         )}

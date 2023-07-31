@@ -134,39 +134,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: clientSecret of the application set up on the OpenID Provider
    *     in: formData
    *     type: string
-   * /api/v1/saml/config:
-   *   post:
-   *    summary: Create SAML config
-   *    operationId: create-saml-config
-   *    deprecated: true
-   *    tags: [SAML Config - Deprecated]
-   *    produces:
-   *      - application/json
-   *    consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
-   *    parameters:
-   *      - $ref: '#/parameters/nameParamPost'
-   *      - $ref: '#/parameters/descriptionParamPost'
-   *      - $ref: '#/parameters/encodedRawMetadataParamPost'
-   *      - $ref: '#/parameters/rawMetadataParamPost'
-   *      - $ref: '#/parameters/metadataUrlParamPost'
-   *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
-   *      - $ref: '#/parameters/redirectUrlParamPost'
-   *      - $ref: '#/parameters/tenantParamPost'
-   *      - $ref: '#/parameters/productParamPost'
-   *    responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/Connection'
-   *      400:
-   *          $ref: '#/definitions/validationErrorsPost'
-   *      401:
-   *        description: Unauthorized
-   *      500:
-   *        description: Please set OpenID response handler path (oidcPath) on Jackson
-   * /api/v1/connections:
+   * /api/v1/sso:
    *   post:
    *     summary: Create SSO connection
    *     operationId: create-sso-connection
@@ -326,36 +294,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: formData
    *     required: false
    *     type: boolean
-   * /api/v1/saml/config:
-   *   patch:
-   *     summary: Update SAML Config
-   *     operationId: update-saml-config
-   *     tags: [SAML Config - Deprecated]
-   *     deprecated: true
-   *     consumes:
-   *       - application/json
-   *       - application/x-www-form-urlencoded
-   *     parameters:
-   *       - $ref: '#/parameters/clientIDParamPatch'
-   *       - $ref: '#/parameters/clientSecretParamPatch'
-   *       - $ref: '#/parameters/nameParamPatch'
-   *       - $ref: '#/parameters/descriptionParamPatch'
-   *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
-   *       - $ref: '#/parameters/rawMetadataParamPatch'
-   *       - $ref: '#/parameters/metadataUrlParamPatch'
-   *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
-   *       - $ref: '#/parameters/redirectUrlParamPatch'
-   *       - $ref: '#/parameters/tenantParamPatch'
-   *       - $ref: '#/parameters/productParamPatch'
-   *       - $ref: '#/parameters/deactivatedParamPatch'
-   *     responses:
-   *       204:
-   *         description: Success
-   *       400:
-   *         $ref: '#/definitions/validationErrorsPatch'
-   *       401:
-   *         description: Unauthorized
-   * /api/v1/connections:
+   * /api/v1/sso:
    *   patch:
    *     summary: Update SSO Connection
    *     operationId: update-sso-connection
@@ -514,7 +453,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Please provide `clientID` or `tenant` and `product`.
    *   '401Get':
    *     description: Unauthorized
-   * /api/v1/connections:
+   * /api/v1/sso:
    *   get:
    *     summary: Get SSO Connections
    *     parameters:
@@ -601,50 +540,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
   }
 
-  /**
-   * @swagger
-   * /api/v1/saml/config:
-   *   get:
-   *     summary: Get SAML Config
-   *     operationId: get-saml-config
-   *     tags: [SAML Config - Deprecated]
-   *     deprecated: true
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/clientIDParamGet'
-   *     responses:
-   *      '200':
-   *         description: Success
-   *         schema:
-   *           type: object
-   *           example:
-   *             {
-   *                "idpMetadata": {
-   *                  "sso": {
-   *                    "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-   *                    "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-   *                  },
-   *                  "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-   *                  "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-   *                  "loginType": "idp",
-   *                  "provider": "okta.com"
-   *                },
-   *                "defaultRedirectUrl": "https://hoppscotch.io/",
-   *                "redirectUrl": ["https://hoppscotch.io/"],
-   *                "tenant": "hoppscotch.io",
-   *                "product": "API Engine",
-   *                "name": "Hoppscotch-SP",
-   *                "description": "SP for hoppscotch.io",
-   *                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *                "deactivated": false
-   *            }
-   *      '400':
-   *        $ref: '#/responses/400Get'
-   *      '401':
-   *        $ref: '#/responses/401Get'
-   */
   public async getConfig(body: GetConfigQuery): Promise<SAMLSSORecord | Record<string, never>> {
     const clientID = 'clientID' in body ? body.clientID : undefined;
     const tenant = 'tenant' in body ? body.tenant : undefined;
@@ -704,7 +599,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: query
    *     type: string
    *     description: Strategy which can help to filter connections with tenant/product query
-   * /api/v1/connections:
+   * /api/v1/sso:
    *   delete:
    *     parameters:
    *      - $ref: '#/parameters/clientIDDel'
@@ -715,27 +610,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     summary: Delete SSO Connections
    *     operationId: delete-sso-connection
    *     tags: [Connections]
-   *     responses:
-   *       '200':
-   *         description: Success
-   *       '400':
-   *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
-   *       '401':
-   *         description: Unauthorized
-   * /api/v1/saml/config:
-   *   delete:
-   *     summary: Delete SAML Config
-   *     operationId: delete-saml-config
-   *     tags: [SAML Config - Deprecated]
-   *     deprecated: true
-   *     consumes:
-   *       - application/x-www-form-urlencoded
-   *       - application/json
-   *     parameters:
-   *      - $ref: '#/parameters/clientIDDel'
-   *      - $ref: '#/parameters/clientSecretDel'
-   *      - $ref: '#/parameters/tenantDel'
-   *      - $ref: '#/parameters/productDel'
    *     responses:
    *       '200':
    *         description: Success
@@ -868,7 +742,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Please provide a `product`.
    *   '401Get':
    *     description: Unauthorized
-   * /api/v1/connections/product:
+   * /api/v1/sso/product:
    *   get:
    *     summary: Get SSO Connections by product
    *     parameters:

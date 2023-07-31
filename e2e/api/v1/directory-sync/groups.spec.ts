@@ -28,9 +28,9 @@ test.afterAll(async ({ request }) => {
   await deleteDirectory(request, directory.id);
 });
 
-test.describe('GET /api/v1/directory-sync/groups', () => {
+test.describe('GET /api/v1/dsync/groups', () => {
   test('should be able to get all groups from a directory', async ({ request }) => {
-    const response = await request.get('/api/v1/directory-sync/groups', {
+    const response = await request.get('/api/v1/dsync/groups', {
       params: {
         tenant,
         product,
@@ -45,9 +45,9 @@ test.describe('GET /api/v1/directory-sync/groups', () => {
   });
 });
 
-test.describe('GET /api/v1/directory-sync/groups/:id', () => {
+test.describe('GET /api/v1/dsync/groups/:id', () => {
   test('should be able to get a group from a directory', async ({ request }) => {
-    let response = await request.get('/api/v1/directory-sync/groups', {
+    let response = await request.get('/api/v1/dsync/groups', {
       params: {
         tenant,
         product,
@@ -57,7 +57,7 @@ test.describe('GET /api/v1/directory-sync/groups/:id', () => {
     const { data: directoryGroups } = await response.json();
     const [firstGroup] = directoryGroups;
 
-    response = await request.get(`/api/v1/directory-sync/groups/${firstGroup.id}`, {
+    response = await request.get(`/api/v1/dsync/groups/${firstGroup.id}`, {
       params: {
         tenant,
         product,
