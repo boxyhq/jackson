@@ -150,6 +150,56 @@ export const useFieldCatalog = ({
   return fieldCatalog;
 };
 
+function SecretInputFormControl({
+  label,
+  value,
+  isHiddenClassName,
+  id,
+  placeholder,
+  required,
+  maxLength,
+  readOnly,
+  args,
+  dataTestId,
+}) {
+  const { t } = useTranslation('common');
+  const [isSecretShown, setisSecretShown] = useState(false);
+  return (
+    <div className='mb-6'>
+      <div className='flex items-center justify-between'>
+        <label
+          htmlFor={id}
+          className={'mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300' + isHiddenClassName}>
+          {label}
+        </label>
+        <div className='flex'>
+          <IconButton
+            tooltip={isSecretShown ? t('hide_secret') : t('show_secret')}
+            Icon={isSecretShown ? EyeSlashIcon : EyeIcon}
+            className='hover:text-primary mr-2'
+            onClick={() => {
+              setisSecretShown(!isSecretShown);
+            }}
+          />
+          <CopyToClipboardButton text={value} />
+        </div>
+      </div>
+      <input
+        id={id}
+        type={isSecretShown ? 'text' : 'password'}
+        placeholder={placeholder}
+        value={(value as string) || ''}
+        required={required}
+        readOnly={readOnly}
+        maxLength={maxLength}
+        onChange={getHandleChange(args.setFormObj, { formObjParentKey: args.formObjParentKey })}
+        className={'input-bordered input w-full' + isHiddenClassName + (readOnly ? ' bg-gray-50' : '')}
+        data-testid={dataTestId}
+      />
+    </div>
+  );
+}
+
 export function renderFieldList(args: {
   isEditView?: boolean;
   formObj: FormObj;
@@ -176,8 +226,6 @@ export function renderFieldList(args: {
     },
     fallback,
   }: FieldCatalogItem) => {
-    const { t } = useTranslation('common');
-    const [isSecretShown, setisSecretShown] = useState(false);
     const readOnly = editable === false;
     const value =
       readOnly && typeof formatForDisplay === 'function'
@@ -217,6 +265,24 @@ export function renderFieldList(args: {
     const isHiddenClassName =
       typeof isHidden === 'function' && isHidden(args.formObj[key]) == true ? ' hidden' : '';
 
+    if (type === 'password') {
+      return (
+        <SecretInputFormControl
+          key={key}
+          label={label}
+          value={value}
+          isHiddenClassName={isHiddenClassName}
+          id={key}
+          placeholder={placeholder}
+          required={required}
+          maxLength={maxLength}
+          readOnly={readOnly}
+          args={args}
+          dataTestId={dataTestId}
+        />
+      );
+    }
+
     return (
       <div className='mb-6 ' key={key}>
         {type !== 'checkbox' && (
@@ -228,19 +294,6 @@ export function renderFieldList(args: {
               }>
               {label}
             </label>
-            {readOnly && type === 'password' && (
-              <div className='flex'>
-                <IconButton
-                  tooltip={isSecretShown ? t('hide_secret') : t('show_secret')}
-                  Icon={isSecretShown ? EyeSlashIcon : EyeIcon}
-                  className='hover:text-primary mr-2'
-                  onClick={() => {
-                    setisSecretShown(!isSecretShown);
-                  }}
-                />
-                <CopyToClipboardButton text={value} />
-              </div>
-            )}
             {typeof fallback === 'object' &&
               (typeof fallback.activateCondition === 'function'
                 ? fallback.activateCondition(value)
@@ -316,7 +369,7 @@ export function renderFieldList(args: {
         ) : (
           <input
             id={key}
-            type={type === 'password' && isSecretShown ? 'text' : type}
+            type={type}
             placeholder={placeholder}
             value={(value as string) || ''}
             required={required}
