@@ -40,8 +40,8 @@
     "statements": 70
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.370.0",
-    "@aws-sdk/credential-providers": "3.370.0",
+    "@aws-sdk/client-dynamodb": "3.379.1",
+    "@aws-sdk/credential-providers": "3.379.1",
     "@aws-sdk/util-dynamodb": "3.370.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.4",
@@ -62,13 +62,13 @@
     "reflect-metadata": "0.1.13",
     "ripemd160": "2.0.2",
     "typeorm": "0.3.17",
-    "xml2js": "0.6.0",
+    "xml2js": "0.6.2",
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
     "@faker-js/faker": "8.0.2",
-    "@types/lodash": "4.14.195",
-    "@types/node": "20.4.4",
+    "@types/lodash": "4.14.196",
+    "@types/node": "20.4.5",
     "@types/sinon": "10.0.15",
     "@types/tap": "15.0.8",
     "cross-env": "7.0.3",
