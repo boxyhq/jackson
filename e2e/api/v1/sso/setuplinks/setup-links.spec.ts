@@ -10,9 +10,9 @@ test.use({
   },
 });
 
-// POST /api/v1/connections/setup-links
+// POST /api/v1/connections/setuplinks
 test('create the setup link', async ({ request }) => {
-  const response = await request.post('/api/v1/connections/setup-links', {
+  const response = await request.post('/api/v1/connections/setuplinks', {
     data: {
       tenant,
       product,
@@ -28,9 +28,9 @@ test('create the setup link', async ({ request }) => {
   expect(setupLink.data.service).toMatch('sso');
 });
 
-// GET /api/v1/connections/setup-links?id={id}
+// GET /api/v1/connections/setuplinks?id={id}
 test('get the setup link by id', async ({ request }) => {
-  let response = await request.get('/api/v1/connections/setup-links', {
+  let response = await request.get('/api/v1/connections/setuplinks', {
     params: {
       tenant,
       product,
@@ -39,7 +39,7 @@ test('get the setup link by id', async ({ request }) => {
 
   const { data: setupLink } = await response.json();
 
-  response = await request.get('/api/v1/connections/setup-links', {
+  response = await request.get('/api/v1/connections/setuplinks', {
     params: {
       id: setupLink.setupID,
     },
@@ -54,9 +54,9 @@ test('get the setup link by id', async ({ request }) => {
   expect(fetchedSetupLink.data.service).toMatch('sso');
 });
 
-// GET /api/v1/connections/setup-links?tenant={tenant}&product={product}
+// GET /api/v1/connections/setuplinks?tenant={tenant}&product={product}
 test('get the setup link by tenant & product', async ({ request }) => {
-  const response = await request.get('/api/v1/connections/setup-links', {
+  const response = await request.get('/api/v1/connections/setuplinks', {
     params: {
       tenant,
       product,
@@ -72,9 +72,9 @@ test('get the setup link by tenant & product', async ({ request }) => {
   expect(setupLink.data.service).toMatch('sso');
 });
 
-// DELETE /api/v1/connections/setup-links?tenant={tenant}&product={product}
+// DELETE /api/v1/connections/setuplinks?tenant={tenant}&product={product}
 test('delete the setup link by tenant & product', async ({ request }) => {
-  let response = await request.delete('/api/v1/connections/setup-links', {
+  let response = await request.delete('/api/v1/connections/setuplinks', {
     params: {
       tenant,
       product,
@@ -86,7 +86,7 @@ test('delete the setup link by tenant & product', async ({ request }) => {
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(200);
 
-  response = await request.get('/api/v1/connections/setup-links', {
+  response = await request.get('/api/v1/connections/setuplinks', {
     params: {
       tenant,
       product,
@@ -97,9 +97,9 @@ test('delete the setup link by tenant & product', async ({ request }) => {
   expect(response.status()).toBe(404);
 });
 
-// DELETE /api/v1/connections/setup-links?id={id}
+// DELETE /api/v1/connections/setuplinks?id={id}
 test('delete the setup link by id', async ({ request }) => {
-  let response = await request.post('/api/v1/connections/setup-links', {
+  let response = await request.post('/api/v1/connections/setuplinks', {
     data: {
       tenant,
       product,
@@ -108,7 +108,7 @@ test('delete the setup link by id', async ({ request }) => {
 
   const { data: setupLink } = await response.json();
 
-  response = await request.delete('/api/v1/connections/setup-links', {
+  response = await request.delete('/api/v1/connections/setuplinks', {
     params: {
       id: setupLink.setupID,
     },
@@ -119,7 +119,7 @@ test('delete the setup link by id', async ({ request }) => {
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(200);
 
-  response = await request.get('/api/v1/connections/setup-links', {
+  response = await request.get('/api/v1/connections/setuplinks', {
     params: {
       id: setupLink.setupID,
     },
@@ -129,24 +129,24 @@ test('delete the setup link by id', async ({ request }) => {
   expect(response.status()).toBe(404);
 });
 
-// GET /api/v1/connections/setup-links/product
+// GET /api/v1/connections/setuplinks/product
 test('get the setup links by product', async ({ request }) => {
   // Create 2 setup links
-  await request.post('/api/v1/connections/setup-links', {
+  await request.post('/api/v1/connections/setuplinks', {
     data: {
       tenant: 'tenant-2',
       product,
     },
   });
 
-  await request.post('/api/v1/connections/setup-links', {
+  await request.post('/api/v1/connections/setuplinks', {
     data: {
       tenant: 'tenant-3',
       product,
     },
   });
 
-  const response = await request.get('/api/v1/connections/setup-links/product', {
+  const response = await request.get('/api/v1/connections/setuplinks/product', {
     params: {
       product,
     },
@@ -160,14 +160,14 @@ test('get the setup links by product', async ({ request }) => {
   expect(setupLinks[0].product).toBe(product);
   expect(setupLinks[1].product).toBe(product);
 
-  await request.delete('/api/v1/connections/setup-links', {
+  await request.delete('/api/v1/connections/setuplinks', {
     params: {
       tenant: 'tenant-2',
       product,
     },
   });
 
-  await request.delete('/api/v1/connections/setup-links', {
+  await request.delete('/api/v1/connections/setuplinks', {
     params: {
       tenant: 'tenant-3',
       product,
