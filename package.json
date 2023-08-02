@@ -27,7 +27,7 @@
     "mssql": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=sql DB_TYPE=mssql DB_URL='sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!' npm run dev",
     "dynamodb": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=dynamodb DB_URL='http://localhost:8000' npm run dev",
     "start": "PORT=5225 NODE_OPTIONS=--dns-result-order=ipv4first node .next/standalone/server.js",
-    "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts -o swagger/swagger.json arg",
+    "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts npm/src/**/**/*.ts -o swagger/swagger.json",
     "redis": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=redis DB_TYPE=redis DB_URL=redis://localhost:6379/redis npm run dev",
     "prepare": "npm run prepare:npm",
     "prepare:npm": "cd npm && npm install --legacy-peer-deps",
