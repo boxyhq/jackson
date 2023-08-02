@@ -166,7 +166,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        description: Unauthorized
    *      500:
    *        description: Please set OpenID response handler path (oidcPath) on Jackson
-   * /api/v1/connections:
+   * /api/v1/sso:
    *   post:
    *     summary: Create SSO connection
    *     operationId: create-sso-connection
@@ -355,7 +355,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         $ref: '#/definitions/validationErrorsPatch'
    *       401:
    *         description: Unauthorized
-   * /api/v1/connections:
+   * /api/v1/sso:
    *   patch:
    *     summary: Update SSO Connection
    *     operationId: update-sso-connection
@@ -514,7 +514,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Please provide `clientID` or `tenant` and `product`.
    *   '401Get':
    *     description: Unauthorized
-   * /api/v1/connections:
+   * /api/v1/sso:
    *   get:
    *     summary: Get SSO Connections
    *     parameters:
@@ -704,7 +704,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: query
    *     type: string
    *     description: Strategy which can help to filter connections with tenant/product query
-   * /api/v1/connections:
+   * /api/v1/sso:
    *   delete:
    *     parameters:
    *      - $ref: '#/parameters/clientIDDel'
@@ -868,7 +868,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Please provide a `product`.
    *   '401Get':
    *     description: Unauthorized
-   * /api/v1/connections/product:
+   * /api/v1/sso/product:
    *   get:
    *     summary: Get SSO Connections by product
    *     parameters:

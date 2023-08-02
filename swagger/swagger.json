@@ -251,7 +251,7 @@
         }
       }
     },
-    "/api/v1/connections": {
+    "/api/v1/sso": {
       "post": {
         "summary": "Create SSO connection",
         "operationId": "create-sso-connection",
@@ -464,7 +464,7 @@
         }
       }
     },
-    "/api/v1/connections/product": {
+    "/api/v1/sso/product": {
       "get": {
         "summary": "Get SSO Connections by product",
         "parameters": [
