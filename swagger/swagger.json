@@ -34,223 +34,6 @@
   ],
   "swagger": "2.0",
   "paths": {
-    "/api/v1/saml/config": {
-      "post": {
-        "summary": "Create SAML config",
-        "operationId": "create-saml-config",
-        "deprecated": true,
-        "tags": [
-          "SAML Config - Deprecated"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/x-www-form-urlencoded",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/nameParamPost"
-          },
-          {
-            "$ref": "#/parameters/descriptionParamPost"
-          },
-          {
-            "$ref": "#/parameters/encodedRawMetadataParamPost"
-          },
-          {
-            "$ref": "#/parameters/rawMetadataParamPost"
-          },
-          {
-            "$ref": "#/parameters/metadataUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/defaultRedirectUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/redirectUrlParamPost"
-          },
-          {
-            "$ref": "#/parameters/tenantParamPost"
-          },
-          {
-            "$ref": "#/parameters/productParamPost"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/Connection"
-            }
-          },
-          "400": {
-            "$ref": "#/definitions/validationErrorsPost"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Please set OpenID response handler path (oidcPath) on Jackson"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update SAML Config",
-        "operationId": "update-saml-config",
-        "tags": [
-          "SAML Config - Deprecated"
-        ],
-        "deprecated": true,
-        "consumes": [
-          "application/json",
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/clientIDParamPatch"
-          },
-          {
-            "$ref": "#/parameters/clientSecretParamPatch"
-          },
-          {
-            "$ref": "#/parameters/nameParamPatch"
-          },
-          {
-            "$ref": "#/parameters/descriptionParamPatch"
-          },
-          {
-            "$ref": "#/parameters/encodedRawMetadataParamPatch"
-          },
-          {
-            "$ref": "#/parameters/rawMetadataParamPatch"
-          },
-          {
-            "$ref": "#/parameters/metadataUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/defaultRedirectUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/redirectUrlParamPatch"
-          },
-          {
-            "$ref": "#/parameters/tenantParamPatch"
-          },
-          {
-            "$ref": "#/parameters/productParamPatch"
-          },
-          {
-            "$ref": "#/parameters/deactivatedParamPatch"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Success"
-          },
-          "400": {
-            "$ref": "#/definitions/validationErrorsPatch"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
-      "get": {
-        "summary": "Get SAML Config",
-        "operationId": "get-saml-config",
-        "tags": [
-          "SAML Config - Deprecated"
-        ],
-        "deprecated": true,
-        "parameters": [
-          {
-            "$ref": "#/parameters/tenantParamGet"
-          },
-          {
-            "$ref": "#/parameters/productParamGet"
-          },
-          {
-            "$ref": "#/parameters/clientIDParamGet"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "type": "object",
-              "example": {
-                "idpMetadata": {
-                  "sso": {
-                    "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml",
-                    "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxxx/sso/saml"
-                  },
-                  "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-                  "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-                  "loginType": "idp",
-                  "provider": "okta.com"
-                },
-                "defaultRedirectUrl": "https://hoppscotch.io/",
-                "redirectUrl": [
-                  "https://hoppscotch.io/"
-                ],
-                "tenant": "hoppscotch.io",
-                "product": "API Engine",
-                "name": "Hoppscotch-SP",
-                "description": "SP for hoppscotch.io",
-                "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-                "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-                "deactivated": false
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/responses/400Get"
-          },
-          "401": {
-            "$ref": "#/responses/401Get"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete SAML Config",
-        "operationId": "delete-saml-config",
-        "tags": [
-          "SAML Config - Deprecated"
-        ],
-        "deprecated": true,
-        "consumes": [
-          "application/x-www-form-urlencoded",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/clientIDDel"
-          },
-          {
-            "$ref": "#/parameters/clientSecretDel"
-          },
-          {
-            "$ref": "#/parameters/tenantDel"
-          },
-          {
-            "$ref": "#/parameters/productDel"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
     "/api/v1/sso": {
       "post": {
         "summary": "Create SSO connection",
@@ -625,6 +408,320 @@
           }
         }
       }
+    },
+    "/api/v1/dsync": {
+      "post": {
+        "summary": "Create a directory connection",
+        "parameters": [
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "description": "Name",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "webhook_url",
+            "description": "Webhook URL",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "webhook_secret",
+            "description": "Webhook secret",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "description": "Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Directory"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a directory connection by tenant and product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Directory"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/{directoryId}": {
+      "get": {
+        "summary": "Get a directory connection by id",
+        "parameters": [
+          {
+            "name": "directoryId",
+            "description": "Directory ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Directory"
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a directory connection by id",
+        "parameters": [
+          {
+            "name": "directoryId",
+            "description": "Directory ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/product": {
+      "get": {
+        "summary": "Get directory connections by product",
+        "parameters": [
+          {
+            "$ref": "#/parameters/product"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Directory"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/groups/{groupId}": {
+      "get": {
+        "summary": "Get group by id from a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "name": "groupId",
+            "description": "Group ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Group"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/groups": {
+      "get": {
+        "summary": "Get groups from a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/directoryId"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Group"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/users/{userId}": {
+      "get": {
+        "summary": "Get user by id from a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "name": "userId",
+            "description": "User ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/users": {
+      "get": {
+        "summary": "Get users from a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/directoryId"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -705,6 +802,115 @@
     },
     "validationErrorsPatch": {
       "description": "Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata"
+    },
+    "Directory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Directory ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "name"
+        },
+        "tenant": {
+          "type": "string",
+          "description": "Tenant"
+        },
+        "product": {
+          "type": "string",
+          "description": "Product"
+        },
+        "type": {
+          "type": "string",
+          "description": "Directory provider"
+        },
+        "deactivated": {
+          "type": "boolean",
+          "description": "Status"
+        },
+        "log_webhook_events": {
+          "type": "boolean",
+          "description": "If true, webhook requests will be logged"
+        },
+        "scim": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "SCIM path"
+            },
+            "endpoint": {
+              "type": "string",
+              "description": "SCIM url"
+            },
+            "secret": {
+              "type": "string",
+              "description": "SCIM secret"
+            }
+          }
+        },
+        "webhook": {
+          "type": "object",
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "description": "Webhook url"
+            },
+            "secret": {
+              "type": "string",
+              "description": "Webhook secret"
+            }
+          }
+        }
+      }
+    },
+    "Group": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Group ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Group name"
+        },
+        "raw": {
+          "type": "object",
+          "description": "Raw group attributes from the Identity Provider"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "User ID"
+        },
+        "first_name": {
+          "type": "string",
+          "description": "First name"
+        },
+        "last_name": {
+          "type": "string",
+          "description": "Last name"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address"
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Indicates whether the user is active or not"
+        },
+        "raw": {
+          "type": "object",
+          "description": "Raw user attributes from the Identity Provider"
+        }
+      }
     }
   },
   "responses": {
@@ -962,6 +1168,27 @@
       "in": "query",
       "type": "string",
       "description": "Strategy which can help to filter connections with tenant/product query"
+    },
+    "tenant": {
+      "name": "tenant",
+      "description": "Tenant",
+      "in": "query",
+      "required": true,
+      "type": "string"
+    },
+    "product": {
+      "name": "product",
+      "description": "Product",
+      "in": "query",
+      "required": true,
+      "type": "string"
+    },
+    "directoryId": {
+      "name": "directory id",
+      "description": "Directory ID",
+      "in": "query",
+      "required": false,
+      "type": "string"
     }
   },
   "tags": []
