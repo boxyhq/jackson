@@ -138,7 +138,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   post:
    *     summary: Create SSO connection
    *     operationId: create-sso-connection
-   *     tags: [Connections]
+   *     tags: [Single Sign On]
    *     produces:
    *      - application/json
    *     consumes:
@@ -298,7 +298,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   patch:
    *     summary: Update SSO Connection
    *     operationId: update-sso-connection
-   *     tags: [Connections]
+   *     tags: [Single Sign On]
    *     consumes:
    *       - application/json
    *       - application/x-www-form-urlencoded
@@ -462,7 +462,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/clientIDParamGet'
    *       - $ref: '#/parameters/strategyParamGet'
    *     operationId: get-connections
-   *     tags: [Connections]
+   *     tags: [Single Sign On]
    *     responses:
    *      '200':
    *        $ref: '#/responses/200Get'
@@ -609,7 +609,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/strategyDel'
    *     summary: Delete SSO Connections
    *     operationId: delete-sso-connection
-   *     tags: [Connections]
+   *     tags: [Single Sign On]
    *     responses:
    *       '200':
    *         description: Success
@@ -748,7 +748,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
    *     operationId: get-connections-by-product
-   *     tags: [Connections]
+   *     tags: [Single Sign On]
    *     responses:
    *      '200':
    *        $ref: '#/responses/200Get'
