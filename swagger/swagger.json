@@ -409,7 +409,7 @@
         }
       }
     },
-    "/api/v1/connections/setup-links": {
+    "/api/v1/sso/setuplinks": {
       "post": {
         "summary": "Create a Setup Link",
         "operationId": "create-sso-setup-link",
@@ -502,7 +502,7 @@
         }
       }
     },
-    "/api/v1/directory-sync/setup-links": {
+    "/api/v1/dsync/setuplinks": {
       "post": {
         "summary": "Create a Setup Link",
         "operationId": "create-dsync-setup-link",
@@ -589,7 +589,7 @@
         }
       }
     },
-    "/api/v1/connections/setup-links/product": {
+    "/api/v1/sso/setuplinks/product": {
       "get": {
         "summary": "Get the Setup Links by product",
         "parameters": [
@@ -614,7 +614,7 @@
         }
       }
     },
-    "/api/v1/directory-sync/setup-links/product": {
+    "/api/v1/dsync/setuplinks/product": {
       "get": {
         "summary": "Get the Setup Links by product",
         "parameters": [

@@ -103,7 +103,7 @@ export class SetupLinkController {
    *     in: formData
    *     type: string
    *     required: true
-   * /api/v1/connections/setup-links:
+   * /api/v1/sso/setuplinks:
    *   post:
    *    summary: Create a Setup Link
    *    operationId: create-sso-setup-link
@@ -123,7 +123,7 @@ export class SetupLinkController {
    *        description: Success
    *        schema:
    *          $ref:  '#/definitions/SetupLink'
-   * /api/v1/directory-sync/setup-links:
+   * /api/v1/dsync/setuplinks:
    *   post:
    *    summary: Create a Setup Link
    *    operationId: create-dsync-setup-link
@@ -243,7 +243,7 @@ export class SetupLinkController {
    *     in: query
    *     required: false
    *     type: string
-   * /api/v1/connections/setup-links:
+   * /api/v1/sso/setuplinks:
    *   delete:
    *     summary: Delete the Setup Link
    *     parameters:
@@ -261,7 +261,7 @@ export class SetupLinkController {
    *           {
    *             data: {}
    *           }
-   * /api/v1/directory-sync/setup-links:
+   * /api/v1/dsync/setuplinks:
    *   delete:
    *     summary: Delete the Setup Link
    *     parameters:
@@ -317,7 +317,7 @@ export class SetupLinkController {
    *     in: query
    *     required: true
    *     type: string
-   * /api/v1/connections/setup-links/product:
+   * /api/v1/sso/setuplinks/product:
    *   get:
    *     summary: Get the Setup Links by product
    *     parameters:
@@ -331,7 +331,7 @@ export class SetupLinkController {
    *          type: array
    *          items:
    *            $ref:  '#/definitions/SetupLink'
-   * /api/v1/directory-sync/setup-links/product:
+   * /api/v1/dsync/setuplinks/product:
    *   get:
    *     summary: Get the Setup Links by product
    *     parameters:
@@ -402,7 +402,7 @@ export class SetupLinkController {
    *     in: query
    *     required: false
    *     type: string
-   * /api/v1/connections/setup-links:
+   * /api/v1/sso/setuplinks:
    *   get:
    *     summary: Get the Setup Link
    *     parameters:
@@ -416,7 +416,7 @@ export class SetupLinkController {
    *        description: Success
    *        schema:
    *          $ref:  '#/definitions/SetupLink'
-   * /api/v1/directory-sync/setup-links:
+   * /api/v1/dsync/setuplinks:
    *   get:
    *     summary: Get the Setup Link
    *     parameters:
