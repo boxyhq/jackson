@@ -87,7 +87,7 @@ test.describe('Admin Portal SSO - SAML', () => {
   });
 });
 
-test.fixme('Admin Portal SSO - OIDC', () => {
+test.describe('Admin Portal SSO - OIDC', () => {
   const oidcMetadataMode = ['discoveryUrl', 'metadata'];
   for (const mode of oidcMetadataMode) {
     test.describe(`SSO connection via ${mode}`, () => {
