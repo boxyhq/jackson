@@ -20,13 +20,16 @@ import * as redirect from './oauth/redirect';
 
 export enum IndexNames {
   EntityID = 'entityID',
-  SetupToken = 'token',
   TenantProduct = 'tenantProduct',
-  TenantProductService = 'tenantProductService',
-  Service = 'service',
   OIDCProviderClientID = 'OIDCProviderClientID',
   SSOClientID = 'SSOClientID',
   Product = 'product',
+
+  // For Setup link
+  Service = 'service',
+  SetupToken = 'token',
+  ProductService = 'productService',
+  TenantProductService = 'tenantProductService',
 }
 
 // The namespace prefix for the database store
