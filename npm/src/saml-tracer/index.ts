@@ -3,6 +3,7 @@ import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../controller/utils';
 import { keyFromParts } from '../db/utils';
 import type { SAMLTrace, Trace } from './types';
+import { JacksonError } from '../controller/error';
 
 const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
@@ -40,6 +41,11 @@ class SAMLTracer {
           name: IndexNames.SSOClientID,
           value: clientID,
           filterLogic: ({ clientID }) => !!clientID,
+        },
+        {
+          name: IndexNames.Product,
+          value: product,
+          filterLogic: ({ product }) => !!product,
         },
       ]
         .filter(({ filterLogic }) => filterLogic(context))
@@ -85,6 +91,32 @@ class SAMLTracer {
     for (let i = 0; i < staleTraces.length; i++) {
       await this.tracerStore.delete(staleTraces[i].traceId);
     }
+  }
+
+  // Get traces by product
+  public async getTracesByProduct(params: {
+    product: string;
+    pageOffset?: number;
+    pageLimit?: number;
+    pageToken?: string;
+  }) {
+    const { product, pageOffset, pageLimit, pageToken } = params;
+
+    if (!product) {
+      throw new JacksonError('Please provide a `product`.', 400);
+    }
+
+    const traces = await this.tracerStore.getByIndex(
+      {
+        name: IndexNames.Product,
+        value: product,
+      },
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
+
+    return traces;
   }
 }
 
