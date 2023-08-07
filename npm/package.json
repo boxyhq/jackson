@@ -54,7 +54,7 @@
     "mixpanel": "0.17.0",
     "mongodb": "5.7.0",
     "mssql": "9.1.2",
-    "mysql2": "3.5.2",
+    "mysql2": "3.6.0",
     "node-forge": "1.3.1",
     "openid-client": "5.4.3",
     "pg": "8.10.0",
