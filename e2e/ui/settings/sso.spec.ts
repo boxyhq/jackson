@@ -7,7 +7,7 @@ const MOCKSAML_METADATA_URL = `${MOCKSAML_ORIGIN}/api/saml/metadata`;
 const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
 // OIDC SSO
 const TEST_OIDC_SSO_CONNECTION_NAME = 'pw_admin_portal_oidc_sso';
-const MOCKLAB_DISCOVERY_PATH = '/.well-known/mocklab-openid-configuration';
+const MOCKLAB_DISCOVERY_ENDPOINT = 'https://oauth.wiremockapi.cloud/.well-known/openid-configuration';
 const MOCKLAB_ISSUER = 'https://oauth.wiremockapi.cloud';
 const MOCKLAB_AUTHORIZATION_ENDPOINT = 'https://oauth.wiremockapi.cloud/oauth/authorize';
 const MOCKLAB_TOKEN_ENDPOINT = 'https://oauth.wiremockapi.cloud/oauth/token';
@@ -91,7 +91,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
   const oidcMetadataMode = ['discoveryUrl', 'metadata'];
   for (const mode of oidcMetadataMode) {
     test.describe(`SSO connection via ${mode}`, () => {
-      test('should be able to add OIDC SSO connection to mocklab', async ({ page, baseURL }) => {
+      test('should be able to add OIDC SSO connection to mocklab', async ({ page }) => {
         await page.goto('/admin/settings');
         // Find the new connection button and click on it
         await page.getByTestId('create-connection').click();
@@ -103,7 +103,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
         if (mode === 'discoveryUrl') {
           // Enter the OIDC discovery url for mocklab in the form
           const discoveryUrlInput = page.getByTestId('oidcDiscoveryUrl');
-          await discoveryUrlInput.fill(baseURL + MOCKLAB_DISCOVERY_PATH);
+          await discoveryUrlInput.fill(MOCKLAB_DISCOVERY_ENDPOINT);
         } else {
           // Activate the oidc discovery fallback fields
           await page.getByTestId('oidcDiscoveryUrl-fallback-switch').click();
