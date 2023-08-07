@@ -140,13 +140,13 @@ jobs:
       - name: Generate mocklab openid discovery document
         run: |
           mkdir ./public/.well-known
-          cat << EOF > ./public/.well-known/mocklab-openid-configuration
+          cat << EOF > ./public/.well-known/mocklab-openid-configuration          
           {
-            "issuer": "https://oauth.wiremockapi.cloud",
-            "authorization_endpoint": "https://oauth.wiremockapi.cloud/oauth/authorize",
-            "token_endpoint": "https://oauth.wiremockapi.cloud/oauth/token",
-            "userinfo_endpoint": "https://oauth.wiremockapi.cloud/userinfo",
-            "jwks_uri": "https://oauth.wiremockapi.cloud/.well-known/jwks.json"
+            "issuer": "https://oauth.mocklab.io",
+            "authorization_endpoint": "https://oauth.mocklab.io/oauth/authorize",
+            "token_endpoint": "https://oauth.mocklab.io/oauth/token",
+            "userinfo_endpoint": "https://oauth.mocklab.io/userinfo",
+            "jwks_uri": "https://oauth.mocklab.io/.well-known/jwks.json"
           }
           EOF
       - run: npm run custom-install
