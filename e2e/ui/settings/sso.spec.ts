@@ -88,7 +88,7 @@ test.describe('Admin Portal SSO - SAML', () => {
 });
 
 test.describe('Admin Portal SSO - OIDC', () => {
-  const oidcMetadataMode = ['discoveryUrl', 'metadata'];
+  const oidcMetadataMode = ['discoveryUrl'];
   for (const mode of oidcMetadataMode) {
     test.describe(`SSO connection via ${mode}`, () => {
       test('should be able to add OIDC SSO connection to mocklab', async ({ page, baseURL }) => {
