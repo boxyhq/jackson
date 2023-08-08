@@ -41,7 +41,7 @@ export const getRawMetadata = (entityId: string) => {
 
 // Create a connection
 export const createConnection = async (request: APIRequestContext, payload: NewConnection) => {
-  const response = await request.post('/api/v1/connections', {
+  const response = await request.post('/api/v1/sso', {
     data: {
       ...payload,
     },
@@ -58,7 +58,7 @@ export const getConnection = async (
   request: APIRequestContext,
   { tenant, product }: { tenant: string; product: string }
 ) => {
-  const response = await request.get('/api/v1/connections', {
+  const response = await request.get('/api/v1/sso', {
     params: {
       tenant,
       product,
@@ -76,7 +76,7 @@ export const deleteConnection = async (
   request: APIRequestContext,
   { tenant, product }: { tenant: string; product: string }
 ) => {
-  const response = await request.delete('/api/v1/connections', {
+  const response = await request.delete('/api/v1/sso', {
     params: {
       tenant,
       product,

@@ -28,9 +28,9 @@ test.afterAll(async ({ request }) => {
   await deleteDirectory(request, directory.id);
 });
 
-test.describe('GET /api/v1/directory-sync/users', () => {
+test.describe('GET /api/v1/dsync/users', () => {
   test('should be able to get all users from a directory', async ({ request }) => {
-    const response = await request.get('/api/v1/directory-sync/users', {
+    const response = await request.get('/api/v1/dsync/users', {
       params: {
         tenant,
         product,
@@ -45,9 +45,9 @@ test.describe('GET /api/v1/directory-sync/users', () => {
   });
 });
 
-test.describe('GET /api/v1/directory-sync/users/:id', () => {
+test.describe('GET /api/v1/dsync/users/:id', () => {
   test('should be able to get a user from a directory', async ({ request }) => {
-    let response = await request.get('/api/v1/directory-sync/users', {
+    let response = await request.get('/api/v1/dsync/users', {
       params: {
         tenant,
         product,
@@ -57,7 +57,7 @@ test.describe('GET /api/v1/directory-sync/users/:id', () => {
     const { data: directoryUsers } = await response.json();
     const [firstUser] = directoryUsers;
 
-    response = await request.get(`/api/v1/directory-sync/users/${firstUser.id}`, {
+    response = await request.get(`/api/v1/dsync/users/${firstUser.id}`, {
       params: {
         tenant,
         product,

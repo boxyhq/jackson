@@ -26,7 +26,7 @@ export const directoryExpected = {
 };
 
 export const createDirectory = async (request: APIRequestContext, payload: typeof directoryPayload) => {
-  const response = await request.post('/api/v1/directory-sync', {
+  const response = await request.post('/api/v1/dsync', {
     data: {
       ...payload,
     },
@@ -44,7 +44,7 @@ export const getDirectory = async (
   request: APIRequestContext,
   { tenant, product }: { tenant: string; product: string }
 ) => {
-  const response = await request.get('/api/v1/directory-sync', {
+  const response = await request.get('/api/v1/dsync', {
     params: {
       tenant,
       product,
@@ -60,7 +60,7 @@ export const getDirectory = async (
 };
 
 export const deleteDirectory = async (request: APIRequestContext, directoryId: string) => {
-  const response = await request.delete(`/api/v1/directory-sync/${directoryId}`);
+  const response = await request.delete(`/api/v1/dsync/${directoryId}`);
 
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(200);

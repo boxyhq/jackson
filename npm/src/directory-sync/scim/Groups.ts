@@ -17,6 +17,22 @@ interface CreateGroupParams {
   id?: string;
 }
 
+/**
+ * @swagger
+ * definitions:
+ *   Group:
+ *      type: object
+ *      properties:
+ *        id:
+ *          type: string
+ *          description: Group ID
+ *        name:
+ *          type: string
+ *          description: Group name
+ *        raw:
+ *          type: object
+ *          description: Raw group attributes from the Identity Provider
+ */
 export class Groups extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
@@ -56,7 +72,29 @@ export class Groups extends Base {
     }
   }
 
-  // Get a group by id
+  /**
+   * @swagger
+   * /api/v1/dsync/groups/{groupId}:
+   *   get:
+   *     summary: Get group by id from a directory
+   *     parameters:
+   *       - $ref: '#/parameters/tenant'
+   *       - $ref: '#/parameters/product'
+   *       - name: groupId
+   *         description: Group ID
+   *         in: path
+   *         required: true
+   *         type: string
+   *     tags:
+   *       - Directory Sync
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Success
+   *         schema:
+   *           $ref: '#/definitions/Group'
+   */
   public async get(id: string): Promise<Response<Group>> {
     try {
       const group = await this.store('groups').get(id);
@@ -160,7 +198,27 @@ export class Groups extends Base {
     }
   }
 
-  // Get all groups in a directory
+  /**
+   * @swagger
+   * /api/v1/dsync/groups:
+   *   get:
+   *     summary: Get groups from a directory
+   *     parameters:
+   *       - $ref: '#/parameters/tenant'
+   *       - $ref: '#/parameters/product'
+   *       - $ref: '#/parameters/directoryId'
+   *     tags:
+   *       - Directory Sync
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Success
+   *         schema:
+   *           type: array
+   *           items:
+   *             $ref: '#/definitions/Group'
+   */
   public async getAll(
     params: PaginationParams & {
       directoryId?: string;

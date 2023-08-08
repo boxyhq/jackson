@@ -20,6 +20,31 @@ interface CreateUserParams {
   id?: string;
 }
 
+/**
+ * @swagger
+ * definitions:
+ *   User:
+ *      type: object
+ *      properties:
+ *        id:
+ *          type: string
+ *          description: User ID
+ *        first_name:
+ *          type: string
+ *          description: First name
+ *        last_name:
+ *          type: string
+ *          description: Last name
+ *        email:
+ *          type: string
+ *          description: Email address
+ *        active:
+ *          type: boolean
+ *          description: Indicates whether the user is active or not
+ *        raw:
+ *          type: object
+ *          description: Raw user attributes from the Identity Provider
+ */
 export class Users extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
@@ -62,7 +87,29 @@ export class Users extends Base {
     }
   }
 
-  // Get a user by id
+  /**
+   * @swagger
+   * /api/v1/dsync/users/{userId}:
+   *   get:
+   *     summary: Get user by id from a directory
+   *     parameters:
+   *       - $ref: '#/parameters/tenant'
+   *       - $ref: '#/parameters/product'
+   *       - name: userId
+   *         description: User ID
+   *         in: path
+   *         required: true
+   *         type: string
+   *     tags:
+   *       - Directory Sync
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Success
+   *         schema:
+   *           $ref: '#/definitions/User'
+   */
   public async get(id: string): Promise<Response<User>> {
     try {
       const user = await this.store('users').get(id);
@@ -141,7 +188,27 @@ export class Users extends Base {
     }
   }
 
-  // Get all users in a directory
+  /**
+   * @swagger
+   * /api/v1/dsync/users:
+   *   get:
+   *     summary: Get users from a directory
+   *     parameters:
+   *       - $ref: '#/parameters/tenant'
+   *       - $ref: '#/parameters/product'
+   *       - $ref: '#/parameters/directoryId'
+   *     tags:
+   *       - Directory Sync
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Success
+   *         schema:
+   *           type: array
+   *           items:
+   *             $ref: '#/definitions/User'
+   */
   public async getAll({
     pageOffset,
     pageLimit,
