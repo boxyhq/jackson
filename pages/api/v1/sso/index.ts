@@ -75,14 +75,14 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   if (isSAML) {
     const connection = await connectionAPIController.updateSAMLConnection(req.body);
 
-    return res.status(204).json(connection);
+    return res.status(200).json(connection);
   }
 
   // Update OIDC connection
   if (isOIDC) {
     const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
-    return res.status(204).json(connection);
+    return res.status(200).json(connection);
   }
 };
 
