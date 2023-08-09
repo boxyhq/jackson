@@ -8,6 +8,49 @@ import { JacksonError } from '../controller/error';
 const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * @swagger
+ * definitions:
+ *   SAMLTrace:
+ *      type: object
+ *      properties:
+ *        traceId:
+ *          type: string
+ *          description: Trace ID
+ *        error:
+ *          type: string
+ *          description: Error
+ *        timestamp:
+ *          type: string
+ *          description: Timestamp
+ *        context:
+ *          type: object
+ *          properties:
+ *            tenant:
+ *              type: string
+ *              description: Tenant
+ *            product:
+ *              type: string
+ *              description: Product
+ *            clientID:
+ *              type: string
+ *              description: Connection client ID
+ *            issuer:
+ *              type: string
+ *              description: Issuer
+ *            relayState:
+ *              type: string
+ *              description: Relay state
+ *            samlResponse:
+ *              type: string
+ *              description: SAML response
+ *            isSAMLFederated:
+ *              type: boolean
+ *              description: Indicates if SAML is federated
+ *            isIdPFlow:
+ *              type: boolean
+ *              description: Indicates if request is from IdP
+ */
 class SAMLTracer {
   tracerStore: Storable;
 
@@ -58,6 +101,27 @@ class SAMLTracer {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/saml-traces:
+   *   get:
+   *     summary: Get trace by ID
+   *     parameters:
+   *       - name: id
+   *         description: Trace ID
+   *         in: query
+   *         required: true
+   *         type: string
+   *     tags:
+   *       - SAML Traces
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       '200':
+   *         description: Success
+   *         schema:
+   *           $ref: '#/definitions/SAMLTrace'
+   */
   public async getByTraceId(traceId: string) {
     return (await this.tracerStore.get(traceId)) as Trace;
   }
@@ -93,7 +157,25 @@ class SAMLTracer {
     }
   }
 
-  // Get traces by product
+  /**
+   * @swagger
+   * /api/v1/saml-traces/product:
+   *   get:
+   *     summary: Get all traces for a product
+   *     parameters:
+   *      - $ref: '#/parameters/product'
+   *     tags:
+   *       - SAML Traces
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       '200':
+   *         description: Success
+   *         schema:
+   *           type: array
+   *           items:
+   *             $ref:  '#/definitions/SAMLTrace'
+   */
   public async getTracesByProduct(params: {
     product: string;
     pageOffset?: number;
