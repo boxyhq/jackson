@@ -7,6 +7,7 @@ import {
   Records,
   Trace,
 } from '../typings';
+import { JacksonError } from './error';
 import { transformConnections } from './utils';
 
 export class AdminController implements IAdminController {
@@ -49,6 +50,19 @@ export class AdminController implements IAdminController {
   public async getSAMLTraceById(traceId: string) {
     const trace = await this.samlTracer.getByTraceId(traceId);
 
+    if (!trace) {
+      throw new JacksonError(`Trace with id ${traceId} not found`, 404);
+    }
+
     return trace;
+  }
+
+  public async getTracesByProduct(
+    product: string,
+    pageOffset: number,
+    pageLimit: number,
+    pageToken?: string
+  ) {
+    return await this.samlTracer.getTracesByProduct({ product, pageOffset, pageLimit, pageToken });
   }
 }
