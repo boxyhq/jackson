@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 
-import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonOutline } from '@components/ButtonOutline';
 
-const NextButton = () => {
+const PreviousButton = () => {
   const router = useRouter();
 
   const onClick = () => {
@@ -12,7 +12,7 @@ const NextButton = () => {
       pathname: router.pathname,
       query: {
         idp,
-        step: parseInt(step) + 1,
+        step: parseInt(step) - 1,
         token,
       },
     });
@@ -20,9 +20,9 @@ const NextButton = () => {
 
   return (
     <div>
-      <ButtonPrimary onClick={onClick}>Next Step</ButtonPrimary>
+      <ButtonOutline onClick={onClick}>Previous Step</ButtonOutline>
     </div>
   );
 };
 
-export default NextButton;
+export default PreviousButton;

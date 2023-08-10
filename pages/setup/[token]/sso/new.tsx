@@ -3,33 +3,50 @@ import remarkGfm from 'remark-gfm';
 import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import type { GetServerSidePropsContext } from 'next';
-import NextButton from '@components/setuplink-docs/NextButton';
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import jackson from '@lib/jackson';
+import Footer from '@components/setuplink-docs/Footer';
 import type { ISPSAMLConfig } from '@boxyhq/saml-jackson';
+import NextButton from '@components/setuplink-docs/NextButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
+import CreateConnection from '@components/connection/CreateConnection';
+import PreviousButton from '@components/setuplink-docs/PreviousButton';
 import SelectIdentityProviders from '@components/setuplink-docs/SelectIdentityProviders';
 
 interface NewConnectionProps {
+  token: string;
+  idpEntityId: string;
   spConfig: Awaited<ReturnType<ISPSAMLConfig['get']>>;
   source: MDXRemoteSerializeResult<Record<string, unknown>>;
 }
 
 const components = {
+  Footer,
   NextButton,
+  PreviousButton,
+  CreateConnection,
   InputWithCopyButton,
 };
 
-const NewConnection = ({ source, spConfig }: NewConnectionProps) => {
-  const scope = {
-    spConfig,
-  };
+const proseClassNames = [
+  'prose',
+  'prose-sm',
+  'prose-h1:text-2xl',
+  'prose-h1:font-medium',
+  'prose-p:text-base',
+  'prose-img:rounded',
+  'prose-table:table',
+  'prose-table:border',
+];
+
+const NewConnection = ({ token, idpEntityId, source, spConfig }: NewConnectionProps) => {
+  const scope = { token, idpEntityId, spConfig };
 
   return (
     <>
-      <article className='prose prose-sm max-w-4xl prose-p:text-base prose-img:rounded prose-table:table prose-table:border'>
+      <article className={`${proseClassNames.join(' ')} max-w-4xl`}>
         {source ? (
           <MDXRemote {...source} components={components} scope={scope} />
         ) : (
@@ -41,7 +58,7 @@ const NewConnection = ({ source, spConfig }: NewConnectionProps) => {
 };
 
 export async function getServerSideProps({ locale, query }: GetServerSidePropsContext) {
-  const { spConfig } = await jackson();
+  const { spConfig, setupLinkController, connectionAPIController } = await jackson();
   const { idp, step, token } = query as { idp: string; step: string; token: string };
 
   let mdxSource: MDXRemoteSerializeResult<Record<string, unknown>> | null = null;
@@ -61,8 +78,17 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
     }
   }
 
+  const { tenant, product } = await setupLinkController.getByToken(token);
+
+  const idpEntityId = connectionAPIController.getIDPEntityID({
+    tenant,
+    product,
+  });
+
   return {
     props: {
+      token,
+      idpEntityId,
       source: mdxSource,
       spConfig: await spConfig.get(),
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
