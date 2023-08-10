@@ -85,7 +85,7 @@
     "@types/micromatch": "4.0.2",
     "@types/node": "20.4.8",
     "@types/react": "18.2.19",
-    "@typescript-eslint/eslint-plugin": "6.2.1",
+    "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
     "autoprefixer": "10.4.14",
     "cross-env": "7.0.3",
