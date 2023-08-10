@@ -1,0 +1,28 @@
+# Okta SAML SSO
+
+## Attribute Mapping
+
+Under the **Attribute Statements** section, you have to configure the following attributes:
+
+| Name      | Value          |
+| --------- | -------------- |
+| id        | user.id        |
+| email     | user.email     |
+| firstName | user.firstName |
+| lastName  | user.lastName  |
+
+See the screenshot below.
+
+![img alt](https://boxyhq.com/assets/images/5-0201a81d19e70ab58c5b12fdda48c299.png)
+
+On the next screen select **I'm an Okta customer adding an internal app** and click **Finish**.
+
+![img alt](https://boxyhq.com/assets/images/6-ca9567781ed00a5c3d074f51d66bbf34.png)
+
+From your application, click **Sign On** tab and go to the section **SAML Signing Certificates**
+
+Click the **Actions** dropdown for the correct certificate and click **View IdP metadata**.
+
+A separate window will open with the metadata XML file, you can copy it to your clipboard.
+
+![img alt](https://boxyhq.com/assets/images/7-94eb6b928c13722fea2fb4cadef9e0fc.png)
