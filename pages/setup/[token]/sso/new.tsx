@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import Link from 'next/link';
 import remarkGfm from 'remark-gfm';
 import { MDXRemote } from 'next-mdx-remote';
@@ -100,8 +101,8 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
   // Read the MDX file based on the idp and step
   if (idp && step) {
     try {
-      const stepFile = `components/setuplink-docs/${idp}/${step}.mdx`;
-      const source = fs.readFileSync(stepFile, 'utf8');
+      const mdxDirectory = path.join(process.cwd(), `components/setuplink-docs/${idp}`);
+      const source = fs.readFileSync(`${mdxDirectory}/${step}.mdx`, 'utf8');
       mdxSource = await serialize(source, { mdxOptions: { remarkPlugins: [remarkGfm] } });
     } catch (error: any) {
       return {
