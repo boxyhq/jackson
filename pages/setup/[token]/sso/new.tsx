@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import Link from 'next/link';
+import { useEffect } from 'react';
 import remarkGfm from 'remark-gfm';
+import mediumZoom from 'medium-zoom';
 import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import type { GetServerSidePropsContext } from 'next';
@@ -12,16 +14,13 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import jackson from '@lib/jackson';
 import { identityProviders } from '@lib/constants';
-import Footer from '@components/setuplink-docs/Footer';
+import Footer from '@components/setup-link-instructions/Footer';
 import type { ISPSAMLConfig } from '@boxyhq/saml-jackson';
-import NextButton from '@components/setuplink-docs/NextButton';
+import NextButton from '@components/setup-link-instructions/NextButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import CreateConnection from '@components/connection/CreateConnection';
-import PreviousButton from '@components/setuplink-docs/PreviousButton';
-import SelectIdentityProviders from '@components/setuplink-docs/SelectIdentityProviders';
-
-import mediumZoom from 'medium-zoom';
-import { useEffect } from 'react';
+import PreviousButton from '@components/setup-link-instructions/PreviousButton';
+import SelectIdentityProviders from '@components/setup-link-instructions/SelectIdentityProviders';
 
 interface NewConnectionProps {
   step: string;
@@ -47,6 +46,7 @@ const proseClassNames = [
   'prose-sm',
   'prose-h2:text-lg',
   'prose-h2:text-slate-700',
+  'prose-h2:font-semibold',
   'prose-p:text-base',
   'prose-img:rounded',
   'prose-img:h-96',
@@ -60,17 +60,14 @@ const findIdp = (idp: string) => {
 };
 
 const NewConnection = ({ step, idp, token, idpEntityId, source, spConfig }: NewConnectionProps) => {
-  let heading = '';
+  const progressMax = 100;
   const scope = { token, idpEntityId, spConfig };
   const LinkSelectIdp = { pathname: '/setup/[token]/sso/new', query: { token } };
 
-  if (idp) {
-    const selectedIdP = findIdp(idp);
-    heading = `Configure SAML SSO with ${selectedIdP?.name}`;
-  } else {
-    heading = 'Select Identity Provider';
-  }
+  let heading = '';
+  let progress = 0;
 
+  // Add zoom to images
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -84,15 +81,33 @@ const NewConnection = ({ step, idp, token, idpEntityId, source, spConfig }: NewC
     };
   }, [step]);
 
+  if (source) {
+    const selectedIdP = findIdp(idp);
+
+    if (!selectedIdP) {
+      throw new Error('Identity Provider not found');
+    }
+
+    progress = (progressMax / selectedIdP.stepCount) * parseInt(step);
+    heading = `Configure SAML SSO with ${selectedIdP?.name}`;
+  } else {
+    heading = 'Select Identity Provider';
+  }
+
   return (
     <>
-      <div className='flex justify-between items-center pb-6'>
-        <h1 className='text-2xl font-semibold'>{heading}</h1>
-        {idp && (
-          <Link className='btn btn-xs h-0' href={LinkSelectIdp}>
-            <ArrowsRightLeftIcon className='w-5 h-5' />
-            Change Identity Provider
-          </Link>
+      <div className='flex space-y-4 flex-col pb-6'>
+        <div className='flex justify-between items-center'>
+          <h1 className='text-xl font-noraml'>{heading}</h1>
+          {source && (
+            <Link className='btn btn-xs h-0' href={LinkSelectIdp}>
+              <ArrowsRightLeftIcon className='w-5 h-5' />
+              Change Identity Provider
+            </Link>
+          )}
+        </div>
+        {source && (
+          <progress className='progress progress-primary w-full' value={progress} max={progressMax} />
         )}
       </div>
 
@@ -123,7 +138,7 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
   // Read the MDX file based on the idp and step
   if (idp && step) {
     try {
-      const mdxDirectory = path.join(process.cwd(), `components/setuplink-docs/${idp}`);
+      const mdxDirectory = path.join(process.cwd(), `components/setup-link-instructions/${idp}`);
       const source = fs.readFileSync(`${mdxDirectory}/${step}.mdx`, 'utf8');
       mdxSource = await serialize(source, { mdxOptions: { remarkPlugins: [remarkGfm] } });
     } catch (error: any) {

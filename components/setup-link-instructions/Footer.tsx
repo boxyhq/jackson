@@ -1,5 +1,5 @@
-import NextButton from '@components/setuplink-docs/NextButton';
-import PreviousButton from '@components/setuplink-docs/PreviousButton';
+import NextButton from '@components/setup-link-instructions/NextButton';
+import PreviousButton from '@components/setup-link-instructions/PreviousButton';
 
 interface FooterProps {
   hasNext?: boolean;
