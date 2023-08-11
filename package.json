@@ -64,6 +64,7 @@
     "cors": "2.8.5",
     "daisyui": "3.5.1",
     "i18next": "22.5.1",
+    "medium-zoom": "^1.0.8",
     "micromatch": "4.0.5",
     "next": "13.4.12",
     "next-auth": "4.22.5",

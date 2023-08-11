@@ -20,7 +20,11 @@ import CreateConnection from '@components/connection/CreateConnection';
 import PreviousButton from '@components/setuplink-docs/PreviousButton';
 import SelectIdentityProviders from '@components/setuplink-docs/SelectIdentityProviders';
 
+import mediumZoom from 'medium-zoom';
+import { useEffect } from 'react';
+
 interface NewConnectionProps {
+  step: string;
   idp: string;
   token: string;
   idpEntityId: string;
@@ -45,6 +49,8 @@ const proseClassNames = [
   'prose-h2:text-slate-700',
   'prose-p:text-base',
   'prose-img:rounded',
+  'prose-img:h-96',
+  'prose-img:w-full',
   'prose-table:table',
   'prose-table:border',
 ];
@@ -53,10 +59,10 @@ const findIdp = (idp: string) => {
   return identityProviders.find((provider) => provider.id === idp);
 };
 
-const NewConnection = ({ idp, token, idpEntityId, source, spConfig }: NewConnectionProps) => {
+const NewConnection = ({ step, idp, token, idpEntityId, source, spConfig }: NewConnectionProps) => {
+  let heading = '';
   const scope = { token, idpEntityId, spConfig };
   const LinkSelectIdp = { pathname: '/setup/[token]/sso/new', query: { token } };
-  let heading = '';
 
   if (idp) {
     const selectedIdP = findIdp(idp);
@@ -64,6 +70,19 @@ const NewConnection = ({ idp, token, idpEntityId, source, spConfig }: NewConnect
   } else {
     heading = 'Select Identity Provider';
   }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const zoom = mediumZoom('img', {
+      scrollOffset: 0,
+      margin: 50,
+    });
+
+    return () => {
+      zoom.detach();
+    };
+  }, [step]);
 
   return (
     <>
@@ -119,6 +138,7 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
   return {
     props: {
       idp: idp || null,
+      step: step || null,
       token,
       idpEntityId,
       source: mdxSource,

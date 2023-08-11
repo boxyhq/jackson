@@ -43,9 +43,9 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
         <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
       )}
 
-      <div className='mx-auto max-w-4xl'>
+      <div className='mx-auto max-w-3xl'>
         <div className='flex flex-1 flex-col'>
-          <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
+          <div className='top-0 flex h-16 flex-shrink-0 border-b'>
             <div className='flex flex-shrink-0 items-center gap-4'>
               <Link href={`/setup/${token}`}>
                 {branding?.logoUrl && (
