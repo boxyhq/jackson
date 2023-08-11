@@ -52,7 +52,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
                   <Image src={branding.logoUrl} alt={branding.companyName} width={40} height={40} />
                 )}
               </Link>
-              <span className='text-lg font-semibold tracking-wide text-gray-900'>{title}</span>
+              <span className='text-xl font-bold tracking-wide text-gray-900'>{title}</span>
             </div>
           </div>
           <main>

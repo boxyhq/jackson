@@ -19,7 +19,7 @@ const SelectIdentityProviders = () => {
       {identityProviders.map((provider) => (
         <button
           key={provider.id}
-          className='text-left border p-4 rounded hover:border-gray-400 font-bold'
+          className='text-left border p-4 rounded hover:border-primary font-bold'
           onClick={() => onClick(provider.id)}>
           {provider.name}
         </button>

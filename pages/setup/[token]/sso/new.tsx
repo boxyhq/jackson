@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import type { GetServerSidePropsContext } from 'next';
+import { CreateSAMLConnection, CreateOIDCConnection } from '@boxyhq/react-ui/sso';
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -33,13 +34,15 @@ const components = {
   PreviousButton,
   CreateConnection,
   InputWithCopyButton,
+  CreateSAMLConnection,
+  CreateOIDCConnection,
 };
 
 const proseClassNames = [
   'prose',
   'prose-sm',
-  'prose-h2:text-xl',
-  'prose-h2:font-medium',
+  'prose-h2:text-lg',
+  'prose-h2:text-slate-700',
   'prose-p:text-base',
   'prose-img:rounded',
   'prose-table:table',
@@ -65,7 +68,7 @@ const NewConnection = ({ idp, token, idpEntityId, source, spConfig }: NewConnect
   return (
     <>
       <div className='flex justify-between items-center pb-6'>
-        <h1 className='text-2xl font-bold'>{heading}</h1>
+        <h1 className='text-2xl font-semibold'>{heading}</h1>
         {idp && (
           <Link className='btn btn-xs h-0' href={LinkSelectIdp}>
             <ArrowsRightLeftIcon className='w-5 h-5' />
