@@ -146,7 +146,7 @@ test.describe('PATCH /api/v1/sso', () => {
     });
 
     expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
+    expect(response.status()).toBe(204);
 
     // Fetch the connection again to check if the update was successful
     const updatedConnection = await getConnection(request, { tenant, product });
