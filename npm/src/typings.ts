@@ -182,6 +182,7 @@ export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string);
   getAllSAMLTraces(pageOffset: number, pageLimit: number, pageToken?: string);
   getSAMLTraceById(traceId: string);
+  getTracesByProduct(product: string, pageOffset: number, pageLimit: number, pageToken?: string);
 }
 
 export interface IHealthCheckController {
