@@ -242,9 +242,6 @@ const saml = {
       }
 
       newMetadata.provider = providerName ? providerName : 'Unknown';
-      if (metadataUrl) {
-        newMetadataUrl = metadataUrl;
-      }
     }
 
     if (newMetadata) {
@@ -256,6 +253,10 @@ const saml = {
       if (clientID !== clientInfo?.clientID) {
         throw new JacksonError('Tenant/Product config mismatch with IdP metadata', 400);
       }
+
+      if (metadataUrl) {
+        newMetadataUrl = metadataUrl;
+      }
     }
 
     const record: SAMLSSORecord = {
@@ -263,7 +264,7 @@ const saml = {
       name: name || name === '' ? name : _savedConnection.name,
       description: description || description === '' ? description : _savedConnection.description,
       idpMetadata: newMetadata ? newMetadata : _savedConnection.idpMetadata,
-      metadataUrl: newMetadataUrl ? newMetadataUrl : _savedConnection.metadataUrl,
+      metadataUrl: newMetadata ? newMetadataUrl : _savedConnection.metadataUrl,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       forceAuthn,
