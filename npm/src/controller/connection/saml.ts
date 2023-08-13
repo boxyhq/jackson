@@ -260,6 +260,7 @@ const saml = {
       name: name || name === '' ? name : _savedConnection.name,
       description: description || description === '' ? description : _savedConnection.description,
       idpMetadata: newMetadata ? newMetadata : _savedConnection.idpMetadata,
+      metadataUrl: metadataUrl ? metadataUrl : undefined,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       forceAuthn,
