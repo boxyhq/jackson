@@ -73,16 +73,16 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Update SAML connection
   if (isSAML) {
-    const connection = await connectionAPIController.updateSAMLConnection(req.body);
+    await connectionAPIController.updateSAMLConnection(req.body);
 
-    return res.status(204).json(connection);
+    res.status(204).end();
   }
 
   // Update OIDC connection
   if (isOIDC) {
-    const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
+    await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
-    return res.status(204).json(connection);
+    res.status(204).end();
   }
 };
 
@@ -93,5 +93,4 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   await connectionAPIController.deleteConnections(req.query as DelConnectionsQuery);
 
   res.status(204).end();
-  return;
 };
