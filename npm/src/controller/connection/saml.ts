@@ -229,7 +229,7 @@ const saml = {
 
     metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
 
-    let newMetadata;
+    let newMetadata, newMetadataUrl;
     if (metadata) {
       newMetadata = await saml20.parseMetadata(metadata, {});
 
@@ -242,6 +242,9 @@ const saml = {
       }
 
       newMetadata.provider = providerName ? providerName : 'Unknown';
+      if (metadataUrl) {
+        newMetadataUrl = metadataUrl;
+      }
     }
 
     if (newMetadata) {
@@ -260,7 +263,7 @@ const saml = {
       name: name || name === '' ? name : _savedConnection.name,
       description: description || description === '' ? description : _savedConnection.description,
       idpMetadata: newMetadata ? newMetadata : _savedConnection.idpMetadata,
-      metadataUrl: metadataUrl ? metadataUrl : undefined,
+      metadataUrl: newMetadataUrl ? newMetadataUrl : _savedConnection.metadataUrl,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       forceAuthn,
