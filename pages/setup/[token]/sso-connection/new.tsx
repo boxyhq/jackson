@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm';
 import mediumZoom from 'medium-zoom';
 import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
-import type { GetServerSidePropsContext } from 'next';
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -14,21 +14,13 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 import { identityProviders } from '@lib/constants';
 import Footer from '@components/setup-link-instructions/Footer';
-import type { ISPSAMLConfig } from '@boxyhq/saml-jackson';
 import NextButton from '@components/setup-link-instructions/NextButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import PreviousButton from '@components/setup-link-instructions/PreviousButton';
 import CreateSSOConnection from '@components/setup-link-instructions/CreateSSOConnection';
 import SelectIdentityProviders from '@components/setup-link-instructions/SelectIdentityProviders';
 
-interface NewConnectionProps {
-  step: string;
-  idp: string;
-  setupLinkToken: string;
-  idpEntityId: string;
-  spConfig: Awaited<ReturnType<ISPSAMLConfig['get']>>;
-  source: MDXRemoteSerializeResult<Record<string, unknown>>;
-}
+type NewConnectionProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const components = {
   Footer,
@@ -56,10 +48,25 @@ const findIdp = (idp: string) => {
   return identityProviders.find((provider) => provider.id === idp);
 };
 
-const NewConnection = ({ step, idp, setupLinkToken, idpEntityId, source, spConfig }: NewConnectionProps) => {
+const NewConnection = ({
+  step,
+  idp,
+  setupLinkToken,
+  idpEntityId,
+  source,
+  spConfig,
+  spMetadataUrl,
+  publicCertUrl,
+}: NewConnectionProps) => {
   const linkSelectIdp = { pathname: '/setup/[token]/sso-connection/new', query: { token: setupLinkToken } };
 
-  const scope = { idpEntityId, spConfig, setupLinkToken };
+  const scope = {
+    idpEntityId,
+    spConfig,
+    setupLinkToken,
+    spMetadataUrl,
+    publicCertUrl,
+  };
 
   let heading = '';
   let progress = 0;
@@ -78,7 +85,7 @@ const NewConnection = ({ step, idp, setupLinkToken, idpEntityId, source, spConfi
     };
   }, [step]);
 
-  if (source) {
+  if (source && idp && step) {
     const selectedIdP = findIdp(idp);
 
     if (!selectedIdP) {
@@ -153,6 +160,8 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
       idpEntityId,
       source: mdxSource,
       spConfig: await spConfig.get(),
+      spMetadataUrl: `${process.env.EXTERNAL_URL}/.well-known/sp-metadata`,
+      publicCertUrl: `${process.env.EXTERNAL_URL}/.well-known/saml.cer`,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };
