@@ -2,21 +2,25 @@
 
 Select **Single Sign On** from the **Manage** section of your app and then **SAML**.
 
-![img alt](/img/sso-providers/azure/4.png)
+![img alt](https://boxyhq.com/assets/images/4-007439a8d81b68e97e3060da7be2afb5.png)
 
 Click **Edit** on the **Basic SAML Configuration** section.
 
-![img alt](/img/sso-providers/azure/5.png)
+![img alt](https://boxyhq.com/assets/images/5-443af12cd55e7b8dcf77d1c87d803ea9.png)
 
 Enter the following values in the **Basic SAML Configuration** section on the next screen:
 
-- **Identifier (Entity ID)**
-- **Reply URL (Assertion Consumer Service URL)**
-
-Replace the values with the ones you have received from SAML Jackson.
+<div className='flex flex-col gap-4'>
+  <div>
+    <InputWithCopyButton text={spConfig.acsUrl} label='Reply URL (Assertion Consumer Service URL)' />
+  </div>
+  <div>
+    <InputWithCopyButton text={spConfig.entityId} label='Identifier (Entity ID)' />
+  </div>
+</div>
 
 Click **Save** to save your changes.
 
-![img alt](/img/sso-providers/azure/6.png)
+![img alt](https://boxyhq.com/assets/images/6-ac36847cbd04361452b2b6bd3a97c708.png)
 
 <Footer />
