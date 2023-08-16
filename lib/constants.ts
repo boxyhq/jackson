@@ -54,6 +54,6 @@ export const identityProviders = [
   {
     name: 'Rippling',
     id: 'rippling',
-    stepCount: 4,
+    stepCount: 3,
   },
 ];
