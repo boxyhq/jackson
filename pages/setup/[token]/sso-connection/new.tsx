@@ -12,6 +12,7 @@ import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import jackson from '@lib/jackson';
+import { jacksonOptions } from '@lib/env';
 import { identityProviders } from '@lib/constants';
 import Footer from '@components/setup-link-instructions/Footer';
 import NextButton from '@components/setup-link-instructions/NextButton';
@@ -69,6 +70,7 @@ const NewConnection = ({
   spConfig,
   spMetadataUrl,
   publicCertUrl,
+  oidcCallbackUrl,
 }: NewConnectionProps) => {
   const linkSelectIdp = { pathname: '/setup/[token]/sso-connection/new', query: { token: setupLinkToken } };
 
@@ -78,6 +80,7 @@ const NewConnection = ({
     setupLinkToken,
     spMetadataUrl,
     publicCertUrl,
+    oidcCallbackUrl,
   };
 
   let heading = '';
@@ -172,8 +175,9 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
       idpEntityId,
       source: mdxSource,
       spConfig: await spConfig.get(),
-      spMetadataUrl: `${process.env.EXTERNAL_URL}/.well-known/sp-metadata`,
-      publicCertUrl: `${process.env.EXTERNAL_URL}/.well-known/saml.cer`,
+      spMetadataUrl: `${jacksonOptions.externalUrl}/.well-known/sp-metadata`,
+      publicCertUrl: `${jacksonOptions.externalUrl}/.well-known/saml.cer`,
+      oidcCallbackUrl: `${jacksonOptions.externalUrl}${jacksonOptions.oidcPath}`,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };

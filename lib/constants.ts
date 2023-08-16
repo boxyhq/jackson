@@ -12,11 +12,6 @@ export const identityProviders = [
     stepCount: 4,
   },
   {
-    name: 'Generic SAML 2.0',
-    id: 'generic-saml',
-    stepCount: 3,
-  },
-  {
     name: 'Google SAML SSO',
     id: 'google',
     stepCount: 4,
@@ -50,5 +45,15 @@ export const identityProviders = [
     name: 'Rippling SAML SSO',
     id: 'rippling',
     stepCount: 3,
+  },
+  {
+    name: 'Generic SAML 2.0',
+    id: 'generic-saml',
+    stepCount: 3,
+  },
+  {
+    name: 'OIDC Provider',
+    id: 'generic-oidc',
+    stepCount: 2,
   },
 ];

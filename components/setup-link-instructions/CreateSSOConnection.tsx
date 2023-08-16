@@ -27,7 +27,7 @@ const CreateSSOConnection = ({ setupLinkToken, idpType }: CreateSSOConnectionPro
   };
 
   const classNames = {
-    button: 'btn btn-primary',
+    button: 'btn btn-primary mt-4',
   };
 
   return idpType === 'saml' ? (
