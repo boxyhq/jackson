@@ -2,15 +2,19 @@
 
 From the next screen, click **DOWNLOAD METADATA** to download the metadata XML file, then click **Continue**.
 
-![img alt](/img/sso-providers/google/3.png)
+![img alt](https://boxyhq.com/assets/images/3-e43aaa2e73230cb585f0045a77792ce3.png)
 
 Enter the following values in the **Service provider details** section:
 
-- **ACS URL**
-- **Entity ID**
+<div className='flex flex-col gap-4'>
+  <div>
+    <InputWithCopyButton text={spConfig.acsUrl} label='ACS URL' />
+  </div>
+  <div>
+    <InputWithCopyButton text={spConfig.entityId} label='Entity ID' />
+  </div>
+</div>
 
-Replace the values with the ones you have received from SAML Jackson and click **Continue** to save the configuration.
-
-![img alt](/img/sso-providers/google/4.png)
+![img alt](https://boxyhq.com/assets/images/4-4235af7c29f61bca468f0657c107b7d5.png)
 
 <Footer />
