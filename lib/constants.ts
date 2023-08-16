@@ -14,7 +14,7 @@ export const identityProviders = [
   {
     name: 'Generic SAML 2.0',
     id: 'generic-saml',
-    stepCount: 4,
+    stepCount: 3,
   },
   {
     name: 'Google',
