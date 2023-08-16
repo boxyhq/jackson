@@ -104,16 +104,16 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     // Update SAML connection
     if (isSAML) {
-      const connection = await connectionAPIController.updateSAMLConnection(req.body);
+      await connectionAPIController.updateSAMLConnection(req.body);
 
-      return res.status(200).json({ data: connection });
+      return res.status(204).end();
     }
 
     // Update OIDC connection
     if (isOIDC) {
-      const connection = await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
+      await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
-      return res.status(200).json({ data: connection });
+      return res.status(204).end();
     }
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
