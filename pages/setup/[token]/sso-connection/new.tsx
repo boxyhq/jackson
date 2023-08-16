@@ -22,12 +22,23 @@ import SelectIdentityProviders from '@components/setup-link-instructions/SelectI
 
 type NewConnectionProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
+const AdvancedSPConfigLink = () => {
+  return (
+    <div className='py-2'>
+      <Link href='/.well-known/saml-configuration' target='_blank' className='underline-offset-4'>
+        <span className='text-xs'>Advanced Service Provider (SP) SAML Configuration</span>
+      </Link>
+    </div>
+  );
+};
+
 const components = {
   Footer,
   NextButton,
   PreviousButton,
   InputWithCopyButton,
   CreateSSOConnection,
+  AdvancedSPConfigLink,
 };
 
 const proseClassNames = [
@@ -42,6 +53,7 @@ const proseClassNames = [
   'prose-img:w-full',
   'prose-table:table',
   'prose-table:border',
+  'prose-a:text-sm',
 ];
 
 const findIdp = (idp: string) => {
