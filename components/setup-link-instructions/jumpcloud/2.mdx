@@ -2,12 +2,18 @@
 
 Next click on the **SSO** tab and enter the following values:
 
-- **IdP Entity ID**
-- **SP Entity ID**
-- **ACS URL**
+<div className='flex flex-col gap-4'>
+  <div>
+    <InputWithCopyButton text={idpEntityId} label='IdP Entity ID' />
+  </div>
+  <div>
+    <InputWithCopyButton text={spConfig.entityId} label='SP Entity ID' />
+  </div>
+  <div>
+    <InputWithCopyButton text={spConfig.acsUrl} label='ACS URL' />
+  </div>
+</div>
 
-Replace the values with the ones you have received from SAML Jackson.
-
-![img alt](/img/sso-providers/jumpcloud/3.png)
+![img alt](https://boxyhq.com/assets/images/3-8cc83f98de1cf2a1f591be8b11882130.png)
 
 <Footer />

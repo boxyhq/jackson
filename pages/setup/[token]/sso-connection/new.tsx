@@ -57,7 +57,7 @@ const findIdp = (idp: string) => {
 };
 
 const NewConnection = ({ step, idp, setupLinkToken, idpEntityId, source, spConfig }: NewConnectionProps) => {
-  const LinkSelectIdp = { pathname: '/setup/[token]/sso-connection/new', query: { token: setupLinkToken } };
+  const linkSelectIdp = { pathname: '/setup/[token]/sso-connection/new', query: { token: setupLinkToken } };
 
   const scope = { idpEntityId, spConfig, setupLinkToken };
 
@@ -97,7 +97,7 @@ const NewConnection = ({ step, idp, setupLinkToken, idpEntityId, source, spConfi
         <div className='flex justify-between items-center'>
           <h1 className='text-xl font-noraml'>{heading}</h1>
           {source && (
-            <Link className='btn btn-xs h-0' href={LinkSelectIdp}>
+            <Link className='btn btn-xs h-0' href={linkSelectIdp}>
               <ArrowsRightLeftIcon className='w-5 h-5' />
               Change Identity Provider
             </Link>
