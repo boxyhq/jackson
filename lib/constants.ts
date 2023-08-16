@@ -4,7 +4,7 @@ export const identityProviders = [
   {
     name: 'Auth0',
     id: 'auth0',
-    stepCount: 4,
+    stepCount: 3,
   },
   {
     name: 'Azure',
