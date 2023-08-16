@@ -2,12 +2,12 @@ export const sessionName = 'next-auth.saml-jackson';
 
 export const identityProviders = [
   {
-    name: 'Auth0',
+    name: 'Auth0 SAML SSO',
     id: 'auth0',
     stepCount: 3,
   },
   {
-    name: 'Azure',
+    name: 'Azure SAML SSO',
     id: 'azure',
     stepCount: 4,
   },
@@ -17,42 +17,37 @@ export const identityProviders = [
     stepCount: 3,
   },
   {
-    name: 'Google',
+    name: 'Google SAML SSO',
     id: 'google',
     stepCount: 4,
   },
   {
-    name: 'JumpCloud',
+    name: 'JumpCloud SAML SSO',
     id: 'jumpcloud',
     stepCount: 4,
   },
   {
-    name: 'Microsoft AD FS',
+    name: 'Microsoft AD FS SAML SSO',
     id: 'microsoft-adfs',
     stepCount: 4,
   },
   {
-    name: 'Okta',
+    name: 'Okta SAML SSO',
     id: 'okta',
     stepCount: 4,
   },
   {
-    name: 'OneLogin',
+    name: 'OneLogin SAML SSO',
     id: 'onelogin',
     stepCount: 4,
   },
   {
-    name: 'OpenID Connect',
-    id: 'openid-connect',
-    stepCount: 4,
-  },
-  {
-    name: 'PingOne',
+    name: 'PingOne SAML SSO',
     id: 'pingone',
     stepCount: 4,
   },
   {
-    name: 'Rippling',
+    name: 'Rippling SAML SSO',
     id: 'rippling',
     stepCount: 3,
   },

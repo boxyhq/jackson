@@ -86,7 +86,7 @@ const NewConnection = ({ step, idp, setupLinkToken, idpEntityId, source, spConfi
     }
 
     progress = (100 / selectedIdP.stepCount) * parseInt(step);
-    heading = `Configure SAML SSO with ${selectedIdP?.name}`;
+    heading = `Configure ${selectedIdP?.name}`;
   } else {
     heading = 'Select Identity Provider';
   }
