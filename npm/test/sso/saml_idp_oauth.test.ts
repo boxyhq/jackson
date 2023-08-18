@@ -44,6 +44,7 @@ import {
   token_req_encoded_client_id_idp_saml_login_wrong_secretverifier,
 } from './fixture';
 import { addSSOConnections, jacksonOptions } from '../utils';
+import boxyhq from './data/metadata/boxyhq';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
@@ -773,9 +774,12 @@ tap.test('IdP initiated flow', async (t) => {
     t.equal(tokenRes.access_token, token);
     t.equal(tokenRes.token_type, 'bearer');
     t.equal(tokenRes.expires_in, 300);
-    const profile = await oauthController.userInfo(tokenRes.access_token);
+    const profile = await idpEnabledOAuthController.userInfo(tokenRes.access_token);
 
     t.equal(profile.id, 'id');
+    t.equal(profile.requested.tenant, boxyhq.tenant);
+    t.equal(profile.requested.product, boxyhq.product);
+    t.equal(profile.requested.isIdPFlow, true);
     stubRandomBytes.restore();
     stubValidate.restore();
   });
@@ -808,9 +812,12 @@ tap.test('IdP initiated flow', async (t) => {
     t.equal(tokenRes.access_token, token);
     t.equal(tokenRes.token_type, 'bearer');
     t.equal(tokenRes.expires_in, 300);
-    const profile = await oauthController.userInfo(tokenRes.access_token);
+    const profile = await idpEnabledOAuthController.userInfo(tokenRes.access_token);
 
     t.equal(profile.id, 'id');
+    t.equal(profile.requested.tenant, boxyhq.tenant);
+    t.equal(profile.requested.product, boxyhq.product);
+    t.equal(profile.requested.isIdPFlow, true);
     stubRandomBytes.restore();
     stubValidate.restore();
   });
