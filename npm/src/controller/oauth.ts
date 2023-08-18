@@ -782,11 +782,17 @@ export class OAuthController implements IOAuthController {
     // Store details against a code
     const code = crypto.randomBytes(20).toString('hex');
 
+    const requested = isIdPFlow
+      ? { isIdPFlow: true, tenant: connection.tenant, product: connection.product }
+      : session
+      ? session.requested
+      : null;
+
     const codeVal = {
       profile,
       clientID: connection.clientID,
       clientSecret: connection.clientSecret,
-      requested: session ? session.requested : null,
+      requested,
       isIdPFlow,
     };
 
