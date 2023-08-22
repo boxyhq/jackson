@@ -51,6 +51,7 @@ class Mongo implements DatabaseDriver {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
     const docs = await this.collection
       .find({ namespace: namespace }, { sort: { createdAt: -1 }, skip: pageOffset, limit: pageLimit })
@@ -67,6 +68,7 @@ class Mongo implements DatabaseDriver {
     idx: Index,
     offset?: number,
     limit?: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string
   ): Promise<Records> {
     const docs =

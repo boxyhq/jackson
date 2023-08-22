@@ -25,7 +25,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       throw error;
     }
 
-    return res.redirect(data.authorizationUrl).end();
+    res.redirect(data.authorizationUrl).end();
+    return;
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
 

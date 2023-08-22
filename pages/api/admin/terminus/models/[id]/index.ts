@@ -7,9 +7,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   switch (method) {
     case 'GET':
-      return getModel(req, res);
+      return await getModel(req, res);
     case 'POST':
-      return saveModel(req, res);
+      return await saveModel(req, res);
     default:
       res.setHeader('Allow', 'GET');
       res.status(405).json({
@@ -28,7 +28,7 @@ const getModel = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { data } = await axios.get<any>(getTerminusUrl(id), {
     headers: {
-      Authorization: `token=${terminusOptions.adminToken}`, // TODO: Implement this on terminus
+      Authorization: `api-key ${terminusOptions.adminToken}`,
       'x-access-token': terminusOptions.adminToken, // TODO: Remove this
     },
   });
@@ -44,7 +44,7 @@ const saveModel = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { data } = await axios.post<any>(getTerminusUrl(id), req.body, {
     headers: {
-      Authorization: `token=${terminusOptions.adminToken}`, // TODO: Implement this on terminus
+      Authorization: `api-key ${terminusOptions.adminToken}`,
       'x-access-token': terminusOptions.adminToken, // TODO: Remove this
     },
   });

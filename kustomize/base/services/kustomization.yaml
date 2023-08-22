@@ -1,0 +1,4 @@
+resources:
+  - ./jackson-service.yaml
+
+namespace: default

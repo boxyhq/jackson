@@ -3,7 +3,7 @@ import nock from 'nock';
 import type { DirectorySyncEvent } from '@boxyhq/saml-jackson';
 
 import { jacksonOptions } from '../utils';
-import { IDirectorySyncController, DirectoryType, Directory } from '../../src/typings';
+import { IDirectorySyncController, DirectoryType } from '../../src/typings';
 
 let directorySyncController: IDirectorySyncController;
 

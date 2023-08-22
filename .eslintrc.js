@@ -18,6 +18,12 @@ module.exports = {
   ],
   overrides: [
     {
+      files: ['*.ts', '*.tsx'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'warn',
+      },
+    },
+    {
       files: ['*.js'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
