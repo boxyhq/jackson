@@ -1,5 +1,5 @@
 
-![SAML-Jackson](https://github.com/boxyhq/jackson/assets/66887028/8662ddfd-cfd6-4f30-a9d7-121e87eea799)
+![SAML-jackson](https://github.com/boxyhq/jackson/assets/66887028/78e88185-b4c6-45c6-91e1-d98ad9de28f6)
 
 # Enterprise SSO made simple
 
