@@ -34,9 +34,17 @@ export class AnalyticsController {
       await this.send();
     }
 
-    setInterval(async () => {
+    setInterval(
+      async () => {
       await this.send();
-    }, 60 * 60 * 24 * 1000);
+      },
+      60 * 60 * 24 * 1000
+    );
+
+    // setInterval(async () => {
+    //   const connections = [10, 10, 8, 12, 12];
+    //   await this.sendSSOData(connections[Math.floor(Math.random() * connections.length)]);
+    // }, 60 * 1000);
   }
 
   async send() {
@@ -61,4 +69,29 @@ export class AnalyticsController {
       console.error('Error sending analytics', err);
     }
   }
+
+  // async sendSSOData(count) {
+  //   try {
+  //     console.log(`sending connections count: ${count}`);
+  //     this.client.track(
+  //       'SSO Data',
+  //       {
+  //         distinct_id: this.anonymousId,
+  //         number_of_connections: count,
+  //       },
+  //       (err: Error | undefined) => {
+  //         if (err) {
+  //           setTimeout(() => {
+  //             this.sendSSOData(12);
+  //           }, RETRY_DELAY);
+  //           return;
+  //         }
+
+  //         this.analyticsStore.put(sentKey, new Date().toISOString());
+  //       }
+  //     );
+  //   } catch (err) {
+  //     console.error('Error sending analytics', err);
+  //   }
+  // }
 }
