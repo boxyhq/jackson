@@ -5,6 +5,9 @@ import { randomUUID } from 'crypto';
 const idKey = 'heartbeat';
 const sentKey = 'lastSent';
 
+/** Retry delay in milliseconds */
+const RETRY_DELAY = 1000 * 60 * 60;
+
 export class AnalyticsController {
   analyticsStore: Storable;
   client: Mixpanel.Mixpanel;
@@ -47,7 +50,7 @@ export class AnalyticsController {
           if (err) {
             setTimeout(() => {
               this.send();
-            }, 1000 * 60 * 60);
+            }, RETRY_DELAY);
             return;
           }
 
