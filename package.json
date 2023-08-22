@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.4",
-    "@boxyhq/react-ui": "3.3.5",
+    "@boxyhq/react-ui": "3.3.7",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.18",
     "@retracedhq/logs-viewer": "2.5.0",
@@ -71,7 +71,7 @@
     "nodemailer": "6.9.4",
     "raw-body": "2.5.2",
     "react": "18.2.0",
-    "react-daisyui": "4.0.4",
+    "react-daisyui": "4.1.0",
     "react-dom": "18.2.0",
     "react-i18next": "12.3.1",
     "react-syntax-highlighter": "15.5.0",
