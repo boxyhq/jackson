@@ -1,4 +1,7 @@
-# SAML Jackson: Enterprise SSO made simple
+
+![SAML-Jackson](https://github.com/boxyhq/jackson/assets/66887028/8662ddfd-cfd6-4f30-a9d7-121e87eea799)
+
+# Enterprise SSO made simple
 
 <p>
     <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge"></a>
@@ -22,7 +25,7 @@
 SAML Jackson can be used with any web application to integrate the **Single Sign-On (SSO) authentication.**
 
 There are two ways to integrate SAML Jackson into an application. Depending on your use case, you can choose either of them. <br>
-1. [separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) (Next.js application) Admin Portal out of the box for managing SSO and Directory Sync connections. 
+1. [Separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) (Next.js application) Admin Portal out of the box for managing SSO and Directory Sync connections. 
 2. [NPM library](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) as an embedded library in your application.
 
 SAML/OIDC SSO service
