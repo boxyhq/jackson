@@ -13,6 +13,8 @@ COPY npm npm
 COPY migrate.sh migrate.sh
 RUN npm run custom-install
 
+
+
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
@@ -38,6 +40,8 @@ ENV NODE_OPTIONS="--max-http-header-size=81920 --dns-result-order=ipv4first"
 
 
 ENV NODE_ENV production
+# Uncomment the following line in case you want to disable telemetry during runtime.
+ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
