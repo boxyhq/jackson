@@ -31,7 +31,8 @@ class Sql implements DatabaseDriver {
       try {
         const baseOpts = {
           type: sqlType,
-          synchronize: this.options.engine !== 'planetscale',
+          // Synchronize by default for non-planetscale engines only if migrations are not set to run
+          synchronize: this.options.engine !== 'planetscale' && !this.options.runMigration,
           migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
