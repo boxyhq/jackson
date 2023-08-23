@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class namespace1688075845553 implements MigrationInterface {
-  name = 'namespace1688075845553'
+export class namespace1692767993709 implements MigrationInterface {
+  name = 'namespace1692767993709'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const response = await queryRunner.query("select jackson.key from jackson_store jackson")

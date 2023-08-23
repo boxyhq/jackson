@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class MdNamespace1688036519383 implements MigrationInterface {
-    name = 'MdNamespace1688036519383'
+export class MdNamespace1692767993709 implements MigrationInterface {
+    name = 'MdNamespace1692767993709'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE \`jackson_store\` ADD \`namespace\` varchar(64) NULL`);
