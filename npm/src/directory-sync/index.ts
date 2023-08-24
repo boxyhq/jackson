@@ -10,6 +10,7 @@ import { handleEventCallback } from './scim/events';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { newGoogleProvider } from './non-scim/google';
 import { startSync } from './non-scim';
+import { DirectoryEvents } from './webhook/events';
 
 const directorySync = async (params: {
   db: DatabaseStore;
@@ -26,6 +27,7 @@ const directorySync = async (params: {
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
   const requestHandler = new RequestHandler(directoryUsers, directoryGroups);
+  const directoryEvents = new DirectoryEvents({ db });
 
   // Fetch the supported providers
   const getProviders = () => {
@@ -42,7 +44,7 @@ const directorySync = async (params: {
     requests: requestHandler,
     providers: getProviders,
     events: {
-      callback: await handleEventCallback(directories, logger),
+      callback: await handleEventCallback(directories, logger, directoryEvents),
     },
     google: googleProvider.oauth,
     sync: async (callback: EventCallback) => {

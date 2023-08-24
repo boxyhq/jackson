@@ -7,6 +7,7 @@ import type {
   DirectorySyncEvent,
   IWebhookEventsLogger,
   IDirectoryConfig,
+  IDirectoryEvents,
 } from '../../typings';
 import { sendPayloadToWebhook } from '../../event/webhook';
 import { transformEventPayload } from './transform';
@@ -32,7 +33,8 @@ export const sendEvent = async (
 
 export const handleEventCallback = async (
   directories: IDirectoryConfig,
-  webhookEventsLogger: IWebhookEventsLogger
+  webhookEventsLogger: IWebhookEventsLogger,
+  directoryEvents: IDirectoryEvents
 ) => {
   return async (event: DirectorySyncEvent) => {
     const { tenant, product, directory_id: directoryId } = event;
@@ -47,16 +49,18 @@ export const handleEventCallback = async (
       return;
     }
 
-    let status = 200;
+    await directoryEvents.create(directory, event);
 
-    try {
-      await sendPayloadToWebhook(directory.webhook, event);
-    } catch (err: any) {
-      status = err.response ? err.response.status : 500;
-    }
+    // let status = 200;
 
-    if (directory.log_webhook_events) {
-      await webhookEventsLogger.setTenantAndProduct(tenant, product).log(directory, event, status);
-    }
+    // try {
+    //   await sendPayloadToWebhook(directory.webhook, event);
+    // } catch (err: any) {
+    //   status = err.response ? err.response.status : 500;
+    // }
+
+    // if (directory.log_webhook_events) {
+    //   await webhookEventsLogger.setTenantAndProduct(tenant, product).log(directory, event, status);
+    // }
   };
 };

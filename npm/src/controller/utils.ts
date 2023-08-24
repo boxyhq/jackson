@@ -41,6 +41,7 @@ export const storeNamespacePrefix = {
     groups: 'dsync:groups',
     members: 'dsync:members',
     providers: 'dsync:providers',
+    events: 'dsync:events',
   },
   saml: {
     config: 'saml:config',

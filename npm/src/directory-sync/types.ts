@@ -7,6 +7,7 @@ import { Groups } from './scim/Groups';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { ApiError } from '../typings';
 import { RequestHandler } from './request';
+import { DirectoryEvents } from './webhook/events';
 
 export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
 export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
@@ -16,6 +17,7 @@ export type IUsers = InstanceType<typeof Users>;
 export type IGroups = InstanceType<typeof Groups>;
 export type IWebhookEventsLogger = InstanceType<typeof WebhookEventsLogger>;
 export type IRequestHandler = InstanceType<typeof RequestHandler>;
+export type IDirectoryEvents = InstanceType<typeof DirectoryEvents>;
 
 export type DirectorySyncEventType =
   | 'user.created'
@@ -157,11 +159,10 @@ export type UserPatchOperation = {
 export type GroupPatchOperation = {
   op: 'add' | 'remove' | 'replace';
   path?: 'members' | 'displayName';
-  value:
-    | {
-        value: string;
-        display?: string;
-      }[];
+  value: {
+    value: string;
+    display?: string;
+  }[];
 };
 
 export type GroupMembership = {
