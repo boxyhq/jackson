@@ -1,7 +1,5 @@
 #!/bin/bash
 
-if [ "$RUN_MIGRATION" == "true" ]
-then
     echo "Initiating Migration..."
 
     cd ./npm
@@ -9,9 +7,9 @@ then
     then
         migrate-mongo up
     else
-        ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts
+    ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d ./typeorm.ts
     fi
     echo "Migration Finished..."
 
     cd ..
-fi
+
