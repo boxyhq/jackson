@@ -1,4 +1,5 @@
-![BoxyHQ Banner small (800 x 320 px) (1)](https://github.com/boxyhq/jackson/assets/66887028/8a631cb6-a7e5-42b5-878c-53c5c27622af)
+
+![BoxyHQ Banner](https://github.com/boxyhq/jackson/assets/66887028/bbb7dad6-5ac4-4a9c-9c18-de4cc6d19461)
 
 # ⭐️ SAML Jackson: Enterprise SSO made simple
 <p>
