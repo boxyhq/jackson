@@ -27,7 +27,7 @@ class Sql implements DatabaseDriver {
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
     // Synchronize by default for non-planetscale engines only if migrations are not set to run
-    const synchronize = this.options.engine !== 'planetscale' && !this.options.runMigration;
+    const synchronize = this.options.engine !== 'planetscale' && !this.options.manualMigration;
 
     while (true) {
       try {
@@ -83,7 +83,7 @@ class Sql implements DatabaseDriver {
         break;
       } catch (err) {
         console.error(
-          `error in index namespace execution: ${this.options.engine}, type: ${sqlType} db: ${err}`
+          `error in index namespace execution for engine: ${this.options.engine}, type: ${sqlType} err: ${err}`
         );
         await dbutils.sleep(1000);
         continue;

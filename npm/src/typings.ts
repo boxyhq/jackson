@@ -381,7 +381,7 @@ export interface DatabaseOption {
     readCapacityUnits?: number;
     writeCapacityUnits?: number;
   };
-  runMigration?: boolean;
+  manualMigration?: boolean;
 }
 
 export interface JacksonOption {
