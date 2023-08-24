@@ -37,7 +37,34 @@ class Mongo implements DatabaseDriver {
     await this.collection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 1 });
     await this.collection.createIndex({ namespace: 1 });
 
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      try {
+        if (!this.options.manualMigration) {
+          await this.indexNamespace();
+        }
+        break;
+      } catch (err) {
+        console.error(
+          `error in index namespace execution for db engine: ${this.options.engine},  err: ${err}`
+        );
+        await dbutils.sleep(1000);
+        continue;
+      }
+    }
+
     return this;
+  }
+
+  async indexNamespace() {
+    const docs = await this.collection.find({ namespace: { $exists: false } }).toArray();
+    const searchTerm = ':';
+
+    for (const doc of docs || []) {
+      const tokens2 = doc._id.toString().split(searchTerm).slice(0, 2);
+      const namespace = tokens2.join(searchTerm);
+      await this.collection.updateOne({ _id: doc._id }, { $set: { namespace } });
+    }
   }
 
   async get(namespace: string, key: string): Promise<any> {
