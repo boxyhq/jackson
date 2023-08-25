@@ -538,6 +538,8 @@ export type AdminPortalBranding = {
   faviconUrl: string | null;
   primaryColor: string | null;
   companyName: string | null;
+  bodyColor: string | null;
+  textColor: string | null;
 };
 
 export type Webhook = {
