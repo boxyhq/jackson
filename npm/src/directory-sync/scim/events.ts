@@ -49,7 +49,7 @@ export const handleEventCallback = async (
       return;
     }
 
-    await directoryEvents.create(directory, event);
+    await directoryEvents.push(directory, event);
 
     // let status = 200;
 
