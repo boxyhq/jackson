@@ -55,11 +55,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Support for DB migration
 COPY --from=builder --chown=nextjs:nodejs /app/migrate.sh ./migrate.sh
-COPY --from=builder --chown=nextjs:nodejs /app/npm/migration ./npm/migration
-COPY --from=builder --chown=nextjs:nodejs /app/npm/typeorm.ts ./npm/typeorm.ts
-COPY --from=builder --chown=nextjs:nodejs /app/npm/src/db/sql/mssql.ts ./npm/src/db/sql/mssql.ts
-COPY --from=builder --chown=nextjs:nodejs /app/npm/migrate-mongo-config.js ./npm/
-COPY --from=builder --chown=nextjs:nodejs /app/npm/tsconfig* ./npm/
+COPY npm npm
 RUN chmod +x migrate.sh
 # mongodb peer dependency would be automatically installed for migrate-mongo
 RUN npm install -g ts-node migrate-mongo typeorm reflect-metadata mssql mysql2 pg
