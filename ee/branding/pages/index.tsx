@@ -15,6 +15,8 @@ const Branding: NextPage = () => {
     faviconUrl: '',
     companyName: '',
     primaryColor: '',
+    bodyColor: '',
+    textColor: '',
   });
 
   // Fetch settings
@@ -131,6 +133,17 @@ const Branding: NextPage = () => {
             </div>
             <div className='form-control'>
               <label className='label'>
+                <span className='label-text'>Body color</span>
+              </label>
+              <input id='bodyColor' type='color' onChange={onChange} value={branding.bodyColor || ''} />
+              <label className='label'>
+                <span className='label-text-alt'>
+                  Body color will be applied to background of all elements
+                </span>
+              </label>
+            </div>
+            <div className='form-control'>
+              <label className='label'>
                 <span className='label-text'>{t('branding_primary_color_label')}</span>
               </label>
               <input type='color' id='primaryColor' onChange={onChange} value={branding.primaryColor || ''} />
@@ -139,7 +152,13 @@ const Branding: NextPage = () => {
               </label>
             </div>
             <div className='form-control'>
-              <label className='label-text-alt'>Body color</label>
+              <label className='label'>
+                <span className='label-text'>Text color</span>
+              </label>
+              <input id='bodyColor' type='color' onChange={onChange} value={branding.textColor || ''} />
+              <label className='label'>
+                <span className='label-text-alt'>Text color will be applied to of all existing text</span>
+              </label>
             </div>
             <div className='mt-5'>
               <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
