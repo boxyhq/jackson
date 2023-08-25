@@ -138,6 +138,9 @@ const Branding: NextPage = () => {
                 <span className='label-text-alt'>{t('branding_primary_color_alt')}</span>
               </label>
             </div>
+            <div className='form-control'>
+              <label className='label-text-alt'>Body color</label>
+            </div>
             <div className='mt-5'>
               <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
             </div>
