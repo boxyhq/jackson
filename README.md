@@ -1,5 +1,8 @@
-
-![BoxyHQ Banner](https://github.com/boxyhq/jackson/assets/66887028/bbb7dad6-5ac4-4a9c-9c18-de4cc6d19461)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/jackson/assets/66887028/43c22388-5838-4c05-b25e-11ef7b6c6c40">
+  <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1">
+</picture>
 
 # ⭐️ SAML Jackson: Enterprise SSO made simple
 <p>
