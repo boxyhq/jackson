@@ -1,4 +1,4 @@
-import lodash from 'lodash';
+import _ from 'lodash';
 
 import { DirectorySyncProviders } from '../../typings';
 import type { DirectoryType, User, UserPatchOperation, GroupPatchOperation } from '../../typings';
@@ -123,7 +123,7 @@ export const updateRawUserAttributes = (raw, attributes) => {
   }
 
   for (const key of keys) {
-    lodash.set(raw, key, attributes[key]);
+    _.set(raw, key, attributes[key]);
   }
 
   return raw;

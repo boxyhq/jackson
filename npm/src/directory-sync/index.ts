@@ -45,6 +45,9 @@ const directorySync = async (params: {
     providers: getProviders,
     events: {
       callback: await handleEventCallback(directories, logger, directoryEvents),
+      sendBatchToWebhooks: async () => {
+        await directoryEvents.process();
+      },
     },
     google: googleProvider.oauth,
     sync: async (callback: EventCallback) => {
