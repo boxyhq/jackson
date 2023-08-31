@@ -4,6 +4,11 @@
   <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1">
 </picture>
 
+<h2 align="center">
+    <br />
+    <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>Exlore the docs »</strong></a>
+    <br />
+
 # ⭐️ SAML Jackson: Enterprise SSO made simple
 <p>
     <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge"></a>
@@ -21,6 +26,9 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,DB_ENCRYPTION_KEY,DB_TTL,DB_CLEANUP_LIMIT,JACKSON_API_KEYS,EXTERNAL_URL,IDP_ENABLED,SAML_AUDIENCE,CLIENT_SECRET_VERIFIER,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,SMTP_FROM,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXTAUTH_ACL&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.EXTERNAL_URL%20(Usually%20https%3A%2F%2F%3Cproject-name-from-above%3E.vercel.app)%20can%20be%20set%20after%20deployment%20from%20the%20project%20dashboard.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/deploy/env-variables>)
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+
+
 
 ## 🚀 Getting Started with SAML Jackson
 
@@ -43,6 +51,16 @@ Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.b
 ## ✨ Demo
 - SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
 - SAML [demo flow](https://saml-demo.boxyhq.com/)
+
+## Here is what deploying SSO looks like with and without BoxyHQ
+
+<div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/jackson/assets/66887028/2abf9852-8d0a-4116-9899-e85703be2fbb">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/jackson/assets/66887028/6aa15c53-7719-4eb4-870a-4a3c3d4c1f32">
+  <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/1dae6821-d8a5-4302-832f-f1736e284e8c">
+</picture>
+</div>
 
 ## Documentation
 
