@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const retry = 3;
+export const retryCount = 3;
 const retryDelay = 3000;
 const axiosInstance = axios.create();
 
@@ -14,7 +14,7 @@ axiosInstance.interceptors.response.use(undefined, (err: any) => {
 
   config.__retryCount = config.__retryCount || 0;
 
-  if (config.__retryCount >= retry) {
+  if (config.__retryCount >= retryCount) {
     return Promise.reject(err);
   }
 

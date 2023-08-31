@@ -425,6 +425,7 @@ export interface JacksonOption {
         callbackUrl: string;
       };
     };
+    bulkSyncLimit: number;
   };
 }
 

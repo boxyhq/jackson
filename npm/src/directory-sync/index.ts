@@ -27,7 +27,7 @@ const directorySync = async (params: {
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
   const requestHandler = new RequestHandler(directoryUsers, directoryGroups);
-  const directoryEvents = new DirectoryEvents({ db });
+  const directoryEvents = new DirectoryEvents({ db, directoryStore: directories });
 
   // Fetch the supported providers
   const getProviders = () => {
@@ -44,7 +44,12 @@ const directorySync = async (params: {
     requests: requestHandler,
     providers: getProviders,
     events: {
-      callback: await handleEventCallback(directories, logger, directoryEvents),
+      callback: await handleEventCallback({
+        opts,
+        directories,
+        webhookEventsLogger: logger,
+        directoryEvents,
+      }),
       sendBatchToWebhooks: async () => {
         await directoryEvents.process();
       },
@@ -52,7 +57,13 @@ const directorySync = async (params: {
     google: googleProvider.oauth,
     sync: async (callback: EventCallback) => {
       return await startSync(
-        { userController: users, groupController: groups, opts, directories, requestHandler },
+        {
+          userController: users,
+          groupController: groups,
+          opts,
+          directories,
+          requestHandler,
+        },
         callback
       );
     },
