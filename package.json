@@ -51,7 +51,7 @@
     "release": "git checkout release && git merge origin/main && release-it"
   },
   "dependencies": {
-    "@boxyhq/metrics": "0.2.4",
+    "@boxyhq/metrics": "0.2.5",
     "@boxyhq/react-ui": "3.3.9",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.18",
