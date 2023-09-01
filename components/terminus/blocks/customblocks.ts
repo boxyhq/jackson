@@ -207,11 +207,16 @@ Blockly.Blocks['data_object_field_mask'] = {
   init: function () {
     this.jsonInit({
       type: 'data_object_field_mask',
-      message0: 'mask %1 %2',
+      message0: 'mask (Admin:%1) (Member:%2) %3',
       args0: [
         {
           type: 'field_dropdown',
-          name: 'object_type',
+          name: 'object_type_1',
+          options: getMasks(),
+        },
+        {
+          type: 'field_dropdown',
+          name: 'object_type_2',
           options: getMasks(),
         },
         {

@@ -67,18 +67,22 @@ const generateCUEStructure = () => {
     }
 
     // MASKS
-    let masks = ``;
+    let masks_admin = ``;
+    let masks_member = ``;
     for (const [field, values] of Object.entries(valuesMap)) {
       if (IGNORE_FIELDS.includes(field)) {
         continue;
       }
-      masks += `\n\t\t\t${field}: ${values[2]}`;
+      masks_admin += `\n\t\t\t${field}: ${values[2]}`;
+      masks_member += `\n\t\t\t${field}: ${values[3]}`;
     }
     const objectOutput = `\n#${key}: {
         #Definition: { ${definitions}
         }
         #Encryption: ${encryption}
-        #Mask_admin: { ${masks}
+        #Mask_admin: { ${masks_admin}
+        }
+        #Mask_member: { ${masks_member}
         }
       }`;
     defs += objectOutput;
@@ -140,8 +144,10 @@ javascriptGenerator['data_object_field_encryption'] = function (block) {
 };
 
 javascriptGenerator['data_object_field_mask'] = function (block) {
-  const objectName = block.getFieldValue('object_type');
-  currentField[2] = objectName; // mask
+  const objectName1 = block.getFieldValue('object_type_1');
+  const objectName2 = block.getFieldValue('object_type_2');
+  currentField[2] = objectName1; // mask
+  currentField[3] = objectName2; // mask
 
   javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
 
