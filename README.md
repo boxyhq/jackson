@@ -1,13 +1,16 @@
 <picture>
+ <a href="https://boxyhq.com/enterprise-sso" target="_blank">
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/jackson/assets/66887028/871d9c0f-d351-49bb-9458-2542830d7910">
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/jackson/assets/66887028/4073c181-0653-4d5b-b74f-e7e84fe79da8">
   <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1">
+ </a>
 </picture>
 
-<h2 align="center">
+<h3 >
+    <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>· Explore the docs » </strong></a>
     <br />
-    <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>Exlore the docs »</strong></a>
-    <br />
+    <a href="https://boxyhq.com/saas-registration" rel="dofollow"><strong>· Join early SaaS access </strong></a>
+</h3>
 
 # ⭐️ SAML Jackson: Enterprise SSO made simple
 <p>
