@@ -73,8 +73,8 @@ const generateCUEStructure = () => {
       if (IGNORE_FIELDS.includes(field)) {
         continue;
       }
-      masks_admin += `\n\t\t\t${field}: ${values[2]}`;
-      masks_member += `\n\t\t\t${field}: ${values[3]}`;
+      masks_admin += `\n\t\t\t${field}: ${values.length > 2 ? values[2] : 'masking.#MRedact'}`;
+      masks_member += `\n\t\t\t${field}: ${values.length > 3 ? values[3] : 'masking.#MRedact'}`;
     }
     const objectOutput = `\n#${key}: {
         #Definition: { ${definitions}
@@ -126,6 +126,8 @@ javascriptGenerator['data_object_field_wrapper'] = function (block) {
 javascriptGenerator['data_object_field_type'] = function (block) {
   const objectName = block.getFieldValue('object_type');
   currentField[0] = objectName; // type
+  currentField[2] = 'masking.#MRedact'; // mask
+  currentField[3] = 'masking.#MRedact'; // mask
 
   javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
 
