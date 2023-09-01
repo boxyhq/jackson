@@ -6,10 +6,10 @@
 </picture>
 </a>
 
-<h3 >
-    <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>· Explore the docs » </strong></a>
+<h3 align="center" >
+    <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>· Explore the docs »</strong></a>
     <br />
-    <a href="https://boxyhq.com/saas-registration" rel="dofollow"><strong>· Join early SaaS access </strong></a>
+    <a href="https://boxyhq.com/saas-registration" rel="dofollow"><strong>· Join early SaaS access »</strong></a>
 </h3>
 
 # ⭐️ SAML Jackson: Enterprise SSO made simple
