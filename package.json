@@ -45,7 +45,7 @@
     "preinstall": "echo 'Please ensure you are running npm install with --install-links=false or using our custom-install npm script.'",
     "postcustom-install": "npm run prebuild",
     "postinstall": "npm run prebuild",
-    "prebuild": "mkdirp public/terminus && (cp node_modules/blockly/media/sprites.png public/terminus || copy .\\node_modules\\blockly\\media\\sprites.png .\\public\\terminus)",
+    "prebuild": "ts-node --logError prebuild.ts",
     "build": "next build",
     "postbuild": "ts-node --logError postbuild.ts",
     "release": "git checkout release && git merge origin/main && release-it"
