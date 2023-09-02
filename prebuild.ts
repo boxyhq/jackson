@@ -4,7 +4,7 @@ import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 const TERMINUS_PATH = path.join('public', 'terminus');
 
 if (!existsSync(TERMINUS_PATH)) {
-  mkdirSync(TERMINUS_PATH);
+  mkdirSync(TERMINUS_PATH, { recursive: true });
 }
 const folders = [
   {
