@@ -9,10 +9,11 @@
 <h3 align="center" >
     <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>· Explore the docs »</strong></a>
     <br />
-    <a href="https://boxyhq.com/saas-registration" rel="dofollow"><strong>· Join early SaaS access »</strong></a>
+    <a href="https://boxyhq.com/saas-registration" rel="dofollow"><strong>· SaaS Early Access »</strong></a>
 </h3>
 
 # ⭐️ SAML Jackson: Enterprise SSO made simple
+
 <p>
     <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge"></a>
     <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="npm" ></a>
@@ -30,15 +31,13 @@
 [![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,DB_ENCRYPTION_KEY,DB_TTL,DB_CLEANUP_LIMIT,JACKSON_API_KEYS,EXTERNAL_URL,IDP_ENABLED,SAML_AUDIENCE,CLIENT_SECRET_VERIFIER,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,SMTP_FROM,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXTAUTH_ACL&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.EXTERNAL_URL%20(Usually%20https%3A%2F%2F%3Cproject-name-from-above%3E.vercel.app)%20can%20be%20set%20after%20deployment%20from%20the%20project%20dashboard.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/deploy/env-variables>)
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-
-
-
 ## 🚀 Getting Started with SAML Jackson
 
-Streamline your web application's authentication with Jackson, an SSO service supporting SAML and OpenID Connect protocols. Beyond enterprise-grade Single Sign-On, it also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.**
+Streamline your web application's authentication with Jackson, an SSO service supporting SAML and OpenID Connect protocols. Beyond enterprise-grade Single Sign-On, it also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.\*\*
 
 There are two ways to integrate SAML Jackson into an application. Depending on your use case, you can choose either of them. <br>
-1. [separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) (Next.js application) Admin Portal out of the box for managing SSO and Directory Sync connections. 
+
+1. [separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) (Next.js application) Admin Portal out of the box for managing SSO and Directory Sync connections.
 2. [NPM library](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) as an embedded library in your application.
 
 SAML/OIDC SSO service
@@ -47,11 +46,13 @@ Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, a
 
 Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
 
-## 🎦 Videos 
+## 🎦 Videos
+
 - SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A) (split into chapters to easily find what you are looking for)
 - SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
 
 ## ✨ Demo
+
 - SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
 - SAML [demo flow](https://saml-demo.boxyhq.com/)
 
@@ -111,6 +112,7 @@ npm run custom-install
 # Start the server
 npm run dev
 ```
+
 #### End-to-End (E2E) tests
 
 Create a `.env.test.local` file and populate the values. To execute the tests run:
@@ -118,6 +120,7 @@ Create a `.env.test.local` file and populate the values. To execute the tests ru
 ```zsh
 npm run test:e2e
 ```
+
 ## 🖳 Contributing
 
 Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
