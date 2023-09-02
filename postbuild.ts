@@ -1,8 +1,9 @@
+import path from 'node:path';
 import { cpSync } from 'node:fs';
 
 const folders = [
-  { src: 'public', dst: '.next/standalone/public' },
-  { src: '.next/static', dst: '.next/standalone/.next/static' },
+  { src: 'public', dst: path.join('.next', 'standalone', 'public') },
+  { src: path.join('.next', 'static'), dst: path.join('.next', 'standalone', '.next', 'static') },
 ];
 
 try {
