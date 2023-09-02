@@ -1,5 +1,10 @@
-# SAML Jackson: Enterprise SSO made simple
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/jackson/assets/66887028/871d9c0f-d351-49bb-9458-2542830d7910">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/jackson/assets/66887028/4073c181-0653-4d5b-b74f-e7e84fe79da8">
+  <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1">
+</picture>
 
+# ⭐️ SAML Jackson: Enterprise SSO made simple
 <p>
     <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge"></a>
     <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="npm" ></a>
@@ -17,7 +22,7 @@
 [![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,DB_ENCRYPTION_KEY,DB_TTL,DB_CLEANUP_LIMIT,JACKSON_API_KEYS,EXTERNAL_URL,IDP_ENABLED,SAML_AUDIENCE,CLIENT_SECRET_VERIFIER,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,SMTP_FROM,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXTAUTH_ACL&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.EXTERNAL_URL%20(Usually%20https%3A%2F%2F%3Cproject-name-from-above%3E.vercel.app)%20can%20be%20set%20after%20deployment%20from%20the%20project%20dashboard.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/deploy/env-variables>)
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-## Getting Started with SAML Jackson
+## 🚀 Getting Started with SAML Jackson
 
 SAML Jackson can be used with any web application to integrate the **Single Sign-On (SSO) authentication.**
 
@@ -31,11 +36,11 @@ Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, a
 
 Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
 
-## Videos 
+## 🎦 Videos 
 - SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A) (split into chapters to easily find what you are looking for)
 - SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
 
-## Demo
+## ✨ Demo
 - SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
 - SAML [demo flow](https://saml-demo.boxyhq.com/)
 
@@ -45,11 +50,11 @@ For full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.
 
 ## Directory Sync
 
-SAML Jackson also includes support for Directory Sync based on the SCIM 2.0 protocol.
+SAML Jackson also supports Directory Sync based on the SCIM 2.0 protocol.
 
 Directory sync helps organizations automate the provisioning and de-provisioning of their users. As a result, it streamlines the user lifecycle management process by saving valuable organizational hours, creating a single truth source of the user identity data, and facilitating them to keep the data secure.
 
-For full documentation, visit [boxyhq.com/docs/directory-sync/overview](https://boxyhq.com/docs/directory-sync/overview)
+For complete documentation, visit [boxyhq.com/docs/directory-sync/overview](https://boxyhq.com/docs/directory-sync/overview)
 
 ## Source code visualizer
 
@@ -92,7 +97,7 @@ Create a `.env.test.local` file and populate the values. To execute the tests ru
 ```zsh
 npm run test:e2e
 ```
-## Contributing
+## 🖳 Contributing
 
 Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
 
@@ -103,23 +108,23 @@ Please try to create bug reports that are:
 - _Unique._ Do not duplicate existing opened issues.
 - _Scoped to a Single Bug._ One bug per report.
 
-## Support
+## 💫 Support
 
 Reach out to the maintainers at one of the following places:
 
 - [GitHub Discussions](https://github.com/boxyhq/jackson/discussions)
 - [GitHub Issues](https://github.com/boxyhq/jackson/issues) (Bug reports, Contributions)
 
-## Community
+## 🤩 Community
 
 - [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Open-Source Community and BoxyHQ team)
 - [Twitter](https://twitter.com/BoxyHQ) (Follow us)
 - [Youtube](https://www.youtube.com/@boxyhq) (Watch community events and tutorials)
 
-## Reporting Security Issues
+## 🛡️ Reporting Security Issues
 
 [Responsible Disclosure](SECURITY.md)
 
-## License
+## 📌 License
 
 [Apache 2.0 License](https://github.com/boxyhq/jackson/blob/main/LICENSE)
