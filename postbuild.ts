@@ -8,7 +8,7 @@ const folders = [
 
 try {
   folders.forEach(({ src, dst }) => cpSync(src, dst, { recursive: true }));
-  console.log(`moved public/static assets to standalone build`);
+  console.log(`copied public/static assets to standalone build`);
 } catch (err) {
-  console.error(`failed moving public/static assets to standalone build`, err);
+  console.error(`failed copying public/static assets to standalone build`, err);
 }
