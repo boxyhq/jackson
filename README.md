@@ -1,10 +1,19 @@
+<a href="https://boxyhq.com/enterprise-sso">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/jackson/assets/66887028/871d9c0f-d351-49bb-9458-2542830d7910">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/jackson/assets/66887028/4073c181-0653-4d5b-b74f-e7e84fe79da8">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/.github/assets/66887028/df1c9904-df2f-4515-b403-58b14a0e9093">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/.github/assets/66887028/e093a466-72ea-41c6-a292-4c39a150facd">
   <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1">
 </picture>
+</a>
+
+<h3 align="center" >
+    <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>· Explore the docs »</strong></a>
+    <br />
+    <a href="https://boxyhq.com/saas-registration" rel="dofollow"><strong>· SaaS Early Access »</strong></a>
+</h3>
 
 # ⭐️ SAML Jackson: Enterprise SSO made simple
+
 <p>
     <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge"></a>
     <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="npm" ></a>
@@ -24,10 +33,11 @@
 
 ## 🚀 Getting Started with SAML Jackson
 
-SAML Jackson can be used with any web application to integrate the **Single Sign-On (SSO) authentication.**
+Streamline your web application's authentication with Jackson, an SSO service supporting SAML and OpenID Connect protocols. Beyond enterprise-grade Single Sign-On, it also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.\*\*
 
 There are two ways to integrate SAML Jackson into an application. Depending on your use case, you can choose either of them. <br>
-1. [separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) (Next.js application) Admin Portal out of the box for managing SSO and Directory Sync connections. 
+
+1. [separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) (Next.js application) Admin Portal out of the box for managing SSO and Directory Sync connections.
 2. [NPM library](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) as an embedded library in your application.
 
 SAML/OIDC SSO service
@@ -36,13 +46,25 @@ Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, a
 
 Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
 
-## 🎦 Videos 
+## 🎦 Videos
+
 - SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A) (split into chapters to easily find what you are looking for)
 - SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
 
 ## ✨ Demo
+
 - SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
 - SAML [demo flow](https://saml-demo.boxyhq.com/)
+
+## Here is what deploying SSO looks like with and without BoxyHQ
+
+<div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/jackson/assets/66887028/2abf9852-8d0a-4116-9899-e85703be2fbb">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/jackson/assets/66887028/6aa15c53-7719-4eb4-870a-4a3c3d4c1f32">
+  <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/1dae6821-d8a5-4302-832f-f1736e284e8c">
+</picture>
+</div>
 
 ## Documentation
 
@@ -90,6 +112,7 @@ npm run custom-install
 # Start the server
 npm run dev
 ```
+
 #### End-to-End (E2E) tests
 
 Create a `.env.test.local` file and populate the values. To execute the tests run:
@@ -97,6 +120,7 @@ Create a `.env.test.local` file and populate the values. To execute the tests ru
 ```zsh
 npm run test:e2e
 ```
+
 ## 🖳 Contributing
 
 Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
