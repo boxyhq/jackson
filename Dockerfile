@@ -10,7 +10,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
-COPY migrate.sh migrate.sh
+COPY migrate.sh prebuild.ts ./
 RUN npm run custom-install
 
 

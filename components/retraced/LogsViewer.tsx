@@ -38,6 +38,7 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
           auditLogToken={viewerToken}
           header='Audit Logs'
           customClass={'text-primary dark:text-white'}
+          skipViewLogEvent={true}
         />
       )}
     </>
