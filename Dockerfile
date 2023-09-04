@@ -21,7 +21,6 @@ WORKDIR /app
 
 COPY --from=deps /app/npm ./npm
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/migrate.sh ./migrate.sh
 COPY . .
 
 
