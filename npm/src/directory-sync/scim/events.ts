@@ -65,16 +65,15 @@ export const handleEventCallback = async ({
 
     // If bulk sync is enabled, push the event to the queue
     // We will process the queue later in the background
-    if (opts.dsync && opts.dsync.bulkSyncLimit > 1) {
+    if (opts.dsync && opts.dsync.webhookBatchSize) {
       await directoryEvents.push(event);
       return;
     }
 
-    // Send the event to the webhook (synchronously)
-
     let status = 200;
 
     try {
+      // Send the event to the webhook (synchronously)
       await sendPayloadToWebhook(directory.webhook, event);
     } catch (err: any) {
       status = err.response ? err.response.status : 500;

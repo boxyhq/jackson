@@ -2,9 +2,10 @@ import _ from 'lodash';
 import { randomUUID } from 'crypto';
 
 import { retryCount } from '../../event/axios';
-import { sendPayloadToWebhook } from '../../event/webhook';
+import { createSignatureString, sendPayloadToWebhook } from '../../event/webhook';
 import { storeNamespacePrefix } from '../../controller/utils';
-import type { DatabaseStore, DirectorySyncEvent, IDirectoryConfig, Storable } from '../../typings';
+import type { DatabaseStore, Directory, DirectorySyncEvent, IDirectoryConfig, Storable } from '../../typings';
+import axios from 'axios';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -63,8 +64,6 @@ export class DirectoryEvents {
   public async process() {
     const events = await this.pop();
 
-    console.info(`Found ${events.length} events to process`);
-
     if (!events.length) {
       return;
     }
@@ -72,40 +71,63 @@ export class DirectoryEvents {
     // Group the events by directory
     const eventsByDirectory = _.groupBy(events, 'event.directory_id');
 
+    const directoryIds = Object.keys(eventsByDirectory);
+    const directoryCount = directoryIds.length;
+
     // Fetch the connections corresponding to the directories it belongs to
-    const fetchResults = await Promise.allSettled(
-      Object.keys(eventsByDirectory).map((directoryId) => this.directoryStore.get(directoryId))
+    const directoriesResult = await Promise.allSettled(
+      directoryIds.map((directoryId) => this.directoryStore.get(directoryId))
     );
 
-    // Send the events to the webhooks
-    for (const fetchResult of fetchResults) {
-      if (fetchResult.status === 'rejected') {
+    // Iterate over the directories and send the events to the webhooks
+    // For each directory, we will send the events in a batch
+    // directoryIds and directoriesResult are in the same order
+    for (let i = 0; i < directoryCount; i++) {
+      const directoryId = directoryIds[i];
+      const directoryResult = directoriesResult[i];
+      const events = eventsByDirectory[directoryId];
+
+      if (directoryResult.status === 'rejected') {
+        await this.markAsFailed(events);
         continue;
       }
 
-      const directory = fetchResult.value.data;
+      const directory = directoryResult.value.data as Directory;
 
       if (!directory) {
+        await this.markAsFailed(events);
         continue;
       }
 
       if (!directory.webhook?.endpoint || !directory.webhook?.secret) {
+        await this.markAsFailed(events);
         continue;
       }
 
-      const events = eventsByDirectory[directory.id];
-
       try {
-        await sendPayloadToWebhook(
-          directory.webhook,
-          events.map(({ event }) => event)
-        );
+        const response = await this.send(directory.webhook, events);
 
-        await this.deleteDelivered(events);
+        if (response.status === 200) {
+          await this.delete(events);
+        } else {
+          await this.markAsFailed(events);
+        }
       } catch (err: any) {
         await this.markAsFailed(events);
       }
     }
+  }
+
+  // Send the events to the webhooks
+  public async send(webhook: Directory['webhook'], events: WebhookEvent[]) {
+    const payload = events.map(({ event }) => event);
+
+    return await axios.post(webhook.endpoint, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'BoxyHQ-Signature': createSignatureString(webhook.secret, payload),
+      },
+    });
   }
 
   // Fetch next batch of events from the database
@@ -125,6 +147,13 @@ export class DirectoryEvents {
     return events;
   }
 
+  // Delete the delivered events
+  private async delete(events: WebhookEvent[]) {
+    const promises = events.map((event) => this.eventStore.delete(event.id));
+
+    await Promise.allSettled(promises);
+  }
+
   // Mark the events as failed
   private async markAsFailed(events: WebhookEvent[]) {
     const promises = events.map((event) =>
@@ -134,13 +163,6 @@ export class DirectoryEvents {
         retry_count: event.retry_count + retryCount,
       })
     );
-
-    await Promise.allSettled(promises);
-  }
-
-  // Delete the delivered events
-  private async deleteDelivered(events: WebhookEvent[]) {
-    const promises = events.map((event) => this.eventStore.delete(event.id));
 
     await Promise.allSettled(promises);
   }

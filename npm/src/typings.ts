@@ -418,6 +418,7 @@ export interface JacksonOption {
   };
   webhook?: Webhook;
   dsync?: {
+    webhookBatchSize: number;
     providers: {
       google: {
         clientId: string;
@@ -425,7 +426,6 @@ export interface JacksonOption {
         callbackUrl: string;
       };
     };
-    bulkSyncLimit: number;
   };
 }
 
