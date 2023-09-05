@@ -5,6 +5,8 @@ import Blockly from 'blockly/core';
 function getEncryption() {
   return [
     ['AES_256', 'crypto.#EnAES_256'],
+    ['FPE_FF1', 'crypto.#EnFPE_FF1'],
+    ['FPE_FF3_1', 'crypto.#EnFPE_FF3_1'],
     ['NoEncryption', 'crypto.#EnNoEncryption'],
     // ['RSA_2048', 'crypto.#EnRSA_2048'],
     // ['Blowfish_448', 'crypto.#EnBlowfish_448'],
