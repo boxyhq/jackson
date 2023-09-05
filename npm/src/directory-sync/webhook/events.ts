@@ -1,17 +1,15 @@
 import _ from 'lodash';
+import axios from 'axios';
 import { randomUUID } from 'crypto';
 
-import { retryCount } from '../../event/axios';
-import { createSignatureString, sendPayloadToWebhook } from '../../event/webhook';
+import { createSignatureString } from '../../event/webhook';
 import { storeNamespacePrefix } from '../../controller/utils';
 import type { DatabaseStore, Directory, DirectorySyncEvent, IDirectoryConfig, Storable } from '../../typings';
-import axios from 'axios';
 
 enum EventStatus {
   PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
-  DELIVERED = 'DELIVERED',
   FAILED = 'FAILED',
+  PROCESSING = 'PROCESSING',
 }
 
 interface WebhookEvent {
@@ -160,7 +158,7 @@ export class DirectoryEvents {
       this.eventStore.put(event.id, {
         ...event,
         status: EventStatus.FAILED,
-        retry_count: event.retry_count + retryCount,
+        retry_count: event.retry_count + 1,
       })
     );
 
