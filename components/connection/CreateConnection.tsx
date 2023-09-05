@@ -14,9 +14,8 @@ import { mutate } from 'swr';
 import { ApiResponse } from 'types';
 import { errorToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
-// import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
-// import { InputWithCopyButton } from '@components/ClipboardButton';
+import { LinkBack } from '@components/LinkBack';
 
 function getInitialState(connectionType, fieldCatalog: FieldCatalogItem[]) {
   const _state = {};
@@ -40,7 +39,6 @@ function getInitialState(connectionType, fieldCatalog: FieldCatalogItem[]) {
 
 const CreateConnection = ({
   setupLinkToken,
-  // idpEntityID,
   isSettingsView = false,
   adminPortalSSODefaults,
 }: {
@@ -64,11 +62,11 @@ const CreateConnection = ({
   const connectionIsSAML = newConnectionType === 'saml';
   const connectionIsOIDC = newConnectionType === 'oidc';
 
-  // const backUrl = setupLinkToken
-  //   ? `/setup/${setupLinkToken}`
-  //   : isSettingsView
-  //   ? '/admin/settings/sso-connection'
-  //   : '/admin/sso-connection';
+  const backUrl = setupLinkToken
+    ? null
+    : isSettingsView
+    ? '/admin/settings/sso-connection'
+    : '/admin/sso-connection';
   const redirectUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
@@ -134,18 +132,11 @@ const CreateConnection = ({
 
   return (
     <>
-      {/* <LinkBack href={backUrl} />
-      {idpEntityID && setupLinkToken && (
-        <div className='mb-5 mt-5 items-center justify-between'>
-          <div className='form-control'>
-            <InputWithCopyButton text={idpEntityID} label={t('idp_entity_id')} />
-          </div>
-        </div>
-      )} */}
+      {backUrl && <LinkBack href={backUrl} />}
       <div>
-        {/* <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
+        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_sso_connection')}
-        </h2> */}
+        </h2>
         <div className='mb-4 flex items-center'>
           <div className='mr-2 py-3'>{t('select_sso_type')}:</div>
           <div className='flex w-52'>
