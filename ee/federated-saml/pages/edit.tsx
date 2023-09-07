@@ -30,6 +30,9 @@ const UpdateApp: NextPage = () => {
     logoUrl: '',
     faviconUrl: '',
     primaryColor: '',
+    textColor: '',
+    borderColor: '',
+    backgroundColor: '',
   });
 
   const { id } = router.query as { id: string };
