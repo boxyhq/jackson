@@ -12,6 +12,16 @@ export type SAMLFederationApp = {
   logoUrl: string | null;
   faviconUrl: string | null;
   primaryColor: string | null;
+  textColor: string | null;
+  borderColor: string | null;
+  backgroundColor: string | null;
+  darkTheme?: {
+    primaryColor?: string;
+    backgroundColor?: string | null;
+    textColor?: string | null;
+    borderColor?: string | null;
+    logoUrl?: string;
+  };
 };
 
 export type SAMLFederationAppWithMetadata = SAMLFederationApp & {
