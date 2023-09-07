@@ -10,18 +10,27 @@ import LicenseRequired from '@components/LicenseRequired';
 const Branding: NextPage = () => {
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
+  const [isDarkThemeEnabled, setIsDarkThemeEnabled] = useState(false);
   const [branding, setBranding] = useState<AdminPortalBranding>({
     logoUrl: '',
     faviconUrl: '',
     companyName: '',
     primaryColor: '',
-    bodyColor: '',
+    backgroundColor: '',
     textColor: '',
+    borderColor: '',
+    darkTheme: {
+      primaryColor: '',
+      backgroundColor: '',
+      textColor: '',
+      borderColor: '',
+      logoUrl: '',
+    },
   });
 
   // Fetch settings
   const fetchSettings = async () => {
-    const rawResponse = await fetch('/api/admin/branding', {
+    const rawResponse = await fetch('/api/branding', {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -49,6 +58,7 @@ const Branding: NextPage = () => {
     });
 
     setLoading(false);
+    setIsDarkThemeEnabled(false);
 
     const response: ApiResponse<AdminPortalBranding> = await rawResponse.json();
 
@@ -66,6 +76,23 @@ const Branding: NextPage = () => {
   const onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = event.target as HTMLInputElement;
 
+    // to handle onChange handler for dark theme values
+    if (target.id.startsWith('darkTheme')) {
+      // split the id which is in the form "darkTheme.property"
+      // in order to only get the property name
+      const id = event.target.id.split('.')[1];
+
+      setBranding({
+        ...branding,
+        darkTheme: {
+          ...branding.darkTheme,
+          [id]: target.value,
+        },
+      });
+
+      return;
+    }
+
     setBranding({
       ...branding,
       [target.id]: target.value,
@@ -82,23 +109,19 @@ const Branding: NextPage = () => {
       <p className='py-3 text-base leading-6 text-gray-800'>{t('settings_branding_description')}</p>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
-          <div className='flex flex-col space-y-2'>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
-                <span className='label-text'>{t('branding_logo_url_label')}</span>
-              </label>
+          <div className='flex gap-3 mb-5 justify-between'>
+            <h1 className='text-2xl font-bold'>Light theme</h1>
+            <div className='flex items-center justify-center gap-3'>
+              <h3 className='font-bold text-xl'>Enable dark theme</h3>
               <input
-                type='url'
-                id='logoUrl'
-                className='input-bordered input'
-                onChange={onChange}
-                value={branding.logoUrl || ''}
-                placeholder='https://company.com/logo.png'
+                type='checkbox'
+                onChange={() => setIsDarkThemeEnabled(!isDarkThemeEnabled)}
+                className='toggle toggle-md'
+                checked={isDarkThemeEnabled}
               />
-              <label className='label'>
-                <span className='label-text-alt'>{t('branding_logo_url_alt')}</span>
-              </label>
             </div>
+          </div>
+          <div className='flex flex-col space-y-2'>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
                 <span className='label-text'>{t('branding_favicon_url_label')}</span>
@@ -131,37 +154,187 @@ const Branding: NextPage = () => {
                 <span className='label-text-alt'>{t('branding_company_name_alt')}</span>
               </label>
             </div>
-            <div className='form-control'>
+            <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>Body color</span>
+                <span className='label-text'>{t('branding_logo_url_label')}</span>
               </label>
-              <input id='bodyColor' type='color' onChange={onChange} value={branding.bodyColor || ''} />
+              <input
+                type='url'
+                id='logoUrl'
+                className='input-bordered input'
+                onChange={onChange}
+                value={branding.logoUrl || ''}
+                placeholder='https://company.com/logo.png'
+              />
               <label className='label'>
-                <span className='label-text-alt'>
-                  Body color will be applied to background of all elements
-                </span>
-              </label>
-            </div>
-            <div className='form-control'>
-              <label className='label'>
-                <span className='label-text'>{t('branding_primary_color_label')}</span>
-              </label>
-              <input type='color' id='primaryColor' onChange={onChange} value={branding.primaryColor || ''} />
-              <label className='label'>
-                <span className='label-text-alt'>{t('branding_primary_color_alt')}</span>
+                <span className='label-text-alt'>{t('branding_logo_url_alt')}</span>
               </label>
             </div>
-            <div className='form-control'>
-              <label className='label'>
-                <span className='label-text'>Text color</span>
-              </label>
-              <input id='bodyColor' type='color' onChange={onChange} value={branding.textColor || ''} />
-              <label className='label'>
-                <span className='label-text-alt'>Text color will be applied to of all existing text</span>
-              </label>
+            <div className='flex gap-7'>
+              <div className='form-control'>
+                <div className='flex'>
+                  <label className='label pr-3'>
+                    <span className='label-text'>{t('branding_primary_color_label')}</span>
+                  </label>
+                </div>
+                <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
+                  <h3 className='border-r-[1px] border-gray-200 pr-2'>
+                    {branding.primaryColor || '#000000'}
+                  </h3>
+                  <input
+                    type='color'
+                    id='primaryColor'
+                    onChange={onChange}
+                    value={branding.primaryColor || ''}
+                  />
+                </div>
+              </div>
+              <div className='form-control'>
+                <div className='flex'>
+                  <label className='label pr-3'>
+                    <span className='label-text'>Background Color</span>
+                  </label>
+                </div>
+                <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
+                  <h3 className='border-r-[1px] border-gray-200 pr-2'>
+                    {branding.backgroundColor || '#000000'}
+                  </h3>
+                  <input
+                    id='backgroundColor'
+                    type='color'
+                    onChange={onChange}
+                    value={branding.backgroundColor || ''}
+                  />
+                </div>
+              </div>
+              <div className='form-control'>
+                <div className='flex'>
+                  <label className='label pr-3'>
+                    <span className='label-text'>Text Color</span>
+                  </label>
+                </div>
+                <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
+                  <h3 className='border-r-[1px] border-gray-200 pr-2'>{branding.textColor || '#000000'}</h3>
+                  <input id='textColor' type='color' onChange={onChange} value={branding.textColor || ''} />
+                </div>
+              </div>
+              <div className='form-control'>
+                <div className='flex'>
+                  <label className='label pr-3'>
+                    <span className='label-text'>Border Color</span>
+                  </label>
+                </div>
+                <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
+                  <h3 className='border-r-[1px] border-gray-200 pr-2'>{branding.borderColor || '#000000'}</h3>
+                  <input
+                    id='borderColor'
+                    type='color'
+                    onChange={onChange}
+                    value={branding.borderColor || ''}
+                  />
+                </div>
+              </div>
             </div>
-            <div className='mt-5'>
-              <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
+            {/* Only to be displayed in case of dark theme state being set to true */}
+            {isDarkThemeEnabled ? (
+              <>
+                <h1 className='text-2xl font-bold mt-5  pt-5'>Dark theme</h1>
+                <div className='form-control w-full md:w-1/2'>
+                  <label className='label'>
+                    <span className='label-text'>{t('branding_logo_url_label')}</span>
+                  </label>
+                  <input
+                    type='url'
+                    id='darkTheme.logoUrl'
+                    className='input-bordered input'
+                    onChange={onChange}
+                    value={branding.darkTheme?.logoUrl || ''}
+                    placeholder='https://company.com/logo.png'
+                  />
+                  <label className='label'>
+                    <span className='label-text-alt'>{t('branding_logo_url_alt')}</span>
+                  </label>
+                </div>
+                <div className='flex gap-7'>
+                  <div className='form-control'>
+                    <div className='flex'>
+                      <label className='label pr-3'>
+                        <span className='label-text'>{t('branding_primary_color_label')}</span>
+                      </label>
+                    </div>
+                    <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
+                      <h3 className='border-r-[1px] border-gray-200 pr-2'>
+                        {branding.darkTheme?.primaryColor || '#000000'}
+                      </h3>
+                      <input
+                        type='color'
+                        id='darkTheme.primaryColor'
+                        onChange={onChange}
+                        value={branding.darkTheme?.primaryColor || ''}
+                      />
+                    </div>
+                  </div>
+                  <div className='form-control'>
+                    <div className='flex'>
+                      <label className='label pr-3'>
+                        <span className='label-text'>Background Color </span>
+                      </label>
+                    </div>
+                    <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
+                      <h3 className='border-r-[1px] border-gray-200 pr-2'>
+                        {branding.darkTheme?.backgroundColor || '#000000'}
+                      </h3>
+                      <input
+                        id='darkTheme.backgroundColor'
+                        type='color'
+                        onChange={onChange}
+                        value={branding.darkTheme?.backgroundColor || ''}
+                      />
+                    </div>
+                  </div>
+                  <div className='form-control'>
+                    <div className='flex'>
+                      <label className='label pr-3'>
+                        <span className='label-text'>Text color</span>
+                      </label>
+                    </div>
+                    <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
+                      <h3 className='border-r-[1px] border-gray-200 pr-2'>
+                        {branding.darkTheme?.textColor || '#000000'}
+                      </h3>
+                      <input
+                        id='darkTheme.textColor'
+                        type='color'
+                        onChange={onChange}
+                        value={branding.darkTheme?.textColor || ''}
+                      />
+                    </div>
+                  </div>
+                  <div className='form-control'>
+                    <div className='flex'>
+                      <label className='label pr-3'>
+                        <span className='label-text'>Border color</span>
+                      </label>
+                    </div>
+                    <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
+                      <h3 className='border-r-[1px] border-gray-200 pr-2'>
+                        {branding.darkTheme?.borderColor || '#000000'}
+                      </h3>
+                      <input
+                        id='darkTheme.borderColor'
+                        type='color'
+                        onChange={onChange}
+                        value={branding.darkTheme?.borderColor || ''}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : null}
+            <div>
+              <ButtonPrimary className='mt-5' loading={loading}>
+                {t('save_changes')}
+              </ButtonPrimary>
             </div>
           </div>
         </form>
