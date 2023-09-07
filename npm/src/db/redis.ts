@@ -1,5 +1,5 @@
 import * as redis from 'redis';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records } from '../typings';
+import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records, SortOrder } from '../typings';
 import * as dbutils from './utils';
 
 class Redis implements DatabaseDriver {
@@ -37,7 +37,13 @@ class Redis implements DatabaseDriver {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
@@ -58,8 +64,12 @@ class Redis implements DatabaseDriver {
       count++;
     }
 
+    //  console.log('keyArray', keyArray);
+    console.log({ sortOrder });
+
     if (keyArray.length > 0) {
       const value = await this.client.MGET(keyArray);
+      console.log('value', value);
       for (let i = 0; i < value.length; i++) {
         const valueObject = JSON.parse(value[i].toString());
         if (valueObject !== null && valueObject !== '') {
@@ -67,6 +77,9 @@ class Redis implements DatabaseDriver {
         }
       }
     }
+
+    console.log('returnValue', returnValue);
+
     return { data: returnValue || [] };
   }
 
@@ -126,6 +139,8 @@ class Redis implements DatabaseDriver {
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
     let tx = this.client.multi();
     const k = dbutils.key(namespace, key);
+
+    console.log('k', k);
 
     tx = tx.set(k, JSON.stringify(val));
 
