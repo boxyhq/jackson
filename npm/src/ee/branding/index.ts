@@ -22,6 +22,10 @@ export class BrandingController {
       faviconUrl: null,
       companyName: null,
       primaryColor: null,
+      textColor: null,
+      borderColor: null,
+      backgroundColor: null,
+      darkTheme: null,
     };
 
     return branding ? branding : defaultBranding;
@@ -31,7 +35,16 @@ export class BrandingController {
   public async update(params: Partial<AdminPortalBranding>) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const { logoUrl, faviconUrl, companyName, primaryColor } = params;
+    const {
+      logoUrl,
+      faviconUrl,
+      companyName,
+      primaryColor,
+      textColor,
+      borderColor,
+      backgroundColor,
+      darkTheme,
+    } = params;
 
     const currentBranding = await this.get();
 
@@ -40,6 +53,10 @@ export class BrandingController {
       faviconUrl: faviconUrl ?? null,
       companyName: companyName ?? null,
       primaryColor: primaryColor ?? null,
+      textColor: textColor ?? null,
+      borderColor: borderColor ?? null,
+      backgroundColor: backgroundColor ?? null,
+      darkTheme: darkTheme ?? null,
     };
 
     const updatedbranding = {
