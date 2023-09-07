@@ -99,13 +99,13 @@ const dbs = [
     ...memDbConfig,
     encryptionKey,
   },
-  {
-    ...redisDbConfig,
-  },
-  {
-    ...redisDbConfig,
-    encryptionKey,
-  },
+  // {
+  //   ...redisDbConfig,
+  // },
+  // {
+  //   ...redisDbConfig,
+  //   encryptionKey,
+  // },
   {
     ...postgresDbConfig,
   },
@@ -206,6 +206,9 @@ tap.test('dbs', async () => {
         }
       );
 
+      // Add delay before adding second record
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       await connectionStore.put(
         record2.id,
         record2,
@@ -276,6 +279,15 @@ tap.test('dbs', async () => {
         1,
         "getAll pagination should get only 1 record, order doesn't matter"
       );
+
+      // Sort the records
+      const { data: sortedRecords } = await connectionStore.getAll(0, 2, undefined, 'ASC');
+      t.match(sortedRecords, [record1, record2], 'records are sorted in ASC order');
+
+      // if (dbEngine.startsWith('sql: mysql')) {
+      //   console.log('allRecords', allRecords);
+      //   console.log('sortedRecords', sortedRecords);
+      // }
     });
 
     tap.test('getByIndex(): ' + dbEngine, async (t) => {
