@@ -95,6 +95,18 @@ module.exports = {
         protocol: 'https',
         hostname: '*',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5225',
+        pathname: '/logo.png',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5225',
+        pathname: '/favicon.ico',
+      },
     ],
   },
 };
