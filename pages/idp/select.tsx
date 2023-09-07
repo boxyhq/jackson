@@ -21,36 +21,71 @@ export default function ChooseIdPConnection({
   const { t } = useTranslation('common');
 
   const primaryColor = hexToHsl(branding.primaryColor);
+  const textColor = hexToHsl(branding.textColor);
   const title = requestType === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
 
   return (
-    <div className='mx-auto my-28 w-[500px]'>
-      <div className='mx-5 flex flex-col space-y-10 rounded border border-gray-300 p-10'>
-        <Head>
-          <title>{`${title} - ${branding.companyName}`}</title>
-          {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
-        </Head>
+    <main className='border-[0.2px] border-black dark:border-black h-[100vh] w-[100vw] backgroundColor'>
+      <div className='mx-auto my-28 w-[500px]'>
+        <div
+          className={`mx-5 flex flex-col space-y-10 rounded border p-10 backgroundColor textColor borderColor`}>
+          <Head>
+            <title>{`${title} - ${branding.companyName}`}</title>
+            {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
+          </Head>
 
-        {primaryColor && (
-          <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
-        )}
+          {primaryColor && (
+            <style>{`:root { --p: ${primaryColor}; --s: ${textColor} ; --pf: ${darkenHslColor(
+              primaryColor,
+              30
+            )}; } .backgroundColor {
+            background-color: ${branding.backgroundColor};
+        } .textColor{
+          color: ${branding.textColor};
+        } .borderColor {
+          border: 0.5px solid ${branding.borderColor};
+          border-radius: 4px;
+        }
 
-        {branding?.logoUrl && (
-          <div className='flex justify-center'>
-            <Image src={branding.logoUrl} alt={branding.companyName} width={50} height={50} />
-          </div>
-        )}
+        ${
+          branding.darkTheme &&
+          ` @media (prefers-color-scheme: dark) {
+            :root {
+              --p: ${hexToHsl(
+                branding.darkTheme?.primaryColor || 'hsl(0 100% 50%)'
+              )}; --s: ${textColor} ; --pf: ${darkenHslColor(primaryColor, 30)};
+            } .backgroundColor {
+              background-color: ${branding.darkTheme?.backgroundColor};
+          } .textColor {
+            color: ${branding.darkTheme?.textColor};
+          } .borderColor {
+            border: 0.5px solid ${branding.darkTheme?.borderColor};
+            border-radius: 4px;
+          }
+          } `
+        }
+          `}</style>
+          )}
 
-        {requestType === 'sp-initiated' ? (
-          <IdpSelector connections={connections} />
-        ) : (
-          <AppSelector connections={connections} SAMLResponse={SAMLResponse} />
-        )}
+          {/* --bc: ${textColor}; */}
+
+          {branding?.logoUrl && (
+            <div className='flex justify-center'>
+              <Image src={branding.logoUrl} alt={branding.companyName} width={50} height={50} />
+            </div>
+          )}
+
+          {requestType === 'sp-initiated' ? (
+            <IdpSelector connections={connections} />
+          ) : (
+            <AppSelector connections={connections} SAMLResponse={SAMLResponse} />
+          )}
+        </div>
+        <div className='my-4'>
+          <PoweredBy />
+        </div>
       </div>
-      <div className='my-4'>
-        <PoweredBy />
-      </div>
-    </div>
+    </main>
   );
 }
 
@@ -85,9 +120,9 @@ const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORec
                 onClick={() => {
                   connectionSelected(connection.clientID);
                 }}>
-                <div className='flex items-center gap-2 px-3 py-3'>
+                <div className='flex items-center gap-2 px-3 py-3 borderColor backgroundColor'>
                   <div className='placeholder avatar'>
-                    <div className='w-8 rounded-full bg-primary text-white'>
+                    <div className='w-8 rounded-full bg-primary'>
                       <span className='text-lg font-bold'>{name.charAt(0).toUpperCase()}</span>
                     </div>
                   </div>
@@ -98,7 +133,7 @@ const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORec
           );
         })}
       </ul>
-      <p className='text-center text-sm text-slate-600'>
+      <p className='text-center text-sm'>
         Choose an Identity Provider to continue. If you don&apos;t see your Identity Provider, please contact
         your administrator.
       </p>
@@ -213,6 +248,10 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       primaryColor: samlFederationApp?.primaryColor || branding.primaryColor,
       faviconUrl: samlFederationApp?.faviconUrl || branding.faviconUrl,
       companyName: samlFederationApp?.name || branding.companyName,
+      textColor: samlFederationApp?.textColor || branding.textColor,
+      borderColor: samlFederationApp?.borderColor || branding.borderColor,
+      backgroundColor: samlFederationApp?.backgroundColor || branding.backgroundColor,
+      darkTheme: {},
     };
   }
 
