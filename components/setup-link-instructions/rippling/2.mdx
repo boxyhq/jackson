@@ -2,7 +2,7 @@
 
 Copy the **Idp Metadata URL** or **Idp Metadata XML** from the next screen. You'll need this value to configure your SAML connection in SAML Jackson.
 
-![img alt](https://boxyhq.com/assets/images/3-8c0d2ab8d0176ce75976ac77c54891c0.png)
+![img alt](https://cdn.boxyhq.com/docs/sso/providers/rippling/3.png)
 
 You'll need to enter the **ACS URL** and **Service Provider Entity ID**.
 
@@ -17,12 +17,12 @@ You'll need to enter the **ACS URL** and **Service Provider Entity ID**.
 
 <AdvancedSPConfigLink />
 
-![img alt](https://boxyhq.com/assets/images/4-bf5f1bd918e3e70d5aa23d4a472df5f6.png)
+![img alt](https://cdn.boxyhq.com/docs/sso/providers/rippling/4.png)
 
 From the **Settings** tab of custom app you just created. Go to **Advanced SAML Settings** section and check the box for **Disable InResponseTo field in assertions for IdP initiated SSO**.
 
 This is because Rippling sends dummy values for the **InResponseTo** field and SAML Jackson will try to validate the **InResponseTo** field if it is present.
 
-![img alt](https://boxyhq.com/assets/images/5-5551f68501f9f807461eda3069d2c912.png)
+![img alt](https://cdn.boxyhq.com/docs/sso/providers/rippling/5.png)
 
 <Footer />
