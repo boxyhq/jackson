@@ -19,11 +19,23 @@ const regexMap = {
   'defs.#SimpleDateFormat': '^20[0-9]{2}-[0-1][1-2]-[0-2][1-8]$', // regex restricted.
 };
 
-export const generateModel = (workspace) => {
+export const generateModel = (workspace, roles: string[]) => {
   ObjectMap.clear();
+
+  javascriptGenerator['data_object_field_mask'] = function (block) {
+    for (let i = 0; i < roles.length; i++) {
+      const objName = block.getFieldValue(`object_type_${i + 1}`);
+      currentField[2 + i] = objName; // mask
+    }
+
+    javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
+
+    return '';
+  };
+
   // trigger the BLOCKLY processing which will run our custom code generation
   javascriptGenerator.workspaceToCode(workspace);
-  const ret = generateCUEStructure();
+  const ret = generateCUEStructure(roles);
 
   // add specific BoxyHQ imports
   return `
@@ -33,7 +45,7 @@ export const generateModel = (workspace) => {
 };
 
 // Rudimentary way of generating a CUE file
-const generateCUEStructure = () => {
+const generateCUEStructure = (roles: string[]) => {
   let defs = ``;
   const encrObjects = [];
   for (const [key, value] of Object.entries(Object.fromEntries(ObjectMap))) {
@@ -67,23 +79,23 @@ const generateCUEStructure = () => {
     }
 
     // MASKS
-    let masks_admin = ``;
-    let masks_member = ``;
+    let maskString = '';
     for (const [field, values] of Object.entries(valuesMap)) {
       if (IGNORE_FIELDS.includes(field)) {
         continue;
       }
-      masks_admin += `\n\t\t\t${field}: ${values.length > 2 ? values[2] : 'masking.#MRedact'}`;
-      masks_member += `\n\t\t\t${field}: ${values.length > 3 ? values[3] : 'masking.#MRedact'}`;
+      let index = 2;
+      for (const role of roles) {
+        const maskKey = `#Mask_${role.toLowerCase()}`;
+        const maskVal = `\n\t\t\t${field}: ${values.length > index ? values[index++] : 'masking.#MRedact'}`;
+        maskString += `\n${maskKey}: { ${maskVal}
+        }`;
+      }
     }
     const objectOutput = `\n#${key}: {
         #Definition: { ${definitions}
         }
-        #Encryption: ${encryption}
-        #Mask_admin: { ${masks_admin}
-        }
-        #Mask_member: { ${masks_member}
-        }
+        #Encryption: ${encryption}${maskString}
       }`;
     defs += objectOutput;
   }
@@ -139,17 +151,6 @@ javascriptGenerator['data_object_field_default_types'] = javascriptGenerator['da
 javascriptGenerator['data_object_field_encryption'] = function (block) {
   const objectName = block.getFieldValue('object_type');
   currentField[1] = objectName; // encryption
-
-  javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
-
-  return '';
-};
-
-javascriptGenerator['data_object_field_mask'] = function (block) {
-  const objectName1 = block.getFieldValue('object_type_1');
-  const objectName2 = block.getFieldValue('object_type_2');
-  currentField[2] = objectName1; // mask
-  currentField[3] = objectName2; // mask
 
   javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
 

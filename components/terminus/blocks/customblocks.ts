@@ -202,7 +202,6 @@ Blockly.Blocks['data_object_field_encryption'] = {
     // this.setStyle('loop_blocks');
   },
 };
-
 Blockly.Blocks['data_object_field_mask'] = {
   init: function () {
     this.jsonInit({
@@ -231,4 +230,45 @@ Blockly.Blocks['data_object_field_mask'] = {
       helpUrl: '',
     });
   },
+};
+
+const capitalize = (s: string) => {
+  if (typeof s !== 'string') return '';
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+};
+
+export const maskSetup = (roles: string[]) => {
+  let maskMessage = 'mask (';
+  let args: any[] = [];
+  for (let i = 0; i < roles.length; i++) {
+    maskMessage += `${capitalize(roles[i])}:%${i + 1}`;
+    if (i < roles.length - 1) {
+      maskMessage += ') (';
+    }
+    args.push({
+      type: 'field_dropdown',
+      name: `object_type_${i + 1}`,
+      options: getMasks(),
+    });
+  }
+  Blockly.Blocks['data_object_field_mask'] = {
+    init: function () {
+      this.jsonInit({
+        type: 'data_object_field_mask',
+        message0: maskMessage + `) %${roles.length + 1}`,
+        args0: [
+          ...args,
+          {
+            type: 'input_value',
+            name: 'object_type',
+            check: ['Boolean', 'String'],
+          },
+        ],
+        output: null,
+        colour: 230,
+        tooltip: '',
+        helpUrl: '',
+      });
+    },
+  };
 };
