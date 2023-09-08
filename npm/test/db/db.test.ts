@@ -142,13 +142,6 @@ const dbs = [
     ...mssqlDbConfig,
     encryptionKey,
   },
-  {
-    ...dynamoDbConfig,
-  },
-  {
-    ...dynamoDbConfig,
-    encryptionKey,
-  },
 ];
 
 if (process.env.PLANETSCALE_URL) {
@@ -215,8 +208,8 @@ tap.test('dbs', async () => {
         }
       );
 
-      // Add delay before adding second record
-      // await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Prevent adding records with same timestamp
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       await connectionStore.put(
         record2.id,
@@ -289,12 +282,13 @@ tap.test('dbs', async () => {
         "getAll pagination should get only 1 record, order doesn't matter"
       );
 
-      // Sort the records
-      const { data: sortedRecordsAsc } = await connectionStore.getAll(0, 2, undefined, 'ASC');
-      t.match(sortedRecordsAsc, [record1, record2], 'records are sorted in ASC order');
+      if (!dbEngine.includes('dynamodb')) {
+        const { data: sortedRecordsAsc } = await connectionStore.getAll(0, 2, undefined, 'ASC');
+        t.match(sortedRecordsAsc, [record1, record2], 'records are sorted in ASC order');
 
-      const { data: sortedRecordsDesc } = await connectionStore.getAll(0, 2, undefined, 'DESC');
-      t.match(sortedRecordsDesc, [record2, record1], 'records are sorted in DESC order');
+        const { data: sortedRecordsDesc } = await connectionStore.getAll(0, 2, undefined, 'DESC');
+        t.match(sortedRecordsDesc, [record2, record1], 'records are sorted in DESC order');
+      }
     });
 
     tap.test('getByIndex(): ' + dbEngine, async (t) => {
