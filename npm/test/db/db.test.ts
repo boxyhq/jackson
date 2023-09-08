@@ -282,7 +282,7 @@ tap.test('dbs', async () => {
         "getAll pagination should get only 1 record, order doesn't matter"
       );
 
-      if (!dbEngine.includes('dynamodb')) {
+      if (!dbEngine.startsWith('dynamodb')) {
         const { data: sortedRecordsAsc } = await connectionStore.getAll(0, 2, undefined, 'ASC');
         t.match(sortedRecordsAsc, [record1, record2], 'records are sorted in ASC order');
 
