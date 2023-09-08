@@ -82,7 +82,7 @@ const mssqlDbConfig = <DatabaseOption>{
 
 const dynamoDbConfig = <DatabaseOption>{
   engine: 'dynamodb',
-  url: 'http://localhost:8000',
+  url: process.env.DYNAMODB_URL,
   ttl: 1,
   cleanupLimit: 10,
   dynamodb: {
@@ -216,7 +216,7 @@ tap.test('dbs', async () => {
       );
 
       // Add delay before adding second record
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // await new Promise((resolve) => setTimeout(resolve, 3000));
 
       await connectionStore.put(
         record2.id,
