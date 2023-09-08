@@ -30,6 +30,7 @@ const memDbConfig = <DatabaseOption>{
 const redisDbConfig = <DatabaseOption>{
   engine: 'redis',
   url: 'redis://localhost:6379',
+  pageLimit: 50,
 };
 
 const postgresDbConfig = <DatabaseOption>{
@@ -92,13 +93,13 @@ const dynamoDbConfig = <DatabaseOption>{
 };
 
 const dbs = [
-  // {
-  //   ...memDbConfig,
-  // },
-  // {
-  //   ...memDbConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...memDbConfig,
+  },
+  {
+    ...memDbConfig,
+    encryptionKey,
+  },
   {
     ...redisDbConfig,
   },
@@ -106,48 +107,48 @@ const dbs = [
     ...redisDbConfig,
     encryptionKey,
   },
-  // {
-  //   ...postgresDbConfig,
-  // },
-  // {
-  //   ...postgresDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mysqlDbConfig,
-  // },
-  // {
-  //   ...mysqlDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mssqlDbConfig,
-  // },
-  // {
-  //   ...mssqlDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...dynamoDbConfig,
-  // },
-  // {
-  //   ...dynamoDbConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...postgresDbConfig,
+  },
+  {
+    ...postgresDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mongoDbConfig,
+  },
+  {
+    ...mongoDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mysqlDbConfig,
+  },
+  {
+    ...mysqlDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mariadbDbConfig,
+  },
+  {
+    ...mariadbDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mssqlDbConfig,
+  },
+  {
+    ...mssqlDbConfig,
+    encryptionKey,
+  },
+  {
+    ...dynamoDbConfig,
+  },
+  {
+    ...dynamoDbConfig,
+    encryptionKey,
+  },
 ];
 
 if (process.env.PLANETSCALE_URL) {
@@ -289,8 +290,11 @@ tap.test('dbs', async () => {
       );
 
       // Sort the records
-      // const { data: sortedRecords } = await connectionStore.getAll(0, 2, undefined, 'ASC');
-      // t.match(sortedRecords, [record1, record2], 'records are sorted in ASC order');
+      const { data: sortedRecordsAsc } = await connectionStore.getAll(0, 2, undefined, 'ASC');
+      t.match(sortedRecordsAsc, [record1, record2], 'records are sorted in ASC order');
+
+      const { data: sortedRecordsDesc } = await connectionStore.getAll(0, 2, undefined, 'DESC');
+      t.match(sortedRecordsDesc, [record2, record1], 'records are sorted in DESC order');
     });
 
     tap.test('getByIndex(): ' + dbEngine, async (t) => {

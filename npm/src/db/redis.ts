@@ -44,43 +44,44 @@ class Redis implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
-    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
-    const returnValue: string[] = [];
-    const keyArray: string[] = [];
-    let count = 0;
-    take += skip;
-    for await (const { value } of this.client.zScanIterator(
-      dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
-      Math.min(take, 1000)
-    )) {
-      if (count >= take) {
-        break;
-      }
-      if (count >= skip) {
-        keyArray.push(dbutils.keyFromParts(namespace, value));
-      }
-      count++;
+    const offset = pageOffset ? Number(pageOffset) : 0;
+    const count = pageLimit ? Number(pageLimit) : this.options.pageLimit;
+    const sortedSetKey = dbutils.keyFromParts(dbutils.createdAtPrefix, namespace);
+
+    const zRangeOptions = {
+      BY: 'SCORE',
+      REV: sortOrder === 'ASC',
+      LIMIT: {
+        offset,
+        count,
+      },
+    };
+
+    const elements =
+      sortOrder === 'ASC'
+        ? await this.client.zRange(sortedSetKey, +Infinity, -Infinity, zRangeOptions)
+        : await this.client.zRange(sortedSetKey, -Infinity, +Infinity, zRangeOptions);
+
+    if (elements.length === 0) {
+      return { data: [] };
     }
 
-    //  console.log('keyArray', keyArray);
-    console.log({ sortOrder });
+    const keyArray = elements.map((element) => {
+      return dbutils.keyFromParts(namespace, element);
+    });
 
-    if (keyArray.length > 0) {
-      const value = await this.client.MGET(keyArray);
-      console.log('value', value);
-      for (let i = 0; i < value.length; i++) {
-        const valueObject = JSON.parse(value[i].toString());
-        if (valueObject !== null && valueObject !== '') {
-          returnValue.push(valueObject);
-        }
+    const records: string[] = [];
+    const values = await this.client.MGET(keyArray);
+
+    for (let i = 0; i < values.length; i++) {
+      const valueObject = JSON.parse(values[i].toString());
+
+      if (valueObject !== null && valueObject !== '') {
+        records.push(valueObject);
       }
     }
 
-    console.log('returnValue', returnValue);
-
-    return { data: returnValue || [] };
+    return { data: records };
   }
 
   async getByIndex(
@@ -139,8 +140,6 @@ class Redis implements DatabaseDriver {
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
     let tx = this.client.multi();
     const k = dbutils.key(namespace, key);
-
-    console.log('k', k);
 
     tx = tx.set(k, JSON.stringify(val));
 
