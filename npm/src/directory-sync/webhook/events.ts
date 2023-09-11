@@ -4,7 +4,14 @@ import { randomUUID } from 'crypto';
 
 import { createSignatureString } from '../../event/webhook';
 import { storeNamespacePrefix } from '../../controller/utils';
-import type { DatabaseStore, Directory, DirectorySyncEvent, IDirectoryConfig, Storable } from '../../typings';
+import type {
+  DatabaseStore,
+  Directory,
+  DirectorySyncEvent,
+  IDirectoryConfig,
+  Storable,
+  JacksonOption,
+} from '../../typings';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -22,16 +29,19 @@ interface WebhookEvent {
 
 interface DirectoryEventsParams {
   db: DatabaseStore;
+  opts: JacksonOption;
   directoryStore: IDirectoryConfig;
 }
 
 export class DirectoryEvents {
   private eventStore: Storable;
+  private opts: JacksonOption;
   private directoryStore: IDirectoryConfig;
 
-  constructor({ db, directoryStore }: DirectoryEventsParams) {
-    this.eventStore = db.store(storeNamespacePrefix.dsync.events);
+  constructor({ db, opts, directoryStore }: DirectoryEventsParams) {
+    this.opts = opts;
     this.directoryStore = directoryStore;
+    this.eventStore = db.store(storeNamespacePrefix.dsync.events);
   }
 
   // Push the new event to the database
@@ -61,15 +71,17 @@ export class DirectoryEvents {
   // Process the events and send them to the webhooks as a batch
   public async process() {
     while (true) {
-      const events = await this.pop();
-      const hasMoreEvents = events.length > 0;
+      const events = await this.fetch();
+      const eventsCount = events.length;
 
-      if (!hasMoreEvents) {
-        console.log('No more events to process. Exiting.');
+      // TODO: Handle events that have reached the max retry count
+
+      if (eventsCount === 0) {
+        console.info('No more events to process. Exiting.');
         break;
       }
 
-      console.log(`Processing ${events.length} events.`);
+      console.info(`Processing ${eventsCount} events.`);
 
       // Group the events by directory
       const eventsByDirectory = _.groupBy(events, 'event.directory_id');
@@ -122,21 +134,11 @@ export class DirectoryEvents {
     }
   }
 
-  // Send the events to the webhooks
-  private async send(webhook: Directory['webhook'], events: WebhookEvent[]) {
-    const payload = events.map(({ event }) => event);
-
-    return await axios.post(webhook.endpoint, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-        'BoxyHQ-Signature': createSignatureString(webhook.secret, payload),
-      },
-    });
-  }
-
   // Fetch next batch of events from the database
-  private async pop(limit = 50) {
-    const { data: events } = (await this.eventStore.getAll(0, limit)) as { data: WebhookEvent[] };
+  public async fetch() {
+    const { data: events } = (await this.eventStore.getAll(0, this.batchSize(), undefined)) as {
+      data: WebhookEvent[];
+    };
 
     if (!events.length) {
       return [];
@@ -149,6 +151,22 @@ export class DirectoryEvents {
     await Promise.allSettled(promises);
 
     return events;
+  }
+
+  public async getAll() {
+    return (await this.eventStore.getAll()) as { data: WebhookEvent[] };
+  }
+
+  // Send the events to the webhooks
+  private async send(webhook: Directory['webhook'], events: WebhookEvent[]) {
+    const payload = events.map(({ event }) => event);
+
+    return await axios.post(webhook.endpoint, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'BoxyHQ-Signature': createSignatureString(webhook.secret, payload),
+      },
+    });
   }
 
   // Delete the delivered events
@@ -169,5 +187,9 @@ export class DirectoryEvents {
     );
 
     await Promise.allSettled(promises);
+  }
+
+  private batchSize() {
+    return this.opts.dsync?.webhookBatchSize;
   }
 }
