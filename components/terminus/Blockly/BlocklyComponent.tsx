@@ -76,30 +76,29 @@ function BlocklyComponent(props) {
     if (primaryWorkspace.current) {
       return;
     }
-    getRolesAndSetupMasks().then(() => {
-      const { initialXml, ...rest } = props;
-      primaryWorkspace.current = Blockly.inject(blocklyDiv.current as any, {
-        toolbox: toolbox.current,
-        readOnly: false,
-        trashcan: true,
-        media: '/terminus/',
-        renderer: 'thrasos', // geras zelos thrasos minimalist
-        move: {
-          scrollbars: true,
-          drag: true,
-          wheel: true,
-        },
-        sounds: false,
-        ...rest,
-      }) as any;
+    getRolesAndSetupMasks();
+    const { initialXml, ...rest } = props;
+    primaryWorkspace.current = Blockly.inject(blocklyDiv.current as any, {
+      toolbox: toolbox.current,
+      readOnly: false,
+      trashcan: true,
+      media: '/terminus/',
+      renderer: 'thrasos', // geras zelos thrasos minimalist
+      move: {
+        scrollbars: true,
+        drag: true,
+        wheel: true,
+      },
+      sounds: false,
+      ...rest,
+    }) as any;
 
-      if (initialXml) {
-        Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(initialXml), primaryWorkspace.current as any);
-      }
-    });
+    if (initialXml) {
+      Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(initialXml), primaryWorkspace.current as any);
+    }
 
     retrieveModel();
-  }, [primaryWorkspace, toolbox, blocklyDiv, props]);
+  }, [primaryWorkspace, toolbox, blocklyDiv, roles, props]);
 
   return (
     <div>

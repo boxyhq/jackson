@@ -24,7 +24,7 @@ export const generateModel = (workspace, roles: string[]) => {
 
   javascriptGenerator['data_object_field_mask'] = function (block) {
     for (let i = 0; i < roles.length; i++) {
-      const objName = block.getFieldValue(`object_type_${i + 1}`);
+      const objName = block.getFieldValue(`object_type_${roles[i]}`);
       currentField[2 + i] = objName; // mask
     }
 
