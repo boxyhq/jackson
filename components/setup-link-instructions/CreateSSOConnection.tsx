@@ -26,14 +26,11 @@ const CreateSSOConnection = ({ setupLinkToken, idpType }: CreateSSOConnectionPro
     save: `/api/setup/${setupLinkToken}/sso-connection`,
   };
 
-  const classNames = {
-    button: 'btn btn-primary mt-4',
-  };
+
 
   return idpType === 'saml' ? (
     <CreateSAML
       variant='basic'
-      classNames={classNames}
       urls={urls}
       successCallback={onSuccess}
       errorCallback={onError}
@@ -41,7 +38,6 @@ const CreateSSOConnection = ({ setupLinkToken, idpType }: CreateSSOConnectionPro
   ) : (
     <CreateOIDC
       variant='basic'
-      classNames={classNames}
       urls={urls}
       successCallback={onSuccess}
       errorCallback={onError}
