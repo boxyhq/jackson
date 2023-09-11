@@ -6,10 +6,9 @@ import useIdpEntityID from '@lib/ui/hooks/useIdpEntityID';
 
 const ConnectionsIndexPage: NextPage = () => {
   const router = useRouter();
+  const { idpEntityID } = useIdpEntityID();
 
   const { token } = router.query as { token: string };
-
-  const { idpEntityID } = useIdpEntityID(token);
 
   return <ConnectionList setupLinkToken={token} idpEntityID={idpEntityID} />;
 };
