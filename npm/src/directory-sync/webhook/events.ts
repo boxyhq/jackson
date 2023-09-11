@@ -35,7 +35,7 @@ export class DirectoryEvents {
   }
 
   // Push the new event to the database
-  async push(event: DirectorySyncEvent): Promise<WebhookEvent> {
+  public async push(event: DirectorySyncEvent): Promise<WebhookEvent> {
     const id = randomUUID();
 
     const record = {
@@ -60,64 +60,70 @@ export class DirectoryEvents {
 
   // Process the events and send them to the webhooks as a batch
   public async process() {
-    const events = await this.pop();
+    while (true) {
+      const events = await this.pop();
+      const hasMoreEvents = events.length > 0;
 
-    if (!events.length) {
-      return;
-    }
-
-    // Group the events by directory
-    const eventsByDirectory = _.groupBy(events, 'event.directory_id');
-
-    const directoryIds = Object.keys(eventsByDirectory);
-    const directoryCount = directoryIds.length;
-
-    // Fetch the connections corresponding to the directories it belongs to
-    const directoriesResult = await Promise.allSettled(
-      directoryIds.map((directoryId) => this.directoryStore.get(directoryId))
-    );
-
-    // Iterate over the directories and send the events to the webhooks
-    // For each directory, we will send the events in a batch
-    // directoryIds and directoriesResult are in the same order
-    for (let i = 0; i < directoryCount; i++) {
-      const directoryId = directoryIds[i];
-      const directoryResult = directoriesResult[i];
-      const events = eventsByDirectory[directoryId];
-
-      if (directoryResult.status === 'rejected') {
-        await this.markAsFailed(events);
-        continue;
+      if (!hasMoreEvents) {
+        console.log('No more events to process. Exiting.');
+        break;
       }
 
-      const directory = directoryResult.value.data as Directory;
+      console.log(`Processing ${events.length} events.`);
 
-      if (!directory) {
-        await this.markAsFailed(events);
-        continue;
-      }
+      // Group the events by directory
+      const eventsByDirectory = _.groupBy(events, 'event.directory_id');
 
-      if (!directory.webhook?.endpoint || !directory.webhook?.secret) {
-        await this.markAsFailed(events);
-        continue;
-      }
+      const directoryIds = Object.keys(eventsByDirectory);
+      const directoryCount = directoryIds.length;
 
-      try {
-        const response = await this.send(directory.webhook, events);
+      // Fetch the connections corresponding to the directories it belongs to
+      const directoriesResult = await Promise.allSettled(
+        directoryIds.map((directoryId) => this.directoryStore.get(directoryId))
+      );
 
-        if (response.status === 200) {
-          await this.delete(events);
-        } else {
+      // Iterate over the directories and send the events to the webhooks
+      // For each directory, we will send the events in a batch
+      // directoryIds and directoriesResult are in the same order
+      for (let i = 0; i < directoryCount; i++) {
+        const directoryId = directoryIds[i];
+        const directoryResult = directoriesResult[i];
+        const events = eventsByDirectory[directoryId];
+
+        if (directoryResult.status === 'rejected') {
+          await this.markAsFailed(events);
+          continue;
+        }
+
+        const directory = directoryResult.value.data as Directory;
+
+        if (!directory) {
+          await this.markAsFailed(events);
+          continue;
+        }
+
+        if (!directory.webhook?.endpoint || !directory.webhook?.secret) {
+          await this.markAsFailed(events);
+          continue;
+        }
+
+        try {
+          const response = await this.send(directory.webhook, events);
+
+          if (response.status === 200) {
+            await this.delete(events);
+          } else {
+            await this.markAsFailed(events);
+          }
+        } catch (err: any) {
           await this.markAsFailed(events);
         }
-      } catch (err: any) {
-        await this.markAsFailed(events);
       }
     }
   }
 
   // Send the events to the webhooks
-  public async send(webhook: Directory['webhook'], events: WebhookEvent[]) {
+  private async send(webhook: Directory['webhook'], events: WebhookEvent[]) {
     const payload = events.map(({ event }) => event);
 
     return await axios.post(webhook.endpoint, payload, {

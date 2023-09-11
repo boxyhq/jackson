@@ -79,6 +79,8 @@ const jacksonOptions: JacksonOption = {
     secret: process.env.WEBHOOK_SECRET || '',
   },
   dsync: {
+    // TODO: Read from env
+    webhookBatchSize: 2,
     providers: {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID || '',

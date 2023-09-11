@@ -59,14 +59,14 @@ export const handleEventCallback = async ({
       return;
     }
 
-    if (!directory.webhook.endpoint || !directory.webhook.secret) {
+    // If bulk sync is enabled, push the event to the queue
+    // We will process the queue later in the background
+    if (opts.dsync?.webhookBatchSize) {
+      await directoryEvents.push(event);
       return;
     }
 
-    // If bulk sync is enabled, push the event to the queue
-    // We will process the queue later in the background
-    if (opts.dsync && opts.dsync.webhookBatchSize) {
-      await directoryEvents.push(event);
+    if (!directory.webhook.endpoint || !directory.webhook.secret) {
       return;
     }
 

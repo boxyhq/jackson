@@ -1,4 +1,10 @@
-import type { DatabaseStore, JacksonOption, IEventController, EventCallback } from '../typings';
+import type {
+  DatabaseStore,
+  JacksonOption,
+  IEventController,
+  EventCallback,
+  DirectorySyncEvent,
+} from '../typings';
 import { DirectoryConfig } from './scim/DirectoryConfig';
 import { DirectoryUsers } from './scim/DirectoryUsers';
 import { DirectoryGroups } from './scim/DirectoryGroups';
@@ -44,15 +50,13 @@ const directorySync = async (params: {
     requests: requestHandler,
     providers: getProviders,
     events: {
+      process: async () => await directoryEvents.process(),
       callback: await handleEventCallback({
         opts,
         directories,
         webhookEventsLogger: logger,
         directoryEvents,
       }),
-      sendBatchToWebhooks: async () => {
-        await directoryEvents.process();
-      },
     },
     google: googleProvider.oauth,
     sync: async (callback: EventCallback) => {

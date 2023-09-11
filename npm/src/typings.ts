@@ -418,8 +418,8 @@ export interface JacksonOption {
   };
   webhook?: Webhook;
   dsync?: {
-    webhookBatchSize: number;
-    providers: {
+    webhookBatchSize?: number;
+    providers?: {
       google: {
         clientId: string;
         clientSecret: string;
