@@ -241,7 +241,7 @@ const capitalize = (s: string) => {
 
 export const maskSetup = (roles: string[]) => {
   let maskMessage = 'mask (';
-  let args: any[] = [];
+  const args: any[] = [];
   for (let i = 0; i < roles.length; i++) {
     maskMessage += `${capitalize(roles[i])}:%${i + 1}`;
     if (i < roles.length - 1) {
@@ -250,7 +250,6 @@ export const maskSetup = (roles: string[]) => {
     args.push({
       type: 'field_dropdown',
       name: `object_type_${roles[i]}`,
-      role: roles[i],
       options: getMasks(),
     });
   }
