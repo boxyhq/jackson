@@ -70,6 +70,7 @@ export class DirectoryEvents {
 
   // Process the events and send them to the webhooks as a batch
   public async process() {
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const events = await this.fetch();
       const eventsCount = events.length;
