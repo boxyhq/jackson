@@ -19,11 +19,23 @@ const regexMap = {
   'defs.#SimpleDateFormat': '^20[0-9]{2}-[0-1][1-2]-[0-2][1-8]$', // regex restricted.
 };
 
-export const generateModel = (workspace) => {
+export const generateModel = (workspace, roles: string[]) => {
   ObjectMap.clear();
+
+  javascriptGenerator['data_object_field_mask'] = function (block) {
+    for (let i = 0; i < roles.length; i++) {
+      const objName = block.getFieldValue(`object_type_${roles[i]}`);
+      currentField[2 + i] = objName; // mask
+    }
+
+    javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
+
+    return '';
+  };
+
   // trigger the BLOCKLY processing which will run our custom code generation
   javascriptGenerator.workspaceToCode(workspace);
-  const ret = generateCUEStructure();
+  const ret = generateCUEStructure(roles);
 
   // add specific BoxyHQ imports
   return `
@@ -33,7 +45,7 @@ export const generateModel = (workspace) => {
 };
 
 // Rudimentary way of generating a CUE file
-const generateCUEStructure = () => {
+const generateCUEStructure = (roles: string[]) => {
   let defs = ``;
   const encrObjects = [];
   for (const [key, value] of Object.entries(Object.fromEntries(ObjectMap))) {
@@ -67,19 +79,23 @@ const generateCUEStructure = () => {
     }
 
     // MASKS
-    let masks = ``;
+    let maskString = '';
     for (const [field, values] of Object.entries(valuesMap)) {
       if (IGNORE_FIELDS.includes(field)) {
         continue;
       }
-      masks += `\n\t\t\t${field}: ${values[2]}`;
+      let index = 2;
+      for (const role of roles) {
+        const maskKey = `#Mask_${role.toLowerCase()}`;
+        const maskVal = `\n\t\t\t${field}: ${values.length > index ? values[index++] : 'masking.#MRedact'}`;
+        maskString += `\n${maskKey}: { ${maskVal}
+        }`;
+      }
     }
     const objectOutput = `\n#${key}: {
         #Definition: { ${definitions}
         }
-        #Encryption: ${encryption}
-        #Mask_admin: { ${masks}
-        }
+        #Encryption: ${encryption}${maskString}
       }`;
     defs += objectOutput;
   }
@@ -122,6 +138,8 @@ javascriptGenerator['data_object_field_wrapper'] = function (block) {
 javascriptGenerator['data_object_field_type'] = function (block) {
   const objectName = block.getFieldValue('object_type');
   currentField[0] = objectName; // type
+  currentField[2] = 'masking.#MRedact'; // mask
+  currentField[3] = 'masking.#MRedact'; // mask
 
   javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
 
@@ -133,15 +151,6 @@ javascriptGenerator['data_object_field_default_types'] = javascriptGenerator['da
 javascriptGenerator['data_object_field_encryption'] = function (block) {
   const objectName = block.getFieldValue('object_type');
   currentField[1] = objectName; // encryption
-
-  javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
-
-  return '';
-};
-
-javascriptGenerator['data_object_field_mask'] = function (block) {
-  const objectName = block.getFieldValue('object_type');
-  currentField[2] = objectName; // mask
 
   javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
 

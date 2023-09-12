@@ -12,12 +12,12 @@ import { hexToHsl, darkenHslColor } from '@lib/color';
 import { PoweredBy } from '@components/PoweredBy';
 
 export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => {
-  const { t } = useTranslation('common');
   const router = useRouter();
+  const { branding } = usePortalBranding();
+  const { t } = useTranslation('common');
 
   const { token } = router.query as { token: string };
 
-  const { branding } = usePortalBranding();
   const { setupLink, error, isLoading } = useSetupLink(token);
 
   if (isLoading) {
@@ -43,27 +43,25 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
         <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
       )}
 
-      <div className='flex flex-1 flex-col'>
-        <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
-          <div className='flex flex-shrink-0 items-center px-4'>
-            <Link href={`/setup/${token}`}>
-              <div className='flex items-center'>
+      <div className='mx-auto max-w-3xl'>
+        <div className='flex flex-1 flex-col'>
+          <div className='top-0 flex h-16 flex-shrink-0 border-b'>
+            <div className='flex flex-shrink-0 items-center gap-4'>
+              <Link href={`/setup/${token}`}>
                 {branding?.logoUrl && (
-                  <Image src={branding.logoUrl} alt={branding.companyName} width={42} height={42} />
+                  <Image src={branding.logoUrl} alt={branding.companyName} width={40} height={40} />
                 )}
-                <span className='ml-4 text-xl font-bold text-gray-900'>{title}</span>
-              </div>
-            </Link>
+              </Link>
+              <span className='text-xl font-bold tracking-wide text-gray-900'>{title}</span>
+            </div>
           </div>
-        </div>
-        <main>
-          <div className='py-6'>
-            <div className='mx-auto max-w-7xl px-4 sm:px-6 md:px-8'>
+          <main>
+            <div className='py-6'>
               {error && <InvalidSetupLinkAlert message={error.message} />}
               {setupLink && children}
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
       <PoweredBy />
     </>
