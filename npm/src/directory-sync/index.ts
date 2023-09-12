@@ -1,4 +1,4 @@
-import type { DatabaseStore, JacksonOption, IEventController, EventCallback } from '../typings';
+import type { JacksonOption, IEventController, EventCallback, DB } from '../typings';
 import { DirectoryConfig } from './scim/DirectoryConfig';
 import { DirectoryUsers } from './scim/DirectoryUsers';
 import { DirectoryGroups } from './scim/DirectoryGroups';
@@ -6,17 +6,15 @@ import { Users } from './scim/Users';
 import { Groups } from './scim/Groups';
 import { getDirectorySyncProviders } from './scim/utils';
 import { RequestHandler } from './request';
-import { handleEventCallback } from './scim/events';
+import { eventLockTTL, handleEventCallback } from './scim/events';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { newGoogleProvider } from './non-scim/google';
 import { startSync } from './non-scim';
 import { DirectoryEvents } from './webhook/events';
+import { storeNamespacePrefix } from '../controller/utils';
+import { EventLock } from './webhook/lock';
 
-const directorySync = async (params: {
-  db: DatabaseStore;
-  opts: JacksonOption;
-  eventController: IEventController;
-}) => {
+const directorySync = async (params: { db: DB; opts: JacksonOption; eventController: IEventController }) => {
   const { db, opts, eventController } = params;
 
   const users = new Users({ db });
@@ -27,7 +25,6 @@ const directorySync = async (params: {
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
   const requestHandler = new RequestHandler(directoryUsers, directoryGroups);
-  const directoryEvents = new DirectoryEvents({ db, opts, directoryStore: directories });
 
   // Fetch the supported providers
   const getProviders = () => {
@@ -35,6 +32,17 @@ const directorySync = async (params: {
   };
 
   const googleProvider = newGoogleProvider({ directories, opts });
+
+  // Batch send events
+  const eventStore = db.store(storeNamespacePrefix.dsync.events);
+  const lockStore = db.store(storeNamespacePrefix.dsync.lock, eventLockTTL);
+  const eventLock = new EventLock({ lockStore });
+  const directoryEvents = new DirectoryEvents({
+    opts,
+    eventStore,
+    eventLock,
+    directories,
+  });
 
   return {
     users,

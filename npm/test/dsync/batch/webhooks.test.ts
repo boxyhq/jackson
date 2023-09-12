@@ -23,11 +23,13 @@ const directory2Payload = {
   webhook_secret: 'secret',
 };
 
+const webhookBatchSize = 1;
+
 tap.before(async () => {
   const options = {
     ...jacksonOptions,
     dsync: {
-      webhookBatchSize: 2,
+      webhookBatchSize,
     },
   };
 
@@ -61,23 +63,13 @@ tap.teardown(async () => {
 });
 
 tap.test('Batch send dsync events', async (t) => {
-  // Retrieve the events
-  let response = await directorySync.events.batch.getAll();
+  const events = await directorySync.events.batch.getAll();
 
-  t.equal(response.data.length, 4);
+  t.equal(events.data.length, 4, 'There should be 4 events');
 
-  // Process the events
   await directorySync.events.batch.process();
 
-  // Retrieve the events again
-  response = await directorySync.events.batch.getAll();
+  const eventsAfter = await directorySync.events.batch.getAll();
 
-  t.equal(response.data.length, 0);
-
-  t.end();
+  t.equal(eventsAfter.data.length, 0, 'There should be no events after processing');
 });
-
-// Test cases
-// 1. Test events are ordered by createdAt in ascending order
-// 3. Test events are marked as failed if the directory is not found
-// 4. Test events are marked as failed if the webhook is not found

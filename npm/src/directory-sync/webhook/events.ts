@@ -3,15 +3,15 @@ import axios from 'axios';
 import { randomUUID } from 'crypto';
 
 import { createSignatureString } from '../../event/webhook';
-import { storeNamespacePrefix } from '../../controller/utils';
 import type {
-  DatabaseStore,
   Directory,
   DirectorySyncEvent,
   IDirectoryConfig,
   Storable,
   JacksonOption,
+  EventLock,
 } from '../../typings';
+import { eventLockTTL } from '../scim/events';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -28,20 +28,25 @@ interface WebhookEvent {
 }
 
 interface DirectoryEventsParams {
-  db: DatabaseStore;
   opts: JacksonOption;
-  directoryStore: IDirectoryConfig;
+  eventStore: Storable;
+  eventLock: EventLock;
+  directories: IDirectoryConfig;
 }
+
+const lockRenewalInterval = (eventLockTTL / 2) * 1000;
 
 export class DirectoryEvents {
   private eventStore: Storable;
+  private eventLock: EventLock;
   private opts: JacksonOption;
-  private directoryStore: IDirectoryConfig;
+  private directories: IDirectoryConfig;
 
-  constructor({ db, opts, directoryStore }: DirectoryEventsParams) {
+  constructor({ opts, eventStore, eventLock, directories }: DirectoryEventsParams) {
     this.opts = opts;
-    this.directoryStore = directoryStore;
-    this.eventStore = db.store(storeNamespacePrefix.dsync.events);
+    this.eventLock = eventLock;
+    this.eventStore = eventStore;
+    this.directories = directories;
   }
 
   // Push the new event to the database
@@ -70,6 +75,17 @@ export class DirectoryEvents {
 
   // Process the events and send them to the webhooks as a batch
   public async process() {
+    // Acquire the lock to ensure only one process is running
+    if (!(await this.eventLock.acquire())) {
+      console.info('Another process is already running.');
+      return;
+    }
+
+    // Renew the lock periodically
+    setInterval(async () => {
+      this.eventLock.renew();
+    }, lockRenewalInterval);
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const events = await this.fetch();
@@ -78,7 +94,6 @@ export class DirectoryEvents {
       // TODO: Handle events that have reached the max retry count
 
       if (eventsCount === 0) {
-        console.info('No more events to process. Exiting.');
         break;
       }
 
@@ -92,7 +107,7 @@ export class DirectoryEvents {
 
       // Fetch the connections corresponding to the directories it belongs to
       const directoriesResult = await Promise.allSettled(
-        directoryIds.map((directoryId) => this.directoryStore.get(directoryId))
+        directoryIds.map((directoryId) => this.directories.get(directoryId))
       );
 
       // Iterate over the directories and send the events to the webhooks

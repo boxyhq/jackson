@@ -5,7 +5,7 @@ import jackson from '@lib/jackson';
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  await directorySyncController.events.process();
+  await directorySyncController.events.batch.process();
 
   res.send('ok');
 };

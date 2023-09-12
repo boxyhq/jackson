@@ -14,6 +14,8 @@ import { sendPayloadToWebhook } from '../../event/webhook';
 import { transformEventPayload } from './transform';
 import { isConnectionActive } from '../../controller/utils';
 
+export const eventLockTTL = 6;
+
 interface Payload {
   directory: Directory;
   group?: Group | null;

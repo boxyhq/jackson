@@ -6,6 +6,10 @@ export * from './saml-tracer/types';
 export * from './directory-sync/types';
 export * from './event/types';
 
+import db from './db/db';
+
+export type DB = Awaited<ReturnType<typeof db.new>>;
+
 interface SSOConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
