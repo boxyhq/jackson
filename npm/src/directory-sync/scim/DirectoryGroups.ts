@@ -12,7 +12,7 @@ import type {
   GroupPatchOperation,
 } from '../../typings';
 import { parseGroupOperation } from './utils';
-import { sendEvent } from './events';
+import { sendEvent } from '../event/utils';
 
 interface DirectoryGroupsParams {
   directories: IDirectoryConfig;

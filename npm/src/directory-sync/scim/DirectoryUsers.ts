@@ -10,7 +10,7 @@ import type {
   UserPatchOperation,
 } from '../../typings';
 import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
-import { sendEvent } from './events';
+import { sendEvent } from '../event/utils';
 
 interface DirectoryUsersParams {
   directories: IDirectoryConfig;
