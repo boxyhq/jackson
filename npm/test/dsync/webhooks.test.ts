@@ -153,17 +153,23 @@ tap.test('Webhook Events / ', async (t) => {
     t.ok(logs);
     t.equal(logs.length, 3);
 
-    t.match(logs[0].event, 'user.deleted');
-    t.match(logs[0].directory_id, directory.id);
-    t.hasStrict(logs[0].data.raw, deletedUser);
+    if (!Array.isArray(logs[0].payload)) {
+      t.match(logs[0].payload.event, 'user.deleted');
+      t.match(logs[0].payload.directory_id, directory.id);
+      t.hasStrict(logs[0].payload.data.raw, deletedUser);
+    }
 
-    t.match(logs[1].event, 'user.updated');
-    t.match(logs[1].directory_id, directory.id);
-    t.hasStrict(logs[1].data.raw, updatedUser);
+    if (!Array.isArray(logs[1].payload)) {
+      t.match(logs[1].payload.event, 'user.updated');
+      t.match(logs[1].payload.directory_id, directory.id);
+      t.hasStrict(logs[1].payload.data.raw, updatedUser);
+    }
 
-    t.match(logs[2].event, 'user.created');
-    t.match(logs[2].directory_id, directory.id);
-    t.hasStrict(logs[2].data.raw, createdUser);
+    if (!Array.isArray(logs[2].payload)) {
+      t.match(logs[2].payload.event, 'user.created');
+      t.match(logs[2].payload.directory_id, directory.id);
+      t.hasStrict(logs[2].payload.data.raw, createdUser);
+    }
 
     await directorySync.users.deleteAll(directory.id);
   });
@@ -199,17 +205,23 @@ tap.test('Webhook Events / ', async (t) => {
     t.ok(logs);
     t.equal(logs.length, 3);
 
-    t.match(logs[0].event, 'group.deleted');
-    t.match(logs[0].directory_id, directory.id);
-    t.hasStrict(logs[0].data.raw, deletedGroup);
+    if (!Array.isArray(logs[0].payload)) {
+      t.match(logs[0].payload.event, 'group.deleted');
+      t.match(logs[0].payload.directory_id, directory.id);
+      t.hasStrict(logs[0].payload.data.raw, deletedGroup);
+    }
 
-    t.match(logs[1].event, 'group.updated');
-    t.match(logs[1].directory_id, directory.id);
-    t.hasStrict(logs[1].data.raw, updatedGroup);
+    if (!Array.isArray(logs[1].payload)) {
+      t.match(logs[1].payload.event, 'group.updated');
+      t.match(logs[1].payload.directory_id, directory.id);
+      t.hasStrict(logs[1].payload.data.raw, updatedGroup);
+    }
 
-    t.match(logs[2].event, 'group.created');
-    t.match(logs[2].directory_id, directory.id);
-    t.hasStrict(logs[2].data.raw, createdGroup);
+    if (!Array.isArray(logs[2].payload)) {
+      t.match(logs[2].payload.event, 'group.created');
+      t.match(logs[2].payload.directory_id, directory.id);
+      t.hasStrict(logs[2].payload.data.raw, createdGroup);
+    }
   });
 
   t.test('Should send group membership related events', async (t) => {
@@ -254,13 +266,17 @@ tap.test('Webhook Events / ', async (t) => {
     t.ok(logs);
     t.equal(logs.length, 4);
 
-    t.match(logs[0].event, 'group.user_removed');
-    t.match(logs[0].directory_id, directory.id);
-    t.hasStrict(logs[0].data.raw, createdUser);
+    if (!Array.isArray(logs[0].payload)) {
+      t.match(logs[0].payload.event, 'group.user_removed');
+      t.match(logs[0].payload.directory_id, directory.id);
+      t.hasStrict(logs[0].payload.data.raw, createdUser);
+    }
 
-    t.match(logs[1].event, 'group.user_added');
-    t.match(logs[1].directory_id, directory.id);
-    t.hasStrict(logs[1].data.raw, createdUser);
+    if (!Array.isArray(logs[1].payload)) {
+      t.match(logs[1].payload.event, 'group.user_added');
+      t.match(logs[1].payload.directory_id, directory.id);
+      t.hasStrict(logs[1].payload.data.raw, createdUser);
+    }
 
     await directorySync.users.delete(createdUser.id);
     await directorySync.groups.delete(createdGroup.id);

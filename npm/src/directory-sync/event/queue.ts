@@ -1,3 +1,4 @@
+import os from 'os';
 import _ from 'lodash';
 import axios from 'axios';
 import { randomUUID } from 'crypto';
@@ -36,6 +37,7 @@ interface DirectoryEventsParams {
   webhookLogs: IWebhookEventsLogger;
 }
 
+const lockKey = os.hostname();
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
 
 export class EventProcessor {
@@ -80,14 +82,14 @@ export class EventProcessor {
   // Process the events and send them to the webhooks as a batch
   public async process() {
     // Acquire the lock to ensure only one process is running
-    if (!(await this.eventLock.acquire())) {
+    if (!(await this.eventLock.acquire(lockKey))) {
       console.info('Another process is already running.');
       return;
     }
 
     // Renew the lock periodically
     setInterval(async () => {
-      this.eventLock.renew();
+      this.eventLock.renew(lockKey);
     }, lockRenewalInterval);
 
     // eslint-disable-next-line no-constant-condition
@@ -208,6 +210,7 @@ export class EventProcessor {
   }
 
   private batchSize() {
+    console.log(this.opts.dsync);
     return this.opts.dsync?.webhookBatchSize;
   }
 

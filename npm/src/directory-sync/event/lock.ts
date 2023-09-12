@@ -1,5 +1,3 @@
-import os from 'os';
-
 import type { Storable } from '../../typings';
 
 interface Lock {
@@ -18,9 +16,7 @@ export class EventLock {
     this.lockStore = lockStore;
   }
 
-  public async acquire() {
-    const key = os.hostname();
-
+  public async acquire(key: string) {
     try {
       const lock = await this.get();
 
@@ -39,9 +35,7 @@ export class EventLock {
     }
   }
 
-  public async renew() {
-    const key = os.hostname();
-
+  public async renew(key: string) {
     try {
       const lock = await this.get();
 
