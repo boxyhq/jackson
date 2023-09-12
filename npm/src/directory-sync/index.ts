@@ -49,6 +49,7 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     eventStore,
     eventLock,
     directories,
+    webhookLogs,
   });
 
   return {

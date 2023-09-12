@@ -10,6 +10,7 @@ import type {
   Storable,
   JacksonOption,
   EventLock,
+  IWebhookEventsLogger,
 } from '../../typings';
 import { eventLockTTL } from './utils';
 
@@ -19,7 +20,7 @@ enum EventStatus {
   PROCESSING = 'PROCESSING',
 }
 
-interface WebhookEvent {
+interface QueuedEvent {
   event: DirectorySyncEvent;
   id: string;
   retry_count: number;
@@ -32,6 +33,7 @@ interface DirectoryEventsParams {
   eventStore: Storable;
   eventLock: EventLock;
   directories: IDirectoryConfig;
+  webhookLogs: IWebhookEventsLogger;
 }
 
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
@@ -41,16 +43,18 @@ export class EventProcessor {
   private eventLock: EventLock;
   private opts: JacksonOption;
   private directories: IDirectoryConfig;
+  private webhookLogs: IWebhookEventsLogger;
 
-  constructor({ opts, eventStore, eventLock, directories }: DirectoryEventsParams) {
+  constructor({ opts, eventStore, eventLock, directories, webhookLogs }: DirectoryEventsParams) {
     this.opts = opts;
     this.eventLock = eventLock;
     this.eventStore = eventStore;
     this.directories = directories;
+    this.webhookLogs = webhookLogs;
   }
 
   // Push the new event to the database
-  public async push(event: DirectorySyncEvent): Promise<WebhookEvent> {
+  public async push(event: DirectorySyncEvent): Promise<QueuedEvent> {
     const id = randomUUID();
 
     const record = {
@@ -136,13 +140,11 @@ export class EventProcessor {
         }
 
         try {
-          const response = await this.send(directory.webhook, events);
+          const { status } = await this.send(directory.webhook, events);
 
-          if (response.status === 200) {
-            await this.delete(events);
-          } else {
-            await this.markAsFailed(events);
-          }
+          status === 200 ? await this.delete(events) : await this.markAsFailed(events);
+
+          await this.logWebhookEvent(directory, events, status);
         } catch (err: any) {
           await this.markAsFailed(events);
         }
@@ -153,7 +155,7 @@ export class EventProcessor {
   // Fetch next batch of events from the database
   public async fetch() {
     const { data: events } = (await this.eventStore.getAll(0, this.batchSize(), undefined)) as {
-      data: WebhookEvent[];
+      data: QueuedEvent[];
     };
 
     if (!events.length) {
@@ -170,11 +172,11 @@ export class EventProcessor {
   }
 
   public async getAll() {
-    return (await this.eventStore.getAll()) as { data: WebhookEvent[] };
+    return (await this.eventStore.getAll()) as { data: QueuedEvent[] };
   }
 
   // Send the events to the webhooks
-  private async send(webhook: Directory['webhook'], events: WebhookEvent[]) {
+  private async send(webhook: Directory['webhook'], events: QueuedEvent[]) {
     const payload = events.map(({ event }) => event);
 
     return await axios.post(webhook.endpoint, payload, {
@@ -186,14 +188,14 @@ export class EventProcessor {
   }
 
   // Delete the delivered events
-  private async delete(events: WebhookEvent[]) {
+  private async delete(events: QueuedEvent[]) {
     const promises = events.map((event) => this.eventStore.delete(event.id));
 
     await Promise.allSettled(promises);
   }
 
   // Mark the events as failed
-  private async markAsFailed(events: WebhookEvent[]) {
+  private async markAsFailed(events: QueuedEvent[]) {
     const promises = events.map((event) =>
       this.eventStore.put(event.id, {
         ...event,
@@ -207,5 +209,17 @@ export class EventProcessor {
 
   private batchSize() {
     return this.opts.dsync?.webhookBatchSize;
+  }
+
+  private async logWebhookEvent(directory: Directory, events: QueuedEvent[], status: number) {
+    if (!directory.log_webhook_events) {
+      return;
+    }
+
+    const payload = events.map(({ event }) => event);
+
+    await this.webhookLogs
+      .setTenantAndProduct(directory.tenant, directory.product)
+      .log(directory, payload, status);
   }
 }

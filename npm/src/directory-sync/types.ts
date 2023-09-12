@@ -99,12 +99,13 @@ export interface DirectorySyncEvent {
   product: string;
 }
 
-export interface WebhookEventLog extends DirectorySyncEvent {
+export interface WebhookEventLog {
   id: string;
   webhook_endpoint: string;
   created_at: Date;
   status_code?: number;
   delivered?: boolean;
+  payload: DirectorySyncEvent | DirectorySyncEvent[];
 }
 
 export type User = {
