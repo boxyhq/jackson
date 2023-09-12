@@ -339,6 +339,7 @@ export interface DatabaseDriver {
     pageLimit?: number,
     pageToken?: string
   ): Promise<Records>;
+  getCount(namespace: string): Promise<number>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
 }
 
@@ -348,6 +349,7 @@ export interface Storable {
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
   getByIndex(idx: Index, pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
+  getCount(): Promise<number>;
   deleteMany(keys: string[]): Promise<void>;
 }
 

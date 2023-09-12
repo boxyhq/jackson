@@ -90,6 +90,10 @@ class DB implements DatabaseDriver {
     };
   }
 
+  async getCount(namespace: string): Promise<number> {
+    return await this.db.getCount(namespace);
+  }
+
   // ttl is in seconds
   async put(namespace: string, key: string, val: unknown, ttl = 0, ...indexes: Index[]): Promise<unknown> {
     if (ttl > 0 && indexes && indexes.length > 0) {
