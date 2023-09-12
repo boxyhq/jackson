@@ -7,8 +7,8 @@ import { Groups } from './scim/Groups';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { ApiError } from '../typings';
 import { RequestHandler } from './request';
-import { DirectoryEvents } from './webhook/events';
-import { EventLock as Lock } from './webhook/lock';
+import { EventProcessor } from './event/queue';
+import { EventLock as Lock } from './event/lock';
 
 export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
 export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
@@ -18,7 +18,7 @@ export type IUsers = InstanceType<typeof Users>;
 export type IGroups = InstanceType<typeof Groups>;
 export type IWebhookEventsLogger = InstanceType<typeof WebhookEventsLogger>;
 export type IRequestHandler = InstanceType<typeof RequestHandler>;
-export type IDirectoryEvents = InstanceType<typeof DirectoryEvents>;
+export type IEventProcessor = InstanceType<typeof EventProcessor>;
 export type EventLock = InstanceType<typeof Lock>;
 
 export type DirectorySyncEventType =

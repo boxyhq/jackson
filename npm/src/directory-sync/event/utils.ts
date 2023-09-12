@@ -7,11 +7,11 @@ import type {
   DirectorySyncEvent,
   IWebhookEventsLogger,
   IDirectoryConfig,
-  IDirectoryEvents,
   JacksonOption,
+  IEventProcessor,
 } from '../../typings';
 import { sendPayloadToWebhook } from '../../event/webhook';
-import { transformEventPayload } from './transform';
+import { transformEventPayload } from '../scim/transform';
 import { isConnectionActive } from '../../controller/utils';
 
 export const eventLockTTL = 6;
@@ -25,8 +25,8 @@ interface Payload {
 interface EventCallbackParams {
   opts: JacksonOption;
   directories: IDirectoryConfig;
-  directoryEvents: IDirectoryEvents;
-  webhookEventsLogger: IWebhookEventsLogger;
+  eventProcessor: IEventProcessor;
+  webhookLogs: IWebhookEventsLogger;
 }
 
 export const sendEvent = async (
@@ -48,8 +48,8 @@ export const sendEvent = async (
 export const handleEventCallback = async ({
   opts,
   directories,
-  directoryEvents,
-  webhookEventsLogger,
+  eventProcessor,
+  webhookLogs,
 }: EventCallbackParams) => {
   // Callback that handles the events for Jackson service
   return async (event: DirectorySyncEvent) => {
@@ -64,7 +64,7 @@ export const handleEventCallback = async ({
     // If bulk sync is enabled, push the event to the queue
     // We will process the queue later in the background
     if (opts.dsync?.webhookBatchSize) {
-      await directoryEvents.push(event);
+      await eventProcessor.push(event);
       return;
     }
 
@@ -82,7 +82,7 @@ export const handleEventCallback = async ({
     }
 
     if (directory.log_webhook_events) {
-      await webhookEventsLogger.setTenantAndProduct(tenant, product).log(directory, event, status);
+      await webhookLogs.setTenantAndProduct(tenant, product).log(directory, event, status);
     }
   };
 };

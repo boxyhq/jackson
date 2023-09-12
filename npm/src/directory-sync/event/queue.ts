@@ -11,7 +11,7 @@ import type {
   JacksonOption,
   EventLock,
 } from '../../typings';
-import { eventLockTTL } from '../scim/events';
+import { eventLockTTL } from './utils';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -36,7 +36,7 @@ interface DirectoryEventsParams {
 
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
 
-export class DirectoryEvents {
+export class EventProcessor {
   private eventStore: Storable;
   private eventLock: EventLock;
   private opts: JacksonOption;

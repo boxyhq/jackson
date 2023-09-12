@@ -6,21 +6,28 @@ import { Users } from './scim/Users';
 import { Groups } from './scim/Groups';
 import { getDirectorySyncProviders } from './scim/utils';
 import { RequestHandler } from './request';
-import { eventLockTTL, handleEventCallback } from './scim/events';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { newGoogleProvider } from './non-scim/google';
 import { startSync } from './non-scim';
-import { DirectoryEvents } from './webhook/events';
 import { storeNamespacePrefix } from '../controller/utils';
-import { EventLock } from './webhook/lock';
+import { eventLockTTL, handleEventCallback } from './event/utils';
+import { EventProcessor } from './event/queue';
+import { EventLock } from './event/lock';
 
 const directorySync = async (params: { db: DB; opts: JacksonOption; eventController: IEventController }) => {
   const { db, opts, eventController } = params;
 
   const users = new Users({ db });
   const groups = new Groups({ db });
-  const logger = new WebhookEventsLogger({ db });
-  const directories = new DirectoryConfig({ db, opts, users, groups, logger, eventController });
+  const webhookLogs = new WebhookEventsLogger({ db });
+  const directories = new DirectoryConfig({
+    db,
+    opts,
+    users,
+    groups,
+    logger: webhookLogs,
+    eventController,
+  });
 
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
@@ -37,7 +44,7 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
   const eventStore = db.store(storeNamespacePrefix.dsync.events);
   const lockStore = db.store(storeNamespacePrefix.dsync.lock, eventLockTTL);
   const eventLock = new EventLock({ lockStore });
-  const directoryEvents = new DirectoryEvents({
+  const eventProcessor = new EventProcessor({
     opts,
     eventStore,
     eventLock,
@@ -48,17 +55,17 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     users,
     groups,
     directories,
-    webhookLogs: logger,
+    webhookLogs,
     requests: requestHandler,
     providers: getProviders,
     events: {
       callback: await handleEventCallback({
         opts,
         directories,
-        webhookEventsLogger: logger,
-        directoryEvents,
+        webhookLogs,
+        eventProcessor,
       }),
-      batch: directoryEvents,
+      batch: eventProcessor,
     },
     google: googleProvider.oauth,
     sync: async (callback: EventCallback) => {
