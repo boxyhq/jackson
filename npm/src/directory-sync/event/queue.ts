@@ -87,7 +87,7 @@ export class EventProcessor {
     }
 
     // Renew the lock periodically
-    setInterval(async () => {
+    const intervalId = setInterval(async () => {
       this.eventLock.renew(lockKey);
     }, lockRenewalInterval);
 
@@ -96,11 +96,12 @@ export class EventProcessor {
       const events = await this.fetch();
       const eventsCount = events.length;
 
-      // TODO: Handle events that have reached the max retry count
-
       if (eventsCount === 0) {
+        clearInterval(intervalId);
         break;
       }
+
+      // TODO: Handle events that have reached the max retry count
 
       // Group the events by directory
       const eventsByDirectory = _.groupBy(events, 'event.directory_id');

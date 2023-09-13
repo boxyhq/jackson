@@ -26,8 +26,6 @@ export class EventLock {
 
       await this.add(key);
 
-      console.log(`Acquired lock for ${key}`);
-
       return true;
     } catch (e: any) {
       console.log(`Error acquiring lock for ${key}: ${e}`);
