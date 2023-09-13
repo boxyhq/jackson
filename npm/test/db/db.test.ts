@@ -209,7 +209,8 @@ tap.test('dbs', async () => {
       );
 
       // Prevent adding records with same timestamp
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // So that we can test the order of records in getAll()
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await connectionStore.put(
         record2.id,
