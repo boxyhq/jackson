@@ -19,7 +19,7 @@ const unAuthenticatedApiRoutes = [
   '/api/well-known/**',
   '/api/setup/**',
   '/api/branding',
-  '/api/scim/test',
+  '/api/scim/process-events',
 ];
 
 export async function middleware(req: NextRequest) {

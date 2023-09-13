@@ -210,7 +210,6 @@ export class EventProcessor {
   }
 
   private batchSize() {
-    console.log(this.opts.dsync);
     return this.opts.dsync?.webhookBatchSize;
   }
 
