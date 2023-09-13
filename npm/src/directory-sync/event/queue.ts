@@ -81,9 +81,8 @@ export class EventProcessor {
 
   // Process the events and send them to the webhooks as a batch
   public async process() {
-    // Acquire the lock to ensure only one process is running
+    // Acquire the lock
     if (!(await this.eventLock.acquire(lockKey))) {
-      console.info('Another process is already running.');
       return;
     }
 
@@ -102,8 +101,6 @@ export class EventProcessor {
       if (eventsCount === 0) {
         break;
       }
-
-      console.info(`Processing ${eventsCount} events.`);
 
       // Group the events by directory
       const eventsByDirectory = _.groupBy(events, 'event.directory_id');

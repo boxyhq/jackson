@@ -48,7 +48,6 @@ export class EventLock {
       }
 
       await this.add(key);
-      console.log(`Renewed lock for ${key}`);
     } catch (e: any) {
       console.log(`Error renewing lock for ${key}: ${e}`);
     }
