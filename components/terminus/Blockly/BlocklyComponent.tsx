@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next';
 
 import Blockly from 'blockly/core';
 import 'blockly/blocks';
+import { maskSetup } from '@components/terminus/blocks/customblocks';
 import locale from 'blockly/msg/en';
 Blockly.setLocale(locale);
 
@@ -36,7 +37,7 @@ function BlocklyComponent(props) {
 
   const uploadModel = async () => {
     const domToPretty = modelToXML();
-    const cueModel = generateModel(primaryWorkspace.current);
+    const cueModel = generateModel(primaryWorkspace.current, roles);
 
     const body = {
       cue_schema: cueModel,
@@ -49,7 +50,6 @@ function BlocklyComponent(props) {
     };
 
     const rsp = await fetch(getEndpoint(), requestOptions);
-
     if (rsp.ok) {
       successToast(t('model_published_successfully'));
       return;
@@ -59,12 +59,12 @@ function BlocklyComponent(props) {
   };
 
   const [retrieveModalVisible, setRetrieveModalVisible] = useState(false);
+  const [roles, setRoles] = useState([]);
   const toggleRetrieveConfirm = () => setRetrieveModalVisible(!retrieveModalVisible);
 
   const retrieveModel = async () => {
     const rsp = await fetch(getEndpoint());
     const response = await rsp.json();
-
     (primaryWorkspace.current! as any).clear();
     const textToDom = Blockly.utils.xml.textToDom(response.data);
     Blockly.Xml.domToWorkspace(textToDom, primaryWorkspace.current! as any);
@@ -76,7 +76,7 @@ function BlocklyComponent(props) {
     if (primaryWorkspace.current) {
       return;
     }
-
+    getRolesAndSetupMasks();
     const { initialXml, ...rest } = props;
     primaryWorkspace.current = Blockly.inject(blocklyDiv.current as any, {
       toolbox: toolbox.current,
@@ -98,7 +98,7 @@ function BlocklyComponent(props) {
     }
 
     retrieveModel();
-  }, [primaryWorkspace, toolbox, blocklyDiv, props]);
+  }, [primaryWorkspace, toolbox, blocklyDiv, roles, props]);
 
   return (
     <div>
@@ -139,6 +139,13 @@ function BlocklyComponent(props) {
         onCancel={toggleRetrieveConfirm}></ConfirmationModal>
     </div>
   );
+
+  async function getRolesAndSetupMasks() {
+    const rolesResp = await fetch(`/api/admin/terminus/roles`);
+    const rolesList = (await rolesResp.json())?.data;
+    maskSetup(rolesList);
+    setRoles(rolesList);
+  }
 }
 
 export default BlocklyComponent;
