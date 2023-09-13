@@ -70,7 +70,7 @@
     "@types/lodash": "4.14.198",
     "@types/node": "20.6.0",
     "@types/sinon": "10.0.16",
-    "@types/tap": "15.0.8",
+    "@types/tap": "15.0.9",
     "cross-env": "7.0.3",
     "nock": "13.3.3",
     "sinon": "15.2.0",
