@@ -54,7 +54,7 @@
     "googleapis": "126.0.1",
     "jose": "4.14.6",
     "lodash": "4.17.21",
-    "mixpanel": "0.17.0",
+    "mixpanel": "0.18.0",
     "mongodb": "6.0.0",
     "mssql": "10.0.0",
     "mysql2": "3.6.1",
