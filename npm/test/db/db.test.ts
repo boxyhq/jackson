@@ -334,6 +334,15 @@ tap.test('dbs', async () => {
       );
     });
 
+    tap.test('getCount(): ' + dbEngine, async (t) => {
+      if (dbEngine !== 'sql' && dbEngine !== 'mongo') {
+        console.log(`skipping getCount test for ${dbEngine}`);
+        return;
+      }
+      const count = await connectionStore.getCount();
+      t.equal(count, records.length);
+    });
+
     tap.test('delete(): ' + dbEngine, async (t) => {
       await connectionStore.delete(record1.id);
 
