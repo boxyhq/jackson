@@ -11,7 +11,7 @@ const directory1Payload = {
   tenant: 'boxyhq-1',
   product: 'saml-jackson',
   type: 'okta-scim-v2' as Directory['type'],
-  webhook_url: 'https://webhook.site/866f8a46-27a9-465e-9703-28732a1f0e28',
+  webhook_url: 'https://example.com',
   webhook_secret: 'secret',
 };
 
@@ -19,11 +19,11 @@ const directory2Payload = {
   tenant: 'boxyhq-2',
   product: 'saml-jackson',
   type: 'okta-scim-v2' as Directory['type'],
-  webhook_url: 'https://webhook.site/866f8a46-27a9-465e-9703-28732a1f0e28',
+  webhook_url: 'https://example.com',
   webhook_secret: 'secret',
 };
 
-const webhookBatchSize = 1;
+const webhookBatchSize = 2;
 
 tap.before(async () => {
   const options = {
@@ -71,5 +71,5 @@ tap.test('Batch send dsync events', async (t) => {
 
   const eventsAfter = await directorySync.events.batch.getAll();
 
-  t.equal(eventsAfter.data.length, 0, 'There should be no events after processing');
+  t.equal(eventsAfter.data.length, 0, 'There should be no events pending after processing');
 });

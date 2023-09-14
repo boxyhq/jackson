@@ -61,7 +61,7 @@ export const handleEventCallback = async ({
       return;
     }
 
-    // If bulk sync is enabled, push the event to the queue
+    // If batch size is set, store the events in the database
     // We will process the queue later in the background
     if (opts.dsync?.webhookBatchSize) {
       await eventProcessor.push(event);
