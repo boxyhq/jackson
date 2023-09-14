@@ -339,7 +339,7 @@ export interface DatabaseDriver {
     pageLimit?: number,
     pageToken?: string
   ): Promise<Records>;
-  getCount(namespace: string): Promise<number>;
+  getCount?(namespace: string): Promise<number | undefined>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
 }
 
