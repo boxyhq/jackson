@@ -25,6 +25,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
   }
 
   const primaryColor = branding?.primaryColor ? hexToHsl(branding?.primaryColor) : null;
+  const backgroundColor = branding?.backgroundColor ? branding?.backgroundColor : null;
   const title =
     setupLink?.service === 'sso'
       ? t('configure_sso')
@@ -33,14 +34,21 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
       : null;
 
   return (
-    <>
+    <div className={`bg-red-500 borderColor textColor h-[100vh] w-[100vw]`}>
       <Head>
         <title>{`${title} - ${branding?.companyName}`}</title>
         {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
       </Head>
 
       {primaryColor && (
-        <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
+        <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; } .backgroundColor {
+          background-color: ${backgroundColor};
+      } .textColor {
+        color: ${branding?.textColor}
+      } .borderColor {
+        border: 0.5px solid ${branding?.borderColor};
+        border-radius: 4px;
+      }`}</style>
       )}
 
       <div className='mx-auto max-w-3xl'>
@@ -64,6 +72,6 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
         </div>
       </div>
       <PoweredBy />
-    </>
+    </div>
   );
 };
