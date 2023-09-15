@@ -44,21 +44,21 @@ const counters = {
   createDsyncConnection: () =>
     incrementCounter({
       meter: METER,
-      name: 'dsync.connection.create',
+      name: 'jackson.dsync.connection.create',
       counterOptions: { description: 'Number of DSync connection create requests' },
     }),
 
   getDsyncConnections: () =>
     incrementCounter({
       meter: METER,
-      name: 'dsync.connection.get',
+      name: 'jackson.dsync.connection.get',
       counterOptions: { description: 'Number of DSync connections get requests' },
     }),
 
   deleteDsyncConnections: () =>
     incrementCounter({
       meter: METER,
-      name: 'dsync.connection.delete',
+      name: 'jackson.dsync.connection.delete',
       counterOptions: { description: 'Number of DSync connections delete requests' },
     }),
 };
