@@ -549,6 +549,8 @@ export class DirectoryConfig {
   public async filterBy(
     params: FilterByParams = {}
   ): Promise<Response<Directory[]> & { pageToken?: string }> {
+    metrics.increment('getDsyncConnections');
+
     const { product, provider, pageOffset, pageLimit, pageToken } = params;
     let index: Index | null = null;
 
