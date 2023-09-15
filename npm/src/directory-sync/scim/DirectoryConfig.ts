@@ -24,6 +24,7 @@ import {
 } from '../../controller/utils';
 import { apiError, JacksonError } from '../../controller/error';
 import { getDirectorySyncProviders, isSCIMEnabledProvider } from './utils';
+import * as metrics from '../../opentelemetry/metrics';
 
 interface DirectoryConfigParams {
   db: DatabaseStore;
@@ -195,6 +196,8 @@ export class DirectoryConfig {
     google_access_token?: string;
     google_refresh_token?: string;
   }): Promise<Response<Directory>> {
+    metrics.increment('createDsyncConnection');
+
     try {
       const {
         name,
@@ -308,6 +311,8 @@ export class DirectoryConfig {
    *           $ref: '#/definitions/Directory'
    */
   public async get(id: string): Promise<Response<Directory>> {
+    metrics.increment('getDsyncConnections');
+
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -400,6 +405,8 @@ export class DirectoryConfig {
    *            $ref:  '#/definitions/Directory'
    */
   public async getByTenantAndProduct(tenant: string, product: string): Promise<Response<Directory[]>> {
+    metrics.increment('getDsyncConnections');
+
     try {
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -422,6 +429,8 @@ export class DirectoryConfig {
   public async getAll(
     params: PaginationParams = {}
   ): Promise<Response<Directory[]> & { pageToken?: string }> {
+    metrics.increment('getDsyncConnections');
+
     const { pageOffset, pageLimit, pageToken } = params;
 
     try {
@@ -465,6 +474,8 @@ export class DirectoryConfig {
    *         description: Success
    */
   public async delete(id: string): Promise<Response<null>> {
+    metrics.increment('deleteDsyncConnections');
+
     try {
       if (!id) {
         throw new JacksonError('Missing required parameter.', 400);
