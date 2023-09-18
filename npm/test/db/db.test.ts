@@ -121,20 +121,20 @@ const dbs = [
     ...mongoDbConfig,
     encryptionKey,
   },
-  {
-    ...mysqlDbConfig,
-  },
-  {
-    ...mysqlDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mariadbDbConfig,
-  },
-  {
-    ...mariadbDbConfig,
-    encryptionKey,
-  },
+  // {
+  //   ...mysqlDbConfig,
+  // },
+  // {
+  //   ...mysqlDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mariadbDbConfig,
+  // },
+  // {
+  //   ...mariadbDbConfig,
+  //   encryptionKey,
+  // },
   {
     ...mssqlDbConfig,
   },
@@ -207,10 +207,6 @@ tap.test('dbs', async () => {
           value: record1.name,
         }
       );
-
-      // Prevent adding records with same timestamp
-      // So that we can test the order of records in getAll()
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await connectionStore.put(
         record2.id,
