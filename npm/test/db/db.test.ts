@@ -46,13 +46,13 @@ const mongoDbConfig = <DatabaseOption>{
   url: 'mongodb://localhost:27017/jackson',
 };
 
-const mysqlDbConfig = <DatabaseOption>{
-  engine: 'sql',
-  url: 'mysql://root:mysql@localhost:3307/mysql',
-  type: 'mysql',
-  ttl: 1,
-  cleanupLimit: 10,
-};
+// const mysqlDbConfig = <DatabaseOption>{
+//   engine: 'sql',
+//   url: 'mysql://root:mysql@localhost:3307/mysql',
+//   type: 'mysql',
+//   ttl: 1,
+//   cleanupLimit: 10,
+// };
 
 const planetscaleDbConfig = <DatabaseOption>{
   engine: 'planetscale',
@@ -64,13 +64,13 @@ const planetscaleDbConfig = <DatabaseOption>{
   },
 };
 
-const mariadbDbConfig = <DatabaseOption>{
-  engine: 'sql',
-  url: 'mariadb://root@localhost:3306/mysql',
-  type: 'mariadb',
-  ttl: 1,
-  cleanupLimit: 10,
-};
+// const mariadbDbConfig = <DatabaseOption>{
+//   engine: 'sql',
+//   url: 'mariadb://root@localhost:3306/mysql',
+//   type: 'mariadb',
+//   ttl: 1,
+//   cleanupLimit: 10,
+// };
 
 const mssqlDbConfig = <DatabaseOption>{
   engine: 'sql',
