@@ -38,7 +38,6 @@ export class JacksonStore {
 
   @Column({
     type: 'timestamp',
-    precision: 6,
     nullable: true,
   })
   modifiedAt?: string;
