@@ -193,7 +193,7 @@ jobs:
       - name: Set up Docker Buildx
         if: github.ref == 'refs/heads/release'
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Set up QEMU
         if: github.ref == 'refs/heads/release'
