@@ -197,7 +197,7 @@ jobs:
 
       - name: Set up QEMU
         if: github.ref == 'refs/heads/release'
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Login to Docker Hub
         if: github.ref == 'refs/heads/release'
