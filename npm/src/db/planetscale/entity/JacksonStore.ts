@@ -30,7 +30,8 @@ export class JacksonStore {
 
   @Column({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    precision: 6,
+    default: () => 'CURRENT_TIMESTAMP(6)',
     nullable: false,
   })
   createdAt?: Date;
