@@ -264,7 +264,9 @@ const Branding: NextPage = () => {
                     </div>
                     <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
                       <h3 className='border-r-[1px] border-gray-200 pr-2'>
-                        {branding.darkTheme?.primaryColor || '#000000'}
+                        {/* Not sure exactly what the default primary color should be in this case, since default
+                        color for primary color is #25c2a0 so '#124f45' since its a darker shade of that */}
+                        {branding.darkTheme?.primaryColor || '#124f45'}
                       </h3>
                       <input
                         type='color'
@@ -277,12 +279,12 @@ const Branding: NextPage = () => {
                   <div className='form-control'>
                     <div className='flex'>
                       <label className='label pr-3'>
-                        <span className='label-text'>Background Color </span>
+                        <span className='label-text'>Background Color</span>
                       </label>
                     </div>
                     <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
                       <h3 className='border-r-[1px] border-gray-200 pr-2'>
-                        {branding.darkTheme?.backgroundColor || '#000000'}
+                        {branding.darkTheme?.backgroundColor || '#18181b'}
                       </h3>
                       <input
                         id='darkTheme.backgroundColor'
@@ -300,7 +302,7 @@ const Branding: NextPage = () => {
                     </div>
                     <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
                       <h3 className='border-r-[1px] border-gray-200 pr-2'>
-                        {branding.darkTheme?.textColor || '#000000'}
+                        {branding.darkTheme?.textColor || '#f4f4f5'}
                       </h3>
                       <input
                         id='darkTheme.textColor'
@@ -318,7 +320,7 @@ const Branding: NextPage = () => {
                     </div>
                     <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
                       <h3 className='border-r-[1px] border-gray-200 pr-2'>
-                        {branding.darkTheme?.borderColor || '#000000'}
+                        {branding.darkTheme?.borderColor || '#e5e7eb'}
                       </h3>
                       <input
                         id='darkTheme.borderColor'
