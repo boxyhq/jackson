@@ -87,7 +87,7 @@
     "@types/cors": "2.8.14",
     "@types/micromatch": "4.0.2",
     "@types/node": "20.6.2",
-    "@types/react": "18.2.21",
+    "@types/react": "18.2.22",
     "@typescript-eslint/eslint-plugin": "6.7.0",
     "@typescript-eslint/parser": "6.7.0",
     "autoprefixer": "10.4.15",
