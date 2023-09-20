@@ -8,6 +8,9 @@ metadata:
     tier: jackson
 spec:
   type: LoadBalancer
+  ports:
+    - port: 5225
+      targetPort: 5225
   selector:
     app: jackson
     tier: jackson

@@ -8,11 +8,16 @@ resources:
   - ./secrets.yaml
 
 patches:
-  - ./jackson-service.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Service
+      name: jackson
+    path: jackson-service.yaml
 
 commonLabels:
   jacksondev: '1'
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.9.7
+    newTag: 1.12.0
