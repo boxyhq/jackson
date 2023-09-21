@@ -46,11 +46,8 @@ export const parseGroupOperation = (operation: GroupPatchOperation) => {
 
 // List of directory sync providers
 // TODO: Fix the return type
-export const getDirectorySyncProviders = (): { [K: string]: string } => {
-  return Object.entries(DirectorySyncProviders).reduce((acc, [key, value]) => {
-    acc[key] = value;
-    return acc;
-  }, {});
+export const getDirectorySyncProviders = (): typeof DirectorySyncProviders => {
+  return DirectorySyncProviders;
 };
 
 // Parse the PATCH request body and return the user attributes (both standard and custom)
