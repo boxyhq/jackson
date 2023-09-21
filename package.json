@@ -32,6 +32,7 @@
     "skaffold:mariadb": "skaffold dev -f skaffold-mariadb.yaml --status-check=false --force=true",
     "skaffold:mssql": "skaffold dev -f skaffold-mssql.yaml --status-check=false --force=true",
     "skaffold:dynamodb": "skaffold dev -f skaffold-dynamodb.yaml --status-check=false --force=true",
+    "skaffold:demo": "echo 'This is only meant for BoxyHQ internal use. Please use skaffold:{dbname} instead' && skaffold run -f skaffold-demo.yaml --status-check=false --force=true",
     "start": "cross-env PORT=5225 NODE_OPTIONS=--dns-result-order=ipv4first node .next/standalone/server.js",
     "swagger-jsdoc": "swagger-jsdoc -d swagger/swaggerDefinition.js npm/src/**/*.ts npm/src/**/**/*.ts -o swagger/swagger.json",
     "redis": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=redis DB_TYPE=redis DB_URL=redis://localhost:6379/redis npm run dev",
