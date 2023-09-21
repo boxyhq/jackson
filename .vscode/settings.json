@@ -1,5 +1,5 @@
 {
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "files.exclude": {
     "**/.next": true,
     "**/.nyc_output": true,
