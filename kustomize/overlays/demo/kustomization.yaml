@@ -12,7 +12,7 @@ patches:
       version: v1
       kind: Service
       name: jackson
-    path: jackson-service.yaml
+    path: ./services/jackson-service.yaml
 
 commonLabels:
   jacksondev: '1'

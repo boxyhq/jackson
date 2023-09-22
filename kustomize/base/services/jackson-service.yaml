@@ -9,7 +9,8 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 5225
+    - name: original
+      port: 5225
       targetPort: 5225
   selector:
     app: jackson
