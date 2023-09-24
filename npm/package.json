@@ -29,7 +29,7 @@
     "db:migration:run:mariadb": "cross-env DB_TYPE=mariadb DB_URL=mariadb://root@localhost:3306/mysql ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "db:migration:run:mssql": "cross-env DB_TYPE=mssql DB_URL='sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!' ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "prepublishOnly": "npm run build",
-    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 tap --timeout=0 test/**/*.test.ts",
+    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 tap --timeout=0 --allow-empty-coverage test/**/*.test.ts",
     "sort": "npx sort-package-json"
   },
   "tap": {
@@ -70,7 +70,7 @@
     "cross-env": "7.0.3",
     "nock": "13.3.3",
     "sinon": "16.0.0",
-    "tap": "18.0.4",
+    "tap": "18.1.1",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.2.2"
