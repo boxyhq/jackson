@@ -79,7 +79,7 @@
     "react-syntax-highlighter": "15.5.0",
     "remark-gfm": "4.0.0",
     "sharp": "0.32.6",
-    "swr": "2.2.2"
+    "swr": "2.2.4"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
