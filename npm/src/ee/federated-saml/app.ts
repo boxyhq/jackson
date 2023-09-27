@@ -1,4 +1,4 @@
-import type { Storable, JacksonOption, SAMLFederationApp, Records } from '../../typings';
+import type { Storable, JacksonOption, SAMLFederationApp, Records, GetByProductParams } from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
@@ -44,10 +44,18 @@ export class App {
       primaryColor: null,
     };
 
-    await this.store.put(id, app, {
-      name: IndexNames.EntityID,
-      value: entityId,
-    });
+    await this.store.put(
+      id,
+      app,
+      {
+        name: IndexNames.EntityID,
+        value: entityId,
+      },
+      {
+        name: IndexNames.Product,
+        value: product,
+      }
+    );
 
     return app;
   }
@@ -175,5 +183,22 @@ export class App {
       ssoUrl,
       x509cert: publicKey,
     };
+  }
+
+  // Get apps by product
+  public async getAppsByProduct({ product, pageOffset, pageLimit, pageToken }: GetByProductParams) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    const apps = await this.store.getByIndex(
+      {
+        name: IndexNames.Product,
+        value: product,
+      },
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
+
+    return apps as Records<SAMLFederationApp>;
   }
 }
