@@ -186,8 +186,12 @@ export class App {
   }
 
   // Get apps by product
-  public async getAppsByProduct({ product, pageOffset, pageLimit, pageToken }: GetByProductParams) {
+  public async getByProduct({ product, pageOffset, pageLimit, pageToken }: GetByProductParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    if (!product) {
+      throw new JacksonError('Please provide a `product`.', 400);
+    }
 
     const apps = await this.store.getByIndex(
       {
@@ -199,6 +203,6 @@ export class App {
       pageToken
     );
 
-    return apps as Records<SAMLFederationApp>;
+    return apps.data as SAMLFederationApp[];
   }
 }

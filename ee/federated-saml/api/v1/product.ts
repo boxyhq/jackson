@@ -29,7 +29,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     pageToken?: string;
   };
 
-  const apps = await samlFederatedController.app.getAppsByProduct({
+  const apps = await samlFederatedController.app.getByProduct({
     product,
     pageOffset: parseInt(pageOffset),
     pageLimit: parseInt(pageLimit),
