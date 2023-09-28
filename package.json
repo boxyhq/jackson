@@ -85,7 +85,7 @@
     "@apidevtools/swagger-cli": "4.0.4",
     "@playwright/test": "1.38.1",
     "@types/cors": "2.8.14",
-    "@types/micromatch": "4.0.2",
+    "@types/micromatch": "4.0.3",
     "@types/node": "20.7.0",
     "@types/react": "18.2.23",
     "@typescript-eslint/eslint-plugin": "6.7.3",
