@@ -209,7 +209,7 @@ export class App {
   public async getMetadata() {
     const { publicKey } = await getDefaultCertificate();
 
-    const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
+    const ssoUrl = `${this.opts.externalUrl}/api/saml-federation/sso`;
     const entityId = `${this.opts.samlAudience}`;
 
     const xml = await createMetadataXML({
