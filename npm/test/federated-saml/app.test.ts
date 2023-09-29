@@ -31,7 +31,7 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Should be able to get the SAML Federation app by id', async (t) => {
-    const response = await samlFederatedController.app.get(app.id);
+    const response = await samlFederatedController.app.get({ id: app.id });
 
     t.ok(response);
     t.match(response.id, app.id);
@@ -54,7 +54,7 @@ tap.test('Federated SAML App', async () => {
     t.match(response.name, 'Updated App Name');
     t.match(response.acsUrl, 'https://twilio.com/saml/acsUrl/updated');
 
-    const updatedApp = await samlFederatedController.app.get(app.id);
+    const updatedApp = await samlFederatedController.app.get({ id: app.id });
 
     t.ok(updatedApp);
     t.match(updatedApp.name, 'Updated App Name');
@@ -73,7 +73,7 @@ tap.test('Federated SAML App', async () => {
     t.match(response.faviconUrl, 'https://company.com/favicon.ico');
     t.match(response.primaryColor, '#000000');
 
-    const updatedApp = await samlFederatedController.app.get(app.id);
+    const updatedApp = await samlFederatedController.app.get({ id: app.id });
 
     t.ok(updatedApp);
     t.match(updatedApp.logoUrl, 'https://company.com/logo.png');

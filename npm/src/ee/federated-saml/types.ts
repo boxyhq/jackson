@@ -31,3 +31,12 @@ export type DeleteAppParams =
       tenant: string;
       product: string;
     };
+
+export type GetAppParams =
+  | {
+      id: string;
+    }
+  | {
+      tenant: string;
+      product: string;
+    };

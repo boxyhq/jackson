@@ -5,6 +5,7 @@ import type {
   Records,
   GetByProductParams,
   DeleteAppParams,
+  GetAppParams,
 } from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
@@ -67,21 +68,31 @@ export class App {
     return app;
   }
 
-  // Get an app by id
-  public async get(id: string) {
+  // Get an app
+  public async get(params: GetAppParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    if (!id) {
-      throw new JacksonError('Missing required parameters. Required parameters are: id', 400);
+    if ('id' in params) {
+      const app = await this.store.get(params.id);
+
+      if (!app) {
+        throw new JacksonError('SAML Federation app not found', 404);
+      }
+
+      return app;
     }
 
-    const app: SAMLFederationApp = await this.store.get(id);
+    if ('tenant' in params && 'product' in params) {
+      const app = await this.store.get(appID(params.tenant, params.product));
 
-    if (!app) {
-      throw new JacksonError('SAML Federation app not found', 404);
+      if (!app) {
+        throw new JacksonError('SAML Federation app not found', 404);
+      }
+
+      return app;
     }
 
-    return app;
+    throw new JacksonError('Provide either the `id` or `tenant` and `product` to get the app', 400);
   }
 
   // Get apps by product
@@ -144,7 +155,7 @@ export class App {
       );
     }
 
-    const app = await this.get(id);
+    const app = await this.get({ id });
 
     const updatedApp: SAMLFederationApp = {
       ...app,
@@ -214,26 +225,4 @@ export class App {
       x509cert: publicKey,
     };
   }
-
-  // // Get by tenant and product
-  // public async getByTenantAndProduct(tenant: string, product: string) {
-  //   await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
-
-  //   if (!tenant || !product) {
-  //     throw new JacksonError('Missing required parameters. Required parameters are: tenant, product', 400);
-  //   }
-
-  //   return await this.get(appID(tenant, product));
-  // }
-
-  // // Delete by tenant and product
-  // public async deleteByTenantAndProduct(tenant: string, product: string) {
-  //   await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
-
-  //   if (!tenant || !product) {
-  //     throw new JacksonError('Missing required parameters. Required parameters are: tenant, product', 400);
-  //   }
-
-  //   return await this.delete(appID(tenant, product));
-  // }
 }
