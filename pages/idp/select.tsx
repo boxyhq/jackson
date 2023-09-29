@@ -195,7 +195,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
   }
 
-  const samlFederationApp = samlFedAppId ? await samlFederatedController.app.get(samlFedAppId) : null;
+  const samlFederationApp = samlFedAppId ? await samlFederatedController.app.get({ id: samlFedAppId }) : null;
 
   if (samlFedAppId && !samlFederationApp) {
     return {
