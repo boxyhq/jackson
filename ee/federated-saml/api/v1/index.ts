@@ -51,9 +51,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { id } = req.query as { id: string };
+  const { id, ...params } = req.body;
 
-  const app = await samlFederatedController.app.update(id, req.body);
+  const app = await samlFederatedController.app.update(id, params);
 
   res.json({ data: app });
 };
@@ -66,5 +66,5 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await samlFederatedController.app.delete(id);
 
-  res.json({ data: null });
+  res.json({ data: {} });
 };

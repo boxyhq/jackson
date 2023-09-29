@@ -60,7 +60,7 @@ export class App {
     return app;
   }
 
-  // Get an app by tenant and product
+  // Get an app by id
   public async get(id: string) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
@@ -75,6 +75,27 @@ export class App {
     }
 
     return app;
+  }
+
+  // Get apps by product
+  public async getByProduct({ product, pageOffset, pageLimit, pageToken }: GetByProductParams) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    if (!product) {
+      throw new JacksonError('Please provide a `product`.', 400);
+    }
+
+    const apps = await this.store.getByIndex(
+      {
+        name: IndexNames.Product,
+        value: product,
+      },
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
+
+    return apps.data as SAMLFederationApp[];
   }
 
   // Get the app by SP EntityId
@@ -183,26 +204,5 @@ export class App {
       ssoUrl,
       x509cert: publicKey,
     };
-  }
-
-  // Get apps by product
-  public async getByProduct({ product, pageOffset, pageLimit, pageToken }: GetByProductParams) {
-    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
-
-    if (!product) {
-      throw new JacksonError('Please provide a `product`.', 400);
-    }
-
-    const apps = await this.store.getByIndex(
-      {
-        name: IndexNames.Product,
-        value: product,
-      },
-      pageOffset,
-      pageLimit,
-      pageToken
-    );
-
-    return apps.data as SAMLFederationApp[];
   }
 }
