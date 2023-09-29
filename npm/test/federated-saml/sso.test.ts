@@ -57,7 +57,7 @@ tap.teardown(async () => {
 
 tap.test('Federated SAML flow', async (t) => {
   t.teardown(async () => {
-    await samlFederatedController.app.delete(app.id);
+    await samlFederatedController.app.delete({ id: app.id });
     await connectionAPIController.deleteConnections({ tenant, product });
   });
 

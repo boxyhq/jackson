@@ -89,7 +89,7 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Should be able to delete the SAML Federation app', async (t) => {
-    await samlFederatedController.app.delete(app.id);
+    await samlFederatedController.app.delete({ id: app.id });
 
     const allApps = await samlFederatedController.app.getAll({});
 

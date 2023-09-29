@@ -1,4 +1,11 @@
-import type { Storable, JacksonOption, SAMLFederationApp, Records, GetByProductParams } from '../../typings';
+import type {
+  Storable,
+  JacksonOption,
+  SAMLFederationApp,
+  Records,
+  GetByProductParams,
+  DeleteAppParams,
+} from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
@@ -172,17 +179,19 @@ export class App {
   }
 
   // Delete the app
-  public async delete(id: string): Promise<void> {
+  public async delete(params: DeleteAppParams): Promise<void> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    if (!id) {
-      throw new JacksonError('Missing required parameters. Required parameters are: id', 400);
+    if ('id' in params) {
+      return await this.store.delete(params.id);
     }
 
-    await this.get(id);
-    await this.store.delete(id);
+    if ('tenant' in params && 'product' in params) {
+      const id = appID(params.tenant, params.product);
+      return await this.store.delete(id);
+    }
 
-    return;
+    throw new JacksonError('Provide either the `id` or `tenant` and `product` to delete the app', 400);
   }
 
   // Get the metadata for the app
@@ -205,4 +214,26 @@ export class App {
       x509cert: publicKey,
     };
   }
+
+  // // Get by tenant and product
+  // public async getByTenantAndProduct(tenant: string, product: string) {
+  //   await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+  //   if (!tenant || !product) {
+  //     throw new JacksonError('Missing required parameters. Required parameters are: tenant, product', 400);
+  //   }
+
+  //   return await this.get(appID(tenant, product));
+  // }
+
+  // // Delete by tenant and product
+  // public async deleteByTenantAndProduct(tenant: string, product: string) {
+  //   await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+  //   if (!tenant || !product) {
+  //     throw new JacksonError('Missing required parameters. Required parameters are: tenant, product', 400);
+  //   }
+
+  //   return await this.delete(appID(tenant, product));
+  // }
 }
