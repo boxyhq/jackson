@@ -42,7 +42,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query as { id: string };
 
-  const app = await samlFederatedController.app.get(id);
+  const app = await samlFederatedController.app.get({ id });
 
   res.json({ data: app });
 };
@@ -64,7 +64,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query as { id: string };
 
-  await samlFederatedController.app.delete(id);
+  await samlFederatedController.app.delete({ id });
 
   res.json({ data: {} });
 };
