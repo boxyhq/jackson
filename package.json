@@ -50,7 +50,11 @@
     "prebuild": "ts-node --logError prebuild.ts",
     "build": "next build",
     "postbuild": "ts-node --logError postbuild.ts",
-    "release": "git checkout release && git merge origin/main && release-it"
+    "release": "git checkout release && git merge origin/main && release-it",
+    "check-types": "tsc --pretty --noEmit",
+    "check-format": "prettier --check .",
+    "check-lint": "eslint . --ext ts --ext tsx --ext js",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.5",
