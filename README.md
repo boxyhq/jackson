@@ -50,7 +50,10 @@ ___
 
 ## 🚀 Getting Started with SAML Jackson
 
-✨ Streamline your web application's authentication with Jackson, an SSO service supporting SAML and OpenID Connect protocols. Beyond enterprise-grade Single Sign-On, it also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.
+Please star ⭐ the repo if you want us to continue developing and improving SAML Jackson! 😀
+
+
+Streamline your web application's authentication with Jackson, an SSO service supporting SAML and OpenID Connect protocols. Beyond enterprise-grade Single Sign-On, it also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.
 
 There are two ways to integrate SAML Jackson into an application. Depending on your use case, you can choose either of them. <br>
 
