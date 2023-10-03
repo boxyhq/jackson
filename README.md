@@ -70,7 +70,7 @@ Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.b
 - SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A) (split into chapters to easily find what you are looking for)
 - SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
 
-## Demo
+## ✨ Demo
 
 - SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
 - SAML [demo flow](https://saml-demo.boxyhq.com/)
