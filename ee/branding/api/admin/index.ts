@@ -25,10 +25,28 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { brandingController } = await jackson();
 
-  const { logoUrl, faviconUrl, companyName, primaryColor } = req.body;
+  const {
+    logoUrl,
+    faviconUrl,
+    companyName,
+    primaryColor,
+    backgroundColor,
+    textColor,
+    borderColor,
+    darkTheme,
+  } = req.body;
 
   return res.json({
-    data: await brandingController.update({ logoUrl, faviconUrl, companyName, primaryColor }),
+    data: await brandingController.update({
+      logoUrl,
+      faviconUrl,
+      companyName,
+      primaryColor,
+      backgroundColor,
+      textColor,
+      borderColor,
+      darkTheme,
+    }),
   });
 };
 

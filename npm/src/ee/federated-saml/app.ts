@@ -42,6 +42,9 @@ export class App {
       logoUrl: null,
       faviconUrl: null,
       primaryColor: null,
+      textColor: null,
+      borderColor: null,
+      backgroundColor: null,
     };
 
     await this.store.put(id, app, {

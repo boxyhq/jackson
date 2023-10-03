@@ -11,6 +11,9 @@ const usePortalBranding = () => {
       primaryColor: string;
       faviconUrl: string;
       companyName: string;
+      backgroundColor: string;
+      textColor: string;
+      borderColor: string;
     }>,
     ApiError
   >(url, fetcher);

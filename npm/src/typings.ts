@@ -537,7 +537,17 @@ export type AdminPortalBranding = {
   logoUrl: string | null;
   faviconUrl: string | null;
   primaryColor: string | null;
+  backgroundColor: string | null;
   companyName: string | null;
+  textColor: string | null;
+  borderColor: string | null;
+  darkTheme?: {
+    primaryColor?: string;
+    backgroundColor?: string | null;
+    textColor?: string | null;
+    borderColor?: string | null;
+    logoUrl?: string;
+  };
 };
 
 export type Webhook = {
