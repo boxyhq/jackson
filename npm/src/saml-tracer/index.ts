@@ -1,4 +1,4 @@
-import { Records, Storable } from '../typings';
+import { GetByProductParams, Records, Storable } from '../typings';
 import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../controller/utils';
 import { keyFromParts } from '../db/utils';
@@ -176,12 +176,7 @@ class SAMLTracer {
    *           items:
    *             $ref:  '#/definitions/SAMLTrace'
    */
-  public async getTracesByProduct(params: {
-    product: string;
-    pageOffset?: number;
-    pageLimit?: number;
-    pageToken?: string;
-  }) {
+  public async getTracesByProduct(params: GetByProductParams) {
     const { product, pageOffset, pageLimit, pageToken } = params;
 
     if (!product) {

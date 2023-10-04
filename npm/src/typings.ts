@@ -160,12 +160,9 @@ export interface IConnectionAPIController {
    * @deprecated Use `deleteConnections` instead.
    */
   deleteConfig(body: DelConfigQuery): Promise<void>;
-  getConnectionsByProduct(body: {
-    product: string;
-    pageOffset?: number;
-    pageLimit?: number;
-    pageToken?: string;
-  }): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }>;
+  getConnectionsByProduct(
+    body: GetByProductParams
+  ): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }>;
 }
 
 export interface IOAuthController {
@@ -543,4 +540,11 @@ export type AdminPortalBranding = {
 export type Webhook = {
   endpoint: string;
   secret: string;
+};
+
+export type GetByProductParams = {
+  product: string;
+  pageOffset?: number;
+  pageLimit?: number;
+  pageToken?: string;
 };

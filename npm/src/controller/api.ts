@@ -17,6 +17,7 @@ import {
   IEventController,
   UpdateSAMLConnectionParams,
   UpdateOIDCConnectionParams,
+  GetByProductParams,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames, appID, transformConnections, transformConnection, isConnectionActive } from './utils';
@@ -757,12 +758,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      '401':
    *        $ref: '#/responses/401Get'
    */
-  public async getConnectionsByProduct(body: {
-    product: string;
-    pageOffset?: number;
-    pageLimit?: number;
-    pageToken?: string;
-  }): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }> {
+  public async getConnectionsByProduct(
+    body: GetByProductParams
+  ): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }> {
     const { product, pageOffset, pageLimit, pageToken } = body;
 
     if (!product) {
