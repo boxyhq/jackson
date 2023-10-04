@@ -1,3 +1,4 @@
+import { AppRequestParams } from '@boxyhq/saml-jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
@@ -40,9 +41,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { id } = req.query as { id: string };
-
-  const app = await samlFederatedController.app.get({ id });
+  const app = await samlFederatedController.app.get(req.query as AppRequestParams);
 
   res.json({ data: app });
 };
@@ -51,9 +50,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { id, ...params } = req.body;
-
-  const app = await samlFederatedController.app.update(id, params);
+  const app = await samlFederatedController.app.update(req.body);
 
   res.json({ data: app });
 };
@@ -62,9 +59,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { id } = req.query as { id: string };
-
-  await samlFederatedController.app.delete({ id });
+  await samlFederatedController.app.delete(req.query as AppRequestParams);
 
   res.json({ data: {} });
 };

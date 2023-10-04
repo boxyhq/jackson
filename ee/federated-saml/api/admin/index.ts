@@ -26,15 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { name, tenant, product, acsUrl, entityId } = req.body;
-
-  const app = await samlFederatedController.app.create({
-    name,
-    tenant,
-    product,
-    acsUrl,
-    entityId,
-  });
+  const app = await samlFederatedController.app.create(req.body);
 
   return res.status(201).json({ data: app });
 };

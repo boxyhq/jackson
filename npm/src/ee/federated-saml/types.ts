@@ -23,16 +23,7 @@ export type SAMLFederationAppWithMetadata = SAMLFederationApp & {
   };
 };
 
-export type DeleteAppParams =
-  | {
-      id: string;
-    }
-  | {
-      tenant: string;
-      product: string;
-    };
-
-export type GetAppParams =
+export type AppRequestParams =
   | {
       id: string;
     }

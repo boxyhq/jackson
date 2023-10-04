@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -48,20 +47,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { id } = req.query as { id: string };
-  const { name, acsUrl, entityId, logoUrl, faviconUrl, primaryColor } = req.body as Pick<
-    SAMLFederationApp,
-    'acsUrl' | 'entityId' | 'name' | 'logoUrl' | 'faviconUrl' | 'primaryColor'
-  >;
-
-  const updatedApp = await samlFederatedController.app.update(id, {
-    name,
-    acsUrl,
-    entityId,
-    logoUrl,
-    faviconUrl,
-    primaryColor,
-  });
+  const updatedApp = await samlFederatedController.app.update(req.body);
 
   return res.status(200).json({ data: updatedApp });
 };
