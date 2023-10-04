@@ -45,7 +45,8 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Should be able to update the SAML Federation app', async (t) => {
-    const response = await samlFederatedController.app.update(app.id, {
+    const response = await samlFederatedController.app.update({
+      id: app.id,
       name: 'Updated App Name',
       acsUrl: 'https://twilio.com/saml/acsUrl/updated',
     });
@@ -62,7 +63,8 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Should be able to update the app branding', async (t) => {
-    const response = await samlFederatedController.app.update(app.id, {
+    const response = await samlFederatedController.app.update({
+      id: app.id,
       logoUrl: 'https://company.com/logo.png',
       faviconUrl: 'https://company.com/favicon.ico',
       primaryColor: '#000000',

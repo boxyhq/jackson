@@ -13,7 +13,11 @@ import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
-type NewAppParams = Omit<SAMLFederationApp, 'id'>;
+type NewAppParams = Pick<SAMLFederationApp, 'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId'> & {
+  logoUrl?: string;
+  faviconUrl?: string;
+  primaryColor?: string;
+};
 
 export class App {
   protected store: Storable;
