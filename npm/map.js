@@ -46,5 +46,5 @@ const map = {
 };
 
 module.exports = (testFile) => {
-  return map[testFile];
+  return map[testFile] || [];
 };
