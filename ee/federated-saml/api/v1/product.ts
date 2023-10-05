@@ -36,5 +36,5 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     pageToken,
   });
 
-  res.json({ data: apps });
+  res.json(apps);
 };
