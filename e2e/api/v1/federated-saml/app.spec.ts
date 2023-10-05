@@ -17,8 +17,6 @@ const expectedApp = {
   acsUrl: 'https://boxyhq.com/acs',
 };
 
-let app = {} as SAMLFederationApp;
-
 test.beforeAll(async ({ request }) => {
   const response = await request.post('/api/v1/federated-saml', {
     data: {
@@ -26,73 +24,45 @@ test.beforeAll(async ({ request }) => {
     },
   });
 
-  app = (await response.json()).data;
+  const app = (await response.json()).data;
 
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(201);
+  expect(app).toMatchObject(expectedApp);
 });
 
 test.describe('GET /api/v1/federated-saml', () => {
-  test('Fetch app by id', async ({ request }) => {
-    const response = await request.get(`/api/v1/federated-saml?id=${app?.id}`);
-
-    const { data } = await response.json();
-
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(data).toMatchObject(app);
-  });
-});
-
-test.describe('GET /api/v1/federated-saml', () => {
-  test('Fetch app by tenant and product', async ({ request }) => {
+  test('Fetch app', async ({ request }) => {
     const response = await request.get(
-      `/api/v1/federated-saml?tenant=${app?.tenant}&product=${app?.product}`
+      `/api/v1/federated-saml?tenant=${expectedApp.tenant}&product=${expectedApp.product}`
     );
 
     const { data } = await response.json();
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
-    expect(data).toMatchObject(app);
+    expect(data).toMatchObject(expectedApp);
   });
 });
 
 test.describe('GET /api/v1/federated-saml/product', () => {
   test('Fetch app by product', async ({ request }) => {
-    const response = await request.get(`/api/v1/federated-saml/product?product=${app?.product}`);
+    const response = await request.get(`/api/v1/federated-saml/product?product=${expectedApp?.product}`);
 
     const { data } = await response.json();
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
-    expect(data).toMatchObject([app]);
+    expect(data).toMatchObject([expectedApp]);
   });
 });
 
 test.describe('PATCH /api/v1/federated-saml', () => {
-  test('Update app by id', async ({ request }) => {
+  test('Update app', async ({ request }) => {
     const response = await request.patch(`/api/v1/federated-saml`, {
       data: {
-        id: app?.id,
-        name: 'Updated App',
-      },
-    });
-
-    const { data } = await response.json();
-
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(data).toMatchObject({
-      ...app,
-      name: 'Updated App',
-    });
-  });
-
-  test('Update app by tenant and product', async ({ request }) => {
-    const response = await request.patch(`/api/v1/federated-saml`, {
-      data: {
-        id: app?.id,
+        tenant: expectedApp?.tenant,
+        product: expectedApp?.product,
         name: 'Updated App 2',
       },
     });
@@ -102,15 +72,17 @@ test.describe('PATCH /api/v1/federated-saml', () => {
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
     expect(data).toMatchObject({
-      ...app,
+      ...expectedApp,
       name: 'Updated App 2',
     });
   });
 });
 
 test.describe('DELETE /api/v1/federated-saml', () => {
-  test('Delete app by id', async ({ request }) => {
-    const response = await request.delete(`/api/v1/federated-saml?id=${app?.id}`);
+  test('Delete app', async ({ request }) => {
+    const response = await request.delete(
+      `/api/v1/federated-saml?tenant=${expectedApp?.tenant}&product=${expectedApp?.product}`
+    );
 
     const { data } = await response.json();
 
@@ -119,7 +91,9 @@ test.describe('DELETE /api/v1/federated-saml', () => {
     expect(data).toMatchObject({});
 
     // Confirm app is deleted
-    const response2 = await request.get(`/api/v1/federated-saml?id=${app?.id}`);
+    const response2 = await request.get(
+      `/api/v1/federated-saml?tenant=${expectedApp?.tenant}&product=${expectedApp?.product}`
+    );
 
     expect(response2.ok()).toBe(false);
     expect(response2.status()).toBe(404);
