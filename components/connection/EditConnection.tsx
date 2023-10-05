@@ -79,13 +79,6 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
       isEditView: true,
       setupLinkToken,
       callback: async (res) => {
-        const response: ApiResponse = await res.json();
-
-        if ('error' in response) {
-          errorToast(response.error.message);
-          return;
-        }
-
         if (res.ok) {
           successToast(t('saved'));
           // revalidate on save
@@ -94,6 +87,14 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
               ? `/api/setup/${setupLinkToken}/sso-connection`
               : `/api/admin/connections/${connectionClientId}`
           );
+          return;
+        }
+
+        const response: ApiResponse = await res.json();
+
+        if ('error' in response) {
+          errorToast(response.error.message);
+          return;
         }
       },
     });
