@@ -23,7 +23,7 @@ test.beforeAll(async ({ request }) => {
     },
   });
 
-  const app = (await response.json()).data;
+  const { data: app } = await response.json();
 
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(201);
@@ -36,11 +36,21 @@ test.describe('GET /api/v1/federated-saml', () => {
       `/api/v1/federated-saml?tenant=${expectedApp.tenant}&product=${expectedApp.product}`
     );
 
-    const { data } = await response.json();
+    const { data: app1 } = await response.json();
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
-    expect(data).toMatchObject(expectedApp);
+    expect(app1).toMatchObject(expectedApp);
+
+    // Fetch app by id
+    const response2 = await request.get(`/api/v1/federated-saml?id=${app1.id}`);
+
+    const { data: app2 } = await response2.json();
+
+    expect(response2.ok()).toBe(true);
+    expect(response2.status()).toBe(200);
+    expect(app2).toMatchObject(app1);
+    expect(app1.id).toBe(app2.id);
   });
 });
 
@@ -66,14 +76,23 @@ test.describe('PATCH /api/v1/federated-saml', () => {
       },
     });
 
-    const { data } = await response.json();
+    const { data: updatedApp } = await response.json();
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
-    expect(data).toMatchObject({
+    expect(updatedApp).toMatchObject({
       ...expectedApp,
       name: 'Updated App 2',
     });
+
+    // Confirm app is updated
+    const response2 = await request.get(`/api/v1/federated-saml?id=${updatedApp.id}`);
+
+    const { data: app } = await response2.json();
+
+    expect(response2.ok()).toBe(true);
+    expect(response2.status()).toBe(200);
+    expect(app).toMatchObject(updatedApp);
   });
 });
 
