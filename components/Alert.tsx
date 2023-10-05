@@ -8,8 +8,8 @@ const Alert = ({ type, message }: { type?: 'error' | 'success' | 'warning'; mess
   const variant = type ? alertType[type] : '';
 
   return (
-    <div className={`alert mb-5 rounded ${variant}`}>
-      <div>
+    <div className={`alert my-2 rounded ${variant}`}>
+      <div className='flex gap-2'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           className='h-6 w-6 flex-shrink-0 stroke-current'

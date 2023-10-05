@@ -7,7 +7,6 @@ import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import EmptyState from '@components/EmptyState';
-import LicenseRequired from '@components/LicenseRequired';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
@@ -45,11 +44,7 @@ const AppsList: NextPage = () => {
   }
 
   if (error) {
-    return (
-      <LicenseRequired>
-        <Alert type='error' message={error.message} />
-      </LicenseRequired>
-    );
+    return <Alert type='error' message={error.message} />;
   }
 
   const apps = data?.data || [];
@@ -57,7 +52,7 @@ const AppsList: NextPage = () => {
   const noMoreResults = apps.length === 0 && paginate.offset > 0;
 
   return (
-    <LicenseRequired>
+    <>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('saml_federation_apps')}</h2>
         <div className='flex'>
@@ -138,7 +133,7 @@ const AppsList: NextPage = () => {
           />
         </>
       )}
-    </LicenseRequired>
+    </>
   );
 };
 

@@ -7,7 +7,6 @@ import { useTranslation } from 'next-i18next';
 
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
-import LicenseRequired from '@components/LicenseRequired';
 import { errorToast, successToast } from '@components/Toaster';
 import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
@@ -94,7 +93,7 @@ const UpdateApp: NextPage = () => {
   };
 
   return (
-    <LicenseRequired>
+    <>
       <LinkBack href='/admin/federated-saml' />
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
@@ -214,7 +213,7 @@ const UpdateApp: NextPage = () => {
         </form>
       </div>
       <DeleteApp app={app} />
-    </LicenseRequired>
+    </>
   );
 };
 

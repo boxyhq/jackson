@@ -5,7 +5,6 @@ import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import type { ApiResponse } from 'types';
 import type { AdminPortalBranding } from '@boxyhq/saml-jackson';
-import LicenseRequired from '@components/LicenseRequired';
 
 const Branding: NextPage = () => {
   const { t } = useTranslation('common');
@@ -75,7 +74,7 @@ const Branding: NextPage = () => {
   }, []);
 
   return (
-    <LicenseRequired>
+    <>
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('settings_branding_title')}</h2>
       <p className='py-3 text-base leading-6 text-gray-800'>{t('settings_branding_description')}</p>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
@@ -144,7 +143,7 @@ const Branding: NextPage = () => {
           </div>
         </form>
       </div>
-    </LicenseRequired>
+    </>
   );
 };
 
