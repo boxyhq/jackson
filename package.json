@@ -94,7 +94,7 @@
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
     "eslint": "8.50.0",
-    "eslint-config-next": "13.5.3",
+    "eslint-config-next": "13.5.4",
     "eslint-config-prettier": "9.0.0",
     "postcss": "8.4.31",
     "prettier": "3.0.3",
