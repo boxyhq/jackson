@@ -4,11 +4,20 @@ import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
 import { Toaster } from '@components/Toaster';
 import { InputWithCopyButton, CopyToClipboardButton } from '@components/ClipboardButton';
 import { LinkOutline } from '@components/LinkOutline';
+import LicenseRequired from '@components/LicenseRequired';
 
 type Metadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
 
-const Metadata = ({ metadata }: { metadata: Metadata }) => {
+const Metadata = ({ metadata, hasValidLicense }: { metadata: Metadata; hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
+
+  if (!hasValidLicense) {
+    return (
+      <div className='p-10'>
+        <LicenseRequired />
+      </div>
+    );
+  }
 
   return (
     <>

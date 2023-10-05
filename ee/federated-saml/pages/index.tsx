@@ -17,7 +17,7 @@ import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import router from 'next/router';
 import LicenseRequired from '@components/LicenseRequired';
 
-const AppsList: NextPage = () => {
+const AppsList: NextPage<{ hasValidLicense: boolean }> = ({ hasValidLicense }) => {
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
 
@@ -28,7 +28,7 @@ const AppsList: NextPage = () => {
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp[]>, ApiError>(getAppsUrl, fetcher);
+  const { data, isLoading } = useSWR<ApiSuccess<SAMLFederationApp[]>, ApiError>(getAppsUrl, fetcher);
 
   const nextPageToken = data?.pageToken;
 
@@ -39,12 +39,12 @@ const AppsList: NextPage = () => {
     }
   }, [nextPageToken, paginate.offset]);
 
-  if (isLoading) {
-    return <Loading />;
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
   }
 
-  if (error && error.status === 403) {
-    return <LicenseRequired />;
+  if (isLoading) {
+    return <Loading />;
   }
 
   const apps = data?.data || [];

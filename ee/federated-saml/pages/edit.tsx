@@ -14,8 +14,9 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
 import { LinkOutline } from '@components/LinkOutline';
+import LicenseRequired from '@components/LicenseRequired';
 
-const UpdateApp: NextPage = () => {
+const UpdateApp: NextPage<{ hasValidLicense: boolean }> = ({ hasValidLicense }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -46,6 +47,10 @@ const UpdateApp: NextPage = () => {
       setApp(data.data);
     }
   }, [data]);
+
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
+  }
 
   if (error) {
     errorToast(error.message);

@@ -8,8 +8,9 @@ import type { ApiResponse } from 'types';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
+import LicenseRequired from '@components/LicenseRequired';
 
-const NewApp: NextPage = () => {
+const NewApp: NextPage<{ hasValidLicense: boolean }> = ({ hasValidLicense }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,10 @@ const NewApp: NextPage = () => {
     acsUrl: '',
     entityId: '',
   });
+
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
+  }
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
