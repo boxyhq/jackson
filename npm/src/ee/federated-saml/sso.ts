@@ -71,6 +71,7 @@ export class SSO {
         product: app.product,
         idp_hint,
         authFlow: 'saml',
+        samlFedAppId: app.id,
         originalParams: {
           RelayState: relayState,
           SAMLRequest: request,
