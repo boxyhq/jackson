@@ -34,7 +34,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const app = await samlFederatedController.app.create(req.body);
 
-  res.json({ data: app });
+  res.status(201).json({ data: app });
 };
 
 // Get a SAML federated app by ID
