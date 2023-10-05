@@ -27,9 +27,10 @@ export const fetcher = async (url: string, queryParams = '') => {
   }
 
   if (!res.ok) {
-    const error = new Error(
-      (resContent.error.message as string) || 'An error occurred while fetching the data.'
-    );
+    const error = new Error(resContent.error.message || 'An error occurred while fetching the data.');
+
+    // Attach extra info to the error object.
+    error['status'] = res.status;
 
     throw error;
   }

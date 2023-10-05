@@ -15,7 +15,7 @@ import { IconButton } from '@components/IconButton';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import router from 'next/router';
-import Alert from '@components/Alert';
+import LicenseRequired from '@components/LicenseRequired';
 
 const AppsList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -43,8 +43,8 @@ const AppsList: NextPage = () => {
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert type='error' message={error.message} />;
+  if (error && error.status === 403) {
+    return <LicenseRequired />;
   }
 
   const apps = data?.data || [];
