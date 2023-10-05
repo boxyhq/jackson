@@ -5,7 +5,7 @@ test('should return oidc discovery configuration', async ({ request, baseURL }) 
   const oidcDiscovery = await response.json();
 
   expect(oidcDiscovery).toStrictEqual({
-    issuer: process.env.SAML_AUDIENCE,
+    issuer: baseURL,
     authorization_endpoint: `${baseURL}/api/oauth/authorize`,
     token_endpoint: `${baseURL}/api/oauth/token`,
     userinfo_endpoint: `${baseURL}/api/oauth/userinfo`,
