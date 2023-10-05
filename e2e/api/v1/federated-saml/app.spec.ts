@@ -32,7 +32,7 @@ test.beforeAll(async ({ request }) => {
   expect(response.status()).toBe(201);
 });
 
-test.describe('POST /api/v1/federated-saml', () => {
+test.describe('GET /api/v1/federated-saml', () => {
   test('Fetch app by id', async ({ request }) => {
     const response = await request.get(`/api/v1/federated-saml?id=${app?.id}`);
 
@@ -42,7 +42,9 @@ test.describe('POST /api/v1/federated-saml', () => {
     expect(response.status()).toBe(200);
     expect(data).toMatchObject(app);
   });
+});
 
+test.describe('GET /api/v1/federated-saml', () => {
   test('Fetch app by tenant and product', async ({ request }) => {
     const response = await request.get(
       `/api/v1/federated-saml?tenant=${app?.tenant}&product=${app?.product}`
@@ -54,7 +56,9 @@ test.describe('POST /api/v1/federated-saml', () => {
     expect(response.status()).toBe(200);
     expect(data).toMatchObject(app);
   });
+});
 
+test.describe('GET /api/v1/federated-saml/product', () => {
   test('Fetch app by product', async ({ request }) => {
     const response = await request.get(`/api/v1/federated-saml/product?product=${app?.product}`);
 
@@ -64,7 +68,9 @@ test.describe('POST /api/v1/federated-saml', () => {
     expect(response.status()).toBe(200);
     expect(data).toMatchObject([app]);
   });
+});
 
+test.describe('PATCH /api/v1/federated-saml', () => {
   test('Update app by id', async ({ request }) => {
     const response = await request.patch(`/api/v1/federated-saml`, {
       data: {
@@ -100,7 +106,9 @@ test.describe('POST /api/v1/federated-saml', () => {
       name: 'Updated App 2',
     });
   });
+});
 
+test.describe('DELETE /api/v1/federated-saml', () => {
   test('Delete app by id', async ({ request }) => {
     const response = await request.delete(`/api/v1/federated-saml?id=${app?.id}`);
 
