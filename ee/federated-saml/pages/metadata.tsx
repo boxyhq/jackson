@@ -6,9 +6,12 @@ import { InputWithCopyButton, CopyToClipboardButton } from '@components/Clipboar
 import { LinkOutline } from '@components/LinkOutline';
 import LicenseRequired from '@components/LicenseRequired';
 
-type Metadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
+type MetadataProps = {
+  metadata: Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
+  hasValidLicense: boolean;
+};
 
-const Metadata = ({ metadata, hasValidLicense }: { metadata: Metadata; hasValidLicense: boolean }) => {
+const Metadata = ({ metadata, hasValidLicense }: MetadataProps) => {
   const { t } = useTranslation('common');
 
   if (!hasValidLicense) {

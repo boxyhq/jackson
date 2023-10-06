@@ -1,4 +1,3 @@
-import type { NextPage } from 'next';
 import type { AdminPortalBranding, SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -16,7 +15,7 @@ import { ButtonDanger } from '@components/ButtonDanger';
 import { LinkOutline } from '@components/LinkOutline';
 import LicenseRequired from '@components/LicenseRequired';
 
-const UpdateApp: NextPage<{ hasValidLicense: boolean }> = ({ hasValidLicense }) => {
+const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);

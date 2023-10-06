@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import type { NextPage } from 'next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
@@ -17,7 +16,7 @@ import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import router from 'next/router';
 import LicenseRequired from '@components/LicenseRequired';
 
-const AppsList: NextPage<{ hasValidLicense: boolean }> = ({ hasValidLicense }) => {
+const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
 

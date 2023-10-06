@@ -1,4 +1,3 @@
-import type { NextPage } from 'next';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
@@ -10,7 +9,7 @@ import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
 
-const NewApp: NextPage<{ hasValidLicense: boolean }> = ({ hasValidLicense }) => {
+const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);

@@ -1,12 +1,12 @@
-import type { NextPage } from 'next';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import type { ApiResponse } from 'types';
 import type { AdminPortalBranding } from '@boxyhq/saml-jackson';
+import LicenseRequired from '@components/LicenseRequired';
 
-const Branding: NextPage = () => {
+const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [branding, setBranding] = useState<AdminPortalBranding>({
@@ -15,6 +15,10 @@ const Branding: NextPage = () => {
     companyName: '',
     primaryColor: '',
   });
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
   // Fetch settings
   const fetchSettings = async () => {
@@ -69,9 +73,9 @@ const Branding: NextPage = () => {
     });
   };
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
+  }
 
   return (
     <>
