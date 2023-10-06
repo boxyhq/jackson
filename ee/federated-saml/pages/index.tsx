@@ -15,6 +15,7 @@ import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import router from 'next/router';
 import LicenseRequired from '@components/LicenseRequired';
+import { errorToast } from '@components/Toaster';
 
 const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
@@ -27,7 +28,7 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, isLoading } = useSWR<ApiSuccess<SAMLFederationApp[]>, ApiError>(getAppsUrl, fetcher);
+  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp[]>, ApiError>(getAppsUrl, fetcher);
 
   const nextPageToken = data?.pageToken;
 
@@ -44,6 +45,11 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
 
   if (isLoading) {
     return <Loading />;
+  }
+
+  if (error) {
+    errorToast(error.message);
+    return;
   }
 
   const apps = data?.data || [];
