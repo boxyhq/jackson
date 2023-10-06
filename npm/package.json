@@ -70,7 +70,7 @@
     "cross-env": "7.0.3",
     "nock": "13.3.3",
     "sinon": "16.1.0",
-    "tap": "18.4.2",
+    "tap": "18.4.3",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.2.2"
