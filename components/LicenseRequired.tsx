@@ -1,35 +1,11 @@
-import useSWR from 'swr';
-
-import { fetcher } from '@lib/ui/utils';
 import EmptyState from './EmptyState';
-import Loading from './Loading';
 
-type Props = {
-  children: React.ReactNode;
-};
-
-const LicenseRequired = (props: Props) => {
-  const { children } = props;
-
-  const { data, isLoading } = useSWR<{ data: { status: boolean } }>('/api/admin/license', fetcher);
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  const hasValidLicense = data?.data.status;
-
+const LicenseRequired = () => {
   return (
-    <>
-      {hasValidLicense ? (
-        children
-      ) : (
-        <EmptyState
-          title='This is an Enterprise feature.'
-          description="Please add a valid license to use this feature. If you don't have a license, please contact BoxyHQ Support."
-        />
-      )}
-    </>
+    <EmptyState
+      title='This is an Enterprise feature.'
+      description="Please add a valid license to use this feature. If you don't have a license, please contact BoxyHQ Support."
+    />
   );
 };
 
