@@ -4,7 +4,7 @@ import jackson from '@lib/jackson';
 export { default } from 'ee/federated-saml/pages/metadata';
 
 export async function getServerSideProps({ locale }) {
-  const { samlFederatedController } = await jackson();
+  const { samlFederatedController, checkLicense } = await jackson();
 
   const metadata = await samlFederatedController.app.getMetadata();
 
@@ -12,6 +12,7 @@ export async function getServerSideProps({ locale }) {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
       metadata,
+      hasValidLicense: await checkLicense(),
     },
   };
 }

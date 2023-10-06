@@ -488,6 +488,8 @@ export class App {
 
   // Get the metadata for the app
   public async getMetadata() {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     const { publicKey } = await getDefaultCertificate();
 
     const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
