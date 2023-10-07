@@ -1,0 +1,6 @@
+---
+bases:
+  - ../../../base/services
+
+patches:
+  - ./jackson-service.yaml
