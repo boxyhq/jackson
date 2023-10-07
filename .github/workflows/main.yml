@@ -45,7 +45,7 @@ jobs:
       OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
-      DYNAMODB_URL: 'http://localhost:8000'
+      # DYNAMODB_URL: 'http://localhost:8000'
       BOXYHQ_NO_ANALYTICS: '1'
       IDP_ENABLED: true
       AWS_ACCESS_KEY_ID: secret
