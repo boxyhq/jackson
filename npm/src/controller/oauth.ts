@@ -962,7 +962,7 @@ export class OAuthController implements IOAuthController {
       const id_token = await new jose.SignJWT(claims)
         .setProtectedHeader({ alg: jwsAlg! })
         .setIssuedAt()
-        .setIssuer(this.opts.samlAudience || '')
+        .setIssuer(this.opts.externalUrl)
         .setSubject(codeVal.profile.claims.id)
         .setAudience(tokenVal.requested.client_id)
         .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.

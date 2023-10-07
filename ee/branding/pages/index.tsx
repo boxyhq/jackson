@@ -1,4 +1,3 @@
-import type { NextPage } from 'next';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import { ButtonPrimary } from '@components/ButtonPrimary';
@@ -7,7 +6,7 @@ import type { ApiResponse } from 'types';
 import type { AdminPortalBranding } from '@boxyhq/saml-jackson';
 import LicenseRequired from '@components/LicenseRequired';
 
-const Branding: NextPage = () => {
+const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [branding, setBranding] = useState<AdminPortalBranding>({
@@ -16,6 +15,10 @@ const Branding: NextPage = () => {
     companyName: '',
     primaryColor: '',
   });
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
   // Fetch settings
   const fetchSettings = async () => {
@@ -70,12 +73,12 @@ const Branding: NextPage = () => {
     });
   };
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
+  }
 
   return (
-    <LicenseRequired>
+    <>
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('settings_branding_title')}</h2>
       <p className='py-3 text-base leading-6 text-gray-800'>{t('settings_branding_description')}</p>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
@@ -144,7 +147,7 @@ const Branding: NextPage = () => {
           </div>
         </form>
       </div>
-    </LicenseRequired>
+    </>
   );
 };
 
