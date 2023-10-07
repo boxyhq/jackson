@@ -14,9 +14,6 @@ patches:
       name: jackson
     path: ./services/jackson-service.yaml
 
-commonLabels:
-  jacksondev: '1'
-
 images:
   - name: boxyhq/jackson
-    newTag: 1.12.0
+    newTag: 1.13.0
