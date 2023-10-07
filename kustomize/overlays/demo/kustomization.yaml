@@ -1,18 +1,9 @@
 ---
 bases:
   - ../../base
-  - ../../base/services
 
 resources:
   - ./secrets.yaml
-
-patches:
-  - target:
-      group: apps
-      version: v1
-      kind: Service
-      name: jackson
-    path: ./services/jackson-service.yaml
 
 images:
   - name: boxyhq/jackson
