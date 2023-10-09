@@ -1,0 +1,10 @@
+---
+bases:
+  - ../../base
+
+resources:
+  - ./secrets.yaml
+
+images:
+  - name: boxyhq/jackson
+    newTag: 1.13.0
