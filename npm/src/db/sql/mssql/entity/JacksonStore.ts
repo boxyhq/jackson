@@ -1,6 +1,6 @@
 import { Entity, Column } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'jackson_store' })
 export class JacksonStore {
   @Column({
     primary: true,
