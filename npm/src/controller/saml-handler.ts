@@ -218,18 +218,18 @@ export class SAMLHandler {
 
     try {
       const responseSigned = await createSAMLResponse({
-        audience: session.request.entityId,
-        acsUrl: session.request.acsUrl,
-        requestId: session.request.id,
+        audience: session.requested.entityId,
+        acsUrl: session.requested.acsUrl,
+        requestId: session.requested.id,
         issuer: `${this.opts.samlAudience}`,
         profile,
         ...certificate,
       });
 
-      const responseForm = saml.createPostForm(session.request.acsUrl, [
+      const responseForm = saml.createPostForm(session.requested.acsUrl, [
         {
           name: 'RelayState',
-          value: session.request.relayState,
+          value: session.requested.relayState,
         },
         {
           name: 'SAMLResponse',
