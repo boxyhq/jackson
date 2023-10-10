@@ -36,8 +36,8 @@ jobs:
       NEXTAUTH_URL: http://localhost:5225
       NEXTAUTH_ACL: '*@boxyhq.com'
       DB_ENGINE: sql
-      DB_URL: mariadb://root:@localhost:3306/mysql
-      DB_TYPE: mariadb
+      DB_URL: mysql://root:mysql@localhost:3307/mysql
+      DB_TYPE: mysql
       DEBUG: pw:webserver
       SAML_AUDIENCE: https://saml.boxyhq.com
       JACKSON_API_KEYS: secret
