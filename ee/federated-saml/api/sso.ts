@@ -34,12 +34,16 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     idp_hint: string;
   };
 
-  const { redirectUrl } = await samlFederatedController.sso.getAuthorizeUrl({
+  const { redirect_url, authorize_form } = await samlFederatedController.sso.getAuthorizeUrl({
     request: SAMLRequest,
     relayState: RelayState,
     idp_hint,
   });
 
-  res.redirect(302, redirectUrl);
-  return;
+  if (redirect_url) {
+    res.redirect(302, redirect_url);
+  } else {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(authorize_form);
+  }
 };
