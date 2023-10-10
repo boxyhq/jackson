@@ -64,13 +64,13 @@
   "devDependencies": {
     "@faker-js/faker": "8.1.0",
     "@types/lodash": "4.14.199",
-    "@types/node": "20.8.2",
+    "@types/node": "20.8.4",
     "@types/sinon": "10.0.19",
     "@types/tap": "15.0.9",
     "cross-env": "7.0.3",
     "nock": "13.3.3",
     "sinon": "16.1.0",
-    "tap": "18.4.4",
+    "tap": "18.4.5",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.2.2"
