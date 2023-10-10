@@ -34,7 +34,6 @@ class Sql implements DatabaseDriver {
         const baseOpts = {
           type: sqlType,
           synchronize,
-          migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
         };

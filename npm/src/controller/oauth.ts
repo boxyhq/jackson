@@ -486,7 +486,7 @@ export class OAuthController implements IOAuthController {
 
   public async samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }> {
+  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }> {
     let connection: SAMLSSORecord | undefined;
     let rawResponse: string | undefined;
     let sessionId: string | undefined;
@@ -535,7 +535,7 @@ export class OAuthController implements IOAuthController {
       }
 
       isSAMLFederated = session && 'samlFederated' in session;
-      const isSPFflow = !isIdPFlow && !isSAMLFederated;
+      const isSPFlow = !isIdPFlow && !isSAMLFederated;
 
       // IdP initiated SSO flow
       if (isIdPFlow) {
@@ -563,17 +563,13 @@ export class OAuthController implements IOAuthController {
 
       // SP initiated SSO flow
       // Resolve if there are multiple matches for SP login
-      if (isSPFflow) {
+      if (isSPFlow || isSAMLFederated) {
         connection = connections.filter((c) => {
           return (
             c.clientID === session.requested.client_id ||
             (c.tenant === session.requested.tenant && c.product === session.requested.product)
           );
         })[0];
-      }
-
-      if (!connection) {
-        connection = connections[0];
       }
 
       if (!connection) {
@@ -630,7 +626,7 @@ export class OAuthController implements IOAuthController {
 
         await this.sessionStore.delete(sessionId);
 
-        return { responseForm };
+        return { response_form: responseForm };
       }
 
       const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);
@@ -962,7 +958,7 @@ export class OAuthController implements IOAuthController {
       const id_token = await new jose.SignJWT(claims)
         .setProtectedHeader({ alg: jwsAlg! })
         .setIssuedAt()
-        .setIssuer(this.opts.samlAudience || '')
+        .setIssuer(this.opts.externalUrl)
         .setSubject(codeVal.profile.claims.id)
         .setAudience(tokenVal.requested.client_id)
         .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.

@@ -271,7 +271,7 @@ export class App {
       pageToken
     );
 
-    return apps.data as SAMLFederationApp[];
+    return apps;
   }
 
   // Get the app by SP EntityId
@@ -360,14 +360,7 @@ export class App {
   public async update(params: Partial<SAMLFederationApp>) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const { acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor, id, tenant, product } = params;
-
-    if (!acsUrl && !entityId && !name && !logoUrl && !faviconUrl && !primaryColor) {
-      throw new JacksonError(
-        'Missing required parameters. Please provide at least one of the following parameters: acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor',
-        400
-      );
-    }
+    const { id, tenant, product } = params;
 
     if (!id && (!tenant || !product)) {
       throw new JacksonError('Provide either the `id` or `tenant` and `product` to update the app', 400);
@@ -385,14 +378,44 @@ export class App {
       throw new JacksonError('SAML Federation app not found', 404);
     }
 
-    const updatedApp: SAMLFederationApp = {
+    const toUpdate: Partial<SAMLFederationApp> = {};
+
+    // Support partial updates
+
+    if ('name' in params) {
+      toUpdate['name'] = params.name;
+    }
+
+    if ('acsUrl' in params) {
+      toUpdate['acsUrl'] = params.acsUrl;
+    }
+
+    if ('entityId' in params) {
+      toUpdate['entityId'] = params.entityId;
+    }
+
+    if ('logoUrl' in params) {
+      toUpdate['logoUrl'] = params.logoUrl || null;
+    }
+
+    if ('faviconUrl' in params) {
+      toUpdate['faviconUrl'] = params.faviconUrl || null;
+    }
+
+    if ('primaryColor' in params) {
+      toUpdate['primaryColor'] = params.primaryColor || null;
+    }
+
+    if (Object.keys(toUpdate).length === 0) {
+      throw new JacksonError(
+        'Please provide at least one of the following parameters: acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor',
+        400
+      );
+    }
+
+    const updatedApp = {
       ...app,
-      name: name || app.name,
-      acsUrl: acsUrl || app.acsUrl,
-      entityId: entityId || app.entityId,
-      logoUrl: logoUrl || app.logoUrl,
-      faviconUrl: faviconUrl || app.faviconUrl,
-      primaryColor: primaryColor || app.primaryColor,
+      ...toUpdate,
     };
 
     await this.store.put(app.id, updatedApp);
@@ -465,6 +488,8 @@ export class App {
 
   // Get the metadata for the app
   public async getMetadata() {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     const { publicKey } = await getDefaultCertificate();
 
     const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;

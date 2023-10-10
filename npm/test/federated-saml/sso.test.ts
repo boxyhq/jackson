@@ -79,15 +79,15 @@ tap.test('Federated SAML flow', async (t) => {
       });
 
       // Extract relay state created by Jackson
-      jacksonRelayState = new URL(response.redirectUrl).searchParams.get('RelayState');
+      jacksonRelayState = new URL(response.redirect_url).searchParams.get('RelayState');
 
       t.ok(
-        response.redirectUrl?.startsWith(`${connection.idpMetadata.sso.redirectUrl}`),
+        response.redirect_url?.startsWith(`${connection.idpMetadata.sso.redirectUrl}`),
         'Should have a SSO URL that starts with IdP SSO URL'
       );
-      t.ok(response.redirectUrl, 'Should have a redirect URL');
-      t.ok(response.redirectUrl?.includes('SAMLRequest'), 'Should have a SAMLRequest in the redirect URL');
-      t.ok(response.redirectUrl?.includes('RelayState'), 'Should have a RelayState in the redirect URL');
+      t.ok(response.redirect_url, 'Should have a redirect URL');
+      t.ok(response.redirect_url?.includes('SAMLRequest'), 'Should have a SAMLRequest in the redirect URL');
+      t.ok(response.redirect_url?.includes('RelayState'), 'Should have a RelayState in the redirect URL');
     });
 
     t.test('Should be able to accept SAML Response from IdP and generate SAML Response for SP', async (t) => {
@@ -110,15 +110,15 @@ tap.test('Federated SAML flow', async (t) => {
       });
 
       t.ok(response);
-      t.ok('responseForm' in response);
+      t.ok('response_form' in response);
       t.ok(
-        response.responseForm?.includes('SAMLResponse'),
+        response.response_form?.includes('SAMLResponse'),
         'Should have a SAMLResponse in the response form'
       );
-      t.ok(response.responseForm?.includes('RelayState'), 'Should have a RelayState in the response form');
+      t.ok(response.response_form?.includes('RelayState'), 'Should have a RelayState in the response form');
 
-      const relayState = response.responseForm
-        ? response.responseForm.match(/<input type="hidden" name="RelayState" value="(.*)"\/>/)?.[1]
+      const relayState = response.response_form
+        ? response.response_form.match(/<input type="hidden" name="RelayState" value="(.*)"\/>/)?.[1]
         : null;
 
       t.match(relayState, relayStateFromSP, 'Should have the same relay state as the one sent by SP');

@@ -26,6 +26,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { message, statusCode = 500 } = err;
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
-    res.redirect('/error');
+    res.redirect(302, '/error');
   }
 }
