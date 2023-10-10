@@ -143,7 +143,7 @@ export class SAMLHandler {
 
     const { sso } = connection.idpMetadata;
 
-    let ssoUrl: string | undefined;
+    let ssoUrl;
     let post = false;
 
     if ('redirectUrl' in sso) {
@@ -151,11 +151,6 @@ export class SAMLHandler {
     } else if ('postUrl' in sso) {
       ssoUrl = sso.postUrl;
       post = true;
-    }
-
-    if (!ssoUrl) {
-      // TODO: Update error message
-      throw new JacksonError('Invalid SAML IdP metadata.', 400);
     }
 
     const samlRequest = saml.request({
@@ -177,6 +172,7 @@ export class SAMLHandler {
       id: samlRequest.id,
       requested: {
         ...requestParams,
+        client_id: connection.clientID,
       },
       samlFederated: true,
     });
