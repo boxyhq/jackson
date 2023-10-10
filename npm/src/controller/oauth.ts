@@ -486,7 +486,7 @@ export class OAuthController implements IOAuthController {
 
   public async samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }> {
+  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }> {
     let connection: SAMLSSORecord | undefined;
     let rawResponse: string | undefined;
     let sessionId: string | undefined;
@@ -620,13 +620,15 @@ export class OAuthController implements IOAuthController {
     try {
       profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
 
+      console.log(session);
+
       // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
       if (isSAMLFederated) {
         const { responseForm } = await this.samlHandler.createSAMLResponse({ profile, session });
 
         await this.sessionStore.delete(sessionId);
 
-        return { responseForm };
+        return { response_form: responseForm };
       }
 
       const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);

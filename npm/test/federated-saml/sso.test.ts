@@ -112,13 +112,13 @@ tap.test('Federated SAML flow', async (t) => {
       t.ok(response);
       t.ok('responseForm' in response);
       t.ok(
-        response.responseForm?.includes('SAMLResponse'),
+        response.response_form?.includes('SAMLResponse'),
         'Should have a SAMLResponse in the response form'
       );
-      t.ok(response.responseForm?.includes('RelayState'), 'Should have a RelayState in the response form');
+      t.ok(response.response_form?.includes('RelayState'), 'Should have a RelayState in the response form');
 
-      const relayState = response.responseForm
-        ? response.responseForm.match(/<input type="hidden" name="RelayState" value="(.*)"\/>/)?.[1]
+      const relayState = response.response_form
+        ? response.response_form.match(/<input type="hidden" name="RelayState" value="(.*)"\/>/)?.[1]
         : null;
 
       t.match(relayState, relayStateFromSP, 'Should have the same relay state as the one sent by SP');
