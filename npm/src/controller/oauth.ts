@@ -535,7 +535,7 @@ export class OAuthController implements IOAuthController {
       }
 
       isSAMLFederated = session && 'samlFederated' in session;
-      const isSPFflow = !isIdPFlow && !isSAMLFederated;
+      const isSPFlow = !isIdPFlow && !isSAMLFederated;
 
       // IdP initiated SSO flow
       if (isIdPFlow) {
@@ -563,7 +563,7 @@ export class OAuthController implements IOAuthController {
 
       // SP initiated SSO flow
       // Resolve if there are multiple matches for SP login
-      if (isSPFflow || isSAMLFederated) {
+      if (isSPFlow || isSAMLFederated) {
         connection = connections.filter((c) => {
           return (
             c.clientID === session.requested.client_id ||
