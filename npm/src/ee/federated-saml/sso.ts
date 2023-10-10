@@ -5,7 +5,7 @@ import { JacksonError } from '../../controller/error';
 import { SAMLHandler } from '../../controller/saml-handler';
 import type { JacksonOption, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
 import { extractSAMLRequestAttributes } from '../../saml/lib';
-import { getErrorMessage } from '../../controller/utils';
+import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
 export class SSO {
@@ -45,6 +45,7 @@ export class SSO {
 
     let connection: SAMLSSORecord | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest, app;
+
     try {
       const parsedSAMLRequest = await extractSAMLRequestAttributes(request);
 
@@ -81,7 +82,8 @@ export class SSO {
       // If there is a redirect URL, then we need to redirect to that URL
       if ('redirectUrl' in response) {
         return {
-          redirectUrl: response.redirectUrl,
+          redirect_url: response.redirectUrl,
+          authorize_form: null,
         };
       }
 
@@ -94,6 +96,10 @@ export class SSO {
         throw new JacksonError('No SAML connection found.', 404);
       }
 
+      if (!isConnectionActive(connection)) {
+        throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
+      }
+
       return await this.samlHandler.createSAMLRequest({
         connection,
         requestParams: {
@@ -103,6 +109,8 @@ export class SSO {
           publicKey,
           providerName,
           relayState,
+          tenant: app.tenant,
+          product: app.product,
         },
       });
     } catch (err: unknown) {

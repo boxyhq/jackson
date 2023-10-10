@@ -11,6 +11,7 @@ import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
 import { createSAMLResponse } from '../saml/lib';
+import * as redirect from './oauth/redirect';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -134,21 +135,39 @@ export class SAMLHandler {
     return { connection: connections[0] };
   }
 
-  async createSAMLRequest(params: {
-    connection: SAMLSSORecord;
-    requestParams: Record<string, any>;
-  }): Promise<{ redirectUrl: string }> {
+  async createSAMLRequest(params: { connection: SAMLSSORecord; requestParams: Record<string, any> }) {
     const { connection, requestParams } = params;
 
     // We have a connection now, so we can create the SAML request
     const certificate = await getDefaultCertificate();
 
+    const { sso } = connection.idpMetadata;
+
+    let ssoUrl: string | undefined;
+    let post = false;
+
+    if ('redirectUrl' in sso) {
+      ssoUrl = sso.redirectUrl;
+    } else if ('postUrl' in sso) {
+      ssoUrl = sso.postUrl;
+      post = true;
+    }
+
+    if (!ssoUrl) {
+      // TODO: Update error message
+      throw new JacksonError('Invalid SAML IdP metadata.', 400);
+    }
+
     const samlRequest = saml.request({
-      ssoUrl: connection.idpMetadata.sso.redirectUrl,
+      ssoUrl,
       entityID: `${this.opts.samlAudience}`,
-      callbackUrl: `${this.opts.externalUrl}/api/oauth/saml`,
+      callbackUrl: this.opts.externalUrl + this.opts.samlPath,
       signingKey: certificate.privateKey,
       publicKey: certificate.publicKey,
+      forceAuthn: !!connection.forceAuthn,
+      identifierFormat: connection.identifierFormat
+        ? connection.identifierFormat
+        : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
     });
 
     // Create a new session to store SP request information
@@ -156,23 +175,39 @@ export class SAMLHandler {
 
     await this.session.put(sessionId, {
       id: samlRequest.id,
-      request: {
+      requested: {
         ...requestParams,
       },
       samlFederated: true,
     });
 
-    // Create URL to redirect to the Identity Provider
-    const url = new URL(`${connection.idpMetadata.sso.redirectUrl}`);
+    const relayState = `${relayStatePrefix}${sessionId}`;
 
-    url.searchParams.set('RelayState', `${relayStatePrefix}${sessionId}`);
-    url.searchParams.set(
-      'SAMLRequest',
-      Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64')
-    );
+    let redirectUrl;
+    let authorizeForm;
+
+    // Decide whether to use HTTP Redirect or HTTP POST binding
+    if (!post) {
+      redirectUrl = redirect.success(ssoUrl, {
+        RelayState: relayState,
+        SAMLRequest: Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64'),
+      });
+    } else {
+      authorizeForm = saml.createPostForm(ssoUrl, [
+        {
+          name: 'RelayState',
+          value: relayState,
+        },
+        {
+          name: 'SAMLRequest',
+          value: Buffer.from(samlRequest.request).toString('base64'),
+        },
+      ]);
+    }
 
     return {
-      redirectUrl: url.toString(),
+      redirect_url: redirectUrl,
+      authorize_form: authorizeForm,
     };
   }
 

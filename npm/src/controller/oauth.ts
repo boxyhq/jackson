@@ -563,17 +563,13 @@ export class OAuthController implements IOAuthController {
 
       // SP initiated SSO flow
       // Resolve if there are multiple matches for SP login
-      if (isSPFflow) {
+      if (isSPFflow || isSAMLFederated) {
         connection = connections.filter((c) => {
           return (
             c.clientID === session.requested.client_id ||
             (c.tenant === session.requested.tenant && c.product === session.requested.product)
           );
         })[0];
-      }
-
-      if (!connection) {
-        connection = connections[0];
       }
 
       if (!connection) {
