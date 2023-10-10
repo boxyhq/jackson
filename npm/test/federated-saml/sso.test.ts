@@ -110,7 +110,7 @@ tap.test('Federated SAML flow', async (t) => {
       });
 
       t.ok(response);
-      t.ok('responseForm' in response);
+      t.ok('response_form' in response);
       t.ok(
         response.response_form?.includes('SAMLResponse'),
         'Should have a SAMLResponse in the response form'
