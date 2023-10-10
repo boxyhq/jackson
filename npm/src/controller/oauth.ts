@@ -620,8 +620,6 @@ export class OAuthController implements IOAuthController {
     try {
       profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
 
-      console.log(session);
-
       // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
       if (isSAMLFederated) {
         const { responseForm } = await this.samlHandler.createSAMLResponse({ profile, session });
