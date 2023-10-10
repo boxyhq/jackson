@@ -79,15 +79,15 @@ tap.test('Federated SAML flow', async (t) => {
       });
 
       // Extract relay state created by Jackson
-      jacksonRelayState = new URL(response.redirectUrl).searchParams.get('RelayState');
+      jacksonRelayState = new URL(response.redirect_url).searchParams.get('RelayState');
 
       t.ok(
-        response.redirectUrl?.startsWith(`${connection.idpMetadata.sso.redirectUrl}`),
+        response.redirect_url?.startsWith(`${connection.idpMetadata.sso.redirectUrl}`),
         'Should have a SSO URL that starts with IdP SSO URL'
       );
-      t.ok(response.redirectUrl, 'Should have a redirect URL');
-      t.ok(response.redirectUrl?.includes('SAMLRequest'), 'Should have a SAMLRequest in the redirect URL');
-      t.ok(response.redirectUrl?.includes('RelayState'), 'Should have a RelayState in the redirect URL');
+      t.ok(response.redirect_url, 'Should have a redirect URL');
+      t.ok(response.redirect_url?.includes('SAMLRequest'), 'Should have a SAMLRequest in the redirect URL');
+      t.ok(response.redirect_url?.includes('RelayState'), 'Should have a RelayState in the redirect URL');
     });
 
     t.test('Should be able to accept SAML Response from IdP and generate SAML Response for SP', async (t) => {
