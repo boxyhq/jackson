@@ -139,7 +139,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - run: npm run custom-install
-      - run: npm run lint
+      - run: npm run check-lint
+      - run: npm run check-format
       - run: npm run build
       - run: npm run test
         working-directory: ./npm
