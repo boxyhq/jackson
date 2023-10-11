@@ -17,17 +17,16 @@
 <h3 align="center">
 
 [⬆️ Take a look at our Issues ⬆️](https://github.com/boxyhq/jackson/issues)
+
 </h3>
 
-___
+---
 
 <h3 align="center" >
     <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>· Explore the docs »</strong></a>
     <br />
     <a href="https://boxyhq.com/saas-registration" rel="dofollow"><strong>· SaaS Early Access »</strong></a>
 </h3>
-
-
 
 # ⭐️ SAML Jackson: Enterprise SSO made simple
 
