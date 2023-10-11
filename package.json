@@ -61,7 +61,7 @@
     "@retracedhq/retraced": "0.7.0",
     "@tailwindcss/typography": "0.5.10",
     "axios": "1.5.1",
-    "blockly": "10.2.1",
+    "blockly": "10.2.2",
     "classnames": "2.3.2",
     "cors": "2.8.5",
     "daisyui": "3.9.2",
