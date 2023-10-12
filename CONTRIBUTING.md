@@ -114,7 +114,7 @@ Start your contribution journey with our list of "good first issue" tasks, ideal
 
 ## License
 
-Jackson is an open-source project released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). Your contributions are subject to the terms of this license.
+Jackson is an open-source project released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt). Your contributions are subject to the terms of this license.
 
 
 ## Additional Tips
