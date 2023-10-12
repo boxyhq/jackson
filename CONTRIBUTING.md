@@ -114,11 +114,8 @@ Start your contribution journey with our list of "good first issue" tasks, ideal
 
 ## License
 
-Jackson is an open-source project released under the [MIT License](LICENSE). Your contributions are subject to the terms of this license.
+Jackson is an open-source project released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). Your contributions are subject to the terms of this license.
 
-### Code of Conduct
-
-Please ensure that your contributions align with our https://github.com/boxyhq/saas-starter-kit/blob/main/CODE_OF_CONDUCT.md. Be respectful, inclusive, and considerate of others.
 
 ## Additional Tips
 
