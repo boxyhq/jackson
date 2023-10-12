@@ -115,7 +115,7 @@ Start your contribution journey with our list of "good first issue" tasks, ideal
 
 Jackson is an open-source project released under the [MIT License](LICENSE). Your contributions are subject to the terms of this license.
 
-###Code of Conduct
+### Code of Conduct
 
 Please ensure that your contributions align with our Code of Conduct. Be respectful, inclusive, and considerate of others.
 
