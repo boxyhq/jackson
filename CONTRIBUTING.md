@@ -70,6 +70,12 @@ git checkout -b your-branch-name
 
 git branch your-branch-name
 ```
+### Make and commit your changes
+
+```shell
+
+git commit -m ""enter the message for changes that need to be committed"
+```
 
 ### Push your changes by commiting them
 
