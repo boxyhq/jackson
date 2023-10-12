@@ -83,6 +83,17 @@ Good pull requests - patches, improvements, new features - are a fantastic help.
 
 Go to the original repository on GitHub and click the "New Pull Request" button. Compare and create a pull request from your branch to the main repository. Provide a clear and concise description of your changes in the pull request.
 
+### Review and Feedback
+
+After submitting your PR, maintainers and other contributors may review your changes and provide feedback. Be ready to address any suggested improvements.
+
+### Merge
+
+Once your PR is approved, it will be merged into the main repository.
+
+Celebrate!
+
+
 ### Bug Reports
 
 If you encounter issues or bugs, please report them with detailed information.
