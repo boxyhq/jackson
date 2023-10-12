@@ -58,6 +58,7 @@ Read the full documentation [here](https://boxyhq.com/docs/jackson/deploy/).
 
 ## Contribution Guidelines
 
+
 ### Create a new branch 
 
 ```shell
@@ -117,11 +118,12 @@ Jackson is an open-source project released under the [MIT License](LICENSE). You
 
 ### Code of Conduct
 
-Please ensure that your contributions align with our Code of Conduct. Be respectful, inclusive, and considerate of others.
+Please ensure that your contributions align with our https://github.com/boxyhq/saas-starter-kit/blob/main/CODE_OF_CONDUCT.md. Be respectful, inclusive, and considerate of others.
 
 ## Additional Tips
 
 1. Be responsive to feedback from maintainers.
 2. Don't hesitate to seek help if needed.
+
 
 Happy contributing!
