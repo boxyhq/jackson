@@ -131,7 +131,7 @@ Jackson is an open-source project released under the [Apache License 2.0](https:
 ## Additional Tips
 
 1. Be responsive to feedback from maintainers.
-2. Don't hesitate to seek help if needed.
+2. Don't hesitate to seek help if needed in the discussion forum or any realted platform.
 
 
 Happy contributing!
