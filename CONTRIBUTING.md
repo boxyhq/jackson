@@ -91,10 +91,6 @@ If you encounter issues or bugs, please report them with detailed information.
 
 Submit detailed feature requests for new functionality.
 
-### Code Style
-
-Maintain code consistency with the [node style guide](https://github.com/felixge/node-style-guide).
-
 ### Testing
 
 Thoroughly test your changes to avoid regressions.
