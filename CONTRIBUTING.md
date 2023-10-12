@@ -54,27 +54,33 @@ npm run start
 
 Visit [http://localhost:5225](http://localhost:5225) in your browser. If you see a sign-in page, you're on the Admin Portal.
 
-### With Docker
-
-You can use the Docker container at [boxyhq/jackson](https://boxyhq.com/docs/jackson/deploy/). Make sure to replace the environment variables before running the `docker run` command.
-
-```shell
-docker run \
-  -p 5225:5225 \
-  -e DB_ENGINE="sql" \
-  -e DB_TYPE="postgres" \
-  -e DB_URL="your-database-url" \
-  -e JACKSON_API_KEYS="your-secret-key" \
-  -e NEXTAUTH_URL="http://localhost:5225" \
-  -e EXTERNAL_URL="http://localhost:5225" \
-  -e NEXTAUTH_SECRET="your-super-secret" \
-  -e NEXTAUTH_ADMIN_CREDENTIALS="admin@company.com:your-password" \
-  -d boxyhq/jackson
-```
-
 Read the full documentation [here](https://boxyhq.com/docs/jackson/deploy/).
 
 ## Contribution Guidelines
+
+### Create a new branch 
+
+```shell
+git checkout -b your-branch-name
+```
+#### or
+
+```shell
+
+git branch your-branch-name
+```
+
+### Push your changes by commiting them
+
+```shell
+git push origin your-branch-name
+```
+
+### Create a Pull Request
+
+Good pull requests - patches, improvements, new features - are a fantastic help. They should remain focused in scope and avoid containing unrelated commits.
+
+Go to the original repository on GitHub and click the "New Pull Request" button. Compare and create a pull request from your branch to the main repository. Provide a clear and concise description of your changes in the pull request.
 
 ### Bug Reports
 
@@ -108,6 +114,10 @@ Start your contribution journey with our list of "good first issue" tasks, ideal
 ## License
 
 Jackson is an open-source project released under the [MIT License](LICENSE). Your contributions are subject to the terms of this license.
+
+###Code of Conduct
+
+Please ensure that your contributions align with our Code of Conduct. Be respectful, inclusive, and considerate of others.
 
 ## Additional Tips
 
