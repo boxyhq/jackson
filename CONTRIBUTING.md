@@ -93,11 +93,11 @@ Submit detailed feature requests for new functionality.
 
 ### Testing
 
-Thoroughly test your changes to avoid regressions.
+Thoroughly test your changes to avoid regressions and errors.
 
 ### Good First Issues
 
-Start your contribution journey with our list of "good first issue" tasks, ideal for newcomers.
+Start your contribution journey with our list of "good first issue" tasks, ideal for newcomers and first timers.
 
 ## Development
 
@@ -108,9 +108,13 @@ Start your contribution journey with our list of "good first issue" tasks, ideal
 5. Test your changes.
 6. Submit a pull request against the main branch.
 
+## Code Of Conduct 
+
+Please ensure that your contributions align with our [Code of Conduct](https://github.com/boxyhq/jackson/blob/6cf5639706714c727d093136372a46ac7b26ac0a/CODE_OF_CONDUCT.md#L1). Be respectful, inclusive, and considerate of others.
+
 ## License
 
-Jackson is an open-source project released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt). Your contributions are subject to the terms of this license.
+Jackson is an open-source project released under the [Apache License 2.0](https://github.com/boxyhq/jackson/blob/main/LICENSE). Your contributions are subject to the terms of this license.
 
 
 ## Additional Tips
