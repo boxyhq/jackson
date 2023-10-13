@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 
@@ -6,12 +6,16 @@ import { Sidebar } from '@components/Sidebar';
 import { Navbar } from '@components/Navbar';
 import { useTranslation } from 'next-i18next';
 import Loading from '@components/Loading';
+import { applyTheme } from '../../lib/theme';
 
 export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation('common');
   const { data: session, status } = useSession({ required: true });
 
   const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    applyTheme(localStorage.getItem('theme') as Theme);
+  }, []);
 
   if (status === 'loading') {
     return <Loading />;
@@ -24,6 +28,7 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+
       <div className='flex flex-1 flex-col md:pl-64'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <button
@@ -44,8 +49,10 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
               <path strokeLinecap='round' strokeLinejoin='round' d='M4 6h16M4 12h16M4 18h7' />
             </svg>
           </button>
+
           <Navbar session={session} />
         </div>
+
         <main>
           <div className='py-6'>
             <div className='mx-auto max-w-7xl px-4 sm:px-6 md:px-8'>{children}</div>

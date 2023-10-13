@@ -23,6 +23,8 @@ module.exports = {
           error: '#F87272',
         },
       },
+      'black',
+      'corporate',
     ],
   },
   plugins: [require('@tailwindcss/typography'), require('daisyui')],

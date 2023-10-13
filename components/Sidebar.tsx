@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
-
+import useTheme from '@lib/ui/hooks/useTheme';
 import Logo from '../public/logo.png';
 import { useTranslation } from 'next-i18next';
 import SSOLogo from '@components/logo/SSO';
@@ -28,7 +28,7 @@ type MenuItem = {
 export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   const { t } = useTranslation('common');
   const { asPath } = useRouter();
-
+  const { selectedTheme, toggleTheme } = useTheme();
   const menus = [
     {
       href: '/admin/dashboard',
@@ -185,6 +185,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
               <span className='ml-4 text-lg font-bold text-gray-900'>BoxyHQ Admin Portal</span>
             </Link>
           </div>
+
           <div className='mt-5 flex flex-1 flex-col'>
             <MenuItems menus={menus} />
           </div>

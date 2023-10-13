@@ -5,15 +5,22 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import PowerIcon from '@heroicons/react/20/solid/PowerIcon';
+import useTheme from '@lib/ui/hooks/useTheme';
 
 export const Navbar = ({ session }: { session: Session | null }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const { t } = useTranslation('common');
+  const { selectedTheme, toggleTheme } = useTheme();
 
   return (
     <div className='flex flex-1 justify-between px-4'>
       <div className='flex flex-1'></div>
       <div className='ml-4 flex items-center md:ml-6'>
+        <button
+          className='p-0 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-slate-200 dark:hover:bg-gray-200 dark:hover:text-black'
+          onClick={toggleTheme}>
+          <selectedTheme.icon className='w-5 h-5' />
+        </button>
         <div className='relative ml-3'>
           {session && (
             <div>
@@ -31,6 +38,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
               </button>
             </div>
           )}
+
           {session && (
             <div
               className={classNames(

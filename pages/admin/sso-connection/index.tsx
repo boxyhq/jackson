@@ -1,5 +1,6 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
 import ConnectionList from '@components/connection/ConnectionList';
+
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const ConnectionsIndexPage: NextPage = () => {
