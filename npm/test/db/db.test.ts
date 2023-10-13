@@ -53,15 +53,15 @@ const mysqlDbConfig = <DatabaseOption>{
   cleanupLimit: 10,
 };
 
-// const planetscaleDbConfig = <DatabaseOption>{
-//   engine: 'planetscale',
-//   url: process.env.PLANETSCALE_URL,
-//   ttl: 1,
-//   cleanupLimit: 10,
-//   ssl: {
-//     rejectUnauthorized: true,
-//   },
-// };
+const planetscaleDbConfig = <DatabaseOption>{
+  engine: 'planetscale',
+  url: process.env.PLANETSCALE_URL,
+  ttl: 1,
+  cleanupLimit: 10,
+  ssl: {
+    rejectUnauthorized: true,
+  },
+};
 
 const mariadbDbConfig = <DatabaseOption>{
   engine: 'sql',
@@ -143,17 +143,17 @@ const dbs = [
   },
 ];
 
-// if (process.env.PLANETSCALE_URL) {
-//   dbs.push(
-//     {
-//       ...planetscaleDbConfig,
-//     },
-//     {
-//       ...planetscaleDbConfig,
-//       encryptionKey,
-//     }
-//   );
-// }
+if (process.env.PLANETSCALE_URL) {
+  dbs.push(
+    {
+      ...planetscaleDbConfig,
+    },
+    {
+      ...planetscaleDbConfig,
+      encryptionKey,
+    }
+  );
+}
 
 if (process.env.DYNAMODB_URL) {
   dbs.push(
