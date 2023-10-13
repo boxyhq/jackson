@@ -7,6 +7,10 @@ resources:
   - ./mocksaml-secrets.yaml
   - ./mocksaml-deployment.yaml
 
+patches:
+  - ./jackson-deployment.yaml
+  - ./migratepg-job.yaml
+
 images:
   - name: boxyhq/jackson
     newTag: 1.13.0
