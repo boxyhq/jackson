@@ -181,9 +181,7 @@ export class DirectoryConfig {
    *      200:
    *        description: Success
    *        schema:
-   *          type: array
-   *          items:
-   *            $ref:  '#/definitions/Directory'
+   *          $ref:  '#/definitions/Directory'
    */
   public async create(params: {
     name?: string;
@@ -330,7 +328,69 @@ export class DirectoryConfig {
     }
   }
 
-  // Update the configuration. Partial updates are supported
+  /**
+   * @swagger
+   * /api/v1/dsync/{directoryId}:
+   *   patch:
+   *     summary: Update a directory connection
+   *     parameters:
+   *       - name: directoryId
+   *         description: Directory ID
+   *         in: path
+   *         required: true
+   *         type: string
+   *       - name: name
+   *         description: Name
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: webhook_url
+   *         description: Webhook URL
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: webhook_secret
+   *         description: Webhook secret
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: log_webhook_events
+   *         description: If true, webhook requests will be logged
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: deactivated
+   *         description: If true, the directory connection will be deactivated
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: google_domain
+   *         description: Google domain
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: google_access_token
+   *         description: Google access token
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: google_refresh_token
+   *         description: Google refresh token
+   *         in: formData
+   *         required: false
+   *         type: string
+   *     tags: [Directory Sync]
+   *     produces:
+   *      - application/json
+   *     consumes:
+   *      - application/x-www-form-urlencoded
+   *      - application/json
+   *     responses:
+   *      200:
+   *        description: Success
+   *        schema:
+   *          $ref:  '#/definitions/Directory'
+   */
   public async update(
     id: string,
     param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim' | 'type'>
