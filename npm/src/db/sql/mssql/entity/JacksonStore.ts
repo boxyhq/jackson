@@ -1,4 +1,4 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, Index } from 'typeorm';
 
 @Entity({ name: 'jackson_store' })
 export class JacksonStore {
@@ -40,4 +40,12 @@ export class JacksonStore {
     nullable: true,
   })
   modifiedAt?: string;
+
+  @Index('_jackson_store_namespace')
+  @Column({
+    type: 'varchar',
+    length: 64,
+    nullable: true,
+  })
+  namespace?: string;
 }
