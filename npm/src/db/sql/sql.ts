@@ -27,7 +27,10 @@ class Sql implements DatabaseDriver {
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
     // Synchronize by default for non-planetscale engines only if migrations are not set to run
-    const synchronize = this.options.engine !== 'planetscale' && !this.options.manualMigration;
+    let synchronize = !this.options.manualMigration;
+    if (this.options.engine === 'planetscale') {
+      synchronize = false;
+    }
 
     while (true) {
       try {
