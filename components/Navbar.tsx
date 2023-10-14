@@ -13,7 +13,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
   const { selectedTheme, toggleTheme } = useTheme();
 
   return (
-    <div className='flex flex-1 justify-between px-4'>
+    <div className='flex flex-1 justify-between px-4 relative z-1'>
       <div className='flex flex-1'></div>
       <div className='ml-4 flex items-center md:ml-6'>
         <button
@@ -42,7 +42,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
           {session && (
             <div
               className={classNames(
-                'absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none',
+                'absolute right-0 mt-2 w-48 origin-top-right rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none',
                 { hidden: !isOpen }
               )}
               role='menu'
