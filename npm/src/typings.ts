@@ -378,6 +378,7 @@ export interface DatabaseOption {
     readCapacityUnits?: number;
     writeCapacityUnits?: number;
   };
+  manualMigration?: boolean;
 }
 
 export interface JacksonOption {

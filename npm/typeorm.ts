@@ -43,7 +43,10 @@ const baseOpts = {
   migrationsTableName: '_jackson_migrations',
   logging: 'all',
   entities: [`src/db/${entitiesDir}/entity/**/*.ts`],
-  migrations: [`migration/${migrationsDir}/**/*.ts`],
+  migrations:
+    type === 'mssql'
+      ? [`migration/${migrationsDir}/**/*.ts`]
+      : [`migration/${migrationsDir}/**/*.ts`, `migration/sql/**/*.ts`],
 };
 
 if (type === 'mssql') {

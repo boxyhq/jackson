@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: jackson
-          image: boxyhq/jackson:tagwillbereplaced
+          image: boxyhq/jackson-local
           imagePullPolicy: IfNotPresent
           startupProbe:
             httpGet:
