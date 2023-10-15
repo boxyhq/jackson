@@ -160,19 +160,16 @@ export interface IConnectionAPIController {
    * @deprecated Use `deleteConnections` instead.
    */
   deleteConfig(body: DelConfigQuery): Promise<void>;
-  getConnectionsByProduct(body: {
-    product: string;
-    pageOffset?: number;
-    pageLimit?: number;
-    pageToken?: string;
-  }): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }>;
+  getConnectionsByProduct(
+    body: GetByProductParams
+  ): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }>;
 }
 
 export interface IOAuthController {
   authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }>;
   samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }>;
+  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }>;
   oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
@@ -392,6 +389,7 @@ export interface DatabaseOption {
     readCapacityUnits?: number;
     writeCapacityUnits?: number;
   };
+  manualMigration?: boolean;
 }
 
 export interface JacksonOption {
@@ -554,6 +552,13 @@ export type AdminPortalBranding = {
 export type Webhook = {
   endpoint: string;
   secret: string;
+};
+
+export type GetByProductParams = {
+  product: string;
+  pageOffset?: number;
+  pageLimit?: number;
+  pageToken?: string;
 };
 
 export type SortOrder = 'ASC' | 'DESC';

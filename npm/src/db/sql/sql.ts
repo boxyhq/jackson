@@ -3,7 +3,7 @@
 require('reflect-metadata');
 
 import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records, SortOrder } from '../../typings';
-import { DataSource, DataSourceOptions, Like, In } from 'typeorm';
+import { DataSource, DataSourceOptions, In, IsNull } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
 
@@ -26,13 +26,17 @@ class Sql implements DatabaseDriver {
 
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
+    // Synchronize by default for non-planetscale engines only if migrations are not set to run
+    let synchronize = !this.options.manualMigration;
+    if (this.options.engine === 'planetscale') {
+      synchronize = false;
+    }
 
     while (true) {
       try {
         const baseOpts = {
           type: sqlType,
-          synchronize: this.options.engine !== 'planetscale',
-          migrationsTableName: '_jackson_migrations',
+          synchronize,
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
         };
@@ -73,6 +77,21 @@ class Sql implements DatabaseDriver {
     this.indexRepository = this.dataSource.getRepository(JacksonIndex);
     this.ttlRepository = this.dataSource.getRepository(JacksonTTL);
 
+    while (true) {
+      try {
+        if (synchronize) {
+          await this.indexNamespace();
+        }
+        break;
+      } catch (err) {
+        console.error(
+          `error in index namespace execution for engine: ${this.options.engine}, type: ${sqlType} err: ${err}`
+        );
+        await dbutils.sleep(1000);
+        continue;
+      }
+    }
+
     if (this.options.ttl && this.options.cleanupLimit) {
       this.ttlCleanup = async () => {
         const now = Date.now();
@@ -111,6 +130,23 @@ class Sql implements DatabaseDriver {
     return this;
   }
 
+  async indexNamespace() {
+    const res = await this.storeRepository.find({
+      where: {
+        namespace: IsNull(),
+      },
+      select: ['key'],
+    });
+    const searchTerm = ':';
+
+    for (const r of res) {
+      const key = r.key;
+      const tokens2 = key.split(searchTerm).slice(0, 2);
+      const value = tokens2.join(searchTerm);
+      await this.storeRepository.update({ key }, { namespace: value });
+    }
+  }
+
   async get(namespace: string, key: string): Promise<any> {
     const res = await this.storeRepository.findOneBy({
       key: dbutils.key(namespace, key),
@@ -138,7 +174,7 @@ class Sql implements DatabaseDriver {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
 
     const res = await this.storeRepository.find({
-      where: { key: Like(`%${namespace}%`) },
+      where: { namespace: namespace },
       select: ['value', 'iv', 'tag'],
       order: {
         ['createdAt']: sortOrder || 'DESC',
@@ -203,6 +239,7 @@ class Sql implements DatabaseDriver {
       store.iv = val.iv;
       store.tag = val.tag;
       store.modifiedAt = new Date().toISOString();
+      store.namespace = namespace;
       await transactionalEntityManager.save(store);
 
       if (ttl) {

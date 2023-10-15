@@ -6,13 +6,11 @@ bases:
 
 resources:
   - ./secrets.yaml
-
-patches:
-  - ./jackson-service.yaml
+  - ./migratepg-job.yaml
 
 commonLabels:
   jacksondev: '1'
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.9.7
+    newTag: 1.12.0

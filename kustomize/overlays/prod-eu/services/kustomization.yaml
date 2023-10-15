@@ -1,0 +1,4 @@
+---
+bases:
+  - ./jackson-service.yaml
+  - ./mocksaml-service.yaml

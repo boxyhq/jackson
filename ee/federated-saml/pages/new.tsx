@@ -1,16 +1,15 @@
-import type { NextPage } from 'next';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 
 import type { ApiResponse } from 'types';
-import LicenseRequired from '@components/LicenseRequired';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
+import LicenseRequired from '@components/LicenseRequired';
 
-const NewApp: NextPage = () => {
+const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -21,6 +20,10 @@ const NewApp: NextPage = () => {
     acsUrl: '',
     entityId: '',
   });
+
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
+  }
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -60,7 +63,7 @@ const NewApp: NextPage = () => {
   };
 
   return (
-    <LicenseRequired>
+    <>
       <LinkBack href='/admin/federated-saml' />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_add_new_app')}</h2>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
@@ -138,7 +141,7 @@ const NewApp: NextPage = () => {
           </div>
         </form>
       </div>
-    </LicenseRequired>
+    </>
   );
 };
 
