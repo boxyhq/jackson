@@ -33,7 +33,8 @@ if (process.env.DB_SSL === 'true') {
   };
 }
 
-const url = process.env.DB_URL || 'postgresql://postgres:postgres@localhost:5432/postgres';
+const url =
+  process.env.DB_URL || process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres';
 
 let AppDataSource: DataSource;
 
@@ -62,7 +63,10 @@ if (type === 'mssql') {
   });
 } else {
   AppDataSource = new DataSource(<DataSourceOptions>{
-    url: process.env.DB_URL || 'postgresql://postgres:postgres@localhost:5432/postgres',
+    url:
+      process.env.DB_URL ||
+      process.env.DATABASE_URL ||
+      'postgresql://postgres:postgres@localhost:5432/postgres',
     ssl,
     ...baseOpts,
   });
