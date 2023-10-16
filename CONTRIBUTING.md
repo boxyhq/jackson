@@ -31,14 +31,14 @@ Navigate to the project folder and install necessary dependencies:
 
 ```shell
 cd jackson
-npm run custom-install
+npm install
 ```
 
 #### Add Environment Variables
 
 ```shell
-npm run dev
 cp .env.example .env
+npm run dev
 ```
 
 Please update .env with your values. See the complete list of [Environment Variables](https://boxyhq.com/docs/jackson/deploy/env-variables).
