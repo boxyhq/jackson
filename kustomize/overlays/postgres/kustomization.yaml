@@ -6,6 +6,7 @@ bases:
 
 resources:
   - ./secrets.yaml
+  - ./migratepg-job.yaml
 
 commonLabels:
   jacksondev: '1'

@@ -43,6 +43,7 @@ const db: DatabaseOption = {
     readCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_RCUS) : undefined,
     writeCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_WCUS) : undefined,
   },
+  manualMigration: process.env.DB_MANUAL_MIGRATION === 'true',
 };
 
 const jacksonOptions: JacksonOption = {

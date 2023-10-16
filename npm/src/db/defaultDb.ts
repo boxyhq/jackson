@@ -11,6 +11,7 @@ export default function defaultDb(opts: JacksonOption) {
   opts.db.dynamodb.region = opts.db.dynamodb.region || 'us-east-1';
   opts.db.dynamodb.readCapacityUnits = opts.db.dynamodb.readCapacityUnits || 5;
   opts.db.dynamodb.writeCapacityUnits = opts.db.dynamodb.writeCapacityUnits || 5;
+  opts.db.manualMigration = opts.db.manualMigration || false;
 
   return opts;
 }
