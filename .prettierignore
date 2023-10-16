@@ -21,3 +21,4 @@ npm/package-lock.json
 .eslintignore
 
 **/LICENSE
+swagger/swagger.json

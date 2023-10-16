@@ -1,7 +1,8 @@
 {
+  "openapi": "3.0.0",
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.13.2",
+    "version": "1.14.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -16,7 +17,10 @@
   },
   "host": "localhost:5225",
   "basePath": "/",
-  "schemes": ["http", "https"],
+  "schemes": [
+    "http",
+    "https"
+  ],
   "securityDefinitions": {
     "apiKey": {
       "type": "apiKey",
@@ -29,15 +33,21 @@
       "apiKey": []
     }
   ],
-  "swagger": "2.0",
   "paths": {
     "/api/v1/sso": {
       "post": {
         "summary": "Create SSO connection",
         "operationId": "create-sso-connection",
-        "tags": ["Single Sign On"],
-        "produces": ["application/json"],
-        "consumes": ["application/x-www-form-urlencoded", "application/json"],
+        "tags": [
+          "Single Sign On"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
         "parameters": [
           {
             "$ref": "#/parameters/nameParamPost"
@@ -97,8 +107,13 @@
       "patch": {
         "summary": "Update SSO Connection",
         "operationId": "update-sso-connection",
-        "tags": ["Single Sign On"],
-        "consumes": ["application/json", "application/x-www-form-urlencoded"],
+        "tags": [
+          "Single Sign On"
+        ],
+        "consumes": [
+          "application/json",
+          "application/x-www-form-urlencoded"
+        ],
         "parameters": [
           {
             "$ref": "#/parameters/clientIDParamPatch"
@@ -181,7 +196,9 @@
           }
         ],
         "operationId": "get-connections",
-        "tags": ["Single Sign On"],
+        "tags": [
+          "Single Sign On"
+        ],
         "responses": {
           "200": {
             "$ref": "#/responses/200Get"
@@ -214,7 +231,9 @@
         ],
         "summary": "Delete SSO Connections",
         "operationId": "delete-sso-connection",
-        "tags": ["Single Sign On"],
+        "tags": [
+          "Single Sign On"
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -237,7 +256,9 @@
           }
         ],
         "operationId": "get-connections-by-product",
-        "tags": ["Single Sign On"],
+        "tags": [
+          "Single Sign On"
+        ],
         "responses": {
           "200": {
             "$ref": "#/responses/200Get"
@@ -255,8 +276,12 @@
       "post": {
         "summary": "Code exchange",
         "operationId": "oauth-code-exchange",
-        "tags": ["OAuth"],
-        "consumes": ["application/x-www-form-urlencoded"],
+        "tags": [
+          "OAuth"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
         "parameters": [
           {
             "name": "grant_type",
@@ -331,7 +356,9 @@
       "get": {
         "summary": "Get profile",
         "operationId": "oauth-get-profile",
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -386,9 +413,16 @@
       "post": {
         "summary": "Create a Setup Link",
         "operationId": "create-sso-setup-link",
-        "tags": ["Setup Links | Single Sign On"],
-        "produces": ["application/json"],
-        "consumes": ["application/x-www-form-urlencoded", "application/json"],
+        "tags": [
+          "Setup Links | Single Sign On"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
         "parameters": [
           {
             "$ref": "#/parameters/tenantParamPost"
@@ -426,7 +460,9 @@
           }
         ],
         "operationId": "delete-sso-setup-link",
-        "tags": ["Setup Links | Single Sign On"],
+        "tags": [
+          "Setup Links | Single Sign On"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -453,7 +489,9 @@
           }
         ],
         "operationId": "get-sso-setup-link",
-        "tags": ["Setup Links | Single Sign On"],
+        "tags": [
+          "Setup Links | Single Sign On"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -468,9 +506,16 @@
       "post": {
         "summary": "Create a Setup Link",
         "operationId": "create-dsync-setup-link",
-        "tags": ["Setup Links | Directory Sync"],
-        "produces": ["application/json"],
-        "consumes": ["application/x-www-form-urlencoded", "application/json"],
+        "tags": [
+          "Setup Links | Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
         "parameters": [
           {
             "$ref": "#/parameters/tenantParamPost"
@@ -502,7 +547,9 @@
           }
         ],
         "operationId": "delete-dsync-setup-link",
-        "tags": ["Setup Links | Directory Sync"],
+        "tags": [
+          "Setup Links | Directory Sync"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -529,7 +576,9 @@
           }
         ],
         "operationId": "get-dsync-setup-link",
-        "tags": ["Setup Links | Directory Sync"],
+        "tags": [
+          "Setup Links | Directory Sync"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -549,7 +598,9 @@
           }
         ],
         "operationId": "get-sso-setup-link-by-product",
-        "tags": ["Setup Links | Single Sign On"],
+        "tags": [
+          "Setup Links | Single Sign On"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -572,7 +623,9 @@
           }
         ],
         "operationId": "get-dsync-setup-link-by-product",
-        "tags": ["Setup Links | Directory Sync"],
+        "tags": [
+          "Setup Links | Directory Sync"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -598,8 +651,12 @@
             "type": "string"
           }
         ],
-        "tags": ["SAML Traces"],
-        "produces": ["application/json"],
+        "tags": [
+          "SAML Traces"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -618,8 +675,12 @@
             "$ref": "#/parameters/product"
           }
         ],
-        "tags": ["SAML Traces"],
-        "produces": ["application/json"],
+        "tags": [
+          "SAML Traces"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -680,9 +741,16 @@
             "type": "string"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
-        "consumes": ["application/x-www-form-urlencoded", "application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -702,9 +770,16 @@
             "$ref": "#/parameters/product"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
-        "consumes": ["application/x-www-form-urlencoded", "application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -730,8 +805,12 @@
             "type": "string"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -808,9 +887,16 @@
             "type": "string"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
-        "consumes": ["application/x-www-form-urlencoded", "application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -831,8 +917,12 @@
             "type": "string"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -848,8 +938,12 @@
             "$ref": "#/parameters/product"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -881,8 +975,12 @@
             "type": "string"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -907,8 +1005,12 @@
             "$ref": "#/parameters/directoryId"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -940,8 +1042,12 @@
             "type": "string"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -966,8 +1072,12 @@
             "$ref": "#/parameters/directoryId"
           }
         ],
-        "tags": ["Directory Sync"],
-        "produces": ["application/json"],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -1042,9 +1152,16 @@
             "type": "string"
           }
         ],
-        "tags": ["SAML Federation"],
-        "produces": ["application/json"],
-        "consumes": ["application/x-www-form-urlencoded", "application/json"],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -1082,8 +1199,12 @@
             "type": "string"
           }
         ],
-        "tags": ["SAML Federation"],
-        "produces": ["application/json"],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -1160,9 +1281,16 @@
             "type": "string"
           }
         ],
-        "tags": ["SAML Federation"],
-        "produces": ["application/json"],
-        "consumes": ["application/x-www-form-urlencoded", "application/json"],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -1197,8 +1325,12 @@
             "type": "string"
           }
         ],
-        "tags": ["SAML Federation"],
-        "produces": ["application/json"],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -1221,8 +1353,12 @@
             "type": "string"
           }
         ],
-        "tags": ["SAML Federation"],
-        "produces": ["application/json"],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -1252,7 +1388,9 @@
           "provider": "okta.com"
         },
         "defaultRedirectUrl": "https://hoppscotch.io/",
-        "redirectUrl": ["https://hoppscotch.io/"],
+        "redirectUrl": [
+          "https://hoppscotch.io/"
+        ],
         "tenant": "hoppscotch.io",
         "product": "API Engine",
         "name": "Hoppscotch-SP",
@@ -1847,5 +1985,6 @@
       "type": "string"
     }
   },
+  "components": {},
   "tags": []
 }
