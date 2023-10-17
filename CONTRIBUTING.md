@@ -31,7 +31,12 @@ Navigate to the project folder and install necessary dependencies:
 
 ```shell
 cd jackson
-npm install
+```
+
+#### Install custom dependencies
+
+``` shell
+npm run custom-install
 ```
 
 #### Add Environment Variables
@@ -59,6 +64,7 @@ Read the full documentation [here](https://boxyhq.com/docs/jackson/deploy/).
 ## Contribution Guidelines
 
 
+
 ### Create a new branch 
 
 ```shell
@@ -70,10 +76,21 @@ git checkout -b your-branch-name
 
 git branch your-branch-name
 ```
+### Stage your changes
+
+``` shell
+git add your-file-name
+```
+
+or 
+
+``` shell
+git add .
+```
+
 ### Make and commit your changes
 
 ```shell
-
 git commit -m ""enter the message for changes that need to be committed"
 ```
 
@@ -97,7 +114,7 @@ After submitting your PR, maintainers and other contributors may review your cha
 
 Once your PR is approved, it will be merged into the main repository.
 
-Celebrate!
+#### Celebrate!
 
 
 ### Bug Reports
