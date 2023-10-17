@@ -32,7 +32,6 @@
     "mssql:skaffold": "skaffold dev -f skaffold-mssql.yaml --status-check=false --force=true",
     "dynamodb:skaffold": "skaffold dev -f skaffold-dynamodb.yaml --status-check=false --force=true",
     "demo:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use {dbname}:skaffold instead' && skaffold run -f skaffold-demo.yaml --status-check=false",
-    "demo-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use {dbname}:skaffold instead' && skaffold run -f skaffold-demo-services.yaml --status-check=false",
     "prod-eu:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use {dbname}:skaffold instead' && skaffold run -f skaffold-prod-eu.yaml --status-check=false",
     "prod-eu-services:skaffold": "echo 'This is only meant for BoxyHQ internal use. Please use {dbname}:skaffold instead' && skaffold run -f skaffold-prod-eu-services.yaml --status-check=false",
     "start": "cross-env PORT=5225 NODE_OPTIONS=--dns-result-order=ipv4first node .next/standalone/server.js",
