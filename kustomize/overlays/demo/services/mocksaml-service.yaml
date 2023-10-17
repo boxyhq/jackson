@@ -11,13 +11,11 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: 'arn:aws:acm:us-west-1:511214097407:certificate/3cd477cb-f54b-4701-89f1-9416216cb1c9'
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: '443'
+    service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
 spec:
   externalTrafficPolicy: Local
   type: LoadBalancer
   ports:
-    - name: http
-      port: 80
-      targetPort: 4000
     - name: https
       port: 443
       targetPort: 4000
