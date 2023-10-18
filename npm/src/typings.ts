@@ -169,7 +169,7 @@ export interface IOAuthController {
   authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }>;
   samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }>;
+  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }>;
   oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
@@ -378,6 +378,7 @@ export interface DatabaseOption {
     readCapacityUnits?: number;
     writeCapacityUnits?: number;
   };
+  manualMigration?: boolean;
 }
 
 export interface JacksonOption {
