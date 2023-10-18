@@ -9,8 +9,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return await handleGET(req, res);
     case 'DELETE':
       return await handleDELETE(req, res);
+    case 'PATCH':
+      return await handlePATCH(req, res);
     default:
-      res.setHeader('Allow', 'GET, DELETE');
+      res.setHeader('Allow', 'GET, DELETE, PATCH');
       res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
   }
 }
@@ -39,4 +41,25 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   await directorySyncController.directories.delete(directoryId);
 
   return res.status(200).json({ data: {} });
+};
+
+// Update directory
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { directorySyncController } = await jackson();
+
+  const { directoryId } = req.query as { directoryId: string };
+
+  const { data, error } = await directorySyncController.directories.update(directoryId, {
+    ...req.body,
+    webhook: {
+      endpoint: req.body.webhook_url,
+      secret: req.body.webhook_secret,
+    },
+  });
+
+  if (error) {
+    res.status(error.code).json({ error });
+  }
+
+  res.json({ data });
 };
