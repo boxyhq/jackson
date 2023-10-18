@@ -9,7 +9,7 @@ import { ApiSuccess, ApiError } from 'types';
 import { fetcher } from '@lib/ui/utils';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { LinkBack } from '@components/LinkBack';
 import { Badge } from 'react-daisyui';
 import { CopyToClipboardButton } from '@components/ClipboardButton';
