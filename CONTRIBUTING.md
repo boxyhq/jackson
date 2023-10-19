@@ -144,7 +144,7 @@ Start your contribution journey with our list of "good first issue" tasks, ideal
 
 ## Code Of Conduct 
 
-Please ensure that your contributions align with our [Code of Conduct](https://github.com/boxyhq/jackson/blob/6cf5639706714c727d093136372a46ac7b26ac0a/CODE_OF_CONDUCT.md#L1). Be respectful, inclusive, and considerate of others.
+Please ensure that your contributions align with our [https://github.com/boxyhq/jackson/blob/main/CODE_OF_CONDUCT.md). Be respectful, inclusive, and considerate of others.
 
 ## License
 
