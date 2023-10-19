@@ -67,7 +67,7 @@
   "devDependencies": {
     "@faker-js/faker": "8.2.0",
     "@types/lodash": "4.14.199",
-    "@types/node": "20.8.6",
+    "@types/node": "20.8.7",
     "@types/sinon": "10.0.19",
     "@types/tap": "15.0.9",
     "cross-env": "7.0.3",
