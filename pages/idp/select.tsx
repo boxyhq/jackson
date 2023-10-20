@@ -23,6 +23,11 @@ export default function ChooseIdPConnection({
   const primaryColor = hexToHsl(branding.primaryColor);
   const title = authFlow === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
 
+  const selectors = {
+    'sp-initiated': <IdpSelector connections={connections} />,
+    'idp-initiated': <AppSelector connections={connections} SAMLResponse={SAMLResponse} />,
+  };
+
   return (
     <div className='mx-auto my-28 w-[500px]'>
       <div className='mx-5 flex flex-col space-y-10 rounded border border-gray-300 p-10'>
@@ -41,11 +46,7 @@ export default function ChooseIdPConnection({
           </div>
         )}
 
-        {authFlow === 'sp-initiated' ? (
-          <IdpSelector connections={connections} />
-        ) : (
-          <AppSelector connections={connections} SAMLResponse={SAMLResponse} />
-        )}
+        {selectors[authFlow]}
       </div>
       <div className='my-4'>
         <PoweredBy />
@@ -191,6 +192,12 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     entityId?: string;
     samlFedAppId?: string;
   };
+
+  if (!['sp-initiated', 'idp-initiated'].includes(authFlow)) {
+    return {
+      notFound: true,
+    };
+  }
 
   // The user has selected an IdP to continue with
   if (idp_hint) {
