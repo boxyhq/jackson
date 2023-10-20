@@ -1,11 +1,12 @@
 
 # Contributing to Jackson
 
-Thank you for your interest in contributing to Jackson! Your contributions are essential in making Jackson even better. Whether you're fixing a bug, implementing new features, or suggesting improvements, your involvement is valued.
+Thank you for your interest in contributing to Jackson! Your contributions are essential in making Jackson even better. Whether you're fixing a bug, implementing new features, or suggesting improvements, your involvement is valued and appreicated.
+
 
 ## Code Style
 
-Please follow the [node style guide](https://github.com/felixge/node-style-guide).
+To maintain consistency, please follow the [Node Style Guide](https://github.com/felixge/node-style-guide).
 
 ## Getting Started
 
@@ -13,9 +14,8 @@ Please follow the [node style guide](https://github.com/felixge/node-style-guide
 
 Start by forking the Jackson repository. This allows you to work on your changes without affecting the original project.
 
-```shell
-https://github.com/boxyhq/jackson
-```
+[![Fork the Repository](https://img.shields.io/badge/Fork-Repository-22a7f0?style=for-the-badge)](https://github.com/boxyhq/jackson)
+
 
 ### 2. Clone the Repository
 
@@ -61,7 +61,7 @@ Visit [http://localhost:5225](http://localhost:5225) in your browser. If you see
 
 Read the full documentation [here](https://boxyhq.com/docs/jackson/deploy/).
 
-## Contribution Guidelines
+## Contribution  💡
 
 
 
@@ -82,13 +82,13 @@ git branch your-branch-name
 git add your-file-name
 ```
 
-or 
+or simply stage everything,
 
 ``` shell
 git add .
 ```
 
-### Make and commit your changes
+### Make and commit your changes with a note
 
 ```shell
 git commit -m ""enter the message for changes that need to be committed"
@@ -100,38 +100,39 @@ git commit -m ""enter the message for changes that need to be committed"
 git push origin your-branch-name
 ```
 
-### Create a Pull Request
+## Create a Pull Request
 
 Good pull requests - patches, improvements, new features - are a fantastic help. They should remain focused in scope and avoid containing unrelated commits.
 
 Go to the original repository on GitHub and click the "New Pull Request" button. Compare and create a pull request from your branch to the main repository. Provide a clear and concise description of your changes in the pull request.
 
-### Review and Feedback
+## Review and Feedback
 
 After submitting your PR, maintainers and other contributors may review your changes and provide feedback. Be ready to address any suggested improvements.
 
-### Merge
+## Merge
 
 Once your PR is approved, it will be merged into the main repository.
 
-#### Celebrate!
+### Celebrate! 🎉
 
 
-### Bug Reports
+## Bug Reports
 
-If you encounter issues or bugs, please report them with detailed information.
+If you encounter issues or bugs, please report them with detailed information to help with troubleshooting.
 
-### Feature Requests
+## Feature Requests
 
-Submit detailed feature requests for new functionality.
+Submit detailed feature requests for new functionality you'd like to see.
 
-### Testing
+## Testing
 
-Thoroughly test your changes to avoid regressions and errors.
+It's essential to thoroughly test your changes to prevent regressions and errors.
 
-### Good First Issues
+## Good First Issues
 
-Start your contribution journey with our list of "good first issue" tasks, ideal for newcomers and first timers.
+Start your contribution journey with our list of "good first issue" tasks, specifically curated for newcomers and first-time contributors.
+
 
 ## Development
 
@@ -157,4 +158,4 @@ Jackson is an open-source project released under the [Apache License 2.0](https:
 2. Don't hesitate to seek help if needed in the discussion forum or any realted platform.
 
 
-Happy contributing!
+### Happy contributing! 🚀
