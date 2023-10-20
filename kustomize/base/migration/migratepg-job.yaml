@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: jackson-migrate-pg
 spec:
+  ttlSecondsAfterFinished: 0
   template:
     spec:
       restartPolicy: 'OnFailure'
