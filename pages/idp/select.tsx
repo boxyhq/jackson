@@ -46,7 +46,11 @@ export default function ChooseIdPConnection({
           </div>
         )}
 
-        {selectors[authFlow]}
+        {authFlow in selectors ? (
+          selectors[authFlow]
+        ) : (
+          <p className='text-center text-sm text-slate-600'>Invalid request. Please try again.</p>
+        )}
       </div>
       <div className='my-4'>
         <PoweredBy />
@@ -193,11 +197,11 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     samlFedAppId?: string;
   };
 
-  if (!['sp-initiated', 'idp-initiated'].includes(authFlow)) {
-    return {
-      notFound: true,
-    };
-  }
+  // if (!['sp-initiated', 'idp-initiated'].includes(authFlow)) {
+  //   return {
+  //     notFound: true,
+  //   };
+  // }
 
   // The user has selected an IdP to continue with
   if (idp_hint) {
