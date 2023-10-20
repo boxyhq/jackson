@@ -78,3 +78,27 @@ test.describe('GET /api/v1/dsync', () => {
     expect(await response.json()).toMatchObject({ data: directoryExpected });
   });
 });
+
+test.describe('PATCH /api/v1/dsync/{directoryId}', () => {
+  test('should be able update', async ({ request }) => {
+    const directory = await getDirectory(request, { tenant, product });
+
+    const response = await request.patch(`/api/v1/dsync/${directory[0].id}`, {
+      data: {
+        name: 'new name',
+        webhook_url: 'https://example.com/new-webhook',
+        webhook_secret: 'new-secret',
+      },
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+
+    // Refetch directory and check if it was updated
+    const updatedDirectory = await getDirectory(request, { tenant, product });
+
+    expect(updatedDirectory[0].name).toBe('new name');
+    expect(updatedDirectory[0].webhook.endpoint).toBe('https://example.com/new-webhook');
+    expect(updatedDirectory[0].webhook.secret).toBe('new-secret');
+  });
+});
