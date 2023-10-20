@@ -106,7 +106,7 @@ export class SAMLHandler {
         const params = new URLSearchParams({
           tenant,
           product,
-          authFlow,
+          authFlow: 'sp-initiated',
           samlFedAppId,
           ...originalParams,
         });
@@ -118,6 +118,7 @@ export class SAMLHandler {
       if (authFlow === 'idp-initiated' && entityId) {
         const params = new URLSearchParams({
           entityId,
+          authFlow,
         });
 
         const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [

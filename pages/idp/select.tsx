@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
@@ -15,13 +15,13 @@ import { getPortalBranding } from '@lib/settings';
 export default function ChooseIdPConnection({
   connections,
   SAMLResponse,
-  requestType,
+  authFlow,
   branding,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { t } = useTranslation('common');
 
   const primaryColor = hexToHsl(branding.primaryColor);
-  const title = requestType === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
+  const title = authFlow === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
 
   return (
     <div className='mx-auto my-28 w-[500px]'>
@@ -41,7 +41,7 @@ export default function ChooseIdPConnection({
           </div>
         )}
 
-        {requestType === 'sp-initiated' ? (
+        {authFlow === 'sp-initiated' ? (
           <IdpSelector connections={connections} />
         ) : (
           <AppSelector connections={connections} SAMLResponse={SAMLResponse} />
@@ -115,15 +115,36 @@ const AppSelector = ({
 }) => {
   const { t } = useTranslation('common');
   const formRef = useRef<HTMLFormElement>(null);
+  const [connection, setConnection] = useState<string | null>(null);
 
-  if (!SAMLResponse) {
-    return <p className='text-center text-sm text-slate-600'>No SAMLResponse found.</p>;
-  }
+  // Warn the user if they refresh the page
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!connection) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+
+    if (!connection) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [connection]);
 
   // IdP initiated SSO: Submit the SAMLResponse and idp_hint to the SAML ACS endpoint
-  const appSelected = () => {
+  const appSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConnection(e.target.value);
     formRef.current?.submit();
   };
+
+  if (!SAMLResponse) {
+    return <p className='text-center text-sm text-slate-600'>No SAMLResponse found. Please try again.</p>;
+  }
 
   return (
     <>
@@ -163,7 +184,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   const paramsToRelay = { ...query } as { [key: string]: string };
 
   const { authFlow, entityId, tenant, product, idp_hint, samlFedAppId } = query as {
-    authFlow: 'saml' | 'oauth';
+    authFlow: 'sp-initiated' | 'idp-initiated';
     tenant?: string;
     product?: string;
     idp_hint?: string;
@@ -173,10 +194,8 @@ export const getServerSideProps = async ({ query, locale, req }) => {
 
   // The user has selected an IdP to continue with
   if (idp_hint) {
-    const params = new URLSearchParams(paramsToRelay).toString();
-
-    const destination =
-      authFlow === 'saml' ? `/api/federated-saml/sso?${params}` : `/api/oauth/authorize?${params}`;
+    const params = new URLSearchParams(paramsToRelay);
+    const destination = samlFedAppId ? `/api/federated-saml/sso?${params}` : `/api/oauth/authorize?${params}`;
 
     return {
       redirect: {
@@ -195,6 +214,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
   }
 
+  // SAML federated app
   const samlFederationApp = samlFedAppId ? await samlFederatedController.app.get({ id: samlFedAppId }) : null;
 
   if (samlFedAppId && !samlFederationApp) {
@@ -233,7 +253,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     return {
       props: {
         ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-        requestType: 'idp-initiated',
+        authFlow,
         SAMLResponse,
         connections,
         branding,
@@ -244,7 +264,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   return {
     props: {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-      requestType: 'sp-initiated',
+      authFlow,
       SAMLResponse: null,
       connections,
       branding,
