@@ -393,40 +393,48 @@ export class DirectoryConfig {
    */
   public async update(
     id: string,
-    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim' | 'type'>
+    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim' | 'type'> & {
+      webhook_url?: string;
+      webhook_secret?: string;
+    }
   ): Promise<Response<Directory>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const {
-        name,
-        log_webhook_events,
-        webhook,
-        deactivated,
-        google_domain,
-        google_access_token,
-        google_refresh_token,
-      } = param;
-
       const directory: Directory = await this.store().get(id);
-
-      let updatedDirectory: Directory = {
+      const toUpdate = {
         ...directory,
-        name: name || directory.name,
-        webhook: webhook || directory.webhook,
-        deactivated: deactivated !== undefined ? deactivated : directory.deactivated,
-        log_webhook_events:
-          log_webhook_events !== undefined ? log_webhook_events : directory.log_webhook_events,
-        google_domain: google_domain || directory.google_domain,
-        google_access_token: google_access_token || directory.google_access_token,
-        google_refresh_token: google_refresh_token || directory.google_refresh_token,
       };
 
-      await this.store().put(id, updatedDirectory);
+      const propertiesToUpdate = [
+        'name',
+        'log_webhook_events',
+        'webhook',
+        'deactivated',
+        'google_domain',
+        'google_access_token',
+        'google_refresh_token',
+      ];
 
-      updatedDirectory = this.transform(updatedDirectory);
+      for (const property of propertiesToUpdate) {
+        if (property in param) {
+          toUpdate[property] = param[property];
+        }
+      }
+
+      if ('webhook_url' in param) {
+        toUpdate['webhook']['endpoint'] = param.webhook_url || '';
+      }
+
+      if ('webhook_secret' in param) {
+        toUpdate['webhook']['secret'] = param.webhook_secret || '';
+      }
+
+      await this.store().put(id, toUpdate);
+
+      const updatedDirectory = this.transform(toUpdate);
 
       if ('deactivated' in param) {
         if (isConnectionActive(updatedDirectory)) {

@@ -49,13 +49,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { directoryId } = req.query as { directoryId: string };
 
-  const { data, error } = await directorySyncController.directories.update(directoryId, {
-    ...req.body,
-    webhook: {
-      endpoint: req.body.webhook_url,
-      secret: req.body.webhook_secret,
-    },
-  });
+  const { data, error } = await directorySyncController.directories.update(directoryId, req.body);
 
   if (error) {
     res.status(error.code).json({ error });
