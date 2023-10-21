@@ -12,9 +12,11 @@ To maintain consistency, please follow the [Node Style Guide](https://github.com
 
 ### 1. Fork the Repository
 
-Start by forking the Jackson repository. This allows you to work on your changes without affecting the original project.
+Begin by forking the Jackson repository. This creates a copy of the project where you can make and test your changes without impacting the original project.
 
-[![Fork the Repository](https://img.shields.io/badge/Fork-Repository-22a7f0?style=for-the-badge)](https://github.com/boxyhq/jackson)
+```shell
+https://github.com/boxyhq/jackson
+```
 
 
 ### 2. Clone the Repository
@@ -61,7 +63,7 @@ Visit [http://localhost:5225](http://localhost:5225) in your browser. If you see
 
 Read the full documentation [here](https://boxyhq.com/docs/jackson/deploy/).
 
-## Contribution  💡
+## Contribution  
 
 
 
@@ -114,7 +116,7 @@ After submitting your PR, maintainers and other contributors may review your cha
 
 Once your PR is approved, it will be merged into the main repository.
 
-### Celebrate! 🎉
+### Celebrate! 
 
 
 ## Bug Reports
@@ -158,4 +160,4 @@ Jackson is an open-source project released under the [Apache License 2.0](https:
 2. Don't hesitate to seek help if needed in the discussion forum or any realted platform.
 
 
-### Happy contributing! 🚀
+### Happy contributing! 
