@@ -14,9 +14,7 @@ Please follow the [Node Style Guide](https://github.com/felixge/node-style-guide
 
 Begin by forking the Jackson repository. This creates a copy of the project where you can make and test your changes without impacting the original project.
 
-```shell
-https://github.com/boxyhq/jackson
-```
+[Fork this repository](https://github.com/boxyhq/jackson/fork)
 
 
 ### 2. Clone the Repository
