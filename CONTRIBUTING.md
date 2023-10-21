@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Jackson! Your contributions are e
 
 ## Code Style
 
-To maintain consistency, please follow the [Node Style Guide](https://github.com/felixge/node-style-guide).
+Please follow the [Node Style Guide](https://github.com/felixge/node-style-guide).
 
 ## Getting Started
 
