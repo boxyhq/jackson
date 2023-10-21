@@ -3,10 +3,10 @@ bases:
   - ../../base
   - ../../base/services
   - ../dbs/postgres
+  - ../../base/migration
 
 resources:
   - ./secrets.yaml
-  - ./migratepg-job.yaml
 
 commonLabels:
   jacksondev: '1'
