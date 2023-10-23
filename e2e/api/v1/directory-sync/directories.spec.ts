@@ -81,11 +81,45 @@ test.describe('GET /api/v1/dsync', () => {
 
 test.describe('PATCH /api/v1/dsync/{directoryId}', () => {
   test('should be able update', async ({ request }) => {
-    const directory = await getDirectory(request, { tenant, product });
+    const directories = await getDirectory(request, { tenant, product });
+    const directory = directories[0];
 
-    const response = await request.patch(`/api/v1/dsync/${directory[0].id}`, {
+    // Update name
+    let response = await request.patch(`/api/v1/dsync/${directory.id}`, {
       data: {
         name: 'new name',
+      },
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: {
+        ...directoryExpected,
+        name: 'new name',
+      },
+    });
+
+    // Deactivate directory
+    response = await request.patch(`/api/v1/dsync/${directory.id}`, {
+      data: {
+        deactivated: true,
+      },
+    });
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: {
+        ...directoryExpected,
+        name: 'new name',
+        deactivated: true,
+      },
+    });
+
+    // Update webhook
+    response = await request.patch(`/api/v1/dsync/${directory.id}`, {
+      data: {
         webhook_url: 'https://example.com/new-webhook',
         webhook_secret: 'new-secret',
       },
@@ -93,12 +127,33 @@ test.describe('PATCH /api/v1/dsync/{directoryId}', () => {
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: {
+        ...directoryExpected,
+        name: 'new name',
+        deactivated: true,
+        webhook: {
+          endpoint: 'https://example.com/new-webhook',
+          secret: 'new-secret',
+        },
+      },
+    });
 
-    // Refetch directory and check if it was updated
-    const updatedDirectory = await getDirectory(request, { tenant, product });
+    // Fetch directory again
+    response = await request.get(`/api/v1/dsync/${directory.id}`);
 
-    expect(updatedDirectory[0].name).toBe('new name');
-    expect(updatedDirectory[0].webhook.endpoint).toBe('https://example.com/new-webhook');
-    expect(updatedDirectory[0].webhook.secret).toBe('new-secret');
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: {
+        ...directoryExpected,
+        name: 'new name',
+        deactivated: true,
+        webhook: {
+          endpoint: 'https://example.com/new-webhook',
+          secret: 'new-secret',
+        },
+      },
+    });
   });
 });
