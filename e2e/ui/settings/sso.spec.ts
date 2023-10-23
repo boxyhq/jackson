@@ -63,9 +63,7 @@ test.describe('Admin Portal SSO - SAML', () => {
     // Go directly to mocksaml hosting
     await page.goto(MOCKSAML_ORIGIN);
     await page.getByRole('link', { name: 'Test IdP Login' }).click();
-    await page
-      .getByPlaceholder('https://jackson-demo.boxyhq.com/api/oauth/saml')
-      .fill(`${baseURL}/api/oauth/saml`);
+    await page.getByPlaceholder('https://sso.eu.boxyhq.com/api/oauth/saml').fill(`${baseURL}/api/oauth/saml`);
     await page.getByRole('textbox', { name: 'Please provide a mock email address' }).fill('bob');
     await page.getByRole('button', { name: MOCKSAML_SIGNIN_BUTTON_NAME }).click();
     // Wait for browser to redirect to admin portal
