@@ -197,11 +197,11 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     samlFedAppId?: string;
   };
 
-  // if (!['sp-initiated', 'idp-initiated'].includes(authFlow)) {
-  //   return {
-  //     notFound: true,
-  //   };
-  // }
+  if (!['sp-initiated', 'idp-initiated'].includes(authFlow)) {
+    return {
+      notFound: true,
+    };
+  }
 
   // The user has selected an IdP to continue with
   if (idp_hint) {
