@@ -118,7 +118,7 @@ After submitting your pull request, maintainers and other contributors will revi
 
 Once your pull request is approved, it will be merged into the main repository.
 
-### Celebrate!
+#### Celebrate!
 
 ## Bug Reports
 
@@ -158,4 +158,4 @@ Jackson is an open-source project released under the [Apache License 2.0](https:
 1. Be responsive to feedback from maintainers.
 2. Don't hesitate to seek help if needed in the discussion forum or any related platform.
 
-### Happy contributing!
+#### Happy contributing!
