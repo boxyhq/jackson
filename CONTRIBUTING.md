@@ -1,21 +1,18 @@
-
 # Contributing to Jackson
 
-Thank you for your interest in contributing to Jackson! Your contributions are essential in making Jackson even better. Whether you're fixing a bug, implementing new features, or suggesting improvements, your involvement is valued and appreicated.
-
+We appreciate your interest in contributing to Jackson, and your contributions are integral to enhancing the project. Whether you are addressing a bug, implementing new features, or suggesting improvements, your involvement is highly valued and essential.
 
 ## Code Style
 
-Please follow the [Node Style Guide](https://github.com/felixge/node-style-guide).
+Please adhere to the [Node Style Guide](https://github.com/felixge/node-style-guide).
 
 ## Getting Started
 
 ### 1. Fork the Repository
 
-Begin by forking the Jackson repository. This creates a copy of the project where you can make and test your changes without impacting the original project.
+To get started, fork the Jackson repository. This creates a duplicate of the project, allowing you to make and test your changes without affecting the original project.
 
 [Fork this repository](https://github.com/boxyhq/jackson/fork)
-
 
 ### 2. Clone the Repository
 
@@ -25,76 +22,83 @@ Clone your forked repository to your local development environment using this co
 git clone https://github.com/your-username/jackson.git
 ```
 
-### 3. Set Up
+### 3. Setup
 
-Navigate to the project folder and install necessary dependencies:
+Navigate to the project folder and install the necessary dependencies:
 
 ```shell
 cd jackson
 ```
 
-#### Install custom dependencies
+#### Install Custom Dependencies
 
-``` shell
+```shell
 npm run custom-install
 ```
 
-#### Add Environment Variables
+#### Configure Environment Variables
 
 ```shell
 cp .env.example .env
 npm run dev
 ```
 
-Please update .env with your values. See the complete list of [Environment Variables](https://boxyhq.com/docs/jackson/deploy/env-variables).
+Please update the .env file with your values. Refer to the complete list of [Environment Variables](https://boxyhq.com/docs/jackson/deploy/env-variables) for guidance.
 
 ### 4. Build and Run
 
-Ensure the project is ready for development:
+Ensure that the project is prepared for development:
 
 ```shell
 npm run build
 npm run start
 ```
 
-Visit [http://localhost:5225](http://localhost:5225) in your browser. If you see a sign-in page, you're on the Admin Portal.
+Visit [http://localhost:5225](http://localhost:5225) in your browser. If you encounter a sign-in page, you've successfully reached the Admin Portal.
 
-Read the full documentation [here](https://boxyhq.com/docs/jackson/deploy/).
+For a comprehensive understanding of the deployment process, consult our documentation [here](https://boxyhq.com/docs/jackson/deploy/).
 
-## Contribution  
+## Contribution
 
+### Creating a New Branch
 
-
-### Create a new branch 
+Begin by creating a new branch where you will work on your changes. You can do this with the following command:
 
 ```shell
 git checkout -b your-branch-name
 ```
-#### or
+
+Alternatively, you can create a branch using:
 
 ```shell
-
 git branch your-branch-name
 ```
-### Stage your changes
 
-``` shell
+### Staging Your Changes
+
+Use the following command to stage the changes you want to commit:
+
+```shell
 git add your-file-name
 ```
 
-or simply stage everything,
+Alternatively, you can stage all changes with:
 
-``` shell
+```shell
 git add .
 ```
 
-### Make and commit your changes with a note
+### Committing Your Changes
+
+Make clear and concise commits with a descriptive message:
 
 ```shell
-git commit -m ""enter the message for changes that need to be committed"
+git commit -m "Enter a descriptive message for the changes to be committed"
 ```
 
-### Push your changes by commiting them
+### Pushing Your Changes
+
+Once your changes are committed, push them to your branch:
 
 ```shell
 git push origin your-branch-name
@@ -102,37 +106,35 @@ git push origin your-branch-name
 
 ## Create a Pull Request
 
-Good pull requests - patches, improvements, new features - are a fantastic help. They should remain focused in scope and avoid containing unrelated commits.
+Effective pull requests, which can include patches, improvements, or new features, are a valuable contribution. Ensure they are focused on a specific scope and do not contain unrelated commits.
 
-Go to the original repository on GitHub and click the "New Pull Request" button. Compare and create a pull request from your branch to the main repository. Provide a clear and concise description of your changes in the pull request.
+To create a pull request, navigate to the original repository on GitHub and click the "New Pull Request" button. Compare and create a pull request from your branch to the main repository. Provide a clear and concise description of your changes in the pull request.
 
 ## Review and Feedback
 
-After submitting your PR, maintainers and other contributors may review your changes and provide feedback. Be ready to address any suggested improvements.
+After submitting your pull request, maintainers and other contributors will review your changes and provide feedback. Be prepared to address any suggested improvements.
 
-## Merge
+## Merging
 
-Once your PR is approved, it will be merged into the main repository.
+Once your pull request is approved, it will be merged into the main repository.
 
-### Celebrate! 
-
+### Celebrate!
 
 ## Bug Reports
 
-If you encounter issues or bugs, please report them with detailed information to help with troubleshooting.
+If you encounter any issues or bugs, please report them with detailed information to aid in troubleshooting.
 
 ## Feature Requests
 
-Submit detailed feature requests for new functionality you'd like to see.
+Feel free to submit detailed feature requests for new functionality you would like to see.
 
 ## Testing
 
-It's essential to thoroughly test your changes to prevent regressions and errors.
+Comprehensive testing of your changes is vital to prevent regressions and errors.
 
 ## Good First Issues
 
-Start your contribution journey with our list of "good first issue" tasks, specifically curated for newcomers and first-time contributors.
-
+To begin your contribution journey, explore our list of "good first issue" tasks specifically curated for newcomers and first-time contributors.
 
 ## Development
 
@@ -143,19 +145,17 @@ Start your contribution journey with our list of "good first issue" tasks, speci
 5. Test your changes.
 6. Submit a pull request against the main branch.
 
-## Code Of Conduct 
+## Code Of Conduct
 
-Please ensure that your contributions align with our [Code of conduct](https://github.com/boxyhq/jackson/blob/main/CODE_OF_CONDUCT.md). Be respectful, inclusive, and considerate of others.
+Please ensure that your contributions align with our [Code of Conduct](https://github.com/boxyhq/jackson/blob/main/CODE_OF_CONDUCT.md). Show respect, inclusivity, and consideration for others.
 
 ## License
 
 Jackson is an open-source project released under the [Apache License 2.0](https://github.com/boxyhq/jackson/blob/main/LICENSE). Your contributions are subject to the terms of this license.
 
-
 ## Additional Tips
 
 1. Be responsive to feedback from maintainers.
-2. Don't hesitate to seek help if needed in the discussion forum or any realted platform.
+2. Don't hesitate to seek help if needed in the discussion forum or any related platform.
 
-
-### Happy contributing! 
+### Happy contributing!
