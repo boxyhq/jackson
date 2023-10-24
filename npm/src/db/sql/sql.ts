@@ -2,7 +2,7 @@
 
 require('reflect-metadata');
 
-import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records } from '../../typings';
+import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records, SortOrder } from '../../typings';
 import { DataSource, DataSourceOptions, In, IsNull } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
@@ -164,17 +164,25 @@ class Sql implements DatabaseDriver {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records> {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+
     const res = await this.storeRepository.find({
       where: { namespace: namespace },
       select: ['value', 'iv', 'tag'],
       order: {
-        ['createdAt']: 'DESC',
+        ['createdAt']: sortOrder || 'DESC',
       },
       take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
       skip: skipOffsetAndLimitValue ? 0 : pageOffset,
     });
+
     return { data: res || [] };
   }
 

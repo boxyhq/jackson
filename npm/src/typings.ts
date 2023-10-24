@@ -325,7 +325,13 @@ export interface Records<T = any> {
 }
 
 export interface DatabaseDriver {
-  getAll(namespace: string, pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
+  getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records>;
   get(namespace: string, key: string): Promise<any>;
   put(namespace: string, key: string, val: any, ttl: number, ...indexes: Index[]): Promise<any>;
   delete(namespace: string, key: string): Promise<any>;
@@ -340,7 +346,12 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
-  getAll(pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
+  getAll(
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records>;
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
@@ -549,3 +560,5 @@ export type GetByProductParams = {
   pageLimit?: number;
   pageToken?: string;
 };
+
+export type SortOrder = 'ASC' | 'DESC';

@@ -1,5 +1,5 @@
 import { Collection, Db, MongoClient, UpdateOptions } from 'mongodb';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records } from '../typings';
+import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records, SortOrder } from '../typings';
 import * as dbutils from './utils';
 
 type _Document = {
@@ -79,14 +79,24 @@ class Mongo implements DatabaseDriver {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records> {
     const docs = await this.collection
-      .find({ namespace: namespace }, { sort: { createdAt: -1 }, skip: pageOffset, limit: pageLimit })
+      .find(
+        { namespace: namespace },
+        { sort: { createdAt: sortOrder === 'ASC' ? 1 : -1 }, skip: pageOffset, limit: pageLimit }
+      )
       .toArray();
 
     if (docs) {
       return { data: docs.map(({ value }) => value) };
     }
+
     return { data: [] };
   }
 
