@@ -1,18 +1,19 @@
 ---
 bases:
   - ../../base
+  - ../../base/migration
 
 resources:
   - ./secrets.yaml
   - ./mocksaml-secrets.yaml
   - ./mocksaml-deployment.yaml
-  - ./migratepg-job.yaml
 
 patches:
   - ./jackson-deployment.yaml
+  - ./migratepg-job.yaml
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.14.0
+    newTag: 1.14.1
   - name: boxyhq/mock-saml
-    newTag: 1.1.7
+    newTag: 1.2.0

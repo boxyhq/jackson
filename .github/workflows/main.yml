@@ -53,7 +53,7 @@ jobs:
       BOXYHQ_LICENSE_KEY: 'dummy-license'
     strategy:
       matrix:
-        node-version: [18]
+        node-version: [20]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
@@ -105,7 +105,7 @@ jobs:
         ports:
           - '8000:8000'
       mocksaml:
-        image: boxyhq/mock-saml:1.0.9
+        image: boxyhq/mock-saml:1.2.0
         ports:
           - 4000:4000
         env:
@@ -408,7 +408,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18]
+        node-version: [20]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:

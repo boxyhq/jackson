@@ -5,14 +5,7 @@ metadata:
 spec:
   template:
     spec:
-      restartPolicy: 'OnFailure'
       containers:
         - name: db
           image: boxyhq/jackson:tagwillbereplaced
           imagePullPolicy: IfNotPresent
-          command:
-            - /bin/sh
-            - migrate.sh
-          envFrom:
-            - secretRef:
-                name: jackson

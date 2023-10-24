@@ -351,6 +351,9 @@ export class App {
    *       - SAML Federation
    *     produces:
    *       - application/json
+   *     consumes:
+   *      - application/x-www-form-urlencoded
+   *      - application/json
    *     responses:
    *       '200':
    *         description: Success
