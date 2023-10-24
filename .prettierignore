@@ -5,6 +5,11 @@ public
 **/**/.next
 **/**/public
 npm/migration/**
+npm/dist/**
+npm/.nyc_output/**
+.vscode/**
+
+npm/package-lock.json
 
 *.lock
 *.log
@@ -16,3 +21,4 @@ npm/migration/**
 .eslintignore
 
 **/LICENSE
+swagger/swagger.json

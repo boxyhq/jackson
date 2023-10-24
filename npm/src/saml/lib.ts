@@ -250,7 +250,7 @@ export const createSAMLResponse = async ({
 
   const xml = xmlbuilder.create(nodes, { encoding: 'UTF-8' }).end();
 
-  return await saml.sign(
+  return saml.sign(
     xml,
     privateKey,
     publicKey,

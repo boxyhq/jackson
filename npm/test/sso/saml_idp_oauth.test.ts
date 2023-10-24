@@ -588,7 +588,7 @@ tap.test('token()', async (t) => {
           const { protectedHeader } = await jose.jwtVerify(tokenRes.id_token, keyPair.publicKey);
           t.match(protectedHeader.alg, jacksonOptions.openid?.jwsAlg);
           t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
-          t.match(claims.iss, jacksonOptions.samlAudience);
+          t.match(claims.iss, jacksonOptions.externalUrl);
         }
         t.match(tokenRes.access_token, token);
         t.match(tokenRes.token_type, 'bearer');

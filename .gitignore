@@ -45,3 +45,4 @@ publishTag.txt
 .env
 _dev/docker/dynamodb/shared-local-instance.db
 public/terminus/sprites.png
+**/.tap/**

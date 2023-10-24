@@ -2,7 +2,7 @@
 
 require('reflect-metadata');
 
-import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records } from '../../typings';
+import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records, SortOrder } from '../../typings';
 import { DataSource, DataSourceOptions, In, IsNull } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
@@ -27,14 +27,16 @@ class Sql implements DatabaseDriver {
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
     // Synchronize by default for non-planetscale engines only if migrations are not set to run
-    const synchronize = this.options.engine !== 'planetscale' && !this.options.manualMigration;
+    let synchronize = !this.options.manualMigration;
+    if (this.options.engine === 'planetscale') {
+      synchronize = false;
+    }
 
     while (true) {
       try {
         const baseOpts = {
           type: sqlType,
           synchronize,
-          migrationsTableName: '_jackson_migrations',
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
         };
@@ -162,17 +164,25 @@ class Sql implements DatabaseDriver {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records> {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+
     const res = await this.storeRepository.find({
       where: { namespace: namespace },
       select: ['value', 'iv', 'tag'],
       order: {
-        ['createdAt']: 'DESC',
+        ['createdAt']: sortOrder || 'DESC',
       },
       take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
       skip: skipOffsetAndLimitValue ? 0 : pageOffset,
     });
+
     return { data: res || [] };
   }
 

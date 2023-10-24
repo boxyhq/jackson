@@ -5,6 +5,7 @@ import {
   EncryptionKey,
   Index,
   Records,
+  SortOrder,
   Storable,
 } from '../typings';
 import * as encrypter from './encrypter';
@@ -61,9 +62,10 @@ class DB implements DatabaseDriver {
     namespace: string,
     pageOffset?: number,
     pageLimit?: number,
-    pageToken?: string
+    pageToken?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
-    const res = await this.db.getAll(namespace, pageOffset, pageLimit, pageToken);
+    const res = await this.db.getAll(namespace, pageOffset, pageLimit, pageToken, sortOrder);
     const encryptionKey = this.encryptionKey;
     return {
       data: res.data.map((r) => {

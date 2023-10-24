@@ -5,7 +5,5 @@ export const transformBase64 = (input: string): string => {
 };
 
 export const encode = (code_challenge: string): string => {
-  return transformBase64(
-    crypto.createHash('sha256').update(code_challenge).digest('base64')
-  );
+  return transformBase64(crypto.createHash('sha256').update(code_challenge).digest('base64'));
 };

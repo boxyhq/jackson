@@ -1,6 +1,6 @@
 import { Entity, Column, Index } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'jackson_store' })
 export class JacksonStore {
   @Column({
     primary: true,
@@ -30,13 +30,15 @@ export class JacksonStore {
 
   @Column({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    precision: 6,
+    default: () => 'CURRENT_TIMESTAMP(6)',
     nullable: false,
   })
   createdAt?: Date;
 
   @Column({
     type: 'timestamp',
+    precision: 6,
     nullable: true,
   })
   modifiedAt?: string;

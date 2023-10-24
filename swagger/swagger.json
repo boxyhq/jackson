@@ -1,7 +1,8 @@
 {
+  "openapi": "3.0.0",
   "info": {
     "title": "SAML Jackson API",
-    "version": "1.11.2",
+    "version": "1.14.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -32,7 +33,6 @@
       "apiKey": []
     }
   ],
-  "swagger": "2.0",
   "paths": {
     "/api/v1/sso": {
       "post": {
@@ -755,10 +755,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Directory"
-              }
+              "$ref": "#/definitions/Directory"
             }
           }
         }
@@ -812,6 +809,92 @@
           "Directory Sync"
         ],
         "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Directory"
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a directory connection",
+        "parameters": [
+          {
+            "name": "directoryId",
+            "description": "Directory ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "description": "Name",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "webhook_url",
+            "description": "Webhook URL",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "webhook_secret",
+            "description": "Webhook secret",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "log_webhook_events",
+            "description": "If true, webhook requests will be logged",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "deactivated",
+            "description": "If true, the directory connection will be deactivated",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "google_domain",
+            "description": "Google domain",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "google_access_token",
+            "description": "Google access token",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "google_refresh_token",
+            "description": "Google refresh token",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
           "application/json"
         ],
         "responses": {
@@ -1002,6 +1085,287 @@
               "type": "array",
               "items": {
                 "$ref": "#/definitions/User"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/federated-saml": {
+      "post": {
+        "summary": "Create a SAML Federation app",
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Name",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "acsUrl",
+            "description": "ACS URL",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "description": "Entity ID",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "logoUrl",
+            "description": "Logo URL",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "faviconUrl",
+            "description": "Favicon URL",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "primaryColor",
+            "description": "Primary color",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SAMLFederationApp"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a SAML Federation app",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "App ID",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SAMLFederationApp"
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a SAML Federation app",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "App ID",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "description": "Name",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "acsUrl",
+            "description": "ACS URL",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "description": "Entity ID",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "logoUrl",
+            "description": "Logo URL",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "faviconUrl",
+            "description": "Favicon URL",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "primaryColor",
+            "description": "Primary color",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SAMLFederationApp"
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a SAML Federation app",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "App ID",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tenant",
+            "description": "Tenant",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SAMLFederationApp"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/federated-saml/product": {
+      "get": {
+        "summary": "Get SAML Federation apps by product",
+        "parameters": [
+          {
+            "name": "product",
+            "description": "Product",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SAML Federation"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SAMLFederationApp"
               }
             }
           }
@@ -1283,6 +1647,47 @@
         "raw": {
           "type": "object",
           "description": "Raw user attributes from the Identity Provider"
+        }
+      }
+    },
+    "SAMLFederationApp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id"
+        },
+        "name": {
+          "type": "string",
+          "description": "name"
+        },
+        "tenant": {
+          "type": "string",
+          "description": "Tenant"
+        },
+        "product": {
+          "type": "string",
+          "description": "Product"
+        },
+        "acsUrl": {
+          "type": "string",
+          "description": "ACS URL"
+        },
+        "entityId": {
+          "type": "string",
+          "description": "Entity ID"
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "Logo URL (optional)"
+        },
+        "faviconUrl": {
+          "type": "string",
+          "description": "Favicon URL (optional)"
+        },
+        "primaryColor": {
+          "type": "string",
+          "description": "Primary color (optional)"
         }
       }
     }
@@ -1580,5 +1985,6 @@
       "type": "string"
     }
   },
+  "components": {},
   "tags": []
 }

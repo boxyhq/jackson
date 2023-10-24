@@ -3,16 +3,14 @@ bases:
   - ../../base
   - ../../base/services
   - ../dbs/postgres
+  - ../../base/migration
 
 resources:
   - ./secrets.yaml
-
-patches:
-  - ./jackson-service.yaml
 
 commonLabels:
   jacksondev: '1'
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.9.7
+    newTag: 1.12.0
