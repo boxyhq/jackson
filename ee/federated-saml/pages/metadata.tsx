@@ -1,18 +1,29 @@
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
-import LicenseRequired from '@components/LicenseRequired';
 import { Toaster } from '@components/Toaster';
 import { InputWithCopyButton, CopyToClipboardButton } from '@components/ClipboardButton';
 import { LinkOutline } from '@components/LinkOutline';
+import LicenseRequired from '@components/LicenseRequired';
 
-type Metadata = Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
+type MetadataProps = {
+  metadata: Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
+  hasValidLicense: boolean;
+};
 
-const Metadata = ({ metadata }: { metadata: Metadata }) => {
+const Metadata = ({ metadata, hasValidLicense }: MetadataProps) => {
   const { t } = useTranslation('common');
 
+  if (!hasValidLicense) {
+    return (
+      <div className='p-10'>
+        <LicenseRequired />
+      </div>
+    );
+  }
+
   return (
-    <LicenseRequired>
+    <>
       <Toaster />
       <div className='mt-10 flex w-full justify-center px-5'>
         <div className='w-full rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-1/2'>
@@ -75,7 +86,7 @@ const Metadata = ({ metadata }: { metadata: Metadata }) => {
           </div>
         </div>
       </div>
-    </LicenseRequired>
+    </>
   );
 };
 

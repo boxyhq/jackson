@@ -22,3 +22,12 @@ export type SAMLFederationAppWithMetadata = SAMLFederationApp & {
     xml: string;
   };
 };
+
+export type AppRequestParams =
+  | {
+      id: string;
+    }
+  | {
+      tenant: string;
+      product: string;
+    };

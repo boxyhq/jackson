@@ -1,11 +1,12 @@
 import { Collection, Db, MongoClient, UpdateOptions } from 'mongodb';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records } from '../typings';
+import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records, SortOrder } from '../typings';
 import * as dbutils from './utils';
 
 type _Document = {
   value: Encrypted;
   expiresAt?: Date;
   modifiedAt: string;
+  namespace: string;
   indexes: string[];
 };
 
@@ -34,8 +35,36 @@ class Mongo implements DatabaseDriver {
 
     await this.collection.createIndex({ indexes: 1 });
     await this.collection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 1 });
+    await this.collection.createIndex({ namespace: 1 });
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      try {
+        if (!this.options.manualMigration) {
+          await this.indexNamespace();
+        }
+        break;
+      } catch (err) {
+        console.error(
+          `error in index namespace execution for db engine: ${this.options.engine},  err: ${err}`
+        );
+        await dbutils.sleep(1000);
+        continue;
+      }
+    }
 
     return this;
+  }
+
+  async indexNamespace() {
+    const docs = await this.collection.find({ namespace: { $exists: false } }).toArray();
+    const searchTerm = ':';
+
+    for (const doc of docs || []) {
+      const tokens2 = doc._id.toString().split(searchTerm).slice(0, 2);
+      const namespace = tokens2.join(searchTerm);
+      await this.collection.updateOne({ _id: doc._id }, { $set: { namespace } });
+    }
   }
 
   async get(namespace: string, key: string): Promise<any> {
@@ -50,15 +79,24 @@ class Mongo implements DatabaseDriver {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
-    const _namespaceMatch = new RegExp(`^${namespace}:.*`);
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records> {
     const docs = await this.collection
-      .find({ _id: _namespaceMatch }, { sort: { createdAt: -1 }, skip: pageOffset, limit: pageLimit })
+      .find(
+        { namespace: namespace },
+        { sort: { createdAt: sortOrder === 'ASC' ? 1 : -1 }, skip: pageOffset, limit: pageLimit }
+      )
       .toArray();
 
     if (docs) {
       return { data: docs.map(({ value }) => value) };
     }
+
     return { data: [] };
   }
 
@@ -102,7 +140,7 @@ class Mongo implements DatabaseDriver {
     if (ttl) {
       doc.expiresAt = new Date(Date.now() + ttl * 1000);
     }
-
+    doc.namespace = namespace;
     // no ttl support for secondary indexes
     for (const idx of indexes || []) {
       const idxKey = dbutils.keyForIndex(namespace, idx);

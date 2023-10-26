@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { message, statusCode = 500 } = err;
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
-    res.redirect('/error');
+    res.redirect(302, '/error');
   }
 }
 
@@ -34,12 +34,16 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     idp_hint: string;
   };
 
-  const { redirectUrl } = await samlFederatedController.sso.getAuthorizeUrl({
+  const { redirect_url, authorize_form } = await samlFederatedController.sso.getAuthorizeUrl({
     request: SAMLRequest,
     relayState: RelayState,
     idp_hint,
   });
 
-  res.redirect(redirectUrl);
-  return;
+  if (redirect_url) {
+    res.redirect(302, redirect_url);
+  } else {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(authorize_form);
+  }
 };

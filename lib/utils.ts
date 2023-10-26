@@ -61,14 +61,13 @@ export const strategyChecker = (req: NextApiRequest): { isSAML: boolean; isOIDC:
 
 // The oidcMetadata JSON will be parsed here
 export const oidcMetadataParse = (
-  body:
-    | (
-        | OIDCSSOConnectionWithDiscoveryUrl
-        | (Omit<OIDCSSOConnectionWithMetadata, 'oidcMetadata'> & { oidcMetadata: string })
-      ) & {
-        clientID: string;
-        clientSecret: string;
-      }
+  body: (
+    | OIDCSSOConnectionWithDiscoveryUrl
+    | (Omit<OIDCSSOConnectionWithMetadata, 'oidcMetadata'> & { oidcMetadata: string })
+  ) & {
+    clientID: string;
+    clientSecret: string;
+  }
 ) => {
   if (!body.oidcDiscoveryUrl && typeof body.oidcMetadata === 'string') {
     try {

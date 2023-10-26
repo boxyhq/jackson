@@ -20,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 const getTerminusUrl = (id) => {
-  return `${terminusOptions.hostUrl}/v1/admin/${id}/model`;
+  return `${terminusOptions.hostUrl}/v1/manage/${id}/model`;
 };
 
 const getModel = async (req: NextApiRequest, res: NextApiResponse) => {

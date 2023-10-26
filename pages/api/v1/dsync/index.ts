@@ -41,16 +41,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { name, tenant, type, product, webhook_url, webhook_secret } = req.body;
-
-  const { data, error } = await directorySyncController.directories.create({
-    name,
-    tenant,
-    product,
-    type,
-    webhook_url,
-    webhook_secret,
-  });
+  const { data, error } = await directorySyncController.directories.create(req.body);
 
   if (error) {
     return res.status(error.code).json({ error });

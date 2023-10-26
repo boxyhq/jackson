@@ -7,7 +7,10 @@ import type {
 } from '../typings';
 
 export class RequestHandler {
-  constructor(private directoryUsers: IDirectoryUsers, private directoryGroups: IDirectoryGroups) {}
+  constructor(
+    private directoryUsers: IDirectoryUsers,
+    private directoryGroups: IDirectoryGroups
+  ) {}
 
   async handle(request: DirectorySyncRequest, callback?: EventCallback): Promise<DirectorySyncResponse> {
     const resourceType = request.resourceType.toLowerCase();
