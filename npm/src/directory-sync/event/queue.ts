@@ -105,7 +105,6 @@ export class EventProcessor {
 
       // Group the events by directory
       const eventsByDirectory = _.groupBy(events, 'event.directory_id');
-
       const directoryIds = Object.keys(eventsByDirectory);
       const directoryCount = directoryIds.length;
 
@@ -154,7 +153,7 @@ export class EventProcessor {
 
   // Fetch next batch of events from the database
   public async fetch() {
-    const { data: events } = (await this.eventStore.getAll(0, this.batchSize(), undefined)) as {
+    const { data: events } = (await this.eventStore.getAll(0, this.batchSize(), undefined, 'ASC')) as {
       data: QueuedEvent[];
     };
 
@@ -162,6 +161,7 @@ export class EventProcessor {
       return [];
     }
 
+    // Update the status of the events to PROCESSING
     const promises = events.map((event) =>
       this.eventStore.put(event.id, { ...event, status: EventStatus.PROCESSING })
     );
