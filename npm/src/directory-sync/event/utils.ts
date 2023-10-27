@@ -13,6 +13,7 @@ import type {
 import { sendPayloadToWebhook } from '../../event/webhook';
 import { transformEventPayload } from '../scim/transform';
 import { isConnectionActive } from '../../controller/utils';
+import { JacksonError } from '../../controller/error';
 
 export const eventLockTTL = 6;
 
@@ -42,7 +43,10 @@ export const sendEvent = async (
     return;
   }
 
-  await callback(transformEventPayload(event, payload));
+  const transformedEvent = transformEventPayload(event, payload);
+
+  // Call the callback function (user defined or default)
+  await callback(transformedEvent);
 };
 
 export const handleEventCallback = async ({
@@ -55,9 +59,17 @@ export const handleEventCallback = async ({
   return async (event: DirectorySyncEvent) => {
     const { tenant, product, directory_id: directoryId } = event;
 
-    const { data: directory } = await directories.get(directoryId);
+    const { data: directory, error } = await directories.get(directoryId);
+
+    if (error) {
+      throw new JacksonError(error.message, error.code);
+    }
 
     if (!directory) {
+      return;
+    }
+
+    if (!directory.webhook.endpoint || !directory.webhook.secret) {
       return;
     }
 
@@ -65,10 +77,6 @@ export const handleEventCallback = async ({
     // We will process the queue later in the background
     if (opts.dsync?.webhookBatchSize) {
       await eventProcessor.push(event);
-      return;
-    }
-
-    if (!directory.webhook.endpoint || !directory.webhook.secret) {
       return;
     }
 

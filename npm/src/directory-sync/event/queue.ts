@@ -1,9 +1,7 @@
 import os from 'os';
 import _ from 'lodash';
-import axios from 'axios';
 import { randomUUID } from 'crypto';
 
-import { createSignatureString } from '../../event/webhook';
 import type {
   Directory,
   DirectorySyncEvent,
@@ -14,6 +12,8 @@ import type {
   IWebhookEventsLogger,
 } from '../../typings';
 import { eventLockTTL } from './utils';
+import { sendPayloadToWebhook } from '../../event/webhook';
+import { isConnectionActive } from '../../controller/utils';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -93,15 +93,13 @@ export class EventProcessor {
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const events = await this.fetch();
+      const events = await this.fetchNextBatch();
       const eventsCount = events.length;
 
       if (eventsCount === 0) {
         clearInterval(intervalId);
         break;
       }
-
-      // TODO: Handle events that have reached the max retry count
 
       // Group the events by directory
       const eventsByDirectory = _.groupBy(events, 'event.directory_id');
@@ -129,36 +127,53 @@ export class EventProcessor {
         const directory = directoryResult.value.data as Directory;
 
         if (!directory) {
-          await this.markAsFailed(events);
+          await this.delete(events);
           continue;
         }
 
-        if (!directory.webhook?.endpoint || !directory.webhook?.secret) {
-          await this.markAsFailed(events);
+        if (!isConnectionActive(directory)) {
+          await this.delete(events);
+          continue;
+        }
+
+        if (!directory.webhook.endpoint || !directory.webhook.secret) {
+          await this.delete(events);
           continue;
         }
 
         try {
           const { status } = await this.send(directory.webhook, events);
 
-          status === 200 ? await this.delete(events) : await this.markAsFailed(events);
+          if (status === 200) {
+            await this.delete(events);
+          } else {
+            await this.markAsFailed(events);
+          }
 
           await this.logWebhookEvent(directory, events, status);
         } catch (err: any) {
           await this.markAsFailed(events);
+          await this.logWebhookEvent(directory, events, err.response?.status || 500);
         }
       }
     }
   }
 
   // Fetch next batch of events from the database
-  public async fetch() {
-    const { data: events } = (await this.eventStore.getAll(0, this.batchSize(), undefined, 'ASC')) as {
+  public async fetchNextBatch() {
+    const batchSize = this.opts.dsync?.webhookBatchSize;
+
+    const { data: events } = (await this.eventStore.getAll(0, batchSize, undefined, 'ASC')) as {
       data: QueuedEvent[];
     };
 
     if (!events.length) {
       return [];
+    }
+
+    // Check if all the events in the batch have failed
+    if (events.every((event) => event.status === EventStatus.FAILED)) {
+      await this.notifyAllEventsFailed();
     }
 
     // Update the status of the events to PROCESSING
@@ -179,18 +194,17 @@ export class EventProcessor {
   private async send(webhook: Directory['webhook'], events: QueuedEvent[]) {
     const payload = events.map(({ event }) => event);
 
-    return await axios.post(webhook.endpoint, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-        'BoxyHQ-Signature': createSignatureString(webhook.secret, payload),
-      },
-    });
+    try {
+      return await sendPayloadToWebhook(webhook, payload);
+    } catch (err: any) {
+      console.error(`Error sending payload to webhook: ${err.message}`);
+      throw err;
+    }
   }
 
   // Delete the delivered events
   private async delete(events: QueuedEvent[]) {
     const promises = events.map((event) => this.eventStore.delete(event.id));
-
     await Promise.allSettled(promises);
   }
 
@@ -207,10 +221,6 @@ export class EventProcessor {
     await Promise.allSettled(promises);
   }
 
-  private batchSize() {
-    return this.opts.dsync?.webhookBatchSize;
-  }
-
   private async logWebhookEvent(directory: Directory, events: QueuedEvent[], status: number) {
     if (!directory.log_webhook_events) {
       return;
@@ -221,5 +231,10 @@ export class EventProcessor {
     await this.webhookLogs
       .setTenantAndProduct(directory.tenant, directory.product)
       .log(directory, payload, status);
+  }
+
+  // Send a OpenTelemetry event indicating that all the events in the batch have failed
+  private notifyAllEventsFailed() {
+    console.error('All events in the batch have failed. Please check the system.');
   }
 }

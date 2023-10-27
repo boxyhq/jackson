@@ -13,6 +13,7 @@ import type {
 } from '../../typings';
 import { parseGroupOperation } from './utils';
 import { sendEvent } from '../event/utils';
+import { isConnectionActive } from '../../controller/utils';
 
 interface DirectoryGroupsParams {
   directories: IDirectoryConfig;
@@ -235,8 +236,22 @@ export class DirectoryGroups {
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);
 
-    if (error || !directory) {
+    if (error) {
       return this.respondWithError(error);
+    }
+
+    if (!directory) {
+      return {
+        status: 200,
+        data: {},
+      };
+    }
+
+    if (!isConnectionActive(directory)) {
+      return {
+        status: 200,
+        data: {},
+      };
     }
 
     // Validate the request
