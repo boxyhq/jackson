@@ -343,6 +343,7 @@ export interface DatabaseDriver {
     pageToken?: string
   ): Promise<Records>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
+  close(): Promise<void>;
 }
 
 export interface Storable {

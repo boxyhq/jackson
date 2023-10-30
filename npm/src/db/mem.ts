@@ -214,6 +214,10 @@ class Mem implements DatabaseDriver {
       await this.delete(namespace, key);
     }
   }
+
+  async close(): Promise<void> {
+    // no-op
+  }
 }
 
 export default {

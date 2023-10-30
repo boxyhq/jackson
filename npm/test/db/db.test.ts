@@ -1,9 +1,10 @@
-import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable } from '../../src/typings';
+import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
 import tap from 'tap';
 import DB from '../../src/db/db';
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
+const dbObjs: DatabaseDriver[] = [];
 const connectionStores: Storable[] = [];
 const ttlStores: Storable[] = [];
 const ttl = 2;
@@ -172,6 +173,7 @@ tap.before(async () => {
   for (const idx in dbs) {
     const opts = dbs[idx];
     const db = await DB.new(opts);
+    dbObjs.push(db);
 
     const randomSession = Date.now();
     connectionStores.push(db.store('saml:config:' + randomSession));
@@ -180,6 +182,9 @@ tap.before(async () => {
 });
 
 tap.teardown(async () => {
+  for (const db of dbObjs) {
+    await db.close();
+  }
   process.exit(0);
 });
 

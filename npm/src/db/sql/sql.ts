@@ -25,6 +25,7 @@ class Sql implements DatabaseDriver {
   }
 
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
+    console.trace('init sql');
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
     // Synchronize by default for non-planetscale engines only if migrations are not set to run
     let synchronize = !this.options.manualMigration;
@@ -328,6 +329,10 @@ class Sql implements DatabaseDriver {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async close() {
+    return await this.dataSource.destroy();
   }
 }
 

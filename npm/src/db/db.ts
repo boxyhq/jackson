@@ -113,66 +113,81 @@ class DB implements DatabaseDriver {
     return await this.db.deleteMany(namespace, keys);
   }
 
+  async close(): Promise<void> {
+    return await this.db.close();
+  }
+
   store(namespace: string, ttl = 0): Storable {
     return store.new(namespace, this, ttl);
   }
 }
 
+const _new = async (options: DatabaseOption) => {
+  const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
+
+  switch (options.engine) {
+    case 'redis':
+      return new DB(await redis.new(options), encryptionKey);
+    case 'sql':
+      switch (options.type) {
+        case 'mssql':
+          return new DB(
+            await sql.new(options, {
+              JacksonStore: JacksonStoreMSSQL,
+              JacksonIndex: JacksonIndexMSSQL,
+              JacksonTTL: JacksonTTLMSSQL,
+            }),
+            encryptionKey
+          );
+        case 'mariadb':
+        case 'mysql':
+          return new DB(
+            await sql.new(options, {
+              JacksonStore: JacksonStoreMariaDB,
+              JacksonIndex: JacksonIndexMariaDB,
+              JacksonTTL: JacksonTTLMariaDB,
+            }),
+            encryptionKey
+          );
+        default:
+          return new DB(
+            await sql.new(options, {
+              JacksonStore,
+              JacksonIndex,
+              JacksonTTL,
+            }),
+            encryptionKey
+          );
+      }
+    case 'planetscale':
+      return new DB(
+        await sql.new(options, {
+          JacksonStore: JacksonStorePlanetscale,
+          JacksonIndex: JacksonIndexPlanetscale,
+          JacksonTTL: JacksonTTLPlanetscale,
+        }),
+        encryptionKey
+      );
+    case 'mongo':
+      return new DB(await mongo.new(options), encryptionKey);
+    case 'mem':
+      return new DB(await mem.new(options), encryptionKey);
+    case 'dynamodb':
+      return new DB(await dynamodb.new(options), encryptionKey);
+    default:
+      throw new Error('unsupported db engine: ' + options.engine);
+  }
+};
+
+const g = global as any;
+
 export default {
   new: async (options: DatabaseOption) => {
-    const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
-
-    switch (options.engine) {
-      case 'redis':
-        return new DB(await redis.new(options), encryptionKey);
-      case 'sql':
-        switch (options.type) {
-          case 'mssql':
-            return new DB(
-              await sql.new(options, {
-                JacksonStore: JacksonStoreMSSQL,
-                JacksonIndex: JacksonIndexMSSQL,
-                JacksonTTL: JacksonTTLMSSQL,
-              }),
-              encryptionKey
-            );
-          case 'mariadb':
-          case 'mysql':
-            return new DB(
-              await sql.new(options, {
-                JacksonStore: JacksonStoreMariaDB,
-                JacksonIndex: JacksonIndexMariaDB,
-                JacksonTTL: JacksonTTLMariaDB,
-              }),
-              encryptionKey
-            );
-          default:
-            return new DB(
-              await sql.new(options, {
-                JacksonStore,
-                JacksonIndex,
-                JacksonTTL,
-              }),
-              encryptionKey
-            );
-        }
-      case 'planetscale':
-        return new DB(
-          await sql.new(options, {
-            JacksonStore: JacksonStorePlanetscale,
-            JacksonIndex: JacksonIndexPlanetscale,
-            JacksonTTL: JacksonTTLPlanetscale,
-          }),
-          encryptionKey
-        );
-      case 'mongo':
-        return new DB(await mongo.new(options), encryptionKey);
-      case 'mem':
-        return new DB(await mem.new(options), encryptionKey);
-      case 'dynamodb':
-        return new DB(await dynamodb.new(options), encryptionKey);
-      default:
-        throw new Error('unsupported db engine: ' + options.engine);
+    if (g.__jacksonDb) {
+      return g.__jacksonDb;
     }
+
+    g.__jacksonDb = await _new(options);
+    return g.__jacksonDb;
   },
 };

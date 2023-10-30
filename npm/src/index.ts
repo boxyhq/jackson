@@ -69,6 +69,7 @@ export const controllers = async (
   samlFederatedController: ISAMLFederationController;
   brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
+  close: () => Promise<void>;
 }> => {
   opts = defaultOpts(opts);
 
@@ -162,6 +163,9 @@ export const controllers = async (
     brandingController,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
+    },
+    close: async () => {
+      await db.close();
     },
   };
 };
