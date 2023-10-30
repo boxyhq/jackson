@@ -182,9 +182,10 @@ tap.before(async () => {
 });
 
 tap.teardown(async () => {
-  for (const db of dbObjs) {
-    await db.close();
+  for (const idx in dbObjs) {
+    await dbObjs[idx].close();
   }
+
   process.exit(0);
 });
 
