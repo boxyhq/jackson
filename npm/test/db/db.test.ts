@@ -4,7 +4,7 @@ import DB from '../../src/db/db';
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
-const dbObjs: DatabaseDriver[] = [];
+const dbObjs: { [key: string]: DatabaseDriver } = {};
 const connectionStores: Storable[] = [];
 const ttlStores: Storable[] = [];
 const ttl = 2;
@@ -173,7 +173,7 @@ tap.before(async () => {
   for (const idx in dbs) {
     const opts = dbs[idx];
     const db = await DB.new(opts);
-    dbObjs.push(db);
+    dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
 
     const randomSession = Date.now();
     connectionStores.push(db.store('saml:config:' + randomSession));
@@ -182,10 +182,6 @@ tap.before(async () => {
 });
 
 tap.teardown(async () => {
-  for (const idx in dbObjs) {
-    await dbObjs[idx].close();
-  }
-
   process.exit(0);
 });
 
@@ -320,10 +316,11 @@ tap.test('dbs', async () => {
         0,
         1
       );
+      const numRec = dbEngine === 'dynamodb' ? 2 : 1;
       t.same(
         ret3.data.length,
-        dbEngine === 'dynamodb' ? 2 : 1,
-        "getByIndex pagination should get only 1 record, order doesn't matter"
+        numRec,
+        `getByIndex pagination should get only ${numRec} record, order doesn't matter`
       );
 
       const ret4 = await connectionStore.getByIndex(
@@ -337,8 +334,8 @@ tap.test('dbs', async () => {
       );
       t.same(
         ret4.data.length,
-        dbEngine === 'dynamodb' ? 2 : 1,
-        "getByIndex pagination should get only 1 record, order doesn't matter"
+        numRec,
+        `getByIndex pagination should get only ${numRec} record, order doesn't matter`
       );
 
       t.same(
@@ -481,19 +478,28 @@ tap.test('dbs', async () => {
       t.same(ret3.data, []);
       t.same(ret4.data, []);
     });
+
+    tap.test('close(): ' + dbEngine, async (t) => {
+      for (const [_, value] of Object.entries(dbObjs)) {
+        await value.close();
+      }
+    });
   }
 
   tap.test('db.new() error', async (t) => {
     try {
+      global.__jacksonDb = undefined;
       await DB.new(<DatabaseOption>{
         engine: <DatabaseEngine>'mongo',
       });
 
+      global.__jacksonDb = undefined;
       await DB.new(<DatabaseOption>{
         engine: <DatabaseEngine>'sql',
         url: tap.expectUncaughtException().toString(),
       });
 
+      global.__jacksonDb = undefined;
       t.ok(
         <DatabaseOption>{
           engine: <DatabaseEngine>'sql',
@@ -501,9 +507,13 @@ tap.test('dbs', async () => {
         },
         'db must have connection'
       );
+
+      global.__jacksonDb = undefined;
       await DB.new({
         engine: <DatabaseEngine>'',
       });
+
+      global.__jacksonDb = undefined;
       await DB.new(<DatabaseOption>{
         engine: <DatabaseEngine>'somedb',
       });
