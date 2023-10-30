@@ -340,7 +340,8 @@ export interface DatabaseDriver {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
-    pageToken?: string
+    pageToken?: string,
+    sortOrder?: SortOrder
   ): Promise<Records>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
 }

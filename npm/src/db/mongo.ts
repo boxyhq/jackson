@@ -106,7 +106,8 @@ class Mongo implements DatabaseDriver {
     offset?: number,
     limit?: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _?: string
+    _?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
     const docs =
       dbutils.isNumeric(offset) && dbutils.isNumeric(limit)
@@ -115,7 +116,7 @@ class Mongo implements DatabaseDriver {
               {
                 indexes: dbutils.keyForIndex(namespace, idx),
               },
-              { sort: { createdAt: -1 }, skip: offset, limit: limit }
+              { sort: { createdAt: sortOrder === 'ASC' ? 1 : -1 }, skip: offset, limit: limit }
             )
             .toArray()
         : await this.collection

@@ -192,19 +192,23 @@ class Sql implements DatabaseDriver {
     pageOffset?: number,
     pageLimit?: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _?: string
+    _?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const res = skipOffsetAndLimitValue
       ? await this.indexRepository.findBy({
           key: dbutils.keyForIndex(namespace, idx),
+          order: {
+            ['id']: sortOrder || 'DESC',
+          },
         })
       : await this.indexRepository.find({
           where: { key: dbutils.keyForIndex(namespace, idx) },
           take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
           skip: skipOffsetAndLimitValue ? 0 : pageOffset,
           order: {
-            ['id']: 'DESC',
+            ['id']: sortOrder || 'DESC',
           },
         });
 
