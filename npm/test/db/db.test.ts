@@ -479,8 +479,8 @@ tap.test('dbs', async () => {
       t.same(ret4.data, []);
     });
 
-    tap.test('close(): ' + dbEngine, async (t) => {
-      for (const [_, value] of Object.entries(dbObjs)) {
+    tap.test('close(): ' + dbEngine, async () => {
+      for (const [, value] of Object.entries(dbObjs)) {
         await value.close();
       }
     });
