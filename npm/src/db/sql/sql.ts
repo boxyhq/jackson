@@ -197,8 +197,8 @@ class Sql implements DatabaseDriver {
   ): Promise<Records> {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const res = skipOffsetAndLimitValue
-      ? await this.indexRepository.createQueryBuilder().findBy({
-          key: dbutils.keyForIndex(namespace, idx),
+      ? await this.indexRepository.find({
+          where: { key: dbutils.keyForIndex(namespace, idx) },
           order: {
             id: sortOrder || 'DESC',
           },
