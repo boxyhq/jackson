@@ -11,7 +11,7 @@ import type {
   EventLock,
   IWebhookEventsLogger,
 } from '../../typings';
-import { eventLockTTL } from './utils';
+import { eventLockTTL } from '../utils';
 import { sendPayloadToWebhook } from '../../event/webhook';
 import { isConnectionActive } from '../../controller/utils';
 import { JacksonError } from '../../controller/error';

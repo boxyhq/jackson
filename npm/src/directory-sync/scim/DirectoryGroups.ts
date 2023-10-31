@@ -12,7 +12,7 @@ import type {
   GroupPatchOperation,
 } from '../../typings';
 import { parseGroupOperation } from './utils';
-import { sendEvent } from '../event/utils';
+import { sendEvent } from '../batch-events/utils';
 import { isConnectionActive } from '../../controller/utils';
 
 interface DirectoryGroupsParams {

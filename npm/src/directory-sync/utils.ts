@@ -9,11 +9,11 @@ import type {
   IDirectoryConfig,
   JacksonOption,
   IEventProcessor,
-} from '../../typings';
-import { sendPayloadToWebhook } from '../../event/webhook';
-import { transformEventPayload } from '../scim/transform';
-import { isConnectionActive } from '../../controller/utils';
-import { JacksonError } from '../../controller/error';
+} from '../typings';
+import { sendPayloadToWebhook } from '../event/webhook';
+import { transformEventPayload } from './scim/transform';
+import { isConnectionActive } from '../controller/utils';
+import { JacksonError } from '../controller/error';
 
 export const eventLockTTL = 6;
 

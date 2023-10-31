@@ -10,9 +10,9 @@ import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { newGoogleProvider } from './non-scim/google';
 import { startSync } from './non-scim';
 import { storeNamespacePrefix } from '../controller/utils';
-import { eventLockTTL, handleEventCallback } from './event/utils';
-import { EventProcessor } from './event/queue';
-import { EventLock } from './event/lock';
+import { eventLockTTL, handleEventCallback } from './batch-events/utils';
+import { EventProcessor } from './batch-events/queue';
+import { EventLock } from './batch-events/lock';
 
 const directorySync = async (params: { db: DB; opts: JacksonOption; eventController: IEventController }) => {
   const { db, opts, eventController } = params;
