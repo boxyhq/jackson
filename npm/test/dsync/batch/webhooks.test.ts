@@ -1,9 +1,11 @@
 import tap from 'tap';
+import sinon from 'sinon';
 
 import users from '../data/users';
 import requests from '../data/user-requests';
 import { jacksonOptions } from '../../utils';
 import { IDirectorySyncController, Directory } from '../../../src/typings';
+import axiosInstance from '../../../src/event/axios';
 
 let directorySync: IDirectorySyncController;
 
@@ -11,7 +13,7 @@ const directory1Payload = {
   tenant: 'boxyhq-1',
   product: 'saml-jackson',
   type: 'okta-scim-v2' as Directory['type'],
-  webhook_url: 'https://example.com',
+  webhook_url: 'https://example.com/webhook-1',
   webhook_secret: 'secret',
 };
 
@@ -19,7 +21,7 @@ const directory2Payload = {
   tenant: 'boxyhq-2',
   product: 'saml-jackson',
   type: 'okta-scim-v2' as Directory['type'],
-  webhook_url: 'https://example.com',
+  webhook_url: 'https://example.com/webhook-2',
   webhook_secret: 'secret',
 };
 
@@ -62,14 +64,75 @@ tap.teardown(async () => {
   process.exit(0);
 });
 
-tap.test('Batch send dsync events', async (t) => {
-  const events = await directorySync.events.batch.getAll();
+tap.test('Event batching', async (t) => {
+  t.test('Should be able to fetch the events in batches', async (t) => {
+    // Take the first batch of events
+    let events = await directorySync.events.batch.fetchNextBatch(0, webhookBatchSize);
 
-  t.equal(events.data.length, 4, 'There should be 4 events');
+    t.equal(events.length, 2);
 
-  await directorySync.events.batch.process();
+    for (const event of events) {
+      t.equal(event.status, 'PENDING');
+      t.equal(event.retry_count, 0);
+      t.equal(event.event.event, 'user.created');
+    }
 
-  const eventsAfter = await directorySync.events.batch.getAll();
+    t.equal(events[0].event.tenant, 'boxyhq-1');
+    t.equal(events[1].event.tenant, 'boxyhq-1');
 
-  t.equal(eventsAfter.data.length, 0, 'There should be no events pending after processing');
+    // Take the second batch of events
+    events = await directorySync.events.batch.fetchNextBatch(2, webhookBatchSize);
+
+    t.equal(events.length, 2);
+
+    for (const event of events) {
+      t.equal(event.status, 'PENDING');
+      t.equal(event.retry_count, 0);
+      t.equal(event.event.event, 'user.created');
+    }
+
+    t.equal(events[0].event.tenant, 'boxyhq-2');
+    t.equal(events[1].event.tenant, 'boxyhq-2');
+
+    // Take the third batch of events
+    events = await directorySync.events.batch.fetchNextBatch(4, webhookBatchSize);
+
+    t.equal(events.length, 0);
+  });
+
+  t.test('Should be able to process the events', async (t) => {
+    let events = await directorySync.events.batch.fetchNextBatch(0, webhookBatchSize);
+
+    const sandbox = sinon.createSandbox();
+    const axiosPostStub = sandbox.stub(axiosInstance, 'post').resolves({ status: 200 });
+
+    await directorySync.events.batch.process();
+
+    t.equal(axiosPostStub.callCount, 2);
+
+    const expectedPayloadForDirectory1 = events
+      .filter((event) => event.event.tenant === 'boxyhq-1')
+      .map((event) => event.event);
+
+    const expectedPayloadForDirectory2 = events
+      .filter((event) => event.event.tenant === 'boxyhq-2')
+      .map((event) => event.event);
+
+    // First call
+    t.equal(axiosPostStub.firstCall.args[0], directory1Payload.webhook_url);
+    t.equal((axiosPostStub.firstCall.args[1] as any[]).length, 2);
+    t.hasStrict(axiosPostStub.firstCall.args[1], expectedPayloadForDirectory1);
+
+    // Second call
+    t.equal(axiosPostStub.secondCall.args[0], directory2Payload.webhook_url);
+    t.equal((axiosPostStub.secondCall.args[1] as any[]).length, 2);
+    t.hasStrict(axiosPostStub.secondCall.args[1], expectedPayloadForDirectory2);
+
+    sandbox.restore();
+
+    // Now that the events have been processed, they should be deleted
+    events = await directorySync.events.batch.fetchNextBatch(0, webhookBatchSize);
+
+    t.equal(events.length, 0);
+  });
 });

@@ -14,6 +14,7 @@ import type {
 import { eventLockTTL } from './utils';
 import { sendPayloadToWebhook } from '../../event/webhook';
 import { isConnectionActive } from '../../controller/utils';
+import { JacksonError } from '../../controller/error';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -91,9 +92,15 @@ export class EventProcessor {
       this.eventLock.renew(lockKey);
     }, lockRenewalInterval);
 
+    const batchSize = this.opts.dsync?.webhookBatchSize;
+
+    if (!batchSize) {
+      throw new JacksonError('Batch size not defined');
+    }
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const events = await this.fetchNextBatch();
+      const events = await this.fetchNextBatch(0, batchSize);
       const eventsCount = events.length;
 
       if (eventsCount === 0) {
@@ -160,10 +167,8 @@ export class EventProcessor {
   }
 
   // Fetch next batch of events from the database
-  public async fetchNextBatch() {
-    const batchSize = this.opts.dsync?.webhookBatchSize;
-
-    const { data: events } = (await this.eventStore.getAll(0, batchSize, undefined, 'ASC')) as {
+  public async fetchNextBatch(offset: number, limit: number) {
+    const { data: events } = (await this.eventStore.getAll(offset, limit, undefined, 'ASC')) as {
       data: QueuedEvent[];
     };
 
@@ -184,10 +189,6 @@ export class EventProcessor {
     await Promise.allSettled(promises);
 
     return events;
-  }
-
-  public async getAll() {
-    return (await this.eventStore.getAll()) as { data: QueuedEvent[] };
   }
 
   // Send the events to the webhooks
