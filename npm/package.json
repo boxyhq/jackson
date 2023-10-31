@@ -32,7 +32,7 @@
     "db:migration:revert:mongo": "cross-env DB_URL='mongodb://localhost:27017/jackson migrate-mongo down",
     "db:migration:run:mssql": "cross-env DB_TYPE=mssql DB_URL='sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!' ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "prepublishOnly": "npm run build",
-    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 tap --timeout=0 --allow-incomplete-coverage --allow-empty-coverage test/dsync/batch/*.test.ts",
+    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 tap --timeout=0 --allow-incomplete-coverage --allow-empty-coverage test/**/*.test.ts",
     "sort": "npx sort-package-json"
   },
   "tap": {

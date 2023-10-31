@@ -28,7 +28,7 @@ export class EventLock {
 
       return true;
     } catch (e: any) {
-      console.log(`Error acquiring lock for ${key}: ${e}`);
+      console.error(`Error acquiring lock for ${key}: ${e}`);
       return false;
     }
   }
@@ -47,7 +47,7 @@ export class EventLock {
 
       await this.add(key);
     } catch (e: any) {
-      console.log(`Error renewing lock for ${key}: ${e}`);
+      console.error(`Error renewing lock for ${key}: ${e}`);
     }
   }
 

@@ -134,16 +134,19 @@ export class EventProcessor {
         const directory = directoryResult.value.data as Directory;
 
         if (!directory) {
+          console.error(`Directory ${directoryId} not found. Deleting the dsync events.`);
           await this.delete(events);
           continue;
         }
 
         if (!isConnectionActive(directory)) {
+          console.error(`Directory ${directoryId} is not active. Deleting the dsync events.`);
           await this.delete(events);
           continue;
         }
 
         if (!directory.webhook.endpoint || !directory.webhook.secret) {
+          console.error(`Webhook not configured for directory ${directoryId}. Deleting the dsync events.`);
           await this.delete(events);
           continue;
         }
@@ -154,11 +157,13 @@ export class EventProcessor {
           if (status === 200) {
             await this.delete(events);
           } else {
+            console.error(`Webhook returned status ${status}. Marking the events as failed.`);
             await this.markAsFailed(events);
           }
 
           await this.logWebhookEvent(directory, events, status);
         } catch (err: any) {
+          console.error(`Error sending payload to webhook: ${err.message}. Marking the events as failed.`);
           await this.markAsFailed(events);
           await this.logWebhookEvent(directory, events, err.response?.status || 500);
         }
@@ -235,7 +240,9 @@ export class EventProcessor {
   }
 
   // Send a OpenTelemetry event indicating that all the events in the batch have failed
-  private notifyAllEventsFailed() {
+  private async notifyAllEventsFailed() {
     console.error('All events in the batch have failed. Please check the system.');
+
+    // TODO: Send an OpenTelemetry event
   }
 }

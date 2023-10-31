@@ -51,6 +51,11 @@ tap.before(async () => {
     throw new Error('Failed to create directories');
   }
 
+  // Enable logging for directory 1
+  await directorySync.directories.update(directory1.id, {
+    log_webhook_events: true,
+  });
+
   const eventCallback = directorySync.events.callback;
 
   // Add some users to generate events
@@ -134,5 +139,31 @@ tap.test('Event batching', async (t) => {
     events = await directorySync.events.batch.fetchNextBatch(0, webhookBatchSize);
 
     t.equal(events.length, 0);
+  });
+
+  t.test('Should log the webhook events if logging is enabled', async (t) => {
+    const logs = await directorySync.webhookLogs
+      .setTenantAndProduct(directory1Payload.tenant, directory1Payload.product)
+      .getAll();
+
+    t.ok(logs);
+    t.equal(logs.length, 1);
+    t.equal(logs[0].status_code, 200);
+    t.equal(logs[0].delivered, true);
+    t.equal(logs[0].webhook_endpoint, directory1Payload.webhook_url);
+    t.equal(Array.isArray(logs[0].payload), true);
+
+    if (Array.isArray(logs[0].payload)) {
+      t.match(logs[0].payload.length, 2);
+    }
+  });
+
+  t.test('Should not log the webhook events if logging is disabled', async (t) => {
+    const logs = await directorySync.webhookLogs
+      .setTenantAndProduct(directory2Payload.tenant, directory2Payload.product)
+      .getAll();
+
+    t.ok(logs);
+    t.equal(logs.length, 0);
   });
 });

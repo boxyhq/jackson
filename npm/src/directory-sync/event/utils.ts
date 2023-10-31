@@ -62,14 +62,17 @@ export const handleEventCallback = async ({
     const { data: directory, error } = await directories.get(directoryId);
 
     if (error) {
+      console.error(`Error fetching directory ${directoryId}: ${error.message}`);
       throw new JacksonError(error.message, error.code);
     }
 
     if (!directory) {
+      console.error(`Directory ${directoryId} not found. Skipping ...`);
       return;
     }
 
     if (!directory.webhook.endpoint || !directory.webhook.secret) {
+      console.error(`Webhook not configured for directory ${directoryId}. Skipping ...`);
       return;
     }
 
