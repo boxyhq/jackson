@@ -196,20 +196,19 @@ class Sql implements DatabaseDriver {
     sortOrder?: SortOrder
   ): Promise<Records> {
     const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const sort = {
+      id: sortOrder || 'DESC',
+    };
     const res = skipOffsetAndLimitValue
       ? await this.indexRepository.find({
           where: { key: dbutils.keyForIndex(namespace, idx) },
-          order: {
-            id: sortOrder || 'DESC',
-          },
+          order: sort,
         })
       : await this.indexRepository.find({
           where: { key: dbutils.keyForIndex(namespace, idx) },
           take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
           skip: skipOffsetAndLimitValue ? 0 : pageOffset,
-          order: {
-            id: sortOrder || 'DESC',
-          },
+          order: sort,
         });
 
     const ret: Encrypted[] = [];
