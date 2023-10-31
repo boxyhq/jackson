@@ -208,7 +208,7 @@ class Sql implements DatabaseDriver {
           take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
           skip: skipOffsetAndLimitValue ? 0 : pageOffset,
           order: {
-            ['id']: sortOrder || 'DESC',
+            id: sortOrder || 'DESC',
           },
         });
 
