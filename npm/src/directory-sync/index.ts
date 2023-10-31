@@ -10,7 +10,7 @@ import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { newGoogleProvider } from './non-scim/google';
 import { startSync } from './non-scim';
 import { storeNamespacePrefix } from '../controller/utils';
-import { eventLockTTL, handleEventCallback } from './batch-events/utils';
+import { eventLockTTL, handleEventCallback } from './utils';
 import { EventProcessor } from './batch-events/queue';
 import { EventLock } from './batch-events/lock';
 

@@ -10,7 +10,7 @@ import type {
   UserPatchOperation,
 } from '../../typings';
 import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
-import { sendEvent } from '../batch-events/utils';
+import { sendEvent } from '../utils';
 import { isConnectionActive } from '../../controller/utils';
 
 interface DirectoryUsersParams {
