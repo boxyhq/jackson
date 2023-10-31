@@ -3,6 +3,7 @@ const { i18n } = require('./next-i18next.config');
 /** @type {import('next').NextConfig} */
 
 module.exports = {
+  experimental: { esmExternals: false, webpackBuildWorker: true },
   productionBrowserSourceMaps: true,
   reactStrictMode: true,
   i18n,
