@@ -182,8 +182,8 @@ const _new = async (options: DatabaseOption) => {
 const g = global as any;
 
 export default {
-  new: async (options: DatabaseOption) => {
-    if (g.__jacksonDb) {
+  new: async (options: DatabaseOption, noCache = false) => {
+    if (g.__jacksonDb && !noCache) {
       return g.__jacksonDb;
     }
 

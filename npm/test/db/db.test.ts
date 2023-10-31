@@ -172,7 +172,7 @@ if (process.env.DYNAMODB_URL) {
 tap.before(async () => {
   for (const idx in dbs) {
     const opts = dbs[idx];
-    const db = await DB.new(opts);
+    const db = await DB.new(opts, true);
     dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
 
     const randomSession = Date.now();
@@ -488,18 +488,21 @@ tap.test('dbs', async () => {
 
   tap.test('db.new() error', async (t) => {
     try {
-      global.__jacksonDb = undefined;
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'mongo',
-      });
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'mongo',
+        },
+        true
+      );
 
-      global.__jacksonDb = undefined;
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'sql',
-        url: tap.expectUncaughtException().toString(),
-      });
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'sql',
+          url: tap.expectUncaughtException().toString(),
+        },
+        true
+      );
 
-      global.__jacksonDb = undefined;
       t.ok(
         <DatabaseOption>{
           engine: <DatabaseEngine>'sql',
@@ -508,15 +511,19 @@ tap.test('dbs', async () => {
         'db must have connection'
       );
 
-      global.__jacksonDb = undefined;
-      await DB.new({
-        engine: <DatabaseEngine>'',
-      });
+      await DB.new(
+        {
+          engine: <DatabaseEngine>'',
+        },
+        true
+      );
 
-      global.__jacksonDb = undefined;
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'somedb',
-      });
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'somedb',
+        },
+        true
+      );
       t.fail('expecting an unsupported db error');
     } catch (err) {
       t.ok(err, 'got expected error');
