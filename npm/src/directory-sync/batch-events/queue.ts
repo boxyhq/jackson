@@ -15,6 +15,7 @@ import { eventLockTTL } from '../utils';
 import { sendPayloadToWebhook } from '../../event/webhook';
 import { isConnectionActive } from '../../controller/utils';
 import { JacksonError } from '../../controller/error';
+import * as metrics from '../../opentelemetry/metrics';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -82,7 +83,6 @@ export class EventProcessor {
 
   // Process the events and send them to the webhooks as a batch
   public async process() {
-    // Acquire the lock
     if (!(await this.eventLock.acquire(lockKey))) {
       return;
     }
@@ -162,10 +162,16 @@ export class EventProcessor {
           }
 
           await this.logWebhookEvent(directory, events, status);
-        } catch (err: any) {
-          console.error(`Error sending payload to webhook: ${err.message}. Marking the events as failed.`);
+        } catch (error: any) {
+          const message = `Error sending payload to webhook ${directory.webhook.endpoint}. Marking the events as failed. ${error.message}`;
+          const status = error.response?.status || 500;
+
+          console.error(message, error);
+
           await this.markAsFailed(events);
-          await this.logWebhookEvent(directory, events, err.response?.status || 500);
+          await this.logWebhookEvent(directory, events, status);
+
+          throw new JacksonError(message, status);
         }
       }
     }
@@ -241,8 +247,7 @@ export class EventProcessor {
 
   // Send a OpenTelemetry event indicating that all the events in the batch have failed
   private async notifyAllEventsFailed() {
+    metrics.increment('dsyncEventsBatchFailed');
     console.error('All events in the batch have failed. Please check the system.');
-
-    // TODO: Send an OpenTelemetry event
   }
 }
