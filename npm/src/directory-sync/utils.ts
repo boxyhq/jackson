@@ -35,18 +35,11 @@ export const sendEvent = async (
   payload: Payload,
   callback?: EventCallback
 ) => {
-  if (!isConnectionActive(payload.directory)) {
-    return;
-  }
-
   if (!callback) {
     return;
   }
 
-  const transformedEvent = transformEventPayload(event, payload);
-
-  // Call the callback function (user defined or default)
-  await callback(transformedEvent);
+  await callback(transformEventPayload(event, payload));
 };
 
 export const handleEventCallback = async ({
@@ -64,11 +57,6 @@ export const handleEventCallback = async ({
     if (error) {
       console.error(`Error fetching directory ${directoryId}: ${error.message}`);
       throw new JacksonError(error.message, error.code);
-    }
-
-    if (!directory) {
-      console.error(`Directory ${directoryId} not found. Skipping ...`);
-      return;
     }
 
     if (!directory.webhook.endpoint || !directory.webhook.secret) {
