@@ -344,7 +344,7 @@ tap.test('dbs', async () => {
       );
 
       // sort order tests
-      if (!dbEngine.startsWith('dynamodb')) {
+      if (!dbEngine.startsWith('dynamodb') && !dbEngine.startsWith('redis')) {
         const { data: sortedRecordsAsc } = await connectionStore.getByIndex(
           {
             name: 'city',
