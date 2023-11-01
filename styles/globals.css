@@ -121,3 +121,12 @@ span.react-datepicker__navigation-icon {
 .modal-content > div > textarea {
   background-color: white;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #a0a0a0;
+  border-radius: 4px;
+}

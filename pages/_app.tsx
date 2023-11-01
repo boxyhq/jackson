@@ -5,13 +5,14 @@ import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Toaster } from '@components/Toaster';
 import { appWithTranslation } from 'next-i18next';
-import { ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode, useEffect } from 'react';
 import micromatch from 'micromatch';
 import nextI18NextConfig from '../next-i18next.config.js';
 
 import { AccountLayout, SetupLinkLayout } from '@components/layouts';
 import '@boxyhq/react-ui/dist/style.css';
 import '../styles/globals.css';
+import { applyTheme } from '../lib/theme';
 
 const unauthenticatedRoutes = [
   '/',
@@ -35,7 +36,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const { session, ...props } = pageProps;
 
   const getLayout = Component.getLayout;
-
+  useEffect(() => {
+    applyTheme(localStorage.getItem('theme') as Theme);
+  }, []);
   // If a page level layout exists, use it
   if (getLayout) {
     return (

@@ -139,10 +139,10 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         className={classNames('relative z-40 md:hidden', { hidden: isOpen })}
         role='dialog'
         aria-modal='true'>
-        <div className='fixed inset-0 bg-gray-600 bg-opacity-75' />
-        <div className='fixed inset-0 z-40 flex'>
-          <div className='relative flex w-full max-w-xs flex-1 flex-col bg-white pt-5 pb-4'>
-            <div className='absolute top-0 right-0 -mr-12 pt-2'>
+        <div className='fixed inset-0 ' />
+        <div className='fixed inset-0  flex'>
+          <div className='relative z-300 flex w-full max-w-xs flex-1 flex-col  pt-5 pb-4 bg-gray-900'>
+            <div className='absolute  top-2 left-64 ml-6 pt-2'>
               <button
                 onClick={() => {
                   setIsOpen(!isOpen);
@@ -162,10 +162,10 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                 </svg>
               </button>
             </div>
-            <div className='flex flex-shrink-0 items-center px-4'>
+            <div className='flex flex-shrink-0 items-center px-4 '>
               <Link href='/' className='flex items-center'>
                 <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
-                <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ Admin Portal</span>
+                <span className='ml-4 text-xl font-bold '>BoxyHQ Admin Portal</span>
               </Link>
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
@@ -178,13 +178,14 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
 
       {/* Sidebar for desktop */}
       <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
-        <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
+        <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 pt-5'>
           <div className='flex flex-shrink-0 items-center px-4'>
             <Link href='/' className='flex items-center'>
               <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
-              <span className='ml-4 text-lg font-bold text-gray-900'>BoxyHQ Admin Portal</span>
+              <span className='ml-4 text-lg font-bold'>BoxyHQ Admin Portal</span>
             </Link>
           </div>
+
           <div className='mt-5 flex flex-1 flex-col'>
             <MenuItems menus={menus} />
           </div>
@@ -228,8 +229,8 @@ const ItemLink = (props: MenuItem) => {
     <Link
       href={href}
       className={classNames(
-        'group mx-2 flex items-center rounded-md py-2 px-2 text-sm text-gray-900',
-        active ? 'bg-gray-100 font-bold' : 'font-medium hover:bg-gray-100 hover:text-gray-900'
+        'group mx-2 flex items-center rounded-md py-2 px-2 text-sm ',
+        active ? 'bg-gray-100 font-bold text-gray-900' : 'font-medium hover:bg-gray-100 hover:text-gray-900'
       )}>
       {props.icon && <props.icon className='mr-2 h-6 w-6 flex-shrink-0' aria-hidden='true' />}
       {text}
