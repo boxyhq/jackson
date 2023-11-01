@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { validateApiKey } from '@lib/auth';
 
+// Sync Google Workspace with Jackson
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { apiKey } = req.query as { apiKey: string };
 

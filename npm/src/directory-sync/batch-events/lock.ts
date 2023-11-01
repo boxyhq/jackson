@@ -65,4 +65,18 @@ export class EventLock {
 
     return data.length > 0 ? data[0] : null;
   }
+
+  async release(key: string) {
+    const lock = await this.get();
+
+    if (!lock) {
+      return;
+    }
+
+    if (lock.key != key) {
+      return;
+    }
+
+    await this.lockStore.delete(key);
+  }
 }

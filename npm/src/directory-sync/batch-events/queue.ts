@@ -39,6 +39,7 @@ interface DirectoryEventsParams {
   webhookLogs: IWebhookEventsLogger;
 }
 
+let isJobRunning = false;
 const lockKey = os.hostname();
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
 
@@ -83,9 +84,15 @@ export class EventProcessor {
 
   // Process the events and send them to the webhooks as a batch
   public async process() {
+    if (isJobRunning) {
+      return;
+    }
+
     if (!(await this.eventLock.acquire(lockKey))) {
       return;
     }
+
+    isJobRunning = true;
 
     // Renew the lock periodically
     const intervalId = setInterval(async () => {
@@ -105,6 +112,7 @@ export class EventProcessor {
 
       if (eventsCount === 0) {
         clearInterval(intervalId);
+        await this.eventLock.release(lockKey);
         break;
       }
 
@@ -175,6 +183,8 @@ export class EventProcessor {
         }
       }
     }
+
+    isJobRunning = false;
   }
 
   // Fetch next batch of events from the database
