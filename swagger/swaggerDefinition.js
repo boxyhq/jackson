@@ -32,4 +32,14 @@ module.exports = {
       apiKey: [],
     },
   ],
+  servers: [
+    {
+      url: 'https://app.eu.boxyhq.com',
+      description: 'Cloud',
+    },
+    {
+      url: 'http://localhost:5225',
+      description: 'Local',
+    },
+  ],
 };
