@@ -48,7 +48,7 @@
     "@googleapis/admin": "13.0.0",
     "axios": "1.6.0",
     "encoding": "0.1.13",
-    "jose": "5.0.1",
+    "jose": "5.0.2",
     "lodash": "4.17.21",
     "mixpanel": "0.18.0",
     "mongodb": "6.2.0",
