@@ -100,7 +100,7 @@
     "autoprefixer": "10.4.16",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
-    "eslint": "8.52.0",
+    "eslint": "8.53.0",
     "eslint-config-next": "14.0.1",
     "eslint-config-prettier": "9.0.0",
     "postcss": "8.4.31",
