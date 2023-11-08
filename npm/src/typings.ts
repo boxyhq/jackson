@@ -65,6 +65,7 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
       redirectUrl?: string;
     };
     thumbprint?: string;
+    publicKey?: string;
     validTo?: string;
   };
   deactivated?: boolean;
