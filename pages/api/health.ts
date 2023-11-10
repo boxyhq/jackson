@@ -16,6 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       version: packageInfo.version,
     });
   } catch (err: any) {
+    console.error('HealthCheck failed', err);
     const { statusCode = 503 } = err;
     res.status(statusCode).json({});
   }
