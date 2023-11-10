@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import * as jose from 'jose';
 import { Client, TokenSet } from 'openid-client';
+import saml from '@boxyhq/saml20';
 
 import * as dbutils from '../db/utils';
 import type {
@@ -68,6 +69,9 @@ export const OAuthErrorResponse = ({
 
 // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
 export function getErrorMessage(error: unknown) {
+  if (error instanceof saml.WrapError) {
+    return error.message + ' ' + error.inner.message;
+  }
   if (error instanceof Error) {
     return error.message;
   }
