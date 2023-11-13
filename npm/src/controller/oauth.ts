@@ -786,8 +786,8 @@ export class OAuthController implements IOAuthController {
     const requested = isIdPFlow
       ? { isIdPFlow: true, tenant: connection.tenant, product: connection.product }
       : session
-      ? session.requested
-      : null;
+        ? session.requested
+        : null;
 
     const codeVal = {
       profile,
