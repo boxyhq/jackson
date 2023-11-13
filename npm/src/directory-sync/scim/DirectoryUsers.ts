@@ -10,7 +10,8 @@ import type {
   UserPatchOperation,
 } from '../../typings';
 import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
-import { sendEvent } from './events';
+import { sendEvent } from '../utils';
+import { isConnectionActive } from '../../controller/utils';
 
 interface DirectoryUsersParams {
   directories: IDirectoryConfig;
@@ -182,8 +183,22 @@ export class DirectoryUsers {
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);
 
-    if (error || !directory) {
+    if (error) {
       return this.respondWithError(error);
+    }
+
+    if (!directory) {
+      return {
+        status: 200,
+        data: {},
+      };
+    }
+
+    if (!isConnectionActive(directory)) {
+      return {
+        status: 200,
+        data: {},
+      };
     }
 
     // Validate the request

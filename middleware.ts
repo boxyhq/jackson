@@ -15,10 +15,10 @@ const unAuthenticatedApiRoutes = [
   '/api/oauth/**',
   '/api/scim/v2.0/**',
   '/api/scim/oauth/**',
-  '/api/scim/cron',
   '/api/well-known/**',
   '/api/setup/**',
   '/api/branding',
+  '/api/scim/cron/**',
 ];
 
 export async function middleware(req: NextRequest) {

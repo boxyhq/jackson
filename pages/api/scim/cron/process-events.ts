@@ -13,11 +13,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { directorySyncController } = await jackson();
 
-    await directorySyncController.sync(directorySyncController.events.callback);
+    await directorySyncController.events.batch.process();
 
-    res.status(200).json({ message: 'Sync completed' });
+    res.json({ message: 'Processing completed' });
   } catch (e: any) {
-    res.status(500).json({ message: e.message || 'Sync failed' });
+    res.status(500).json({ message: e.message || 'Processing failed' });
   }
 };
 

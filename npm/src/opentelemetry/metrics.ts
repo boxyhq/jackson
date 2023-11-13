@@ -61,6 +61,14 @@ const counters = {
       name: 'jackson.dsync.connection.delete',
       counterOptions: { description: 'Number of DSync connections delete requests' },
     }),
+
+  dsyncEventsBatchFailed: () => {
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.dsync.events_batch.failed',
+      counterOptions: { description: 'Indicate that a batch of dsync events failed' },
+    });
+  },
 };
 
 const increment = (action: keyof typeof counters) => {
