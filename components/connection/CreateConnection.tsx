@@ -65,18 +65,18 @@ const CreateConnection = ({
   const backUrl = setupLinkToken
     ? null
     : isSettingsView
-    ? '/admin/settings/sso-connection'
-    : '/admin/sso-connection';
+      ? '/admin/settings/sso-connection'
+      : '/admin/sso-connection';
   const redirectUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
-    ? '/admin/settings/sso-connection'
-    : '/admin/sso-connection';
+      ? '/admin/settings/sso-connection'
+      : '/admin/sso-connection';
   const mutationUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
-    ? '/api/admin/connections?isSystemSSO'
-    : '/api/admin/connections';
+      ? '/api/admin/connections?isSystemSSO'
+      : '/api/admin/connections';
 
   // FORM LOGIC: SUBMIT
   const save = async (event: React.FormEvent) => {

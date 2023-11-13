@@ -29,8 +29,8 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
     setupLink?.service === 'sso'
       ? t('configure_sso')
       : setupLink?.service === 'dsync'
-      ? t('configure_dsync')
-      : null;
+        ? t('configure_dsync')
+        : null;
 
   return (
     <>
