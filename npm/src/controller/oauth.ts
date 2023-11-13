@@ -40,7 +40,7 @@ import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SAMLHandler } from './saml-handler';
-import { extractSAMLResponseAttributes } from '../saml/lib';
+import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
@@ -494,7 +494,7 @@ export class OAuthController implements IOAuthController {
     let issuer: string | undefined;
     let isIdPFlow: boolean | undefined;
     let isSAMLFederated: boolean | undefined;
-    let validateOpts: { thumbprint: string; audience: string; privateKey: string };
+    let validateOpts: ValidateOption;
     let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
 
@@ -587,10 +587,15 @@ export class OAuthController implements IOAuthController {
       const { privateKey } = await getDefaultCertificate();
 
       validateOpts = {
-        thumbprint: `${connection?.idpMetadata.thumbprint}`,
         audience: `${this.opts.samlAudience}`,
         privateKey,
       };
+
+      if (connection.idpMetadata.publicKey) {
+        validateOpts.publicKey = connection.idpMetadata.publicKey;
+      } else if (connection.idpMetadata.thumbprint) {
+        validateOpts.thumbprint = connection.idpMetadata.thumbprint;
+      }
 
       if (session && session.id) {
         validateOpts['inResponseTo'] = session.id;
@@ -781,8 +786,8 @@ export class OAuthController implements IOAuthController {
     const requested = isIdPFlow
       ? { isIdPFlow: true, tenant: connection.tenant, product: connection.product }
       : session
-      ? session.requested
-      : null;
+        ? session.requested
+        : null;
 
     const codeVal = {
       profile,

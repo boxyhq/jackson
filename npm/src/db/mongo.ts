@@ -1,4 +1,4 @@
-import { Collection, Db, MongoClient, UpdateOptions } from 'mongodb';
+import { Collection, Db, MongoClient, Sort, UpdateOptions } from 'mongodb';
 import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records, SortOrder } from '../typings';
 import * as dbutils from './utils';
 
@@ -106,8 +106,10 @@ class Mongo implements DatabaseDriver {
     offset?: number,
     limit?: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _?: string
+    _?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
+    const sort: Sort = { createdAt: sortOrder === 'ASC' ? 'asc' : 'desc' };
     const docs =
       dbutils.isNumeric(offset) && dbutils.isNumeric(limit)
         ? await this.collection
@@ -115,13 +117,16 @@ class Mongo implements DatabaseDriver {
               {
                 indexes: dbutils.keyForIndex(namespace, idx),
               },
-              { sort: { createdAt: -1 }, skip: offset, limit: limit }
+              { sort, skip: offset, limit: limit }
             )
             .toArray()
         : await this.collection
-            .find({
-              indexes: dbutils.keyForIndex(namespace, idx),
-            })
+            .find(
+              {
+                indexes: dbutils.keyForIndex(namespace, idx),
+              },
+              { sort }
+            )
             .toArray();
 
     const ret: string[] = [];

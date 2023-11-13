@@ -1,9 +1,9 @@
 const packageInfo = require('../package.json');
 
 module.exports = {
-  openapi: '3.0.0',
+  openapi: '3.1.0',
   info: {
-    title: 'SAML Jackson API',
+    title: 'Enterprise SSO & Directory Sync',
     version: packageInfo.version,
     description: 'This is the API documentation for SAML Jackson service.',
     termsOfService: 'https://boxyhq.com/terms.html',
@@ -30,6 +30,16 @@ module.exports = {
   security: [
     {
       apiKey: [],
+    },
+  ],
+  servers: [
+    {
+      url: 'https://api.eu.boxyhq.com',
+      description: 'Cloud',
+    },
+    {
+      url: 'http://localhost:5225',
+      description: 'Local',
     },
   ],
 };
