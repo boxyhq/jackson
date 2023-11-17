@@ -131,15 +131,15 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
         setupLinkToken
           ? `/api/setup/${setupLinkToken}/connections`
           : isSettingsView
-          ? `/api/admin/connections?isSystemSSO`
-          : '/api/admin/connections'
+            ? `/api/admin/connections?isSystemSSO`
+            : '/api/admin/connections'
       );
       router.replace(
         setupLinkToken
           ? `/setup/${setupLinkToken}/sso-connection`
           : isSettingsView
-          ? '/admin/settings/sso-connection'
-          : '/admin/sso-connection'
+            ? '/admin/settings/sso-connection'
+            : '/admin/sso-connection'
       );
     }
   };
@@ -171,8 +171,8 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
   const backUrl = setupLinkToken
     ? `/setup/${setupLinkToken}`
     : isSettingsView
-    ? '/admin/settings/sso-connection'
-    : '/admin/sso-connection';
+      ? '/admin/settings/sso-connection'
+      : '/admin/sso-connection';
 
   return (
     <>

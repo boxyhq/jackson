@@ -9,8 +9,8 @@ const SetupLinksIndexPage: NextPage = () => {
   const service = router.asPath.includes('sso-connection')
     ? 'sso'
     : router.asPath.includes('directory-sync')
-    ? 'dsync'
-    : '';
+      ? 'dsync'
+      : '';
 
   if (service.length === 0) {
     return null;
