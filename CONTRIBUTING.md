@@ -33,7 +33,7 @@ cd jackson
 #### Install Dependencies
 
 ```shell
-npm i
+npm install
 ```
 
 #### Configure Environment Variables

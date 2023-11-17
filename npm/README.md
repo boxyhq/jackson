@@ -9,7 +9,7 @@ You need someone like Jules Winnfield to save you from the vagaries of SAML logi
 Jackson is available as an [npm package](https://www.npmjs.com/package/@boxyhq/saml-jackson) that can be integrated into any web application framework (like Express.js for example). Please file an issue or submit a PR if you encounter any issues with your choice of framework.
 
 ```bash
-npm i @boxyhq/saml-jackson
+npm install @boxyhq/saml-jackson
 ```
 
 ## Documentation
