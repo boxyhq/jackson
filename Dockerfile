@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json package-lock.json  ./
 COPY npm npm
 COPY migrate.sh prebuild.ts ./
-RUN npm run custom-install
+RUN npm i
 
 
 

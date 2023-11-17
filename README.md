@@ -110,7 +110,7 @@ Run the dev server:
 
 ```zsh
 # Install the packages
-npm run custom-install
+npm i
 # Start the server
 npm run dev
 ```
