@@ -575,3 +575,10 @@ export type GetByProductParams = {
 };
 
 export type SortOrder = 'ASC' | 'DESC';
+
+export type Product = {
+  id: string;
+  name: string;
+  teamId: string;
+  teamName: string;
+};
