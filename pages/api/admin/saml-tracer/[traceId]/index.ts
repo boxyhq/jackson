@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { IAdminController } from '@boxyhq/saml-jackson';
+import type { IAdminController } from '@npm/src/index';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;

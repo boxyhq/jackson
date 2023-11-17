@@ -4,7 +4,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import type { User } from '@boxyhq/saml-jackson';
+import type { User } from '@npm/src/index';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import DirectoryTab from '@components/dsync/DirectoryTab';

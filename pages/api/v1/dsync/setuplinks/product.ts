@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { SetupLinkService } from '@boxyhq/saml-jackson';
+import type { SetupLinkService } from '@npm/src/index';
 import jackson from '@lib/jackson';
 
 const service: SetupLinkService = 'dsync';

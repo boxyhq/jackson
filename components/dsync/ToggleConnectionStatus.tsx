@@ -1,4 +1,4 @@
-import type { Directory } from '@boxyhq/saml-jackson';
+import type { Directory } from '@npm/src/index';
 import { errorToast, successToast } from '@components/Toaster';
 import { FC, useState, useEffect } from 'react';
 import type { ApiResponse } from 'types';

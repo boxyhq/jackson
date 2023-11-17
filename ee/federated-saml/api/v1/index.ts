@@ -1,4 +1,4 @@
-import { AppRequestParams } from '@boxyhq/saml-jackson';
+import { AppRequestParams } from '@npm/src/index';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';

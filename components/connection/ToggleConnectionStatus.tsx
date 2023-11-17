@@ -1,4 +1,4 @@
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, SAMLSSORecord } from '@npm/src/index';
 import { errorToast, successToast } from '@components/Toaster';
 import { FC, useEffect, useState } from 'react';
 import type { ApiResponse } from 'types';

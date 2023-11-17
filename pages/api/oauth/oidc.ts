@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { setErrorCookie } from '@lib/utils';
-import { OIDCAuthzResponsePayload } from '@boxyhq/saml-jackson';
+import { OIDCAuthzResponsePayload } from '@npm/src/index';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {

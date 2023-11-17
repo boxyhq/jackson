@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, SAMLSSORecord } from '@npm/src/index';
 import type { InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';

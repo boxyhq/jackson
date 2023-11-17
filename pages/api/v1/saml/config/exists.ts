@@ -2,7 +2,7 @@
 
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { GetConfigQuery } from '@boxyhq/saml-jackson';
+import type { GetConfigQuery } from '@npm/src/index';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {

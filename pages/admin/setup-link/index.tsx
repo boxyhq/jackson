@@ -2,15 +2,15 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 import SetupLinkList from '@components/setup-link/SetupLinkList';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
-import type { SetupLinkService } from '@boxyhq/saml-jackson';
+import type { SetupLinkService } from '@npm/src/index';
 
 const SetupLinksIndexPage: NextPage = () => {
   const router = useRouter();
   const service = router.asPath.includes('sso-connection')
     ? 'sso'
     : router.asPath.includes('directory-sync')
-      ? 'dsync'
-      : '';
+    ? 'dsync'
+    : '';
 
   if (service.length === 0) {
     return null;

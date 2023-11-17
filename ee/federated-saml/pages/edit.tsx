@@ -1,4 +1,4 @@
-import type { AdminPortalBranding, SAMLFederationApp } from '@boxyhq/saml-jackson';
+import type { AdminPortalBranding, SAMLFederationApp } from '@npm/src/index';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';

@@ -7,7 +7,7 @@ import EditConnection from '@components/connection/EditConnection';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { ApiError, ApiSuccess } from 'types';
 import Loading from '@components/Loading';
-import { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import { OIDCSSORecord, SAMLSSORecord } from '@npm/src/index';
 import { errorToast } from '@components/Toaster';
 
 const ConnectionEditPage: NextPage = () => {

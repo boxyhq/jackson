@@ -20,7 +20,7 @@ import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
 import { isObjectEmpty } from '@lib/ui/utils';
 import { ToggleConnectionStatus } from './ToggleConnectionStatus';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, SAMLSSORecord } from '@npm/src/index';
 
 function getInitialState(connection, fieldCatalog: FieldCatalogItem[], connectionType) {
   const _state = {};
@@ -131,15 +131,15 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
         setupLinkToken
           ? `/api/setup/${setupLinkToken}/connections`
           : isSettingsView
-            ? `/api/admin/connections?isSystemSSO`
-            : '/api/admin/connections'
+          ? `/api/admin/connections?isSystemSSO`
+          : '/api/admin/connections'
       );
       router.replace(
         setupLinkToken
           ? `/setup/${setupLinkToken}/sso-connection`
           : isSettingsView
-            ? '/admin/settings/sso-connection'
-            : '/admin/sso-connection'
+          ? '/admin/settings/sso-connection'
+          : '/admin/sso-connection'
       );
     }
   };
@@ -171,8 +171,8 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
   const backUrl = setupLinkToken
     ? `/setup/${setupLinkToken}`
     : isSettingsView
-      ? '/admin/settings/sso-connection'
-      : '/admin/sso-connection';
+    ? '/admin/settings/sso-connection'
+    : '/admin/sso-connection';
 
   return (
     <>

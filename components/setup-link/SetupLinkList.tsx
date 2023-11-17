@@ -15,7 +15,7 @@ import { IconButton } from '@components/IconButton';
 import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import Loading from '@components/Loading';
-import type { SetupLinkService, SetupLink } from '@boxyhq/saml-jackson';
+import type { SetupLinkService, SetupLink } from '@npm/src/index';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 import { SetupLinkInfo } from './SetupLinkInfo';
 

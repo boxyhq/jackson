@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import type { DirectorySyncProviders } from '@boxyhq/saml-jackson';
+import type { DirectorySyncProviders } from '@npm/src/index';
 import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
 

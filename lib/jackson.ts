@@ -1,6 +1,6 @@
-import type { SAMLJackson } from '@boxyhq/saml-jackson';
+import type { SAMLJackson } from '@npm/src/index';
 
-import jackson from '@boxyhq/saml-jackson';
+import jackson from '@npm/src/index';
 import { jacksonOptions } from '@lib/env';
 import '@lib/metrics';
 

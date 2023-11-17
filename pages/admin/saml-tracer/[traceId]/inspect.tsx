@@ -1,7 +1,7 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import type { SAMLTrace } from '@boxyhq/saml-jackson';
+import type { SAMLTrace } from '@npm/src/index';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import useSWR from 'swr';
@@ -75,10 +75,10 @@ const SAMLTraceInspector: NextPage = () => {
                 {trace.context.requestedOIDCFlow
                   ? 'OIDC'
                   : trace.context.isSAMLFederated
-                    ? t('saml_federation')
-                    : trace.context.isIdPFlow
-                      ? t('idp_login')
-                      : 'OAuth 2.0'}
+                  ? t('saml_federation')
+                  : trace.context.isIdPFlow
+                  ? t('idp_login')
+                  : 'OAuth 2.0'}
               </Badge>
             </span>
           </p>

@@ -1,5 +1,5 @@
 import { expect, type APIRequestContext } from '@playwright/test';
-import type { Directory } from '@boxyhq/saml-jackson';
+import type { Directory } from '@npm/src/index';
 
 export const createGroup = async (request: APIRequestContext, directory: Directory, group: any) => {
   const response = await request.post(`${directory.scim.path}/Groups`, {

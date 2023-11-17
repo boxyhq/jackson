@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { SetupLink } from '@boxyhq/saml-jackson';
+import { SetupLink } from '@npm/src/index';
 import Modal from '@components/Modal';
 import { ButtonOutline } from '@components/ButtonOutline';
 import { InputWithCopyButton } from '@components/ClipboardButton';

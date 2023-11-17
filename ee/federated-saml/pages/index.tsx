@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import type { SAMLFederationApp } from '@npm/src/index';
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
 import type { ApiError, ApiSuccess } from 'types';

@@ -4,7 +4,7 @@ import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import { useEffect } from 'react';
-import type { Directory } from '@boxyhq/saml-jackson';
+import type { Directory } from '@npm/src/index';
 import { useTranslation } from 'next-i18next';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { IconButton } from '@components/IconButton';

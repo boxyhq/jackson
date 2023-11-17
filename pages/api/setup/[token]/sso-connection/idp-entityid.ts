@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { SetupLink } from '@boxyhq/saml-jackson';
+import type { SetupLink } from '@npm/src/index';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import type { SAMLFederationApp } from '@npm/src/index';
 
 import type { ApiResponse } from 'types';
 import { LinkBack } from '@components/LinkBack';

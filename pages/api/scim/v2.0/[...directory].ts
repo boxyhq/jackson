@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { DirectorySyncRequest } from '@boxyhq/saml-jackson';
+import type { DirectorySyncRequest } from '@npm/src/index';
 import jackson from '@lib/jackson';
 import { extractAuthToken } from '@lib/auth';
 import { bodyParser } from '@lib/utils';

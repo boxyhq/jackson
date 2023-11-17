@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import { SAMLFederationApp } from '@npm/src/index';
 
 test.use({
   extraHTTPHeaders: {

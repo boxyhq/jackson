@@ -30,10 +30,10 @@ Navigate to the project folder and install the necessary dependencies:
 cd jackson
 ```
 
-#### Install Custom Dependencies
+#### Install Dependencies
 
 ```shell
-npm run custom-install
+npm i
 ```
 
 #### Configure Environment Variables

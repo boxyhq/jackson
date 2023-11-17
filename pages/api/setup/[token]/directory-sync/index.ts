@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { DirectoryType, SetupLink } from '@boxyhq/saml-jackson';
+import type { DirectoryType, SetupLink } from '@npm/src/index';
 import jackson from '@lib/jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

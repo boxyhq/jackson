@@ -1,7 +1,7 @@
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { DelConnectionsQuery, GetConnectionsQuery } from '@boxyhq/saml-jackson';
+import type { DelConnectionsQuery, GetConnectionsQuery } from '@npm/src/index';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;

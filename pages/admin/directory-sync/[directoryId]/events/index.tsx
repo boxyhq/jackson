@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import useSWR from 'swr';
-import type { WebhookEventLog } from '@boxyhq/saml-jackson';
+import type { WebhookEventLog } from '@npm/src/index';
 
 import EmptyState from '@components/EmptyState';
 import DirectoryTab from '@components/dsync/DirectoryTab';

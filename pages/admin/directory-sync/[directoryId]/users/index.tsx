@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import type { User } from '@boxyhq/saml-jackson';
+import type { User } from '@npm/src/index';
 
 import EmptyState from '@components/EmptyState';
 import DirectoryTab from '@components/dsync/DirectoryTab';

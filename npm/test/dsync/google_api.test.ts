@@ -1,6 +1,6 @@
 import tap from 'tap';
 import nock from 'nock';
-import type { DirectorySyncEvent } from '@boxyhq/saml-jackson';
+import type { DirectorySyncEvent } from '@npm/src/index';
 
 import { jacksonOptions } from '../utils';
 import { IDirectorySyncController, DirectoryType } from '../../src/typings';

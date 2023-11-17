@@ -2,7 +2,7 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import CreateSetupLink from '@components/setup-link/CreateSetupLink';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import type { SetupLinkService } from '@boxyhq/saml-jackson';
+import type { SetupLinkService } from '@npm/src/index';
 
 const serviceMaps = {
   'sso-connection': 'sso',

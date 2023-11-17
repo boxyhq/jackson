@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
-import type { Directory } from '@boxyhq/saml-jackson';
+import type { Directory } from '@npm/src/index';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import useDirectoryProviders from '@lib/ui/hooks/useDirectoryProviders';

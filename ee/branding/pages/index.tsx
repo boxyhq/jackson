@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import type { ApiResponse } from 'types';
-import type { AdminPortalBranding } from '@boxyhq/saml-jackson';
+import type { AdminPortalBranding } from '@npm/src/index';
 import LicenseRequired from '@components/LicenseRequired';
 
 const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {

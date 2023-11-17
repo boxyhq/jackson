@@ -10,7 +10,7 @@ import { IconButton } from '@components/IconButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, SAMLSSORecord } from '@npm/src/index';
 import useSWR from 'swr';
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
@@ -35,8 +35,8 @@ const ConnectionList = ({
   let getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
-      ? `/api/admin/connections?isSystemSSO`
-      : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
+    ? `/api/admin/connections?isSystemSSO`
+    : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
 
   // Use the (next)pageToken mapped to the previous page offset to get the current page
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
@@ -45,8 +45,8 @@ const ConnectionList = ({
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`
     : isSettingsView
-      ? `/admin/settings/sso-connection/new`
-      : '/admin/sso-connection/new';
+    ? `/admin/settings/sso-connection/new`
+    : '/admin/sso-connection/new';
 
   const { data, error, isLoading } = useSWR<
     ApiSuccess<((SAMLSSORecord | OIDCSSORecord) & { isSystemSSO?: boolean })[]>,
@@ -212,8 +212,8 @@ const ConnectionList = ({
                                 setupLinkToken
                                   ? `/setup/${setupLinkToken}/sso-connection/edit/${connection.clientID}`
                                   : isSettingsView || isSystemSSO
-                                    ? `/admin/settings/sso-connection/edit/${connection.clientID}`
-                                    : `/admin/sso-connection/edit/${connection.clientID}`
+                                  ? `/admin/settings/sso-connection/edit/${connection.clientID}`
+                                  : `/admin/sso-connection/edit/${connection.clientID}`
                               );
                             }}
                           />

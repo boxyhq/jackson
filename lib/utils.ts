@@ -6,7 +6,7 @@ import type {
   OIDCSSOConnectionWithMetadata,
   OIDCSSORecord,
   SAMLSSORecord,
-} from '@boxyhq/saml-jackson';
+} from '@npm/src/index';
 import { JacksonError } from 'npm/src/controller/error';
 
 export const validateEmailWithACL = (email: string) => {

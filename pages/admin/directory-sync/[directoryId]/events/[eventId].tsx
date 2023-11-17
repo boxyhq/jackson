@@ -3,7 +3,7 @@ import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import useSWR from 'swr';
-import type { WebhookEventLog } from '@boxyhq/saml-jackson';
+import type { WebhookEventLog } from '@npm/src/index';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 

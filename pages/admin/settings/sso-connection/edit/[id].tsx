@@ -8,7 +8,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
 import type { ApiError, ApiSuccess } from 'types';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, SAMLSSORecord } from '@npm/src/index';
 
 const EditSSOConnection: NextPage = () => {
   const router = useRouter();

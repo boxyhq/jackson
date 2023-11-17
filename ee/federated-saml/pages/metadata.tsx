@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
+import type { SAMLFederationAppWithMetadata } from '@npm/src/index';
 import { Toaster } from '@components/Toaster';
 import { InputWithCopyButton, CopyToClipboardButton } from '@components/ClipboardButton';
 import { LinkOutline } from '@components/LinkOutline';

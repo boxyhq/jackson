@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useTranslation } from 'next-i18next';
-import type { Directory } from '@boxyhq/saml-jackson';
+import type { Directory } from '@npm/src/index';
 import type { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
 import ConfirmationModal from '@components/ConfirmationModal';

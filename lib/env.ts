@@ -1,4 +1,4 @@
-import type { DatabaseEngine, DatabaseOption, DatabaseType, JacksonOption } from '@boxyhq/saml-jackson';
+import type { DatabaseEngine, DatabaseOption, DatabaseType, JacksonOption } from '@npm/src/index';
 
 const samlPath = '/api/oauth/saml';
 const oidcPath = '/api/oauth/oidc';

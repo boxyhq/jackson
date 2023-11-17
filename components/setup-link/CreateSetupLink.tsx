@@ -6,7 +6,7 @@ import { errorToast, successToast } from '@components/Toaster';
 import { ButtonPrimary } from '../ButtonPrimary';
 import { LinkBack } from '../LinkBack';
 import { InputWithCopyButton } from '../ClipboardButton';
-import type { SetupLinkService, SetupLink } from '@boxyhq/saml-jackson';
+import type { SetupLinkService, SetupLink } from '@npm/src/index';
 import type { ApiResponse } from 'types';
 
 const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {

@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { fetcher } from '@lib/ui/utils';
 import type { ApiSuccess, ApiError } from 'types';
-import type { Trace } from '@boxyhq/saml-jackson';
+import type { Trace } from '@npm/src/index';
 import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
