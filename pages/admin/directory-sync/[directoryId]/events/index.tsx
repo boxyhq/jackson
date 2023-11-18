@@ -93,9 +93,6 @@ const Events: NextPage = () => {
                 <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                   <tr className='hover:bg-gray-50'>
                     <th scope='col' className='px-6 py-3'>
-                      {t('event_type')}
-                    </th>
-                    <th scope='col' className='px-6 py-3'>
                       {t('sent_at')}
                     </th>
                     <th scope='col' className='px-6 py-3'>
@@ -110,7 +107,6 @@ const Events: NextPage = () => {
                       <tr
                         key={event.id}
                         className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'>
-                        <td className='px-6 py-3 font-semibold'>{event.event}</td>
                         <td className='px-6 py-3'>{event.created_at.toString()}</td>
                         <td className='px-6 py-3'>
                           {event.status_code === 200 ? (

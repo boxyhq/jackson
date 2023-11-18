@@ -100,7 +100,8 @@ class Mem implements DatabaseDriver {
     pageOffset?: number,
     pageLimit?: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _?: string
+    _?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
@@ -110,7 +111,8 @@ class Mem implements DatabaseDriver {
 
     take += skip;
     const dbKeys = Array.from((await this.indexes[dbutils.keyForIndex(namespace, idx)]) || []) as string[];
-    const iterator: IterableIterator<string> = dbKeys.reverse().values();
+    const iterator: IterableIterator<string> =
+      sortOrder === 'ASC' ? dbKeys.values() : dbKeys.reverse().values();
     const ret: string[] = [];
     for (const dbKey of iterator || []) {
       if (offsetAndLimitValueCheck) {

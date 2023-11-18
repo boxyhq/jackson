@@ -80,9 +80,10 @@ class DB implements DatabaseDriver {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
-    pageToken?: string
+    pageToken?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
-    const res = await this.db.getByIndex(namespace, idx, pageOffset, pageLimit, pageToken);
+    const res = await this.db.getByIndex(namespace, idx, pageOffset, pageLimit, pageToken, sortOrder);
     const encryptionKey = this.encryptionKey;
     return {
       data: res.data.map((r) => {

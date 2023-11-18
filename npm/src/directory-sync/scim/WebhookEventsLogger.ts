@@ -18,12 +18,12 @@ export class WebhookEventsLogger extends Base {
     super({ db });
   }
 
-  public async log(directory: Directory, event: DirectorySyncEvent, status: number) {
+  public async log(directory: Directory, event: DirectorySyncEvent | DirectorySyncEvent[], status: number) {
     const id = randomUUID();
 
     const log: WebhookEventLog = {
-      ...event,
       id,
+      payload: event,
       webhook_endpoint: directory.webhook.endpoint,
       created_at: new Date(),
       status_code: status,

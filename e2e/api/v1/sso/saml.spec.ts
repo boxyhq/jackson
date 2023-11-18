@@ -98,13 +98,13 @@ test.describe('POST /api/v1/sso', () => {
     const response = await getConnection(request, { tenant, product });
 
     expect(response).toHaveLength(2);
-    expect(response[0]).toMatchObject(expectedConnection);
-    expect(response[1]).toMatchObject({
+    expect(response[0]).toMatchObject({
       ...expectedConnection,
       idpMetadata: {
         entityID: 'https://saml.example.com/entityid-1',
       },
     });
+    expect(response[1]).toMatchObject(expectedConnection);
   });
 });
 
