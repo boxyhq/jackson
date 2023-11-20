@@ -1,3 +1,4 @@
+import { JacksonError } from '../../controller/error';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import type { Storable, Product, JacksonOption } from '../../typings';
 
@@ -13,7 +14,13 @@ export class ProductController {
   public async get(productId: string) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    return (await this.productStore.get(productId)) as Product;
+    const product = (await this.productStore.get(productId)) as Product;
+
+    if (!product) {
+      throw new JacksonError('Product not found.', 404);
+    }
+
+    return product;
   }
 
   public async upsert(product: Product) {
