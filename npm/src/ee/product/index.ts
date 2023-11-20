@@ -23,9 +23,20 @@ export class ProductController {
     return product;
   }
 
-  public async upsert(product: Product) {
+  public async upsert(params: Partial<Product> & { id: string }) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    await this.productStore.put(product.id, { ...product });
+    if (!('id' in params)) {
+      throw new JacksonError('Provide a product id', 400);
+    }
+
+    const product = (await this.productStore.get(params.id)) as Product;
+
+    if (!product) {
+      await this.productStore.put(params.id, { ...params });
+      return;
+    }
+
+    await this.productStore.put(product.id, { ...product, ...params });
   }
 }
