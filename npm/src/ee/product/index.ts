@@ -30,7 +30,7 @@ export class ProductController {
       throw new JacksonError('Provide a product id', 400);
     }
 
-    const product = (await this.productStore.get(params.id)) as Product;
+    const product = await this.productStore.get(params.id);
 
     if (!product) {
       await this.productStore.put(params.id, { ...params });
