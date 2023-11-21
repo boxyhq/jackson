@@ -85,9 +85,9 @@ const jacksonOptions: JacksonOption = {
       : undefined,
     providers: {
       google: {
-        clientId: process.env.GOOGLE_CLIENT_ID || '',
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-        callbackUrl: process.env.GOOGLE_REDIRECT_URI || '',
+        clientId: process.env.DSYNC_GOOGLE_CLIENT_ID || '',
+        clientSecret: process.env.DSYNC_GOOGLE_CLIENT_SECRET || '',
+        callbackUrl: process.env.DSYNC_GOOGLE_REDIRECT_URI || '',
       },
     },
   },
