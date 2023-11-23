@@ -12,6 +12,12 @@ import Image from 'next/image';
 import { PoweredBy } from '@components/PoweredBy';
 import { getPortalBranding } from '@lib/settings';
 
+interface Connection {
+  name: string;
+  product: string;
+  clientID: string;
+}
+
 export default function ChooseIdPConnection({
   connections,
   SAMLResponse,
@@ -59,7 +65,7 @@ export default function ChooseIdPConnection({
   );
 }
 
-const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORecord)[] }) => {
+const IdpSelector = ({ connections }: { connections: Connection[] }) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
@@ -73,15 +79,6 @@ const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORec
       <h3 className='text-center text-xl font-bold'>{t('select_an_idp')}</h3>
       <ul className='flex flex-col space-y-5'>
         {connections.map((connection) => {
-          const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
-          const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
-
-          const name =
-            connection.name ||
-            (idpMetadata
-              ? idpMetadata.friendlyProviderName || idpMetadata.provider
-              : `${oidcProvider?.provider}`);
-
           return (
             <li key={connection.clientID} className='rounded bg-gray-100'>
               <button
@@ -93,10 +90,10 @@ const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORec
                 <div className='flex items-center gap-2 px-3 py-3'>
                   <div className='placeholder avatar'>
                     <div className='w-8 rounded-full bg-primary text-white'>
-                      <span className='text-lg font-bold'>{name.charAt(0).toUpperCase()}</span>
+                      <span className='text-lg font-bold'>{connection.name.charAt(0).toUpperCase()}</span>
                     </div>
                   </div>
-                  {name}
+                  {connection.name}
                 </div>
               </button>
             </li>
@@ -115,7 +112,7 @@ const AppSelector = ({
   connections,
   SAMLResponse,
 }: {
-  connections: (OIDCSSORecord | SAMLSSORecord)[];
+  connections: Connection[];
   SAMLResponse: string | null;
 }) => {
   const { t } = useTranslation('common');
@@ -184,7 +181,8 @@ const AppSelector = ({
 };
 
 export const getServerSideProps = async ({ query, locale, req }) => {
-  const { connectionAPIController, samlFederatedController, checkLicense } = await jackson();
+  const { connectionAPIController, samlFederatedController, checkLicense, productController } =
+    await jackson();
 
   const paramsToRelay = { ...query } as { [key: string]: string };
 
@@ -247,6 +245,21 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     };
   }
 
+  let connectionsTransformed: Connection[] = connections.map((connection) => {
+    const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
+    const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
+
+    const name =
+      connection.name ||
+      (idpMetadata ? idpMetadata.friendlyProviderName || idpMetadata.provider : `${oidcProvider?.provider}`);
+
+    return {
+      name,
+      product: connection.product,
+      clientID: connection.clientID,
+    };
+  });
+
   // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
   if (req.method == 'POST') {
     const body = await getRawBody(req);
@@ -261,12 +274,30 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       };
     }
 
+    // Fetch products to display the product name instead of the product ID
+    const promises = connectionsTransformed.map(async (connection) =>
+      productController.get(connection.product)
+    );
+
+    const products = (await Promise.allSettled(promises)) as any;
+
+    connectionsTransformed = connectionsTransformed.map((connection, index) => {
+      if (products[index].status === 'fulfilled') {
+        return {
+          ...connection,
+          product: products[index].value.name || connection.product,
+        };
+      }
+
+      return connection;
+    });
+
     return {
       props: {
         ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
         authFlow,
         SAMLResponse,
-        connections,
+        connections: connectionsTransformed,
         branding,
       },
     };
@@ -277,7 +308,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
       authFlow,
       SAMLResponse: null,
-      connections,
+      connections: connectionsTransformed,
       branding,
     },
   };
