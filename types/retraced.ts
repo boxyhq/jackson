@@ -32,3 +32,5 @@ export type Group = {
   group_id: string;
   name: string;
 };
+
+export type AuditEventType = 'sso.user.login';
