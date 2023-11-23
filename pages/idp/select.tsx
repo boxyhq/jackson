@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, Product, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import type { InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
@@ -275,11 +275,9 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     }
 
     // Fetch products to display the product name instead of the product ID
-    const promises = connectionsTransformed.map(async (connection) =>
-      productController.get(connection.product)
-    );
-
-    const products = (await Promise.allSettled(promises)) as any;
+    const products = (await Promise.allSettled(
+      connectionsTransformed.map((connection) => productController.get(connection.product))
+    )) as PromiseFulfilledResult<Product>[];
 
     connectionsTransformed = connectionsTransformed.map((connection, index) => {
       if (products[index].status === 'fulfilled') {
