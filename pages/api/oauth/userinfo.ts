@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { extractAuthToken } from '@lib/auth';
+import retraced from '@ee/retraced';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -8,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw { message: 'Method not allowed', statusCode: 405 };
     }
 
-    const { oauthController } = await jackson();
+    const { oauthController, productController } = await jackson();
     let token: string | null = extractAuthToken(req);
 
     // check for query param
@@ -26,6 +27,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const profile = await oauthController.userInfo(token);
+
+    retraced.reportEvent({
+      action: 'sso.user.login',
+      crud: 'r',
+      actor: {
+        id: profile.email,
+        name: `${profile.firstName} ${profile.lastName}`,
+      },
+      productId: profile.requested.product,
+    });
 
     res.json(profile);
   } catch (err: any) {
