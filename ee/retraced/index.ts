@@ -71,8 +71,8 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
     }
 
     await retracedClient.reportEvent(retracedEvent);
-  } catch (err: any) {
-    console.error('Error reporting event to Retraced', err);
+  } catch (error: any) {
+    console.error(error);
   }
 };
 
