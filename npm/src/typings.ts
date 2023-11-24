@@ -79,7 +79,8 @@ export interface OIDCSSORecord extends SSOConnection {
   clientID: string; // set by Jackson
   clientSecret: string; // set by Jackson
   oidcProvider: {
-    provider?: string;
+    provider: string | 'Unknown';
+    friendlyProviderName: string | null;
     discoveryUrl?: string;
     metadata?: IssuerMetadata;
     clientId?: string;
