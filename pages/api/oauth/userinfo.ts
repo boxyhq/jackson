@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw { message: 'Method not allowed', statusCode: 405 };
     }
 
-    const { oauthController, productController } = await jackson();
+    const { oauthController } = await jackson();
     let token: string | null = extractAuthToken(req);
 
     // check for query param
