@@ -35,6 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: profile.email,
         name: `${profile.firstName} ${profile.lastName}`,
       },
+      description: `User ${profile.email} logged in via SSO`,
       productId: profile.requested.product,
     });
 

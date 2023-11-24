@@ -33,7 +33,7 @@ const getClient = async () => {
 };
 
 // Send an event to Retraced
-const reportEvent = async ({ action, crud, group, actor, productId }: ReportEventParams) => {
+const reportEvent = async ({ action, crud, group, actor, description, productId }: ReportEventParams) => {
   try {
     const retracedClient = await getClient();
 
@@ -52,6 +52,8 @@ const reportEvent = async ({ action, crud, group, actor, productId }: ReportEven
       crud,
       group,
       actor,
+      description,
+      created: new Date(),
     };
 
     // Find team info for the product
@@ -64,7 +66,7 @@ const reportEvent = async ({ action, crud, group, actor, productId }: ReportEven
           name: productInfo.teamName,
         };
       } catch (err: any) {
-        console.error('Error getting product info', err);
+        console.error('Error getting product info. Event not reported to Retraced.', err);
       }
     }
 
