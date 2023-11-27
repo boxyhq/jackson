@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.15.0",
+  "version": "1.15.1",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.5",
-    "@boxyhq/react-ui": "3.3.18",
+    "@boxyhq/react-ui": "3.3.19",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.0.18",
     "@retracedhq/logs-viewer": "2.5.2",
