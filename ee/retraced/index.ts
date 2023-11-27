@@ -59,11 +59,16 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
     // Find team info for the product
     if (productId && !group) {
       try {
-        const productInfo = await productController.get(productId);
+        const product = await productController.get(productId);
 
         retracedEvent.group = {
-          id: productInfo.teamId,
-          name: productInfo.teamName,
+          id: product.teamId,
+          name: product.teamName,
+        };
+
+        retracedEvent.target = {
+          id: product.id,
+          name: product.name,
         };
       } catch (err: any) {
         console.error('Error getting product info. Event not reported to Retraced.', err);

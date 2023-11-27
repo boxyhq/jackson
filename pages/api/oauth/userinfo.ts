@@ -34,6 +34,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       actor: {
         id: profile.email,
         name: `${profile.firstName} ${profile.lastName}`,
+        fields: {
+          tenant: profile.requested.tenant,
+        },
       },
       productId: profile.requested.product,
     });
