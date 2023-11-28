@@ -4,6 +4,7 @@ import axios from 'axios';
 import type { Project } from 'types/retraced';
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
+import retraced from '@ee/retraced';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -37,6 +38,15 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     }
   );
+
+  retraced.reportAdminPortalEvent({
+    action: 'retraced.project.create',
+    crud: 'c',
+    req,
+    target: {
+      id: data.project.id,
+    },
+  });
 
   return res.status(201).json({
     data,

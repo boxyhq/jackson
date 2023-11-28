@@ -38,7 +38,14 @@ type AuditEventType =
   // Federated SAML
   | 'federation.app.create'
   | 'federation.app.update'
-  | 'federation.app.delete';
+  | 'federation.app.delete'
+
+  // Retraced
+  | 'retraced.project.create'
+
+  // Admin settings
+  | 'portal.branding.update'
+  | 'portal.user.login';
 
 type ReportAdminEventParams = {
   action: AuditEventType;
