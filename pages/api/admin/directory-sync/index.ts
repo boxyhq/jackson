@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { DirectoryType } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -32,6 +33,15 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (data) {
+    retraced.reportAdminPortalEvent({
+      action: 'dsync.connection.create',
+      crud: 'c',
+      req,
+      target: {
+        id: data.id,
+      },
+    });
+
     return res.status(201).json({ data });
   }
 
@@ -59,6 +69,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (nextPageToken) {
+    retraced.reportAdminPortalEvent({
+      action: 'dsync.connection.list',
+      crud: 'r',
+      req,
+    });
+
     res.setHeader('jackson-pagetoken', nextPageToken);
   }
 

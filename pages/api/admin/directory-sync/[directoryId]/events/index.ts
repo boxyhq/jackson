@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -47,6 +48,15 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
       directoryId,
     });
 
+  retraced.reportAdminPortalEvent({
+    action: 'dsync.webhook_event.list',
+    crud: 'r',
+    req,
+    target: {
+      id: directoryId,
+    },
+  });
+
   return res.status(200).json({ data: events });
 };
 
@@ -69,6 +79,15 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   await directorySyncController.webhookLogs
     .setTenantAndProduct(directory.tenant, directory.product)
     .deleteAll(directoryId);
+
+  retraced.reportAdminPortalEvent({
+    action: 'dsync.webhook_event.delete',
+    crud: 'd',
+    req,
+    target: {
+      id: directoryId,
+    },
+  });
 
   return res.status(200).json({ data: null });
 };

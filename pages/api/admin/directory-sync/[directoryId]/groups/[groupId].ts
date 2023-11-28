@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -34,6 +35,15 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (group) {
+    retraced.reportAdminPortalEvent({
+      action: 'dsync.group.get',
+      crud: 'r',
+      req,
+      target: {
+        id: groupId,
+      },
+    });
+
     return res.status(200).json({ data: group });
   }
 };

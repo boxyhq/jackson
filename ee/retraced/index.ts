@@ -15,12 +15,39 @@ export const adminPortalGroup = {
 
 type AuditEventType =
   | 'sso.user.login'
+
+  // Single Sign On
   | 'sso.connection.create'
   | 'sso.connection.update'
   | 'sso.connection.delete'
   | 'sso.connection.list'
+  | 'sso.connection.get'
+
+  // Directory Sync
+  | 'dsync.connection.create'
+  | 'dsync.connection.update'
+  | 'dsync.connection.delete'
+  | 'dsync.connection.list'
+  | 'dsync.connection.get'
+  | 'dsync.user.list'
+  | 'dsync.user.get'
+  | 'dsync.group.list'
+  | 'dsync.group.get'
+  | 'dsync.webhook_event.list'
+  | 'dsync.webhook_event.get'
+  | 'dsync.webhook_event.delete'
+
+  // Setup Link
   | 'sso.setuplink.create'
-  | 'sso.setuplink.delete';
+  | 'sso.setuplink.update'
+  | 'sso.setuplink.delete'
+  | 'sso.setuplink.list'
+  | 'sso.setuplink.get'
+  | 'dsync.setuplink.create'
+  | 'dsync.setuplink.update'
+  | 'dsync.setuplink.delete'
+  | 'dsync.setuplink.list'
+  | 'dsync.setuplink.get';
 
 type ReportAdminEventParams = {
   action: AuditEventType;

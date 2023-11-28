@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -26,6 +27,15 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.update(directoryId, req.body);
 
   if (data) {
+    retraced.reportAdminPortalEvent({
+      action: 'dsync.connection.update',
+      crud: 'u',
+      req,
+      target: {
+        id: directoryId,
+      },
+    });
+
     return res.status(200).json({ data });
   }
 
@@ -43,6 +53,15 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
   if (data) {
+    retraced.reportAdminPortalEvent({
+      action: 'dsync.connection.get',
+      crud: 'r',
+      req,
+      target: {
+        id: directoryId,
+      },
+    });
+
     return res.status(200).json({ data });
   }
 
@@ -62,6 +81,15 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   if (error) {
     return res.status(error.code).json({ error });
   }
+
+  retraced.reportAdminPortalEvent({
+    action: 'dsync.connection.delete',
+    crud: 'd',
+    req,
+    target: {
+      id: directoryId,
+    },
+  });
 
   return res.json({ data: null });
 };

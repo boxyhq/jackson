@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -36,6 +37,15 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const event = await directorySyncController.webhookLogs
     .setTenantAndProduct(directory.tenant, directory.product)
     .get(eventId);
+
+  retraced.reportAdminPortalEvent({
+    action: 'dsync.webhook_event.get',
+    crud: 'r',
+    req,
+    target: {
+      id: eventId,
+    },
+  });
 
   return res.status(200).json({ data: event });
 };

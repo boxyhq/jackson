@@ -27,7 +27,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     const connections = await connectionAPIController.getConnections({ clientID: clientId });
 
     retraced.reportAdminPortalEvent({
-      action: 'sso.connection.list',
+      action: 'sso.connection.get',
       crud: 'r',
       req,
       target: {
