@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
+import type { SetupLinkService } from '@boxyhq/saml-jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -41,6 +43,15 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     regenerate,
   });
 
+  retraced.reportAdminPortalEvent({
+    action: `${service as SetupLinkService}.setuplink.create`,
+    crud: 'c',
+    req,
+    target: {
+      id: setupLink.setupID,
+    },
+  });
+
   return res.status(201).json({ data: setupLink });
 };
 
@@ -49,7 +60,18 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { setupID } = req.query as { setupID: string };
 
+  const setupLink = await setupLinkController.get(setupID);
+
   await setupLinkController.remove({ id: setupID });
+
+  retraced.reportAdminPortalEvent({
+    action: `${setupLink.service}.setuplink.delete`,
+    crud: 'd',
+    req,
+    target: {
+      id: setupID,
+    },
+  });
 
   return res.json({ data: {} });
 };
@@ -78,6 +100,15 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (token) {
     const setupLink = await setupLinkController.getByToken(token);
 
+    retraced.reportAdminPortalEvent({
+      action: `${setupLink.service}.setuplink.get`,
+      crud: 'r',
+      req,
+      target: {
+        id: setupLink.setupID,
+      },
+    });
+
     return res.json({ data: setupLink });
   }
 
@@ -90,6 +121,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     if (setupLinksPaginated.pageToken) {
       res.setHeader('jackson-pagetoken', setupLinksPaginated.pageToken);
     }
+
+    retraced.reportAdminPortalEvent({
+      action: `${service as SetupLinkService}.setuplink.list`,
+      crud: 'r',
+      req,
+    });
 
     return res.json({ data: setupLinksPaginated.data });
   }
