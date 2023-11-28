@@ -51,7 +51,8 @@ type ReportAdminEventParams = {
   action: AuditEventType;
   crud: Retraced.CRUD;
   target?: Retraced.Target;
-  req: NextApiRequest;
+  req?: NextApiRequest;
+  actor?: Retraced.Actor;
 };
 
 interface ReportEventParams extends Event {
@@ -129,7 +130,13 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
 };
 
 // Report Admin portal events to Retraced
-export const reportAdminPortalEvent = async ({ action, crud, target, req }: ReportAdminEventParams) => {
+export const reportAdminPortalEvent = async ({
+  action,
+  crud,
+  target,
+  actor,
+  req,
+}: ReportAdminEventParams) => {
   try {
     const retracedClient = await getClient();
 
@@ -137,27 +144,31 @@ export const reportAdminPortalEvent = async ({ action, crud, target, req }: Repo
       return;
     }
 
-    // Get actor info
-    const user = await getNextAuthToken({
-      req,
-      cookieName: sessionName,
-    });
+    // If no actor is provided, try to get it from the request
+    if (req && !actor) {
+      const user = await getNextAuthToken({
+        req,
+        cookieName: sessionName,
+      });
 
-    if (!user || !user.email || !user.name) {
-      console.error(`Can't find actor info for Retraced event.`);
-      return;
+      if (!user || !user.email || !user.name) {
+        console.error(`Can't find actor info for Retraced event.`);
+        return;
+      }
+
+      actor = {
+        id: user.email,
+        name: user.name,
+      };
     }
 
     const retracedEvent: Event = {
       action,
       crud,
       target,
+      actor,
       group: adminPortalGroup,
       created: new Date(),
-      actor: {
-        id: user.email,
-        name: user.name,
-      },
       //source_ip: process.env.NODE_ENV === 'development' ? null : requestIp.getClientIp(req),
     };
 
