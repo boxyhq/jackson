@@ -69,12 +69,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (nextPageToken) {
-    retraced.reportAdminPortalEvent({
-      action: 'dsync.connection.list',
-      crud: 'r',
-      req,
-    });
-
     res.setHeader('jackson-pagetoken', nextPageToken);
   }
 

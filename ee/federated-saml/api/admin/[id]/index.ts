@@ -36,15 +36,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const app = await samlFederatedController.app.get({ id });
   const metadata = await samlFederatedController.app.getMetadata();
 
-  retraced.reportAdminPortalEvent({
-    action: 'federation.app.get',
-    crud: 'r',
-    req,
-    target: {
-      id,
-    },
-  });
-
   return res.status(200).json({
     data: {
       ...app,

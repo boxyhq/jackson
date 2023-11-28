@@ -56,12 +56,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('jackson-pagetoken', apps.pageToken);
   }
 
-  retraced.reportAdminPortalEvent({
-    action: 'federation.app.list',
-    crud: 'r',
-    req,
-  });
-
   return res.json({ data: apps.data });
 };
 

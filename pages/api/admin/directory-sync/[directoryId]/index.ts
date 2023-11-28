@@ -53,15 +53,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
   if (data) {
-    retraced.reportAdminPortalEvent({
-      action: 'dsync.connection.get',
-      crud: 'r',
-      req,
-      target: {
-        id: directoryId,
-      },
-    });
-
     return res.status(200).json({ data });
   }
 

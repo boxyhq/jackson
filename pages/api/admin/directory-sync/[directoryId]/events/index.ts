@@ -48,15 +48,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
       directoryId,
     });
 
-  retraced.reportAdminPortalEvent({
-    action: 'dsync.webhook_event.list',
-    crud: 'r',
-    req,
-    target: {
-      id: directoryId,
-    },
-  });
-
   return res.status(200).json({ data: events });
 };
 

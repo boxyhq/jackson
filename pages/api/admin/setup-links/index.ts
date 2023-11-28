@@ -100,15 +100,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (token) {
     const setupLink = await setupLinkController.getByToken(token);
 
-    retraced.reportAdminPortalEvent({
-      action: `${setupLink.service}.setuplink.get`,
-      crud: 'r',
-      req,
-      target: {
-        id: setupLink.setupID,
-      },
-    });
-
     return res.json({ data: setupLink });
   }
 
@@ -121,12 +112,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     if (setupLinksPaginated.pageToken) {
       res.setHeader('jackson-pagetoken', setupLinksPaginated.pageToken);
     }
-
-    retraced.reportAdminPortalEvent({
-      action: `${service as SetupLinkService}.setuplink.list`,
-      crud: 'r',
-      req,
-    });
 
     return res.json({ data: setupLinksPaginated.data });
   }
