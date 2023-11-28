@@ -47,7 +47,14 @@ type AuditEventType =
   | 'dsync.setuplink.update'
   | 'dsync.setuplink.delete'
   | 'dsync.setuplink.list'
-  | 'dsync.setuplink.get';
+  | 'dsync.setuplink.get'
+
+  // Federated SAML
+  | 'federation.app.create'
+  | 'federation.app.update'
+  | 'federation.app.delete'
+  | 'federation.app.list'
+  | 'federation.app.get';
 
 type ReportAdminEventParams = {
   action: AuditEventType;

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -28,6 +29,15 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const app = await samlFederatedController.app.create(req.body);
 
+  retraced.reportAdminPortalEvent({
+    action: 'federation.app.create',
+    crud: 'c',
+    req,
+    target: {
+      id: app.id,
+    },
+  });
+
   return res.status(201).json({ data: app });
 };
 
@@ -45,6 +55,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (apps.pageToken) {
     res.setHeader('jackson-pagetoken', apps.pageToken);
   }
+
+  retraced.reportAdminPortalEvent({
+    action: 'federation.app.list',
+    crud: 'r',
+    req,
+  });
 
   return res.json({ data: apps.data });
 };

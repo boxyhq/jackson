@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -35,6 +36,15 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const app = await samlFederatedController.app.get({ id });
   const metadata = await samlFederatedController.app.getMetadata();
 
+  retraced.reportAdminPortalEvent({
+    action: 'federation.app.get',
+    crud: 'r',
+    req,
+    target: {
+      id,
+    },
+  });
+
   return res.status(200).json({
     data: {
       ...app,
@@ -49,6 +59,15 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const updatedApp = await samlFederatedController.app.update(req.body);
 
+  retraced.reportAdminPortalEvent({
+    action: 'federation.app.update',
+    crud: 'u',
+    req,
+    target: {
+      id: updatedApp.id,
+    },
+  });
+
   return res.status(200).json({ data: updatedApp });
 };
 
@@ -59,6 +78,15 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query as { id: string };
 
   await samlFederatedController.app.delete({ id });
+
+  retraced.reportAdminPortalEvent({
+    action: 'federation.app.delete',
+    crud: 'd',
+    req,
+    target: {
+      id,
+    },
+  });
 
   return res.status(200).json({ data: {} });
 };
