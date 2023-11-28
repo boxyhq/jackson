@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -57,6 +58,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (paginatedConnectionList.pageToken) {
     res.setHeader('jackson-pagetoken', paginatedConnectionList.pageToken);
   }
+
+  retraced.reportAdminPortalEvent({
+    action: 'sso.connection.list',
+    crud: 'r',
+    req,
+  });
+
   return res.json({ data: connections });
 };
 
@@ -75,12 +83,32 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     if (isSAML) {
       const connection = await connectionAPIController.createSAMLConnection(req.body);
 
+      retraced.reportAdminPortalEvent({
+        action: 'sso.connection.create',
+        crud: 'c',
+        req,
+        target: {
+          id: connection.clientID,
+          type: 'SAML Connection',
+        },
+      });
+
       return res.status(201).json({ data: connection });
     }
 
     // Create OIDC connection
     if (isOIDC) {
       const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
+
+      retraced.reportAdminPortalEvent({
+        action: 'sso.connection.create',
+        crud: 'c',
+        req,
+        target: {
+          id: connection.clientID,
+          type: 'OIDC Connection',
+        },
+      });
 
       return res.status(201).json({ data: connection });
     }
@@ -106,12 +134,32 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     if (isSAML) {
       await connectionAPIController.updateSAMLConnection(req.body);
 
+      retraced.reportAdminPortalEvent({
+        action: 'sso.connection.update',
+        crud: 'u',
+        req,
+        target: {
+          id: req.body.clientID,
+          type: 'SAML Connection',
+        },
+      });
+
       return res.status(204).end();
     }
 
     // Update OIDC connection
     if (isOIDC) {
       await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
+
+      retraced.reportAdminPortalEvent({
+        action: 'sso.connection.update',
+        crud: 'u',
+        req,
+        target: {
+          id: req.body.clientID,
+          type: 'OIDC Connection',
+        },
+      });
 
       return res.status(204).end();
     }
@@ -133,6 +181,15 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     await connectionAPIController.deleteConnections({ clientID, clientSecret });
+
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.delete',
+      crud: 'd',
+      req,
+      target: {
+        id: clientID,
+      },
+    });
 
     return res.status(200).json({ data: null });
   } catch (error: any) {

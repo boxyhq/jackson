@@ -1,9 +1,33 @@
 import * as Retraced from '@retracedhq/retraced';
 import type { Event } from '@retracedhq/retraced';
+import type { NextApiRequest } from 'next';
+import { getToken as getNextAuthToken } from 'next-auth/jwt';
+// import requestIp from 'request-ip';
 
 import jackson from '@lib/jackson';
 import { retracedOptions } from '@lib/env';
-import type { AuditEventType } from 'types/retraced';
+import { sessionName } from '@lib/constants';
+
+export const adminPortalGroup = {
+  id: 'boxyhq-admin-portal',
+  name: 'BoxyHQ Admin Portal',
+};
+
+type AuditEventType =
+  | 'sso.user.login'
+  | 'sso.connection.create'
+  | 'sso.connection.update'
+  | 'sso.connection.delete'
+  | 'sso.connection.list'
+  | 'sso.setuplink.create'
+  | 'sso.setuplink.delete';
+
+type ReportAdminEventParams = {
+  action: AuditEventType;
+  crud: Retraced.CRUD;
+  target?: Retraced.Target;
+  req: NextApiRequest;
+};
 
 interface ReportEventParams extends Event {
   action: AuditEventType;
@@ -15,6 +39,12 @@ let client: Retraced.Client | null = null;
 
 // Create a Retraced client
 const getClient = async () => {
+  const { checkLicense } = await jackson();
+
+  if (!(await checkLicense())) {
+    return;
+  }
+
   if (!retracedOptions.hostUrl || !retracedOptions.apiKey || !retracedOptions.projectId) {
     return;
   }
@@ -41,12 +71,6 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
       return;
     }
 
-    const { checkLicense, productController } = await jackson();
-
-    if (!(await checkLicense())) {
-      throw new Error('BoxyHQ license not valid. Cannot report event to Retraced.');
-    }
-
     const retracedEvent: Event = {
       action,
       crud,
@@ -58,6 +82,8 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
 
     // Find team info for the product
     if (productId && !group) {
+      const { productController } = await jackson();
+
       const product = await productController.get(productId);
 
       retracedEvent.group = {
@@ -77,9 +103,51 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
   }
 };
 
+// Report Admin portal events to Retraced
+export const reportAdminPortalEvent = async ({ action, crud, target, req }: ReportAdminEventParams) => {
+  try {
+    const retracedClient = await getClient();
+
+    if (!retracedClient) {
+      return;
+    }
+
+    // Get actor info
+    const user = await getNextAuthToken({
+      req,
+      cookieName: sessionName,
+    });
+
+    if (!user || !user.email || !user.name) {
+      console.error(`Can't find actor info for Retraced event.`);
+      return;
+    }
+
+    const retracedEvent: Event = {
+      action,
+      crud,
+      target,
+      group: adminPortalGroup,
+      created: new Date(),
+      actor: {
+        id: user.email,
+        name: user.name,
+      },
+      //source_ip: process.env.NODE_ENV === 'development' ? null : requestIp.getClientIp(req),
+    };
+
+    console.log('Retraced event', retracedEvent);
+
+    await retracedClient.reportEvent(retracedEvent);
+  } catch (error: any) {
+    console.error('Error reporting event to Retraced', error);
+  }
+};
+
 const retraced = {
   getClient,
   reportEvent,
+  reportAdminPortalEvent,
 };
 
 export default retraced;

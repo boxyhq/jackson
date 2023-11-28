@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -24,6 +25,15 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const connections = await connectionAPIController.getConnections({ clientID: clientId });
+
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.list',
+      crud: 'r',
+      req,
+      target: {
+        id: clientId,
+      },
+    });
 
     return res.json({ data: connections[0] });
   } catch (error: any) {
