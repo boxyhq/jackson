@@ -2,16 +2,11 @@ import * as Retraced from '@retracedhq/retraced';
 import type { Event } from '@retracedhq/retraced';
 import type { NextApiRequest } from 'next';
 import { getToken as getNextAuthToken } from 'next-auth/jwt';
-// import requestIp from 'request-ip';
+import requestIp from 'request-ip';
 
 import jackson from '@lib/jackson';
 import { retracedOptions } from '@lib/env';
 import { sessionName } from '@lib/constants';
-
-export const adminPortalGroup = {
-  id: 'boxyhq-admin-portal',
-  name: 'BoxyHQ Admin Portal',
-};
 
 type AuditEventType =
   | 'sso.user.login'
@@ -47,20 +42,29 @@ type AuditEventType =
   | 'portal.branding.update'
   | 'portal.user.login';
 
-type ReportAdminEventParams = {
+interface ReportAdminEventParams {
   action: AuditEventType;
   crud: Retraced.CRUD;
   target?: Retraced.Target;
   req?: NextApiRequest;
   actor?: Retraced.Actor;
-};
-
-interface ReportEventParams extends Event {
-  action: AuditEventType;
-  productId: string;
 }
 
-// Cache retraced client
+interface ReportEventParams {
+  action: AuditEventType;
+  crud: Retraced.CRUD;
+  actor: Retraced.Actor;
+  req: NextApiRequest;
+  group?: Retraced.Group;
+  target?: Retraced.Target;
+  productId?: string;
+}
+
+const adminPortalGroup = {
+  id: 'boxyhq-admin-portal',
+  name: 'BoxyHQ Admin Portal',
+};
+
 let client: Retraced.Client | null = null;
 
 // Create a Retraced client
@@ -88,8 +92,10 @@ const getClient = async () => {
   return client;
 };
 
-// Send an event to Retraced
-const reportEvent = async ({ action, crud, group, actor, description, productId }: ReportEventParams) => {
+// Report events to Retraced
+const reportEvent = async (params: ReportEventParams) => {
+  const { action, crud, actor, req } = params;
+
   try {
     const retracedClient = await getClient();
 
@@ -100,17 +106,24 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
     const retracedEvent: Event = {
       action,
       crud,
-      group,
       actor,
-      description,
       created: new Date(),
+      source_ip: getClientIp(req),
     };
 
-    // Find team info for the product
-    if (productId && !group) {
+    if ('group' in params && params.group) {
+      retracedEvent.group = params.group;
+    }
+
+    if ('target' in params && params.target) {
+      retracedEvent.target = params.target;
+    }
+
+    // Find team info if productId is provided
+    if ('productId' in params && params.productId) {
       const { productController } = await jackson();
 
-      const product = await productController.get(productId);
+      const product = await productController.get(params.productId);
 
       retracedEvent.group = {
         id: product.teamId,
@@ -123,6 +136,8 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
       };
     }
 
+    console.log(retracedEvent);
+
     await retracedClient.reportEvent(retracedEvent);
   } catch (error: any) {
     console.error('Error reporting event to Retraced', error);
@@ -130,13 +145,9 @@ const reportEvent = async ({ action, crud, group, actor, description, productId 
 };
 
 // Report Admin portal events to Retraced
-export const reportAdminPortalEvent = async ({
-  action,
-  crud,
-  target,
-  actor,
-  req,
-}: ReportAdminEventParams) => {
+export const reportAdminPortalEvent = async (params: ReportAdminEventParams) => {
+  const { action, crud, target, actor, req } = params;
+
   try {
     const retracedClient = await getClient();
 
@@ -144,35 +155,15 @@ export const reportAdminPortalEvent = async ({
       return;
     }
 
-    // If no actor is provided, try to get it from the request
-    if (req && !actor) {
-      const user = await getNextAuthToken({
-        req,
-        cookieName: sessionName,
-      });
-
-      if (!user || !user.email || !user.name) {
-        console.error(`Can't find actor info for Retraced event.`);
-        return;
-      }
-
-      actor = {
-        id: user.email,
-        name: user.name,
-      };
-    }
-
     const retracedEvent: Event = {
       action,
       crud,
       target,
-      actor,
+      actor: actor ?? (await getAdminUser(req)),
       group: adminPortalGroup,
       created: new Date(),
-      //source_ip: process.env.NODE_ENV === 'development' ? null : requestIp.getClientIp(req),
+      source_ip: getClientIp(req),
     };
-
-    console.log('Retraced event', retracedEvent);
 
     await retracedClient.reportEvent(retracedEvent);
   } catch (error: any) {
@@ -180,8 +171,44 @@ export const reportAdminPortalEvent = async ({
   }
 };
 
+// Find admin actor info from NextAuth token
+const getAdminUser = async (req: NextApiRequest | undefined) => {
+  if (!req) {
+    throw new Error(`NextApiRequest is required to get actor info for Retraced event.`);
+  }
+
+  const user = await getNextAuthToken({
+    req,
+    cookieName: sessionName,
+  });
+
+  if (!user || !user.email || !user.name) {
+    throw new Error(`Can't find actor info from the NextAuth token.`);
+  }
+
+  return {
+    id: user.email,
+    name: user.name,
+  };
+};
+
+// Find Ip from request
+const getClientIp = (req: NextApiRequest | undefined) => {
+  if (!req) {
+    return undefined;
+  }
+
+  const sourceIp = requestIp.getClientIp(req);
+
+  // TODO: Verify this is the correct way to check
+  if (!sourceIp.startsWith('::')) {
+    return sourceIp as string;
+  }
+
+  return undefined;
+};
+
 const retraced = {
-  getClient,
   reportEvent,
   reportAdminPortalEvent,
 };

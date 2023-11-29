@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     retraced.reportEvent({
       action: 'sso.user.login',
-      crud: 'r',
+      crud: 'c',
       actor: {
         id: profile.email,
         name: `${profile.firstName} ${profile.lastName}`,
@@ -39,6 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       },
       productId: profile.requested.product,
+      req,
     });
 
     res.json(profile);
