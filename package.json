@@ -61,7 +61,7 @@
     "@retracedhq/logs-viewer": "2.5.2",
     "@retracedhq/retraced": "0.7.1",
     "@tailwindcss/typography": "0.5.10",
-    "axios": "1.6.0",
+    "axios": "1.6.2",
     "blockly": "10.2.2",
     "classnames": "2.3.2",
     "cors": "2.8.5",
