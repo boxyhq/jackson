@@ -92,7 +92,7 @@
     "@types/node": "20.8.8",
     "@types/react": "18.2.39",
     "@typescript-eslint/eslint-plugin": "6.13.1",
-    "@typescript-eslint/parser": "6.12.0",
+    "@typescript-eslint/parser": "6.13.1",
     "autoprefixer": "10.4.16",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
