@@ -31,3 +31,10 @@ export type AppRequestParams =
       tenant: string;
       product: string;
     };
+
+export type FederatedSAMLProfile = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  requested: Record<string, string>;
+};
