@@ -65,7 +65,7 @@
     "blockly": "10.2.2",
     "classnames": "2.3.2",
     "cors": "2.8.5",
-    "daisyui": "3.9.4",
+    "daisyui": "4.0.0",
     "i18next": "22.5.1",
     "medium-zoom": "1.1.0",
     "micromatch": "4.0.5",
