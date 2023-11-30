@@ -136,8 +136,6 @@ const reportEvent = async (params: ReportEventParams) => {
       };
     }
 
-    console.log(retracedEvent);
-
     await retracedClient.reportEvent(retracedEvent);
   } catch (error: any) {
     console.error('Error reporting event to Retraced', error);
