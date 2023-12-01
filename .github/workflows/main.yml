@@ -1,443 +1,443 @@
-# This is a basic workflow to help you get started with Actions
+# # This is a basic workflow to help you get started with Actions
 
-name: CI
+# name: CI
 
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches:
-      - main
-      - release
-    tags:
-      - 'beta-v*'
-  pull_request:
-    # Trigger only for PRs that target main branch
-    branches:
-      - main
+# # Controls when the workflow will run
+# on:
+#   # Triggers the workflow on push or pull request events but only for the main branch
+#   push:
+#     branches:
+#       - main
+#       - release
+#     tags:
+#       - 'beta-v*'
+#   pull_request:
+#     # Trigger only for PRs that target main branch
+#     branches:
+#       - main
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-  # Schedule
-  schedule:
-    - cron: '0 8 * * MON,THU' # Run every Monday and Thursday at 08:00 UTC
+#   # Allows you to run this workflow manually from the Actions tab
+#   workflow_dispatch:
+#   # Schedule
+#   schedule:
+#     - cron: '0 8 * * MON,THU' # Run every Monday and Thursday at 08:00 UTC
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    outputs:
-      NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
-      PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
-      IMAGE_SUFFIX: ${{ steps.version.outputs.IMAGE_SUFFIX }}
-      IMAGE_PATH: ${{ steps.version.outputs.IMAGE_PATH }}
-    env:
-      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-      NEXTAUTH_URL: http://localhost:5225
-      NEXTAUTH_ACL: '*@boxyhq.com'
-      DB_ENGINE: sql
-      DB_URL: postgres://postgres:postgres@localhost:5432/postgres
-      DB_TYPE: postgres
-      DEBUG: pw:webserver
-      SAML_AUDIENCE: https://saml.boxyhq.com
-      JACKSON_API_KEYS: secret
-      OPENID_JWS_ALG: RS256
-      OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
-      OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
-      PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
-      DYNAMODB_URL: 'http://localhost:8000'
-      BOXYHQ_NO_ANALYTICS: '1'
-      IDP_ENABLED: true
-      AWS_ACCESS_KEY_ID: secret
-      AWS_SECRET_ACCESS_KEY: secret
-      BOXYHQ_LICENSE_KEY: 'dummy-license'
-    strategy:
-      matrix:
-        node-version: [20]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+# # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# jobs:
+#   ci:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
+#       PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
+#       IMAGE_SUFFIX: ${{ steps.version.outputs.IMAGE_SUFFIX }}
+#       IMAGE_PATH: ${{ steps.version.outputs.IMAGE_PATH }}
+#     env:
+#       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+#       NEXTAUTH_URL: http://localhost:5225
+#       NEXTAUTH_ACL: '*@boxyhq.com'
+#       DB_ENGINE: sql
+#       DB_URL: postgres://postgres:postgres@localhost:5432/postgres
+#       DB_TYPE: postgres
+#       DEBUG: pw:webserver
+#       SAML_AUDIENCE: https://saml.boxyhq.com
+#       JACKSON_API_KEYS: secret
+#       OPENID_JWS_ALG: RS256
+#       OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
+#       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
+#       PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
+#       DYNAMODB_URL: 'http://localhost:8000'
+#       BOXYHQ_NO_ANALYTICS: '1'
+#       IDP_ENABLED: true
+#       AWS_ACCESS_KEY_ID: secret
+#       AWS_SECRET_ACCESS_KEY: secret
+#       BOXYHQ_LICENSE_KEY: 'dummy-license'
+#     strategy:
+#       matrix:
+#         node-version: [20]
+#         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: ''
-          POSTGRES_HOST_AUTH_METHOD: 'trust'
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:6.2.5-alpine
-        ports:
-          - 6379:6379
-      mongo:
-        image: mongo:4.4.10
-        ports:
-          - 27017:27017
-      mysql:
-        image: mysql:8.0.31
-        ports:
-          - 3307:3306
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: mysql
-      maria:
-        image: mariadb:10.4.22
-        ports:
-          - 3306:3306
-        env:
-          MARIADB_DATABASE: mysql
-          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
-      mssql:
-        image: mcr.microsoft.com/azure-sql-edge:1.0.6
-        #image: mcr.microsoft.com/mssql/server:2019-latest
-        ports:
-          - 1433:1433
-        env:
-          ACCEPT_EULA: 'Y'
-          SA_PASSWORD: '123ABabc!'
-      dynamodb-local:
-        image: 'amazon/dynamodb-local:latest'
-        ports:
-          - '8000:8000'
-      mocksaml:
-        image: boxyhq/mock-saml:1.2.0
-        ports:
-          - 4000:4000
-        env:
-          APP_URL: http://localhost:4000
-          ENTITY_ID: https://saml.example.com/entityid
-          PUBLIC_KEY: ${{ secrets.MOCK_SAML_PUBLIC_KEY }}
-          PRIVATE_KEY: ${{ secrets.MOCK_SAML_PRIVATE_KEY }}
+#     services:
+#       postgres:
+#         image: postgres:13
+#         ports:
+#           - 5432:5432
+#         env:
+#           POSTGRES_PASSWORD: ''
+#           POSTGRES_HOST_AUTH_METHOD: 'trust'
+#         # Set health checks to wait until postgres has started
+#         options: >-
+#           --health-cmd pg_isready
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retries 5
+#       redis:
+#         image: redis:6.2.5-alpine
+#         ports:
+#           - 6379:6379
+#       mongo:
+#         image: mongo:4.4.10
+#         ports:
+#           - 27017:27017
+#       mysql:
+#         image: mysql:8.0.31
+#         ports:
+#           - 3307:3306
+#         env:
+#           MYSQL_DATABASE: mysql
+#           MYSQL_ROOT_PASSWORD: mysql
+#       maria:
+#         image: mariadb:10.4.22
+#         ports:
+#           - 3306:3306
+#         env:
+#           MARIADB_DATABASE: mysql
+#           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+#       mssql:
+#         image: mcr.microsoft.com/azure-sql-edge:1.0.6
+#         #image: mcr.microsoft.com/mssql/server:2019-latest
+#         ports:
+#           - 1433:1433
+#         env:
+#           ACCEPT_EULA: 'Y'
+#           SA_PASSWORD: '123ABabc!'
+#       dynamodb-local:
+#         image: 'amazon/dynamodb-local:latest'
+#         ports:
+#           - '8000:8000'
+#       mocksaml:
+#         image: boxyhq/mock-saml:1.2.0
+#         ports:
+#           - 4000:4000
+#         env:
+#           APP_URL: http://localhost:4000
+#           ENTITY_ID: https://saml.example.com/entityid
+#           PUBLIC_KEY: ${{ secrets.MOCK_SAML_PUBLIC_KEY }}
+#           PRIVATE_KEY: ${{ secrets.MOCK_SAML_PRIVATE_KEY }}
 
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          always-auth: true
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org
-          scope: '@boxyhq'
-          cache: 'npm'
-          check-latest: true
-      - run: node -v
-      - run: npm -v
-      - name: Setup Next.js cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.npm
-            ${{ github.workspace }}/.next/cache
-          # Generate a new cache whenever packages or source files change.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - run: npm install
-      - run: npm run check-lint
-      - run: npm run check-format
-      - run: npm run build
-      - run: npm run test
-        working-directory: ./npm
-      - name: Install playwright browser dependencies
-        run: npx playwright install chromium
-      - name: e2e tests
-        run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
-      - id: version
-        name: Generate NPM_VERSION and PUBLISH_TAG
-        run: |
-          npm install -g json
-          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v4
+#         with:
+#           always-auth: true
+#           node-version: ${{ matrix.node-version }}
+#           registry-url: https://registry.npmjs.org
+#           scope: '@boxyhq'
+#           cache: 'npm'
+#           check-latest: true
+#       - run: node -v
+#       - run: npm -v
+#       - name: Setup Next.js cache
+#         uses: actions/cache@v3
+#         with:
+#           path: |
+#             ~/.npm
+#             ${{ github.workspace }}/.next/cache
+#           # Generate a new cache whenever packages or source files change.
+#           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+#           # If source files changed but packages didn't, rebuild from a prior cache.
+#           restore-keys: |
+#             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+#       - run: npm install
+#       - run: npm run check-lint
+#       - run: npm run check-format
+#       - run: npm run build
+#       - run: npm run test
+#         working-directory: ./npm
+#       - name: Install playwright browser dependencies
+#         run: npx playwright install chromium
+#       - name: e2e tests
+#         run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
+#       - id: version
+#         name: Generate NPM_VERSION and PUBLISH_TAG
+#         run: |
+#           npm install -g json
+#           JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
 
-          publishTag="latest"
-          imageSuffix=""
-          imagePath="${{ github.repository }}"
+#           publishTag="latest"
+#           imageSuffix=""
+#           imagePath="${{ github.repository }}"
 
-          if [[ "$GITHUB_REF" == *\/release ]]
-          then
-            echo "Release branch"
-          else
-            echo "Dev branch"
-            publishTag="beta"
-            imageSuffix="-beta"
-            imagePath="${{ github.repository }}-beta"
-            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-          fi
+#           if [[ "$GITHUB_REF" == *\/release ]]
+#           then
+#             echo "Release branch"
+#           else
+#             echo "Dev branch"
+#             publishTag="beta"
+#             imageSuffix="-beta"
+#             imagePath="${{ github.repository }}-beta"
+#             JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+#           fi
 
-          echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
-          echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
-          echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
-          echo "IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
+#           echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
+#           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
+#           echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
+#           echo "IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
 
-        working-directory: ./npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+#         working-directory: ./npm
+#         env:
+#           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  build:
-    needs: ci
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check Out Repo
-        uses: actions/checkout@v4
+#   build:
+#     needs: ci
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check Out Repo
+#         uses: actions/checkout@v4
 
-      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
-      - run: echo ${{ needs.ci.outputs.IMAGE_PATH }}
+#       - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
+#       - run: echo ${{ needs.ci.outputs.IMAGE_PATH }}
 
-      - name: Get short SHA
-        id: slug
-        run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+#       - name: Get short SHA
+#         id: slug
+#         run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      - name: Set up Docker Buildx
-        if: github.ref == 'refs/heads/release'
-        id: buildx
-        uses: docker/setup-buildx-action@v3
+#       - name: Set up Docker Buildx
+#         if: github.ref == 'refs/heads/release'
+#         id: buildx
+#         uses: docker/setup-buildx-action@v3
 
-      - name: Set up QEMU
-        if: github.ref == 'refs/heads/release'
-        uses: docker/setup-qemu-action@v3
+#       - name: Set up QEMU
+#         if: github.ref == 'refs/heads/release'
+#         uses: docker/setup-qemu-action@v3
 
-      - name: Login to Docker Hub
-        if: github.ref == 'refs/heads/release'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+#       - name: Login to Docker Hub
+#         if: github.ref == 'refs/heads/release'
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and push
-        if: github.ref == 'refs/heads/release'
-        id: docker_build
-        uses: docker/build-push-action@v5
-        with:
-          context: ./
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
+#       - name: Build and push
+#         if: github.ref == 'refs/heads/release'
+#         id: docker_build
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: ./
+#           file: ./Dockerfile
+#           platforms: linux/amd64,linux/arm64
+#           push: true
+#           tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
-      - name: Image digest
-        if: github.ref == 'refs/heads/release'
-        run: echo ${{ steps.docker_build.outputs.digest }}
+#       - name: Image digest
+#         if: github.ref == 'refs/heads/release'
+#         run: echo ${{ steps.docker_build.outputs.digest }}
 
-      - name: Login to GitHub Container Registry
-        if: github.ref == 'refs/heads/release'
-        run: |
-          echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
+#       - name: Login to GitHub Container Registry
+#         if: github.ref == 'refs/heads/release'
+#         run: |
+#           echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
 
-      - name: Install Cosign
-        if: github.ref == 'refs/heads/release'
-        uses: sigstore/cosign-installer@main
+#       - name: Install Cosign
+#         if: github.ref == 'refs/heads/release'
+#         uses: sigstore/cosign-installer@main
 
-      - name: Check install!
-        if: github.ref == 'refs/heads/release'
-        run: cosign version
+#       - name: Check install!
+#         if: github.ref == 'refs/heads/release'
+#         run: cosign version
 
-      - name: place the cosign private key in a file
-        if: github.ref == 'refs/heads/release'
-        run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
-        shell: bash
-        env:
-          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
+#       - name: place the cosign private key in a file
+#         if: github.ref == 'refs/heads/release'
+#         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
+#         shell: bash
+#         env:
+#           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
 
-      - name: Sign the image
-        if: github.ref == 'refs/heads/release'
-        run: cosign sign --key /tmp/cosign.key -y ${{ needs.ci.outputs.IMAGE_PATH }}@${{ steps.docker_build.outputs.digest }}
-        env:
-          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
+#       - name: Sign the image
+#         if: github.ref == 'refs/heads/release'
+#         run: cosign sign --key /tmp/cosign.key -y ${{ needs.ci.outputs.IMAGE_PATH }}@${{ steps.docker_build.outputs.digest }}
+#         env:
+#           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
-      - name: Create NPM Package SBOM Report [SPDX]
-        uses: anchore/sbom-action@v0
-        with:
-          format: spdx
-          artifact-name: npm_sbom.spdx
-      - name: Publish report [SPDX]
-        uses: anchore/sbom-action/publish-sbom@v0
-        with:
-          sbom-artifact-match: ".*\\.spdx$"
-      - name: Create NPM Pacakge SBOM Report [CycloneDx]
-        uses: anchore/sbom-action@v0
-        with:
-          format: cyclonedx
-          artifact-name: npm_sbom.cyclonedx
-      - name: Publish report [CycloneDx]
-        uses: anchore/sbom-action/publish-sbom@v0
-        with:
-          sbom-artifact-match: ".*\\.cyclonedx$"
-      - name: Download artifact for SPDX Report
-        if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
-        with:
-          name: npm_sbom.spdx
-      - name: Download artifact for CycloneDx Report
-        if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
-        with:
-          name: npm_sbom.cyclonedx
-      - name: Remove older SBOMs
-        if: github.ref == 'refs/heads/release'
-        run: rm -rf ./npm/sbom*.* || true
-      - name: Move SPDX Report
-        if: github.ref == 'refs/heads/release'
-        run: mv npm_sbom.spdx "./npm/sbom.spdx"
-      - name: Move CycloneDx Report
-        if: github.ref == 'refs/heads/release'
-        run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
+#       - name: Create NPM Package SBOM Report [SPDX]
+#         uses: anchore/sbom-action@v0
+#         with:
+#           format: spdx
+#           artifact-name: npm_sbom.spdx
+#       - name: Publish report [SPDX]
+#         uses: anchore/sbom-action/publish-sbom@v0
+#         with:
+#           sbom-artifact-match: ".*\\.spdx$"
+#       - name: Create NPM Pacakge SBOM Report [CycloneDx]
+#         uses: anchore/sbom-action@v0
+#         with:
+#           format: cyclonedx
+#           artifact-name: npm_sbom.cyclonedx
+#       - name: Publish report [CycloneDx]
+#         uses: anchore/sbom-action/publish-sbom@v0
+#         with:
+#           sbom-artifact-match: ".*\\.cyclonedx$"
+#       - name: Download artifact for SPDX Report
+#         if: github.ref == 'refs/heads/release'
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: npm_sbom.spdx
+#       - name: Download artifact for CycloneDx Report
+#         if: github.ref == 'refs/heads/release'
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: npm_sbom.cyclonedx
+#       - name: Remove older SBOMs
+#         if: github.ref == 'refs/heads/release'
+#         run: rm -rf ./npm/sbom*.* || true
+#       - name: Move SPDX Report
+#         if: github.ref == 'refs/heads/release'
+#         run: mv npm_sbom.spdx "./npm/sbom.spdx"
+#       - name: Move CycloneDx Report
+#         if: github.ref == 'refs/heads/release'
+#         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
 
-      - name: Next Js Project SBOM Report [SPDX]
-        uses: anchore/sbom-action@v0
-        with:
-          format: spdx
-          artifact-name: sbom.spdx
-      - name: Publish report [SPDX]
-        uses: anchore/sbom-action/publish-sbom@v0
-        with:
-          sbom-artifact-match: ".*\\.spdx$"
-      - name: Next Js Project SBOM Report [CycloneDx]
-        uses: anchore/sbom-action@v0
-        with:
-          format: cyclonedx
-          artifact-name: sbom.cyclonedx
-      - name: Publish report [CycloneDx]
-        uses: anchore/sbom-action/publish-sbom@v0
-        with:
-          sbom-artifact-match: ".*\\.cyclonedx$"
-      - name: Remove older SBOMs
-        if: github.ref == 'refs/heads/release'
-        run: rm -rf sbom*.* || true
-      - name: Download artifact for SPDX Report
-        if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
-        with:
-          name: sbom.spdx
-      - name: Download artifact for CycloneDx Report
-        if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
-        with:
-          name: sbom.cyclonedx
+#       - name: Next Js Project SBOM Report [SPDX]
+#         uses: anchore/sbom-action@v0
+#         with:
+#           format: spdx
+#           artifact-name: sbom.spdx
+#       - name: Publish report [SPDX]
+#         uses: anchore/sbom-action/publish-sbom@v0
+#         with:
+#           sbom-artifact-match: ".*\\.spdx$"
+#       - name: Next Js Project SBOM Report [CycloneDx]
+#         uses: anchore/sbom-action@v0
+#         with:
+#           format: cyclonedx
+#           artifact-name: sbom.cyclonedx
+#       - name: Publish report [CycloneDx]
+#         uses: anchore/sbom-action/publish-sbom@v0
+#         with:
+#           sbom-artifact-match: ".*\\.cyclonedx$"
+#       - name: Remove older SBOMs
+#         if: github.ref == 'refs/heads/release'
+#         run: rm -rf sbom*.* || true
+#       - name: Download artifact for SPDX Report
+#         if: github.ref == 'refs/heads/release'
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: sbom.spdx
+#       - name: Download artifact for CycloneDx Report
+#         if: github.ref == 'refs/heads/release'
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: sbom.cyclonedx
 
-      - name: Create SBOM Report [Docker][SPDX]
-        if: github.ref == 'refs/heads/release'
-        uses: anchore/sbom-action@v0
-        with:
-          image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
-          format: spdx
-          artifact-name: docker_sbom.spdx
-      - name: Publish report [Docker][SPDX]
-        if: github.ref == 'refs/heads/release'
-        uses: anchore/sbom-action/publish-sbom@v0
-        with:
-          sbom-artifact-match: ".*\\.spdx$"
-      - name: Create SBOM Report [Docker][CycloneDx]
-        if: github.ref == 'refs/heads/release'
-        uses: anchore/sbom-action@v0
-        with:
-          image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
-          format: cyclonedx
-          artifact-name: docker_sbom.cyclonedx
-      - name: Publish report [Docker][CycloneDx]
-        if: github.ref == 'refs/heads/release'
-        uses: anchore/sbom-action/publish-sbom@v0
-        with:
-          sbom-artifact-match: ".*\\.cyclonedx$"
-      - name: Download artifact for SPDX Report [Docker]
-        if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
-        with:
-          name: docker_sbom.spdx
-      - name: Download artifact for CycloneDx Report [Docker]
-        if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
-        with:
-          name: docker_sbom.cyclonedx
-      - name: Create/Clear folder [Docker]
-        if: github.ref == 'refs/heads/release'
-        run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
+#       - name: Create SBOM Report [Docker][SPDX]
+#         if: github.ref == 'refs/heads/release'
+#         uses: anchore/sbom-action@v0
+#         with:
+#           image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+#           format: spdx
+#           artifact-name: docker_sbom.spdx
+#       - name: Publish report [Docker][SPDX]
+#         if: github.ref == 'refs/heads/release'
+#         uses: anchore/sbom-action/publish-sbom@v0
+#         with:
+#           sbom-artifact-match: ".*\\.spdx$"
+#       - name: Create SBOM Report [Docker][CycloneDx]
+#         if: github.ref == 'refs/heads/release'
+#         uses: anchore/sbom-action@v0
+#         with:
+#           image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
+#           format: cyclonedx
+#           artifact-name: docker_sbom.cyclonedx
+#       - name: Publish report [Docker][CycloneDx]
+#         if: github.ref == 'refs/heads/release'
+#         uses: anchore/sbom-action/publish-sbom@v0
+#         with:
+#           sbom-artifact-match: ".*\\.cyclonedx$"
+#       - name: Download artifact for SPDX Report [Docker]
+#         if: github.ref == 'refs/heads/release'
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: docker_sbom.spdx
+#       - name: Download artifact for CycloneDx Report [Docker]
+#         if: github.ref == 'refs/heads/release'
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: docker_sbom.cyclonedx
+#       - name: Create/Clear folder [Docker]
+#         if: github.ref == 'refs/heads/release'
+#         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
 
-      - name: Move Report & cleanup
-        if: github.ref == 'refs/heads/release'
-        run: |
-          mv docker_sbom.spdx "./_docker/sbom.spdx" || true
-          mv docker_sbom.cyclonedx "./_docker/sbom.cyclonedx" || true
+#       - name: Move Report & cleanup
+#         if: github.ref == 'refs/heads/release'
+#         run: |
+#           mv docker_sbom.spdx "./_docker/sbom.spdx" || true
+#           mv docker_sbom.cyclonedx "./_docker/sbom.cyclonedx" || true
 
-      - name: ORAS Setup
-        if: github.ref == 'refs/heads/release'
-        run: |
-          ORAS_VERSION="v0.8.1"
-          ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
-          curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/${ORAS_FILENAME}"
-          mkdir oras_install
-          tar -xvf "${ORAS_FILENAME}" -C oras_install
+#       - name: ORAS Setup
+#         if: github.ref == 'refs/heads/release'
+#         run: |
+#           ORAS_VERSION="v0.8.1"
+#           ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
+#           curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/${ORAS_FILENAME}"
+#           mkdir oras_install
+#           tar -xvf "${ORAS_FILENAME}" -C oras_install
 
-      - name: Push SBOM reports to GitHub Container Registry & Sign the sbom images
-        if: github.ref == 'refs/heads/release'
-        run: |
-          result=$(./oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
-          ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
-          if [ -z "$ORAS_DIGEST" ]; then
-            echo "Error: ORAS_DIGEST is empty"
-            exit 1
-          fi
-          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
-          cd _docker
-          result=$(../oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
-          ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
-          if [ -z "$ORAS_DIGEST" ]; then
-            echo "Error: ORAS_DIGEST is empty"
-            exit 1
-          fi
-          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
-          cd ..
-          cd npm
-          result=$(../oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
-          ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
-          if [ -z "$ORAS_DIGEST" ]; then
-            echo "Error: ORAS_DIGEST is empty"
-            exit 1
-          fi
-          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
-          cd ..
-        env:
-          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
-  publish:
-    needs: [ci, build]
-    runs-on: ubuntu-latest
+#       - name: Push SBOM reports to GitHub Container Registry & Sign the sbom images
+#         if: github.ref == 'refs/heads/release'
+#         run: |
+#           result=$(./oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+#           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+#           if [ -z "$ORAS_DIGEST" ]; then
+#             echo "Error: ORAS_DIGEST is empty"
+#             exit 1
+#           fi
+#           cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+#           cd _docker
+#           result=$(../oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+#           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+#           if [ -z "$ORAS_DIGEST" ]; then
+#             echo "Error: ORAS_DIGEST is empty"
+#             exit 1
+#           fi
+#           cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+#           cd ..
+#           cd npm
+#           result=$(../oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+#           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
+#           if [ -z "$ORAS_DIGEST" ]; then
+#             echo "Error: ORAS_DIGEST is empty"
+#             exit 1
+#           fi
+#           cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+#           cd ..
+#         env:
+#           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
+#   publish:
+#     needs: [ci, build]
+#     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+#     strategy:
+#       matrix:
+#         node-version: [20]
+#         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    steps:
-      - uses: actions/checkout@v4
-      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
-      - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
+#     steps:
+#       - uses: actions/checkout@v4
+#       - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
+#       - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          always-auth: true
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org
-          scope: '@boxyhq'
-          cache: 'npm'
-          check-latest: true
-      - run: npm install --legacy-peer-deps
-        working-directory: ./npm
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v4
+#         with:
+#           always-auth: true
+#           node-version: ${{ matrix.node-version }}
+#           registry-url: https://registry.npmjs.org
+#           scope: '@boxyhq'
+#           cache: 'npm'
+#           check-latest: true
+#       - run: npm install --legacy-peer-deps
+#         working-directory: ./npm
 
-      - name: Publish NPM
-        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
-        run: |
-          npm install -g json
-          JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
-          json -I -f package.json -e "this.main=\"dist/index.js\""
-          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
-          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+#       - name: Publish NPM
+#         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
+#         run: |
+#           npm install -g json
+#           JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
+#           json -I -f package.json -e "this.main=\"dist/index.js\""
+#           json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+#           json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
-          npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
-        working-directory: ./npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+#           npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
+#         working-directory: ./npm
+#         env:
+#           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
