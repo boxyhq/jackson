@@ -64,16 +64,30 @@ const WellKnownURLs = () => {
         </h2>
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-        <div
-          className='w-full text-left rounded-lg border hover:border-gray-400 p-6 cursor-pointer'
-          onClick={() => setView('auth')}>
-          <p>Auth integration</p>
-        </div>
-        <div
-          className='w-full text-left rounded-lg border hover:border-gray-400 p-6 cursor-pointer'
-          onClick={() => setView('idp-config')}>
-          Identity Provider Configuration
-        </div>
+        <button
+          type='button'
+          className={`w-full text-left rounded-lg focus:outline-none focus:ring focus:ring-teal-200 border hover:border-teal-800 p-6${
+            view === 'auth' ? ' bg-teal-50 opacity-100' : ' opacity-50'
+          }`}
+          onClick={() => setView('auth')}
+          aria-label='Auth integration links'>
+          <span className='flex flex-col items-end'>
+            <span className='font-semibold'>Auth integration</span>
+            <span>Links useful for OAuth2.0/OpenID and SAML Federation flows</span>
+          </span>
+        </button>
+        <button
+          type='button'
+          className={`w-full text-left rounded-lg focus:outline-none focus:ring focus:ring-teal-200 border hover:border-teal-800 p-6${
+            view === 'idp-config' ? ' bg-teal-50 opacity-100' : ' opacity-50'
+          }`}
+          onClick={() => setView('idp-config')}
+          aria-label='Identity Provider Configuration links'>
+          <span className='flex flex-col items-end'>
+            <span className='font-semibold'>Identity Provider Configuration</span>
+            <span>Links useful for SAML/OIDC IdP configuration</span>
+          </span>
+        </button>
       </div>
       <div className='space-y-3 mt-8'>
         {links
