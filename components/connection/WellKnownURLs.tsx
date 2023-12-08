@@ -68,21 +68,21 @@ const WellKnownURLs = () => {
           isActive={view === 'auth'}
           setIsActive={() => setView('auth')}
           title='Auth integration'
-          description='Links useful for OAuth2.0/OpenID'
+          description='Links for OAuth 2.0/OpenID Connect auth'
           label='Auth integration links'
         />
         <Tab
           isActive={view === 'idp-config'}
           setIsActive={() => setView('idp-config')}
           title='Identity Provider Configuration'
-          description='Links useful for SAML/OIDC IdP configuration'
+          description='Links for SAML/OIDC IdP setup'
           label='Identity Provider Configuration links'
         />
         <Tab
           isActive={view === 'saml-fed'}
           setIsActive={() => setView('saml-fed')}
           title='SAML Federation'
-          description='Links useful for SAML Federation configuration'
+          description='Links for SAML Federation app setup'
           label='SAML Federation links'
         />
       </div>
