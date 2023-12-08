@@ -9,7 +9,7 @@ const WellKnownURLs = () => {
   const viewText = t('view');
   const downloadText = t('download');
 
-  const [view, setView] = useState<'auth' | 'idp-config'>('auth');
+  const [view, setView] = useState<'auth' | 'idp-config' | 'saml-fed'>('auth');
 
   const links = [
     {
@@ -45,14 +45,14 @@ const WellKnownURLs = () => {
       description: t('idp_metadata_description'),
       href: '/.well-known/idp-metadata',
       buttonText: viewText,
-      type: 'auth',
+      type: 'saml-fed',
     },
     {
       title: 'IdP Configuration',
       description: t('idp_config_description'),
       href: '/.well-known/idp-configuration',
       buttonText: viewText,
-      type: 'auth',
+      type: 'saml-fed',
     },
   ];
 
@@ -63,31 +63,28 @@ const WellKnownURLs = () => {
           {t('here_are_the_set_of_uris_you_would_need_access_to')}:
         </h2>
       </div>
-      <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-        <button
-          type='button'
-          className={`w-full text-left rounded-lg focus:outline-none focus:ring focus:ring-teal-200 border hover:border-teal-800 p-6${
-            view === 'auth' ? ' bg-teal-50 opacity-100' : ' opacity-50'
-          }`}
-          onClick={() => setView('auth')}
-          aria-label='Auth integration links'>
-          <span className='flex flex-col items-end'>
-            <span className='font-semibold'>Auth integration</span>
-            <span>Links useful for OAuth2.0/OpenID and SAML Federation flows</span>
-          </span>
-        </button>
-        <button
-          type='button'
-          className={`w-full text-left rounded-lg focus:outline-none focus:ring focus:ring-teal-200 border hover:border-teal-800 p-6${
-            view === 'idp-config' ? ' bg-teal-50 opacity-100' : ' opacity-50'
-          }`}
-          onClick={() => setView('idp-config')}
-          aria-label='Identity Provider Configuration links'>
-          <span className='flex flex-col items-end'>
-            <span className='font-semibold'>Identity Provider Configuration</span>
-            <span>Links useful for SAML/OIDC IdP configuration</span>
-          </span>
-        </button>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+        <Tab
+          isActive={view === 'auth'}
+          setIsActive={() => setView('auth')}
+          title='Auth integration'
+          description='Links useful for OAuth2.0/OpenID'
+          label='Auth integration links'
+        />
+        <Tab
+          isActive={view === 'idp-config'}
+          setIsActive={() => setView('idp-config')}
+          title='Identity Provider Configuration'
+          description='Links useful for SAML/OIDC IdP configuration'
+          label='Identity Provider Configuration links'
+        />
+        <Tab
+          isActive={view === 'saml-fed'}
+          setIsActive={() => setView('saml-fed')}
+          title='SAML Federation'
+          description='Links useful for SAML Federation configuration'
+          label='SAML Federation links'
+        />
       </div>
       <div className='space-y-3 mt-8'>
         {links
@@ -103,6 +100,23 @@ const WellKnownURLs = () => {
           ))}
       </div>
     </>
+  );
+};
+
+const Tab = ({ isActive, setIsActive, title, description, label }) => {
+  return (
+    <button
+      type='button'
+      className={`w-full text-left rounded-lg focus:outline-none focus:ring focus:ring-teal-200 border hover:border-teal-800 p-6${
+        isActive ? ' bg-teal-50 opacity-100' : ' opacity-50'
+      }`}
+      onClick={setIsActive}
+      aria-label={label}>
+      <span className='flex flex-col items-end'>
+        <span className='font-semibold'>{title}</span>
+        <span>{description}</span>
+      </span>
+    </button>
   );
 };
 
