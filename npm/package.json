@@ -58,7 +58,7 @@
     "openid-client": "5.6.1",
     "pg": "8.11.3",
     "redis": "4.6.11",
-    "reflect-metadata": "0.1.13",
+    "reflect-metadata": "0.1.14",
     "ripemd160": "2.0.2",
     "typeorm": "0.3.17",
     "xml2js": "0.6.2",
