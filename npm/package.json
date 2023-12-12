@@ -44,7 +44,7 @@
     "@aws-sdk/util-dynamodb": "3.470.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.6",
-    "@boxyhq/saml20": "1.3.2",
+    "@boxyhq/saml20": "1.3.3",
     "@googleapis/admin": "14.0.0",
     "axios": "1.6.2",
     "encoding": "0.1.13",
