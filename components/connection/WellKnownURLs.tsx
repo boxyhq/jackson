@@ -36,6 +36,13 @@ const WellKnownURLs = () => {
     {
       title: 'OpenID Configuration',
       description: t('oidc_config_description'),
+      href: '/.well-known/oidc-configuration',
+      buttonText: viewText,
+      type: 'idp-config',
+    },
+    {
+      title: 'OpenID Connect Discovery',
+      description: t('oidc_discovery_description'),
       href: '/.well-known/openid-configuration',
       buttonText: viewText,
       type: 'auth',

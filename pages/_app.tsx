@@ -18,6 +18,7 @@ const unauthenticatedRoutes = [
   '/admin/auth/login',
   '/admin/auth/idp-login',
   '/well-known/saml-configuration',
+  '/well-known/oidc-configuration',
   '/well-known/idp-configuration',
   '/oauth/jwks',
   '/idp/select',

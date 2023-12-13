@@ -9,7 +9,7 @@ import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
 import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
-import { SPSAMLConfig } from './controller/sp-config';
+import { SPSSOConfig } from './controller/sp-config';
 import { SetupLinkController } from './controller/setup-link';
 import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
@@ -66,7 +66,7 @@ export const controllers = async (
   setupLinkController: SetupLinkController;
   directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
-  spConfig: SPSAMLConfig;
+  spConfig: SPSSOConfig;
   samlFederatedController: ISAMLFederationController;
   brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
@@ -124,7 +124,7 @@ export const controllers = async (
   });
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
-  const spConfig = new SPSAMLConfig(opts);
+  const spConfig = new SPSSOConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts, eventController });
 
   // Enterprise Features
