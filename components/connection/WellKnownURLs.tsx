@@ -140,7 +140,7 @@ const LinkCard = ({
         </div>
         <div className='mx-4'>
           <LinkOutline
-            className='w-32'
+            className='btn btn-secondary btn-sm w-32'
             href={href}
             target='_blank'
             rel='noreferrer'
