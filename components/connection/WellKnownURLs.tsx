@@ -9,7 +9,7 @@ const WellKnownURLs = () => {
   const viewText = t('view');
   const downloadText = t('download');
 
-  const [view, setView] = useState<'auth' | 'idp-config' | 'saml-fed'>('auth');
+  const [view, setView] = useState<'idp-config' | 'auth' | 'saml-fed'>('idp-config');
 
   const links = [
     {
