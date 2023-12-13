@@ -9,7 +9,7 @@ const WellKnownURLs = () => {
   const viewText = t('view');
   const downloadText = t('download');
 
-  const [view, setView] = useState<'auth' | 'idp-config' | 'saml-fed'>('auth');
+  const [view, setView] = useState<'idp-config' | 'auth' | 'saml-fed'>('idp-config');
 
   const links = [
     {
@@ -36,6 +36,13 @@ const WellKnownURLs = () => {
     {
       title: 'OpenID Configuration',
       description: t('oidc_config_description'),
+      href: '/.well-known/oidc-configuration',
+      buttonText: viewText,
+      type: 'idp-config',
+    },
+    {
+      title: 'OpenID Connect Discovery',
+      description: t('oidc_discovery_description'),
       href: '/.well-known/openid-configuration',
       buttonText: viewText,
       type: 'auth',
@@ -65,18 +72,18 @@ const WellKnownURLs = () => {
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         <Tab
-          isActive={view === 'auth'}
-          setIsActive={() => setView('auth')}
-          title='Auth integration'
-          description='Links for OAuth 2.0/OpenID Connect auth'
-          label='Auth integration links'
-        />
-        <Tab
           isActive={view === 'idp-config'}
           setIsActive={() => setView('idp-config')}
           title='Identity Provider Configuration'
           description='Links for SAML/OIDC IdP setup'
           label='Identity Provider Configuration links'
+        />
+        <Tab
+          isActive={view === 'auth'}
+          setIsActive={() => setView('auth')}
+          title='Auth integration'
+          description='Links for OAuth 2.0/OpenID Connect auth'
+          label='Auth integration links'
         />
         <Tab
           isActive={view === 'saml-fed'}
@@ -140,7 +147,7 @@ const LinkCard = ({
         </div>
         <div className='mx-4'>
           <LinkOutline
-            className='w-32'
+            className='btn btn-secondary btn-sm w-32'
             href={href}
             target='_blank'
             rel='noreferrer'

@@ -505,7 +505,8 @@ export type OIDCErrorCodes =
   | 'request_uri_not_supported'
   | 'registration_not_supported';
 
-export interface ISPSAMLConfig {
+export interface ISPSSOConfig {
+  oidcRedirectURI: string;
   get(): Promise<{
     acsUrl: string;
     entityId: string;

@@ -37,6 +37,10 @@ module.exports = {
         destination: '/api/well-known/openid-configuration',
       },
       {
+        source: '/.well-known/oidc-configuration',
+        destination: '/well-known/oidc-configuration',
+      },
+      {
         source: '/.well-known/sp-metadata',
         destination: '/api/well-known/sp-metadata',
       },
