@@ -65,18 +65,18 @@ const WellKnownURLs = () => {
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         <Tab
-          isActive={view === 'auth'}
-          setIsActive={() => setView('auth')}
-          title='Auth integration'
-          description='Links for OAuth 2.0/OpenID Connect auth'
-          label='Auth integration links'
-        />
-        <Tab
           isActive={view === 'idp-config'}
           setIsActive={() => setView('idp-config')}
           title='Identity Provider Configuration'
           description='Links for SAML/OIDC IdP setup'
           label='Identity Provider Configuration links'
+        />
+        <Tab
+          isActive={view === 'auth'}
+          setIsActive={() => setView('auth')}
+          title='Auth integration'
+          description='Links for OAuth 2.0/OpenID Connect auth'
+          label='Auth integration links'
         />
         <Tab
           isActive={view === 'saml-fed'}
