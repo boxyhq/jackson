@@ -304,9 +304,6 @@ export class DirectoryGroups {
         });
     }
 
-    return {
-      status: 404,
-      data: {},
-    };
+    return this.respondWithError({ code: 404, message: 'Not found' });
   }
 }
