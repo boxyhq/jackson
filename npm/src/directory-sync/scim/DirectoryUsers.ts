@@ -35,10 +35,7 @@ export class DirectoryUsers {
     const { data: users } = await this.users.search(email, directory.id);
 
     if (users && users.length > 0) {
-      return {
-        status: 409,
-        data: {},
-      };
+      return this.respondWithError({ code: 409, message: 'User already exists' });
     }
 
     const { data: user } = await this.users.create({

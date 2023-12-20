@@ -41,6 +41,11 @@ tap.test('Directory users /', async (t) => {
       const { data } = await directorySync.requests.handle(requests.create(directory, users[0]));
 
       createdUser = data;
+
+      // Creating same user again should return 409
+      const { status } = await directorySync.requests.handle(requests.create(directory, users[0]));
+
+      t.equal(status, 409);
     });
 
     t.afterEach(async () => {

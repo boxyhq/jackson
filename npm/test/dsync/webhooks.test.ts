@@ -63,6 +63,7 @@ tap.test('Webhook Events /', async (t) => {
   t.test('Webhook Events / ', async (t) => {
     t.afterEach(async () => {
       await directorySync.webhookLogs.deleteAll(directory.id);
+      await directorySync.users.deleteAll(directory.id);
     });
 
     t.test("Should be able to get the directory's webhook", async (t) => {
@@ -115,7 +116,10 @@ tap.test('Webhook Events /', async (t) => {
 
     t.test('Should be able to get an event by id', async (t) => {
       // Create a user
-      await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
+      const resp = await directorySync.requests.handle(
+        usersRequest.create(directory, users[0]),
+        eventCallback
+      );
 
       const logs = await directorySync.webhookLogs.getAll();
 
