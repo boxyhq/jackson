@@ -31,6 +31,16 @@ export class DirectoryUsers {
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
     const { id, first_name, last_name, email, active } = extractStandardUserAttributes(body);
 
+    // Check if the user already exists
+    const { data: users } = await this.users.search(email, directory.id);
+
+    if (users && users.length > 0) {
+      return {
+        status: 409,
+        data: {},
+      };
+    }
+
     const { data: user } = await this.users.create({
       directoryId: directory.id,
       id,
@@ -167,7 +177,10 @@ export class DirectoryUsers {
   private respondWithError(error: ApiError | null) {
     return {
       status: error ? error.code : 500,
-      data: null,
+      data: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+        detail: error ? error.message : 'Internal Server Error',
+      },
     };
   }
 
@@ -246,9 +259,6 @@ export class DirectoryUsers {
         });
     }
 
-    return {
-      status: 404,
-      data: {},
-    };
+    return this.respondWithError({ code: 404, message: 'Not found' });
   }
 }
