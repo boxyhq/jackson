@@ -93,7 +93,7 @@ export const controllers = async (
   const adminController = new AdminController({ connectionStore, samlTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
-  const setupLinkController = new SetupLinkController({ setupLinkStore });
+  const setupLinkController = new SetupLinkController({ setupLinkStore, opts });
   const productController = new ProductController({ productStore, opts });
 
   if (!opts.noAnalytics) {
