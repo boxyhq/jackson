@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.6",
-    "@boxyhq/react-ui": "3.3.23",
+    "@boxyhq/react-ui": "3.3.25",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.1.1",
     "@retracedhq/logs-viewer": "2.5.2",
