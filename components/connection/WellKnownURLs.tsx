@@ -13,49 +13,49 @@ const WellKnownURLs = () => {
 
   const links = [
     {
-      title: 'SP Metadata',
+      title: t('sp_metadata'),
       description: t('sp_metadata_description'),
       href: '/.well-known/sp-metadata',
       buttonText: viewText,
       type: 'idp-config',
     },
     {
-      title: 'SAML Configuration',
+      title: t('saml_configuration'),
       description: t('sp_config_description'),
       href: '/.well-known/saml-configuration',
       buttonText: viewText,
       type: 'idp-config',
     },
     {
-      title: 'SAML Public Certificate',
+      title: t('saml_public_cert'),
       description: t('saml_public_cert_description'),
       href: '/.well-known/saml.cer',
       buttonText: downloadText,
       type: 'idp-config',
     },
     {
-      title: 'OpenID Configuration',
+      title: t('oidc_configuration'),
       description: t('oidc_config_description'),
       href: '/.well-known/oidc-configuration',
       buttonText: viewText,
       type: 'idp-config',
     },
     {
-      title: 'OpenID Connect Discovery',
+      title: t('oidc_discovery'),
       description: t('oidc_discovery_description'),
       href: '/.well-known/openid-configuration',
       buttonText: viewText,
       type: 'auth',
     },
     {
-      title: 'IdP Metadata',
+      title: t('idp_metadata'),
       description: t('idp_metadata_description'),
       href: '/.well-known/idp-metadata',
       buttonText: viewText,
       type: 'saml-fed',
     },
     {
-      title: 'IdP Configuration',
+      title: t('idp_configuration'),
       description: t('idp_config_description'),
       href: '/.well-known/idp-configuration',
       buttonText: viewText,
@@ -74,23 +74,23 @@ const WellKnownURLs = () => {
         <Tab
           isActive={view === 'idp-config'}
           setIsActive={() => setView('idp-config')}
-          title='Identity Provider Configuration'
-          description='Links for SAML/OIDC IdP setup'
-          label='Identity Provider Configuration links'
+          title={'title_idp_configuration'}
+          description={'description_idp_configuration'}
+          label={'label_idp_configuration'}
         />
         <Tab
           isActive={view === 'auth'}
           setIsActive={() => setView('auth')}
-          title='Auth integration'
-          description='Links for OAuth 2.0/OpenID Connect auth'
-          label='Auth integration links'
+          title={t('title_auth_integration')}
+          description={t('description_auth_integration')}
+          label={t('label_auth_integration')}
         />
         <Tab
           isActive={view === 'saml-fed'}
           setIsActive={() => setView('saml-fed')}
-          title='SAML Federation'
-          description='Links for SAML Federation app setup'
-          label='SAML Federation links'
+          title={t('title_saml_fed_configuration')}
+          description={t('description_saml_fed_configuration')}
+          label={t('label_saml_fed_configuration')}
         />
       </div>
       <div className='space-y-3 mt-8'>

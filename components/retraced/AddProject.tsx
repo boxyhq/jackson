@@ -3,9 +3,11 @@ import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { successToast, errorToast } from '@components/Toaster';
 import { LinkBack } from '@components/LinkBack';
+import { useTranslation } from 'next-i18next';
 
 const AddProject = () => {
   const router = useRouter();
+  const { t } = useTranslation('common');
 
   const [loading, setLoading] = useState(false);
   const [project, setProject] = useState({
@@ -49,7 +51,7 @@ const AddProject = () => {
     }
 
     if (data && data.project) {
-      successToast('Project created successfully.');
+      successToast(t('retraced_project_created'));
       router.replace(`/admin/retraced/projects/${data.project.id}`);
     }
   };
@@ -58,13 +60,15 @@ const AddProject = () => {
     <>
       <LinkBack href='/admin/retraced/projects' />
       <div className='mt-5'>
-        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>Create Project</h2>
+        <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
+          {t('create_project')}
+        </h2>
         <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
           <form onSubmit={createProject}>
             <div className='flex flex-col space-y-3'>
               <div className='form-control w-full'>
                 <label className='label'>
-                  <span className='label-text'>Project name</span>
+                  <span className='label-text'>{t('project_name')}</span>
                 </label>
                 <input
                   type='text'
@@ -76,7 +80,7 @@ const AddProject = () => {
               </div>
               <div>
                 <button className={classNames('btn-primary btn', loading ? 'loading' : '')}>
-                  Create Project
+                  {t('create_project')}
                 </button>
               </div>
             </div>
