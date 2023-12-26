@@ -8,7 +8,7 @@ import Loading from '@components/Loading';
 import useSetupLink from '@lib/ui/hooks/useSetupLink';
 import usePortalBranding from '@lib/ui/hooks/usePortalBranding';
 import { useTranslation } from 'next-i18next';
-import { hexToHsl, darkenHslColor } from '@lib/color';
+import { hexToOklch } from '@lib/color';
 import { PoweredBy } from '@components/PoweredBy';
 
 export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => {
@@ -24,7 +24,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
     return <Loading />;
   }
 
-  const primaryColor = branding?.primaryColor ? hexToHsl(branding?.primaryColor) : null;
+  const primaryColor = branding?.primaryColor ? hexToOklch(branding?.primaryColor) : null;
   const title =
     setupLink?.service === 'sso'
       ? t('configure_sso')
@@ -39,9 +39,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
         {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
       </Head>
 
-      {primaryColor && (
-        <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
-      )}
+      {primaryColor && <style>{`:root { --p: ${primaryColor}; }`}</style>}
 
       <div className='mx-auto max-w-3xl'>
         <div className='flex flex-1 flex-col'>
