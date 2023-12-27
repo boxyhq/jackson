@@ -258,5 +258,10 @@
   "advanced_sp_saml_configuration": "Advanced Service Provider (SP) SAML Configuration",
   "select_identity_provider": "Select Identity Provider",
   "configure_identity_provider": "Configure {{provider}}",
-  "change_identity_provider": "Change Identity Provider"
+  "change_identity_provider": "Change Identity Provider",
+  "invalid_request_try_again": "Invalid request. Please try again.",
+  "choose_an_identity_provider_to_continue": "Choose an Identity Provider to continue. If you don't see your Identity Provider, please contact your administrator.",
+  "choose_an_app_to_continue": " Choose an app to continue. If you don't see your app, please contact your administrator.",
+  "no_saml_response_try_again": "No SAMLResponse found. Please try again.",
+  "customize_branding": "You can customize the look and feel Identity Provider selection page by setting following options"
 }
