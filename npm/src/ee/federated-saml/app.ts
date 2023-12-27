@@ -327,11 +327,6 @@ export class App {
    *         in: formData
    *         required: false
    *         type: string
-   *       - name: entityId
-   *         description: Entity ID
-   *         in: formData
-   *         required: false
-   *         type: string
    *       - name: logoUrl
    *         description: Logo URL
    *         in: formData
@@ -393,10 +388,6 @@ export class App {
       toUpdate['acsUrl'] = params.acsUrl;
     }
 
-    if ('entityId' in params) {
-      toUpdate['entityId'] = params.entityId;
-    }
-
     if ('logoUrl' in params) {
       toUpdate['logoUrl'] = params.logoUrl || null;
     }
@@ -411,7 +402,7 @@ export class App {
 
     if (Object.keys(toUpdate).length === 0) {
       throw new JacksonError(
-        'Please provide at least one of the following parameters: acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor',
+        'Please provide at least one of the following parameters: acsUrl, name, logoUrl, faviconUrl, primaryColor',
         400
       );
     }

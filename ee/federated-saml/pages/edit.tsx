@@ -124,6 +124,12 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
+                <span className='label-text'>{t('entity_id')}</span>
+              </label>
+              <input type='url' className='input-bordered input' defaultValue={app.entityId} disabled />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
                 <span className='label-text'>{t('name')}</span>
               </label>
               <input
@@ -146,19 +152,6 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 required
                 onChange={onChange}
                 value={app.acsUrl}
-              />
-            </div>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
-                <span className='label-text'>{t('entity_id')}</span>
-              </label>
-              <input
-                type='url'
-                id='entityId'
-                className='input-bordered input'
-                required
-                onChange={onChange}
-                value={app.entityId}
               />
             </div>
             <div className='pt-4'>
