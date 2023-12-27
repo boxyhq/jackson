@@ -165,7 +165,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
             <div className='flex flex-shrink-0 items-center px-4'>
               <Link href='/' className='flex items-center'>
                 <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
-                <span className='ml-4 text-xl font-bold text-gray-900'>BoxyHQ Admin Portal</span>
+                <span className='ml-4 text-xl font-bold text-gray-900'>{t('boxyhq_admin_portal')}</span>
               </Link>
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
@@ -182,7 +182,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           <div className='flex flex-shrink-0 items-center px-4'>
             <Link href='/' className='flex items-center'>
               <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
-              <span className='ml-4 text-lg font-bold text-gray-900'>BoxyHQ Admin Portal</span>
+              <span className='ml-4 text-lg font-bold text-gray-900'>{t('boxyhq_admin_portal')}</span>
             </Link>
           </div>
           <div className='mt-5 flex flex-1 flex-col'>

@@ -113,11 +113,11 @@ function BlocklyComponent(props) {
           />
         </div>
         <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
-          <ButtonPrimary onClick={uploadModel}>Publish Model</ButtonPrimary>
+          <ButtonPrimary onClick={uploadModel}>{t('publish_model')}</ButtonPrimary>
         </div>
         <div className='mb-6 w-full px-3 md:mb-0 md:w-1/3'>
           <ButtonBase color='secondary' onClick={toggleRetrieveConfirm}>
-            Retrieve Model
+            {t('retrieve_model')}
           </ButtonBase>
         </div>
       </div>

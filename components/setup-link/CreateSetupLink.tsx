@@ -196,7 +196,7 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
                   <textarea
                     id={'redirectUrl'}
                     name='redirectUrl'
-                    placeholder={'Allowed redirect URLs (newline separated)'}
+                    placeholder={t('allowed_redirect_url')}
                     value={formObj['redirectUrl']}
                     required
                     onChange={handleChange}
