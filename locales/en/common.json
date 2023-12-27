@@ -171,6 +171,8 @@
   "assertion_encryption": "Assertion Encryption",
   "sp_saml_config_title": "Service Provider (SP) SAML Configuration",
   "sp_saml_config_description": "Your Identity Provider (IdP) will ask for the following information while configuring the SAML application. Share this information with your IT administrator.",
+  "refer_to_provider_instructions": "Refer to our <guideLink>guides</guideLink> for provider specific instructions.",
+  "sp_download_our_public_cert": "If you want to encrypt the assertion, you can <downloadLink>download our public certificate.</downloadLink> Otherwise select the Unencrypted option.",
   "sp_oidc_config_title": "Service Provider (SP) OIDC Configuration",
   "sp_oidc_config_description": "Your Identity Provider (IdP) will ask for the following information while configuring the OIDC application. Share this information with your IT administrator.",
   "password": "Password",
@@ -250,5 +252,11 @@
   "next_step": "Next Step",
   "boxyhq_powered_by": "Powered by BoxyHQ",
   "publish_model": "Publish Model",
-  "retrieve_model": "Retrieve Model"
+  "retrieve_model": "Retrieve Model",
+  "guides": "guides",
+  "learn_to_enable_auth_methods": "Please visit <docLink>BoxyHQ documentation</docLink> to learn how to enable the Magic Link or Email/Password authentication methods.",
+  "advanced_sp_saml_configuration": "Advanced Service Provider (SP) SAML Configuration",
+  "select_identity_provider": "Select Identity Provider",
+  "configure_identity_provider": "Configure {{provider}}",
+  "change_identity_provider": "Change Identity Provider"
 }

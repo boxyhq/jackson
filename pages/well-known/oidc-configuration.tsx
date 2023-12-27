@@ -1,6 +1,6 @@
 import type { NextPage, InferGetStaticPropsType } from 'next';
 import React from 'react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation, Trans } from 'next-i18next';
 import jackson from '@lib/jackson';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -18,15 +18,21 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = (
             <h2 className='font-bold text-gray-700 md:text-xl'>{t('sp_oidc_config_title')}</h2>
             <p className='text-sm leading-6 text-gray-800'>{t('sp_oidc_config_description')}</p>
             <p className='text-sm leading-6 text-gray-600'>
-              Refer to our&nbsp;
-              <a
-                href='https://boxyhq.com/docs/jackson/sso-providers'
-                target='_blank'
-                rel='noreferrer'
-                className='underline underline-offset-4'>
-                guides
-              </a>
-              &nbsp;for provider specific instructions.
+              <Trans
+                i18nKey='refer_to_provider_instructions'
+                t={t}
+                components={{
+                  guideLink: (
+                    <a
+                      href='https://boxyhq.com/docs/jackson/sso-providers'
+                      target='_blank'
+                      rel='noreferrer'
+                      className='underline underline-offset-4'>
+                      {t('guides')}
+                    </a>
+                  ),
+                }}
+              />
             </p>
           </div>
           <div className='mt-6 flex flex-col gap-6'>

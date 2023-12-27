@@ -74,9 +74,9 @@ const WellKnownURLs = () => {
         <Tab
           isActive={view === 'idp-config'}
           setIsActive={() => setView('idp-config')}
-          title={'title_idp_configuration'}
-          description={'description_idp_configuration'}
-          label={'label_idp_configuration'}
+          title={t('title_idp_configuration')}
+          description={t('description_idp_configuration')}
+          label={t('label_idp_configuration')}
         />
         <Tab
           isActive={view === 'auth'}
