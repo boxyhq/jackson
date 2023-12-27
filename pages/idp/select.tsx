@@ -7,7 +7,7 @@ import type { InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
-import { hexToHsl, darkenHslColor } from '@lib/color';
+import { hexToOklch } from '@lib/color';
 import Image from 'next/image';
 import { PoweredBy } from '@components/PoweredBy';
 import { getPortalBranding } from '@lib/settings';
@@ -26,7 +26,7 @@ export default function ChooseIdPConnection({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { t } = useTranslation('common');
 
-  const primaryColor = hexToHsl(branding.primaryColor);
+  const primaryColor = hexToOklch(branding.primaryColor);
   const title = authFlow === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
 
   const selectors = {
@@ -42,9 +42,7 @@ export default function ChooseIdPConnection({
           {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
         </Head>
 
-        {primaryColor && (
-          <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
-        )}
+        {primaryColor && <style>{`:root { --p: ${primaryColor}; }`}</style>}
 
         {branding?.logoUrl && (
           <div className='flex justify-center'>
