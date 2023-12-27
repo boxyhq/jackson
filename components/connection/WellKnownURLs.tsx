@@ -74,23 +74,23 @@ const WellKnownURLs = () => {
         <Tab
           isActive={view === 'idp-config'}
           setIsActive={() => setView('idp-config')}
-          title={t('title_idp_configuration')}
-          description={t('description_idp_configuration')}
-          label={t('label_idp_configuration')}
+          title={t('idp_configuration_title')}
+          description={t('idp_configuration_description')}
+          label={t('idp_configuration_label')}
         />
         <Tab
           isActive={view === 'auth'}
           setIsActive={() => setView('auth')}
-          title={t('title_auth_integration')}
-          description={t('description_auth_integration')}
-          label={t('label_auth_integration')}
+          title={t('auth_integration_title')}
+          description={t('auth_integration_description')}
+          label={t('auth_integration_label')}
         />
         <Tab
           isActive={view === 'saml-fed'}
           setIsActive={() => setView('saml-fed')}
-          title={t('title_saml_fed_configuration')}
-          description={t('description_saml_fed_configuration')}
-          label={t('label_saml_fed_configuration')}
+          title={t('saml_fed_configuration_title')}
+          description={t('saml_fed_configuration_description')}
+          label={t('saml_fed_configuration_label')}
         />
       </div>
       <div className='space-y-3 mt-8'>
