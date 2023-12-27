@@ -146,6 +146,12 @@ export class App {
 
     const id = appID(tenant, product);
 
+    const foundApp = await this.store.get(id);
+
+    if (foundApp) {
+      throw new JacksonError('An app is already created with the same tenant and product.', 400);
+    }
+
     const app: SAMLFederationApp = {
       id,
       name,
@@ -215,7 +221,7 @@ export class App {
         throw new JacksonError('SAML Federation app not found', 404);
       }
 
-      return app;
+      return app as SAMLFederationApp;
     }
 
     if ('tenant' in params && 'product' in params) {
@@ -225,7 +231,7 @@ export class App {
         throw new JacksonError('SAML Federation app not found', 404);
       }
 
-      return app;
+      return app as SAMLFederationApp;
     }
 
     throw new JacksonError('Provide either the `id` or `tenant` and `product` to get the app', 400);
