@@ -149,7 +149,10 @@ export class App {
     const foundApp = await this.store.get(id);
 
     if (foundApp) {
-      throw new JacksonError('An app is already created with the same tenant and product.', 400);
+      throw new JacksonError(
+        'Cannot create another app for the same tenant and product. An app already exists.',
+        400
+      );
     }
 
     const app: SAMLFederationApp = {
