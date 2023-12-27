@@ -240,5 +240,15 @@
   "create_project": "Create Project",
   "share_setup_link": "Share this link with your customer to setup their service",
   "setup_link_valid_till": "This link is valid till",
-  "invalid_setup_link_alert": "Please contact your administrator to get a new setup link. If you are the administrator, visit the Admin Portal to create a new setup link for the service."
+  "invalid_setup_link_alert": "Please contact your administrator to get a new setup link. If you are the administrator, visit the Admin Portal to create a new setup link for the service.",
+  "boxyhq_admin_portal": "BoxyHQ Admin Portal",
+  "environment:": "Environment",
+  "group_or_tenant": "Group (Tenant)",
+  "id": "Id",
+  "created_at": "Created At",
+  "previous_step": "Previous Step",
+  "next_step": "Next Step",
+  "boxyhq_powered_by": "Powered by BoxyHQ",
+  "publish_model": "Publish Model",
+  "retrieve_model": "Retrieve Model"
 }

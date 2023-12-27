@@ -114,7 +114,9 @@ const Login = ({
               <div className='flex justify-center'>
                 <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
               </div>
-              <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin Portal</h2>
+              <h2 className='text-center text-3xl font-extrabold text-gray-900'>
+                {t('boxyhq_admin_portal')}
+              </h2>
               <p className='text-center text-sm text-gray-600'>{t('boxyhq_tagline')}</p>
             </div>
 
