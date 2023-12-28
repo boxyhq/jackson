@@ -64,7 +64,7 @@
     "axios": "1.6.3",
     "blockly": "10.3.0",
     "chroma-js": "2.4.2",
-    "classnames": "2.4.0",
+    "classnames": "2.5.0",
     "cors": "2.8.5",
     "daisyui": "4.4.24",
     "i18next": "22.5.1",
