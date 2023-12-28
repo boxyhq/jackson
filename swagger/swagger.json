@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.14.2",
+    "version": "1.15.4",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -1258,13 +1258,6 @@
           {
             "name": "acsUrl",
             "description": "ACS URL",
-            "in": "formData",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "entityId",
-            "description": "Entity ID",
             "in": "formData",
             "required": false,
             "type": "string"
