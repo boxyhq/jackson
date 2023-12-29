@@ -1,10 +1,9 @@
 import useSWR from 'swr';
-import type { ApiError, ApiSuccess } from 'types';
+
 import { fetcher } from '@lib/ui/utils';
+import type { ApiError, ApiSuccess } from 'types';
 
-const usePortalBranding = () => {
-  const url = '/api/branding';
-
+const usePortalBranding = (productId: string | undefined) => {
   const { data, error, isLoading } = useSWR<
     ApiSuccess<{
       logoUrl: string;
@@ -13,7 +12,7 @@ const usePortalBranding = () => {
       companyName: string;
     }>,
     ApiError
-  >(url, fetcher);
+  >(productId ? `/api/branding?productId=${productId}` : null, fetcher);
 
   return {
     branding: data?.data,

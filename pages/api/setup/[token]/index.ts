@@ -31,7 +31,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     data: {
       ...setupLink,
       tenant: undefined,
-      product: undefined,
+      // product: undefined,
     },
   });
 };

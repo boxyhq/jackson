@@ -1,15 +1,15 @@
 import { JacksonError } from '../../controller/error';
 import { throwIfInvalidLicense } from '../common/checkLicense';
-import type { Storable, JacksonOption } from '../../typings';
+import type { Storable, JacksonOption, ProductConfig } from '../../typings';
 
-type ProductConfig = {
-  id: string;
-  name: string;
-  teamId: string;
-  teamName: string;
-  logoUrl: string;
-  faviconUrl: string;
-  primaryColor: string;
+const defaultProductConfig: Omit<ProductConfig, 'id'> = {
+  name: null,
+  teamId: null,
+  teamName: null,
+  logoUrl: null,
+  primaryColor: null,
+  faviconUrl: null,
+  companyName: null,
 };
 
 export class ProductController {
@@ -24,13 +24,16 @@ export class ProductController {
   public async get(productId: string) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const product = (await this.productStore.get(productId)) as ProductConfig;
+    const productConfig = (await this.productStore.get(productId)) as ProductConfig;
 
-    if (!product) {
-      throw new JacksonError('Product not found.', 404);
+    if (!productConfig) {
+      console.error(`Product config not found for ${productId}`);
     }
 
-    return product;
+    return {
+      ...defaultProductConfig,
+      ...productConfig,
+    };
   }
 
   public async upsert(params: Partial<ProductConfig> & { id: string }) {
@@ -40,9 +43,9 @@ export class ProductController {
       throw new JacksonError('Provide a product id', 400);
     }
 
-    const product = await this.productStore.get(params.id);
+    const productConfig = (await this.productStore.get(params.id)) as ProductConfig;
 
-    const toUpdate = product ? { ...product, ...params } : params;
+    const toUpdate = productConfig ? { ...productConfig, ...params } : params;
 
     await this.productStore.put(params.id, toUpdate);
   }

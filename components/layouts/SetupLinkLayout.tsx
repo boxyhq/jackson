@@ -13,24 +13,23 @@ import { PoweredBy } from '@components/PoweredBy';
 
 export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const { branding } = usePortalBranding();
   const { t } = useTranslation('common');
 
   const { token } = router.query as { token: string };
 
   const { setupLink, error, isLoading } = useSetupLink(token);
+  const { branding, isLoading: isLoadingBranding } = usePortalBranding(setupLink?.product);
 
-  if (isLoading) {
+  if (isLoading || isLoadingBranding) {
     return <Loading />;
   }
 
-  const primaryColor = branding?.primaryColor ? hexToOklch(branding?.primaryColor) : null;
-  const title =
-    setupLink?.service === 'sso'
-      ? t('configure_sso')
-      : setupLink?.service === 'dsync'
-        ? t('configure_dsync')
-        : null;
+  const titles = {
+    sso: t('configure_sso'),
+    dsync: t('configure_dsync'),
+  };
+
+  const title = setupLink?.service ? titles[setupLink?.service] : '';
 
   return (
     <>
@@ -39,7 +38,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
         {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
       </Head>
 
-      {primaryColor && <style>{`:root { --p: ${primaryColor}; }`}</style>}
+      {branding?.primaryColor && <style>{`:root { --p: ${hexToOklch(branding.primaryColor)}; }`}</style>}
 
       <div className='mx-auto max-w-3xl'>
         <div className='flex flex-1 flex-col'>

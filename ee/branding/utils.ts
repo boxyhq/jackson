@@ -1,4 +1,5 @@
 import jackson from '@lib/jackson';
+import { boxyhqHosted } from '@lib/env';
 
 // BoxyHQ branding
 export const boxyhqBranding = {
@@ -23,5 +24,22 @@ export const getPortalBranding = async () => {
     primaryColor: customBranding?.primaryColor || boxyhqBranding.primaryColor,
     faviconUrl: customBranding?.faviconUrl || boxyhqBranding.faviconUrl,
     companyName: customBranding?.companyName || boxyhqBranding.companyName,
+  };
+};
+
+export const getProductBranding = async (productId: string) => {
+  if (!boxyhqHosted) {
+    return boxyhqBranding;
+  }
+
+  const { productController } = await jackson();
+
+  const productBranding = await productController?.get(productId);
+
+  return {
+    logoUrl: productBranding.logoUrl || boxyhqBranding.logoUrl,
+    faviconUrl: productBranding.faviconUrl || boxyhqBranding.faviconUrl,
+    companyName: productBranding.companyName || boxyhqBranding.companyName,
+    primaryColor: productBranding.primaryColor || boxyhqBranding.primaryColor,
   };
 };
