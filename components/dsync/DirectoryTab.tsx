@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Directory } from '@boxyhq/saml-jackson';
 import classNames from 'classnames';
+import { useTranslation } from 'next-i18next';
 
 const DirectoryTab = ({
   directory,
@@ -11,32 +12,34 @@ const DirectoryTab = ({
   activeTab: string;
   setupLinkToken?: string;
 }) => {
+  const { t } = useTranslation('common');
+
   const menus = setupLinkToken
     ? [
         {
-          name: 'Directory',
+          name: t('directory'),
           href: `/setup/${setupLinkToken}/directory-sync/${directory.id}`,
           active: activeTab === 'directory',
         },
       ]
     : [
         {
-          name: 'Directory',
+          name: t('directory'),
           href: `/admin/directory-sync/${directory.id}`,
           active: activeTab === 'directory',
         },
         {
-          name: 'Users',
+          name: t('users'),
           href: `/admin/directory-sync/${directory.id}/users`,
           active: activeTab === 'users',
         },
         {
-          name: 'Groups',
+          name: t('groups'),
           href: `/admin/directory-sync/${directory.id}/groups`,
           active: activeTab === 'groups',
         },
         {
-          name: 'Webhook Events',
+          name: t('webhook_events'),
           href: `/admin/directory-sync/${directory.id}/events`,
           active: activeTab === 'events',
         },

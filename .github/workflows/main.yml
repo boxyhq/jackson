@@ -269,12 +269,12 @@ jobs:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report
         if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
         if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: npm_sbom.cyclonedx
       - name: Remove older SBOMs
@@ -310,12 +310,12 @@ jobs:
         run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
         if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: sbom.spdx
       - name: Download artifact for CycloneDx Report
         if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: sbom.cyclonedx
 
@@ -345,12 +345,12 @@ jobs:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report [Docker]
         if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: docker_sbom.spdx
       - name: Download artifact for CycloneDx Report [Docker]
         if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: docker_sbom.cyclonedx
       - name: Create/Clear folder [Docker]

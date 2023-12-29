@@ -19,7 +19,7 @@ const ProjectDetails = (props: { project: Project; host?: string }) => {
     <>
       <div className='form-control mb-5 max-w-xs'>
         <label className='label pl-0'>
-          <span className='label-text'>Environment</span>
+          <span className='label-text'>{t('environment')}</span>
         </label>
         <Select
           value={selectedIndex}

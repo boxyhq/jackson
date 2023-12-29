@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, getCsrfToken, signIn, SessionProvider } from 'next-auth/react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation, Trans } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toaster';
 import { ButtonOutline } from '@components/ButtonOutline';
@@ -114,7 +114,9 @@ const Login = ({
               <div className='flex justify-center'>
                 <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
               </div>
-              <h2 className='text-center text-3xl font-extrabold text-gray-900'>BoxyHQ Admin Portal</h2>
+              <h2 className='text-center text-3xl font-extrabold text-gray-900'>
+                {t('boxyhq_admin_portal')}
+              </h2>
               <p className='text-center text-sm text-gray-600'>{t('boxyhq_tagline')}</p>
             </div>
 
@@ -170,17 +172,21 @@ const Login = ({
             {/* No login methods enabled */}
             {!isEmailPasswordEnabled && !isMagicLinkEnabled && (
               <div className='mt-10 text-center font-medium text-gray-600'>
-                <p>
-                  Please visit&nbsp;
-                  <a
-                    href='https://boxyhq.com/docs/admin-portal/overview'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='underline underline-offset-2'>
-                    BoxyHQ documentation
-                  </a>
-                  &nbsp;to learn how to enable the Magic Link or Email/Password authentication methods.
-                </p>
+                <Trans
+                  i18nKey='learn_to_enable_auth_methods'
+                  t={t}
+                  components={{
+                    docLink: (
+                      <a
+                        href='https://boxyhq.com/docs/admin-portal/overview'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='underline underline-offset-2'>
+                        {t('documentation')}
+                      </a>
+                    ),
+                  }}
+                />
               </div>
             )}
 

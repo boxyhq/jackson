@@ -53,7 +53,7 @@ export default function ChooseIdPConnection({
         {authFlow in selectors ? (
           selectors[authFlow]
         ) : (
-          <p className='text-center text-sm text-slate-600'>Invalid request. Please try again.</p>
+          <p className='text-center text-sm text-slate-600'>{t('invalid_request_try_again')}</p>
         )}
       </div>
       <div className='my-4'>
@@ -98,10 +98,7 @@ const IdpSelector = ({ connections }: { connections: Connection[] }) => {
           );
         })}
       </ul>
-      <p className='text-center text-sm text-slate-600'>
-        Choose an Identity Provider to continue. If you don&apos;t see your Identity Provider, please contact
-        your administrator.
-      </p>
+      <p className='text-center text-sm text-slate-600'>{t('choose_an_identity_provider_to_continue')}</p>
     </>
   );
 };
@@ -143,7 +140,7 @@ const AppSelector = ({
   };
 
   if (!SAMLResponse) {
-    return <p className='text-center text-sm text-slate-600'>No SAMLResponse found. Please try again.</p>;
+    return <p className='text-center text-sm text-slate-600'>{t('no_saml_response_try_again')}</p>;
   }
 
   return (
@@ -171,9 +168,7 @@ const AppSelector = ({
           })}
         </ul>
       </form>
-      <p className='text-center text-sm text-slate-600'>
-        Choose an app to continue. If you don&apos;t see your app, please contact your administrator.
-      </p>
+      <p className='text-center text-sm text-slate-600'>{t('choose_an_app_to_continue')}</p>
     </>
   );
 };

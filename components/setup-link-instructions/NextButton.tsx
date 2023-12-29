@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
-
+import { useTranslation } from 'next-i18next';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 
 const NextButton = () => {
   const router = useRouter();
+  const { t } = useTranslation('common');
 
   const onClick = () => {
     const { idp, step, token } = router.query as { idp: string; step: string; token: string };
@@ -20,7 +21,7 @@ const NextButton = () => {
 
   return (
     <div>
-      <ButtonPrimary onClick={onClick}>Next Step</ButtonPrimary>
+      <ButtonPrimary onClick={onClick}>{t('next_step')}</ButtonPrimary>
     </div>
   );
 };
