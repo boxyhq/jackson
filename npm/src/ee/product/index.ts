@@ -2,16 +2,6 @@ import { JacksonError } from '../../controller/error';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import type { Storable, JacksonOption, ProductConfig } from '../../typings';
 
-const defaultProductConfig: Omit<ProductConfig, 'id'> = {
-  name: null,
-  teamId: null,
-  teamName: null,
-  logoUrl: null,
-  primaryColor: null,
-  faviconUrl: null,
-  companyName: null,
-};
-
 export class ProductController {
   private productStore: Storable;
   private opts: JacksonOption;
@@ -21,7 +11,7 @@ export class ProductController {
     this.opts = opts;
   }
 
-  public async get(productId: string) {
+  public async get(productId: string): Promise<ProductConfig> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const productConfig = (await this.productStore.get(productId)) as ProductConfig;
@@ -31,8 +21,15 @@ export class ProductController {
     }
 
     return {
-      ...defaultProductConfig,
       ...productConfig,
+      id: productId,
+      name: productConfig?.name || null,
+      teamId: productConfig?.teamId || null,
+      teamName: productConfig?.teamName || null,
+      logoUrl: productConfig?.logoUrl || null,
+      faviconUrl: productConfig?.faviconUrl || null,
+      companyName: productConfig?.companyName || null,
+      primaryColor: productConfig?.primaryColor || '#25c2a0',
     };
   }
 

@@ -239,8 +239,6 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     };
   }
 
-  console.log('branding', branding);
-
   let connectionsTransformed: Connection[] = connections.map((connection) => {
     const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
     const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
