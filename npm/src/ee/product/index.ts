@@ -1,6 +1,16 @@
 import { JacksonError } from '../../controller/error';
 import { throwIfInvalidLicense } from '../common/checkLicense';
-import type { Storable, Product, JacksonOption } from '../../typings';
+import type { Storable, JacksonOption } from '../../typings';
+
+type ProductConfig = {
+  id: string;
+  name: string;
+  teamId: string;
+  teamName: string;
+  logoUrl: string;
+  faviconUrl: string;
+  primaryColor: string;
+};
 
 export class ProductController {
   private productStore: Storable;
@@ -14,7 +24,7 @@ export class ProductController {
   public async get(productId: string) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const product = (await this.productStore.get(productId)) as Product;
+    const product = (await this.productStore.get(productId)) as ProductConfig;
 
     if (!product) {
       throw new JacksonError('Product not found.', 404);
@@ -23,7 +33,7 @@ export class ProductController {
     return product;
   }
 
-  public async upsert(params: Partial<Product> & { id: string }) {
+  public async upsert(params: Partial<ProductConfig> & { id: string }) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     if (!('id' in params)) {
@@ -32,11 +42,8 @@ export class ProductController {
 
     const product = await this.productStore.get(params.id);
 
-    if (!product) {
-      await this.productStore.put(params.id, { ...params });
-      return;
-    }
+    const toUpdate = product ? { ...product, ...params } : params;
 
-    await this.productStore.put(product.id, { ...product, ...params });
+    await this.productStore.put(params.id, toUpdate);
   }
 }
