@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import type { OIDCSSORecord, Product, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, ProductConfig, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import type { InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
@@ -10,7 +10,8 @@ import Head from 'next/head';
 import { hexToOklch } from '@lib/color';
 import Image from 'next/image';
 import { PoweredBy } from '@components/PoweredBy';
-import { getPortalBranding } from '@lib/settings';
+import { getPortalBranding, getProductBranding } from '@ee/branding/utils';
+import { boxyhqHosted } from '@lib/env';
 
 interface Connection {
   name: string;
@@ -226,7 +227,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   }
 
   // Get the branding to use for the IdP selector screen
-  let branding = await getPortalBranding();
+  let branding = boxyhqHosted && product ? await getProductBranding(product) : await getPortalBranding();
 
   // For SAML federated requests, use the branding from the SAML federated app
   if (samlFederationApp && (await checkLicense())) {
@@ -267,21 +268,23 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       };
     }
 
-    // Fetch products to display the product name instead of the product ID
-    const products = (await Promise.allSettled(
-      connectionsTransformed.map((connection) => productController.get(connection.product))
-    )) as PromiseFulfilledResult<Product>[];
+    if (boxyhqHosted) {
+      // Fetch products to display the product name instead of the product ID
+      const products = (await Promise.allSettled(
+        connectionsTransformed.map((connection) => productController.get(connection.product))
+      )) as PromiseFulfilledResult<ProductConfig>[];
 
-    connectionsTransformed = connectionsTransformed.map((connection, index) => {
-      if (products[index].status === 'fulfilled') {
-        return {
-          ...connection,
-          product: products[index].value.name || connection.product,
-        };
-      }
+      connectionsTransformed = connectionsTransformed.map((connection, index) => {
+        if (products[index].status === 'fulfilled') {
+          return {
+            ...connection,
+            product: products[index].value.name || connection.product,
+          };
+        }
 
-      return connection;
-    });
+        return connection;
+      });
+    }
 
     return {
       props: {

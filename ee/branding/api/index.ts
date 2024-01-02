@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getPortalBranding } from '@lib/settings';
+
+import { boxyhqHosted } from '@lib/env';
+import { getPortalBranding, getProductBranding } from '../utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -7,7 +9,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     switch (method) {
       case 'GET':
-        return await handleGET(req, res);
+        await handleGET(req, res);
+        break;
       default:
         res.setHeader('Allow', 'GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -15,12 +18,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
 
-    return res.status(statusCode).json({ error: { message } });
+    res.status(statusCode).json({ error: { message } });
   }
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  return res.json({ data: await getPortalBranding() });
+  const { productId } = req.query as { productId: string };
+
+  const productOrPortalBranding = boxyhqHosted
+    ? await getProductBranding(productId)
+    : await getPortalBranding();
+
+  res.json({ data: productOrPortalBranding });
 };
 
 export default handler;
