@@ -92,7 +92,7 @@
     "@types/micromatch": "4.0.6",
     "@types/node": "20.10.1",
     "@types/react": "18.2.46",
-    "@typescript-eslint/eslint-plugin": "6.16.0",
+    "@typescript-eslint/eslint-plugin": "6.17.0",
     "@typescript-eslint/parser": "6.16.0",
     "autoprefixer": "10.4.16",
     "cross-env": "7.0.3",
