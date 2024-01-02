@@ -578,9 +578,13 @@ export type GetByProductParams = {
 
 export type SortOrder = 'ASC' | 'DESC';
 
-export interface ProductConfig extends AdminPortalBranding {
+export interface ProductConfig {
   id: string;
   name: string | null;
   teamId: string | null;
   teamName: string | null;
+  logoUrl: string | null;
+  primaryColor: string | null;
+  faviconUrl: string | null;
+  companyName: string | null;
 }
