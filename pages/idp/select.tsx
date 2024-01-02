@@ -268,21 +268,23 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       };
     }
 
-    // Fetch products to display the product name instead of the product ID
-    const products = (await Promise.allSettled(
-      connectionsTransformed.map((connection) => productController.get(connection.product))
-    )) as PromiseFulfilledResult<ProductConfig>[];
+    if (boxyhqHosted) {
+      // Fetch products to display the product name instead of the product ID
+      const products = (await Promise.allSettled(
+        connectionsTransformed.map((connection) => productController.get(connection.product))
+      )) as PromiseFulfilledResult<ProductConfig>[];
 
-    connectionsTransformed = connectionsTransformed.map((connection, index) => {
-      if (products[index].status === 'fulfilled') {
-        return {
-          ...connection,
-          product: products[index].value.name || connection.product,
-        };
-      }
+      connectionsTransformed = connectionsTransformed.map((connection, index) => {
+        if (products[index].status === 'fulfilled') {
+          return {
+            ...connection,
+            product: products[index].value.name || connection.product,
+          };
+        }
 
-      return connection;
-    });
+        return connection;
+      });
+    }
 
     return {
       props: {

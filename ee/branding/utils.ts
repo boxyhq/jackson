@@ -27,12 +27,22 @@ export const getPortalBranding = async () => {
   };
 };
 
+/**
+ * Get the branding for a specific product.
+ * If the product does not have a custom branding, return the default branding
+ * @param productId
+ * @returns
+ */
 export const getProductBranding = async (productId: string) => {
-  if (!boxyhqHosted) {
+  const { checkLicense, productController } = await jackson();
+
+  if (!(await checkLicense())) {
     return boxyhqBranding;
   }
 
-  const { productController } = await jackson();
+  if (!boxyhqHosted || !productId) {
+    return boxyhqBranding;
+  }
 
   const productBranding = await productController?.get(productId);
 

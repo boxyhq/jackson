@@ -108,5 +108,7 @@ export { jacksonOptions };
 
 export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';
 
-// Indicate if the Jackson instance is hosted (i.e. not self-hosted)
+/**
+ * Indicates if the Jackson instance is hosted (i.e. not self-hosted)
+ */
 export const boxyhqHosted = process.env.BOXYHQ_HOSTED === '1';
