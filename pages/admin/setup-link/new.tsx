@@ -1,4 +1,4 @@
-import type { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from 'next';
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import CreateSetupLink from '@components/setup-link/CreateSetupLink';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';

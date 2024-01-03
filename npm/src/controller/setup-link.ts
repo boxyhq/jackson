@@ -208,8 +208,6 @@ export class SetupLinkController {
       url: `${this.opts.externalUrl}/setup/${token}`,
     };
 
-    console.log('Creating setup link', setupLink);
-
     await this.setupLinkStore.put(
       setupID,
       setupLink,
