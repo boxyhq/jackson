@@ -29,8 +29,8 @@ const terminus = {
   adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
 };
 
-export const setupLinkExpirationDays = process.env.SETUP_LINK_EXPIRY
-  ? Number(process.env.SETUP_LINK_EXPIRY)
+export const setupLinkExpirationDays = process.env.SETUP_LINK_EXPIRY_DAYS
+  ? Number(process.env.SETUP_LINK_EXPIRY_DAYS)
   : 3;
 
 const db: DatabaseOption = {
