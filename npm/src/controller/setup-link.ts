@@ -34,11 +34,9 @@ const throwIfInvalidService = (service: string) => {
   }
 };
 
-// Calculate the expiry date
-const getExpiryDateTime = (expiryDays: number) => {
-  const expiryDate = new Date();
-  expiryDate.setDate(expiryDate.getDate() + expiryDays);
-  return expiryDate.getTime();
+const calculateExpiryTimestamp = (expiryDays: number): number => {
+  const currentTimestamp = Date.now();
+  return currentTimestamp + expiryDays * 24 * 60 * 60 * 1000;
 };
 
 /**
@@ -193,7 +191,7 @@ export class SetupLinkController {
       await this.setupLinkStore.delete(existing[0].setupID);
     }
 
-    const expiryInDays = expiryDays || this.opts.setupLinkExpirationDays || 3;
+    const expiryInDays = expiryDays || this.opts.setupLinkExpiryDays || 3;
 
     const setupLink = {
       setupID,
@@ -204,7 +202,7 @@ export class SetupLinkController {
       description,
       redirectUrl,
       defaultRedirectUrl,
-      validTill: getExpiryDateTime(expiryInDays),
+      validTill: calculateExpiryTimestamp(expiryInDays),
       url: `${this.opts.externalUrl}/setup/${token}`,
     };
 

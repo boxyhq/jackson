@@ -29,7 +29,7 @@ const terminus = {
   adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
 };
 
-export const setupLinkExpirationDays = process.env.SETUP_LINK_EXPIRY_DAYS
+export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
   ? Number(process.env.SETUP_LINK_EXPIRY_DAYS)
   : 3;
 
@@ -95,7 +95,7 @@ const jacksonOptions: JacksonOption = {
       },
     },
   },
-  setupLinkExpirationDays,
+  setupLinkExpiryDays,
 };
 
 const adminPortalSSODefaults = {

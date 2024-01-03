@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import CreateSetupLink from '@components/setup-link/CreateSetupLink';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
-import { setupLinkExpirationDays } from '@lib/env';
+import { setupLinkExpiryDays } from '@lib/env';
 
 const serviceMaps = {
   'sso-connection': 'sso',
@@ -31,7 +31,7 @@ export async function getServerSideProps({ locale }: GetServerSidePropsContext) 
   return {
     props: {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-      expiryDays: setupLinkExpirationDays,
+      expiryDays: setupLinkExpiryDays,
     },
   };
 }

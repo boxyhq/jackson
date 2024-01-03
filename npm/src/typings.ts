@@ -451,7 +451,7 @@ export interface JacksonOption {
   };
 
   /**  The number of days a setup link is valid for. Defaults to 3 days. */
-  setupLinkExpirationDays?: number;
+  setupLinkExpiryDays?: number;
 }
 
 export interface SLORequestParams {
