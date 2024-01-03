@@ -5,7 +5,7 @@ import { getToken as getNextAuthToken } from 'next-auth/jwt';
 import requestIp from 'request-ip';
 
 import jackson from '@lib/jackson';
-import { retracedOptions } from '@lib/env';
+import { auditLogEnabledGroup, retracedOptions } from '@lib/env';
 import { sessionName } from '@lib/constants';
 
 type AuditEventType =
@@ -67,6 +67,11 @@ const adminPortalGroup = {
 
 let client: Retraced.Client | null = null;
 
+// Check if audit log is enabled for a given group
+const auditLogEnabledFor = (groupId: string) => {
+  return auditLogEnabledGroup.includes(groupId);
+};
+
 // Create a Retraced client
 const getClient = async () => {
   const { checkLicense } = await jackson();
@@ -125,15 +130,29 @@ const reportEvent = async (params: ReportEventParams) => {
 
       const product = await productController.get(params.productId);
 
-      retracedEvent.group = {
-        id: product.teamId,
-        name: product.teamName,
-      };
+      if (!product) {
+        console.error(`Can't find product info for productId ${params.productId}`);
+        return;
+      }
 
-      retracedEvent.target = {
-        id: product.id,
-        name: product.name,
-      };
+      if (product.teamId && product.teamName) {
+        retracedEvent.group = {
+          id: product.teamId,
+          name: product.teamName,
+        };
+      }
+
+      if (product.id && product.name) {
+        retracedEvent.target = {
+          id: product.id,
+          name: product.name,
+        };
+      }
+    }
+
+    // Skip reporting if audit log is not enabled for the team
+    if (retracedEvent.group?.id && !auditLogEnabledFor(retracedEvent.group?.id)) {
+      return;
     }
 
     await retracedClient.reportEvent(retracedEvent);
@@ -160,8 +179,13 @@ export const reportAdminPortalEvent = async (params: ReportAdminEventParams) => 
       actor: actor ?? (await getAdminUser(req)),
       group: adminPortalGroup,
       created: new Date(),
-      source_ip: getClientIp(req),
     };
+
+    const ip = getClientIp(req);
+
+    if (ip) {
+      retracedEvent['source_ip'] = ip;
+    }
 
     await retracedClient.reportEvent(retracedEvent);
   } catch (error: any) {
@@ -193,17 +217,14 @@ const getAdminUser = async (req: NextApiRequest | undefined) => {
 // Find Ip from request
 const getClientIp = (req: NextApiRequest | undefined) => {
   if (!req) {
-    return undefined;
+    return;
   }
 
   const sourceIp = requestIp.getClientIp(req);
 
-  // TODO: Verify this is the correct way to check
   if (!sourceIp.startsWith('::')) {
     return sourceIp as string;
   }
-
-  return undefined;
 };
 
 const retraced = {
