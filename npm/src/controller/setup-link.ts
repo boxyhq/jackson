@@ -34,6 +34,13 @@ const throwIfInvalidService = (service: string) => {
   }
 };
 
+// Calculate the expiry date
+const getExpiryDateTime = (expiryDays: number) => {
+  const expiryDate = new Date();
+  expiryDate.setDate(expiryDate.getDate() + expiryDays);
+  return expiryDate.getTime();
+};
+
 /**
  * @swagger
  * definitions:
@@ -146,7 +153,17 @@ export class SetupLinkController {
    *          $ref:  '#/definitions/SetupLink'
    */
   async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
-    const { tenant, product, service, name, description, defaultRedirectUrl, regenerate, redirectUrl } = body;
+    const {
+      tenant,
+      product,
+      service,
+      name,
+      description,
+      defaultRedirectUrl,
+      regenerate,
+      redirectUrl,
+      expiryDays,
+    } = body;
 
     validateTenantAndProduct(tenant, product);
 
@@ -176,6 +193,8 @@ export class SetupLinkController {
       await this.setupLinkStore.delete(existing[0].setupID);
     }
 
+    const expiryInDays = expiryDays || this.opts.setupLinkExpirationDays || 3;
+
     const setupLink = {
       setupID,
       tenant,
@@ -185,9 +204,11 @@ export class SetupLinkController {
       description,
       redirectUrl,
       defaultRedirectUrl,
-      validTill: +new Date(new Date().setDate(new Date().getDate() + 3)),
+      validTill: getExpiryDateTime(expiryInDays),
       url: `${this.opts.externalUrl}/setup/${token}`,
     };
+
+    console.log('Creating setup link', setupLink);
 
     await this.setupLinkStore.put(
       setupID,

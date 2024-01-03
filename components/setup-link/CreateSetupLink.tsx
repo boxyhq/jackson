@@ -9,7 +9,12 @@ import { InputWithCopyButton } from '../ClipboardButton';
 import type { SetupLinkService, SetupLink } from '@boxyhq/saml-jackson';
 import type { ApiResponse } from 'types';
 
-const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
+interface Props {
+  service: SetupLinkService;
+  expiryDays: number;
+}
+
+const CreateSetupLink = ({ service, expiryDays }: Props) => {
   const router = useRouter();
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
@@ -25,6 +30,7 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
     description: '',
     defaultRedirectUrl: '',
     redirectUrl: '',
+    expiryDays,
   });
 
   // Create a new setup link
@@ -206,8 +212,25 @@ const CreateSetupLink = ({ service }: { service: SetupLinkService }) => {
                 </div>
               </>
             )}
+            <div className=''>
+              <label
+                htmlFor='expiryDays'
+                className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
+                {t('expiry_in_days')}
+              </label>
+              <input
+                id='expiryDays'
+                name='expiryDays'
+                type='number'
+                placeholder='3'
+                value={formObj['expiryDays']}
+                onChange={handleChange}
+                className='input-bordered input w-1/4'
+                required
+              />
+            </div>
           </div>
-          <div className='flex'>
+          <div className='flex py-5'>
             <ButtonPrimary loading={loading} disabled={buttonDisabled}>
               {t('generate')}
             </ButtonPrimary>
