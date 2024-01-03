@@ -41,6 +41,11 @@ tap.test('Directory groups /', async (t) => {
       const { data } = await directorySync.requests.handle(groupsRequest.create(directory, groups[0]));
 
       createdGroup = data;
+
+      // Creating same group again should return 409
+      const { status } = await directorySync.requests.handle(groupsRequest.create(directory, groups[0]));
+
+      t.equal(status, 409);
     });
 
     t.afterEach(async () => {

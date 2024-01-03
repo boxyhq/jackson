@@ -2,15 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import type { OIDCSSORecord, Product, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, ProductConfig, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import type { InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
-import { hexToHsl, darkenHslColor } from '@lib/color';
+import { hexToOklch } from '@lib/color';
 import Image from 'next/image';
 import { PoweredBy } from '@components/PoweredBy';
-import { getPortalBranding } from '@lib/settings';
+import { getPortalBranding, getProductBranding } from '@ee/branding/utils';
+import { boxyhqHosted } from '@lib/env';
 
 interface Connection {
   name: string;
@@ -26,7 +27,7 @@ export default function ChooseIdPConnection({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { t } = useTranslation('common');
 
-  const primaryColor = hexToHsl(branding.primaryColor);
+  const primaryColor = hexToOklch(branding.primaryColor);
   const title = authFlow === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
 
   const selectors = {
@@ -42,9 +43,7 @@ export default function ChooseIdPConnection({
           {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
         </Head>
 
-        {primaryColor && (
-          <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
-        )}
+        {primaryColor && <style>{`:root { --p: ${primaryColor}; }`}</style>}
 
         {branding?.logoUrl && (
           <div className='flex justify-center'>
@@ -55,7 +54,7 @@ export default function ChooseIdPConnection({
         {authFlow in selectors ? (
           selectors[authFlow]
         ) : (
-          <p className='text-center text-sm text-slate-600'>Invalid request. Please try again.</p>
+          <p className='text-center text-sm text-slate-600'>{t('invalid_request_try_again')}</p>
         )}
       </div>
       <div className='my-4'>
@@ -100,10 +99,7 @@ const IdpSelector = ({ connections }: { connections: Connection[] }) => {
           );
         })}
       </ul>
-      <p className='text-center text-sm text-slate-600'>
-        Choose an Identity Provider to continue. If you don&apos;t see your Identity Provider, please contact
-        your administrator.
-      </p>
+      <p className='text-center text-sm text-slate-600'>{t('choose_an_identity_provider_to_continue')}</p>
     </>
   );
 };
@@ -145,7 +141,7 @@ const AppSelector = ({
   };
 
   if (!SAMLResponse) {
-    return <p className='text-center text-sm text-slate-600'>No SAMLResponse found. Please try again.</p>;
+    return <p className='text-center text-sm text-slate-600'>{t('no_saml_response_try_again')}</p>;
   }
 
   return (
@@ -173,9 +169,7 @@ const AppSelector = ({
           })}
         </ul>
       </form>
-      <p className='text-center text-sm text-slate-600'>
-        Choose an app to continue. If you don&apos;t see your app, please contact your administrator.
-      </p>
+      <p className='text-center text-sm text-slate-600'>{t('choose_an_app_to_continue')}</p>
     </>
   );
 };
@@ -233,7 +227,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   }
 
   // Get the branding to use for the IdP selector screen
-  let branding = await getPortalBranding();
+  let branding = boxyhqHosted && product ? await getProductBranding(product) : await getPortalBranding();
 
   // For SAML federated requests, use the branding from the SAML federated app
   if (samlFederationApp && (await checkLicense())) {
@@ -274,21 +268,23 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       };
     }
 
-    // Fetch products to display the product name instead of the product ID
-    const products = (await Promise.allSettled(
-      connectionsTransformed.map((connection) => productController.get(connection.product))
-    )) as PromiseFulfilledResult<Product>[];
+    if (boxyhqHosted) {
+      // Fetch products to display the product name instead of the product ID
+      const products = (await Promise.allSettled(
+        connectionsTransformed.map((connection) => productController.get(connection.product))
+      )) as PromiseFulfilledResult<ProductConfig>[];
 
-    connectionsTransformed = connectionsTransformed.map((connection, index) => {
-      if (products[index].status === 'fulfilled') {
-        return {
-          ...connection,
-          product: products[index].value.name || connection.product,
-        };
-      }
+      connectionsTransformed = connectionsTransformed.map((connection, index) => {
+        if (products[index].status === 'fulfilled') {
+          return {
+            ...connection,
+            product: products[index].value.name || connection.product,
+          };
+        }
 
-      return connection;
-    });
+        return connection;
+      });
+    }
 
     return {
       props: {

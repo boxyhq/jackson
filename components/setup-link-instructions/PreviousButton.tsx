@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
-
+import { useTranslation } from 'next-i18next';
 import { ButtonOutline } from '@components/ButtonOutline';
 
 const PreviousButton = () => {
   const router = useRouter();
+  const { t } = useTranslation('common');
 
   const onClick = () => {
     const { idp, step, token } = router.query as { idp: string; step: string; token: string };
@@ -20,7 +21,7 @@ const PreviousButton = () => {
 
   return (
     <div>
-      <ButtonOutline onClick={onClick}>Previous Step</ButtonOutline>
+      <ButtonOutline onClick={onClick}>{t('previous_step')}</ButtonOutline>
     </div>
   );
 };

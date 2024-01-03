@@ -287,8 +287,8 @@ test.describe('SCIM /api/scim/v2.0/:directoryId/Groups', () => {
     const [directory] = await getDirectory(request, { tenant, product });
 
     // Create some users
-    const firstUser = await createUser(request, directory, users[0]);
-    const secondUser = await createUser(request, directory, users[1]);
+    const firstUser = await createUser(request, directory, users[1]);
+    const secondUser = await createUser(request, directory, users[2]);
 
     const createdGroup = await createGroup(request, directory, {
       ...groups[0],

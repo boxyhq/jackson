@@ -124,6 +124,12 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
+                <span className='label-text'>{t('entity_id')}</span>
+              </label>
+              <input type='url' className='input-bordered input' defaultValue={app.entityId} disabled />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
                 <span className='label-text'>{t('name')}</span>
               </label>
               <input
@@ -148,24 +154,8 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 value={app.acsUrl}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
-                <span className='label-text'>{t('entity_id')}</span>
-              </label>
-              <input
-                type='url'
-                id='entityId'
-                className='input-bordered input'
-                required
-                onChange={onChange}
-                value={app.entityId}
-              />
-            </div>
             <div className='pt-4'>
-              <p className='text-base leading-6 text-gray-500'>
-                You can customize the look and feel Identity Provider selection page by setting following
-                options:
-              </p>
+              <p className='text-base leading-6 text-gray-500'>{t('customize_branding')}:</p>
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>

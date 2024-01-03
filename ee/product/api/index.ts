@@ -5,8 +5,8 @@ import jackson from '@lib/jackson';
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     switch (req.method) {
-      case 'POST':
-        await handlePOST(req, res);
+      case 'PATCH':
+        await handlePATCH(req, res);
         break;
       default:
         res.setHeader('Allow', 'POST');
@@ -19,7 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Update product configuration
-const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { productController } = await jackson();
 
   await productController.upsert(req.body);

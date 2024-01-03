@@ -505,7 +505,8 @@ export type OIDCErrorCodes =
   | 'request_uri_not_supported'
   | 'registration_not_supported';
 
-export interface ISPSAMLConfig {
+export interface ISPSSOConfig {
+  oidcRedirectURI: string;
   get(): Promise<{
     acsUrl: string;
     entityId: string;
@@ -577,9 +578,13 @@ export type GetByProductParams = {
 
 export type SortOrder = 'ASC' | 'DESC';
 
-export type Product = {
+export interface ProductConfig {
   id: string;
-  name: string;
-  teamId: string;
-  teamName: string;
-};
+  name: string | null;
+  teamId: string | null;
+  teamName: string | null;
+  logoUrl: string | null;
+  primaryColor: string | null;
+  faviconUrl: string | null;
+  companyName: string | null;
+}

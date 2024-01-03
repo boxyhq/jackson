@@ -58,7 +58,7 @@ const SAMLTraceInspector: NextPage = () => {
           <h3 className='text-base font-semibold leading-6 text-gray-900'>{t('trace_details')}</h3>
           <p className='mt-1 flex max-w-2xl gap-6 text-sm text-gray-500'>
             <span className='whitespace-nowrap'>
-              <span className='font-medium text-gray-500'>TraceID:</span>
+              <span className='font-medium text-gray-500'>{t('trace_id')}</span>
               <span className='ml-2 font-bold text-gray-700'> {traceId}</span>
             </span>
             <span className='whitespace-nowrap'>
