@@ -31,6 +31,10 @@ const terminus = {
   adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
 };
 
+export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
+  ? Number(process.env.SETUP_LINK_EXPIRY_DAYS)
+  : 3;
+
 const db: DatabaseOption = {
   engine: process.env.DB_ENGINE ? <DatabaseEngine>process.env.DB_ENGINE : undefined,
   url: process.env.DB_URL || process.env.DATABASE_URL,
@@ -93,6 +97,7 @@ const jacksonOptions: JacksonOption = {
       },
     },
   },
+  setupLinkExpiryDays,
 };
 
 const adminPortalSSODefaults = {
@@ -110,9 +115,7 @@ export { jacksonOptions };
 
 export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';
 
-/**
- * Indicates if the Jackson instance is hosted (i.e. not self-hosted)
- */
+/** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */
 export const boxyhqHosted = process.env.BOXYHQ_HOSTED === '1';
 
 /** List of group that have audit logging enabled. Not applicable to self-hosted instances. */

@@ -449,6 +449,9 @@ export interface JacksonOption {
       };
     };
   };
+
+  /**  The number of days a setup link is valid for. Defaults to 3 days. */
+  setupLinkExpiryDays?: number;
 }
 
 export interface SLORequestParams {
@@ -534,6 +537,7 @@ export type SetupLinkCreatePayload = {
   redirectUrl?: string;
   service: SetupLinkService;
   regenerate?: boolean;
+  expiryDays?: number;
 };
 
 export type SetupLink = {

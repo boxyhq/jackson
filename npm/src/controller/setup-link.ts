@@ -34,6 +34,11 @@ const throwIfInvalidService = (service: string) => {
   }
 };
 
+const calculateExpiryTimestamp = (expiryDays: number): number => {
+  const currentTimestamp = Date.now();
+  return currentTimestamp + expiryDays * 24 * 60 * 60 * 1000;
+};
+
 /**
  * @swagger
  * definitions:
@@ -146,7 +151,17 @@ export class SetupLinkController {
    *          $ref:  '#/definitions/SetupLink'
    */
   async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
-    const { tenant, product, service, name, description, defaultRedirectUrl, regenerate, redirectUrl } = body;
+    const {
+      tenant,
+      product,
+      service,
+      name,
+      description,
+      defaultRedirectUrl,
+      regenerate,
+      redirectUrl,
+      expiryDays,
+    } = body;
 
     validateTenantAndProduct(tenant, product);
 
@@ -176,6 +191,8 @@ export class SetupLinkController {
       await this.setupLinkStore.delete(existing[0].setupID);
     }
 
+    const expiryInDays = expiryDays || this.opts.setupLinkExpiryDays || 3;
+
     const setupLink = {
       setupID,
       tenant,
@@ -185,7 +202,7 @@ export class SetupLinkController {
       description,
       redirectUrl,
       defaultRedirectUrl,
-      validTill: +new Date(new Date().setDate(new Date().getDate() + 3)),
+      validTill: calculateExpiryTimestamp(expiryInDays),
       url: `${this.opts.externalUrl}/setup/${token}`,
     };
 
