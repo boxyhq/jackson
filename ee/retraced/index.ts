@@ -68,9 +68,9 @@ const adminPortalGroup = {
 let client: Retraced.Client | null = null;
 
 // Check if audit log is enabled for a given group
-const auditLogEnabledFor = (groupId: string) => {
-  return auditLogEnabledGroup.includes(groupId);
-};
+// const auditLogEnabledFor = (groupId: string) => {
+//   return auditLogEnabledGroup.includes(groupId);
+// };
 
 // Create a Retraced client
 const getClient = async () => {
@@ -150,10 +150,15 @@ const reportEvent = async (params: ReportEventParams) => {
       }
     }
 
-    // Skip reporting if audit log is not enabled for the team
-    if (retracedEvent.group?.id && !auditLogEnabledFor(retracedEvent.group?.id)) {
+    if (!retracedEvent.group?.id) {
       return;
     }
+
+    if (auditLogEnabledGroup.length && !auditLogEnabledGroup.includes(retracedEvent.group?.id)) {
+      return;
+    }
+
+    console.log(retracedEvent);
 
     await retracedClient.reportEvent(retracedEvent);
   } catch (error: any) {
