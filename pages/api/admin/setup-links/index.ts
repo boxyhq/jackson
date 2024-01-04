@@ -31,8 +31,10 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const setupLink = await setupLinkController.create(req.body);
 
+  const { service } = req.body as { service: SetupLinkService };
+
   retraced.reportAdminPortalEvent({
-    action: `${service as SetupLinkService}.setuplink.create`,
+    action: `${service}.setuplink.create`,
     crud: 'c',
     req,
     target: {
