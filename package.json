@@ -61,7 +61,7 @@
     "@retracedhq/logs-viewer": "2.7.0",
     "@retracedhq/retraced": "0.7.5",
     "@tailwindcss/typography": "0.5.10",
-    "axios": "1.6.3",
+    "axios": "1.6.4",
     "blockly": "10.3.0",
     "chroma-js": "2.4.2",
     "classnames": "2.5.1",
