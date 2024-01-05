@@ -80,10 +80,6 @@ Directory sync helps organizations automate the provisioning and de-provisioning
 
 For complete documentation, visit [boxyhq.com/docs/directory-sync/overview](https://boxyhq.com/docs/directory-sync/overview)
 
-## Source code visualizer
-
-[CodeSee codebase visualizer](https://app.codesee.io/maps/public/53e91640-23b5-11ec-a724-79d7dd589517)
-
 ## Observability
 
 We support first-class observability on the back of OpenTelemetry, refer [here](https://boxyhq.com/docs/jackson/observability) for more details.
