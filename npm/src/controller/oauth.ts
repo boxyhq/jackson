@@ -3,11 +3,10 @@ import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { errors, generators } from 'openid-client';
+import { CallbackParamsType, errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
-  OIDCAuthzResponsePayload,
   IOAuthController,
   JacksonOption,
   OAuthReq,
@@ -701,28 +700,6 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Redirect URL is not allowed.', 403);
     }
     const redirect_uri = (session && session.redirect_uri) || oidcConnection.defaultRedirectUrl;
-
-    if (error) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error,
-          error_description: error_description ?? 'Authorization failure at OIDC Provider',
-          redirect_uri,
-          state: session.state,
-        }),
-      };
-    }
-
-    if (!opCode) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'server_error',
-          error_description: 'Authorization code could not be retrieved from OIDC Provider',
-          redirect_uri,
-          state: session.state,
-        }),
-      };
-    }
 
     // Reconstruct the oidcClient
     const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
