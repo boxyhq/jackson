@@ -33,7 +33,7 @@
 
 ## 🚀 Getting Started with SAML Jackson
 
-Please star ⭐ the repo if you want us to continue developing and improving SAML Jackson! 😀
+Please star ⭐ the repo to support us! 😀
 
 Streamline your web application's authentication with Jackson, an SSO service supporting SAML and OpenID Connect protocols. Beyond enterprise-grade Single Sign-On, it also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.
 
@@ -79,10 +79,6 @@ SAML Jackson also supports Directory Sync based on the SCIM 2.0 protocol.
 Directory sync helps organizations automate the provisioning and de-provisioning of their users. As a result, it streamlines the user lifecycle management process by saving valuable organizational hours, creating a single truth source of the user identity data, and facilitating them to keep the data secure.
 
 For complete documentation, visit [boxyhq.com/docs/directory-sync/overview](https://boxyhq.com/docs/directory-sync/overview)
-
-## Source code visualizer
-
-[CodeSee codebase visualizer](https://app.codesee.io/maps/public/53e91640-23b5-11ec-a724-79d7dd589517)
 
 ## Observability
 

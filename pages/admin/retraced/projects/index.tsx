@@ -32,7 +32,7 @@ const ProjectList: NextPage = () => {
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Projects</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('projects')}</h2>
         <LinkPrimary Icon={PlusIcon} href={'/admin/retraced/projects/new'}>
           {t('new_project')}
         </LinkPrimary>
@@ -46,16 +46,16 @@ const ProjectList: NextPage = () => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3'>
-                    Name
+                    {t('name')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
-                    Id
+                    {t('id')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
-                    Created At
+                    {t('created_at')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
-                    Actions
+                    {t('actions')}
                   </th>
                 </tr>
               </thead>

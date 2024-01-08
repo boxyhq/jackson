@@ -39,6 +39,26 @@ const users = [
     groups: [],
     active: true,
   },
+  {
+    schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+    userName: 'david@example.com',
+    name: {
+      givenName: 'David',
+      familyName: 'Phillips',
+    },
+    emails: [
+      {
+        primary: true,
+        value: 'david@example.com',
+        type: 'work',
+      },
+    ],
+    displayName: 'David Phillips',
+    locale: 'en-US',
+    externalId: '00u1b1hpjh91GaknX547',
+    groups: [],
+    active: true,
+  },
 ];
 
 export default users;

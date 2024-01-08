@@ -10,6 +10,7 @@ import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'nex
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 import jackson from '@lib/jackson';
 import { jacksonOptions } from '@lib/env';
@@ -24,10 +25,12 @@ import SelectIdentityProviders from '@components/setup-link-instructions/SelectI
 type NewConnectionProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const AdvancedSPConfigLink = () => {
+  const { t } = useTranslation('common');
+
   return (
     <div className='py-2'>
       <Link href='/.well-known/saml-configuration' target='_blank' className='underline-offset-4'>
-        <span className='text-xs'>Advanced Service Provider (SP) SAML Configuration</span>
+        <span className='text-xs'>{t('advanced_sp_saml_configuration')}</span>
       </Link>
     </div>
   );
@@ -72,6 +75,8 @@ const NewConnection = ({
   publicCertUrl,
   oidcCallbackUrl,
 }: NewConnectionProps) => {
+  const { t } = useTranslation('common');
+
   const linkSelectIdp = { pathname: '/setup/[token]/sso-connection/new', query: { token: setupLinkToken } };
 
   const scope = {
@@ -108,9 +113,9 @@ const NewConnection = ({
     }
 
     progress = (100 / selectedIdP.stepCount) * parseInt(step);
-    heading = `Configure ${selectedIdP?.name}`;
+    heading = t('configure_identity_provider', { provider: selectedIdP.name });
   } else {
-    heading = 'Select Identity Provider';
+    heading = t('select_identity_provider');
   }
 
   return (
@@ -121,7 +126,7 @@ const NewConnection = ({
           {source && (
             <Link className='btn btn-xs h-0' href={linkSelectIdp}>
               <ArrowsRightLeftIcon className='w-5 h-5' />
-              Change Identity Provider
+              {t('change_identity_provider')}
             </Link>
           )}
         </div>

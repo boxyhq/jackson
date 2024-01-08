@@ -23,13 +23,10 @@ export const SetupLinkInfo = ({ setupLink, visible, onClose }: SetupLinkInfoProp
       title={`Setup link info: tenant '${setupLink.tenant}', product '${setupLink.product}'`}>
       <div className='mt-2 flex flex-col gap-3'>
         <div>
-          <InputWithCopyButton
-            text={setupLink.url}
-            label='Share this link with your customer to setup their service'
-          />
+          <InputWithCopyButton text={setupLink.url} label={t('share_setup_link')} />
         </div>
         <p className='text-sm'>
-          This link is valid till{' '}
+          {t('setup_link_valid_till')}{' '}
           <span className={new Date(setupLink.validTill) < new Date() ? 'text-red-400' : ''}>
             {new Date(setupLink.validTill).toString()}
           </span>

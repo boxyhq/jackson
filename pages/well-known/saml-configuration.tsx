@@ -1,7 +1,7 @@
 import type { NextPage, InferGetStaticPropsType } from 'next';
 import Link from 'next/link';
 import React from 'react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation, Trans } from 'next-i18next';
 import jackson from '@lib/jackson';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -19,15 +19,21 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = (
             <h2 className='font-bold text-gray-700 md:text-xl'>{t('sp_saml_config_title')}</h2>
             <p className='text-sm leading-6 text-gray-800'>{t('sp_saml_config_description')}</p>
             <p className='text-sm leading-6 text-gray-600'>
-              Refer to our&nbsp;
-              <a
-                href='https://boxyhq.com/docs/jackson/sso-providers'
-                target='_blank'
-                rel='noreferrer'
-                className='underline underline-offset-4'>
-                guides
-              </a>
-              &nbsp;for provider specific instructions.
+              <Trans
+                i18nKey='refer_to_provider_instructions'
+                t={t}
+                components={{
+                  guideLink: (
+                    <a
+                      href='https://boxyhq.com/docs/jackson/sso-providers'
+                      target='_blank'
+                      rel='noreferrer'
+                      className='underline underline-offset-4'>
+                      {t('guides')}
+                    </a>
+                  ),
+                }}
+              />
             </p>
           </div>
           <div className='mt-6 flex flex-col gap-6'>
@@ -67,11 +73,20 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = (
                   {t('assertion_encryption')}
                 </label>
                 <p className='text-sm'>
-                  If you want to encrypt the assertion, you can&nbsp;
-                  <Link href='/.well-known/saml.cer' className='underline underline-offset-4' target='_blank'>
-                    download our public certificate.
-                  </Link>
-                  &nbsp;Otherwise select the Unencrypted option.
+                  <Trans
+                    i18nKey='sp_download_our_public_cert'
+                    t={t}
+                    components={{
+                      downloadLink: (
+                        <Link
+                          href='/.well-known/saml.cer'
+                          className='underline underline-offset-4'
+                          target='_blank'>
+                          {t('download')}
+                        </Link>
+                      ),
+                    }}
+                  />
                 </p>
               </div>
             </div>

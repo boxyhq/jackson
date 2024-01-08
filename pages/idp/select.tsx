@@ -2,15 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, ProductConfig, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import type { InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
-import { hexToHsl, darkenHslColor } from '@lib/color';
+import { hexToOklch } from '@lib/color';
 import Image from 'next/image';
 import { PoweredBy } from '@components/PoweredBy';
-import { getPortalBranding } from '@lib/settings';
+import { getPortalBranding, getProductBranding } from '@ee/branding/utils';
+import { boxyhqHosted } from '@lib/env';
+
+interface Connection {
+  name: string;
+  product: string;
+  clientID: string;
+}
 
 export default function ChooseIdPConnection({
   connections,
@@ -20,7 +27,7 @@ export default function ChooseIdPConnection({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { t } = useTranslation('common');
 
-  const primaryColor = hexToHsl(branding.primaryColor);
+  const primaryColor = hexToOklch(branding.primaryColor);
   const title = authFlow === 'sp-initiated' ? t('select_an_idp') : t('select_an_app');
 
   const selectors = {
@@ -36,9 +43,7 @@ export default function ChooseIdPConnection({
           {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
         </Head>
 
-        {primaryColor && (
-          <style>{`:root { --p: ${primaryColor}; --pf: ${darkenHslColor(primaryColor, 30)}; }`}</style>
-        )}
+        {primaryColor && <style>{`:root { --p: ${primaryColor}; }`}</style>}
 
         {branding?.logoUrl && (
           <div className='flex justify-center'>
@@ -49,7 +54,7 @@ export default function ChooseIdPConnection({
         {authFlow in selectors ? (
           selectors[authFlow]
         ) : (
-          <p className='text-center text-sm text-slate-600'>Invalid request. Please try again.</p>
+          <p className='text-center text-sm text-slate-600'>{t('invalid_request_try_again')}</p>
         )}
       </div>
       <div className='my-4'>
@@ -59,7 +64,7 @@ export default function ChooseIdPConnection({
   );
 }
 
-const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORecord)[] }) => {
+const IdpSelector = ({ connections }: { connections: Connection[] }) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
@@ -73,15 +78,6 @@ const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORec
       <h3 className='text-center text-xl font-bold'>{t('select_an_idp')}</h3>
       <ul className='flex flex-col space-y-5'>
         {connections.map((connection) => {
-          const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
-          const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
-
-          const name =
-            connection.name ||
-            (idpMetadata
-              ? idpMetadata.friendlyProviderName || idpMetadata.provider
-              : `${oidcProvider?.provider}`);
-
           return (
             <li key={connection.clientID} className='rounded bg-gray-100'>
               <button
@@ -93,20 +89,17 @@ const IdpSelector = ({ connections }: { connections: (OIDCSSORecord | SAMLSSORec
                 <div className='flex items-center gap-2 px-3 py-3'>
                   <div className='placeholder avatar'>
                     <div className='w-8 rounded-full bg-primary text-white'>
-                      <span className='text-lg font-bold'>{name.charAt(0).toUpperCase()}</span>
+                      <span className='text-lg font-bold'>{connection.name.charAt(0).toUpperCase()}</span>
                     </div>
                   </div>
-                  {name}
+                  {connection.name}
                 </div>
               </button>
             </li>
           );
         })}
       </ul>
-      <p className='text-center text-sm text-slate-600'>
-        Choose an Identity Provider to continue. If you don&apos;t see your Identity Provider, please contact
-        your administrator.
-      </p>
+      <p className='text-center text-sm text-slate-600'>{t('choose_an_identity_provider_to_continue')}</p>
     </>
   );
 };
@@ -115,7 +108,7 @@ const AppSelector = ({
   connections,
   SAMLResponse,
 }: {
-  connections: (OIDCSSORecord | SAMLSSORecord)[];
+  connections: Connection[];
   SAMLResponse: string | null;
 }) => {
   const { t } = useTranslation('common');
@@ -148,7 +141,7 @@ const AppSelector = ({
   };
 
   if (!SAMLResponse) {
-    return <p className='text-center text-sm text-slate-600'>No SAMLResponse found. Please try again.</p>;
+    return <p className='text-center text-sm text-slate-600'>{t('no_saml_response_try_again')}</p>;
   }
 
   return (
@@ -176,15 +169,14 @@ const AppSelector = ({
           })}
         </ul>
       </form>
-      <p className='text-center text-sm text-slate-600'>
-        Choose an app to continue. If you don&apos;t see your app, please contact your administrator.
-      </p>
+      <p className='text-center text-sm text-slate-600'>{t('choose_an_app_to_continue')}</p>
     </>
   );
 };
 
 export const getServerSideProps = async ({ query, locale, req }) => {
-  const { connectionAPIController, samlFederatedController, checkLicense } = await jackson();
+  const { connectionAPIController, samlFederatedController, checkLicense, productController } =
+    await jackson();
 
   const paramsToRelay = { ...query } as { [key: string]: string };
 
@@ -235,7 +227,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   }
 
   // Get the branding to use for the IdP selector screen
-  let branding = await getPortalBranding();
+  let branding = boxyhqHosted && product ? await getProductBranding(product) : await getPortalBranding();
 
   // For SAML federated requests, use the branding from the SAML federated app
   if (samlFederationApp && (await checkLicense())) {
@@ -246,6 +238,21 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       companyName: samlFederationApp?.name || branding.companyName,
     };
   }
+
+  let connectionsTransformed: Connection[] = connections.map((connection) => {
+    const idpMetadata = 'idpMetadata' in connection ? connection.idpMetadata : undefined;
+    const oidcProvider = 'oidcProvider' in connection ? connection.oidcProvider : undefined;
+
+    const name =
+      connection.name ||
+      (idpMetadata ? idpMetadata.friendlyProviderName || idpMetadata.provider : `${oidcProvider?.provider}`);
+
+    return {
+      name,
+      product: connection.product,
+      clientID: connection.clientID,
+    };
+  });
 
   // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
   if (req.method == 'POST') {
@@ -261,12 +268,30 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       };
     }
 
+    if (boxyhqHosted) {
+      // Fetch products to display the product name instead of the product ID
+      const products = (await Promise.allSettled(
+        connectionsTransformed.map((connection) => productController.get(connection.product))
+      )) as PromiseFulfilledResult<ProductConfig>[];
+
+      connectionsTransformed = connectionsTransformed.map((connection, index) => {
+        if (products[index].status === 'fulfilled') {
+          return {
+            ...connection,
+            product: products[index].value.name || connection.product,
+          };
+        }
+
+        return connection;
+      });
+    }
+
     return {
       props: {
         ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
         authFlow,
         SAMLResponse,
-        connections,
+        connections: connectionsTransformed,
         branding,
       },
     };
@@ -277,7 +302,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
       authFlow,
       SAMLResponse: null,
-      connections,
+      connections: connectionsTransformed,
       branding,
     },
   };

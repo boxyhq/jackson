@@ -18,7 +18,6 @@ const unAuthenticatedApiRoutes = [
   '/api/well-known/**',
   '/api/setup/**',
   '/api/branding',
-  '/api/scim/cron/**',
 ];
 
 export async function middleware(req: NextRequest) {
@@ -44,7 +43,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Validate API routes `/api/v1/**`
-  if (micromatch.isMatch(pathname, '/api/v1/**')) {
+  if (micromatch.isMatch(pathname, ['/api/v1/**', '/api/internals/**'])) {
     if (!validateApiKey(extractAuthToken(req))) {
       return sendUnAuthorizedResponse({ message: 'Unauthorized' });
     }
