@@ -715,6 +715,7 @@ export class OAuthController implements IOAuthController {
       const tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
         code_verifier: session.oidcCodeVerifier,
         nonce: session.oidcNonce,
+        state: callbackParams.state,
       });
       profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
