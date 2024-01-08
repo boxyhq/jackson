@@ -1,6 +1,5 @@
-import { generators } from 'openid-client';
+import { generators, CallbackParamsType } from 'openid-client';
 import {
-  OIDCAuthzResponsePayload,
   OAuthReqBody,
   OAuthReqBodyWithAccessType,
   OAuthReqBodyWithClientId,
@@ -121,7 +120,7 @@ export const oidc_response = {
 };
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export const oidc_response_with_error: OIDCAuthzResponsePayload = {
+export const oidc_response_with_error: CallbackParamsType = {
   error: 'access_denied',
   error_description: 'The user denied the request',
 };
