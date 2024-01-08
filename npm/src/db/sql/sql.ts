@@ -333,8 +333,8 @@ class Sql implements DatabaseDriver {
     }
   }
 
-  async close() {
-    return await this.dataSource.destroy();
+  async close(): Promise<void> {
+    await this.dataSource.destroy();
   }
 }
 

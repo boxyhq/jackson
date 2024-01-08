@@ -115,7 +115,7 @@ class DB implements DatabaseDriver {
   }
 
   async close(): Promise<void> {
-    return await this.db.close();
+    await this.db.close();
   }
 
   store(namespace: string, ttl = 0): Storable {

@@ -215,7 +215,7 @@ class Redis implements DatabaseDriver {
   }
 
   async close(): Promise<void> {
-    return await this.client.quit();
+    await this.client.quit();
   }
 }
 
