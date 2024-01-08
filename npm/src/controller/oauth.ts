@@ -18,6 +18,7 @@ import type {
   SAMLSSORecord,
   OIDCSSORecord,
   SAMLTracerInstance,
+  OAuthErrorHandlerParams,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -720,10 +721,14 @@ export class OAuthController implements IOAuthController {
       profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
       if (err) {
+        const { error, error_description } = err as Pick<
+          OAuthErrorHandlerParams,
+          'error' | 'error_description'
+        >;
         return {
           redirect_url: OAuthErrorResponse({
-            error: 'server_error',
-            error_description: (err as errors.OPError)?.error || getErrorMessage(err),
+            error: error || 'server_error',
+            error_description: error_description || getErrorMessage(err),
             redirect_uri,
             state: session.state,
           }),
