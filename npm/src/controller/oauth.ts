@@ -681,7 +681,7 @@ export class OAuthController implements IOAuthController {
     }
   }
 
-  public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
+  public async oidcAuthzResponse(body: CallbackParamsType): Promise<{ redirect_url?: string }> {
     const { code: opCode, state, error, error_description } = body;
 
     let RelayState = state || '';
