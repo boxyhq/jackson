@@ -682,9 +682,9 @@ export class OAuthController implements IOAuthController {
   }
 
   public async oidcAuthzResponse(body: CallbackParamsType): Promise<{ redirect_url?: string }> {
-    const { code: opCode, state, error, error_description } = body;
+    const callbackParams = body;
 
-    let RelayState = state || '';
+    let RelayState = callbackParams.state || '';
     if (!RelayState) {
       throw new JacksonError('State from original request is missing.', 403);
     }
@@ -735,13 +735,10 @@ export class OAuthController implements IOAuthController {
         redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
         response_types: ['code'],
       });
-      const tokenSet = await oidcClient.callback(
-        this.opts.externalUrl + this.opts.oidcPath,
-        {
-          code: opCode,
-        },
-        { code_verifier: session.oidcCodeVerifier, nonce: session.oidcNonce }
-      );
+      const tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
+        code_verifier: session.oidcCodeVerifier,
+        nonce: session.oidcNonce,
+      });
       profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
       if (err) {
