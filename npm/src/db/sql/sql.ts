@@ -232,12 +232,15 @@ class Sql implements DatabaseDriver {
     return { data: ret };
   }
 
-  async getCount(namespace: string): Promise<number> {
-    const count = await this.storeRepository.count({
-      where: {
-        namespace,
-      },
-    });
+  async getCount(namespace: string, idx?: Index): Promise<number> {
+    const count =
+      idx !== undefined
+        ? await this.indexRepository.count({ where: { key: dbutils.keyForIndex(namespace, idx) } })
+        : await this.storeRepository.count({
+            where: {
+              namespace,
+            },
+          });
     return count;
   }
 
