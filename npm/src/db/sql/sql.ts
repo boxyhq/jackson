@@ -344,6 +344,10 @@ class Sql implements DatabaseDriver {
       await queryRunner.release();
     }
   }
+
+  async close(): Promise<void> {
+    await this.dataSource.destroy();
+  }
 }
 
 export default {

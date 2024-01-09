@@ -213,6 +213,10 @@ class Redis implements DatabaseDriver {
 
     await tx.exec();
   }
+
+  async close(): Promise<void> {
+    await this.client.quit();
+  }
 }
 
 export default {
