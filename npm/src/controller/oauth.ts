@@ -3,11 +3,10 @@ import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { errors, generators } from 'openid-client';
+import { CallbackParamsType, errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
-  OIDCAuthzResponsePayload,
   IOAuthController,
   JacksonOption,
   OAuthReq,
@@ -19,6 +18,7 @@ import type {
   SAMLSSORecord,
   OIDCSSORecord,
   SAMLTracerInstance,
+  OAuthErrorHandlerParams,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -681,10 +681,10 @@ export class OAuthController implements IOAuthController {
     }
   }
 
-  public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
-    const { code: opCode, state, error, error_description } = body;
+  public async oidcAuthzResponse(body: CallbackParamsType): Promise<{ redirect_url?: string }> {
+    const callbackParams = body;
 
-    let RelayState = state || '';
+    let RelayState = callbackParams.state || '';
     if (!RelayState) {
       throw new JacksonError('State from original request is missing.', 403);
     }
@@ -702,28 +702,6 @@ export class OAuthController implements IOAuthController {
     }
     const redirect_uri = (session && session.redirect_uri) || oidcConnection.defaultRedirectUrl;
 
-    if (error) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error,
-          error_description: error_description ?? 'Authorization failure at OIDC Provider',
-          redirect_uri,
-          state: session.state,
-        }),
-      };
-    }
-
-    if (!opCode) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'server_error',
-          error_description: 'Authorization code could not be retrieved from OIDC Provider',
-          redirect_uri,
-          state: session.state,
-        }),
-      };
-    }
-
     // Reconstruct the oidcClient
     const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
     let profile;
@@ -735,20 +713,22 @@ export class OAuthController implements IOAuthController {
         redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
         response_types: ['code'],
       });
-      const tokenSet = await oidcClient.callback(
-        this.opts.externalUrl + this.opts.oidcPath,
-        {
-          code: opCode,
-        },
-        { code_verifier: session.oidcCodeVerifier, nonce: session.oidcNonce }
-      );
+      const tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
+        code_verifier: session.oidcCodeVerifier,
+        nonce: session.oidcNonce,
+        state: callbackParams.state,
+      });
       profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
       if (err) {
+        const { error, error_description } = err as Pick<
+          OAuthErrorHandlerParams,
+          'error' | 'error_description'
+        >;
         return {
           redirect_url: OAuthErrorResponse({
-            error: 'server_error',
-            error_description: (err as errors.OPError)?.error || getErrorMessage(err),
+            error: error || 'server_error',
+            error_description: error_description || getErrorMessage(err),
             redirect_uri,
             state: session.state,
           }),
