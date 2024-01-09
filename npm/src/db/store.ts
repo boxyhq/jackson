@@ -38,6 +38,7 @@ class Store implements Storable {
   }
 
   async getCount(idx?: Index) {
+    idx && (idx.value = dbutils.keyDigest(idx.value));
     return await this.db.getCount(this.namespace, idx);
   }
 
