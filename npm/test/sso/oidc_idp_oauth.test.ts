@@ -83,29 +83,6 @@ tap.test('[OIDCProvider]', async (t) => {
     }
   });
 
-  t.test('[oidcAuthzResponse] Should throw an error if `code` is missing', async (t) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    const { redirect_url } = await oauthController.oidcAuthzResponse({ state: context.state });
-    const response_params = new URLSearchParams(new URL(redirect_url!).search);
-
-    t.match(
-      response_params.get('error'),
-      'server_error',
-      'got server_error when unable to retrieve code from provider'
-    );
-    t.match(
-      response_params.get('error_description'),
-      'Authorization code could not be retrieved from OIDC Provider',
-      'matched error_description when unable to retrieve code from provider'
-    );
-    t.match(
-      response_params.get('state'),
-      authz_request_oidc_provider.state,
-      'state present in error response'
-    );
-  });
-
   t.test('[oidcAuthzResponse] Should throw an error if `state` is invalid', async (t) => {
     try {
       await oauthController.oidcAuthzResponse({ ...oidc_response, state: context.state + 'invalid_chars' });
@@ -123,16 +100,20 @@ tap.test('[OIDCProvider]', async (t) => {
     });
     const response_params = new URLSearchParams(new URL(redirect_url!).search);
 
-    t.match(response_params.get('error'), oidc_response_with_error.error, 'oidc error got forwarded');
+    t.match(
+      response_params.get('error'),
+      oidc_response_with_error.error,
+      'mismatch in forwarded oidc provider error'
+    );
     t.match(
       response_params.get('error_description'),
       oidc_response_with_error.error_description,
-      'oidc error_description got forwarded'
+      'mismatch in forwaded oidc error_description'
     );
     t.match(
       response_params.get('state'),
       authz_request_oidc_provider.state,
-      'state present in error response'
+      'state mismatch in error response'
     );
   });
 

@@ -1,5 +1,5 @@
 import type { JWK } from 'jose';
-import type { IssuerMetadata } from 'openid-client';
+import type { CallbackParamsType, IssuerMetadata } from 'openid-client';
 
 export * from './ee/federated-saml/types';
 export * from './saml-tracer/types';
@@ -176,7 +176,7 @@ export interface IOAuthController {
   samlResponse(
     body: SAMLResponsePayload
   ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }>;
-  oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
+  oidcAuthzResponse(body: CallbackParamsType): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
@@ -263,22 +263,6 @@ export interface SAMLResponsePayload {
   RelayState: string;
   idp_hint?: string;
 }
-
-interface OIDCAuthzResponseSuccess {
-  code: string;
-  state: string;
-  error?: never;
-  error_description?: never;
-}
-
-interface OIDCAuthzResponseError {
-  code?: never;
-  state: string;
-  error: OAuthErrorHandlerParams['error'] | OIDCErrorCodes;
-  error_description?: string;
-}
-
-export type OIDCAuthzResponsePayload = OIDCAuthzResponseSuccess | OIDCAuthzResponseError;
 
 interface OAuthTokenReqBody {
   code: string;
