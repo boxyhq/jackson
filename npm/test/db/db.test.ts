@@ -342,6 +342,33 @@ tap.test('dbs', async () => {
           : [ret3.data[0], ret4.data[0]].sort((a, b) => a.id.localeCompare(b.id)),
         'getByIndex pagination for index "city" failed'
       );
+
+      // sort order tests
+      if (!dbEngine.startsWith('dynamodb') && !dbEngine.startsWith('redis')) {
+        const { data: sortedRecordsAsc } = await connectionStore.getByIndex(
+          {
+            name: 'city',
+            value: record1.city,
+          },
+          undefined,
+          undefined,
+          undefined,
+          'ASC'
+        );
+        t.match(sortedRecordsAsc, [record1, record2], 'records are sorted in ASC order');
+
+        const { data: sortedRecordsDesc } = await connectionStore.getByIndex(
+          {
+            name: 'city',
+            value: record2.city,
+          },
+          undefined,
+          undefined,
+          undefined,
+          'DESC'
+        );
+        t.match(sortedRecordsDesc, [record2, record1], 'records are sorted in DESC order');
+      }
     });
 
     tap.test('getCount(): ' + dbEngine, async (t) => {

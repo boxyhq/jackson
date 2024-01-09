@@ -10,7 +10,8 @@ import type {
   UserPatchOperation,
 } from '../../typings';
 import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
-import { sendEvent } from './events';
+import { sendEvent } from '../utils';
+import { isConnectionActive } from '../../controller/utils';
 
 interface DirectoryUsersParams {
   directories: IDirectoryConfig;
@@ -29,6 +30,13 @@ export class DirectoryUsers {
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
     const { id, first_name, last_name, email, active } = extractStandardUserAttributes(body);
+
+    // Check if the user already exists
+    const { data: users } = await this.users.search(email, directory.id);
+
+    if (users && users.length > 0) {
+      return this.respondWithError({ code: 409, message: 'User already exists' });
+    }
 
     const { data: user } = await this.users.create({
       directoryId: directory.id,
@@ -166,7 +174,10 @@ export class DirectoryUsers {
   private respondWithError(error: ApiError | null) {
     return {
       status: error ? error.code : 500,
-      data: null,
+      data: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+        detail: error ? error.message : 'Internal Server Error',
+      },
     };
   }
 
@@ -182,8 +193,22 @@ export class DirectoryUsers {
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);
 
-    if (error || !directory) {
+    if (error) {
       return this.respondWithError(error);
+    }
+
+    if (!directory) {
+      return {
+        status: 200,
+        data: {},
+      };
+    }
+
+    if (!isConnectionActive(directory)) {
+      return {
+        status: 200,
+        data: {},
+      };
     }
 
     // Validate the request
@@ -231,9 +256,6 @@ export class DirectoryUsers {
         });
     }
 
-    return {
-      status: 404,
-      data: {},
-    };
+    return this.respondWithError({ code: 404, message: 'Not found' });
   }
 }

@@ -4,8 +4,8 @@ import saml20 from '@boxyhq/saml20';
 import xmlbuilder from 'xmlbuilder';
 import { getDefaultCertificate } from '../saml/x509';
 
-// Service Provider SAML Configuration
-export class SPSAMLConfig {
+// Service Provider SSO Configuration
+export class SPSSOConfig {
   constructor(private opts: JacksonOption) {}
 
   private get acsUrl(): string {
@@ -26,6 +26,10 @@ export class SPSAMLConfig {
 
   private get signatureAlgorithm(): string {
     return 'RSA-SHA256';
+  }
+
+  public get oidcRedirectURI(): string {
+    return `${this.opts.externalUrl}${this.opts.oidcPath}`;
   }
 
   public async get(): Promise<{

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 
 import { CreateSAMLConnection as CreateSAML, CreateOIDCConnection as CreateOIDC } from '@boxyhq/react-ui/sso';
-
+import styles from 'styles/sdk-override.module.css';
 import { errorToast } from '@components/Toaster';
 
 interface CreateSSOConnectionProps {
@@ -24,10 +24,14 @@ const CreateSSOConnection = ({ setupLinkToken, idpType }: CreateSSOConnectionPro
   };
 
   const urls = {
-    save: `/api/setup/${setupLinkToken}/sso-connection`,
+    post: `/api/setup/${setupLinkToken}/sso-connection`,
   };
 
-  const _CSS = { input: 'input input-bordered', button: { ctoa: 'btn btn-primary' } };
+  const _CSS = {
+    input: `${styles['sdk-input']} input input-bordered`,
+    button: { ctoa: 'btn btn-primary' },
+    textarea: styles['sdk-input'],
+  };
 
   return idpType === 'saml' ? (
     <CreateSAML

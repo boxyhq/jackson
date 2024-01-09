@@ -258,8 +258,9 @@ export const createSAMLResponse = async ({
   );
 };
 
-type ValidateOption = {
-  thumbprint: string;
+export type ValidateOption = {
+  thumbprint?: string;
+  publicKey?: string;
   audience: string;
   privateKey: string;
   inResponseTo?: string;

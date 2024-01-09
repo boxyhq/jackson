@@ -6,6 +6,10 @@ export * from './saml-tracer/types';
 export * from './directory-sync/types';
 export * from './event/types';
 
+import db from './db/db';
+
+export type DB = Awaited<ReturnType<typeof db.new>>;
+
 interface SSOConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
@@ -65,6 +69,7 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
       redirectUrl?: string;
     };
     thumbprint?: string;
+    publicKey?: string;
     validTo?: string;
   };
   deactivated?: boolean;
@@ -74,7 +79,8 @@ export interface OIDCSSORecord extends SSOConnection {
   clientID: string; // set by Jackson
   clientSecret: string; // set by Jackson
   oidcProvider: {
-    provider?: string;
+    provider: string | 'Unknown';
+    friendlyProviderName: string | null;
     discoveryUrl?: string;
     metadata?: IssuerMetadata;
     clientId?: string;
@@ -340,7 +346,8 @@ export interface DatabaseDriver {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
-    pageToken?: string
+    pageToken?: string,
+    sortOrder?: SortOrder
   ): Promise<Records>;
   getCount?(namespace: string): Promise<number | undefined>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
@@ -356,8 +363,14 @@ export interface Storable {
   get(key: string): Promise<any>;
   put(key: string, val: any, ...indexes: Index[]): Promise<any>;
   delete(key: string): Promise<any>;
-  getByIndex(idx: Index, pageOffset?: number, pageLimit?: number, pageToken?: string): Promise<Records>;
-  getCount(): Promise<number>;
+  getByIndex(
+    idx: Index,
+    pageOffset?: number,
+    pageLimit?: number,
+    pageToken?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records>;
+  getCount(): Promise<number | undefined>;
   deleteMany(keys: string[]): Promise<void>;
 }
 
@@ -429,7 +442,8 @@ export interface JacksonOption {
   };
   webhook?: Webhook;
   dsync?: {
-    providers: {
+    webhookBatchSize?: number;
+    providers?: {
       google: {
         clientId: string;
         clientSecret: string;
@@ -437,6 +451,9 @@ export interface JacksonOption {
       };
     };
   };
+
+  /**  The number of days a setup link is valid for. Defaults to 3 days. */
+  setupLinkExpiryDays?: number;
 }
 
 export interface SLORequestParams {
@@ -493,7 +510,8 @@ export type OIDCErrorCodes =
   | 'request_uri_not_supported'
   | 'registration_not_supported';
 
-export interface ISPSAMLConfig {
+export interface ISPSSOConfig {
+  oidcRedirectURI: string;
   get(): Promise<{
     acsUrl: string;
     entityId: string;
@@ -521,6 +539,7 @@ export type SetupLinkCreatePayload = {
   redirectUrl?: string;
   service: SetupLinkService;
   regenerate?: boolean;
+  expiryDays?: number;
 };
 
 export type SetupLink = {
@@ -564,3 +583,14 @@ export type GetByProductParams = {
 };
 
 export type SortOrder = 'ASC' | 'DESC';
+
+export interface ProductConfig {
+  id: string;
+  name: string | null;
+  teamId: string | null;
+  teamName: string | null;
+  logoUrl: string | null;
+  primaryColor: string | null;
+  faviconUrl: string | null;
+  companyName: string | null;
+}

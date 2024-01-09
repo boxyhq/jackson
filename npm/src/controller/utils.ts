@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import * as jose from 'jose';
 import { Client, TokenSet } from 'openid-client';
+import saml from '@boxyhq/saml20';
 
 import * as dbutils from '../db/utils';
 import type {
@@ -41,6 +42,8 @@ export const storeNamespacePrefix = {
     groups: 'dsync:groups',
     members: 'dsync:members',
     providers: 'dsync:providers',
+    events: 'dsync:events',
+    lock: 'dsync:lock',
   },
   saml: {
     config: 'saml:config',
@@ -68,6 +71,9 @@ export const OAuthErrorResponse = ({
 
 // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
 export function getErrorMessage(error: unknown) {
+  if (error instanceof saml.WrapError) {
+    return error.message + ' ' + error.inner.message;
+  }
   if (error instanceof Error) {
     return error.message;
   }
@@ -327,6 +333,10 @@ export const transformConnections = (connections: Array<SAMLSSORecord | OIDCSSOR
 export const transformConnection = (connection: SAMLSSORecord | OIDCSSORecord) => {
   if ('idpMetadata' in connection) {
     connection.idpMetadata.friendlyProviderName = findFriendlyProviderName(connection.idpMetadata.provider);
+  }
+
+  if ('oidcProvider' in connection) {
+    connection.oidcProvider.friendlyProviderName = findFriendlyProviderName(connection.oidcProvider.provider);
   }
 
   if (!('deactivated' in connection)) {

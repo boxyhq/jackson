@@ -12,7 +12,8 @@ import type {
   GroupPatchOperation,
 } from '../../typings';
 import { parseGroupOperation } from './utils';
-import { sendEvent } from './events';
+import { sendEvent } from '../utils';
+import { isConnectionActive } from '../../controller/utils';
 
 interface DirectoryGroupsParams {
   directories: IDirectoryConfig;
@@ -34,6 +35,13 @@ export class DirectoryGroups {
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
     const { displayName, groupId } = body as { displayName: string; groupId?: string };
+
+    // Check if the group already exists
+    const { data: groups } = await this.groups.search(displayName, directory.id);
+
+    if (groups && groups.length > 0) {
+      return this.respondWithError({ code: 409, message: 'Group already exists' });
+    }
 
     const { data: group } = await this.groups.create({
       directoryId: directory.id,
@@ -219,7 +227,10 @@ export class DirectoryGroups {
   private respondWithError(error: ApiError | null) {
     return {
       status: error ? error.code : 500,
-      data: null,
+      data: {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+        detail: error ? error.message : 'Internal Server Error',
+      },
     };
   }
 
@@ -235,8 +246,22 @@ export class DirectoryGroups {
     // Get the directory
     const { data: directory, error } = await this.directories.get(directoryId);
 
-    if (error || !directory) {
+    if (error) {
       return this.respondWithError(error);
+    }
+
+    if (!directory) {
+      return {
+        status: 200,
+        data: {},
+      };
+    }
+
+    if (!isConnectionActive(directory)) {
+      return {
+        status: 200,
+        data: {},
+      };
     }
 
     // Validate the request
@@ -279,9 +304,6 @@ export class DirectoryGroups {
         });
     }
 
-    return {
-      status: 404,
-      data: {},
-    };
+    return this.respondWithError({ code: 404, message: 'Not found' });
   }
 }

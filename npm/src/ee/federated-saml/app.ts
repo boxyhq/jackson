@@ -146,6 +146,15 @@ export class App {
 
     const id = appID(tenant, product);
 
+    const foundApp = await this.store.get(id);
+
+    if (foundApp) {
+      throw new JacksonError(
+        'Cannot create another app for the same tenant and product. An app already exists.',
+        400
+      );
+    }
+
     const app: SAMLFederationApp = {
       id,
       name,
@@ -215,7 +224,7 @@ export class App {
         throw new JacksonError('SAML Federation app not found', 404);
       }
 
-      return app;
+      return app as SAMLFederationApp;
     }
 
     if ('tenant' in params && 'product' in params) {
@@ -225,7 +234,7 @@ export class App {
         throw new JacksonError('SAML Federation app not found', 404);
       }
 
-      return app;
+      return app as SAMLFederationApp;
     }
 
     throw new JacksonError('Provide either the `id` or `tenant` and `product` to get the app', 400);
@@ -327,11 +336,6 @@ export class App {
    *         in: formData
    *         required: false
    *         type: string
-   *       - name: entityId
-   *         description: Entity ID
-   *         in: formData
-   *         required: false
-   *         type: string
    *       - name: logoUrl
    *         description: Logo URL
    *         in: formData
@@ -393,10 +397,6 @@ export class App {
       toUpdate['acsUrl'] = params.acsUrl;
     }
 
-    if ('entityId' in params) {
-      toUpdate['entityId'] = params.entityId;
-    }
-
     if ('logoUrl' in params) {
       toUpdate['logoUrl'] = params.logoUrl || null;
     }
@@ -411,7 +411,7 @@ export class App {
 
     if (Object.keys(toUpdate).length === 0) {
       throw new JacksonError(
-        'Please provide at least one of the following parameters: acsUrl, entityId, name, logoUrl, faviconUrl, primaryColor',
+        'Please provide at least one of the following parameters: acsUrl, name, logoUrl, faviconUrl, primaryColor',
         400
       );
     }

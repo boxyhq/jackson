@@ -1,8 +1,8 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
-    "title": "SAML Jackson API",
-    "version": "1.14.0",
+    "title": "Enterprise SSO & Directory Sync",
+    "version": "1.15.4",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -31,6 +31,16 @@
   "security": [
     {
       "apiKey": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.eu.boxyhq.com",
+      "description": "Cloud"
+    },
+    {
+      "url": "http://localhost:5225",
+      "description": "Local"
     }
   ],
   "paths": {
@@ -1248,13 +1258,6 @@
           {
             "name": "acsUrl",
             "description": "ACS URL",
-            "in": "formData",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "entityId",
-            "description": "Entity ID",
             "in": "formData",
             "required": false,
             "type": "string"

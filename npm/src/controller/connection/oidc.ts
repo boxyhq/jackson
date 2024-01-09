@@ -61,7 +61,7 @@ const oidc = {
     record.oidcProvider = {
       clientId: oidcClientId,
       clientSecret: oidcClientSecret,
-    };
+    } as OIDCSSORecord['oidcProvider'];
 
     if (oidcDiscoveryUrl) {
       record.oidcProvider.discoveryUrl = oidcDiscoveryUrl;

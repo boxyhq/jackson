@@ -3,6 +3,7 @@ const { i18n } = require('./next-i18next.config');
 /** @type {import('next').NextConfig} */
 
 module.exports = {
+  experimental: { esmExternals: false, webpackBuildWorker: true },
   productionBrowserSourceMaps: true,
   reactStrictMode: true,
   i18n,
@@ -34,6 +35,10 @@ module.exports = {
       {
         source: '/.well-known/openid-configuration',
         destination: '/api/well-known/openid-configuration',
+      },
+      {
+        source: '/.well-known/oidc-configuration',
+        destination: '/well-known/oidc-configuration',
       },
       {
         source: '/.well-known/sp-metadata',
@@ -96,5 +101,26 @@ module.exports = {
         hostname: '*',
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*?)',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains;',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+        ],
+      },
+    ];
   },
 };

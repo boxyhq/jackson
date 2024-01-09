@@ -3,6 +3,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Loading from '@components/Loading';
 import useSetupLink from '@lib/ui/hooks/useSetupLink';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const SetupLinkIndexPage: NextPage = () => {
   const router = useRouter();
@@ -27,6 +28,16 @@ const SetupLinkIndexPage: NextPage = () => {
   }
 
   return null;
+};
+
+export const getServerSideProps = async (context) => {
+  const { locale } = context;
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default SetupLinkIndexPage;

@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:20.8.1-alpine3.18
+ARG NODEJS_IMAGE=node:20.10.0-alpine3.18
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json package-lock.json  ./
 COPY npm npm
 COPY migrate.sh prebuild.ts ./
-RUN npm run custom-install
+RUN npm install
 
 
 

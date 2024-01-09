@@ -28,7 +28,7 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   createOAuth2Client(directory: Directory) {
-    const googleProvider = this.opts.dsync?.providers.google;
+    const googleProvider = this.opts.dsync?.providers?.google;
 
     const authClient = new OAuth2Client(
       googleProvider?.clientId,

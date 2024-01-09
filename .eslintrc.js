@@ -9,18 +9,20 @@ module.exports = {
   },
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'i18next'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'prettier',
     'next/core-web-vitals',
+    'plugin:i18next/recommended',
   ],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
       rules: {
-        '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/no-explicit-any': 'off',
+        'import/no-anonymous-default-export': 'off',
       },
     },
     {

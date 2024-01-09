@@ -9,6 +9,7 @@ import ErrorMessage from '@components/Error';
 import { LinkBack } from '@components/LinkBack';
 import { Select } from 'react-daisyui';
 import { retracedOptions } from '@lib/env';
+import { useTranslation } from 'next-i18next';
 
 const LogsViewer = dynamic(() => import('@components/retraced/LogsViewer'), {
   ssr: false,
@@ -20,6 +21,7 @@ export interface Props {
 
 const Events: NextPage<Props> = ({ host }: Props) => {
   const router = useRouter();
+  const { t } = useTranslation('common');
 
   const [environment, setEnvironment] = useState('');
   const [group, setGroup] = useState('');
@@ -62,7 +64,7 @@ const Events: NextPage<Props> = ({ host }: Props) => {
       <div className='flex space-x-2'>
         <div className='form-control max-w-xs'>
           <label className='label pl-0'>
-            <span className='label-text'>Environment</span>
+            <span className='label-text'>{t('environment')}</span>
           </label>
           {project ? (
             <Select
@@ -81,7 +83,7 @@ const Events: NextPage<Props> = ({ host }: Props) => {
         </div>
         <div className='form-control max-w-xs'>
           <label className='label pl-0'>
-            <span className='label-text'>Group (Tenant)</span>
+            <span className='label-text'>{t('group_or_tenant')}</span>
           </label>
           {groups ? (
             <Select

@@ -5,6 +5,7 @@ import {
   PaginationParams,
   SetupLinkService,
   Index,
+  JacksonOption,
 } from '../typings';
 import * as dbutils from '../db/utils';
 import { IndexNames, validateTenantAndProduct, validateRedirectUrl, extractRedirectUrls } from './utils';
@@ -33,6 +34,11 @@ const throwIfInvalidService = (service: string) => {
   }
 };
 
+const calculateExpiryTimestamp = (expiryDays: number): number => {
+  const currentTimestamp = Date.now();
+  return currentTimestamp + expiryDays * 24 * 60 * 60 * 1000;
+};
+
 /**
  * @swagger
  * definitions:
@@ -57,9 +63,11 @@ const throwIfInvalidService = (service: string) => {
  */
 export class SetupLinkController {
   setupLinkStore: Storable;
+  opts: JacksonOption;
 
-  constructor({ setupLinkStore }) {
+  constructor({ setupLinkStore, opts }) {
     this.setupLinkStore = setupLinkStore;
+    this.opts = opts;
   }
 
   /**
@@ -143,7 +151,17 @@ export class SetupLinkController {
    *          $ref:  '#/definitions/SetupLink'
    */
   async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
-    const { tenant, product, service, name, description, defaultRedirectUrl, regenerate, redirectUrl } = body;
+    const {
+      tenant,
+      product,
+      service,
+      name,
+      description,
+      defaultRedirectUrl,
+      regenerate,
+      redirectUrl,
+      expiryDays,
+    } = body;
 
     validateTenantAndProduct(tenant, product);
 
@@ -173,6 +191,8 @@ export class SetupLinkController {
       await this.setupLinkStore.delete(existing[0].setupID);
     }
 
+    const expiryInDays = expiryDays || this.opts.setupLinkExpiryDays || 3;
+
     const setupLink = {
       setupID,
       tenant,
@@ -182,8 +202,8 @@ export class SetupLinkController {
       description,
       redirectUrl,
       defaultRedirectUrl,
-      validTill: +new Date(new Date().setDate(new Date().getDate() + 3)),
-      url: `${process.env.NEXTAUTH_URL}/setup/${token}`,
+      validTill: calculateExpiryTimestamp(expiryInDays),
+      url: `${this.opts.externalUrl}/setup/${token}`,
     };
 
     await this.setupLinkStore.put(

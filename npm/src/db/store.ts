@@ -29,11 +29,12 @@ class Store implements Storable {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
-    pageToken?: string
+    pageToken?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
     idx.value = dbutils.keyDigest(idx.value);
 
-    return await this.db.getByIndex(this.namespace, idx, pageOffset, pageLimit, pageToken);
+    return await this.db.getByIndex(this.namespace, idx, pageOffset, pageLimit, pageToken, sortOrder);
   }
 
   async getCount() {

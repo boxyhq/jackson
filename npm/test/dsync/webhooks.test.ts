@@ -63,6 +63,7 @@ tap.test('Webhook Events /', async (t) => {
   t.test('Webhook Events / ', async (t) => {
     t.afterEach(async () => {
       await directorySync.webhookLogs.deleteAll(directory.id);
+      await directorySync.users.deleteAll(directory.id);
     });
 
     t.test("Should be able to get the directory's webhook", async (t) => {
@@ -155,17 +156,23 @@ tap.test('Webhook Events /', async (t) => {
       t.ok(logs);
       t.equal(logs.length, 3);
 
-      t.match(logs[0].event, 'user.deleted');
-      t.match(logs[0].directory_id, directory.id);
-      t.hasStrict(logs[0].data.raw, deletedUser);
+      if (!Array.isArray(logs[0].payload)) {
+        t.match(logs[0].payload.event, 'user.deleted');
+        t.match(logs[0].payload.directory_id, directory.id);
+        t.hasStrict(logs[0].payload.data.raw, deletedUser);
+      }
 
-      t.match(logs[1].event, 'user.updated');
-      t.match(logs[1].directory_id, directory.id);
-      t.hasStrict(logs[1].data.raw, updatedUser);
+      if (!Array.isArray(logs[1].payload)) {
+        t.match(logs[1].payload.event, 'user.updated');
+        t.match(logs[1].payload.directory_id, directory.id);
+        t.hasStrict(logs[1].payload.data.raw, updatedUser);
+      }
 
-      t.match(logs[2].event, 'user.created');
-      t.match(logs[2].directory_id, directory.id);
-      t.hasStrict(logs[2].data.raw, createdUser);
+      if (!Array.isArray(logs[2].payload)) {
+        t.match(logs[2].payload.event, 'user.created');
+        t.match(logs[2].payload.directory_id, directory.id);
+        t.hasStrict(logs[2].payload.data.raw, createdUser);
+      }
 
       await directorySync.users.deleteAll(directory.id);
     });
@@ -201,100 +208,110 @@ tap.test('Webhook Events /', async (t) => {
       t.ok(logs);
       t.equal(logs.length, 3);
 
-      t.match(logs[0].event, 'group.deleted');
-      t.match(logs[0].directory_id, directory.id);
-      t.hasStrict(logs[0].data.raw, deletedGroup);
+      if (!Array.isArray(logs[0].payload)) {
+        t.match(logs[0].payload.event, 'group.deleted');
+        t.match(logs[0].payload.directory_id, directory.id);
+        t.hasStrict(logs[0].payload.data.raw, deletedGroup);
+      }
 
-      t.match(logs[1].event, 'group.updated');
-      t.match(logs[1].directory_id, directory.id);
-      t.hasStrict(logs[1].data.raw, updatedGroup);
+      if (!Array.isArray(logs[1].payload)) {
+        t.match(logs[1].payload.event, 'group.updated');
+        t.match(logs[1].payload.directory_id, directory.id);
+        t.hasStrict(logs[1].payload.data.raw, updatedGroup);
+      }
 
-      t.match(logs[2].event, 'group.created');
-      t.match(logs[2].directory_id, directory.id);
-      t.hasStrict(logs[2].data.raw, createdGroup);
+      if (!Array.isArray(logs[2].payload)) {
+        t.match(logs[2].payload.event, 'group.created');
+        t.match(logs[2].payload.directory_id, directory.id);
+        t.hasStrict(logs[2].payload.data.raw, createdGroup);
+      }
     });
+  });
 
-    t.test('Should send group membership related events', async (t) => {
-      const mock = sinon.mock(axios);
+  t.test('Should send group membership related events', async (t) => {
+    const mock = sinon.mock(axios);
 
-      mock.expects('post').exactly(4).withArgs(webhook.endpoint).throws();
+    mock.expects('post').exactly(4).withArgs(webhook.endpoint).throws();
 
-      // Create the user
-      const { data: createdUser } = await directorySync.requests.handle(
-        usersRequest.create(directory, users[0]),
-        eventCallback
-      );
+    // Create the user
+    const { data: createdUser } = await directorySync.requests.handle(
+      usersRequest.create(directory, users[0]),
+      eventCallback
+    );
 
-      // Create the group
-      const { data: createdGroup } = await directorySync.requests.handle(
-        groupRequest.create(directory, groups[0]),
-        eventCallback
-      );
+    // Create the group
+    const { data: createdGroup } = await directorySync.requests.handle(
+      groupRequest.create(directory, groups[0]),
+      eventCallback
+    );
 
-      // Add the user to the group
-      await directorySync.requests.handle(
-        groupRequest.addMembers(directory, createdGroup.id, [{ value: createdUser.id }]),
-        eventCallback
-      );
+    // Add the user to the group
+    await directorySync.requests.handle(
+      groupRequest.addMembers(directory, createdGroup.id, [{ value: createdUser.id }]),
+      eventCallback
+    );
 
-      // Remove the user from the group
-      await directorySync.requests.handle(
-        groupRequest.removeMembers(
-          directory,
-          createdGroup.id,
-          [{ value: createdUser.id }],
-          `members[value eq "${createdUser.id}"]`
-        ),
-        eventCallback
-      );
+    // Remove the user from the group
+    await directorySync.requests.handle(
+      groupRequest.removeMembers(
+        directory,
+        createdGroup.id,
+        [{ value: createdUser.id }],
+        `members[value eq "${createdUser.id}"]`
+      ),
+      eventCallback
+    );
 
-      mock.verify();
-      mock.restore();
+    mock.verify();
+    mock.restore();
 
-      const logs = await directorySync.webhookLogs.getAll();
+    const logs = await directorySync.webhookLogs.getAll();
 
-      t.ok(logs);
-      t.equal(logs.length, 4);
+    t.ok(logs);
+    t.equal(logs.length, 4);
 
-      t.match(logs[0].event, 'group.user_removed');
-      t.match(logs[0].directory_id, directory.id);
-      t.hasStrict(logs[0].data.raw, createdUser);
+    if (!Array.isArray(logs[0].payload)) {
+      t.match(logs[0].payload.event, 'group.user_removed');
+      t.match(logs[0].payload.directory_id, directory.id);
+      t.hasStrict(logs[0].payload.data.raw, createdUser);
+    }
 
-      t.match(logs[1].event, 'group.user_added');
-      t.match(logs[1].directory_id, directory.id);
-      t.hasStrict(logs[1].data.raw, createdUser);
+    if (!Array.isArray(logs[1].payload)) {
+      t.match(logs[1].payload.event, 'group.user_added');
+      t.match(logs[1].payload.directory_id, directory.id);
+      t.hasStrict(logs[1].payload.data.raw, createdUser);
+    }
 
-      await directorySync.users.delete(createdUser.id);
-      await directorySync.groups.delete(createdGroup.id);
-    });
+    await directorySync.users.delete(createdUser.id);
+    await directorySync.groups.delete(createdGroup.id);
+  });
 
-    t.test('createSignatureString()', async (t) => {
-      const event: DirectorySyncEvent = {
-        event: 'user.created',
-        directory_id: directory.id,
-        tenant: directory.tenant,
-        product: directory.product,
-        data: {
-          raw: [],
-          id: 'user-id',
-          first_name: 'Kiran',
-          last_name: 'Krishnan',
-          email: 'kiran@boxyhq.com',
-          active: true,
-        },
-      };
+  t.test('createSignatureString()', async (t) => {
+    const event: DirectorySyncEvent = {
+      event: 'user.created',
+      directory_id: directory.id,
+      tenant: directory.tenant,
+      product: directory.product,
+      data: {
+        raw: [],
+        id: 'user-id',
+        first_name: 'Kiran',
+        last_name: 'Krishnan',
+        email: 'kiran@boxyhq.com',
+        active: true,
+      },
+    };
 
-      const signatureString = createSignatureString(directory.webhook.secret, event);
-      const parts = signatureString.split(',');
+    const signatureString = createSignatureString(directory.webhook.secret, event);
+    const parts = signatureString.split(',');
 
-      t.ok(signatureString);
-      t.ok(parts[0].match(/^t=[0-9a-f]/));
-      t.ok(parts[1].match(/^s=[0-9a-f]/));
+    t.ok(signatureString);
+    t.ok(parts[0].match(/^t=[0-9a-f]/));
+    t.ok(parts[1].match(/^s=[0-9a-f]/));
 
-      // Empty secret should create an empty signature
-      const emptySignatureString = createSignatureString('', event);
+    // Empty secret should create an empty signature
+    const emptySignatureString = createSignatureString('', event);
 
-      t.match(emptySignatureString, '');
-    });
+    t.match(emptySignatureString, '');
   });
 });

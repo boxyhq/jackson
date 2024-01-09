@@ -117,7 +117,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           always-auth: true
           node-version: ${{ matrix.node-version }}
@@ -138,7 +138,7 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - run: npm run custom-install
+      - run: npm install
       - run: npm run check-lint
       - run: npm run check-format
       - run: npm run build
@@ -417,7 +417,7 @@ jobs:
       - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           always-auth: true
           node-version: ${{ matrix.node-version }}
