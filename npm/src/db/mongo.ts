@@ -137,8 +137,12 @@ class Mongo implements DatabaseDriver {
     return { data: ret };
   }
 
-  async getCount(namespace: string): Promise<number> {
-    return await this.collection.countDocuments({ namespace });
+  async getCount(namespace: string, idx?: Index): Promise<number> {
+    const count =
+      idx !== undefined
+        ? await this.collection.countDocuments({ indexes: dbutils.keyForIndex(namespace, idx) })
+        : await this.collection.countDocuments({ namespace });
+    return count;
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
