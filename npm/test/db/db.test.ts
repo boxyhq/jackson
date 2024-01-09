@@ -1,9 +1,10 @@
-import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable } from '../../src/typings';
+import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
 import tap from 'tap';
 import DB from '../../src/db/db';
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
+const dbObjs: { [key: string]: DatabaseDriver } = {};
 const connectionStores: Storable[] = [];
 const ttlStores: Storable[] = [];
 const ttl = 2;
@@ -171,7 +172,8 @@ if (process.env.DYNAMODB_URL) {
 tap.before(async () => {
   for (const idx in dbs) {
     const opts = dbs[idx];
-    const db = await DB.new(opts);
+    const db = await DB.new(opts, true);
+    dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
 
     const randomSession = Date.now();
     connectionStores.push(db.store('saml:config:' + randomSession));
@@ -314,10 +316,11 @@ tap.test('dbs', async () => {
         0,
         1
       );
+      const numRec = dbEngine === 'dynamodb' ? 2 : 1;
       t.same(
         ret3.data.length,
-        dbEngine === 'dynamodb' ? 2 : 1,
-        "getByIndex pagination should get only 1 record, order doesn't matter"
+        numRec,
+        `getByIndex pagination should get only ${numRec} record, order doesn't matter`
       );
 
       const ret4 = await connectionStore.getByIndex(
@@ -331,8 +334,8 @@ tap.test('dbs', async () => {
       );
       t.same(
         ret4.data.length,
-        dbEngine === 'dynamodb' ? 2 : 1,
-        "getByIndex pagination should get only 1 record, order doesn't matter"
+        numRec,
+        `getByIndex pagination should get only ${numRec} record, order doesn't matter`
       );
 
       t.same(
@@ -504,16 +507,28 @@ tap.test('dbs', async () => {
     });
   }
 
+  tap.test('close():', async () => {
+    for (const [, value] of Object.entries(dbObjs)) {
+      await value.close();
+    }
+  });
+
   tap.test('db.new() error', async (t) => {
     try {
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'mongo',
-      });
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'mongo',
+        },
+        true
+      );
 
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'sql',
-        url: tap.expectUncaughtException().toString(),
-      });
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'sql',
+          url: tap.expectUncaughtException().toString(),
+        },
+        true
+      );
 
       t.ok(
         <DatabaseOption>{
@@ -522,12 +537,20 @@ tap.test('dbs', async () => {
         },
         'db must have connection'
       );
-      await DB.new({
-        engine: <DatabaseEngine>'',
-      });
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'somedb',
-      });
+
+      await DB.new(
+        {
+          engine: <DatabaseEngine>'',
+        },
+        true
+      );
+
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'somedb',
+        },
+        true
+      );
       t.fail('expecting an unsupported db error');
     } catch (err) {
       t.ok(err, 'got expected error');

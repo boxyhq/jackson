@@ -334,6 +334,7 @@ export interface DatabaseDriver {
     sortOrder?: SortOrder
   ): Promise<Records>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
+  close(): Promise<void>;
 }
 
 export interface Storable {

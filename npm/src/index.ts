@@ -71,6 +71,7 @@ export const controllers = async (
   brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
   productController: ProductController;
+  close: () => Promise<void>;
 }> => {
   opts = defaultOpts(opts);
 
@@ -168,6 +169,9 @@ export const controllers = async (
       return checkLicense(opts.boxyhqLicenseKey);
     },
     productController,
+    close: async () => {
+      await db.close();
+    },
   };
 };
 

@@ -186,6 +186,10 @@ class Mongo implements DatabaseDriver {
       _id: { $in: dbKeys },
     });
   }
+
+  async close(): Promise<void> {
+    await this.client.close();
+  }
 }
 
 export default {
