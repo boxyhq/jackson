@@ -378,6 +378,8 @@ tap.test('dbs', async () => {
       }
       const count = await connectionStore.getCount();
       t.equal(count, records.length);
+      const countByIndex = await connectionStore.getCount({ name: 'name', value: record1.name });
+      t.equal(countByIndex, 1);
     });
 
     tap.test('delete(): ' + dbEngine, async (t) => {
