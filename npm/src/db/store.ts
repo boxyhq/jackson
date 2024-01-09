@@ -37,8 +37,8 @@ class Store implements Storable {
     return await this.db.getByIndex(this.namespace, idx, pageOffset, pageLimit, pageToken, sortOrder);
   }
 
-  async getCount() {
-    return await this.db.getCount(this.namespace);
+  async getCount(idx?: Index) {
+    return await this.db.getCount(this.namespace, idx);
   }
 
   async put(key: string, val: any, ...indexes: Index[]): Promise<any> {

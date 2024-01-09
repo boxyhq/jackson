@@ -93,11 +93,11 @@ class DB implements DatabaseDriver {
     };
   }
 
-  async getCount(namespace: string): Promise<number | undefined> {
+  async getCount(namespace: string, idx?: Index): Promise<number | undefined> {
     if (typeof this.db.getCount !== 'function') {
       return;
     }
-    return await this.db.getCount(namespace);
+    return await this.db.getCount(namespace, idx);
   }
 
   // ttl is in seconds
