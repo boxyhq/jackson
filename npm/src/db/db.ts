@@ -94,7 +94,10 @@ class DB implements DatabaseDriver {
   }
 
   async getCount(namespace: string): Promise<number | undefined> {
-    return await this.db.getCount?.(namespace);
+    if (typeof this.db.getCount !== 'function') {
+      return;
+    }
+    return await this.db.getCount(namespace);
   }
 
   // ttl is in seconds
