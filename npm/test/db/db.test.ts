@@ -376,7 +376,7 @@ tap.test('dbs', async () => {
     });
 
     tap.test('getCount(): ' + dbType, async (t) => {
-      if (dbEngine !== 'sql' && dbEngine !== 'mongo') {
+      if (dbEngine !== 'sql' && dbEngine !== 'mongo' && dbEngine !== 'planetscale') {
         console.log(`skipping getCount test for ${dbEngine}`);
         return;
       }
