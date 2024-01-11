@@ -140,8 +140,11 @@ class Mongo implements DatabaseDriver {
   async getCount(namespace: string, idx?: Index): Promise<number> {
     const count =
       idx !== undefined
-        ? await this.collection.countDocuments({ indexes: dbutils.keyForIndex(namespace, idx) })
-        : await this.collection.countDocuments({ namespace });
+        ? await this.collection.countDocuments(
+            { indexes: dbutils.keyForIndex(namespace, idx) },
+            { hint: 'indexes_1' }
+          )
+        : await this.collection.countDocuments({ namespace }, { hint: 'namespace_1' });
     return count;
   }
 
