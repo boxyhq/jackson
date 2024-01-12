@@ -176,7 +176,7 @@ export interface IOAuthController {
   samlResponse(
     body: SAMLResponsePayload
   ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }>;
-  oidcAuthzResponse(body: CallbackParamsType): Promise<{ redirect_url?: string }>;
+  oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
@@ -264,6 +264,7 @@ export interface SAMLResponsePayload {
   idp_hint?: string;
 }
 
+export type OIDCAuthzResponsePayload = CallbackParamsType;
 interface OAuthTokenReqBody {
   code: string;
   grant_type: 'authorization_code';

@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { CallbackParamsType, errors, generators } from 'openid-client';
+import { errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
@@ -19,6 +19,7 @@ import type {
   OIDCSSORecord,
   SAMLTracerInstance,
   OAuthErrorHandlerParams,
+  OIDCAuthzResponsePayload,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -681,7 +682,7 @@ export class OAuthController implements IOAuthController {
     }
   }
 
-  public async oidcAuthzResponse(body: CallbackParamsType): Promise<{ redirect_url?: string }> {
+  public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
     const callbackParams = body;
 
     let RelayState = callbackParams.state || '';
