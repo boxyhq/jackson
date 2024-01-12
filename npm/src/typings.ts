@@ -265,6 +265,7 @@ export interface SAMLResponsePayload {
 }
 
 export type OIDCAuthzResponsePayload = CallbackParamsType;
+
 interface OAuthTokenReqBody {
   code: string;
   grant_type: 'authorization_code';
