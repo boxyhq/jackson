@@ -333,6 +333,7 @@ export interface DatabaseDriver {
     pageToken?: string,
     sortOrder?: SortOrder
   ): Promise<Records>;
+  getCount?(namespace: string, idx?: Index): Promise<number | undefined>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
   close(): Promise<void>;
 }
@@ -354,6 +355,7 @@ export interface Storable {
     pageToken?: string,
     sortOrder?: SortOrder
   ): Promise<Records>;
+  getCount(idx?: Index): Promise<number | undefined>;
   deleteMany(keys: string[]): Promise<void>;
 }
 

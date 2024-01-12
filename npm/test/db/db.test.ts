@@ -189,12 +189,13 @@ tap.test('dbs', async () => {
   for (const idx in connectionStores) {
     const connectionStore = connectionStores[idx];
     const ttlStore = ttlStores[idx];
-    let dbEngine = dbs[idx].engine!;
+    const dbEngine = dbs[idx].engine!;
+    let dbType = dbEngine;
     if (dbs[idx].type) {
-      dbEngine += ': ' + dbs[idx].type;
+      dbType += ': ' + dbs[idx].type;
     }
 
-    tap.test('put(): ' + dbEngine, async () => {
+    tap.test('put(): ' + dbType, async () => {
       await connectionStore.put(
         record1.id,
         record1,
@@ -226,7 +227,7 @@ tap.test('dbs', async () => {
       );
     });
 
-    tap.test('get(): ' + dbEngine, async (t) => {
+    tap.test('get(): ' + dbType, async (t) => {
       const ret1 = await connectionStore.get(record1.id);
       const ret2 = await connectionStore.get(record2.id);
 
@@ -234,7 +235,7 @@ tap.test('dbs', async () => {
       t.same(ret2, record2, 'unable to get record2');
     });
 
-    tap.test('getAll(): ' + dbEngine, async (t) => {
+    tap.test('getAll(): ' + dbType, async (t) => {
       const allRecords = await connectionStore.getAll();
       const allRecordOutput = {};
       let allRecordInput = {};
@@ -290,7 +291,7 @@ tap.test('dbs', async () => {
       }
     });
 
-    tap.test('getByIndex(): ' + dbEngine, async (t) => {
+    tap.test('getByIndex(): ' + dbType, async (t) => {
       const ret1 = await connectionStore.getByIndex({
         name: 'name',
         value: record1.name,
@@ -374,7 +375,18 @@ tap.test('dbs', async () => {
       }
     });
 
-    tap.test('delete(): ' + dbEngine, async (t) => {
+    tap.test('getCount(): ' + dbType, async (t) => {
+      if (dbEngine !== 'sql' && dbEngine !== 'mongo' && dbEngine !== 'planetscale') {
+        console.log(`skipping getCount test for ${dbEngine}`);
+        return;
+      }
+      const count = await connectionStore.getCount();
+      t.equal(count, records.length);
+      const countByIndex = await connectionStore.getCount({ name: 'name', value: record1.name });
+      t.equal(countByIndex, 1);
+    });
+
+    tap.test('delete(): ' + dbType, async (t) => {
       await connectionStore.delete(record1.id);
 
       const ret0 = await connectionStore.getByIndex({
@@ -405,7 +417,7 @@ tap.test('dbs', async () => {
       t.same(ret4.data, [], 'delete for record2 failed');
     });
 
-    tap.test('ttl indexes: ' + dbEngine, async (t) => {
+    tap.test('ttl indexes: ' + dbType, async (t) => {
       try {
         await ttlStore.put(
           record1.id,
@@ -428,13 +440,13 @@ tap.test('dbs', async () => {
       }
     });
 
-    tap.test('ttl put(): ' + dbEngine, async () => {
+    tap.test('ttl put(): ' + dbType, async () => {
       await ttlStore.put(record1.id, record1);
 
       await ttlStore.put(record2.id, record2);
     });
 
-    tap.test('ttl get(): ' + dbEngine, async (t) => {
+    tap.test('ttl get(): ' + dbType, async (t) => {
       const ret1 = await ttlStore.get(record1.id);
       const ret2 = await ttlStore.get(record2.id);
 
@@ -442,7 +454,7 @@ tap.test('dbs', async () => {
       t.same(ret2, record2, 'unable to get record2');
     });
 
-    tap.test('ttl expiry: ' + dbEngine, async (t) => {
+    tap.test('ttl expiry: ' + dbType, async (t) => {
       // mongo runs ttl task every 60 seconds
       if (dbEngine.startsWith('mongo')) {
         return;
@@ -457,7 +469,7 @@ tap.test('dbs', async () => {
       t.same(ret2, null, 'ttl for record2 failed');
     });
 
-    tap.test('deleteMany(): ' + dbEngine, async (t) => {
+    tap.test('deleteMany(): ' + dbType, async (t) => {
       await connectionStore.put(
         record1.id,
         record1,

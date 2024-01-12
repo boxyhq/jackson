@@ -93,6 +93,13 @@ class DB implements DatabaseDriver {
     };
   }
 
+  async getCount(namespace: string, idx?: Index): Promise<number | undefined> {
+    if (typeof this.db.getCount !== 'function') {
+      return;
+    }
+    return await this.db.getCount(namespace, idx);
+  }
+
   // ttl is in seconds
   async put(namespace: string, key: string, val: unknown, ttl = 0, ...indexes: Index[]): Promise<unknown> {
     if (ttl > 0 && indexes && indexes.length > 0) {
