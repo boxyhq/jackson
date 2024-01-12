@@ -4,6 +4,9 @@
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
+ignore:
+  - dependency-name: 'npm'
+    versions: ['<10.2.3']
 updates:
   - package-ecosystem: 'npm' # See documentation for possible values
     directory: '/' # Location of package manifests
