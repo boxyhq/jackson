@@ -14,7 +14,7 @@ export class AnalyticsController {
   constructor({ analyticsStore, connectionStore }) {
     this.analyticsStore = analyticsStore;
     this.connectionStore = connectionStore;
-    this.client = Mixpanel.init('eb6a7bcc43995c3b358140be34abcb89');
+    this.client = Mixpanel.init('1028494897a5520b90e7344344060fa7');
     this.anonymousId = '';
   }
 
