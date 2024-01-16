@@ -169,6 +169,7 @@ export interface IConnectionAPIController {
   getConnectionsByProduct(
     body: GetByProductParams
   ): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }>;
+  getCount(idx?: Index): Promise<number | undefined>;
 }
 
 export interface IOAuthController {
