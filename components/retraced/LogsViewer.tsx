@@ -1,5 +1,6 @@
 import RetracedEventsBrowser from '@retracedhq/logs-viewer';
 import useSWR from 'swr';
+import { useTranslation } from 'next-i18next';
 
 import type { ApiError, ApiSuccess } from 'types';
 import type { Project } from 'types/retraced';
@@ -8,6 +9,8 @@ import Loading from '@components/Loading';
 import { fetcher } from '@lib/ui/utils';
 
 const LogsViewer = (props: { project: Project; environmentId: string; groupId: string; host: string }) => {
+  const { t } = useTranslation('common');
+
   const { project, environmentId, groupId, host } = props;
 
   const token = project.tokens.filter((token) => token.environment_id === environmentId)[0];
@@ -36,8 +39,9 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
         <RetracedEventsBrowser
           host={`${host}/viewer/v1`}
           auditLogToken={viewerToken}
-          header='Audit Logs'
+          header={t('audit_logs')}
           customClass={'text-primary dark:text-white'}
+          skipViewLogEvent={true}
         />
       )}
     </>

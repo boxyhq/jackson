@@ -15,7 +15,6 @@ const unAuthenticatedApiRoutes = [
   '/api/oauth/**',
   '/api/scim/v2.0/**',
   '/api/scim/oauth/**',
-  '/api/scim/cron',
   '/api/well-known/**',
   '/api/setup/**',
   '/api/branding',
@@ -44,7 +43,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Validate API routes `/api/v1/**`
-  if (micromatch.isMatch(pathname, '/api/v1/**')) {
+  if (micromatch.isMatch(pathname, ['/api/v1/**', '/api/internals/**'])) {
     if (!validateApiKey(extractAuthToken(req))) {
       return sendUnAuthorizedResponse({ message: 'Unauthorized' });
     }

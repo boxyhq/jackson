@@ -5,6 +5,7 @@ import {
   EncryptionKey,
   Index,
   Records,
+  SortOrder,
   Storable,
 } from '../typings';
 import * as encrypter from './encrypter';
@@ -61,9 +62,10 @@ class DB implements DatabaseDriver {
     namespace: string,
     pageOffset?: number,
     pageLimit?: number,
-    pageToken?: string
+    pageToken?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
-    const res = await this.db.getAll(namespace, pageOffset, pageLimit, pageToken);
+    const res = await this.db.getAll(namespace, pageOffset, pageLimit, pageToken, sortOrder);
     const encryptionKey = this.encryptionKey;
     return {
       data: res.data.map((r) => {
@@ -78,9 +80,10 @@ class DB implements DatabaseDriver {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
-    pageToken?: string
+    pageToken?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
-    const res = await this.db.getByIndex(namespace, idx, pageOffset, pageLimit, pageToken);
+    const res = await this.db.getByIndex(namespace, idx, pageOffset, pageLimit, pageToken, sortOrder);
     const encryptionKey = this.encryptionKey;
     return {
       data: res.data.map((r) => {
@@ -88,6 +91,13 @@ class DB implements DatabaseDriver {
       }),
       pageToken: res.pageToken,
     };
+  }
+
+  async getCount(namespace: string, idx?: Index): Promise<number | undefined> {
+    if (typeof this.db.getCount !== 'function') {
+      return;
+    }
+    return await this.db.getCount(namespace, idx);
   }
 
   // ttl is in seconds
@@ -111,66 +121,81 @@ class DB implements DatabaseDriver {
     return await this.db.deleteMany(namespace, keys);
   }
 
+  async close(): Promise<void> {
+    await this.db.close();
+  }
+
   store(namespace: string, ttl = 0): Storable {
     return store.new(namespace, this, ttl);
   }
 }
 
-export default {
-  new: async (options: DatabaseOption) => {
-    const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
+const _new = async (options: DatabaseOption) => {
+  const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
 
-    switch (options.engine) {
-      case 'redis':
-        return new DB(await redis.new(options), encryptionKey);
-      case 'sql':
-        switch (options.type) {
-          case 'mssql':
-            return new DB(
-              await sql.new(options, {
-                JacksonStore: JacksonStoreMSSQL,
-                JacksonIndex: JacksonIndexMSSQL,
-                JacksonTTL: JacksonTTLMSSQL,
-              }),
-              encryptionKey
-            );
-          case 'mariadb':
-          case 'mysql':
-            return new DB(
-              await sql.new(options, {
-                JacksonStore: JacksonStoreMariaDB,
-                JacksonIndex: JacksonIndexMariaDB,
-                JacksonTTL: JacksonTTLMariaDB,
-              }),
-              encryptionKey
-            );
-          default:
-            return new DB(
-              await sql.new(options, {
-                JacksonStore,
-                JacksonIndex,
-                JacksonTTL,
-              }),
-              encryptionKey
-            );
-        }
-      case 'planetscale':
-        return new DB(
-          await sql.new(options, {
-            JacksonStore: JacksonStorePlanetscale,
-            JacksonIndex: JacksonIndexPlanetscale,
-            JacksonTTL: JacksonTTLPlanetscale,
-          }),
-          encryptionKey
-        );
-      case 'mongo':
-        return new DB(await mongo.new(options), encryptionKey);
-      case 'mem':
-        return new DB(await mem.new(options), encryptionKey);
-      case 'dynamodb':
-        return new DB(await dynamodb.new(options), encryptionKey);
-      default:
-        throw new Error('unsupported db engine: ' + options.engine);
+  switch (options.engine) {
+    case 'redis':
+      return new DB(await redis.new(options), encryptionKey);
+    case 'sql':
+      switch (options.type) {
+        case 'mssql':
+          return new DB(
+            await sql.new(options, {
+              JacksonStore: JacksonStoreMSSQL,
+              JacksonIndex: JacksonIndexMSSQL,
+              JacksonTTL: JacksonTTLMSSQL,
+            }),
+            encryptionKey
+          );
+        case 'mariadb':
+        case 'mysql':
+          return new DB(
+            await sql.new(options, {
+              JacksonStore: JacksonStoreMariaDB,
+              JacksonIndex: JacksonIndexMariaDB,
+              JacksonTTL: JacksonTTLMariaDB,
+            }),
+            encryptionKey
+          );
+        default:
+          return new DB(
+            await sql.new(options, {
+              JacksonStore,
+              JacksonIndex,
+              JacksonTTL,
+            }),
+            encryptionKey
+          );
+      }
+    case 'planetscale':
+      return new DB(
+        await sql.new(options, {
+          JacksonStore: JacksonStorePlanetscale,
+          JacksonIndex: JacksonIndexPlanetscale,
+          JacksonTTL: JacksonTTLPlanetscale,
+        }),
+        encryptionKey
+      );
+    case 'mongo':
+      return new DB(await mongo.new(options), encryptionKey);
+    case 'mem':
+      return new DB(await mem.new(options), encryptionKey);
+    case 'dynamodb':
+      return new DB(await dynamodb.new(options), encryptionKey);
+    default:
+      throw new Error('unsupported db engine: ' + options.engine);
+  }
+};
+
+const g = global as any;
+
+export default {
+  new: async (options: DatabaseOption, noCache = false) => {
+    if (g.__jacksonDb && !noCache) {
+      return g.__jacksonDb;
     }
+
+    g.__jacksonDb = await _new(options);
+    return g.__jacksonDb;
   },
 };

@@ -29,6 +29,10 @@ const terminus = {
   adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
 };
 
+export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
+  ? Number(process.env.SETUP_LINK_EXPIRY_DAYS)
+  : 3;
+
 const db: DatabaseOption = {
   engine: process.env.DB_ENGINE ? <DatabaseEngine>process.env.DB_ENGINE : undefined,
   url: process.env.DB_URL || process.env.DATABASE_URL,
@@ -43,6 +47,7 @@ const db: DatabaseOption = {
     readCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_RCUS) : undefined,
     writeCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_WCUS) : undefined,
   },
+  manualMigration: process.env.DB_MANUAL_MIGRATION === 'true',
 };
 
 const jacksonOptions: JacksonOption = {
@@ -79,14 +84,18 @@ const jacksonOptions: JacksonOption = {
     secret: process.env.WEBHOOK_SECRET || '',
   },
   dsync: {
+    webhookBatchSize: process.env.DSYNC_WEBHOOK_BATCH_SIZE
+      ? Number(process.env.DSYNC_WEBHOOK_BATCH_SIZE)
+      : undefined,
     providers: {
       google: {
-        clientId: process.env.GOOGLE_CLIENT_ID || '',
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-        callbackUrl: process.env.GOOGLE_REDIRECT_URI || '',
+        clientId: process.env.DSYNC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || '',
+        clientSecret: process.env.DSYNC_GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET || '',
+        callbackUrl: process.env.DSYNC_GOOGLE_REDIRECT_URI || process.env.GOOGLE_REDIRECT_URI || '',
       },
     },
   },
+  setupLinkExpiryDays,
 };
 
 const adminPortalSSODefaults = {
@@ -103,3 +112,6 @@ export { apiKeys };
 export { jacksonOptions };
 
 export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';
+
+/** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */
+export const boxyhqHosted = process.env.BOXYHQ_HOSTED === '1';

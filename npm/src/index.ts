@@ -9,7 +9,7 @@ import { HealthCheckController } from './controller/health-check';
 import { LogoutController } from './controller/logout';
 import initDirectorySync from './directory-sync';
 import { OidcDiscoveryController } from './controller/oidc-discovery';
-import { SPSAMLConfig } from './controller/sp-config';
+import { SPSSOConfig } from './controller/sp-config';
 import { SetupLinkController } from './controller/setup-link';
 import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
@@ -18,6 +18,7 @@ import checkLicense from './ee/common/checkLicense';
 import { BrandingController } from './ee/branding';
 import SAMLTracer from './saml-tracer';
 import EventController from './event';
+import { ProductController } from './ee/product';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -65,10 +66,12 @@ export const controllers = async (
   setupLinkController: SetupLinkController;
   directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
-  spConfig: SPSAMLConfig;
+  spConfig: SPSSOConfig;
   samlFederatedController: ISAMLFederationController;
   brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
+  productController: ProductController;
+  close: () => Promise<void>;
 }> => {
   opts = defaultOpts(opts);
 
@@ -82,6 +85,7 @@ export const controllers = async (
   const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
+  const productStore = db.store('product:config');
 
   const samlTracer = new SAMLTracer({ db });
   const eventController = new EventController({ opts });
@@ -90,7 +94,8 @@ export const controllers = async (
   const adminController = new AdminController({ connectionStore, samlTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
-  const setupLinkController = new SetupLinkController({ setupLinkStore });
+  const setupLinkController = new SetupLinkController({ setupLinkStore, opts });
+  const productController = new ProductController({ productStore, opts });
 
   if (!opts.noAnalytics) {
     console.info(
@@ -120,7 +125,7 @@ export const controllers = async (
   });
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
-  const spConfig = new SPSAMLConfig(opts);
+  const spConfig = new SPSSOConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts, eventController });
 
   // Enterprise Features
@@ -162,6 +167,10 @@ export const controllers = async (
     brandingController,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
+    },
+    productController,
+    close: async () => {
+      await db.close();
     },
   };
 };

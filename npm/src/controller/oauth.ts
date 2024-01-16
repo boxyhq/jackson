@@ -7,7 +7,6 @@ import { errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
-  OIDCAuthzResponsePayload,
   IOAuthController,
   JacksonOption,
   OAuthReq,
@@ -19,6 +18,8 @@ import type {
   SAMLSSORecord,
   OIDCSSORecord,
   SAMLTracerInstance,
+  OAuthErrorHandlerParams,
+  OIDCAuthzResponsePayload,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -40,7 +41,7 @@ import * as codeVerifier from './oauth/code-verifier';
 import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SAMLHandler } from './saml-handler';
-import { extractSAMLResponseAttributes } from '../saml/lib';
+import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
@@ -486,7 +487,7 @@ export class OAuthController implements IOAuthController {
 
   public async samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string; responseForm?: string }> {
+  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }> {
     let connection: SAMLSSORecord | undefined;
     let rawResponse: string | undefined;
     let sessionId: string | undefined;
@@ -494,7 +495,7 @@ export class OAuthController implements IOAuthController {
     let issuer: string | undefined;
     let isIdPFlow: boolean | undefined;
     let isSAMLFederated: boolean | undefined;
-    let validateOpts: { thumbprint: string; audience: string; privateKey: string };
+    let validateOpts: ValidateOption;
     let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
 
@@ -535,7 +536,7 @@ export class OAuthController implements IOAuthController {
       }
 
       isSAMLFederated = session && 'samlFederated' in session;
-      const isSPFflow = !isIdPFlow && !isSAMLFederated;
+      const isSPFlow = !isIdPFlow && !isSAMLFederated;
 
       // IdP initiated SSO flow
       if (isIdPFlow) {
@@ -563,17 +564,13 @@ export class OAuthController implements IOAuthController {
 
       // SP initiated SSO flow
       // Resolve if there are multiple matches for SP login
-      if (isSPFflow) {
+      if (isSPFlow || isSAMLFederated) {
         connection = connections.filter((c) => {
           return (
             c.clientID === session.requested.client_id ||
             (c.tenant === session.requested.tenant && c.product === session.requested.product)
           );
         })[0];
-      }
-
-      if (!connection) {
-        connection = connections[0];
       }
 
       if (!connection) {
@@ -591,10 +588,15 @@ export class OAuthController implements IOAuthController {
       const { privateKey } = await getDefaultCertificate();
 
       validateOpts = {
-        thumbprint: `${connection?.idpMetadata.thumbprint}`,
         audience: `${this.opts.samlAudience}`,
         privateKey,
       };
+
+      if (connection.idpMetadata.publicKey) {
+        validateOpts.publicKey = connection.idpMetadata.publicKey;
+      } else if (connection.idpMetadata.thumbprint) {
+        validateOpts.thumbprint = connection.idpMetadata.thumbprint;
+      }
 
       if (session && session.id) {
         validateOpts['inResponseTo'] = session.id;
@@ -630,7 +632,7 @@ export class OAuthController implements IOAuthController {
 
         await this.sessionStore.delete(sessionId);
 
-        return { responseForm };
+        return { response_form: responseForm };
       }
 
       const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);
@@ -681,9 +683,9 @@ export class OAuthController implements IOAuthController {
   }
 
   public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
-    const { code: opCode, state, error, error_description } = body;
+    const callbackParams = body;
 
-    let RelayState = state || '';
+    let RelayState = callbackParams.state || '';
     if (!RelayState) {
       throw new JacksonError('State from original request is missing.', 403);
     }
@@ -701,28 +703,6 @@ export class OAuthController implements IOAuthController {
     }
     const redirect_uri = (session && session.redirect_uri) || oidcConnection.defaultRedirectUrl;
 
-    if (error) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error,
-          error_description: error_description ?? 'Authorization failure at OIDC Provider',
-          redirect_uri,
-          state: session.state,
-        }),
-      };
-    }
-
-    if (!opCode) {
-      return {
-        redirect_url: OAuthErrorResponse({
-          error: 'server_error',
-          error_description: 'Authorization code could not be retrieved from OIDC Provider',
-          redirect_uri,
-          state: session.state,
-        }),
-      };
-    }
-
     // Reconstruct the oidcClient
     const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
     let profile;
@@ -734,20 +714,22 @@ export class OAuthController implements IOAuthController {
         redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
         response_types: ['code'],
       });
-      const tokenSet = await oidcClient.callback(
-        this.opts.externalUrl + this.opts.oidcPath,
-        {
-          code: opCode,
-        },
-        { code_verifier: session.oidcCodeVerifier, nonce: session.oidcNonce }
-      );
+      const tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
+        code_verifier: session.oidcCodeVerifier,
+        nonce: session.oidcNonce,
+        state: callbackParams.state,
+      });
       profile = await extractOIDCUserProfile(tokenSet, oidcClient);
     } catch (err: unknown) {
       if (err) {
+        const { error, error_description } = err as Pick<
+          OAuthErrorHandlerParams,
+          'error' | 'error_description'
+        >;
         return {
           redirect_url: OAuthErrorResponse({
-            error: 'server_error',
-            error_description: (err as errors.OPError)?.error || getErrorMessage(err),
+            error: error || 'server_error',
+            error_description: error_description || getErrorMessage(err),
             redirect_uri,
             state: session.state,
           }),
@@ -785,8 +767,8 @@ export class OAuthController implements IOAuthController {
     const requested = isIdPFlow
       ? { isIdPFlow: true, tenant: connection.tenant, product: connection.product }
       : session
-      ? session.requested
-      : null;
+        ? session.requested
+        : null;
 
     const codeVal = {
       profile,
@@ -962,7 +944,7 @@ export class OAuthController implements IOAuthController {
       const id_token = await new jose.SignJWT(claims)
         .setProtectedHeader({ alg: jwsAlg! })
         .setIssuedAt()
-        .setIssuer(this.opts.samlAudience || '')
+        .setIssuer(this.opts.externalUrl)
         .setSubject(codeVal.profile.claims.id)
         .setAudience(tokenVal.requested.client_id)
         .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.

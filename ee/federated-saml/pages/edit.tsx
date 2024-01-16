@@ -1,4 +1,3 @@
-import type { NextPage } from 'next';
 import type { AdminPortalBranding, SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -7,7 +6,6 @@ import { useTranslation } from 'next-i18next';
 
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
-import LicenseRequired from '@components/LicenseRequired';
 import { errorToast, successToast } from '@components/Toaster';
 import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
@@ -15,8 +13,9 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
 import { LinkOutline } from '@components/LinkOutline';
+import LicenseRequired from '@components/LicenseRequired';
 
-const UpdateApp: NextPage = () => {
+const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -47,6 +46,10 @@ const UpdateApp: NextPage = () => {
       setApp(data.data);
     }
   }, [data]);
+
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
+  }
 
   if (error) {
     errorToast(error.message);
@@ -94,7 +97,7 @@ const UpdateApp: NextPage = () => {
   };
 
   return (
-    <LicenseRequired>
+    <>
       <LinkBack href='/admin/federated-saml' />
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
@@ -118,6 +121,12 @@ const UpdateApp: NextPage = () => {
                 <span className='label-text'>{t('product')}</span>
               </label>
               <input type='text' className='input-bordered input' defaultValue={app.product} disabled />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>{t('entity_id')}</span>
+              </label>
+              <input type='url' className='input-bordered input' defaultValue={app.entityId} disabled />
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
@@ -145,24 +154,8 @@ const UpdateApp: NextPage = () => {
                 value={app.acsUrl}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
-                <span className='label-text'>{t('entity_id')}</span>
-              </label>
-              <input
-                type='url'
-                id='entityId'
-                className='input-bordered input'
-                required
-                onChange={onChange}
-                value={app.entityId}
-              />
-            </div>
             <div className='pt-4'>
-              <p className='text-base leading-6 text-gray-500'>
-                You can customize the look and feel Identity Provider selection page by setting following
-                options:
-              </p>
+              <p className='text-base leading-6 text-gray-500'>{t('customize_branding')}:</p>
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
@@ -214,7 +207,7 @@ const UpdateApp: NextPage = () => {
         </form>
       </div>
       <DeleteApp app={app} />
-    </LicenseRequired>
+    </>
   );
 };
 

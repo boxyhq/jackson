@@ -40,6 +40,35 @@ const counters = {
       name: 'jackson.oauth.userinfo',
       counterOptions: { description: 'Number of oauth user info requests' },
     }),
+
+  createDsyncConnection: () =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.dsync.connection.create',
+      counterOptions: { description: 'Number of DSync connection create requests' },
+    }),
+
+  getDsyncConnections: () =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.dsync.connection.get',
+      counterOptions: { description: 'Number of DSync connections get requests' },
+    }),
+
+  deleteDsyncConnections: () =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.dsync.connection.delete',
+      counterOptions: { description: 'Number of DSync connections delete requests' },
+    }),
+
+  dsyncEventsBatchFailed: () => {
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.dsync.events_batch.failed',
+      counterOptions: { description: 'Indicate that a batch of dsync events failed' },
+    });
+  },
 };
 
 const increment = (action: keyof typeof counters) => {

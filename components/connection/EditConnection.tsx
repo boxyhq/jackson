@@ -79,13 +79,6 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
       isEditView: true,
       setupLinkToken,
       callback: async (res) => {
-        const response: ApiResponse = await res.json();
-
-        if ('error' in response) {
-          errorToast(response.error.message);
-          return;
-        }
-
         if (res.ok) {
           successToast(t('saved'));
           // revalidate on save
@@ -94,6 +87,14 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
               ? `/api/setup/${setupLinkToken}/sso-connection`
               : `/api/admin/connections/${connectionClientId}`
           );
+          return;
+        }
+
+        const response: ApiResponse = await res.json();
+
+        if ('error' in response) {
+          errorToast(response.error.message);
+          return;
         }
       },
     });
@@ -130,15 +131,15 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
         setupLinkToken
           ? `/api/setup/${setupLinkToken}/connections`
           : isSettingsView
-          ? `/api/admin/connections?isSystemSSO`
-          : '/api/admin/connections'
+            ? `/api/admin/connections?isSystemSSO`
+            : '/api/admin/connections'
       );
       router.replace(
         setupLinkToken
           ? `/setup/${setupLinkToken}/sso-connection`
           : isSettingsView
-          ? '/admin/settings/sso-connection'
-          : '/admin/sso-connection'
+            ? '/admin/settings/sso-connection'
+            : '/admin/sso-connection'
       );
     }
   };
@@ -170,8 +171,8 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
   const backUrl = setupLinkToken
     ? `/setup/${setupLinkToken}`
     : isSettingsView
-    ? '/admin/settings/sso-connection'
-    : '/admin/sso-connection';
+      ? '/admin/settings/sso-connection'
+      : '/admin/sso-connection';
 
   return (
     <>

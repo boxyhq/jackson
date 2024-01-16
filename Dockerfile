@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:18.16.1-alpine3.18
+ARG NODEJS_IMAGE=node:20.10.0-alpine3.18
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
@@ -10,7 +10,8 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
-RUN npm run custom-install
+COPY migrate.sh prebuild.ts ./
+RUN npm install
 
 
 
@@ -29,7 +30,6 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN npm run build
-
 
 # Production image, copy all the files and run next
 FROM $NODEJS_IMAGE AS runner
@@ -52,8 +52,12 @@ COPY --from=builder /app/public ./public
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-
+# Support for DB migration
+COPY --from=builder --chown=nextjs:nodejs /app/migrate.sh ./migrate.sh
+COPY npm npm
+RUN chmod +x migrate.sh
+# mongodb peer dependency would be automatically installed for migrate-mongo
+RUN npm install -g ts-node migrate-mongo typeorm reflect-metadata mssql mysql2 pg
 USER nextjs
 
 EXPOSE 5225

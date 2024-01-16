@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { setErrorCookie } from '@lib/utils';
-import { OIDCAuthzResponsePayload } from '@boxyhq/saml-jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -12,9 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { oauthController } = await jackson();
 
-    const { redirect_url } = await oauthController.oidcAuthzResponse(
-      req.query as unknown as OIDCAuthzResponsePayload
-    );
+    const { redirect_url } = await oauthController.oidcAuthzResponse(req.query);
     if (redirect_url) {
       res.redirect(302, redirect_url);
     }
@@ -23,6 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { message, statusCode = 500 } = err;
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
-    res.redirect('/error');
+    res.redirect(302, '/error');
   }
 }

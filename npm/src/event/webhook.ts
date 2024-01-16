@@ -2,7 +2,7 @@ import type { EventPayloadSchema, Webhook } from '../typings';
 import crypto from 'crypto';
 import axios from './axios';
 
-export const createSignatureString = (secret: string, payload: EventPayloadSchema) => {
+export const createSignatureString = (secret: string, payload: any) => {
   if (!secret) {
     return '';
   }
@@ -17,7 +17,10 @@ export const createSignatureString = (secret: string, payload: EventPayloadSchem
   return `t=${timestamp},s=${signature}`;
 };
 
-export const sendPayloadToWebhook = async (webhook: Webhook, payload: EventPayloadSchema) => {
+export const sendPayloadToWebhook = async (
+  webhook: Webhook,
+  payload: EventPayloadSchema | EventPayloadSchema[]
+) => {
   return await axios.post(webhook.endpoint, payload, {
     headers: {
       'Content-Type': 'application/json',

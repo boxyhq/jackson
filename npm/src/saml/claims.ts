@@ -35,8 +35,8 @@ const mapping = [
   ...arrayMapping,
 ];
 
-type attributes = typeof mapping[number]['attribute'];
-type schemas = typeof mapping[number]['schema'];
+type attributes = (typeof mapping)[number]['attribute'];
+type schemas = (typeof mapping)[number]['schema'];
 
 const map = (claims: Record<attributes | schemas, unknown>) => {
   arrayMapping.forEach((m) => {

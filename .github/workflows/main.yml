@@ -50,9 +50,10 @@ jobs:
       IDP_ENABLED: true
       AWS_ACCESS_KEY_ID: secret
       AWS_SECRET_ACCESS_KEY: secret
+      BOXYHQ_LICENSE_KEY: 'dummy-license'
     strategy:
       matrix:
-        node-version: [18]
+        node-version: [20]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
@@ -104,7 +105,7 @@ jobs:
         ports:
           - '8000:8000'
       mocksaml:
-        image: boxyhq/mock-saml:1.0.9
+        image: boxyhq/mock-saml:1.2.0
         ports:
           - 4000:4000
         env:
@@ -114,9 +115,9 @@ jobs:
           PRIVATE_KEY: ${{ secrets.MOCK_SAML_PRIVATE_KEY }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           always-auth: true
           node-version: ${{ matrix.node-version }}
@@ -137,8 +138,9 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - run: npm run custom-install
-      - run: npm run lint
+      - run: npm install
+      - run: npm run check-lint
+      - run: npm run check-format
       - run: npm run build
       - run: npm run test
         working-directory: ./npm
@@ -181,7 +183,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
       - run: echo ${{ needs.ci.outputs.IMAGE_PATH }}
@@ -193,15 +195,15 @@ jobs:
       - name: Set up Docker Buildx
         if: github.ref == 'refs/heads/release'
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Set up QEMU
         if: github.ref == 'refs/heads/release'
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Login to Docker Hub
         if: github.ref == 'refs/heads/release'
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
@@ -209,7 +211,7 @@ jobs:
       - name: Build and push
         if: github.ref == 'refs/heads/release'
         id: docker_build
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: ./
           file: ./Dockerfile
@@ -406,16 +408,16 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18]
+        node-version: [20]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
       - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           always-auth: true
           node-version: ${{ matrix.node-version }}

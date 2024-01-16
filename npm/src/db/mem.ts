@@ -1,6 +1,6 @@
 // This is an in-memory implementation to be used with testing and prototyping only
 
-import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records } from '../typings';
+import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records, SortOrder } from '../typings';
 import * as dbutils from './utils';
 
 class Mem implements DatabaseDriver {
@@ -52,7 +52,13 @@ class Mem implements DatabaseDriver {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const returnValue: string[] = [];
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
@@ -70,7 +76,7 @@ class Mem implements DatabaseDriver {
       }
 
       const val: string[] = Array.from(this.indexes[index]);
-      const iterator: IterableIterator<string> = val.reverse().values();
+      const iterator: IterableIterator<string> = sortOrder === 'ASC' ? val.values() : val.reverse().values();
 
       for (const value of iterator) {
         if (count >= take) {
@@ -94,7 +100,8 @@ class Mem implements DatabaseDriver {
     pageOffset?: number,
     pageLimit?: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _?: string
+    _?: string,
+    sortOrder?: SortOrder
   ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
@@ -104,7 +111,8 @@ class Mem implements DatabaseDriver {
 
     take += skip;
     const dbKeys = Array.from((await this.indexes[dbutils.keyForIndex(namespace, idx)]) || []) as string[];
-    const iterator: IterableIterator<string> = dbKeys.reverse().values();
+    const iterator: IterableIterator<string> =
+      sortOrder === 'ASC' ? dbKeys.values() : dbKeys.reverse().values();
     const ret: string[] = [];
     for (const dbKey of iterator || []) {
       if (offsetAndLimitValueCheck) {
@@ -207,6 +215,10 @@ class Mem implements DatabaseDriver {
     for (const key of keys) {
       await this.delete(namespace, key);
     }
+  }
+
+  async close(): Promise<void> {
+    // no-op
   }
 }
 

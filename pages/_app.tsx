@@ -10,7 +10,7 @@ import micromatch from 'micromatch';
 import nextI18NextConfig from '../next-i18next.config.js';
 
 import { AccountLayout, SetupLinkLayout } from '@components/layouts';
-
+import '@boxyhq/react-ui/dist/style.css';
 import '../styles/globals.css';
 
 const unauthenticatedRoutes = [
@@ -18,6 +18,7 @@ const unauthenticatedRoutes = [
   '/admin/auth/login',
   '/admin/auth/idp-login',
   '/well-known/saml-configuration',
+  '/well-known/oidc-configuration',
   '/well-known/idp-configuration',
   '/oauth/jwks',
   '/idp/select',

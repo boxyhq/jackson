@@ -1,5 +1,5 @@
 import * as redis from 'redis';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records } from '../typings';
+import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records, SortOrder } from '../typings';
 import * as dbutils from './utils';
 
 class Redis implements DatabaseDriver {
@@ -37,37 +37,51 @@ class Redis implements DatabaseDriver {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAll(namespace: string, pageOffset?: number, pageLimit?: number, _?: string): Promise<Records> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
-    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
-    const returnValue: string[] = [];
-    const keyArray: string[] = [];
-    let count = 0;
-    take += skip;
-    for await (const { value } of this.client.zScanIterator(
-      dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
-      Math.min(take, 1000)
-    )) {
-      if (count >= take) {
-        break;
-      }
-      if (count >= skip) {
-        keyArray.push(dbutils.keyFromParts(namespace, value));
-      }
-      count++;
+  async getAll(
+    namespace: string,
+    pageOffset?: number,
+    pageLimit?: number,
+    _?: string,
+    sortOrder?: SortOrder
+  ): Promise<Records> {
+    const offset = pageOffset ? Number(pageOffset) : 0;
+    const count = pageLimit ? Number(pageLimit) : this.options.pageLimit;
+    const sortedSetKey = dbutils.keyFromParts(dbutils.createdAtPrefix, namespace);
+
+    const zRangeOptions = {
+      BY: 'SCORE',
+      REV: sortOrder === 'ASC',
+      LIMIT: {
+        offset,
+        count,
+      },
+    };
+
+    const elements =
+      sortOrder === 'ASC'
+        ? await this.client.zRange(sortedSetKey, +Infinity, -Infinity, zRangeOptions)
+        : await this.client.zRange(sortedSetKey, -Infinity, +Infinity, zRangeOptions);
+
+    if (elements.length === 0) {
+      return { data: [] };
     }
 
-    if (keyArray.length > 0) {
-      const value = await this.client.MGET(keyArray);
-      for (let i = 0; i < value.length; i++) {
-        const valueObject = JSON.parse(value[i].toString());
-        if (valueObject !== null && valueObject !== '') {
-          returnValue.push(valueObject);
-        }
+    const keyArray = elements.map((element) => {
+      return dbutils.keyFromParts(namespace, element);
+    });
+
+    const records: string[] = [];
+    const values = await this.client.MGET(keyArray);
+
+    for (let i = 0; i < values.length; i++) {
+      const valueObject = JSON.parse(values[i].toString());
+
+      if (valueObject !== null && valueObject !== '') {
+        records.push(valueObject);
       }
     }
-    return { data: returnValue || [] };
+
+    return { data: records };
   }
 
   async getByIndex(
@@ -198,6 +212,10 @@ class Redis implements DatabaseDriver {
     }
 
     await tx.exec();
+  }
+
+  async close(): Promise<void> {
+    await this.client.quit();
   }
 }
 

@@ -4,7 +4,7 @@ import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { CopyToClipboardButton } from '@components/ClipboardButton';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { IconButton } from '@components/IconButton';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 export const saveConnection = async ({
   formObj,
@@ -233,8 +233,8 @@ export function renderFieldList(args: {
             args.formObjParentKey ? args.formObj[args.formObjParentKey]?.[key] : args.formObj[key]
           )
         : args.formObjParentKey
-        ? args.formObj[args.formObjParentKey]?.[key]
-        : args.formObj[key];
+          ? args.formObj[args.formObjParentKey]?.[key]
+          : args.formObj[key];
 
     if (type === 'object') {
       return (

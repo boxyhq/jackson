@@ -52,164 +52,180 @@ tap.before(async () => {
 });
 
 tap.teardown(async () => {
-  // Delete the directory after the test
-  await directorySync.directories.delete(directory.id);
-
   process.exit(0);
 });
 
-tap.test('Webhook Events / ', async (t) => {
-  tap.afterEach(async () => {
-    await directorySync.webhookLogs.deleteAll(directory.id);
+tap.test('Webhook Events /', async (t) => {
+  t.teardown(async () => {
+    await directorySync.directories.delete(directory.id);
   });
 
-  t.test("Should be able to get the directory's webhook", async (t) => {
-    t.match(directory.webhook.endpoint, webhook.endpoint);
-    t.match(directory.webhook.secret, webhook.secret);
-  });
-
-  t.test('Should not log events if the directory has no webhook', async (t) => {
-    await directorySync.directories.update(directory.id, {
-      webhook: {
-        endpoint: '',
-        secret: '',
-      },
+  t.test('Webhook Events / ', async (t) => {
+    t.afterEach(async () => {
+      await directorySync.webhookLogs.deleteAll(directory.id);
+      await directorySync.users.deleteAll(directory.id);
     });
 
-    // Create a user
-    await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
-
-    const events = await directorySync.webhookLogs.getAll();
-
-    t.equal(events.length, 0);
-
-    // Restore the directory's webhook
-    await directorySync.directories.update(directory.id, {
-      webhook: {
-        endpoint: webhook.endpoint,
-        secret: webhook.secret,
-      },
-    });
-  });
-
-  t.test('Should not log webhook events if the logging is turned off', async (t) => {
-    // Turn off webhook event logging for the directory
-    await directorySync.directories.update(directory.id, {
-      log_webhook_events: false,
+    t.test("Should be able to get the directory's webhook", async (t) => {
+      t.match(directory.webhook.endpoint, webhook.endpoint);
+      t.match(directory.webhook.secret, webhook.secret);
     });
 
-    // Create a user
-    await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
+    t.test('Should not log events if the directory has no webhook', async (t) => {
+      await directorySync.directories.update(directory.id, {
+        webhook: {
+          endpoint: '',
+          secret: '',
+        },
+      });
 
-    const events = await directorySync.webhookLogs.getAll();
+      // Create a user
+      await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    t.equal(events.length, 0);
+      const events = await directorySync.webhookLogs.getAll();
 
-    // Turn on webhook event logging for the directory
-    await directorySync.directories.update(directory.id, {
-      log_webhook_events: true,
+      t.equal(events.length, 0);
+
+      // Restore the directory's webhook
+      await directorySync.directories.update(directory.id, {
+        webhook: {
+          endpoint: webhook.endpoint,
+          secret: webhook.secret,
+        },
+      });
     });
-  });
 
-  t.test('Should be able to get an event by id', async (t) => {
-    // Create a user
-    await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
+    t.test('Should not log webhook events if the logging is turned off', async (t) => {
+      // Turn off webhook event logging for the directory
+      await directorySync.directories.update(directory.id, {
+        log_webhook_events: false,
+      });
 
-    const logs = await directorySync.webhookLogs.getAll();
+      // Create a user
+      await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    const log = await directorySync.webhookLogs.get(logs[0].id);
+      const events = await directorySync.webhookLogs.getAll();
 
-    t.equal(log.id, logs[0].id);
-  });
+      t.equal(events.length, 0);
 
-  t.test('Should send user related events', async (t) => {
-    const mock = sinon.mock(axios);
+      // Turn on webhook event logging for the directory
+      await directorySync.directories.update(directory.id, {
+        log_webhook_events: true,
+      });
+    });
 
-    mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
+    t.test('Should be able to get an event by id', async (t) => {
+      // Create a user
+      await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
 
-    // Create the user
-    const { data: createdUser } = await directorySync.requests.handle(
-      usersRequest.create(directory, users[0]),
-      eventCallback
-    );
+      const logs = await directorySync.webhookLogs.getAll();
 
-    // Update the user
-    const { data: updatedUser } = await directorySync.requests.handle(
-      usersRequest.updateById(directory, createdUser.id, users[0]),
-      eventCallback
-    );
+      const log = await directorySync.webhookLogs.get(logs[0].id);
 
-    // Delete the user
-    const { data: deletedUser } = await directorySync.requests.handle(
-      usersRequest.deleteById(directory, createdUser.id),
-      eventCallback
-    );
+      t.equal(log.id, logs[0].id);
+    });
 
-    mock.verify();
-    mock.restore();
+    t.test('Should send user related events', async (t) => {
+      const mock = sinon.mock(axios);
 
-    const logs = await directorySync.webhookLogs.getAll();
+      mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
 
-    t.ok(logs);
-    t.equal(logs.length, 3);
+      // Create the user
+      const { data: createdUser } = await directorySync.requests.handle(
+        usersRequest.create(directory, users[0]),
+        eventCallback
+      );
 
-    t.match(logs[0].event, 'user.deleted');
-    t.match(logs[0].directory_id, directory.id);
-    t.hasStrict(logs[0].data.raw, deletedUser);
+      // Update the user
+      const { data: updatedUser } = await directorySync.requests.handle(
+        usersRequest.updateById(directory, createdUser.id, users[0]),
+        eventCallback
+      );
 
-    t.match(logs[1].event, 'user.updated');
-    t.match(logs[1].directory_id, directory.id);
-    t.hasStrict(logs[1].data.raw, updatedUser);
+      // Delete the user
+      const { data: deletedUser } = await directorySync.requests.handle(
+        usersRequest.deleteById(directory, createdUser.id),
+        eventCallback
+      );
 
-    t.match(logs[2].event, 'user.created');
-    t.match(logs[2].directory_id, directory.id);
-    t.hasStrict(logs[2].data.raw, createdUser);
+      mock.verify();
+      mock.restore();
 
-    await directorySync.users.deleteAll(directory.id);
-  });
+      const logs = await directorySync.webhookLogs.getAll();
 
-  t.test('Should send group related events', async (t) => {
-    const mock = sinon.mock(axios);
+      t.ok(logs);
+      t.equal(logs.length, 3);
 
-    mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
+      if (!Array.isArray(logs[0].payload)) {
+        t.match(logs[0].payload.event, 'user.deleted');
+        t.match(logs[0].payload.directory_id, directory.id);
+        t.hasStrict(logs[0].payload.data.raw, deletedUser);
+      }
 
-    // Create the group
-    const { data: createdGroup } = await directorySync.requests.handle(
-      groupRequest.create(directory, groups[0]),
-      eventCallback
-    );
+      if (!Array.isArray(logs[1].payload)) {
+        t.match(logs[1].payload.event, 'user.updated');
+        t.match(logs[1].payload.directory_id, directory.id);
+        t.hasStrict(logs[1].payload.data.raw, updatedUser);
+      }
 
-    // Update the group
-    const { data: updatedGroup } = await directorySync.requests.handle(
-      groupRequest.updateById(directory, createdGroup.id, groups[0]),
-      eventCallback
-    );
+      if (!Array.isArray(logs[2].payload)) {
+        t.match(logs[2].payload.event, 'user.created');
+        t.match(logs[2].payload.directory_id, directory.id);
+        t.hasStrict(logs[2].payload.data.raw, createdUser);
+      }
 
-    // Delete the group
-    const { data: deletedGroup } = await directorySync.requests.handle(
-      groupRequest.deleteById(directory, createdGroup.id),
-      eventCallback
-    );
+      await directorySync.users.deleteAll(directory.id);
+    });
 
-    mock.verify();
-    mock.restore();
+    t.test('Should send group related events', async (t) => {
+      const mock = sinon.mock(axios);
 
-    const logs = await directorySync.webhookLogs.getAll();
+      mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
 
-    t.ok(logs);
-    t.equal(logs.length, 3);
+      // Create the group
+      const { data: createdGroup } = await directorySync.requests.handle(
+        groupRequest.create(directory, groups[0]),
+        eventCallback
+      );
 
-    t.match(logs[0].event, 'group.deleted');
-    t.match(logs[0].directory_id, directory.id);
-    t.hasStrict(logs[0].data.raw, deletedGroup);
+      // Update the group
+      const { data: updatedGroup } = await directorySync.requests.handle(
+        groupRequest.updateById(directory, createdGroup.id, groups[0]),
+        eventCallback
+      );
 
-    t.match(logs[1].event, 'group.updated');
-    t.match(logs[1].directory_id, directory.id);
-    t.hasStrict(logs[1].data.raw, updatedGroup);
+      // Delete the group
+      const { data: deletedGroup } = await directorySync.requests.handle(
+        groupRequest.deleteById(directory, createdGroup.id),
+        eventCallback
+      );
 
-    t.match(logs[2].event, 'group.created');
-    t.match(logs[2].directory_id, directory.id);
-    t.hasStrict(logs[2].data.raw, createdGroup);
+      mock.verify();
+      mock.restore();
+
+      const logs = await directorySync.webhookLogs.getAll();
+
+      t.ok(logs);
+      t.equal(logs.length, 3);
+
+      if (!Array.isArray(logs[0].payload)) {
+        t.match(logs[0].payload.event, 'group.deleted');
+        t.match(logs[0].payload.directory_id, directory.id);
+        t.hasStrict(logs[0].payload.data.raw, deletedGroup);
+      }
+
+      if (!Array.isArray(logs[1].payload)) {
+        t.match(logs[1].payload.event, 'group.updated');
+        t.match(logs[1].payload.directory_id, directory.id);
+        t.hasStrict(logs[1].payload.data.raw, updatedGroup);
+      }
+
+      if (!Array.isArray(logs[2].payload)) {
+        t.match(logs[2].payload.event, 'group.created');
+        t.match(logs[2].payload.directory_id, directory.id);
+        t.hasStrict(logs[2].payload.data.raw, createdGroup);
+      }
+    });
   });
 
   t.test('Should send group membership related events', async (t) => {
@@ -254,13 +270,17 @@ tap.test('Webhook Events / ', async (t) => {
     t.ok(logs);
     t.equal(logs.length, 4);
 
-    t.match(logs[0].event, 'group.user_removed');
-    t.match(logs[0].directory_id, directory.id);
-    t.hasStrict(logs[0].data.raw, createdUser);
+    if (!Array.isArray(logs[0].payload)) {
+      t.match(logs[0].payload.event, 'group.user_removed');
+      t.match(logs[0].payload.directory_id, directory.id);
+      t.hasStrict(logs[0].payload.data.raw, createdUser);
+    }
 
-    t.match(logs[1].event, 'group.user_added');
-    t.match(logs[1].directory_id, directory.id);
-    t.hasStrict(logs[1].data.raw, createdUser);
+    if (!Array.isArray(logs[1].payload)) {
+      t.match(logs[1].payload.event, 'group.user_added');
+      t.match(logs[1].payload.directory_id, directory.id);
+      t.hasStrict(logs[1].payload.data.raw, createdUser);
+    }
 
     await directorySync.users.delete(createdUser.id);
     await directorySync.groups.delete(createdGroup.id);

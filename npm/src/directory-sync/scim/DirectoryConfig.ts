@@ -24,6 +24,7 @@ import {
 } from '../../controller/utils';
 import { apiError, JacksonError } from '../../controller/error';
 import { getDirectorySyncProviders, isSCIMEnabledProvider } from './utils';
+import * as metrics from '../../opentelemetry/metrics';
 
 interface DirectoryConfigParams {
   db: DatabaseStore;
@@ -180,9 +181,7 @@ export class DirectoryConfig {
    *      200:
    *        description: Success
    *        schema:
-   *          type: array
-   *          items:
-   *            $ref:  '#/definitions/Directory'
+   *          $ref:  '#/definitions/Directory'
    */
   public async create(params: {
     name?: string;
@@ -195,6 +194,8 @@ export class DirectoryConfig {
     google_access_token?: string;
     google_refresh_token?: string;
   }): Promise<Response<Directory>> {
+    metrics.increment('createDsyncConnection');
+
     try {
       const {
         name,
@@ -308,6 +309,8 @@ export class DirectoryConfig {
    *           $ref: '#/definitions/Directory'
    */
   public async get(id: string): Promise<Response<Directory>> {
+    metrics.increment('getDsyncConnections');
+
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -325,43 +328,113 @@ export class DirectoryConfig {
     }
   }
 
-  // Update the configuration. Partial updates are supported
+  /**
+   * @swagger
+   * /api/v1/dsync/{directoryId}:
+   *   patch:
+   *     summary: Update a directory connection
+   *     parameters:
+   *       - name: directoryId
+   *         description: Directory ID
+   *         in: path
+   *         required: true
+   *         type: string
+   *       - name: name
+   *         description: Name
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: webhook_url
+   *         description: Webhook URL
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: webhook_secret
+   *         description: Webhook secret
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: log_webhook_events
+   *         description: If true, webhook requests will be logged
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: deactivated
+   *         description: If true, the directory connection will be deactivated
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: google_domain
+   *         description: Google domain
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: google_access_token
+   *         description: Google access token
+   *         in: formData
+   *         required: false
+   *         type: string
+   *       - name: google_refresh_token
+   *         description: Google refresh token
+   *         in: formData
+   *         required: false
+   *         type: string
+   *     tags: [Directory Sync]
+   *     produces:
+   *      - application/json
+   *     consumes:
+   *      - application/x-www-form-urlencoded
+   *      - application/json
+   *     responses:
+   *      200:
+   *        description: Success
+   *        schema:
+   *          $ref:  '#/definitions/Directory'
+   */
   public async update(
     id: string,
-    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim' | 'type'>
+    param: Omit<Partial<Directory>, 'id' | 'tenant' | 'prodct' | 'scim' | 'type'> & {
+      webhook_url?: string;
+      webhook_secret?: string;
+    }
   ): Promise<Response<Directory>> {
     try {
       if (!id) {
         throw new JacksonError('Missing required parameters.', 400);
       }
 
-      const {
-        name,
-        log_webhook_events,
-        webhook,
-        deactivated,
-        google_domain,
-        google_access_token,
-        google_refresh_token,
-      } = param;
-
       const directory: Directory = await this.store().get(id);
-
-      let updatedDirectory: Directory = {
+      const toUpdate = {
         ...directory,
-        name: name || directory.name,
-        webhook: webhook || directory.webhook,
-        deactivated: deactivated !== undefined ? deactivated : directory.deactivated,
-        log_webhook_events:
-          log_webhook_events !== undefined ? log_webhook_events : directory.log_webhook_events,
-        google_domain: google_domain || directory.google_domain,
-        google_access_token: google_access_token || directory.google_access_token,
-        google_refresh_token: google_refresh_token || directory.google_refresh_token,
       };
 
-      await this.store().put(id, updatedDirectory);
+      const propertiesToUpdate = [
+        'name',
+        'log_webhook_events',
+        'webhook',
+        'deactivated',
+        'google_domain',
+        'google_access_token',
+        'google_refresh_token',
+      ];
 
-      updatedDirectory = this.transform(updatedDirectory);
+      for (const property of propertiesToUpdate) {
+        if (property in param) {
+          toUpdate[property] = param[property];
+        }
+      }
+
+      if ('webhook_url' in param) {
+        toUpdate['webhook']['endpoint'] = param.webhook_url || '';
+      }
+
+      if ('webhook_secret' in param) {
+        toUpdate['webhook']['secret'] = param.webhook_secret || '';
+      }
+
+      await this.store().put(id, toUpdate);
+
+      const updatedDirectory = this.transform(toUpdate);
 
       if ('deactivated' in param) {
         if (isConnectionActive(updatedDirectory)) {
@@ -400,6 +473,8 @@ export class DirectoryConfig {
    *            $ref:  '#/definitions/Directory'
    */
   public async getByTenantAndProduct(tenant: string, product: string): Promise<Response<Directory[]>> {
+    metrics.increment('getDsyncConnections');
+
     try {
       if (!tenant || !product) {
         throw new JacksonError('Missing required parameters.', 400);
@@ -422,6 +497,8 @@ export class DirectoryConfig {
   public async getAll(
     params: PaginationParams = {}
   ): Promise<Response<Directory[]> & { pageToken?: string }> {
+    metrics.increment('getDsyncConnections');
+
     const { pageOffset, pageLimit, pageToken } = params;
 
     try {
@@ -465,6 +542,8 @@ export class DirectoryConfig {
    *         description: Success
    */
   public async delete(id: string): Promise<Response<null>> {
+    metrics.increment('deleteDsyncConnections');
+
     try {
       if (!id) {
         throw new JacksonError('Missing required parameter.', 400);
@@ -538,6 +617,8 @@ export class DirectoryConfig {
   public async filterBy(
     params: FilterByParams = {}
   ): Promise<Response<Directory[]> & { pageToken?: string }> {
+    metrics.increment('getDsyncConnections');
+
     const { product, provider, pageOffset, pageLimit, pageToken } = params;
     let index: Index | null = null;
 

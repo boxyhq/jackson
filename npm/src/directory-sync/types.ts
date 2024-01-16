@@ -7,6 +7,8 @@ import { Groups } from './scim/Groups';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { ApiError } from '../typings';
 import { RequestHandler } from './request';
+import { EventProcessor } from './batch-events/queue';
+import { EventLock as Lock } from './batch-events/lock';
 
 export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
 export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
@@ -16,6 +18,8 @@ export type IUsers = InstanceType<typeof Users>;
 export type IGroups = InstanceType<typeof Groups>;
 export type IWebhookEventsLogger = InstanceType<typeof WebhookEventsLogger>;
 export type IRequestHandler = InstanceType<typeof RequestHandler>;
+export type IEventProcessor = InstanceType<typeof EventProcessor>;
+export type EventLock = InstanceType<typeof Lock>;
 
 export type DirectorySyncEventType =
   | 'user.created'
@@ -95,12 +99,13 @@ export interface DirectorySyncEvent {
   product: string;
 }
 
-export interface WebhookEventLog extends DirectorySyncEvent {
+export interface WebhookEventLog {
   id: string;
   webhook_endpoint: string;
   created_at: Date;
   status_code?: number;
   delivered?: boolean;
+  payload: DirectorySyncEvent | DirectorySyncEvent[];
 }
 
 export type User = {
@@ -157,11 +162,10 @@ export type UserPatchOperation = {
 export type GroupPatchOperation = {
   op: 'add' | 'remove' | 'replace';
   path?: 'members' | 'displayName';
-  value:
-    | {
-        value: string;
-        display?: string;
-      }[];
+  value: {
+    value: string;
+    display?: string;
+  }[];
 };
 
 export type GroupMembership = {

@@ -20,7 +20,7 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Head>
-        <title>Admin Portal | BoxyHQ</title>
+        <title>{t('boxyhq_admin_portal')}</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />

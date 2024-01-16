@@ -24,7 +24,7 @@ export class GoogleAuth {
   }
 
   createOAuth2Client(directory: Directory) {
-    const googleProvider = this.opts.dsync?.providers.google;
+    const googleProvider = this.opts.dsync?.providers?.google;
 
     const authClient = new OAuth2Client(
       googleProvider?.clientId,

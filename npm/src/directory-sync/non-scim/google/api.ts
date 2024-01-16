@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { admin } from '@googleapis/admin';
 import { OAuth2Client } from 'google-auth-library';
 
 import type {
@@ -28,7 +28,7 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   createOAuth2Client(directory: Directory) {
-    const googleProvider = this.opts.dsync?.providers.google;
+    const googleProvider = this.opts.dsync?.providers?.google;
 
     const authClient = new OAuth2Client(
       googleProvider?.clientId,
@@ -70,7 +70,7 @@ export class GoogleProvider implements IDirectoryProvider {
       query['pageToken'] = options.pageToken;
     }
 
-    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
+    const googleAdmin = admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
 
     const response = await googleAdmin.users.list(query);
 
@@ -102,7 +102,7 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   async getGroups(directory: Directory, options: PaginationParams | null) {
-    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
+    const googleAdmin = admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
 
     const query = {
       maxResults: 200,
@@ -140,7 +140,7 @@ export class GoogleProvider implements IDirectoryProvider {
   }
 
   async getGroupMembers(directory: Directory, group: Group) {
-    const googleAdmin = google.admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
+    const googleAdmin = admin({ version: 'directory_v1', auth: this.createOAuth2Client(directory) });
 
     const allMembers: GroupMember[] = [];
     const query = {
