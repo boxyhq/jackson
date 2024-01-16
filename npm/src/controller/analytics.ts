@@ -1,4 +1,4 @@
-import { Storable } from '../typings';
+import { IConnectionAPIController, IDirectorySyncController, Storable } from '../typings';
 import Mixpanel from 'mixpanel';
 import { randomUUID } from 'crypto';
 
@@ -7,14 +7,15 @@ const sentKey = 'lastSent';
 
 export class AnalyticsController {
   analyticsStore: Storable;
-  connectionStore: Storable;
+  connectionAPIController: IConnectionAPIController;
+  directorySyncController: IDirectorySyncController;
   client: Mixpanel.Mixpanel;
   anonymousId: string;
 
-  constructor({ analyticsStore, connectionStore }) {
+  constructor({ analyticsStore, connectionAPIController, directorySyncController }) {
     this.analyticsStore = analyticsStore;
-    this.connectionStore = connectionStore;
-    this.client = Mixpanel.init('1028494897a5520b90e7344344060fa7');
+    this.connectionAPIController = connectionAPIController;
+    this.directorySyncController = directorySyncController;
     this.anonymousId = '';
   }
 
@@ -43,12 +44,15 @@ export class AnalyticsController {
 
   async send() {
     try {
-      const sso_connections_added = (await this.connectionStore.getCount()) || 'No count returned';
+      const sso_connections_added = (await this.connectionAPIController.getCount()) || 'No count recorded';
+      const dsync_connections_added =
+        (await this.directorySyncController.directories.getCount()) || 'No count recorded';
       this.client.track(
         idKey,
         {
           distinct_id: this.anonymousId,
           'SSO Connections added': sso_connections_added,
+          'Directory Sync Connections added': dsync_connections_added,
         },
         (err: Error | undefined) => {
           if (err) {
