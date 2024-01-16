@@ -102,7 +102,7 @@ export const controllers = async (
       'Anonymous analytics enabled. You can disable this by setting the DO_NOT_TRACK=1 or BOXYHQ_NO_ANALYTICS=1 environment variables'
     );
     const analyticsStore = db.store('_analytics:events');
-    const analyticsController = new AnalyticsController({ analyticsStore });
+    const analyticsController = new AnalyticsController({ analyticsStore, connectionStore });
     await analyticsController.init();
   }
 
