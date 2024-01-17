@@ -97,15 +97,6 @@ export const controllers = async (
   const setupLinkController = new SetupLinkController({ setupLinkStore, opts });
   const productController = new ProductController({ productStore, opts });
 
-  if (!opts.noAnalytics) {
-    console.info(
-      'Anonymous analytics enabled. You can disable this by setting the DO_NOT_TRACK=1 or BOXYHQ_NO_ANALYTICS=1 environment variables'
-    );
-    const analyticsStore = db.store('_analytics:events');
-    const analyticsController = new AnalyticsController({ analyticsStore });
-    await analyticsController.init();
-  }
-
   // Create default certificate if it doesn't exist.
   await x509.init(certificateStore, opts);
 
@@ -146,6 +137,19 @@ export const controllers = async (
 
       console.info(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
+  }
+
+  if (!opts.noAnalytics) {
+    console.info(
+      'Anonymous analytics enabled. You can disable this by setting the DO_NOT_TRACK=1 or BOXYHQ_NO_ANALYTICS=1 environment variables'
+    );
+    const analyticsStore = db.store('_analytics:events');
+    const analyticsController = new AnalyticsController({
+      analyticsStore,
+      connectionAPIController,
+      directorySyncController,
+    });
+    await analyticsController.init();
   }
 
   const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';

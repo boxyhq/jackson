@@ -18,6 +18,7 @@ import {
   UpdateSAMLConnectionParams,
   UpdateOIDCConnectionParams,
   GetByProductParams,
+  Index,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames, appID, transformConnections, transformConnection, isConnectionActive } from './utils';
@@ -778,5 +779,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
     );
 
     return { data: transformConnections(connections.data), pageToken };
+  }
+
+  public async getCount(idx?: Index) {
+    return await this.connectionStore.getCount(idx);
   }
 }

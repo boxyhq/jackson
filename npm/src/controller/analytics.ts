@@ -1,5 +1,5 @@
-import { Storable } from '../typings';
-import Mixpanel from 'mixpanel';
+import { IConnectionAPIController, IDirectorySyncController, Storable } from '../typings';
+import Mixpanel, { type Event } from 'mixpanel';
 import { randomUUID } from 'crypto';
 
 const idKey = 'heartbeat';
@@ -7,12 +7,16 @@ const sentKey = 'lastSent';
 
 export class AnalyticsController {
   analyticsStore: Storable;
+  connectionAPIController: IConnectionAPIController;
+  directorySyncController: IDirectorySyncController;
   client: Mixpanel.Mixpanel;
   anonymousId: string;
 
-  constructor({ analyticsStore }) {
+  constructor({ analyticsStore, connectionAPIController, directorySyncController }) {
     this.analyticsStore = analyticsStore;
     this.client = Mixpanel.init('1028494897a5520b90e7344344060fa7');
+    this.connectionAPIController = connectionAPIController;
+    this.directorySyncController = directorySyncController;
     this.anonymousId = '';
   }
 
@@ -41,25 +45,40 @@ export class AnalyticsController {
 
   async send() {
     try {
-      this.client.track(
-        idKey,
+      const sso_connections_count = await this.connectionAPIController.getCount();
+      const dsync_connections_count = await this.directorySyncController.directories.getCount();
+      const events: Event[] = [
         {
-          distinct_id: this.anonymousId,
+          event: idKey,
+          properties: {
+            distinct_id: this.anonymousId,
+          },
         },
-        (err: Error | undefined) => {
-          if (err) {
-            setTimeout(
-              () => {
-                this.send();
-              },
-              1000 * 60 * 60
-            );
-            return;
-          }
+      ];
+      if (sso_connections_count || dsync_connections_count) {
+        events.push({
+          event: 'usage',
+          properties: {
+            distinct_id: this.anonymousId,
+            'SSO Connections': sso_connections_count,
+            'Directory Sync Connections': dsync_connections_count,
+          },
+        });
+      }
 
-          this.analyticsStore.put(sentKey, new Date().toISOString());
+      this.client.track_batch(events, (err: Error[] | undefined) => {
+        if (err?.length) {
+          setTimeout(
+            () => {
+              this.send();
+            },
+            1000 * 60 * 60
+          );
+          return;
         }
-      );
+
+        this.analyticsStore.put(sentKey, new Date().toISOString());
+      });
     } catch (err) {
       console.error('Error sending analytics', err);
     }
