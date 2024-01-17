@@ -45,9 +45,8 @@ export class AnalyticsController {
 
   async send() {
     try {
-      const sso_connections_added = (await this.connectionAPIController.getCount()) || 'No count recorded';
-      const dsync_connections_added =
-        (await this.directorySyncController.directories.getCount()) || 'No count recorded';
+      const sso_connections_added = await this.connectionAPIController.getCount();
+      const dsync_connections_added = await this.directorySyncController.directories.getCount();
       this.client.track(
         idKey,
         {
