@@ -1,5 +1,5 @@
 import { IConnectionAPIController, IDirectorySyncController, Storable } from '../typings';
-import Mixpanel from 'mixpanel';
+import Mixpanel, { type Event } from 'mixpanel';
 import { randomUUID } from 'crypto';
 
 const idKey = 'heartbeat';
@@ -45,29 +45,40 @@ export class AnalyticsController {
 
   async send() {
     try {
-      const sso_connections_added = await this.connectionAPIController.getCount();
-      const dsync_connections_added = await this.directorySyncController.directories.getCount();
-      this.client.track(
-        idKey,
+      const sso_connections_count = await this.connectionAPIController.getCount();
+      const dsync_connections_count = await this.directorySyncController.directories.getCount();
+      const events: Event[] = [
         {
-          distinct_id: this.anonymousId,
-          'SSO Connections added': sso_connections_added,
-          'Directory Sync Connections added': dsync_connections_added,
+          event: idKey,
+          properties: {
+            distinct_id: this.anonymousId,
+          },
         },
-        (err: Error | undefined) => {
-          if (err) {
-            setTimeout(
-              () => {
-                this.send();
-              },
-              1000 * 60 * 60
-            );
-            return;
-          }
+      ];
+      if (sso_connections_count || dsync_connections_count) {
+        events.push({
+          event: 'usage',
+          properties: {
+            distinct_id: this.anonymousId,
+            'SSO Connections': sso_connections_count,
+            'Directory Sync Connections': dsync_connections_count,
+          },
+        });
+      }
 
-          this.analyticsStore.put(sentKey, new Date().toISOString());
+      this.client.track_batch(events, (err: Error[] | undefined) => {
+        if (err?.length) {
+          setTimeout(
+            () => {
+              this.send();
+            },
+            1000 * 60 * 60
+          );
+          return;
         }
-      );
+
+        this.analyticsStore.put(sentKey, new Date().toISOString());
+      });
     } catch (err) {
       console.error('Error sending analytics', err);
     }
