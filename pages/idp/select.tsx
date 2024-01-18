@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
@@ -8,7 +9,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
 import { hexToOklch } from '@lib/color';
-import Image from 'next/image';
 import { PoweredBy } from '@components/PoweredBy';
 import { getPortalBranding, getProductBranding } from '@ee/branding/utils';
 import { boxyhqHosted } from '@lib/env';
@@ -47,7 +47,7 @@ export default function ChooseIdPConnection({
 
         {branding?.logoUrl && (
           <div className='flex justify-center'>
-            <Image src={branding.logoUrl} alt={branding.companyName} width={50} height={50} />
+            <img src={branding.logoUrl} alt={branding.companyName} className='max-h-12' />
           </div>
         )}
 
