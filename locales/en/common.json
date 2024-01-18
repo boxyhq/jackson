@@ -187,7 +187,7 @@
   "branding_primary_color_label": "Primary Color",
   "configure_sso": "Configure Single Sign-On",
   "configure_dsync": "Configure Directory Sync",
-  "branding_logo_url_alt": "Provide a URL to your logo. Recommend PNG or SVG formats. The image will be capped to maximum height of 56px.",
+  "branding_logo_url_alt": "Provide a URL to your logo. Recommend PNG or SVG formats. The image will be capped to a maximum height of 56px.",
   "branding_favicon_url_alt": "Provide a URL to your favicon. Recommend PNG, SVG, or ICO formats.",
   "branding_company_name_alt": "Provide your company name or product name.",
   "branding_primary_color_alt": "Primary color will be applied to buttons, links, and other elements.",
