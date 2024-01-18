@@ -47,7 +47,7 @@ export default function ChooseIdPConnection({
 
         {branding?.logoUrl && (
           <div className='flex justify-center'>
-            <img src={branding.logoUrl} alt={branding.companyName} className='max-h-12' />
+            <img src={branding.logoUrl} alt={branding.companyName} className='max-h-14' />
           </div>
         )}
 
