@@ -254,7 +254,7 @@ export class SSOHandler {
       };
     } catch (err: any) {
       console.error(err);
-      throw new JacksonError(`Unable to completed OIDC request. - ${err.message}`, 400);
+      throw new JacksonError(`Unable to complete OIDC request. - ${err.message}`, 400);
     }
   }
 
