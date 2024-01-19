@@ -17,7 +17,7 @@ import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
 
-export class SAMLHandler {
+export class SSOHandler {
   private connection: Storable;
   private session: Storable;
   private opts: JacksonOption;

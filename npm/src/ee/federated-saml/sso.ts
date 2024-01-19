@@ -2,7 +2,7 @@ import saml from '@boxyhq/saml20';
 
 import { App } from './app';
 import { JacksonError } from '../../controller/error';
-import { SAMLHandler } from '../../controller/sso-handler';
+import { SSOHandler } from '../../controller/sso-handler';
 import type { JacksonOption, OIDCSSORecord, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
 import { extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
@@ -18,7 +18,7 @@ const isOIDCConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection
 
 export class SSO {
   private app: App;
-  private ssoHandler: SAMLHandler;
+  private ssoHandler: SSOHandler;
   private samlTracer: SAMLTracerInstance;
   private opts: JacksonOption;
 
@@ -29,7 +29,7 @@ export class SSO {
     opts,
   }: {
     app: App;
-    ssoHandler: SAMLHandler;
+    ssoHandler: SSOHandler;
     samlTracer: SAMLTracerInstance;
     opts: JacksonOption;
   }) {
