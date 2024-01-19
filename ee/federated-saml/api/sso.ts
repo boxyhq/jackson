@@ -41,7 +41,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (!response) {
-    throw new Error('Unable create SAML Federated request. Error creating authorize url.');
+    throw new Error('Unable to create SAML Federated request. Error creating authorize url.');
   }
 
   if ('redirect_url' in response) {
