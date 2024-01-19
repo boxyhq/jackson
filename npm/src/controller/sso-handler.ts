@@ -240,6 +240,8 @@ export class SAMLHandler {
       const relayState = await this.createSession({
         requestId: connection.clientID,
         requested: requestParams,
+        oidcCodeVerifier,
+        oidcNonce,
       });
 
       const ssoUrl = oidcClient.authorizationUrl({
@@ -259,9 +261,7 @@ export class SAMLHandler {
     }
   }
 
-  createSAMLResponse = async (params: { profile: SAMLProfile; session: any }) => {
-    const { profile, session } = params;
-
+  createSAMLResponse = async ({ profile, session }: { profile: SAMLProfile; session: any }) => {
     const certificate = await getDefaultCertificate();
 
     try {
@@ -293,7 +293,17 @@ export class SAMLHandler {
   };
 
   // Create a new session to store SP request information
-  private createSession = async ({ requestId, requested }: { requestId: string; requested: any }) => {
+  private createSession = async ({
+    requestId,
+    requested,
+    oidcCodeVerifier,
+    oidcNonce,
+  }: {
+    requestId: string;
+    requested: any;
+    oidcCodeVerifier?: string;
+    oidcNonce?: string;
+  }) => {
     const sessionId = crypto.randomBytes(16).toString('hex');
 
     const session = {
@@ -301,6 +311,14 @@ export class SAMLHandler {
       requested,
       samlFederated: true,
     };
+
+    if (oidcCodeVerifier) {
+      session['oidcCodeVerifier'] = oidcCodeVerifier;
+    }
+
+    if (oidcNonce) {
+      session['oidcNonce'] = oidcNonce;
+    }
 
     await this.session.put(sessionId, session);
 

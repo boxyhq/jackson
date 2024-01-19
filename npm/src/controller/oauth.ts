@@ -739,13 +739,11 @@ export class OAuthController implements IOAuthController {
       }
     }
 
+    // Prepare the response
     let redirectUrl: string | undefined;
     let responseForm: string | undefined;
 
     const isSAMLFederated = session && 'samlFederated' in session;
-
-    console.log('isSAMLFederated', isSAMLFederated);
-    console.log('profile', profile);
 
     if (!isSAMLFederated) {
       const code = await this._buildAuthorizationCode(oidcConnection, profile, session, false);
