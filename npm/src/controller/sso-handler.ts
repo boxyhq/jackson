@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
+import { generators } from 'openid-client';
 
 import type { JacksonOption, Storable, SAMLSSORecord, OIDCSSORecord } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
@@ -12,10 +13,11 @@ import { IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
 import { createSAMLResponse } from '../saml/lib';
 import * as redirect from './oauth/redirect';
+import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
 
-export class SAMLHandler {
+export class SSOHandler {
   private connection: Storable;
   private session: Storable;
   private opts: JacksonOption;
@@ -136,9 +138,13 @@ export class SAMLHandler {
     return { connection: connections[0] };
   }
 
-  async createSAMLRequest(params: { connection: SAMLSSORecord; requestParams: Record<string, any> }) {
-    const { connection, requestParams } = params;
-
+  async createSAMLRequest({
+    connection,
+    requestParams,
+  }: {
+    connection: SAMLSSORecord;
+    requestParams: Record<string, any>;
+  }) {
     // We have a connection now, so we can create the SAML request
     const certificate = await getDefaultCertificate();
 
@@ -166,19 +172,13 @@ export class SAMLHandler {
         : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
     });
 
-    // Create a new session to store SP request information
-    const sessionId = crypto.randomBytes(16).toString('hex');
-
-    await this.session.put(sessionId, {
-      id: samlRequest.id,
+    const relayState = await this.createSession({
+      requestId: samlRequest.id,
       requested: {
         ...requestParams,
         client_id: connection.clientID,
       },
-      samlFederated: true,
     });
-
-    const relayState = `${relayStatePrefix}${sessionId}`;
 
     let redirectUrl;
     let authorizeForm;
@@ -208,9 +208,57 @@ export class SAMLHandler {
     };
   }
 
-  createSAMLResponse = async (params: { profile: SAMLProfile; session: any }) => {
-    const { profile, session } = params;
+  async createOIDCRequest({
+    connection,
+    requestParams,
+  }: {
+    connection: OIDCSSORecord;
+    requestParams: Record<string, any>;
+  }) {
+    if (!this.opts.oidcPath) {
+      throw new JacksonError('OpenID response handler path (oidcPath) is not set', 400);
+    }
 
+    const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
+
+    try {
+      const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
+      const oidcClient = new oidcIssuer.Client({
+        client_id: clientId!,
+        client_secret: clientSecret,
+        redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
+        response_types: ['code'],
+      });
+
+      const oidcCodeVerifier = generators.codeVerifier();
+      const code_challenge = generators.codeChallenge(oidcCodeVerifier);
+      const oidcNonce = generators.nonce();
+
+      const relayState = await this.createSession({
+        requestId: connection.clientID,
+        requested: requestParams,
+        oidcCodeVerifier,
+        oidcNonce,
+      });
+
+      const ssoUrl = oidcClient.authorizationUrl({
+        scope: 'openid email profile',
+        code_challenge,
+        code_challenge_method: 'S256',
+        state: relayState,
+        nonce: oidcNonce,
+      });
+
+      return {
+        redirect_url: ssoUrl,
+      };
+    } catch (err: any) {
+      console.error(err);
+      throw new JacksonError(`Unable to complete OIDC request. - ${err.message}`, 400);
+    }
+  }
+
+  createSAMLResponse = async ({ profile, session }: { profile: SAMLProfile; session: any }) => {
     const certificate = await getDefaultCertificate();
 
     try {
@@ -239,5 +287,38 @@ export class SAMLHandler {
       // TODO: Instead send saml response with status code
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
+  };
+
+  // Create a new session to store SP request information
+  private createSession = async ({
+    requestId,
+    requested,
+    oidcCodeVerifier,
+    oidcNonce,
+  }: {
+    requestId: string;
+    requested: any;
+    oidcCodeVerifier?: string;
+    oidcNonce?: string;
+  }) => {
+    const sessionId = crypto.randomBytes(16).toString('hex');
+
+    const session = {
+      id: requestId,
+      requested,
+      samlFederated: true,
+    };
+
+    if (oidcCodeVerifier) {
+      session['oidcCodeVerifier'] = oidcCodeVerifier;
+    }
+
+    if (oidcNonce) {
+      session['oidcNonce'] = oidcNonce;
+    }
+
+    await this.session.put(sessionId, session);
+
+    return `${relayStatePrefix}${sessionId}`;
   };
 }

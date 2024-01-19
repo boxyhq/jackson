@@ -2,31 +2,35 @@ import saml from '@boxyhq/saml20';
 
 import { App } from './app';
 import { JacksonError } from '../../controller/error';
-import { SAMLHandler } from '../../controller/saml-handler';
-import type { JacksonOption, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
+import { SSOHandler } from '../../controller/sso-handler';
+import type { JacksonOption, OIDCSSORecord, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
 import { extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
+const isSAMLConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection is SAMLSSORecord => {
+  return 'idpMetadata' in connection;
+};
+
 export class SSO {
   private app: App;
-  private samlHandler: SAMLHandler;
+  private ssoHandler: SSOHandler;
   private samlTracer: SAMLTracerInstance;
   private opts: JacksonOption;
 
   constructor({
     app,
-    samlHandler,
+    ssoHandler,
     samlTracer,
     opts,
   }: {
     app: App;
-    samlHandler: SAMLHandler;
+    ssoHandler: SSOHandler;
     samlTracer: SAMLTracerInstance;
     opts: JacksonOption;
   }) {
     this.app = app;
-    this.samlHandler = samlHandler;
+    this.ssoHandler = ssoHandler;
     this.samlTracer = samlTracer;
     this.opts = opts;
   }
@@ -43,7 +47,7 @@ export class SSO {
   }) => {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    let connection: SAMLSSORecord | undefined;
+    let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest, app;
 
     try {
@@ -67,7 +71,7 @@ export class SSO {
         throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
       }
 
-      const response = await this.samlHandler.resolveConnection({
+      const response = await this.ssoHandler.resolveConnection({
         tenant: app.tenant,
         product: app.product,
         idp_hint,
@@ -88,31 +92,38 @@ export class SSO {
       }
 
       // If there is a connection, use that connection
-      if ('connection' in response && 'idpMetadata' in response.connection) {
+      if ('connection' in response) {
         connection = response.connection;
       }
 
       if (!connection) {
-        throw new JacksonError('No SAML connection found.', 404);
+        throw new JacksonError('No SSO connection found.', 404);
       }
 
       if (!isConnectionActive(connection)) {
         throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
       }
 
-      return await this.samlHandler.createSAMLRequest({
-        connection,
-        requestParams: {
-          id,
-          acsUrl,
-          entityId,
-          publicKey,
-          providerName,
-          relayState,
-          tenant: app.tenant,
-          product: app.product,
-        },
-      });
+      const requestParams = {
+        id,
+        acsUrl,
+        entityId,
+        publicKey,
+        providerName,
+        relayState,
+        tenant: app.tenant,
+        product: app.product,
+      };
+
+      return isSAMLConnection(connection)
+        ? await this.ssoHandler.createSAMLRequest({
+            connection,
+            requestParams,
+          })
+        : await this.ssoHandler.createOIDCRequest({
+            connection,
+            requestParams,
+          });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
