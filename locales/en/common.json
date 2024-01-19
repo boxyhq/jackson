@@ -187,7 +187,7 @@
   "branding_primary_color_label": "Primary Color",
   "configure_sso": "Configure Single Sign-On",
   "configure_dsync": "Configure Directory Sync",
-  "branding_logo_url_alt": "Provide a URL to your logo. Recommend PNG or SVG formats.",
+  "branding_logo_url_alt": "Provide a URL to your logo. Recommend PNG or SVG formats. The image will be capped to a maximum height of 56px.",
   "branding_favicon_url_alt": "Provide a URL to your favicon. Recommend PNG, SVG, or ICO formats.",
   "branding_company_name_alt": "Provide your company name or product name.",
   "branding_primary_color_alt": "Primary color will be applied to buttons, links, and other elements.",
@@ -263,6 +263,6 @@
   "choose_an_identity_provider_to_continue": "Choose an Identity Provider to continue. If you don't see your Identity Provider, please contact your administrator.",
   "choose_an_app_to_continue": "Choose an app to continue. If you don't see your app, please contact your administrator.",
   "no_saml_response_try_again": "No SAMLResponse found. Please try again.",
-  "customize_branding": "You can customize the look and feel Identity Provider selection page by setting following options",
+  "customize_branding": "You can customize the look and feel of the Identity Provider selection page by setting the following options",
   "expiry_in_days": "Expiry in days"
 }

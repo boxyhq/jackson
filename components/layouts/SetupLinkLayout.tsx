@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import InvalidSetupLinkAlert from '@components/setup-link/InvalidSetupLinkAlert';
 import Loading from '@components/Loading';
@@ -44,7 +44,7 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
             <div className='flex flex-shrink-0 items-center gap-4'>
               <Link href={`/setup/${token}`}>
                 {setupLink?.logoUrl && (
-                  <Image src={setupLink.logoUrl} alt={setupLink.companyName || ''} width={40} height={40} />
+                  <img src={setupLink.logoUrl} alt={setupLink.companyName || ''} className='max-h-10' />
                 )}
               </Link>
               <span className='text-xl font-bold tracking-wide text-gray-900'>{title}</span>
