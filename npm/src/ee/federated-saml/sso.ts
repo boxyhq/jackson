@@ -12,10 +12,6 @@ const isSAMLConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection
   return 'idpMetadata' in connection;
 };
 
-const isOIDCConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection is OIDCSSORecord => {
-  return !('idpMetadata' in connection);
-};
-
 export class SSO {
   private app: App;
   private ssoHandler: SSOHandler;
@@ -119,21 +115,15 @@ export class SSO {
         product: app.product,
       };
 
-      // When SAML Request
-      if (isSAMLConnection(connection)) {
-        return await this.ssoHandler.createSAMLRequest({
-          connection,
-          requestParams,
-        });
-      }
-
-      // When OIDC Request
-      if (isOIDCConnection(connection)) {
-        return await this.ssoHandler.createOIDCRequest({
-          connection,
-          requestParams,
-        });
-      }
+      return isSAMLConnection(connection)
+        ? await this.ssoHandler.createSAMLRequest({
+            connection,
+            requestParams,
+          })
+        : await this.ssoHandler.createOIDCRequest({
+            connection,
+            requestParams,
+          });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
