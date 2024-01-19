@@ -233,9 +233,6 @@ export class SSOHandler {
       const oidcCodeVerifier = generators.codeVerifier();
       const code_challenge = generators.codeChallenge(oidcCodeVerifier);
       const oidcNonce = generators.nonce();
-      const scope = ['openid', 'email', 'profile']
-        .filter((value, index, self) => self.indexOf(value) === index)
-        .join(' ');
 
       const relayState = await this.createSession({
         requestId: connection.clientID,
@@ -245,7 +242,7 @@ export class SSOHandler {
       });
 
       const ssoUrl = oidcClient.authorizationUrl({
-        scope,
+        scope: 'openid email profile',
         code_challenge,
         code_challenge_method: 'S256',
         state: relayState,
