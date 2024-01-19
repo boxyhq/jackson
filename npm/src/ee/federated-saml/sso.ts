@@ -8,25 +8,33 @@ import { extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
+const isSAMLConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection is SAMLSSORecord => {
+  return 'idpMetadata' in connection;
+};
+
+const isOIDCConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection is OIDCSSORecord => {
+  return !('idpMetadata' in connection);
+};
+
 export class SSO {
   private app: App;
-  private samlHandler: SAMLHandler;
+  private ssoHandler: SAMLHandler;
   private samlTracer: SAMLTracerInstance;
   private opts: JacksonOption;
 
   constructor({
     app,
-    samlHandler,
+    ssoHandler,
     samlTracer,
     opts,
   }: {
     app: App;
-    samlHandler: SAMLHandler;
+    ssoHandler: SAMLHandler;
     samlTracer: SAMLTracerInstance;
     opts: JacksonOption;
   }) {
     this.app = app;
-    this.samlHandler = samlHandler;
+    this.ssoHandler = ssoHandler;
     this.samlTracer = samlTracer;
     this.opts = opts;
   }
@@ -67,7 +75,7 @@ export class SSO {
         throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
       }
 
-      const response = await this.samlHandler.resolveConnection({
+      const response = await this.ssoHandler.resolveConnection({
         tenant: app.tenant,
         product: app.product,
         idp_hint,
@@ -78,8 +86,6 @@ export class SSO {
           SAMLRequest: request,
         },
       });
-
-      console.log('resolveConnection', response);
 
       // If there is a redirect URL, then we need to redirect to that URL
       if ('redirectUrl' in response) {
@@ -95,28 +101,31 @@ export class SSO {
       }
 
       if (!connection) {
-        throw new JacksonError('No SAML connection found.', 404);
+        throw new JacksonError('No SSO connection found.', 404);
       }
 
       if (!isConnectionActive(connection)) {
         throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
       }
 
-      // if connection is SAML, call createSAMLRequest or call createOIDCRequest
+      if (isSAMLConnection(connection)) {
+        return await this.ssoHandler.createSAMLRequest({
+          connection,
+          requestParams: {
+            id,
+            acsUrl,
+            entityId,
+            publicKey,
+            providerName,
+            relayState,
+            tenant: app.tenant,
+            product: app.product,
+          },
+        });
+      }
 
-      return await this.samlHandler.createSAMLRequest({
-        connection,
-        requestParams: {
-          id,
-          acsUrl,
-          entityId,
-          publicKey,
-          providerName,
-          relayState,
-          tenant: app.tenant,
-          product: app.product,
-        },
-      });
+      if (isOIDCConnection(connection)) {
+      }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
