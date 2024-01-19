@@ -256,7 +256,7 @@ export class SSOHandler {
         redirect_url: ssoUrl,
       };
     } catch (err: any) {
-      console.log(err);
+      console.error(err);
       throw new JacksonError(`Unable to completed OIDC request. - ${err.message}`, 400);
     }
   }
