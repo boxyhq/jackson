@@ -2,8 +2,8 @@ import saml from '@boxyhq/saml20';
 
 import { App } from './app';
 import { JacksonError } from '../../controller/error';
-import { SAMLHandler } from '../../controller/saml-handler';
-import type { JacksonOption, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
+import { SAMLHandler } from '../../controller/sso-handler';
+import type { JacksonOption, OIDCSSORecord, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
 import { extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
@@ -43,7 +43,7 @@ export class SSO {
   }) => {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    let connection: SAMLSSORecord | undefined;
+    let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest, app;
 
     try {
@@ -79,6 +79,8 @@ export class SSO {
         },
       });
 
+      console.log('resolveConnection', response);
+
       // If there is a redirect URL, then we need to redirect to that URL
       if ('redirectUrl' in response) {
         return {
@@ -88,7 +90,7 @@ export class SSO {
       }
 
       // If there is a connection, use that connection
-      if ('connection' in response && 'idpMetadata' in response.connection) {
+      if ('connection' in response) {
         connection = response.connection;
       }
 
@@ -99,6 +101,8 @@ export class SSO {
       if (!isConnectionActive(connection)) {
         throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
       }
+
+      // if connection is SAML, call createSAMLRequest or call createOIDCRequest
 
       return await this.samlHandler.createSAMLRequest({
         connection,
