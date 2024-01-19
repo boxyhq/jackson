@@ -17,14 +17,14 @@ const SAMLFederation = async ({
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const connectionStore = db.store('saml:config');
 
-  const samlHandler = new SAMLHandler({
+  const ssoHandler = new SAMLHandler({
     connection: connectionStore,
     session: sessionStore,
     opts,
   });
 
   const app = new App({ store: appStore, opts });
-  const sso = new SSO({ app, samlHandler, samlTracer, opts });
+  const sso = new SSO({ app, ssoHandler, samlTracer, opts });
 
   const response = {
     app,

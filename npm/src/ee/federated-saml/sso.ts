@@ -108,23 +108,31 @@ export class SSO {
         throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
       }
 
+      const requestParams = {
+        id,
+        acsUrl,
+        entityId,
+        publicKey,
+        providerName,
+        relayState,
+        tenant: app.tenant,
+        product: app.product,
+      };
+
+      // When SAML Request
       if (isSAMLConnection(connection)) {
         return await this.ssoHandler.createSAMLRequest({
           connection,
-          requestParams: {
-            id,
-            acsUrl,
-            entityId,
-            publicKey,
-            providerName,
-            relayState,
-            tenant: app.tenant,
-            product: app.product,
-          },
+          requestParams,
         });
       }
 
+      // When OIDC Request
       if (isOIDCConnection(connection)) {
+        return await this.ssoHandler.createOIDCRequest({
+          connection,
+          requestParams,
+        });
       }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);

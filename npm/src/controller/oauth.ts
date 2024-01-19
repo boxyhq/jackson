@@ -682,7 +682,9 @@ export class OAuthController implements IOAuthController {
     }
   }
 
-  public async oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }> {
+  public async oidcAuthzResponse(
+    body: OIDCAuthzResponsePayload
+  ): Promise<{ redirect_url?: string; response_form?: string }> {
     const callbackParams = body;
 
     let RelayState = callbackParams.state || '';
@@ -737,21 +739,38 @@ export class OAuthController implements IOAuthController {
       }
     }
 
-    const code = await this._buildAuthorizationCode(oidcConnection, profile, session, false);
+    let redirectUrl: string | undefined;
+    let responseForm: string | undefined;
 
-    const params = {
-      code,
-    };
+    const isSAMLFederated = session && 'samlFederated' in session;
 
-    if (session && session.state) {
-      params['state'] = session.state;
+    console.log('isSAMLFederated', isSAMLFederated);
+    console.log('profile', profile);
+
+    if (!isSAMLFederated) {
+      const code = await this._buildAuthorizationCode(oidcConnection, profile, session, false);
+
+      const params = {
+        code,
+      };
+
+      if (session && session.state) {
+        params['state'] = session.state;
+      }
+
+      redirectUrl = redirect.success(redirect_uri, params);
+    } else {
+      const response = await this.samlHandler.createSAMLResponse({ profile, session });
+
+      responseForm = response.responseForm;
     }
-
-    const redirectUrl = redirect.success(redirect_uri, params);
 
     await this.sessionStore.delete(RelayState);
 
-    return { redirect_url: redirectUrl };
+    return {
+      redirect_url: redirectUrl,
+      response_form: responseForm,
+    };
   }
 
   // Build the authorization code for the session
