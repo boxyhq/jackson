@@ -778,12 +778,13 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: unknown) {
-      const { error, error_description } = err as Pick<
+      const { error, error_description = getErrorMessage(err) } = err as Pick<
         OAuthErrorHandlerParams,
         'error' | 'error_description'
       >;
-      await this.samlTracer.saveTrace({
-        error: getErrorMessage(err),
+
+      const traceId = await this.samlTracer.saveTrace({
+        error: error || error_description,
         context: {
           tenant: oidcConnection.tenant || '',
           product: oidcConnection.product || '',
