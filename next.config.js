@@ -92,6 +92,10 @@ module.exports = {
         source: '/api/v1/directory-sync/:path*',
         destination: '/api/v1/dsync/:path*',
       },
+      {
+        source: '/api/v1/saml-traces/:path*',
+        destination: '/api/v1/sso-traces/:path*',
+      },
     ];
   },
   images: {

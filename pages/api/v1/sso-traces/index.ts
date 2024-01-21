@@ -23,7 +23,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query as { id: string };
 
-  const trace = await adminController.getSAMLTraceById(id);
+  const trace = await adminController.getSSOTraceById(id);
 
   res.json({ data: trace });
 };
