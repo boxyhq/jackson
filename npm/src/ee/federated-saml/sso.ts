@@ -3,7 +3,7 @@ import saml from '@boxyhq/saml20';
 import { App } from './app';
 import { JacksonError } from '../../controller/error';
 import { SSOHandler } from '../../controller/sso-handler';
-import type { JacksonOption, OIDCSSORecord, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
+import type { JacksonOption, OIDCSSORecord, SAMLSSORecord, SSOTracerInstance } from '../../typings';
 import { extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
@@ -15,23 +15,23 @@ const isSAMLConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection
 export class SSO {
   private app: App;
   private ssoHandler: SSOHandler;
-  private samlTracer: SAMLTracerInstance;
+  private ssoTracer: SSOTracerInstance;
   private opts: JacksonOption;
 
   constructor({
     app,
     ssoHandler,
-    samlTracer,
+    ssoTracer,
     opts,
   }: {
     app: App;
     ssoHandler: SSOHandler;
-    samlTracer: SAMLTracerInstance;
+    ssoTracer: SSOTracerInstance;
     opts: JacksonOption;
   }) {
     this.app = app;
     this.ssoHandler = ssoHandler;
-    this.samlTracer = samlTracer;
+    this.ssoTracer = ssoTracer;
     this.opts = opts;
   }
 
@@ -127,7 +127,7 @@ export class SSO {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
-      this.samlTracer.saveTrace({
+      this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           tenant: app?.tenant || '',

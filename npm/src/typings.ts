@@ -2,7 +2,7 @@ import type { JWK } from 'jose';
 import type { CallbackParamsType, IssuerMetadata } from 'openid-client';
 
 export * from './ee/federated-saml/types';
-export * from './saml-tracer/types';
+export * from './sso-tracer/types';
 export * from './directory-sync/types';
 export * from './event/types';
 
@@ -186,8 +186,8 @@ export interface IOAuthController {
 
 export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string);
-  getAllSAMLTraces(pageOffset: number, pageLimit: number, pageToken?: string);
-  getSAMLTraceById(traceId: string);
+  getAllSSOTraces(pageOffset: number, pageLimit: number, pageToken?: string);
+  getSSOTraceById(traceId: string);
   getTracesByProduct(product: string, pageOffset: number, pageLimit: number, pageToken?: string);
 }
 

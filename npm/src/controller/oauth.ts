@@ -17,7 +17,7 @@ import type {
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
-  SAMLTracerInstance,
+  SSOTracerInstance,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
 } from '../typings';
@@ -51,16 +51,16 @@ export class OAuthController implements IOAuthController {
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
-  private samlTracer: SAMLTracerInstance;
+  private ssoTracer: SSOTracerInstance;
   private opts: JacksonOption;
   private ssoHandler: SSOHandler;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, samlTracer, opts }) {
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTracer, opts }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
-    this.samlTracer = samlTracer;
+    this.ssoTracer = ssoTracer;
     this.opts = opts;
 
     this.ssoHandler = new SSOHandler({
@@ -187,7 +187,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Save the error trace
-      await this.samlTracer.saveTrace({
+      await this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           tenant: requestedTenant || '',
@@ -237,7 +237,7 @@ export class OAuthController implements IOAuthController {
       }
 
       // Save the error trace
-      const traceId = await this.samlTracer.saveTrace({
+      const traceId = await this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           tenant: requestedTenant,
@@ -281,7 +281,7 @@ export class OAuthController implements IOAuthController {
           // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
           const error_description = 'SAML binding could not be retrieved';
           // Save the error trace
-          const traceId = await this.samlTracer.saveTrace({
+          const traceId = await this.ssoTracer.saveTrace({
             error: error_description,
             context: {
               tenant: requestedTenant as string,
@@ -317,7 +317,7 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         // Save the error trace
-        const traceId = await this.samlTracer.saveTrace({
+        const traceId = await this.ssoTracer.saveTrace({
           error: error_description,
           context: {
             tenant: requestedTenant,
@@ -463,7 +463,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Save the error trace
-      const traceId = await this.samlTracer.saveTrace({
+      const traceId = await this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           tenant: requestedTenant as string,
@@ -605,7 +605,7 @@ export class OAuthController implements IOAuthController {
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
       // Save the error trace
-      await this.samlTracer.saveTrace({
+      await this.ssoTracer.saveTrace({
         error: getErrorMessage(err),
         context: {
           samlResponse: rawResponse,
@@ -655,7 +655,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Trace the error
-      const traceId = await this.samlTracer.saveTrace({
+      const traceId = await this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           samlResponse: rawResponse,
@@ -732,7 +732,7 @@ export class OAuthController implements IOAuthController {
         }
       }
     } catch (err) {
-      await this.samlTracer.saveTrace({
+      await this.ssoTracer.saveTrace({
         error: getErrorMessage(err),
         context: {
           tenant: session?.requested?.tenant || oidcConnection?.tenant,
@@ -795,7 +795,7 @@ export class OAuthController implements IOAuthController {
         'error' | 'error_description'
       >;
 
-      const traceId = await this.samlTracer.saveTrace({
+      const traceId = await this.ssoTracer.saveTrace({
         error: error || error_description,
         context: {
           tenant: oidcConnection.tenant,
