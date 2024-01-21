@@ -798,6 +798,9 @@ export class OAuthController implements IOAuthController {
       const traceId = await this.samlTracer.saveTrace({
         error: error || error_description,
         context: {
+          tenant: oidcConnection.tenant,
+          product: oidcConnection.product,
+          clientID: oidcConnection.clientID,
           providerName: oidcConnection.oidcProvider.provider,
           redirectUri: redirect_uri,
           relayState: RelayState,
