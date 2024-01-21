@@ -802,7 +802,7 @@ export class OAuthController implements IOAuthController {
       return {
         redirect_url: OAuthErrorResponse({
           error: error || 'server_error',
-          error_description: error_description || getErrorMessage(err),
+          error_description: traceId ? `${traceId}: ${error_description}` : error_description,
           redirect_uri: redirect_uri!,
           state: session.state,
         }),
