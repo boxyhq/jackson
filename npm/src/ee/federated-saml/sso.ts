@@ -134,6 +134,7 @@ export class SSO {
           product: app?.product || '',
           clientID: connection?.clientID || '',
           isSAMLFederated: true,
+          relayState,
           providerName,
           acsUrl,
           entityId,
