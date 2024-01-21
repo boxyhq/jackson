@@ -609,9 +609,12 @@ export class OAuthController implements IOAuthController {
         error: getErrorMessage(err),
         context: {
           samlResponse: rawResponse,
+          tenant: session?.requested?.tenant || connection?.tenant,
+          product: session?.requested?.product || connection?.product,
+          clientID: session?.requested?.client_id || connection?.clientID,
           providerName: connection?.idpMetadata?.provider,
           redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
-          issuer: issuer || '',
+          issuer,
           isSAMLFederated: !!isSAMLFederated,
           isIdPFlow: !!isIdPFlow,
           requestedOIDCFlow: !!session?.requested?.oidc,
@@ -732,6 +735,9 @@ export class OAuthController implements IOAuthController {
       await this.samlTracer.saveTrace({
         error: getErrorMessage(err),
         context: {
+          tenant: session?.requested?.tenant || oidcConnection?.tenant,
+          product: session?.requested?.product || oidcConnection?.product,
+          clientID: session?.requested?.client_id || oidcConnection?.clientID,
           providerName: oidcConnection?.oidcProvider?.provider,
           acsUrl: session?.requested?.acsUrl,
           entityId: session?.requested?.entityId,
