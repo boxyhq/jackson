@@ -609,13 +609,14 @@ export class OAuthController implements IOAuthController {
         error: getErrorMessage(err),
         context: {
           samlResponse: rawResponse,
-          tenant: connection?.tenant || '',
-          product: connection?.product || '',
-          clientID: connection?.clientID || '',
+          providerName: connection?.idpMetadata?.provider,
           redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
           issuer: issuer || '',
           isSAMLFederated: !!isSAMLFederated,
           isIdPFlow: !!isIdPFlow,
+          requestedOIDCFlow: !!session?.requested?.oidc,
+          acsUrl: session?.requested?.acsUrl,
+          entityId: session?.requested?.entityId,
           relayState: RelayState,
         },
       });
@@ -658,9 +659,13 @@ export class OAuthController implements IOAuthController {
           tenant: connection.tenant,
           product: connection.product,
           clientID: connection.clientID,
+          providerName: connection?.idpMetadata?.provider,
           redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
           isSAMLFederated,
           isIdPFlow,
+          acsUrl: session.requested.acsUrl,
+          entityId: session.requested.entityId,
+          requestedOIDCFlow: !!session.requested.oidc,
           relayState: RelayState,
           issuer,
           profile,
@@ -727,12 +732,13 @@ export class OAuthController implements IOAuthController {
       await this.samlTracer.saveTrace({
         error: getErrorMessage(err),
         context: {
-          tenant: oidcConnection?.tenant || '',
-          product: oidcConnection?.product || '',
-          clientID: oidcConnection?.clientID || '',
+          providerName: oidcConnection?.oidcProvider?.provider,
+          acsUrl: session?.requested?.acsUrl,
+          entityId: session?.requested?.entityId,
           redirectUri: redirect_uri,
           relayState: RelayState,
           isSAMLFederated: !!isSAMLFederated,
+          requestedOIDCFlow: !!session?.requested?.oidc,
         },
       });
       // Rethrow err and redirect to Jackson error page
@@ -786,13 +792,13 @@ export class OAuthController implements IOAuthController {
       const traceId = await this.samlTracer.saveTrace({
         error: error || error_description,
         context: {
-          tenant: oidcConnection.tenant || '',
-          product: oidcConnection.product || '',
-          clientID: oidcConnection.clientID || '',
+          providerName: oidcConnection.oidcProvider.provider,
           redirectUri: redirect_uri,
           relayState: RelayState,
           isSAMLFederated: !!isSAMLFederated,
           acsUrl: session.requested.acsUrl,
+          entityId: session.requested.entityId,
+          requestedOIDCFlow: !!session.requested.oidc,
           profile,
         },
       });
