@@ -16,4 +16,4 @@ images:
   - name: boxyhq/jackson
     newTag: 1.17.0
   - name: boxyhq/mock-saml
-    newTag: 1.2.1
+    newTag: 1.3.1
