@@ -24,16 +24,19 @@ import { JacksonError } from './error';
 import { IndexNames, appID, transformConnections, transformConnection, isConnectionActive } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
+import { OryController } from '../ee/ory/ory';
 
 export class ConnectionAPIController implements IConnectionAPIController {
   private connectionStore: Storable;
   private opts: JacksonOption;
   private eventController: IEventController;
+  private oryController: OryController;
 
-  constructor({ connectionStore, opts, eventController }) {
+  constructor({ connectionStore, opts, eventController, oryController }) {
     this.connectionStore = connectionStore;
     this.opts = opts;
     this.eventController = eventController;
+    this.oryController = oryController;
   }
 
   /**
@@ -175,7 +178,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   ): Promise<SAMLSSORecord> {
     metrics.increment('createConnection');
 
-    const connection = await samlConnection.create(body, this.connectionStore);
+    const connection = await samlConnection.create(body, this.connectionStore, this.oryController);
 
     await this.eventController.notify('sso.created', connection);
 
@@ -335,7 +338,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const connection = await samlConnection.update(
       body,
       this.connectionStore,
-      this.getConnections.bind(this)
+      this.getConnections.bind(this),
+      this.oryController
     );
 
     if ('deactivated' in body) {

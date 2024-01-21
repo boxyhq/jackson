@@ -10,13 +10,25 @@ import db from './db/db';
 
 export type DB = Awaited<ReturnType<typeof db.new>>;
 
-interface SSOConnection {
+export interface OryRes {
+  projectId?: string;
+  domains?: string[];
+  organizationId?: string;
+  connectionId?: string;
+}
+
+export interface OryConfig extends OryRes {
+  sdkToken?: string;
+}
+
+export interface SSOConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
   tenant: string;
   product: string;
   name?: string;
   description?: string;
+  ory?: OryConfig;
 }
 
 export interface SAMLSSOConnection extends SSOConnection {
@@ -121,6 +133,7 @@ export type UpdateConnectionParams = TenantProduct & {
   defaultRedirectUrl?: string;
   redirectUrl?: string[] | string;
   deactivated?: boolean;
+  ory?: OryConfig;
 };
 
 export type UpdateSAMLConnectionParams = UpdateConnectionParams & {
@@ -442,6 +455,12 @@ export interface JacksonOption {
 
   /**  The number of days a setup link is valid for. Defaults to 3 days. */
   setupLinkExpiryDays?: number;
+  boxyhqHosted?: boolean;
+
+  ory: {
+    projectId: string | undefined;
+    sdkToken: string | undefined;
+  };
 }
 
 export interface SLORequestParams {

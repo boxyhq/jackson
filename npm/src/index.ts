@@ -19,6 +19,7 @@ import { BrandingController } from './ee/branding';
 import SAMLTracer from './saml-tracer';
 import EventController from './event';
 import { ProductController } from './ee/product';
+import { OryController } from './ee/ory/ory';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -90,7 +91,13 @@ export const controllers = async (
   const samlTracer = new SAMLTracer({ db });
   const eventController = new EventController({ opts });
 
-  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts, eventController });
+  const oryController = new OryController({ opts });
+  const connectionAPIController = new ConnectionAPIController({
+    connectionStore,
+    opts,
+    eventController,
+    oryController,
+  });
   const adminController = new AdminController({ connectionStore, samlTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();

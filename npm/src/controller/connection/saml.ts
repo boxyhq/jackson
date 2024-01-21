@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+import saml20 from '@boxyhq/saml20';
+import axios from 'axios';
+
 import {
   IConnectionAPIController,
   SAMLSSOConnectionWithEncodedMetadata,
@@ -17,9 +20,8 @@ import {
   validateTenantAndProduct,
   isLocalhost,
 } from '../utils';
-import saml20 from '@boxyhq/saml20';
 import { JacksonError } from '../error';
-import axios from 'axios';
+import { OryController } from '../../ee/ory/ory';
 
 async function fetchMetadata(resource: string) {
   try {
@@ -57,7 +59,8 @@ function validateMetadataURL(metadataUrl: string) {
 const saml = {
   create: async (
     body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata,
-    connectionStore: Storable
+    connectionStore: Storable,
+    oryController: OryController
   ) => {
     const {
       encodedRawMetadata,
@@ -143,6 +146,9 @@ const saml = {
     }
 
     const exists = await connectionStore.get(record.clientID);
+    const oryProjectId = exists?.ory?.projectId || body.ory?.projectId;
+    const oryOrganizationId = exists?.ory?.organizationId;
+    const oryConnectionId = exists?.ory?.connectionId;
 
     if (exists) {
       connectionClientSecret = exists.clientSecret;
@@ -151,6 +157,20 @@ const saml = {
     }
 
     record.clientSecret = connectionClientSecret;
+
+    const oryRes = await oryController.createConnection(
+      {
+        sdkToken: body.ory?.sdkToken,
+        projectId: oryProjectId,
+        domains: body.ory?.domains,
+        organizationId: oryOrganizationId,
+        connectionId: oryConnectionId,
+      },
+      `${tenant}:${product}`
+    );
+    if (oryRes) {
+      record.ory = oryRes;
+    }
 
     await connectionStore.put(
       record.clientID,
@@ -177,7 +197,8 @@ const saml = {
   update: async (
     body: UpdateSAMLConnectionParams,
     connectionStore: Storable,
-    connectionsGetter: IConnectionAPIController['getConnections']
+    connectionsGetter: IConnectionAPIController['getConnections'],
+    oryController: OryController
   ) => {
     const {
       encodedRawMetadata, // could be empty
@@ -276,6 +297,20 @@ const saml = {
 
     if ('identifierFormat' in body) {
       record['identifierFormat'] = body.identifierFormat;
+    }
+
+    const oryRes = await oryController.updateConnection(
+      {
+        sdkToken: body.ory?.sdkToken,
+        projectId: _savedConnection.ory?.projectId,
+        domains: _savedConnection.ory?.domains,
+        organizationId: _savedConnection.ory?.organizationId,
+        connectionId: _savedConnection.ory?.connectionId,
+      },
+      `${_savedConnection.tenant}:${_savedConnection.product}`
+    );
+    if (oryRes) {
+      record.ory = oryRes;
     }
 
     await connectionStore.put(
