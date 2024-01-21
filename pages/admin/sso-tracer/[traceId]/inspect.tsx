@@ -48,6 +48,7 @@ const SSOTraceInspector: NextPage = () => {
   if (!data) return null;
 
   const trace = data.data;
+  const assertionType = trace.context.samlResponse ? 'Response' : trace.context.samlRequest ? 'Request' : '-';
 
   return (
     <>

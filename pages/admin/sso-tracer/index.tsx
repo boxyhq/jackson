@@ -82,6 +82,9 @@ const SSOTraceViewer: NextPage = () => {
                         </Link>
                       </td>
                       <td className='whitespace-nowrap px-6 py-3'>{new Date(timestamp).toLocaleString()}</td>
+                      <td className='px-6 py-3'>
+                        {context?.samlResponse ? 'Response' : context?.samlRequest ? 'Request' : '-'}
+                      </td>
                       <td className='px-6'>{error}</td>
                     </tr>
                   );
