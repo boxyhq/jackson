@@ -28,7 +28,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminControl
   const pageOffset = parseInt(offset);
   const pageLimit = parseInt(limit);
 
-  const tracesPaginated = await adminController.getAllSAMLTraces(pageOffset, pageLimit, pageToken);
+  const tracesPaginated = await adminController.getAllSSOTraces(pageOffset, pageLimit, pageToken);
 
   if (tracesPaginated.pageToken) {
     res.setHeader('jackson-pagetoken', tracesPaginated.pageToken);

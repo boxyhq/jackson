@@ -1,7 +1,7 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import type { SAMLTrace } from '@boxyhq/saml-jackson';
+import type { SSOTrace } from '@boxyhq/saml-jackson';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import useSWR from 'swr';
@@ -21,15 +21,15 @@ const DescriptionListItem = ({ term, value }: { term: string; value: string | JS
   </div>
 );
 
-const SAMLTraceInspector: NextPage = () => {
+const SSOTraceInspector: NextPage = () => {
   const { t } = useTranslation('common');
 
   const router = useRouter();
 
   const { traceId } = router.query as { traceId: string };
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLTrace>, ApiError>(
-    `/api/admin/saml-tracer/${traceId}`,
+  const { data, error, isLoading } = useSWR<ApiSuccess<SSOTrace>, ApiError>(
+    `/api/admin/sso-tracer/${traceId}`,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -48,7 +48,6 @@ const SAMLTraceInspector: NextPage = () => {
   if (!data) return null;
 
   const trace = data.data;
-  const assertionType = trace.context.samlResponse ? 'Response' : 'Request';
 
   return (
     <>
@@ -157,7 +156,7 @@ const SAMLTraceInspector: NextPage = () => {
   );
 };
 
-export default SAMLTraceInspector;
+export default SSOTraceInspector;
 
 export async function getServerSideProps({ locale }) {
   return {
