@@ -201,7 +201,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
 
-    const connection = await oidcConnection.create(body, this.connectionStore);
+    const connection = await oidcConnection.create(body, this.connectionStore, this.oryController);
 
     await this.eventController.notify('sso.created', connection);
 
@@ -366,7 +366,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const connection = await oidcConnection.update(
       body,
       this.connectionStore,
-      this.getConnections.bind(this)
+      this.getConnections.bind(this),
+      this.oryController
     );
 
     if ('deactivated' in body) {
