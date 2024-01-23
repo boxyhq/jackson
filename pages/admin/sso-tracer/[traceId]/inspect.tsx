@@ -1,7 +1,7 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import type { SAMLTrace } from '@boxyhq/saml-jackson';
+import type { SSOTrace } from '@boxyhq/saml-jackson';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import useSWR from 'swr';
@@ -17,19 +17,19 @@ import { CopyToClipboardButton } from '@components/ClipboardButton';
 const DescriptionListItem = ({ term, value }: { term: string; value: string | JSX.Element }) => (
   <div className='px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
     <dt className='text-sm font-medium text-gray-500'>{term}</dt>
-    <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{value}</dd>
+    <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 overflow-auto'>{value}</dd>
   </div>
 );
 
-const SAMLTraceInspector: NextPage = () => {
+const SSOTraceInspector: NextPage = () => {
   const { t } = useTranslation('common');
 
   const router = useRouter();
 
   const { traceId } = router.query as { traceId: string };
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLTrace>, ApiError>(
-    `/api/admin/saml-tracer/${traceId}`,
+  const { data, error, isLoading } = useSWR<ApiSuccess<SSOTrace>, ApiError>(
+    `/api/admin/sso-tracer/${traceId}`,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -48,7 +48,7 @@ const SAMLTraceInspector: NextPage = () => {
   if (!data) return null;
 
   const trace = data.data;
-  const assertionType = trace.context.samlResponse ? 'Response' : 'Request';
+  const assertionType = trace.context.samlResponse ? 'Response' : trace.context.samlRequest ? 'Request' : '-';
 
   return (
     <>
@@ -157,7 +157,7 @@ const SAMLTraceInspector: NextPage = () => {
   );
 };
 
-export default SAMLTraceInspector;
+export default SSOTraceInspector;
 
 export async function getServerSideProps({ locale }) {
   return {

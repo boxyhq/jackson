@@ -25,7 +25,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminController: IAdminController) => {
   const { traceId } = req.query as { traceId: string };
 
-  const trace = await adminController.getSAMLTraceById(traceId);
+  const trace = await adminController.getSSOTraceById(traceId);
 
   if (!trace) {
     return res.status(404).json({ error: { message: 'Trace not found.' } });

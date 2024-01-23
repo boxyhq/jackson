@@ -1,5 +1,5 @@
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
-import SAMLTracer from '.';
+import SSOTracer from '.';
 
 export interface Trace {
   traceId: string;
@@ -10,7 +10,7 @@ export interface Trace {
   };
 }
 
-export interface SAMLTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
+export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
   timestamp?: number /** Can be passed in from outside else will be set to Date.now() */;
   context: Trace['context'] & {
     tenant: string;
@@ -31,4 +31,4 @@ export interface SAMLTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
   };
 }
 
-export type SAMLTracerInstance = InstanceType<typeof SAMLTracer>;
+export type SSOTracerInstance = InstanceType<typeof SSOTracer>;

@@ -81,8 +81,7 @@ export class SSOHandler {
       ).data;
     }
 
-    const noSSOConnectionErrMessage =
-      authFlow === 'oauth' ? 'No SSO connection found.' : 'No SAML connection found.';
+    const noSSOConnectionErrMessage = 'No SSO connection found.';
 
     if (!connections || connections.length === 0) {
       throw new JacksonError(noSSOConnectionErrMessage, 404);
