@@ -166,7 +166,8 @@ const saml = {
         organizationId: oryOrganizationId,
         connectionId: oryConnectionId,
       },
-      `${tenant}:${product}`
+      tenant,
+      product
     );
     if (oryRes) {
       record.ory = oryRes;
@@ -307,7 +308,8 @@ const saml = {
         organizationId: _savedConnection.ory?.organizationId,
         connectionId: _savedConnection.ory?.connectionId,
       },
-      `${_savedConnection.tenant}:${_savedConnection.product}`
+      _savedConnection.tenant,
+      _savedConnection.product
     );
     if (oryRes) {
       record.ory = oryRes;

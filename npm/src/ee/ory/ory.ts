@@ -4,6 +4,9 @@ import { throwIfInvalidLicense } from '../common/checkLicense';
 
 const basePath = 'https://api.console.ory.sh';
 const providerId = 'sso_boxyhq';
+const dataMapping =
+  'base64://bG9jYWwgY2xhaW1zID0gewogIGVtYWlsX3ZlcmlmaWVkOiB0cnVlLAp9ICsgc3RkLmV4dFZhcignY2xhaW1zJyk7Cgp7CiAgaWRlbnRpdHk6IHsKICAgIHRyYWl0czogewogICAgICBbaWYgJ2VtYWlsJyBpbiBjbGFpbXMgJiYgY2xhaW1zLmVtYWlsX3ZlcmlmaWVkIHRoZW4gJ2VtYWlsJyBlbHNlIG51bGxdOiBjbGFpbXMuZW1haWwsCiAgICB9LAogIH0sCn0=';
+const issuerUrl = 'https://sso.eu.boxyhq.com';
 
 export class OryController {
   private opts: JacksonOption;
@@ -12,7 +15,7 @@ export class OryController {
     this.opts = opts;
   }
 
-  private async addOrUpdateConnection(config: OryConfig): Promise<void> {
+  private async addOrUpdateConnection(config: OryConfig, tenant: string, product: string): Promise<void> {
     const project = await axios.get(`${basePath}/projects/${config.projectId}`, {
       headers: {
         Authorization: `Bearer ${config.sdkToken}`,
@@ -43,13 +46,13 @@ export class OryController {
             provider_id: providerId,
             provider: 'generic',
             label: 'SSO',
-            client_id: 'dummy',
-            client_secret: 'dummy',
+            client_id: `tenant=${tenant}&product=${product}`,
+            client_secret: this.opts.clientSecretVerifier,
             organization_id: config.organizationId,
             scope: [],
-            mapper_url: 'base64://eHl6',
+            mapper_url: dataMapping,
             additional_id_token_audiences: [],
-            issuer_url: 'https://sso.eu.boxyhq.com/.well-known/openid-configuration',
+            issuer_url: issuerUrl,
           },
         },
       ],
@@ -100,40 +103,45 @@ export class OryController {
     return res.data.id;
   }
 
-  public async createConnection(config: OryConfig, label: string): Promise<OryRes | null> {
-    if (!(await this.isEnabled(config))) {
-      return null;
-    }
-
+  private async sanitizeConfig(config: OryConfig, tenant: string): Promise<OryConfig> {
     if (!config.sdkToken) {
       config.sdkToken = this.opts.ory.sdkToken;
     }
     if (!config.projectId) {
       config.projectId = this.opts.ory.projectId;
     }
+    config.domains = config.domains || [];
+    if (!config.domains.includes(tenant)) {
+      config.domains.push(tenant);
+    }
+    return config;
+  }
 
-    const organizationId = await this.createOrganization(config, label);
+  public async createConnection(config: OryConfig, tenant: string, product: string): Promise<OryRes | null> {
+    if (!(await this.isEnabled(config))) {
+      return null;
+    }
 
-    await this.addOrUpdateConnection(config);
+    this.sanitizeConfig(config, tenant);
+
+    const organizationId = await this.createOrganization(config, `${tenant}:${product}`);
+    config.organizationId = organizationId;
+
+    await this.addOrUpdateConnection(config, tenant, product);
 
     return { projectId: config.projectId, domains: config.domains, organizationId };
   }
 
-  public async updateConnection(config: OryConfig, label: string): Promise<OryRes | null> {
+  public async updateConnection(config: OryConfig, tenant: string, product: string): Promise<OryRes | null> {
     if (!(await this.isEnabled(config))) {
       return null;
     }
 
-    if (!config.sdkToken) {
-      config.sdkToken = this.opts.ory.sdkToken;
-    }
-    if (!config.projectId) {
-      config.projectId = this.opts.ory.projectId;
-    }
+    this.sanitizeConfig(config, tenant);
 
-    const organizationId = await this.createOrganization(config, label);
+    const organizationId = await this.createOrganization(config, `${tenant}:${product}`);
 
-    await this.addOrUpdateConnection(config);
+    await this.addOrUpdateConnection(config, tenant, product);
 
     return { projectId: config.projectId, domains: config.domains, organizationId };
   }
