@@ -2,7 +2,7 @@ import type { JWK } from 'jose';
 import type { CallbackParamsType, IssuerMetadata } from 'openid-client';
 
 export * from './ee/federated-saml/types';
-export * from './saml-tracer/types';
+export * from './sso-tracer/types';
 export * from './directory-sync/types';
 export * from './event/types';
 
@@ -95,8 +95,8 @@ export interface OIDCSSORecord extends SSOConnection {
     friendlyProviderName: string | null;
     discoveryUrl?: string;
     metadata?: IssuerMetadata;
-    clientId?: string;
-    clientSecret?: string;
+    clientId: string;
+    clientSecret: string;
   };
   deactivated?: boolean;
 }
@@ -190,15 +190,17 @@ export interface IOAuthController {
   samlResponse(
     body: SAMLResponsePayload
   ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }>;
-  oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
+  oidcAuthzResponse(
+    body: OIDCAuthzResponsePayload
+  ): Promise<{ redirect_url?: string; response_form?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
 
 export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string);
-  getAllSAMLTraces(pageOffset: number, pageLimit: number, pageToken?: string);
-  getSAMLTraceById(traceId: string);
+  getAllSSOTraces(pageOffset: number, pageLimit: number, pageToken?: string);
+  getSSOTraceById(traceId: string);
   getTracesByProduct(product: string, pageOffset: number, pageLimit: number, pageToken?: string);
 }
 

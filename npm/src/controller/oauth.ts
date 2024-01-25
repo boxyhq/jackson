@@ -17,7 +17,7 @@ import type {
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
-  SAMLTracerInstance,
+  SSOTracerInstance,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
 } from '../typings';
@@ -51,16 +51,16 @@ export class OAuthController implements IOAuthController {
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
-  private samlTracer: SAMLTracerInstance;
+  private ssoTracer: SSOTracerInstance;
   private opts: JacksonOption;
   private ssoHandler: SSOHandler;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, samlTracer, opts }) {
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTracer, opts }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
-    this.samlTracer = samlTracer;
+    this.ssoTracer = ssoTracer;
     this.opts = opts;
 
     this.ssoHandler = new SSOHandler({
@@ -187,7 +187,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Save the error trace
-      await this.samlTracer.saveTrace({
+      await this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           tenant: requestedTenant || '',
@@ -237,7 +237,7 @@ export class OAuthController implements IOAuthController {
       }
 
       // Save the error trace
-      const traceId = await this.samlTracer.saveTrace({
+      const traceId = await this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           tenant: requestedTenant,
@@ -281,7 +281,7 @@ export class OAuthController implements IOAuthController {
           // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
           const error_description = 'SAML binding could not be retrieved';
           // Save the error trace
-          const traceId = await this.samlTracer.saveTrace({
+          const traceId = await this.ssoTracer.saveTrace({
             error: error_description,
             context: {
               tenant: requestedTenant as string,
@@ -317,7 +317,7 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         // Save the error trace
-        const traceId = await this.samlTracer.saveTrace({
+        const traceId = await this.ssoTracer.saveTrace({
           error: error_description,
           context: {
             tenant: requestedTenant,
@@ -463,7 +463,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Save the error trace
-      const traceId = await this.samlTracer.saveTrace({
+      const traceId = await this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           tenant: requestedTenant as string,
@@ -605,17 +605,21 @@ export class OAuthController implements IOAuthController {
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
       // Save the error trace
-      await this.samlTracer.saveTrace({
+      await this.ssoTracer.saveTrace({
         error: getErrorMessage(err),
         context: {
           samlResponse: rawResponse,
-          tenant: connection?.tenant || '',
-          product: connection?.product || '',
-          clientID: connection?.clientID || '',
+          tenant: session?.requested?.tenant || connection?.tenant,
+          product: session?.requested?.product || connection?.product,
+          clientID: session?.requested?.client_id || connection?.clientID,
+          providerName: connection?.idpMetadata?.provider,
           redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
-          issuer: issuer || '',
+          issuer,
           isSAMLFederated: !!isSAMLFederated,
           isIdPFlow: !!isIdPFlow,
+          requestedOIDCFlow: !!session?.requested?.oidc,
+          acsUrl: session?.requested?.acsUrl,
+          entityId: session?.requested?.entityId,
           relayState: RelayState,
         },
       });
@@ -651,16 +655,20 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Trace the error
-      const traceId = await this.samlTracer.saveTrace({
+      const traceId = await this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           samlResponse: rawResponse,
           tenant: connection.tenant,
           product: connection.product,
           clientID: connection.clientID,
+          providerName: connection?.idpMetadata?.provider,
           redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
           isSAMLFederated,
           isIdPFlow,
+          acsUrl: session.requested.acsUrl,
+          entityId: session.requested.entityId,
+          requestedOIDCFlow: !!session.requested.oidc,
           relayState: RelayState,
           issuer,
           profile,
@@ -685,29 +693,66 @@ export class OAuthController implements IOAuthController {
   public async oidcAuthzResponse(
     body: OIDCAuthzResponsePayload
   ): Promise<{ redirect_url?: string; response_form?: string }> {
+    let oidcConnection: OIDCSSORecord | undefined;
+    let session: any;
+    let isSAMLFederated: boolean | undefined;
+    let redirect_uri: string | undefined;
+    let profile;
+
     const callbackParams = body;
 
     let RelayState = callbackParams.state || '';
-    if (!RelayState) {
-      throw new JacksonError('State from original request is missing.', 403);
+    try {
+      if (!RelayState) {
+        throw new JacksonError('State from original request is missing.', 403);
+      }
+
+      RelayState = RelayState.replace(relayStatePrefix, '');
+      session = await this.sessionStore.get(RelayState);
+      if (!session) {
+        throw new JacksonError('Unable to validate state from the original request.', 403);
+      }
+
+      isSAMLFederated = session && 'samlFederated' in session;
+
+      oidcConnection = await this.connectionStore.get(session.id);
+
+      if (!oidcConnection) {
+        throw new JacksonError('OIDC connection not found.', 403);
+      }
+
+      if (!isSAMLFederated) {
+        redirect_uri = session && session.redirect_uri;
+        if (!redirect_uri) {
+          throw new JacksonError('Redirect URL from the authorization request could not be retrieved', 403);
+        }
+
+        if (redirect_uri && !allowed.redirect(redirect_uri, oidcConnection.redirectUrl as string[])) {
+          throw new JacksonError('Redirect URL is not allowed.', 403);
+        }
+      }
+    } catch (err) {
+      await this.ssoTracer.saveTrace({
+        error: getErrorMessage(err),
+        context: {
+          tenant: session?.requested?.tenant || oidcConnection?.tenant,
+          product: session?.requested?.product || oidcConnection?.product,
+          clientID: session?.requested?.client_id || oidcConnection?.clientID,
+          providerName: oidcConnection?.oidcProvider?.provider,
+          acsUrl: session?.requested?.acsUrl,
+          entityId: session?.requested?.entityId,
+          redirectUri: redirect_uri,
+          relayState: RelayState,
+          isSAMLFederated: !!isSAMLFederated,
+          requestedOIDCFlow: !!session?.requested?.oidc,
+        },
+      });
+      // Rethrow err and redirect to Jackson error page
+      throw err;
     }
 
-    RelayState = RelayState.replace(relayStatePrefix, '');
-    const session = await this.sessionStore.get(RelayState);
-    if (!session) {
-      throw new JacksonError('Unable to validate state from the original request.', 403);
-    }
-
-    const oidcConnection = await this.connectionStore.get(session.id);
-
-    if (session.redirect_uri && !allowed.redirect(session.redirect_uri, oidcConnection.redirectUrl)) {
-      throw new JacksonError('Redirect URL is not allowed.', 403);
-    }
-    const redirect_uri = (session && session.redirect_uri) || oidcConnection.defaultRedirectUrl;
-
-    // Reconstruct the oidcClient
+    // Reconstruct the oidcClient, code exchange for token and user profile happens here
     const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
-    let profile;
     try {
       const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
       const oidcClient = new oidcIssuer.Client({
@@ -722,30 +767,15 @@ export class OAuthController implements IOAuthController {
         state: callbackParams.state,
       });
       profile = await extractOIDCUserProfile(tokenSet, oidcClient);
-    } catch (err: unknown) {
-      if (err) {
-        const { error, error_description } = err as Pick<
-          OAuthErrorHandlerParams,
-          'error' | 'error_description'
-        >;
-        return {
-          redirect_url: OAuthErrorResponse({
-            error: error || 'server_error',
-            error_description: error_description || getErrorMessage(err),
-            redirect_uri,
-            state: session.state,
-          }),
-        };
+
+      if (isSAMLFederated) {
+        const { responseForm } = await this.ssoHandler.createSAMLResponse({ profile, session });
+
+        await this.sessionStore.delete(RelayState);
+
+        return { response_form: responseForm };
       }
-    }
 
-    // Prepare the response
-    let redirectUrl: string | undefined;
-    let responseForm: string | undefined;
-
-    const isSAMLFederated = session && 'samlFederated' in session;
-
-    if (!isSAMLFederated) {
       const code = await this._buildAuthorizationCode(oidcConnection, profile, session, false);
 
       const params = {
@@ -756,19 +786,43 @@ export class OAuthController implements IOAuthController {
         params['state'] = session.state;
       }
 
-      redirectUrl = redirect.success(redirect_uri, params);
-    } else {
-      const response = await this.ssoHandler.createSAMLResponse({ profile, session });
+      await this.sessionStore.delete(RelayState);
 
-      responseForm = response.responseForm;
+      return { redirect_url: redirect.success(redirect_uri!, params) };
+    } catch (err: unknown) {
+      const { error, error_description = getErrorMessage(err) } = err as Pick<
+        OAuthErrorHandlerParams,
+        'error' | 'error_description'
+      >;
+
+      const traceId = await this.ssoTracer.saveTrace({
+        error: error || error_description,
+        context: {
+          tenant: oidcConnection.tenant,
+          product: oidcConnection.product,
+          clientID: oidcConnection.clientID,
+          providerName: oidcConnection.oidcProvider.provider,
+          redirectUri: redirect_uri,
+          relayState: RelayState,
+          isSAMLFederated: !!isSAMLFederated,
+          acsUrl: session.requested.acsUrl,
+          entityId: session.requested.entityId,
+          requestedOIDCFlow: !!session.requested.oidc,
+          profile,
+        },
+      });
+      if (isSAMLFederated) {
+        throw err;
+      }
+      return {
+        redirect_url: OAuthErrorResponse({
+          error: error || 'server_error',
+          error_description: traceId ? `${traceId}: ${error_description}` : error_description,
+          redirect_uri: redirect_uri!,
+          state: session.state,
+        }),
+      };
     }
-
-    await this.sessionStore.delete(RelayState);
-
-    return {
-      redirect_url: redirectUrl,
-      response_form: responseForm,
-    };
   }
 
   // Build the authorization code for the session

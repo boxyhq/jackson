@@ -2,7 +2,7 @@ import { GetByProductParams, Records, Storable } from '../typings';
 import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../controller/utils';
 import { keyFromParts } from '../db/utils';
-import type { SAMLTrace, Trace } from './types';
+import type { SSOTrace, Trace } from './types';
 import { JacksonError } from '../controller/error';
 
 const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -11,7 +11,7 @@ const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
 /**
  * @swagger
  * definitions:
- *   SAMLTrace:
+ *   SSOTrace:
  *      type: object
  *      properties:
  *        traceId:
@@ -51,7 +51,7 @@ const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
  *              type: boolean
  *              description: Indicates if request is from IdP
  */
-class SAMLTracer {
+class SSOTracer {
   tracerStore: Storable;
 
   constructor({ db }) {
@@ -64,7 +64,7 @@ class SAMLTracer {
     }, INTERVAL_1_DAY_MS);
   }
 
-  public async saveTrace(payload: SAMLTrace) {
+  public async saveTrace(payload: SSOTrace) {
     try {
       const { context } = payload;
       // Friendly trace id
@@ -103,7 +103,7 @@ class SAMLTracer {
 
   /**
    * @swagger
-   * /api/v1/saml-traces:
+   * /api/v1/sso-traces:
    *   get:
    *     summary: Get trace by ID
    *     parameters:
@@ -120,7 +120,7 @@ class SAMLTracer {
    *       '200':
    *         description: Success
    *         schema:
-   *           $ref: '#/definitions/SAMLTrace'
+   *           $ref: '#/definitions/SSOTrace'
    */
   public async getByTraceId(traceId: string) {
     return (await this.tracerStore.get(traceId)) as Trace;
@@ -159,7 +159,7 @@ class SAMLTracer {
 
   /**
    * @swagger
-   * /api/v1/saml-traces/product:
+   * /api/v1/sso-traces/product:
    *   get:
    *     summary: Get all traces for a product
    *     parameters:
@@ -174,7 +174,7 @@ class SAMLTracer {
    *         schema:
    *           type: array
    *           items:
-   *             $ref:  '#/definitions/SAMLTrace'
+   *             $ref:  '#/definitions/SSOTrace'
    */
   public async getTracesByProduct(params: GetByProductParams) {
     const { product, pageOffset, pageLimit, pageToken } = params;
@@ -197,4 +197,4 @@ class SAMLTracer {
   }
 }
 
-export default SAMLTracer;
+export default SSOTracer;

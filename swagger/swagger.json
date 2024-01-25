@@ -1,8 +1,8 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.15.4",
+    "version": "1.17.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -649,7 +649,7 @@
         }
       }
     },
-    "/api/v1/saml-traces": {
+    "/api/v1/sso-traces": {
       "get": {
         "summary": "Get trace by ID",
         "parameters": [
@@ -671,13 +671,13 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/SAMLTrace"
+              "$ref": "#/definitions/SSOTrace"
             }
           }
         }
       }
     },
-    "/api/v1/saml-traces/product": {
+    "/api/v1/sso-traces/product": {
       "get": {
         "summary": "Get all traces for a product",
         "parameters": [
@@ -697,7 +697,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/SAMLTrace"
+                "$ref": "#/definitions/SSOTrace"
               }
             }
           }
@@ -1490,7 +1490,7 @@
         }
       }
     },
-    "SAMLTrace": {
+    "SSOTrace": {
       "type": "object",
       "properties": {
         "traceId": {
