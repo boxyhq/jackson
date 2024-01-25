@@ -14,7 +14,7 @@ export interface OryRes {
   projectId?: string;
   domains?: string[];
   organizationId?: string;
-  connectionId?: string;
+  error: any | undefined;
 }
 
 export interface OryConfig extends OryRes {
@@ -600,4 +600,5 @@ export interface ProductConfig {
   primaryColor: string | null;
   faviconUrl: string | null;
   companyName: string | null;
+  ory: OryConfig | null;
 }

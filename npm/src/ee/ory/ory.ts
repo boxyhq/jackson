@@ -1,6 +1,7 @@
 import { JacksonOption, OryConfig, OryRes } from '../../typings';
 import axios, { AxiosError } from 'axios';
 import { throwIfInvalidLicense } from '../common/checkLicense';
+import { ProductController } from '../product';
 
 const basePath = 'https://api.console.ory.sh';
 const providerId = 'sso_boxyhq';
@@ -10,9 +11,19 @@ const issuerUrl = 'https://sso.eu.boxyhq.com';
 
 export class OryController {
   private opts: JacksonOption;
+  private productController: ProductController;
 
-  constructor({ opts }: { opts: JacksonOption }) {
+  constructor({ opts, productController }: { opts: JacksonOption; productController: ProductController }) {
     this.opts = opts;
+    this.productController = productController;
+  }
+
+  private async getIssuerUrl() {
+    if (this.opts.boxyhqHosted) {
+      return issuerUrl;
+    } else {
+      return this.opts.externalUrl;
+    }
   }
 
   private async addOrUpdateConnection(config: OryConfig, tenant: string, product: string): Promise<void> {
@@ -52,7 +63,7 @@ export class OryController {
             scope: [],
             mapper_url: dataMapping,
             additional_id_token_audiences: [],
-            issuer_url: issuerUrl,
+            issuer_url: this.getIssuerUrl(),
           },
         },
       ],
@@ -118,41 +129,52 @@ export class OryController {
   }
 
   public async createConnection(config: OryConfig, tenant: string, product: string): Promise<OryRes | null> {
-    if (!(await this.isEnabled(config))) {
+    if (!(await this.isEnabled(config, tenant, product))) {
       return null;
     }
-
-    this.sanitizeConfig(config, tenant);
 
     const organizationId = await this.createOrganization(config, `${tenant}:${product}`);
     config.organizationId = organizationId;
 
-    await this.addOrUpdateConnection(config, tenant, product);
+    let error;
+    try {
+      await this.addOrUpdateConnection(config, tenant, product);
+    } catch (err) {
+      error = err;
+    }
 
-    return { projectId: config.projectId, domains: config.domains, organizationId };
+    return { projectId: config.projectId, domains: config.domains, organizationId, error };
   }
 
   public async updateConnection(config: OryConfig, tenant: string, product: string): Promise<OryRes | null> {
-    if (!(await this.isEnabled(config))) {
+    if (!(await this.isEnabled(config, tenant, product))) {
       return null;
     }
 
-    this.sanitizeConfig(config, tenant);
-
     const organizationId = await this.createOrganization(config, `${tenant}:${product}`);
 
-    await this.addOrUpdateConnection(config, tenant, product);
+    let error;
+    try {
+      await this.addOrUpdateConnection(config, tenant, product);
+    } catch (err) {
+      error = err;
+    }
 
-    return { projectId: config.projectId, domains: config.domains, organizationId };
+    return { projectId: config.projectId, domains: config.domains, organizationId, error };
   }
 
-  // const deleteConnection = async (config: OryConfig) => {};
-
-  public async isEnabled(config: OryConfig): Promise<boolean> {
+  public async isEnabled(config: OryConfig, tenant: string, product: string): Promise<boolean> {
     if (this.opts.boxyhqHosted) {
-      if (!config.sdkToken || !config.projectId) {
+      const productConfig = await this.productController.get(product);
+      if (!productConfig || !productConfig.ory) {
         return false;
       }
+
+      config.sdkToken = productConfig.ory.sdkToken;
+      config.projectId = productConfig.ory.projectId;
+
+      this.sanitizeConfig(config, tenant);
+
       return true;
     } else {
       if (!this.opts.ory.sdkToken || !this.opts.ory.projectId) {
@@ -164,6 +186,7 @@ export class OryController {
         console.error('Ory is not enabled because of invalid license');
         return false;
       }
+      this.sanitizeConfig(config, tenant);
       return true;
     }
   }

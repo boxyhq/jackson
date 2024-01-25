@@ -146,9 +146,8 @@ const saml = {
     }
 
     const exists = await connectionStore.get(record.clientID);
-    const oryProjectId = exists?.ory?.projectId || body.ory?.projectId;
+    const oryProjectId = exists?.ory?.projectId;
     const oryOrganizationId = exists?.ory?.organizationId;
-    const oryConnectionId = exists?.ory?.connectionId;
 
     if (exists) {
       connectionClientSecret = exists.clientSecret;
@@ -160,11 +159,11 @@ const saml = {
 
     const oryRes = await oryController.createConnection(
       {
-        sdkToken: body.ory?.sdkToken,
+        sdkToken: undefined,
         projectId: oryProjectId,
         domains: body.ory?.domains,
         organizationId: oryOrganizationId,
-        connectionId: oryConnectionId,
+        error: undefined,
       },
       tenant,
       product
@@ -302,11 +301,11 @@ const saml = {
 
     const oryRes = await oryController.updateConnection(
       {
-        sdkToken: body.ory?.sdkToken,
+        sdkToken: undefined,
         projectId: _savedConnection.ory?.projectId,
         domains: _savedConnection.ory?.domains,
         organizationId: _savedConnection.ory?.organizationId,
-        connectionId: _savedConnection.ory?.connectionId,
+        error: undefined,
       },
       _savedConnection.tenant,
       _savedConnection.product

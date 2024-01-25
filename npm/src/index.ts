@@ -90,8 +90,9 @@ export const controllers = async (
 
   const samlTracer = new SAMLTracer({ db });
   const eventController = new EventController({ opts });
+  const productController = new ProductController({ productStore, opts });
 
-  const oryController = new OryController({ opts });
+  const oryController = new OryController({ opts, productController });
   const connectionAPIController = new ConnectionAPIController({
     connectionStore,
     opts,
@@ -102,7 +103,6 @@ export const controllers = async (
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore, opts });
-  const productController = new ProductController({ productStore, opts });
 
   // Create default certificate if it doesn't exist.
   await x509.init(certificateStore, opts);
