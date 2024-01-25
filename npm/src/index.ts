@@ -19,6 +19,7 @@ import { BrandingController } from './ee/branding';
 import SAMLTracer from './saml-tracer';
 import EventController from './event';
 import { ProductController } from './ee/product';
+import { SecurityLogsConfigController } from './ee/security-logs';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -69,6 +70,7 @@ export const controllers = async (
   spConfig: SPSSOConfig;
   samlFederatedController: ISAMLFederationController;
   brandingController: IBrandingController;
+  securityLogsConfigController: ISecurityLogsConfigController;
   checkLicense: () => Promise<boolean>;
   productController: ProductController;
 }> => {
@@ -84,6 +86,7 @@ export const controllers = async (
   const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
+  const securityLogsConfigStore = db.store('security:logs:config');
   const productStore = db.store('product:config');
 
   const samlTracer = new SAMLTracer({ db });
@@ -130,6 +133,7 @@ export const controllers = async (
   // Enterprise Features
   const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
   const brandingController = new BrandingController({ store: settingsStore, opts });
+  const securityLogsConfig = new SecurityLogsConfigController({ store: securityLogsConfigStore, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
@@ -168,6 +172,7 @@ export const controllers = async (
       return checkLicense(opts.boxyhqLicenseKey);
     },
     productController,
+    securityLogsConfigController: securityLogsConfig,
   };
 };
 
@@ -178,3 +183,4 @@ export * from './ee/federated-saml/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
 export type ISetupLinkController = InstanceType<typeof SetupLinkController>;
 export type IBrandingController = InstanceType<typeof BrandingController>;
+export type ISecurityLogsConfigController = InstanceType<typeof SecurityLogsConfigController>;

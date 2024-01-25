@@ -31,6 +31,9 @@ export enum IndexNames {
   SetupToken = 'token',
   ProductService = 'productService',
   TenantProductService = 'tenantProductService',
+
+  // For Security Logs Config
+  Tenant = 'tenant',
 }
 
 // The namespace prefix for the database store

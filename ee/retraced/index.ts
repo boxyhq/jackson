@@ -40,7 +40,12 @@ type AuditEventType =
 
   // Admin settings
   | 'portal.branding.update'
-  | 'portal.user.login';
+  | 'portal.user.login'
+
+  // Security Logs Config
+  | 'security.logs.config.create'
+  | 'security.logs.config.update'
+  | 'security.logs.config.delete';
 
 interface ReportAdminEventParams {
   action: AuditEventType;
