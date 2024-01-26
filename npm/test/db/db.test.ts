@@ -1,6 +1,7 @@
 import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
 import tap from 'tap';
 import DB from '../../src/db/db';
+import { randomBytes } from 'crypto';
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
@@ -176,8 +177,8 @@ tap.before(async () => {
     dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
 
     const randomSession = Date.now();
-    connectionStores.push(db.store('saml:config:' + randomSession));
-    ttlStores.push(db.store('oauth:session:' + randomSession, ttl));
+    connectionStores.push(db.store('saml:config:' + randomSession + randomBytes(4).toString('hex')));
+    ttlStores.push(db.store('oauth:session:' + randomSession + randomBytes(4).toString('hex'), ttl));
   }
 });
 
