@@ -42,7 +42,9 @@ export class OryController {
           break;
         }
       }
-    } catch (err) {}
+    } catch (err) {
+      // empty
+    }
 
     const op = index === '-' ? 'add' : 'replace';
 
