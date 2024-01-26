@@ -18,7 +18,7 @@ export class OryController {
     this.productController = productController;
   }
 
-  private async getIssuerUrl() {
+  private getIssuerUrl() {
     if (this.opts.boxyhqHosted) {
       return issuerUrl;
     } else {
