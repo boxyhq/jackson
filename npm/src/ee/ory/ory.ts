@@ -118,10 +118,10 @@ export class OryController {
 
   private async sanitizeConfig(config: OryConfig, tenant: string): Promise<OryConfig> {
     if (!config.sdkToken) {
-      config.sdkToken = this.opts.ory.sdkToken;
+      config.sdkToken = this.opts.ory?.sdkToken;
     }
     if (!config.projectId) {
-      config.projectId = this.opts.ory.projectId;
+      config.projectId = this.opts.ory?.projectId;
     }
     config.domains = config.domains || [];
     if (!config.domains.includes(tenant)) {
@@ -179,7 +179,7 @@ export class OryController {
 
       return true;
     } else {
-      if (!this.opts.ory.sdkToken || !this.opts.ory.projectId) {
+      if (!this.opts.ory?.sdkToken || !this.opts.ory?.projectId) {
         return false;
       }
       try {
