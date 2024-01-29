@@ -1,7 +1,8 @@
 import { IndexNames } from '../../controller/utils';
-import type { Storable, JacksonOption, SecurityLogsConfigCreate, SecurityLogsConfig } from '../../typings';
+import type { Storable, JacksonOption } from '../../typings';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { randomUUID } from 'crypto';
+import { SecurityLogsConfig, SecurityLogsConfigCreate } from './types';
 
 export class SecurityLogsConfigController {
   private store: Storable;
