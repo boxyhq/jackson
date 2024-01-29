@@ -59,6 +59,14 @@ a {
   .modal-box {
     @apply rounded;
   }
+
+  .react-tagsinput {
+    @apply input input-bordered;
+  }
+
+  /* .react-tagsinput-tag {
+    @apply bg-purple-600;
+  } */
 }
 
 .react-datepicker {
@@ -120,4 +128,12 @@ span.react-datepicker__navigation-icon {
 
 .modal-content > div > textarea {
   background-color: white;
+}
+
+.react-tagsinput-tag {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid var(--fallback-bc, oklch(var(--bc) / 0.2)) !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 0.3rem !important;
 }
