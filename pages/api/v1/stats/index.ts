@@ -27,8 +27,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   return res.json({
     data: {
-      sso: sso_connections_count,
-      dsync: dsync_connections_count,
+      sso_connections: sso_connections_count,
+      dsync_connections: dsync_connections_count,
     },
   });
 };
