@@ -406,6 +406,7 @@ export class App {
     }
 
     const toUpdate: Partial<SAMLFederationApp> = {};
+    const indexes: Index[] = [];
 
     // Support partial updates
 
@@ -429,6 +430,24 @@ export class App {
       toUpdate['primaryColor'] = params.primaryColor || null;
     }
 
+    if ('tenants' in params) {
+      const tenants = params.tenants || [app.tenant];
+      const product = app.product;
+
+      if (!tenants.includes(app.tenant)) {
+        tenants.push(app.tenant);
+      }
+
+      toUpdate['tenants'] = tenants;
+
+      tenants.map((tenant) =>
+        indexes.push({
+          name: IndexNames.TenantProduct,
+          value: dbutils.keyFromParts(tenant, product),
+        })
+      );
+    }
+
     if (Object.keys(toUpdate).length === 0) {
       throw new JacksonError(
         'Please provide at least one of the following parameters: acsUrl, name, logoUrl, faviconUrl, primaryColor',
@@ -441,7 +460,7 @@ export class App {
       ...toUpdate,
     };
 
-    await this.store.put(app.id, updatedApp);
+    await this.store.put(app.id, updatedApp, ...indexes);
 
     return updatedApp;
   }

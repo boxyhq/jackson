@@ -264,5 +264,8 @@
   "choose_an_app_to_continue": "Choose an app to continue. If you don't see your app, please contact your administrator.",
   "no_saml_response_try_again": "No SAMLResponse found. Please try again.",
   "customize_branding": "You can customize the look and feel of the Identity Provider selection page by setting the following options",
-  "expiry_in_days": "Expiry in days"
+  "expiry_in_days": "Expiry in days",
+  "enter_tenant": "Enter tenant",
+  "tenants": "Tenants",
+  "tenants_mapping_description": "Provide a custom mapping for SAML federation apps that lets you associate multiple tenants to it. Enter the tenant name and press enter to add it to the list."
 }
