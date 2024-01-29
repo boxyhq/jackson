@@ -47,6 +47,7 @@ export class SSOHandler {
     entityId?: string;
     idp_hint?: string;
     samlFedAppId?: string;
+    tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
     | {
         connection: SAMLSSORecord | OIDCSSORecord;
@@ -58,27 +59,45 @@ export class SSOHandler {
         postForm: string;
       }
   > {
-    const { authFlow, originalParams, tenant, product, idp_hint, entityId, samlFedAppId = '' } = params;
+    const {
+      authFlow,
+      originalParams,
+      tenant,
+      product,
+      idp_hint,
+      entityId,
+      tenants,
+      samlFedAppId = '',
+    } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
 
     // Find SAML connections for the app
-    if (tenant && product) {
-      connections = (
-        await this.connection.getByIndex({
-          name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(tenant, product),
-        })
-      ).data;
-    }
+    if (tenants && tenants.length > 0 && product) {
+      const result = await Promise.all(
+        tenants.map((tenant) =>
+          this.connection.getByIndex({
+            name: IndexNames.TenantProduct,
+            value: dbutils.keyFromParts(tenant, product),
+          })
+        )
+      );
 
-    if (entityId) {
-      connections = (
-        await this.connection.getByIndex({
-          name: IndexNames.EntityID,
-          value: entityId,
-        })
-      ).data;
+      connections = result.flatMap((r) => r.data);
+    } else if (tenant && product) {
+      const result = await this.connection.getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
+
+      connections = result.data;
+    } else if (entityId) {
+      const result = await this.connection.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+
+      connections = result.data;
     }
 
     const noSSOConnectionErrMessage = 'No SSO connection found.';

@@ -5,6 +5,7 @@ import type {
   Records,
   GetByProductParams,
   AppRequestParams,
+  Index,
 } from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
@@ -12,8 +13,12 @@ import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
+import * as dbutils from '../../db/utils';
 
-type NewAppParams = Pick<SAMLFederationApp, 'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId'> & {
+type NewAppParams = Pick<
+  SAMLFederationApp,
+  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants'
+> & {
   logoUrl?: string;
   faviconUrl?: string;
   primaryColor?: string;
@@ -132,6 +137,7 @@ export class App {
     logoUrl,
     faviconUrl,
     primaryColor,
+    tenants,
   }: NewAppParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
@@ -155,6 +161,12 @@ export class App {
       );
     }
 
+    const tenantsMapping = tenants && tenants.length > 0 ? tenants : [];
+
+    if (!tenantsMapping.includes(tenant)) {
+      tenantsMapping.push(tenant);
+    }
+
     const app: SAMLFederationApp = {
       id,
       name,
@@ -165,11 +177,10 @@ export class App {
       logoUrl: logoUrl || null,
       faviconUrl: faviconUrl || null,
       primaryColor: primaryColor || null,
+      tenants: tenantsMapping,
     };
 
-    await this.store.put(
-      id,
-      app,
+    const indexes: Index[] = [
       {
         name: IndexNames.EntityID,
         value: entityId,
@@ -177,8 +188,17 @@ export class App {
       {
         name: IndexNames.Product,
         value: product,
-      }
+      },
+    ];
+
+    tenantsMapping.map((tenant) =>
+      indexes.push({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      })
     );
+
+    await this.store.put(id, app, ...indexes);
 
     return app;
   }
