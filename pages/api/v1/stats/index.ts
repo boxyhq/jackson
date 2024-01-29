@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { connectionAPIController, directorySyncController, samlFederatedController } = await jackson();
+  const { connectionAPIController, directorySyncController } = await jackson();
 
   const sso_connections_count = await connectionAPIController.getCount();
   const dsync_connections_count = await directorySyncController.directories.getCount();
