@@ -31,6 +31,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
+  const { tenant, product } = req.query as { tenant: string | string[]; product: string };
+
+  // Filter connections by multiple tenants
+  if (Array.isArray(tenant) && product) {
+    const tenants = tenant.filter((t) => t).filter((t, i, a) => a.indexOf(t) === i);
+
+    if (tenants.length === 0) {
+      return res.json([]);
+    }
+
+    const result = await Promise.all(
+      tenants.map(async (t) => connectionAPIController.getConnections({ tenant: t, product }))
+    );
+
+    return res.json(result.flat());
+  }
+
   const connections = await connectionAPIController.getConnections(req.query as GetConnectionsQuery);
 
   return res.json(connections);
