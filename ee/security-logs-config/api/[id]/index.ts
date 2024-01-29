@@ -27,7 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-// Get SAML Federation config by id
+// Get Security Logs config by id
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { securityLogsConfigController } = await jackson();
 
@@ -42,11 +42,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-// Update SAML Federation config
+// Update Security Logs config
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { securityLogsConfigController } = await jackson();
 
-  const { id, config } = req.body as { id: string; config: any };
+  const { id } = req.query as { id: string };
+
+  const { config } = req.body as { config: any };
 
   const updatedApp = await securityLogsConfigController.update(id, config);
 
@@ -62,7 +64,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({ data: updatedApp });
 };
 
-// Delete the SAML Federation config
+// Delete the Security Logs config
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { securityLogsConfigController } = await jackson();
 

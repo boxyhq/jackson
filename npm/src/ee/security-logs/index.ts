@@ -1,20 +1,7 @@
 import { IndexNames } from '../../controller/utils';
-import type { Storable, JacksonOption } from '../../typings';
+import type { Storable, JacksonOption, SecurityLogsConfigCreate, SecurityLogsConfig } from '../../typings';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { randomUUID } from 'crypto';
-
-export type SecurityLogsConfigCreate = {
-  tenant: string;
-  config: any;
-  type: string;
-};
-
-export type SecurityLogsConfig = {
-  id: string;
-  tenant: string;
-  config: any;
-  type: string;
-};
 
 export class SecurityLogsConfigController {
   private store: Storable;
@@ -28,13 +15,13 @@ export class SecurityLogsConfigController {
   public async createSecurityLogsConfig(params: SecurityLogsConfigCreate): Promise<string> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
+    const id = randomUUID();
     const record = {
+      id,
       tenant: params.tenant,
       type: params.type,
       config: params.config,
     };
-
-    const id = randomUUID();
 
     await this.store.put(id, record, {
       name: IndexNames.Tenant,
@@ -44,20 +31,18 @@ export class SecurityLogsConfigController {
     return id;
   }
 
-  public async getAll(tenant?: string, pageOffset?: number, pageLimit?: number, pageToken?: string) {
+  public async getAll(tenant: string, pageOffset?: number, pageLimit?: number, pageToken?: string) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    return tenant
-      ? await this.store.getByIndex(
-          {
-            name: IndexNames.Tenant,
-            value: tenant,
-          },
-          pageOffset,
-          pageLimit,
-          pageToken
-        )
-      : await this.store.getAll(pageOffset, pageLimit, pageToken);
+    return await this.store.getByIndex(
+      {
+        name: IndexNames.Tenant,
+        value: tenant,
+      },
+      pageOffset,
+      pageLimit,
+      pageToken
+    );
   }
 
   public async get(id: string): Promise<SecurityLogsConfig | undefined> {

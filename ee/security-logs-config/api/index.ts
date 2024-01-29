@@ -72,7 +72,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     pageLimit,
     pageToken
   );
-
   if (configs.pageToken) {
     res.setHeader('jackson-pagetoken', configs.pageToken);
   }

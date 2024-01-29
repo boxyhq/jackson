@@ -128,6 +128,11 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           text: 'Branding',
           active: asPath.includes('/admin/settings/branding'),
         },
+        {
+          href: '/admin/settings/security-logs',
+          text: 'Security Logs',
+          active: asPath.includes('/admin/settings/security-logs'),
+        },
       ],
     },
   ];
