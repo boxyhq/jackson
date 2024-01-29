@@ -18,6 +18,10 @@ export class OryController {
     this.productController = productController;
   }
 
+  private getOrgName(tenant: string, product: string): string {
+    return this.opts.boxyhqHosted ? tenant : `${tenant}:${product}`;
+  }
+
   private getIssuerUrl() {
     if (this.opts.boxyhqHosted) {
       return issuerUrl;
@@ -135,7 +139,7 @@ export class OryController {
       return null;
     }
 
-    const organizationId = await this.createOrganization(config, `${tenant}:${product}`);
+    const organizationId = await this.createOrganization(config, this.getOrgName(tenant, product));
     config.organizationId = organizationId;
 
     let error;
@@ -153,7 +157,7 @@ export class OryController {
       return null;
     }
 
-    const organizationId = await this.createOrganization(config, `${tenant}:${product}`);
+    const organizationId = await this.createOrganization(config, this.getOrgName(tenant, product));
 
     let error;
     try {
