@@ -5,7 +5,6 @@ import type {
   Records,
   GetByProductParams,
   AppRequestParams,
-  Index,
 } from '../../typings';
 import { appID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
@@ -13,7 +12,6 @@ import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
-import * as dbutils from '../../db/utils';
 
 type NewAppParams = Pick<
   SAMLFederationApp,
@@ -161,10 +159,10 @@ export class App {
       );
     }
 
-    const tenantsMapping = tenants && tenants.length > 0 ? tenants : [];
+    const _tenants = tenants && tenants.length > 0 ? tenants : [];
 
-    if (!tenantsMapping.includes(tenant)) {
-      tenantsMapping.push(tenant);
+    if (!_tenants.includes(tenant)) {
+      _tenants.push(tenant);
     }
 
     const app: SAMLFederationApp = {
@@ -177,10 +175,12 @@ export class App {
       logoUrl: logoUrl || null,
       faviconUrl: faviconUrl || null,
       primaryColor: primaryColor || null,
-      tenants: tenantsMapping,
+      tenants: _tenants,
     };
 
-    const indexes: Index[] = [
+    await this.store.put(
+      id,
+      app,
       {
         name: IndexNames.EntityID,
         value: entityId,
@@ -188,17 +188,8 @@ export class App {
       {
         name: IndexNames.Product,
         value: product,
-      },
-    ];
-
-    tenantsMapping.map((tenant) =>
-      indexes.push({
-        name: IndexNames.TenantProduct,
-        value: dbutils.keyFromParts(tenant, product),
-      })
+      }
     );
-
-    await this.store.put(id, app, ...indexes);
 
     return app;
   }
@@ -406,7 +397,6 @@ export class App {
     }
 
     const toUpdate: Partial<SAMLFederationApp> = {};
-    const indexes: Index[] = [];
 
     // Support partial updates
 
@@ -432,20 +422,12 @@ export class App {
 
     if ('tenants' in params) {
       const tenants = params.tenants || [app.tenant];
-      const product = app.product;
 
       if (!tenants.includes(app.tenant)) {
         tenants.push(app.tenant);
       }
 
       toUpdate['tenants'] = tenants;
-
-      tenants.map((tenant) =>
-        indexes.push({
-          name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(tenant, product),
-        })
-      );
     }
 
     if (Object.keys(toUpdate).length === 0) {
@@ -460,7 +442,7 @@ export class App {
       ...toUpdate,
     };
 
-    await this.store.put(app.id, updatedApp, ...indexes);
+    await this.store.put(app.id, updatedApp);
 
     return updatedApp;
   }
