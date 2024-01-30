@@ -37,7 +37,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
 
   const { id } = router.query as { id: string };
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
+  const { data, error, isLoading, mutate } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
     `/api/admin/federated-saml/${id}`,
     fetcher,
     {
@@ -87,6 +87,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     }
 
     if ('data' in response) {
+      mutate();
       successToast(t('saml_federation_update_success'));
     }
   };

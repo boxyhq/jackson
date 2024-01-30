@@ -159,9 +159,12 @@ export class App {
       );
     }
 
-    const _tenants = tenants && tenants.length > 0 ? tenants : [];
+    let _tenants: string[] = [];
 
-    if (!_tenants.includes(tenant)) {
+    if (tenants && tenants.length > 0) {
+      _tenants = tenants.filter((t) => t !== tenant);
+      _tenants.unshift(tenant);
+    } else {
       _tenants.push(tenant);
     }
 
@@ -421,13 +424,16 @@ export class App {
     }
 
     if ('tenants' in params) {
-      const tenants = params.tenants || [app.tenant];
+      let _tenants: string[] = [];
 
-      if (!tenants.includes(app.tenant)) {
-        tenants.push(app.tenant);
+      if (params.tenants && params.tenants.length > 0) {
+        _tenants = params.tenants.filter((t) => t !== app?.tenant);
+        _tenants.unshift(app.tenant);
+      } else {
+        _tenants.push(app.tenant);
       }
 
-      toUpdate['tenants'] = tenants;
+      toUpdate['tenants'] = _tenants;
     }
 
     if (Object.keys(toUpdate).length === 0) {
