@@ -62,11 +62,8 @@ a {
 
   .react-tagsinput {
     @apply input input-bordered;
+    border-radius: 0.25rem !important;
   }
-
-  /* .react-tagsinput-tag {
-    @apply bg-purple-600;
-  } */
 }
 
 .react-datepicker {
