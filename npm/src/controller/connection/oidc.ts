@@ -17,11 +17,13 @@ import {
   validateTenantAndProduct,
 } from '../utils';
 import { JacksonError } from '../error';
+import { OryController } from '../../ee/ory/ory';
 
 const oidc = {
   create: async (
     body: OIDCSSOConnectionWithDiscoveryUrl | OIDCSSOConnectionWithMetadata,
-    connectionStore: Storable
+    connectionStore: Storable,
+    oryController: OryController
   ) => {
     validateSSOConnection(body, 'oidc');
 
@@ -77,6 +79,8 @@ const oidc = {
     record.clientID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, oidcClientId));
 
     const exists = await connectionStore.get(record.clientID);
+    const oryProjectId = exists?.ory?.projectId;
+    const oryOrganizationId = exists?.ory?.organizationId;
 
     if (exists) {
       connectionClientSecret = exists.clientSecret;
@@ -85,6 +89,21 @@ const oidc = {
     }
 
     record.clientSecret = connectionClientSecret;
+
+    const oryRes = await oryController.createConnection(
+      {
+        sdkToken: undefined,
+        projectId: oryProjectId,
+        domains: body.ory?.domains,
+        organizationId: oryOrganizationId,
+        error: undefined,
+      },
+      tenant,
+      product
+    );
+    if (oryRes) {
+      record.ory = oryRes;
+    }
 
     await connectionStore.put(
       record.clientID,
@@ -107,7 +126,8 @@ const oidc = {
   update: async (
     body: UpdateOIDCConnectionParams,
     connectionStore: Storable,
-    connectionsGetter: IConnectionAPIController['getConnections']
+    connectionsGetter: IConnectionAPIController['getConnections'],
+    oryController: OryController
   ) => {
     const {
       defaultRedirectUrl,
@@ -194,6 +214,21 @@ const oidc = {
 
     if ('deactivated' in body) {
       record['deactivated'] = body.deactivated;
+    }
+
+    const oryRes = await oryController.updateConnection(
+      {
+        sdkToken: undefined,
+        projectId: _savedConnection.ory?.projectId,
+        domains: _savedConnection.ory?.domains,
+        organizationId: _savedConnection.ory?.organizationId,
+        error: undefined,
+      },
+      _savedConnection.tenant,
+      _savedConnection.product
+    );
+    if (oryRes) {
+      record.ory = oryRes;
     }
 
     await connectionStore.put(
