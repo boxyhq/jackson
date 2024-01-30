@@ -88,7 +88,7 @@ export class SSO {
           RelayState: relayState,
           SAMLRequest: request,
         },
-        tenants: app?.tenants || [app.tenant],
+        tenants: app.tenants,
       });
 
       // If there is a redirect URL, then we need to redirect to that URL
