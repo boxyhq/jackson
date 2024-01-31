@@ -172,7 +172,12 @@ export class OryController {
   private async isEnabled(config: OryConfig, tenant: string, product: string): Promise<boolean> {
     if (this.opts.boxyhqHosted) {
       const productConfig = await this.productController.get(product);
-      if (!productConfig || !productConfig.ory) {
+      if (
+        !productConfig ||
+        !productConfig.ory ||
+        !productConfig.ory.sdkToken ||
+        !productConfig.ory.projectId
+      ) {
         return false;
       }
 
