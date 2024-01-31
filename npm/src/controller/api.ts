@@ -75,6 +75,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Name/identifier for the connection
    *     type: string
    *     in: formData
+   *   labelParamPost:
+   *     name: label
+   *     description: An internal label to identify the connection
+   *     type: string
+   *     in: formData
    *   descriptionParamPost:
    *     name: description
    *     description: A short description for the connection not more than 100 characters
@@ -151,6 +156,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - application/json
    *     parameters:
    *      - $ref: '#/parameters/nameParamPost'
+   *      - $ref: '#/parameters/labelParamPost'
    *      - $ref: '#/parameters/descriptionParamPost'
    *      - $ref: '#/parameters/encodedRawMetadataParamPost'
    *      - $ref: '#/parameters/rawMetadataParamPost'
@@ -229,6 +235,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   nameParamPatch:
    *     name: name
    *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   labelParamPatch:
+   *     name: label
+   *     description: An internal label to identify the connection
    *     type: string
    *     in: formData
    *   descriptionParamPatch:
@@ -311,6 +322,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/clientIDParamPatch'
    *       - $ref: '#/parameters/clientSecretParamPatch'
    *       - $ref: '#/parameters/nameParamPatch'
+   *       - $ref: '#/parameters/labelParamPatch'
    *       - $ref: '#/parameters/descriptionParamPatch'
    *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
    *       - $ref: '#/parameters/rawMetadataParamPatch'
@@ -425,6 +437,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        name:
    *          type: string
    *          description: Connection name
+   *        label:
+   *          type: string
+   *          description: Connection label
    *        description:
    *          type: string
    *          description: Connection description

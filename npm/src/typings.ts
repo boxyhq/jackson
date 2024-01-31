@@ -27,6 +27,7 @@ export interface SSOConnection {
   tenant: string;
   product: string;
   name?: string;
+  label?: string;
   description?: string;
   ory?: OryConfig;
 }
@@ -129,6 +130,7 @@ export type UpdateConnectionParams = TenantProduct & {
   clientID: string;
   clientSecret: string;
   name?: string;
+  label?: string;
   description?: string;
   defaultRedirectUrl?: string;
   redirectUrl?: string[] | string;
