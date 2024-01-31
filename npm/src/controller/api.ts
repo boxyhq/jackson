@@ -144,6 +144,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: clientSecret of the application set up on the OpenID Provider
    *     in: formData
    *     type: string
+   *   sortOrder:
+   *    name: sortOrder
+   *    description: Indicate the position of the connection in the IdP selection screen
+   *    in: formData
+   *    type: number
    * /api/v1/sso:
    *   post:
    *     summary: Create SSO connection
@@ -169,6 +174,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/oidcMetadataPost'
    *      - $ref: '#/parameters/oidcClientIdPost'
    *      - $ref: '#/parameters/oidcClientSecretPost'
+   *      - $ref: '#/parameters/sortOrder'
    *     responses:
    *       200:
    *         description: Success

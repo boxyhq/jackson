@@ -19,6 +19,7 @@ import {
   validateRedirectUrl,
   validateTenantAndProduct,
   isLocalhost,
+  validateSortOrder,
 } from '../utils';
 import { JacksonError } from '../error';
 import { OryController } from '../../ee/ory/ory';
@@ -87,6 +88,10 @@ const saml = {
 
     validateTenantAndProduct(tenant, product);
 
+    if ('sortOrder' in body) {
+      validateSortOrder(body.sortOrder);
+    }
+
     const record: Partial<SAMLSSORecord> = {
       defaultRedirectUrl,
       redirectUrl: redirectUrlList,
@@ -100,6 +105,7 @@ const saml = {
       forceAuthn,
       identifierFormat,
       metadataUrl,
+      sortOrder: body.sortOrder,
     };
 
     let metadata = rawMetadata as string;
@@ -235,6 +241,10 @@ const saml = {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
 
+    if ('sortOrder' in body) {
+      validateSortOrder(body.sortOrder);
+    }
+
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
@@ -294,6 +304,10 @@ const saml = {
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       forceAuthn,
     };
+
+    if ('sortOrder' in body) {
+      record.sortOrder = body.sortOrder;
+    }
 
     if ('deactivated' in body) {
       record['deactivated'] = body.deactivated;

@@ -15,6 +15,7 @@ import {
   validateSSOConnection,
   validateRedirectUrl,
   validateTenantAndProduct,
+  validateSortOrder,
 } from '../utils';
 import { JacksonError } from '../error';
 import { OryController } from '../../ee/ory/ory';
@@ -49,6 +50,10 @@ const oidc = {
 
     validateTenantAndProduct(tenant, product);
 
+    if ('sortOrder' in body) {
+      validateSortOrder(body.sortOrder);
+    }
+
     const record: Partial<OIDCSSORecord> = {
       defaultRedirectUrl,
       redirectUrl: redirectUrlList,
@@ -59,6 +64,7 @@ const oidc = {
       description,
       clientID: '',
       clientSecret: '',
+      sortOrder: body.sortOrder,
     };
 
     //  from OpenID Provider
@@ -164,6 +170,10 @@ const oidc = {
       throw new JacksonError('Description should not exceed 100 characters', 400);
     }
 
+    if ('sortOrder' in body) {
+      validateSortOrder(body.sortOrder);
+    }
+
     const redirectUrlList = redirectUrl ? extractRedirectUrls(redirectUrl) : null;
     validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
 
@@ -215,6 +225,10 @@ const oidc = {
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       oidcProvider: oidcProvider ? oidcProvider : _savedConnection.oidcProvider,
     };
+
+    if ('sortOrder' in body) {
+      record.sortOrder = body.sortOrder;
+    }
 
     if ('deactivated' in body) {
       record['deactivated'] = body.deactivated;

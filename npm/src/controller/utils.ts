@@ -363,3 +363,11 @@ export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | D
 
   return true;
 };
+
+export const validateSortOrder = (sortOrder: unknown) => {
+  if (typeof sortOrder === 'number' || sortOrder === null) {
+    return;
+  }
+
+  throw new JacksonError('The field `sortOrder` must be a number. Set `null` to remove the value.', 400);
+};

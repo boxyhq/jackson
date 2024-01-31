@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import type { OIDCSSORecord, ProductConfig, SAMLSSORecord } from '@boxyhq/saml-jackson';
+import type { OIDCSSORecord, ProductConfig, SAMLSSORecord, SSOConnection } from '@boxyhq/saml-jackson';
 import type { InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
@@ -17,6 +17,7 @@ interface Connection {
   name: string;
   product: string;
   clientID: string;
+  sortOrder: number | null;
 }
 
 export default function ChooseIdPConnection({
@@ -260,8 +261,24 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       name,
       product: connection.product,
       clientID: connection.clientID,
+      sortOrder: connection.sortOrder || null,
     };
   });
+
+  // Sort connections by sortOrder
+  connectionsTransformed.sort((a, b) => {
+    if (a.sortOrder === null) {
+      return 1;
+    }
+
+    if (b.sortOrder === null) {
+      return -1;
+    }
+
+    return b.sortOrder - a.sortOrder;
+  });
+
+  console.log(connectionsTransformed);
 
   // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
   if (req.method == 'POST') {

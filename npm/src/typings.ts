@@ -30,6 +30,7 @@ export interface SSOConnection {
   label?: string;
   description?: string;
   ory?: OryConfig;
+  sortOrder?: number | null;
 }
 
 export interface SAMLSSOConnection extends SSOConnection {
@@ -136,6 +137,7 @@ export type UpdateConnectionParams = TenantProduct & {
   redirectUrl?: string[] | string;
   deactivated?: boolean;
   ory?: OryConfig;
+  sortOrder?: number;
 };
 
 export type UpdateSAMLConnectionParams = UpdateConnectionParams & {
