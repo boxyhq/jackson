@@ -75,7 +75,7 @@ jobs:
         ports:
           - 6379:6379
       mongo:
-        image: mongo:4.4.10
+        image: mongo:4.4.28
         ports:
           - 27017:27017
       mysql:
