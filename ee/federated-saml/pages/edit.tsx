@@ -165,6 +165,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
               </label>
               <TagsInput
                 value={app.tenants || []}
+                onBlur={true}
                 onChange={(tags) => setApp({ ...app, tenants: tags })}
                 onlyUnique={true}
                 inputProps={{

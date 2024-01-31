@@ -145,6 +145,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
               </label>
               <TagsInput
                 value={newApp.tenants}
+                onBlur={true}
                 onChange={(tags) => setApp({ ...newApp, tenants: tags })}
                 onlyUnique={true}
                 inputProps={{
