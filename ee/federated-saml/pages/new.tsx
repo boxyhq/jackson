@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import TagsInput from 'react-tagsinput';
 
 import type { ApiResponse } from 'types';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
+
+import 'react-tagsinput/react-tagsinput.css';
 
 const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
@@ -19,6 +22,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     product: '',
     acsUrl: '',
     entityId: '',
+    tenants: [],
   });
 
   if (!hasValidLicense) {
@@ -134,6 +138,23 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 onChange={onChange}
                 placeholder='https://your-idp.com/saml/entityId'
               />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>{t('tenants')}</span>
+              </label>
+              <TagsInput
+                value={newApp.tenants}
+                onChange={(tags) => setApp({ ...newApp, tenants: tags })}
+                onlyUnique={true}
+                inputProps={{
+                  placeholder: t('enter_tenant'),
+                }}
+                focusedClassName='input-focused'
+              />
+              <label className='label'>
+                <span className='label-text-alt'>{t('tenants_mapping_description')}</span>
+              </label>
             </div>
             <div>
               <ButtonPrimary loading={loading}>{t('create_app')}</ButtonPrimary>

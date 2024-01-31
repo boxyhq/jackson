@@ -208,15 +208,6 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     };
   }
 
-  // Otherwise, show the list of IdPs
-  let connections: (OIDCSSORecord | SAMLSSORecord)[] = [];
-
-  if (tenant && product) {
-    connections = await connectionAPIController.getConnections({ tenant, product });
-  } else if (entityId) {
-    connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
-  }
-
   // SAML federated app
   const samlFederationApp = samlFedAppId ? await samlFederatedController.app.get({ id: samlFedAppId }) : null;
 
@@ -224,6 +215,24 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     return {
       notFound: true,
     };
+  }
+
+  // Otherwise, show the list of IdPs
+  let connections: (OIDCSSORecord | SAMLSSORecord)[] = [];
+
+  if (samlFederationApp) {
+    const tenants = samlFederationApp?.tenants || [samlFederationApp.tenant];
+    const result = await Promise.all(
+      tenants.map((tenant) =>
+        connectionAPIController.getConnections({ tenant, product: samlFederationApp.product })
+      )
+    );
+
+    connections = result.flat();
+  } else if (tenant && product) {
+    connections = await connectionAPIController.getConnections({ tenant, product });
+  } else if (entityId) {
+    connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
   }
 
   // Get the branding to use for the IdP selector screen

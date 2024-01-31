@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import TagsInput from 'react-tagsinput';
 
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
@@ -14,6 +15,8 @@ import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
 import { LinkOutline } from '@components/LinkOutline';
 import LicenseRequired from '@components/LicenseRequired';
+
+import 'react-tagsinput/react-tagsinput.css';
 
 const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
@@ -29,11 +32,12 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     logoUrl: '',
     faviconUrl: '',
     primaryColor: '',
+    tenants: [],
   });
 
   const { id } = router.query as { id: string };
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
+  const { data, error, isLoading, mutate } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
     `/api/admin/federated-saml/${id}`,
     fetcher,
     {
@@ -83,6 +87,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     }
 
     if ('data' in response) {
+      mutate();
       successToast(t('saml_federation_update_success'));
     }
   };
@@ -153,6 +158,23 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 onChange={onChange}
                 value={app.acsUrl}
               />
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>{t('tenants')}</span>
+              </label>
+              <TagsInput
+                value={app.tenants || []}
+                onChange={(tags) => setApp({ ...app, tenants: tags })}
+                onlyUnique={true}
+                inputProps={{
+                  placeholder: t('enter_tenant'),
+                }}
+                focusedClassName='input-focused'
+              />
+              <label className='label'>
+                <span className='label-text-alt'>{t('tenants_mapping_description')}</span>
+              </label>
             </div>
             <div className='pt-4'>
               <p className='text-base leading-6 text-gray-500'>{t('customize_branding')}:</p>
