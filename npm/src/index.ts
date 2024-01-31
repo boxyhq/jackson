@@ -19,6 +19,7 @@ import { BrandingController } from './ee/branding';
 import SSOTracer from './sso-tracer';
 import EventController from './event';
 import { ProductController } from './ee/product';
+import { OryController } from './ee/ory/ory';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -89,13 +90,19 @@ export const controllers = async (
 
   const ssoTracer = new SSOTracer({ db });
   const eventController = new EventController({ opts });
+  const productController = new ProductController({ productStore, opts });
 
-  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts, eventController });
+  const oryController = new OryController({ opts, productController });
+  const connectionAPIController = new ConnectionAPIController({
+    connectionStore,
+    opts,
+    eventController,
+    oryController,
+  });
   const adminController = new AdminController({ connectionStore, ssoTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore, opts });
-  const productController = new ProductController({ productStore, opts });
 
   // Create default certificate if it doesn't exist.
   await x509.init(certificateStore, opts);
