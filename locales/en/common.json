@@ -267,5 +267,5 @@
   "expiry_in_days": "Expiry in days",
   "enter_tenant": "Enter tenant",
   "tenants": "Tenants",
-  "tenants_mapping_description": "Provide a custom mapping for SAML federation apps that lets you associate multiple tenants to it. Enter the tenant name and press enter to add it to the list."
+  "tenants_mapping_description": "Provide a custom mapping for SAML federation apps that lets you associate multiple tenants to it. Enter the tenant name and press ENTER or TAB."
 }
