@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
+
 import { copyToClipboard } from '@lib/ui/utils';
 import { successToast } from '@components/Toaster';
 
@@ -18,7 +19,7 @@ const EntityId = ({ onIdChange }: { onIdChange: (entityId: string) => void }) =>
 
   useEffect(() => {
     onIdChange(value);
-  }, [value, onIdChange]);
+  }, [value]);
 
   return (
     <label className='form-control w-full'>
