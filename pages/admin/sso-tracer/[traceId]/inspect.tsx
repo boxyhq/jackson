@@ -150,6 +150,67 @@ const SSOTraceInspector: NextPage = () => {
                 }
               />
             )}
+            {trace.context.error_description && (
+              <DescriptionListItem
+                term={t('error_description_from_oidc_idp')}
+                value={trace.context.error_description}
+              />
+            )}
+            {trace.context.error_uri && (
+              <DescriptionListItem term={t('error_uri')} value={trace.context.error_uri} />
+            )}
+            {trace.context.oidcTokenSet?.id_token && (
+              <>
+                <DescriptionListItem
+                  term={t('id_token_from_oidc_idp')}
+                  value={
+                    <>
+                      <CopyToClipboardButton
+                        text={trace.context.oidcTokenSet.id_token}></CopyToClipboardButton>
+                      <SyntaxHighlighter language='shell' style={materialOceanic}>
+                        {trace.context.oidcTokenSet.id_token}
+                      </SyntaxHighlighter>
+                    </>
+                  }
+                />
+              </>
+            )}
+            {trace.context.oidcTokenSet?.access_token && (
+              <DescriptionListItem
+                term={t('access_token_from_oidc_idp')}
+                value={
+                  <>
+                    <CopyToClipboardButton
+                      text={trace.context.oidcTokenSet.access_token}></CopyToClipboardButton>
+                    <SyntaxHighlighter language='shell' style={materialOceanic}>
+                      {trace.context.oidcTokenSet.access_token}
+                    </SyntaxHighlighter>
+                  </>
+                }
+              />
+            )}
+            {trace.context.stack && (
+              <DescriptionListItem
+                term={t('stack_trace')}
+                value={
+                  <SyntaxHighlighter language='shell' style={materialOceanic}>
+                    {trace.context.stack}
+                  </SyntaxHighlighter>
+                }
+              />
+            )}
+            {trace.context.session_state_from_op_error && (
+              <DescriptionListItem
+                term={t('session_state_from_oidc_idp')}
+                value={trace.context.session_state_from_op_error}
+              />
+            )}
+            {trace.context.scope_from_op_error && (
+              <DescriptionListItem
+                term={t('scope_from_oidc_idp')}
+                value={trace.context.scope_from_op_error}
+              />
+            )}
           </dl>
         </div>
       </div>

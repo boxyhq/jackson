@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { errors, generators } from 'openid-client';
+import { TokenSet, errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
@@ -753,6 +753,7 @@ export class OAuthController implements IOAuthController {
 
     // Reconstruct the oidcClient, code exchange for token and user profile happens here
     const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
+    let tokenSet: TokenSet | undefined;
     try {
       const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
       const oidcClient = new oidcIssuer.Client({
@@ -761,7 +762,7 @@ export class OAuthController implements IOAuthController {
         redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
         response_types: ['code'],
       });
-      const tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
+      tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
         code_verifier: session.oidcCodeVerifier,
         nonce: session.oidcNonce,
         state: callbackParams.state,
@@ -790,13 +791,10 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: unknown) {
-      const { error, error_description = getErrorMessage(err) } = err as Pick<
-        OAuthErrorHandlerParams,
-        'error' | 'error_description'
-      >;
-
+      const { error, error_description, error_uri, session_state, scope, stack } = err as errors.OPError;
+      const error_message = getErrorMessage(err);
       const traceId = await this.ssoTracer.saveTrace({
-        error: error || error_description,
+        error: error_message,
         context: {
           tenant: oidcConnection.tenant,
           product: oidcConnection.product,
@@ -809,6 +807,13 @@ export class OAuthController implements IOAuthController {
           entityId: session.requested.entityId,
           requestedOIDCFlow: !!session.requested.oidc,
           profile,
+          error,
+          error_description,
+          error_uri,
+          session_state_from_op_error: session_state,
+          scope_from_op_error: scope,
+          stack,
+          oidcTokenSet: { id_token: tokenSet?.id_token, access_token: tokenSet?.access_token },
         },
       });
       if (isSAMLFederated) {
@@ -816,8 +821,8 @@ export class OAuthController implements IOAuthController {
       }
       return {
         redirect_url: OAuthErrorResponse({
-          error: error || 'server_error',
-          error_description: traceId ? `${traceId}: ${error_description}` : error_description,
+          error: (error as OAuthErrorHandlerParams['error']) || 'server_error',
+          error_description: traceId ? `${traceId}: ${error_message}` : error_message,
           redirect_uri: redirect_uri!,
           state: session.state,
         }),
