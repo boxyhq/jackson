@@ -3,13 +3,14 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import type { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import TagsInput from 'react-tagsinput';
+import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 import type { ApiResponse } from 'types';
 import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
-import EntityId from '../components/EntityId';
+import { copyToClipboard } from '@lib/ui/utils';
 
 import 'react-tagsinput/react-tagsinput.css';
 
@@ -65,6 +66,14 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
       ...newApp,
       [target.id]: target.value,
     });
+  };
+
+  const generateEntityId = () => {
+    const id = crypto.randomUUID().replace(/-/g, '');
+    const entityId = `https://saml.boxyhq.com/${id}`;
+    setApp({ ...newApp, entityId });
+    copyToClipboard(entityId);
+    successToast(t('entity_id_generated_copied'));
   };
 
   return (
@@ -127,7 +136,34 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 placeholder='https://your-idp.com/saml/acs'
               />
             </div>
-            <EntityId onIdChange={(entityId) => setApp({ ...newApp, entityId })} />
+            <label className='form-control w-full'>
+              <div className='label'>
+                <span className='label-text'>{t('entity_id')}</span>
+                <span className='label-text-alt'>
+                  <div className='flex items-center gap-1'>
+                    <span
+                      className='cursor-pointer border-stone-600 border p-1 rounded'
+                      onClick={generateEntityId}>
+                      {t('generate_sp_entity_id')}
+                    </span>
+                    <div
+                      className='tooltip tooltip-left'
+                      data-tip={t('saml_federation_entity_id_instruction')}>
+                      <QuestionMarkCircleIcon className='h-5 w-5' />
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <input
+                type='url'
+                className='input input-bordered w-full'
+                id='entityId'
+                placeholder='https://your-idp.com/saml/entityId'
+                required
+                value={newApp.entityId}
+                onChange={onChange}
+              />
+            </label>
             <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('tenants')}</span>
