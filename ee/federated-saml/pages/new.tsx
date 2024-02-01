@@ -151,6 +151,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                   placeholder: t('enter_tenant'),
                 }}
                 focusedClassName='input-focused'
+                addOnBlur={true}
               />
               <label className='label'>
                 <span className='label-text-alt'>{t('tenants_mapping_description')}</span>
