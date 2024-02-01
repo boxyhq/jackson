@@ -105,7 +105,7 @@ const saml = {
       forceAuthn,
       identifierFormat,
       metadataUrl,
-      sortOrder: body.sortOrder,
+      sortOrder: parseInt(body.sortOrder as any),
     };
 
     let metadata = rawMetadata as string;
@@ -306,7 +306,7 @@ const saml = {
     };
 
     if ('sortOrder' in body) {
-      record.sortOrder = body.sortOrder;
+      record.sortOrder = parseInt(body.sortOrder as any);
     }
 
     if ('deactivated' in body) {

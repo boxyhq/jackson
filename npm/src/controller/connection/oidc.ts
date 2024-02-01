@@ -64,7 +64,7 @@ const oidc = {
       description,
       clientID: '',
       clientSecret: '',
-      sortOrder: body.sortOrder,
+      sortOrder: parseInt(body.sortOrder as any),
     };
 
     //  from OpenID Provider
@@ -227,7 +227,7 @@ const oidc = {
     };
 
     if ('sortOrder' in body) {
-      record.sortOrder = body.sortOrder;
+      record.sortOrder = parseInt(body.sortOrder as any);
     }
 
     if ('deactivated' in body) {

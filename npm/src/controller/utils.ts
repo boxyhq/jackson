@@ -365,9 +365,7 @@ export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | D
 };
 
 export const validateSortOrder = (sortOrder: unknown) => {
-  if (typeof sortOrder === 'number' || sortOrder === null) {
-    return;
+  if (Number.isNaN(Number(sortOrder))) {
+    throw new JacksonError('The field `sortOrder` must be a number. Set `null` to remove the value.', 400);
   }
-
-  throw new JacksonError('The field `sortOrder` must be a number. Set `null` to remove the value.', 400);
 };
