@@ -790,11 +790,7 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: unknown) {
-      const { error, error_description = getErrorMessage(err) } = err as Pick<
-        OAuthErrorHandlerParams,
-        'error' | 'error_description'
-      >;
-
+      const { error, error_description, error_uri, session_state, scope, stack } = err as errors.OPError;
       const traceId = await this.ssoTracer.saveTrace({
         error: error || error_description,
         context: {
@@ -809,6 +805,12 @@ export class OAuthController implements IOAuthController {
           entityId: session.requested.entityId,
           requestedOIDCFlow: !!session.requested.oidc,
           profile,
+          error,
+          error_description,
+          error_uri,
+          session_state,
+          scope,
+          stack,
         },
       });
       if (isSAMLFederated) {
