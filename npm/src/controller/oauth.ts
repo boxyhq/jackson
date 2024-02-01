@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { errors, generators } from 'openid-client';
+import { TokenSet, errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
@@ -753,6 +753,7 @@ export class OAuthController implements IOAuthController {
 
     // Reconstruct the oidcClient, code exchange for token and user profile happens here
     const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
+    let tokenSet: TokenSet | undefined;
     try {
       const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
       const oidcClient = new oidcIssuer.Client({
@@ -761,7 +762,7 @@ export class OAuthController implements IOAuthController {
         redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
         response_types: ['code'],
       });
-      const tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
+      tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
         code_verifier: session.oidcCodeVerifier,
         nonce: session.oidcNonce,
         state: callbackParams.state,
@@ -812,6 +813,7 @@ export class OAuthController implements IOAuthController {
           session_state,
           scope,
           stack,
+          oidcTokenSet: { id_token: tokenSet?.id_token, access_token: tokenSet?.access_token },
         },
       });
       if (isSAMLFederated) {

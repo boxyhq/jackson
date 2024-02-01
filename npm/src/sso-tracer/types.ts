@@ -35,6 +35,7 @@ export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     session_state?: string;
     scope?: string;
     stack?: string;
+    oidcTokenSet?: { id_token?: string; access_token?: string };
   };
 }
 
