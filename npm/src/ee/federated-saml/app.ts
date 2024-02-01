@@ -150,11 +150,27 @@ export class App {
 
     const id = appID(tenant, product);
 
+    // Check if an app already exists for the same tenant and product
     const foundApp = await this.store.get(id);
 
     if (foundApp) {
       throw new JacksonError(
         'Cannot create another app for the same tenant and product. An app already exists.',
+        400
+      );
+    }
+
+    // Check if an app already exists with the same entityId
+    const result = await this.store.getByIndex({
+      name: IndexNames.EntityID,
+      value: entityId,
+    });
+
+    const apps: SAMLFederationApp[] = result.data;
+
+    if (apps && apps.length > 0) {
+      throw new JacksonError(
+        `An app already exists with the same Entity ID. Provide a unique Entity ID and try again.`,
         400
       );
     }
