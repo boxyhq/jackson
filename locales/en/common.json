@@ -124,7 +124,7 @@
   "provider": "Provider",
   "trace_entity_id": "Entity ID",
   "sso_connection_client_id": "SSO Connection Client ID",
-  "error_description": "Error Description",
+  "error_description_from_oidc_idp": "Error Description (from OIDC Provider)",
   "new_saml_federation_app": "New App",
   "view": "View",
   "view_idp_configuration": "View IdP Configuration",

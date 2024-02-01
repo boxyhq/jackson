@@ -89,12 +89,6 @@ const SSOTraceInspector: NextPage = () => {
               <DescriptionListItem term={t('timestamp')} value={new Date(trace.timestamp).toLocaleString()} />
             )}
             <DescriptionListItem term={t('error')} value={trace.error} />
-            {trace.context.error_description && (
-              <DescriptionListItem term={t('error_description')} value={trace.context.error_description} />
-            )}
-            {trace.context.error_uri && (
-              <DescriptionListItem term={t('error_uri')} value={trace.context.error_uri} />
-            )}
             {trace.context.tenant && <DescriptionListItem term={t('tenant')} value={trace.context.tenant} />}
             {trace.context.product && (
               <DescriptionListItem term={t('product')} value={trace.context.product} />
@@ -155,6 +149,15 @@ const SSOTraceInspector: NextPage = () => {
                   </SyntaxHighlighter>
                 }
               />
+            )}
+            {trace.context.error_description && (
+              <DescriptionListItem
+                term={t('error_description_from_oidc_idp')}
+                value={trace.context.error_description}
+              />
+            )}
+            {trace.context.error_uri && (
+              <DescriptionListItem term={t('error_uri')} value={trace.context.error_uri} />
             )}
             {trace.context.oidcTokenSet?.id_token && (
               <>
