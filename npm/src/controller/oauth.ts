@@ -791,8 +791,9 @@ export class OAuthController implements IOAuthController {
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: unknown) {
       const { error, error_description, error_uri, session_state, scope, stack } = err as errors.OPError;
+      const error_message = getErrorMessage(err);
       const traceId = await this.ssoTracer.saveTrace({
-        error: error || error_description,
+        error: error_message,
         context: {
           tenant: oidcConnection.tenant,
           product: oidcConnection.product,
@@ -818,8 +819,8 @@ export class OAuthController implements IOAuthController {
       }
       return {
         redirect_url: OAuthErrorResponse({
-          error: error || 'server_error',
-          error_description: traceId ? `${traceId}: ${error_description}` : error_description,
+          error: (error as OAuthErrorHandlerParams['error']) || 'server_error',
+          error_description: traceId ? `${traceId}: ${error_message}` : error_message,
           redirect_uri: redirect_uri!,
           state: session.state,
         }),
