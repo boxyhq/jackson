@@ -124,7 +124,7 @@
   "provider": "Provider",
   "trace_entity_id": "Entity ID",
   "sso_connection_client_id": "SSO Connection Client ID",
-  "error_description": "Error description",
+  "error_description": "Error Description",
   "new_saml_federation_app": "New App",
   "view": "View",
   "view_idp_configuration": "View IdP Configuration",
@@ -267,5 +267,11 @@
   "expiry_in_days": "Expiry in days",
   "enter_tenant": "Enter tenant",
   "tenants": "Tenants",
-  "tenants_mapping_description": "Provide a custom mapping for SAML federation apps that lets you associate multiple tenants to it. Enter the tenant name and press ENTER or TAB."
+  "tenants_mapping_description": "Provide a custom mapping for SAML federation apps that lets you associate multiple tenants to it. Enter the tenant name and press ENTER or TAB.",
+  "stack_trace": "Stack Trace",
+  "error_uri": "error_uri in error response (from OIDC Provider)",
+  "id_token_from_oidc_idp": "ID Token (from OIDC Provider)",
+  "access_token_from_oidc_idp": "Access Token (from OIDC Provider)",
+  "session_state_from_oidc_idp": "Session State (from OIDC Provider)",
+  "scope_from_op_error": "Scope (from OIDC Provider)"
 }
