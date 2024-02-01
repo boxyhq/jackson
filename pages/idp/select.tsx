@@ -278,8 +278,6 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     return b.sortOrder - a.sortOrder;
   });
 
-  console.log(connectionsTransformed);
-
   // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
   if (req.method == 'POST') {
     const body = await getRawBody(req);

@@ -209,12 +209,11 @@ export const getCommonFields = ({
   {
     key: 'sortOrder',
     label: 'Sort Order',
-    type: 'text',
+    type: 'number',
     placeholder: '10',
     attributes: {
       required: false,
       hideInSetupView: true,
-      'data-testid': 'name',
     },
   },
   {
