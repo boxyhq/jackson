@@ -267,7 +267,7 @@
   "expiry_in_days": "Expiry in days",
   "enter_tenant": "Enter tenant",
   "tenants": "Tenants",
-  "tenants_mapping_description": "Provide a custom mapping for SAML federation apps that lets you associate multiple tenants to it. Enter the tenant name and press enter to add it to the list.",
+  "tenants_mapping_description": "Provide a custom mapping for SAML federation apps that lets you associate multiple tenants to it. Enter the tenant name and press ENTER or TAB.",
   "generate_sp_entity_id": "Generate Entity ID",
   "saml_federation_entity_id_instruction": "Use the button to create a distinctive identifier if your service provider does not provide a unique Entity ID and set that in your provider's configuration. If your service provider does provide a unique ID, you can use that instead.",
   "entity_id_generated_copied": "Generated Entity ID copied to clipboard."
