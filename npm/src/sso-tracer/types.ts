@@ -28,6 +28,13 @@ export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     samlResponse?: string; // Raw SAML response from IdP
     issuer?: string; // Parsed issuer from samlResponse
     profile?: SAMLProfile; // Profile extracted from samlResponse
+    //  OPError attributes from OIDC provider authorization response: https://github.com/panva/node-openid-client/blob/main/docs/README.md#class-operror
+    error?: string;
+    error_description?: string;
+    error_uri?: string;
+    session_state?: string;
+    scope?: string;
+    stack?: string;
   };
 }
 
