@@ -133,7 +133,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 className='input-bordered input'
                 required
                 onChange={onChange}
-                placeholder='https://your-idp.com/saml/acs'
+                placeholder='https://your-sp.com/saml/acs'
               />
             </div>
             <label className='form-control w-full'>
@@ -158,7 +158,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 type='url'
                 className='input input-bordered w-full'
                 id='entityId'
-                placeholder='https://your-idp.com/saml/entityId'
+                placeholder='https://your-sp.com/saml/entityId'
                 required
                 value={newApp.entityId}
                 onChange={onChange}
