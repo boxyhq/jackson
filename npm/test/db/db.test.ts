@@ -212,6 +212,9 @@ tap.test('dbs', async () => {
         }
       );
 
+      // wait 100ms to ensure that the record is written with a different timestamp
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       await connectionStore.put(
         record2.id,
         record2,
