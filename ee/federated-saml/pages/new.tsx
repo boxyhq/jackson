@@ -14,7 +14,7 @@ import { copyToClipboard } from '@lib/ui/utils';
 
 import 'react-tagsinput/react-tagsinput.css';
 
-const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
+const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; samlAudience: string }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -70,7 +70,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
 
   const generateEntityId = () => {
     const id = crypto.randomUUID().replace(/-/g, '');
-    const entityId = `https://saml.boxyhq.com/${id}`;
+    const entityId = `${samlAudience}/${id}`;
     setApp({ ...newApp, entityId });
     copyToClipboard(entityId);
     successToast(t('entity_id_generated_copied'));
