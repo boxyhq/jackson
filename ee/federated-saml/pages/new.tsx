@@ -9,6 +9,7 @@ import { LinkBack } from '@components/LinkBack';
 import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
+import EntityId from '../components/EntityId';
 
 import 'react-tagsinput/react-tagsinput.css';
 
@@ -74,7 +75,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
             <p className='text-sm leading-6 text-gray-800'>{t('saml_federation_add_new_app_description')}</p>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('name')}</span>
               </label>
@@ -87,7 +88,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 placeholder='Your app'
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('tenant')}</span>
               </label>
@@ -100,7 +101,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 placeholder='boxyhq'
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('product')}</span>
               </label>
@@ -113,7 +114,7 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 placeholder='saml-jackson'
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('acs_url')}</span>
               </label>
@@ -126,20 +127,8 @@ const NewApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 placeholder='https://your-idp.com/saml/acs'
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
-                <span className='label-text'>{t('entity_id')}</span>
-              </label>
-              <input
-                type='url'
-                id='entityId'
-                className='input-bordered input'
-                required
-                onChange={onChange}
-                placeholder='https://your-idp.com/saml/entityId'
-              />
-            </div>
-            <div className='form-control w-full md:w-1/2'>
+            <EntityId onIdChange={(entityId) => setApp({ ...newApp, entityId })} />
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('tenants')}</span>
               </label>
