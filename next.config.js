@@ -10,7 +10,7 @@ module.exports = {
   output: 'standalone',
   webpack: (config, { dev, webpack, isServer }) => {
     // Enable source maps in development mode and for server-side rendering
-    if (dev || isServer) {
+    if (!dev && isServer) {
       config.devtool = 'source-map';
     }
 
