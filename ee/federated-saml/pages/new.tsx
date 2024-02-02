@@ -155,7 +155,7 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
                 </span>
               </div>
               <input
-                type='url'
+                type='text'
                 className='input input-bordered w-full'
                 id='entityId'
                 placeholder='https://your-sp.com/saml/entityId'
@@ -163,6 +163,9 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
                 value={newApp.entityId}
                 onChange={onChange}
               />
+              <label className='label'>
+                <span className='label-text-alt'>{t('entity-id-change-restriction')}</span>
+              </label>
             </label>
             <div className='form-control w-full'>
               <label className='label'>
