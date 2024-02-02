@@ -10,7 +10,7 @@ import type {
   SAMLSSORecord,
   SSOTracerInstance,
 } from '../../typings';
-import { extractSAMLRequestAttributes } from '../../saml/lib';
+import { decodeBase64, extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
@@ -146,7 +146,7 @@ export class SSO {
           providerName,
           acsUrl,
           entityId,
-          samlRequest: decodedRequest,
+          samlRequest: decodedRequest || (await decodeBase64(request, true)),
         },
       });
 
