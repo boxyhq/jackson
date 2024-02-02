@@ -316,6 +316,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: formData
    *     required: false
    *     type: boolean
+   *   sortOrderParamPatch:
+   *     name: sortOrder
+   *     description: Indicate the position of the connection in the IdP selection screen
+   *     in: formData
+   *     type: number
+   *     required: false
    * /api/v1/sso:
    *   patch:
    *     summary: Update SSO Connection
@@ -342,6 +348,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/tenantParamPatch'
    *       - $ref: '#/parameters/productParamPatch'
    *       - $ref: '#/parameters/deactivatedParamPatch'
+   *       - $ref: '#/parameters/sortOrderParamPatch'
    *     responses:
    *       204:
    *         description: Success

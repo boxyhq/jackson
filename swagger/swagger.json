@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.18.1",
+    "version": "1.18.2",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -181,6 +181,9 @@
           },
           {
             "$ref": "#/parameters/deactivatedParamPatch"
+          },
+          {
+            "$ref": "#/parameters/sortOrderParamPatch"
           }
         ],
         "responses": {
@@ -1926,6 +1929,13 @@
       "in": "formData",
       "required": false,
       "type": "boolean"
+    },
+    "sortOrderParamPatch": {
+      "name": "sortOrder",
+      "description": "Indicate the position of the connection in the IdP selection screen",
+      "in": "formData",
+      "type": "number",
+      "required": false
     },
     "tenantParamGet": {
       "in": "query",
