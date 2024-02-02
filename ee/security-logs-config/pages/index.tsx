@@ -77,6 +77,9 @@ const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr className='hover:bg-gray-50'>
                   <th scope='col' className='px-6 py-3'>
+                    {t('name')}
+                  </th>
+                  <th scope='col' className='px-6 py-3'>
                     {t('type')}
                   </th>
                   <th scope='col' className='px-6 py-3'>
@@ -94,6 +97,7 @@ const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                       <tr
                         key={config.id}
                         className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
+                        <td className='px-6'>{config.name}</td>
                         <td className='px-6'>{getDisplayTypeFromSinkType(config.type)}</td>
                         <td className='px-6 py-3'>{config.tenant}</td>
                         <td className='px-6'>

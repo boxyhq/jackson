@@ -28,16 +28,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { securityLogsConfigController } = await jackson();
 
-  const { tenant, type, config } = req.body as {
+  const { tenant, type, config, name } = req.body as {
     tenant: string;
     type: string;
     config: any;
+    name?: string;
   };
 
   const id = await securityLogsConfigController.createSecurityLogsConfig({
-    tenant: boxyhqHosted ? tenant : adminPortalSSODefaults.tenant,
+    tenant: boxyhqHosted && tenant ? tenant : adminPortalSSODefaults.tenant,
     type,
     config,
+    name,
   });
 
   retraced.reportAdminPortalEvent({

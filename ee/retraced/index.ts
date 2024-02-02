@@ -7,6 +7,7 @@ import requestIp from 'request-ip';
 import jackson from '@lib/jackson';
 import { auditLogEnabledGroup, retracedOptions } from '@lib/env';
 import { sessionName } from '@lib/constants';
+import { sendSecurityLogs } from '@ee/security-logs-config';
 
 type AuditEventType =
   | 'sso.user.login'
@@ -45,14 +46,35 @@ type AuditEventType =
   // Security Logs Config
   | 'security.logs.config.create'
   | 'security.logs.config.update'
-  | 'security.logs.config.delete';
+  | 'security.logs.config.delete'
+
+  // SaaS app
+  | 'member.invitation.create'
+  | 'member.invitation.delete'
+  | 'member.remove'
+  | 'member.update'
+  | 'sso.connection.create'
+  | 'sso.connection.patch'
+  | 'sso.connection.delete'
+  | 'dsync.connection.create'
+  | 'dsync.connection.delete'
+  | 'webhook.create'
+  | 'webhook.delete'
+  | 'webhook.update'
+  | 'team.create'
+  | 'team.update'
+  | 'team.delete'
+  | 'audit_log.splunk_connection.create'
+  | 'audit_log.splunk_connection.delete'
+  | 'audit_log.splunk_connection.update';
 
 interface ReportAdminEventParams {
   action: AuditEventType;
   crud: Retraced.CRUD;
   target?: Retraced.Target;
-  req?: NextApiRequest;
+  group?: Retraced.Group;
   actor?: Retraced.Actor;
+  req?: NextApiRequest;
 }
 
 interface ReportEventParams {
@@ -62,6 +84,7 @@ interface ReportEventParams {
   req: NextApiRequest;
   group?: Retraced.Group;
   target?: Retraced.Target;
+  sourceIp?: string;
   productId?: string;
 }
 
@@ -104,21 +127,16 @@ const getClient = async () => {
 
 // Report events to Retraced
 const reportEvent = async (params: ReportEventParams) => {
-  const { action, crud, actor, req } = params;
-
+  const { action, crud, actor, sourceIp, req } = params;
   try {
     const retracedClient = await getClient();
-
-    if (!retracedClient) {
-      return;
-    }
 
     const retracedEvent: Event = {
       action,
       crud,
       actor,
       created: new Date(),
-      source_ip: getClientIp(req),
+      source_ip: sourceIp || getClientIp(req),
     };
 
     if ('group' in params && params.group) {
@@ -163,7 +181,11 @@ const reportEvent = async (params: ReportEventParams) => {
       return;
     }
 
-    await retracedClient.reportEvent(retracedEvent);
+    if (retracedClient) {
+      await retracedClient.reportEvent(retracedEvent);
+    }
+
+    await sendSecurityLogs(retracedEvent, retracedEvent.group?.id);
   } catch (error: any) {
     console.error('Error reporting event to Retraced', error);
   }
@@ -171,31 +193,28 @@ const reportEvent = async (params: ReportEventParams) => {
 
 // Report Admin portal events to Retraced
 export const reportAdminPortalEvent = async (params: ReportAdminEventParams) => {
-  const { action, crud, target, actor, req } = params;
+  const { action, crud, target, actor, group, req } = params;
 
   try {
     const retracedClient = await getClient();
-
-    if (!retracedClient) {
-      return;
-    }
 
     const retracedEvent: Event = {
       action,
       crud,
       target,
       actor: actor ?? (await getAdminUser(req)),
-      group: adminPortalGroup,
+      group: group || adminPortalGroup,
       created: new Date(),
     };
-
     const ip = getClientIp(req);
 
     if (ip) {
       retracedEvent['source_ip'] = ip;
     }
-
-    await retracedClient.reportEvent(retracedEvent);
+    if (retracedClient) {
+      await retracedClient.reportEvent(retracedEvent);
+    }
+    await sendSecurityLogs(retracedEvent);
   } catch (error: any) {
     console.error('Error reporting event to Retraced', error);
   }

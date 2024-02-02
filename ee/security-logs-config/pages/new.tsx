@@ -12,6 +12,7 @@ const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [config, setConfig] = useState({});
+  const [name, setName] = useState('');
   const [type, setType] = useState(t('select_type'));
 
   if (!hasValidLicense) {
@@ -28,7 +29,7 @@ const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => 
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ type: configMap[type].type, config }),
+      body: JSON.stringify({ name, type: configMap[type].type, config }),
     });
 
     setLoading(false);
@@ -82,6 +83,20 @@ const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => 
                   );
                 })}
               </select>
+            </div>
+            <div className='form-control w-full md:w-1/2'>
+              <label className='label'>
+                <span className='label-text'>{t('name')}</span>
+              </label>
+              <input
+                type='text'
+                id='name'
+                className='input-bordered input'
+                value={name}
+                required={false}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t('name')}
+              />
             </div>
             {type && (
               <>

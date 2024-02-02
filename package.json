@@ -57,6 +57,7 @@
     "@boxyhq/metrics": "0.2.6",
     "@boxyhq/react-ui": "3.3.25",
     "@boxyhq/saml-jackson": "file:npm",
+    "@boxyhq/security-logs-sink": "file:./ee/sinks",
     "@heroicons/react": "2.1.1",
     "@retracedhq/logs-viewer": "2.7.0",
     "@retracedhq/retraced": "0.7.4",

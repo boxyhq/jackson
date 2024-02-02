@@ -19,6 +19,7 @@ export class SecurityLogsConfigController {
     const id = randomUUID();
     const record = {
       id,
+      name: params.name,
       tenant: params.tenant,
       type: params.type,
       config: params.config,
@@ -35,15 +36,17 @@ export class SecurityLogsConfigController {
   public async getAll(tenant: string, pageOffset?: number, pageLimit?: number, pageToken?: string) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    return await this.store.getByIndex(
-      {
-        name: IndexNames.Tenant,
-        value: tenant,
-      },
-      pageOffset,
-      pageLimit,
-      pageToken
-    );
+    return tenant
+      ? await this.store.getByIndex(
+          {
+            name: IndexNames.Tenant,
+            value: tenant,
+          },
+          pageOffset,
+          pageLimit,
+          pageToken
+        )
+      : await this.store.getAll(pageOffset, pageLimit, pageToken);
   }
 
   public async get(id: string): Promise<SecurityLogsConfig | undefined> {
@@ -52,7 +55,7 @@ export class SecurityLogsConfigController {
     return await this.store.get(id);
   }
 
-  public async update(id: string, config: any): Promise<SecurityLogsConfig> {
+  public async update(id: string, config: any, name?: string): Promise<SecurityLogsConfig> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const currentConfig = await this.get(id);
@@ -65,6 +68,7 @@ export class SecurityLogsConfigController {
       type: currentConfig.type,
       tenant: currentConfig.tenant,
       config: config ?? currentConfig.config,
+      name: name ?? currentConfig.name,
     };
 
     const updatedConfig = {

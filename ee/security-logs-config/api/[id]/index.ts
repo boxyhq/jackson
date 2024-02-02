@@ -48,9 +48,9 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query as { id: string };
 
-  const { config } = req.body as { config: any };
+  const { config, name } = req.body as { config: any; name?: string };
 
-  const updatedApp = await securityLogsConfigController.update(id, config);
+  const updatedApp = await securityLogsConfigController.update(id, config, name);
 
   retraced.reportAdminPortalEvent({
     action: 'security.logs.config.update',
