@@ -149,6 +149,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *    description: Indicate the position of the connection in the IdP selection screen
    *    in: formData
    *    type: number
+   *    required: false
    * /api/v1/sso:
    *   post:
    *     summary: Create SSO connection

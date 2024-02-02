@@ -1821,7 +1821,8 @@
       "name": "sortOrder",
       "description": "Indicate the position of the connection in the IdP selection screen",
       "in": "formData",
-      "type": "number"
+      "type": "number",
+      "required": false
     },
     "clientIDParamPatch": {
       "name": "clientID",
