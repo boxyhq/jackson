@@ -24,16 +24,19 @@ import { JacksonError } from './error';
 import { IndexNames, appID, transformConnections, transformConnection, isConnectionActive } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
+import { OryController } from '../ee/ory/ory';
 
 export class ConnectionAPIController implements IConnectionAPIController {
   private connectionStore: Storable;
   private opts: JacksonOption;
   private eventController: IEventController;
+  private oryController: OryController;
 
-  constructor({ connectionStore, opts, eventController }) {
+  constructor({ connectionStore, opts, eventController, oryController }) {
     this.connectionStore = connectionStore;
     this.opts = opts;
     this.eventController = eventController;
+    this.oryController = oryController;
   }
 
   /**
@@ -70,6 +73,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   nameParamPost:
    *     name: name
    *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   labelParamPost:
+   *     name: label
+   *     description: An internal label to identify the connection
    *     type: string
    *     in: formData
    *   descriptionParamPost:
@@ -148,6 +156,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - application/json
    *     parameters:
    *      - $ref: '#/parameters/nameParamPost'
+   *      - $ref: '#/parameters/labelParamPost'
    *      - $ref: '#/parameters/descriptionParamPost'
    *      - $ref: '#/parameters/encodedRawMetadataParamPost'
    *      - $ref: '#/parameters/rawMetadataParamPost'
@@ -175,7 +184,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   ): Promise<SAMLSSORecord> {
     metrics.increment('createConnection');
 
-    const connection = await samlConnection.create(body, this.connectionStore);
+    const connection = await samlConnection.create(body, this.connectionStore, this.oryController);
 
     await this.eventController.notify('sso.created', connection);
 
@@ -198,7 +207,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
 
-    const connection = await oidcConnection.create(body, this.connectionStore);
+    const connection = await oidcConnection.create(body, this.connectionStore, this.oryController);
 
     await this.eventController.notify('sso.created', connection);
 
@@ -226,6 +235,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   nameParamPatch:
    *     name: name
    *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   labelParamPatch:
+   *     name: label
+   *     description: An internal label to identify the connection
    *     type: string
    *     in: formData
    *   descriptionParamPatch:
@@ -308,6 +322,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/clientIDParamPatch'
    *       - $ref: '#/parameters/clientSecretParamPatch'
    *       - $ref: '#/parameters/nameParamPatch'
+   *       - $ref: '#/parameters/labelParamPatch'
    *       - $ref: '#/parameters/descriptionParamPatch'
    *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
    *       - $ref: '#/parameters/rawMetadataParamPatch'
@@ -335,7 +350,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const connection = await samlConnection.update(
       body,
       this.connectionStore,
-      this.getConnections.bind(this)
+      this.getConnections.bind(this),
+      this.oryController
     );
 
     if ('deactivated' in body) {
@@ -362,7 +378,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const connection = await oidcConnection.update(
       body,
       this.connectionStore,
-      this.getConnections.bind(this)
+      this.getConnections.bind(this),
+      this.oryController
     );
 
     if ('deactivated' in body) {
@@ -420,6 +437,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        name:
    *          type: string
    *          description: Connection name
+   *        label:
+   *          type: string
+   *          description: Connection label
    *        description:
    *          type: string
    *          description: Connection description

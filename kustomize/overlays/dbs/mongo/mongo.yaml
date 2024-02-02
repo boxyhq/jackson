@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: mongo
-          image: mongo:4.4.10
+          image: mongo:4.4.28
           imagePullPolicy: IfNotPresent
           env:
             # - name: MONGO_INITDB_ROOT_USERNAME

@@ -3,7 +3,13 @@ import saml from '@boxyhq/saml20';
 import { App } from './app';
 import { JacksonError } from '../../controller/error';
 import { SSOHandler } from '../../controller/sso-handler';
-import type { JacksonOption, OIDCSSORecord, SAMLSSORecord, SSOTracerInstance } from '../../typings';
+import type {
+  JacksonOption,
+  OIDCSSORecord,
+  SAMLFederationApp,
+  SAMLSSORecord,
+  SSOTracerInstance,
+} from '../../typings';
 import { extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
@@ -48,7 +54,8 @@ export class SSO {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
-    let id, acsUrl, entityId, publicKey, providerName, decodedRequest, app;
+    let app: SAMLFederationApp | undefined;
+    let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
 
     try {
       const parsedSAMLRequest = await extractSAMLRequestAttributes(request);
@@ -81,6 +88,7 @@ export class SSO {
           RelayState: relayState,
           SAMLRequest: request,
         },
+        tenants: app.tenants,
       });
 
       // If there is a redirect URL, then we need to redirect to that URL
