@@ -35,16 +35,16 @@ export const extractSAMLRequestAttributes = async (samlRequest: string) => {
   const decodedRequest = await decodeBase64(samlRequest, true);
   const result = await parseXML(decodedRequest);
 
-  const publicKey: string = result['samlp:AuthnRequest']['Signature']
-    ? result['samlp:AuthnRequest']['Signature'][0]['KeyInfo'][0]['X509Data'][0]['X509Certificate'][0]
+  const publicKey: string = result['AuthnRequest']['Signature']
+    ? result['AuthnRequest']['Signature'][0]['KeyInfo'][0]['X509Data'][0]['X509Certificate'][0]
     : null;
 
-  const attributes = result['samlp:AuthnRequest']['$'];
+  const attributes = result['AuthnRequest']['$'];
 
   const id: string = attributes.ID;
   const providerName: string = attributes.ProviderName;
   const acsUrl: string = attributes.AssertionConsumerServiceURL;
-  const entityId: string = result['samlp:AuthnRequest']['saml:Issuer'][0];
+  const entityId: string = result['AuthnRequest']['Issuer'][0];
 
   if (!entityId) {
     throw new Error("Missing 'Entity ID' in SAML Request.");
@@ -128,13 +128,20 @@ export const decodeBase64 = async (string: string, isDeflated: boolean) => {
 // Parse XML
 const parseXML = async (xml: string): Promise<Record<string, string>> => {
   return new Promise((resolve, reject) => {
-    xml2js.parseString(xml, (err: Error | null, result: any) => {
-      if (err) {
-        reject(err);
-      }
+    xml2js.parseString(
+      xml,
+      {
+        tagNameProcessors: [xml2js.processors.stripPrefix],
+        strict: true,
+      },
+      (err: Error | null, result: any) => {
+        if (err) {
+          reject(err);
+        }
 
-      resolve(result);
-    });
+        resolve(result);
+      }
+    );
   });
 };
 
