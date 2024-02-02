@@ -65,7 +65,7 @@ const SSOTraceViewer: NextPage = () => {
                   <th className='px-6 py-3'>{t('trace_id')}</th>
                   <th className='px-6 py-3'>{t('timestamp')}</th>
                   <th className='px-6 py-3'>{t('assertion_type')}</th>
-                  <th className='px-6 py-3'>{t('error_description')}</th>
+                  <th className='px-6 py-3'>{t('error')}</th>
                 </tr>
               </thead>
               <tbody>

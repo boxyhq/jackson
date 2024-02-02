@@ -507,7 +507,7 @@ export interface OAuthErrorHandlerParams {
     | 'server_error'
     | 'temporarily_unavailable'
     | OIDCErrorCodes;
-  error_description: string;
+  error_description?: string;
   redirect_uri: string;
   state?: string;
 }
