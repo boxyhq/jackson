@@ -433,6 +433,50 @@ tap.test('controller/api', async (t) => {
       t.equal(savedConnection.description, 'A new description');
     });
 
+    t.test('Update sortOrder', async (t) => {
+      const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
+        body_saml_provider as SAMLSSOConnectionWithEncodedMetadata
+      );
+
+      // Set sortOrder to null
+      await connectionAPIController.updateSAMLConnection({
+        clientID,
+        clientSecret,
+        tenant: body_saml_provider.tenant,
+        product: body_saml_provider.product,
+        sortOrder: null,
+      });
+
+      let savedConnection = (await connectionAPIController.getConnections({ clientID }))[0];
+      t.equal(savedConnection.sortOrder, null);
+
+      // Set sortOrder to 1
+      await connectionAPIController.updateSAMLConnection({
+        clientID,
+        clientSecret,
+        tenant: body_saml_provider.tenant,
+        product: body_saml_provider.product,
+        sortOrder: 1,
+      });
+
+      savedConnection = (await connectionAPIController.getConnections({ clientID }))[0];
+      t.equal(savedConnection.sortOrder, 1);
+
+      // Set sortOrder to string
+      try {
+        await connectionAPIController.updateSAMLConnection({
+          clientID,
+          clientSecret,
+          tenant: body_saml_provider.tenant,
+          product: body_saml_provider.product,
+          sortOrder: 'one' as any,
+        });
+      } catch (err: any) {
+        t.equal(err.message, 'The field `sortOrder` must be a number. Set `null` to remove the value.');
+        t.equal(err.statusCode, 400);
+      }
+    });
+
     t.test('When metadata XML is malformed', async (t) => {
       t.test('entityID missing in XML', async (t) => {
         const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(

@@ -137,7 +137,7 @@ export type UpdateConnectionParams = TenantProduct & {
   redirectUrl?: string[] | string;
   deactivated?: boolean;
   ory?: OryConfig;
-  sortOrder?: number;
+  sortOrder?: number | null;
 };
 
 export type UpdateSAMLConnectionParams = UpdateConnectionParams & {
