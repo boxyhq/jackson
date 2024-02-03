@@ -44,7 +44,11 @@ export const extractSAMLRequestAttributes = async (samlRequest: string) => {
   const id: string = attributes.ID;
   const providerName: string = attributes.ProviderName;
   const acsUrl: string = attributes.AssertionConsumerServiceURL;
-  const entityId: string = result['AuthnRequest']['Issuer'][0];
+  let issuer = result['AuthnRequest']['Issuer'][0];
+  if (issuer && issuer._) {
+    issuer = issuer._;
+  }
+  const entityId: string = issuer as string;
 
   if (!entityId) {
     throw new Error("Missing 'Entity ID' in SAML Request.");
