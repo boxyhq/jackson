@@ -146,7 +146,7 @@ export class SSO {
           providerName,
           acsUrl,
           entityId,
-          samlRequest: decodedRequest || (await saml.decodeBase64(request, true)),
+          samlRequest: decodedRequest || request,
         },
       });
 
