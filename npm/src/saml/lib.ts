@@ -1,7 +1,4 @@
 import crypto from 'crypto';
-import xml2js from 'xml2js';
-import { inflateRaw } from 'zlib';
-import { promisify } from 'util';
 import saml from '@boxyhq/saml20';
 import xmlbuilder from 'xmlbuilder';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
@@ -29,43 +26,6 @@ export const extractSAMLResponseAttributes = async (
   attributes.claims.idHash = dbutils.keyDigest(attributes.claims.id);
 
   return attributes;
-};
-
-export const extractSAMLRequestAttributes = async (samlRequest: string) => {
-  const decodedRequest = await decodeBase64(samlRequest, true);
-  const result = await parseXML(decodedRequest);
-
-  const publicKey: string = result['AuthnRequest']['Signature']
-    ? result['AuthnRequest']['Signature'][0]['KeyInfo'][0]['X509Data'][0]['X509Certificate'][0]
-    : null;
-
-  const attributes = result['AuthnRequest']['$'];
-
-  const id: string = attributes.ID;
-  const providerName: string = attributes.ProviderName;
-  const acsUrl: string = attributes.AssertionConsumerServiceURL;
-  let issuer = result['AuthnRequest']['Issuer'][0];
-  if (issuer && issuer._) {
-    issuer = issuer._;
-  }
-  const entityId: string = issuer as string;
-
-  if (!entityId) {
-    throw new Error("Missing 'Entity ID' in SAML Request.");
-  }
-
-  if (!acsUrl) {
-    throw new Error("Missing 'ACS URL' in SAML Request.");
-  }
-
-  return {
-    id,
-    acsUrl,
-    entityId,
-    publicKey,
-    providerName,
-    decodedRequest,
-  };
 };
 
 // Create Metadata XML
@@ -118,35 +78,6 @@ export const createMetadataXML = async ({
   };
 
   return xmlbuilder.create(nodes, { encoding: 'UTF-8', standalone: false }).end({ pretty: true });
-};
-
-// Decode the base64 string
-export const decodeBase64 = async (string: string, isDeflated: boolean) => {
-  const inflateRawAsync = promisify(inflateRaw);
-
-  return isDeflated
-    ? (await inflateRawAsync(Buffer.from(string, 'base64'))).toString()
-    : Buffer.from(string, 'base64').toString();
-};
-
-// Parse XML
-const parseXML = async (xml: string): Promise<Record<string, string>> => {
-  return new Promise((resolve, reject) => {
-    xml2js.parseString(
-      xml,
-      {
-        tagNameProcessors: [xml2js.processors.stripPrefix],
-        strict: true,
-      },
-      (err: Error | null, result: any) => {
-        if (err) {
-          reject(err);
-        }
-
-        resolve(result);
-      }
-    );
-  });
 };
 
 const randomId = () => {
