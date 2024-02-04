@@ -10,7 +10,6 @@ import type {
   SAMLSSORecord,
   SSOTracerInstance,
 } from '../../typings';
-import { extractSAMLRequestAttributes } from '../../saml/lib';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
@@ -58,14 +57,14 @@ export class SSO {
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
 
     try {
-      const parsedSAMLRequest = await extractSAMLRequestAttributes(request);
+      decodedRequest = await saml.decodeBase64(request, true);
+
+      const parsedSAMLRequest = await saml.parseSAMLRequest(decodedRequest, false);
 
       id = parsedSAMLRequest.id;
-      acsUrl = parsedSAMLRequest.acsUrl;
-      entityId = parsedSAMLRequest.entityId;
+      entityId = parsedSAMLRequest.audience;
       publicKey = parsedSAMLRequest.publicKey;
       providerName = parsedSAMLRequest.providerName;
-      decodedRequest = parsedSAMLRequest.decodedRequest;
 
       // Verify the request if it is signed
       if (publicKey && !saml.hasValidSignature(request, publicKey, null)) {
@@ -73,6 +72,7 @@ export class SSO {
       }
 
       app = await this.app.getByEntityId(entityId);
+      acsUrl = parsedSAMLRequest.acsUrl || app.acsUrl; // acsUrl is optional in the SAMLRequest
 
       if (app.acsUrl !== acsUrl) {
         throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
@@ -146,7 +146,7 @@ export class SSO {
           providerName,
           acsUrl,
           entityId,
-          samlRequest: decodedRequest,
+          samlRequest: decodedRequest || request,
         },
       });
 
