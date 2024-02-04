@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
-import xml2js from 'xml2js';
 import xmlbuilder from 'xmlbuilder';
 import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
@@ -111,7 +110,7 @@ export class LogoutController {
       throw new JacksonError('Unable to validate state from the origin request.', 403);
     }
 
-    const parsedResponse = await parseSAMLResponse(rawResponse);
+    const parsedResponse = await saml.parseLogoutResponse(rawResponse);
 
     if (parsedResponse.status !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
       throw new JacksonError(`SLO failed with status ${parsedResponse.status}.`, 400);
@@ -176,38 +175,6 @@ const buildRequestXML = (nameId: string, providerName: string, sloUrl: string) =
     id,
     xml: xmlbuilder.create(xml).end({}),
   };
-};
-
-// Parse SAMLResponse
-const parseSAMLResponse = async (
-  rawResponse: string
-): Promise<{
-  id: string;
-  issuer: string;
-  status: string;
-  destination: string;
-  inResponseTo: string;
-}> => {
-  return new Promise((resolve, reject) => {
-    xml2js.parseString(
-      rawResponse,
-      { tagNameProcessors: [xml2js.processors.stripPrefix] },
-      (err: Error, { LogoutResponse }) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        resolve({
-          issuer: LogoutResponse.Issuer[0]._,
-          id: LogoutResponse.$.ID,
-          status: LogoutResponse.Status[0].StatusCode[0].$.Value,
-          destination: LogoutResponse.$.Destination,
-          inResponseTo: LogoutResponse.$.InResponseTo,
-        });
-      }
-    );
-  });
 };
 
 // Sign the XML
