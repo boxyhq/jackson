@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import saml from '@boxyhq/saml20';
 import xmlbuilder from 'xmlbuilder';
-import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import * as dbutils from '../db/utils';
 import claims from '../saml/claims';
 
