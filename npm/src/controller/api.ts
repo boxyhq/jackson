@@ -604,7 +604,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
     if (connections) {
       const sort = 'sort' in body ? body.sort : false;
 
-      if (sort && !('pageOffset' in body || 'pageLimit' in body)) {
+      if (sort) {
         connections.sort((a, b) => (b.sortOrder || 0) - (a.sortOrder || 0));
       }
 
