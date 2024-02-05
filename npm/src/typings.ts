@@ -120,7 +120,12 @@ type TenantProduct = {
   product: string;
 };
 
-export type GetConnectionsQuery = ClientIDQuery | TenantQuery | { entityId: string };
+export type GetConnectionsQuery =
+  | ClientIDQuery
+  | TenantQuery
+  | { entityId: string }
+  | { tenant: string[]; product: string; sort?: boolean };
+
 export type GetIDPEntityIDBody = TenantProduct;
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 

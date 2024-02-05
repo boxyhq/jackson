@@ -223,15 +223,11 @@ export const getServerSideProps = async ({ query, locale, req }) => {
 
   if (samlFederationApp) {
     const tenants = samlFederationApp?.tenants || [samlFederationApp.tenant];
-    const result = await Promise.all(
-      tenants.map((tenant) =>
-        connectionAPIController.getConnections({ tenant, product: samlFederationApp.product })
-      )
-    );
+    const { product } = samlFederationApp;
 
-    connections = result.flat();
+    connections = await connectionAPIController.getConnections({ tenant: tenants, product, sort: true });
   } else if (tenant && product) {
-    connections = await connectionAPIController.getConnections({ tenant, product });
+    connections = await connectionAPIController.getConnections({ tenant, product, sort: true });
   } else if (entityId) {
     connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
   }
@@ -263,19 +259,6 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       clientID: connection.clientID,
       sortOrder: connection.sortOrder || null,
     };
-  });
-
-  // Sort connections by sortOrder
-  connectionsTransformed.sort((a, b) => {
-    if (a.sortOrder === null) {
-      return 1;
-    }
-
-    if (b.sortOrder === null) {
-      return -1;
-    }
-
-    return b.sortOrder - a.sortOrder;
   });
 
   // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component

@@ -438,6 +438,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: strategy
    *     type: string
    *     description: Strategy which can help to filter connections with tenant/product query
+   *  sortParamGet:
+   *     in: query
+   *     name: sort
+   *     type: string
+   *     description: If present, the connections will be sorted by `sortOrder`. It won't consider if pagination is used.
    * definitions:
    *   Connection:
    *      type: object
@@ -500,6 +505,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/clientIDParamGet'
    *       - $ref: '#/parameters/strategyParamGet'
+   *       - $ref: '#/parameters/sortParamGet'
    *     operationId: get-connections
    *     tags: [Single Sign On]
    *     responses:
@@ -519,61 +525,84 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
     metrics.increment('getConnections');
 
+    let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
+
+    // Fetch connections by entityId
     if (entityId) {
-      const connections = await this.connectionStore.getByIndex({
+      const result = await this.connectionStore.getByIndex({
         name: IndexNames.EntityID,
         value: entityId,
       });
 
-      if (!connections || typeof connections !== 'object') {
-        return [];
+      if (!result || typeof result !== 'object') {
+        connections = [];
+      } else {
+        connections = result.data;
       }
-
-      return transformConnections(connections.data);
     }
 
-    if (clientID) {
-      const connection = await this.connectionStore.get(clientID);
+    // Fetch connections by clientID
+    else if (clientID) {
+      const result = await this.connectionStore.get(clientID);
 
-      if (!connection || typeof connection !== 'object') {
-        return [];
+      if (!result || typeof result !== 'object') {
+        connections = [];
+      } else {
+        connections = [result];
       }
-
-      return transformConnections([connection]);
     }
 
-    if (tenant && product) {
-      const connections = await this.connectionStore.getByIndex({
+    // Fetch connections by multiple tenants
+    else if (tenant && product && Array.isArray(tenant)) {
+      const tenants = tenant.filter((t) => t).filter((t, i, a) => a.indexOf(t) === i);
+
+      const result = await Promise.all(
+        tenants.map(async (t) =>
+          this.connectionStore.getByIndex({
+            name: IndexNames.TenantProduct,
+            value: dbutils.keyFromParts(t, product),
+          })
+        )
+      );
+
+      if (!result || !result.length) {
+        connections = [];
+      } else {
+        connections = result.flatMap((r) => r.data);
+      }
+    }
+
+    // Fetch connections by tenant and product
+    else if (tenant && product && !Array.isArray(tenant)) {
+      const result = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!connections || !connections.data.length) {
-        return [];
+      if (!result || !result.data.length) {
+        connections = [];
+      } else {
+        connections = result.data;
       }
 
-      // filter if strategy is passed
-      const filteredConnections = strategy
-        ? connections.data.filter((connection) => {
-            if (strategy === 'saml') {
-              if (connection.idpMetadata) {
-                return true;
-              }
-            }
-            if (strategy === 'oidc') {
-              if (connection.oidcProvider) {
-                return true;
-              }
-            }
-            return false;
-          })
-        : connections.data;
+      // Filter connections by strategy
+      if (connections && connections.length > 0 && strategy) {
+        connections = connections.filter((connection) => {
+          if (strategy === 'saml') {
+            return 'idpMetadata' in connection;
+          }
 
-      if (!filteredConnections.length) {
-        return [];
+          if (strategy === 'oidc') {
+            return 'oidcProvider' in connection;
+          }
+
+          return false;
+        });
       }
+    }
 
-      return transformConnections(filteredConnections);
+    if (connections) {
+      return transformConnections(connections);
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
