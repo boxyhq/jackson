@@ -478,6 +478,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        deactivated:
    *          type: boolean
    *          description: Connection status
+   *        sortOrder:
+   *          type: number
+   *          description: Connection sort order
    * responses:
    *   '200Get':
    *     description: Success
