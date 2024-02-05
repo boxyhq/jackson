@@ -36,23 +36,17 @@ async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, isPo
   let samlRequest = '';
   let relayState = '';
   let idpHint = '';
-  let isDeflated = true;
-  let binding: 'http-redirect' | 'http-post' = 'http-redirect';
 
   if (isPostBinding) {
     const { SAMLRequest, RelayState } = req.body as SAMLRequest;
 
     samlRequest = SAMLRequest;
     relayState = RelayState;
-
-    binding = 'http-post';
-    isDeflated = false;
   } else {
     const { SAMLRequest, RelayState } = req.query as SAMLRequest;
 
     samlRequest = SAMLRequest;
     relayState = RelayState;
-    binding = 'http-post';
   }
 
   if ('idp_hint' in req.query) {
@@ -64,8 +58,7 @@ async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, isPo
   const response = await samlFederatedController.sso.getAuthorizeUrl({
     request: samlRequest,
     relayState,
-    idpHint,
-    binding,
+    idp_hint: idpHint,
   });
 
   if (!response) {
