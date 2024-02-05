@@ -365,7 +365,17 @@ export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | D
 };
 
 export const validateSortOrder = (sortOrder: unknown) => {
-  if (Number.isNaN(Number(sortOrder))) {
-    throw new JacksonError('The field `sortOrder` must be a number. Set `null` to remove the value.', 400);
+  if (sortOrder === null || sortOrder === '') {
+    return;
+  }
+
+  const _sortOrder = parseInt(sortOrder as string);
+
+  if (isNaN(_sortOrder)) {
+    throw new JacksonError('The field `sortOrder` must be a number.', 400);
+  }
+
+  if (_sortOrder < 0) {
+    throw new JacksonError('The field `sortOrder` must be a number greater than or equal to 0.', 400);
   }
 };
