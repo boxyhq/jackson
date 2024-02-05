@@ -472,7 +472,7 @@ tap.test('controller/api', async (t) => {
           sortOrder: 'one' as any,
         });
       } catch (err: any) {
-        t.equal(err.message, 'The field `sortOrder` must be a number. Set `null` to remove the value.');
+        t.equal(err.message, 'The field `sortOrder` must be a number.');
         t.equal(err.statusCode, 400);
       }
     });
