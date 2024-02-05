@@ -132,6 +132,9 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 <span className='label-text'>{t('entity_id')}</span>
               </label>
               <input type='url' className='input-bordered input' defaultValue={app.entityId} disabled />
+              <label className='label'>
+                <span className='label-text-alt'>{t('desc-entity-id')}</span>
+              </label>
             </div>
             <div className='form-control w-full'>
               <label className='label'>

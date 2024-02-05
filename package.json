@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.18.2",
+  "version": "1.18.3",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -92,7 +92,7 @@
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.6",
     "@types/node": "20.10.1",
-    "@types/react": "18.2.51",
+    "@types/react": "18.2.52",
     "@typescript-eslint/eslint-plugin": "6.20.0",
     "@typescript-eslint/parser": "6.20.0",
     "autoprefixer": "10.4.17",
@@ -103,7 +103,7 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.0.3",
     "postcss": "8.4.33",
-    "prettier": "3.2.4",
+    "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.5.11",
     "release-it": "17.0.3",
     "swagger-jsdoc": "6.2.8",
