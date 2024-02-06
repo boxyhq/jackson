@@ -1,4 +1,11 @@
+const redirectUrlPlaceholder = 'http://_boxyhq_redirect_not_in_use';
+
 export const redirect = (redirectUrl: string, redirectUrls: string[]): boolean => {
+  // Don't allow redirect to URL placeholder
+  if (redirectUrl === redirectUrlPlaceholder) {
+    return false;
+  }
+
   const url: URL = new URL(redirectUrl);
 
   for (const idx in redirectUrls) {
