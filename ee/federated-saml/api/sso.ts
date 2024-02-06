@@ -45,11 +45,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     throw new Error('Unable to create SAML Federated request. Error creating authorize url.');
   }
 
-  if ('redirect_url' in response && response.redirect_url) {
+  if (response?.redirect_url) {
     res.redirect(302, response.redirect_url);
   }
 
-  if ('authorize_form' in response && response.authorize_form) {
+  if (response?.authorize_form) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(response.authorize_form);
   }
