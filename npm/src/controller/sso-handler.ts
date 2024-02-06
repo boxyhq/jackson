@@ -11,7 +11,6 @@ import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
-import { createSAMLResponse } from '../saml/lib';
 import * as redirect from './oauth/redirect';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
@@ -280,12 +279,12 @@ export class SSOHandler {
     const certificate = await getDefaultCertificate();
 
     try {
-      const responseSigned = await createSAMLResponse({
+      const responseSigned = await saml.createSAMLResponse({
         audience: session.requested.entityId,
         acsUrl: session.requested.acsUrl,
         requestId: session.requested.id,
         issuer: `${this.opts.samlAudience}`,
-        profile,
+        claims: profile.claims,
         ...certificate,
       });
 

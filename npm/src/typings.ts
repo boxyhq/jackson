@@ -461,7 +461,7 @@ export interface JacksonOption {
   setupLinkExpiryDays?: number;
   boxyhqHosted?: boolean;
 
-  ory: {
+  ory?: {
     projectId: string | undefined;
     sdkToken: string | undefined;
   };
