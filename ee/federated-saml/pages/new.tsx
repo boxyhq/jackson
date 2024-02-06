@@ -25,6 +25,7 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
     acsUrl: '',
     entityId: '',
     tenants: [],
+    mappings: {},
   });
 
   if (!hasValidLicense) {
