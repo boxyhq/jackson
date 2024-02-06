@@ -18,6 +18,7 @@ interface Connection {
   product: string;
   clientID: string;
   sortOrder: number | null;
+  deactivated: boolean;
 }
 
 export default function ChooseIdPConnection({
@@ -258,8 +259,12 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       product: connection.product,
       clientID: connection.clientID,
       sortOrder: connection.sortOrder || null,
+      deactivated: connection.deactivated || false,
     };
   });
+
+  // Filter out connections that are not enabled
+  connectionsTransformed = connectionsTransformed.filter((connection) => connection.deactivated !== true);
 
   // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
   if (req.method == 'POST') {
