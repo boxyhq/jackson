@@ -15,7 +15,7 @@ import { throwIfInvalidLicense } from '../common/checkLicense';
 
 type NewAppParams = Pick<
   SAMLFederationApp,
-  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants'
+  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings'
 > & {
   logoUrl?: string;
   faviconUrl?: string;
@@ -112,6 +112,16 @@ export class App {
    *         in: formData
    *         required: false
    *         type: string
+   *       - name: tenants
+   *         description: Mapping of tenants whose connections will be grouped under this SAML Federation app
+   *         in: formData
+   *         required: false
+   *         type: array
+   *       - name: mappings
+   *         description: Mapping of attributes from the IdP to SP
+   *         in: formData
+   *         required: false
+   *         type: object
    *     tags: [SAML Federation]
    *     produces:
    *      - application/json
@@ -136,6 +146,7 @@ export class App {
     faviconUrl,
     primaryColor,
     tenants,
+    mappings,
   }: NewAppParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
@@ -195,6 +206,7 @@ export class App {
       faviconUrl: faviconUrl || null,
       primaryColor: primaryColor || null,
       tenants: _tenants,
+      mappings: mappings || {},
     };
 
     await this.store.put(
@@ -381,6 +393,16 @@ export class App {
    *         in: formData
    *         required: false
    *         type: string
+   *       - name: tenants
+   *         description: Mapping of tenants whose connections will be grouped under this SAML Federation app
+   *         in: formData
+   *         required: false
+   *         type: array
+   *       - name: mappings
+   *         description: Mapping of attributes from the IdP to SP
+   *         in: formData
+   *         required: false
+   *         type: object
    *     tags:
    *       - SAML Federation
    *     produces:
@@ -450,6 +472,10 @@ export class App {
       }
 
       toUpdate['tenants'] = _tenants;
+    }
+
+    if ('mappings' in params) {
+      toUpdate['mappings'] = params.mappings;
     }
 
     if (Object.keys(toUpdate).length === 0) {
