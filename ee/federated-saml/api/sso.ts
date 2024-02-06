@@ -9,7 +9,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     switch (method) {
       case 'GET':
-        return await handleGET(req, res);
+        await handleGET(req, res);
+        break;
       default:
         res.setHeader('Allow', 'GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -52,6 +53,4 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(response.authorize_form);
   }
-
-  throw new Error('Unable to create SAML Federated request. Error creating authorize url.');
 };
