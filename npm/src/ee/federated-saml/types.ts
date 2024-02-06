@@ -13,7 +13,7 @@ export type SAMLFederationApp = {
   faviconUrl: string | null;
   primaryColor: string | null;
   tenants?: string[]; // To support multiple tenants for a single app
-  mappings?: Record<string, string> | null;
+  mappings: Record<string, string> | null;
 };
 
 export type SAMLFederationAppWithMetadata = SAMLFederationApp & {
