@@ -268,6 +268,7 @@ export class SSOHandler {
 
       return {
         redirect_url: ssoUrl,
+        authorize_form: null,
       };
     } catch (err: any) {
       console.error(err);
