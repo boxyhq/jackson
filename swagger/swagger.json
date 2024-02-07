@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.18.0",
+    "version": "1.18.5",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -1166,6 +1166,20 @@
             "in": "formData",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "tenants",
+            "description": "Mapping of tenants whose connections will be grouped under this SAML Federation app",
+            "in": "formData",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "name": "mappings",
+            "description": "Mapping of attributes from the IdP to SP",
+            "in": "formData",
+            "required": false,
+            "type": "array"
           }
         ],
         "tags": [
@@ -1288,6 +1302,20 @@
             "in": "formData",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "tenants",
+            "description": "Mapping of tenants whose connections will be grouped under this SAML Federation app",
+            "in": "formData",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "name": "mappings",
+            "description": "Mapping of attributes from the IdP to SP",
+            "in": "formData",
+            "required": false,
+            "type": "array"
           }
         ],
         "tags": [
