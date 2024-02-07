@@ -441,3 +441,20 @@ jobs:
         working-directory: ./npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - run: npm install
+        working-directory: ./ee/security-sinks
+
+      - name: Publish Security_Sink
+        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
+        run: |
+          npm install -g json
+          JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
+          json -I -f package.json -e "this.main=\"dist/index.js\""
+          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+
+          npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
+        working-directory: ./ee/security-sinks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
