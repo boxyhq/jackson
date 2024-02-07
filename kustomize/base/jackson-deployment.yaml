@@ -22,13 +22,15 @@ spec:
             httpGet:
               port: 5225
               path: /api/health
-            periodSeconds: 10
+            periodSeconds: 3
+            timeoutSeconds: 3
             failureThreshold: 5
           readinessProbe:
             httpGet:
               port: 5225
               path: /api/health
-            periodSeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
             failureThreshold: 5
             successThreshold: 2
           ports:
