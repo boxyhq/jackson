@@ -92,7 +92,7 @@
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.6",
     "@types/node": "20.10.1",
-    "@types/react": "18.2.54",
+    "@types/react": "18.2.55",
     "@typescript-eslint/eslint-plugin": "6.21.0",
     "@typescript-eslint/parser": "6.21.0",
     "autoprefixer": "10.4.17",
