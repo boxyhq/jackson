@@ -162,7 +162,7 @@ export class SSOHandler {
   }: {
     connection: SAMLSSORecord;
     requestParams: Record<string, any>;
-    mappings: Record<string, string> | null;
+    mappings: any[] | null;
   }) {
     // We have a connection now, so we can create the SAML request
     const certificate = await getDefaultCertificate();
@@ -235,7 +235,7 @@ export class SSOHandler {
   }: {
     connection: OIDCSSORecord;
     requestParams: Record<string, any>;
-    mappings: Record<string, string> | null;
+    mappings: any[] | null;
   }) {
     if (!this.opts.oidcPath) {
       throw new JacksonError('OpenID response handler path (oidcPath) is not set', 400);
@@ -287,14 +287,16 @@ export class SSOHandler {
 
     const mappedClaims = profile.claims;
     if (session.mappings) {
-      Object.keys(session.mappings).forEach((key) => {
-        const value = session.mappings[key];
+      session.mappings.forEach((elem) => {
+        const key = elem.key;
+        const value = elem.value;
         if (mappedClaims.raw[value]) {
           mappedClaims.raw[key] = mappedClaims.raw[value];
         }
       });
-      Object.values(session.mappings).forEach((value) => {
-        delete mappedClaims.raw[value as string];
+      session.mappings.forEach((elem) => {
+        const value = elem.value;
+        delete mappedClaims.raw[value];
       });
     }
 
@@ -339,7 +341,7 @@ export class SSOHandler {
     requested: any;
     oidcCodeVerifier?: string;
     oidcNonce?: string;
-    mappings: Record<string, string> | null;
+    mappings: any[] | null;
   }) => {
     const sessionId = crypto.randomBytes(16).toString('hex');
 

@@ -121,7 +121,7 @@ export class App {
    *         description: Mapping of attributes from the IdP to SP
    *         in: formData
    *         required: false
-   *         type: object
+   *         type: array
    *     tags: [SAML Federation]
    *     produces:
    *      - application/json
@@ -206,7 +206,7 @@ export class App {
       faviconUrl: faviconUrl || null,
       primaryColor: primaryColor || null,
       tenants: _tenants,
-      mappings: mappings || {},
+      mappings: mappings || [],
     };
 
     await this.store.put(
@@ -402,7 +402,7 @@ export class App {
    *         description: Mapping of attributes from the IdP to SP
    *         in: formData
    *         required: false
-   *         type: object
+   *         type: array
    *     tags:
    *       - SAML Federation
    *     produces:
