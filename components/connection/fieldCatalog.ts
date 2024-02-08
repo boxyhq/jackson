@@ -207,6 +207,16 @@ export const getCommonFields = ({
     },
   },
   {
+    key: 'sortOrder',
+    label: 'Sort Order',
+    type: 'number',
+    placeholder: '10',
+    attributes: {
+      required: false,
+      hideInSetupView: true,
+    },
+  },
+  {
     key: 'forceAuthn',
     label: 'Force Authentication',
     type: 'checkbox',

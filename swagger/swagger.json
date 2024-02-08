@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.18.5",
+    "version": "1.18.6",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -100,6 +100,9 @@
           },
           {
             "$ref": "#/parameters/oidcClientSecretPost"
+          },
+          {
+            "$ref": "#/parameters/sortOrder"
           }
         ],
         "responses": {
@@ -178,6 +181,9 @@
           },
           {
             "$ref": "#/parameters/deactivatedParamPatch"
+          },
+          {
+            "$ref": "#/parameters/sortOrderParamPatch"
           }
         ],
         "responses": {
@@ -209,6 +215,9 @@
           },
           {
             "$ref": "#/parameters/strategyParamGet"
+          },
+          {
+            "$ref": "#/parameters/sortParamGet"
           }
         ],
         "operationId": "get-connections",
@@ -1484,6 +1493,10 @@
         "deactivated": {
           "type": "boolean",
           "description": "Connection status"
+        },
+        "sortOrder": {
+          "type": "number",
+          "description": "Connection sort order"
         }
       }
     },
@@ -1839,6 +1852,13 @@
       "in": "formData",
       "type": "string"
     },
+    "sortOrder": {
+      "name": "sortOrder",
+      "description": "Indicate the position of the connection in the IdP selection screen",
+      "in": "formData",
+      "type": "number",
+      "required": false
+    },
     "clientIDParamPatch": {
       "name": "clientID",
       "description": "Client ID for the connection",
@@ -1946,6 +1966,13 @@
       "required": false,
       "type": "boolean"
     },
+    "sortOrderParamPatch": {
+      "name": "sortOrder",
+      "description": "Indicate the position of the connection in the IdP selection screen",
+      "in": "formData",
+      "type": "number",
+      "required": false
+    },
     "tenantParamGet": {
       "in": "query",
       "name": "tenant",
@@ -1971,6 +1998,12 @@
       "name": "strategy",
       "type": "string",
       "description": "Strategy which can help to filter connections with tenant/product query"
+    },
+    "sortParamGet": {
+      "in": "query",
+      "name": "sort",
+      "type": "string",
+      "description": "If present, the connections will be sorted by `sortOrder`. It won't consider if pagination is used."
     },
     "clientIDDel": {
       "name": "clientID",

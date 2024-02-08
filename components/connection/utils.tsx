@@ -112,7 +112,7 @@ type fieldAttributes = {
 export type FieldCatalogItem = {
   key: string;
   label?: string;
-  type: 'url' | 'object' | 'pre' | 'text' | 'password' | 'textarea' | 'checkbox';
+  type: 'url' | 'object' | 'pre' | 'text' | 'password' | 'textarea' | 'checkbox' | 'number';
   placeholder?: string;
   attributes: fieldAttributes;
   members?: FieldCatalogItem[];
