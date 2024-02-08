@@ -33,6 +33,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     faviconUrl: '',
     primaryColor: '',
     tenants: [],
+    mappings: [],
   });
 
   const { id } = router.query as { id: string };
