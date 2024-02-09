@@ -118,13 +118,13 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                       <tr
                         key={directory.id}
                         className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                        <td className='px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                        <td className='break-all px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                           {directory.name}
                         </td>
                         {displayTenantProduct && (
                           <>
-                            <td className='px-6 py-3'>{directory.tenant}</td>
-                            <td className='px-6 py-3'>{directory.product}</td>
+                            <td className='break-all px-6 py-3'>{directory.tenant}</td>
+                            <td className='break-all px-6 py-3'>{directory.product}</td>
                           </>
                         )}
                         <td className='px-6 py-3'>{providers && providers[directory.type]}</td>

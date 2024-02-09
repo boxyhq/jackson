@@ -165,13 +165,13 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
                     <tr
                       key={setupLink.setupID}
                       className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
+                      <td className='break-all  px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
                         {setupLink.tenant}
                       </td>
-                      <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                      <td className='break-all  px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                         {setupLink.product}
                       </td>
-                      <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                      <td className='px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                         <p className={new Date(setupLink.validTill) < new Date() ? 'text-red-400' : ''}>
                           {new Date(setupLink.validTill).toString()}
                         </p>

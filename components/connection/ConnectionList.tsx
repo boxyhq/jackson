@@ -163,7 +163,7 @@ const ConnectionList = ({
                     <tr
                       key={connection.clientID}
                       className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                      <td className='break-all px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                         {connectionDisplayName(connection)}
                         {isSystemSSO && (
                           <Badge
@@ -177,8 +177,8 @@ const ConnectionList = ({
                       </td>
                       {displayTenantProduct && (
                         <>
-                          <td className='px-6 py-3'>{connection.tenant}</td>
-                          <td className='px-6 py-3'>{connection.product}</td>
+                          <td className='break-all px-6 py-3'>{connection.tenant}</td>
+                          <td className='break-all px-6 py-3'>{connection.product}</td>
                         </>
                       )}
                       <td className='px-6 py-3'>

@@ -99,9 +99,9 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                       <tr
                         key={app.id}
                         className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                        <td className='px-6 py-3'>{app.name}</td>
-                        <td className='px-6 py-3'>{app.tenant}</td>
-                        <td className='px-6'>{app.product}</td>
+                        <td className='break-all px-6 py-3'>{app.name}</td>
+                        <td className='break-all px-6 py-3'>{app.tenant}</td>
+                        <td className='break-all px-6'>{app.product}</td>
                         <td className='px-6'>
                           <span className='inline-flex items-baseline'>
                             <IconButton
