@@ -118,16 +118,16 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                       <tr
                         key={directory.id}
                         className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                        <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                        <td className='px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                           {directory.name}
                         </td>
                         {displayTenantProduct && (
                           <>
-                            <td className='px-6'>{directory.tenant}</td>
-                            <td className='px-6'>{directory.product}</td>
+                            <td className='px-6 py-3'>{directory.tenant}</td>
+                            <td className='px-6 py-3'>{directory.product}</td>
                           </>
                         )}
-                        <td className='px-6'>{providers && providers[directory.type]}</td>
+                        <td className='px-6 py-3'>{providers && providers[directory.type]}</td>
                         <td className='px-6'>
                           {directory.deactivated ? (
                             <Badge color='warning' size='md'>
@@ -139,7 +139,7 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                             </Badge>
                           )}
                         </td>
-                        <td className='px-6'>
+                        <td className='px-6 py-3'>
                           <span className='inline-flex items-baseline'>
                             <IconButton
                               tooltip={t('view')}
