@@ -79,6 +79,7 @@ export class SplunkHecLogs extends WithExponentialBackoff implements Sink {
       throw new Error('event is required');
     }
     let backoff = 100;
+    const retry = true;
     do {
       try {
         const transformedEvent = this.transformEvent(event);
@@ -101,7 +102,8 @@ export class SplunkHecLogs extends WithExponentialBackoff implements Sink {
         await sleep(backoff);
         backoff = this.getNextExponentialBackoff(backoff);
       }
-    } while (true);
+    } while (retry);
+    return false;
   }
 
   /**
