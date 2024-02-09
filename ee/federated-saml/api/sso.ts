@@ -9,9 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     switch (method) {
       case 'GET':
-        return await handleSAMLRequest(req, res);
+        await handleSAMLRequest(req, res, 'HTTP-Redirect');
+        break;
       case 'POST':
-        return await handleSAMLRequest(req, res, true);
+        await handleSAMLRequest(req, res, 'HTTP-POST');
+        break;
       default:
         res.setHeader('Allow', 'GET, POST');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -28,29 +30,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 type SAMLRequest = {
   SAMLRequest: string;
   RelayState: string;
+  samlBinding?: ProtocolBinding;
+  idp_hint?: string;
 };
+
+type ProtocolBinding = 'HTTP-POST' | 'HTTP-Redirect';
 
 // Handle the SAML Request from Service Provider
 // This endpoint act as Single Sign On (SSO) URL
-async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, isPostBinding = false) {
+async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, binding: ProtocolBinding) {
   let samlRequest = '';
   let relayState = '';
-  let idpHint = '';
+  let idpHint: string | undefined;
+  let samlBinding = binding;
 
-  if (isPostBinding) {
+  if (samlBinding === 'HTTP-POST') {
     const { SAMLRequest, RelayState } = req.body as SAMLRequest;
 
     samlRequest = SAMLRequest;
     relayState = RelayState;
   } else {
-    const { SAMLRequest, RelayState } = req.query as SAMLRequest;
+    const { SAMLRequest, RelayState, idp_hint } = req.query as SAMLRequest;
 
     samlRequest = SAMLRequest;
     relayState = RelayState;
+    idpHint = idp_hint || undefined;
+    samlBinding = (req.query.samlBinding as ProtocolBinding) || samlBinding;
   }
 
-  if ('idp_hint' in req.query) {
-    idpHint = req.query.idp_hint as string;
+  console.log(req.query);
+
+  if (!['HTTP-POST', 'HTTP-Redirect'].includes(samlBinding)) {
+    throw new Error('Invalid protocol binding. We support only HTTP-POST and HTTP-Redirect.');
+  }
+
+  if (!samlRequest || !relayState) {
+    throw new Error('SAMLRequest and RelayState are required to proceed.');
   }
 
   const { samlFederatedController } = await jackson();
@@ -59,6 +74,7 @@ async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, isPo
     request: samlRequest,
     relayState,
     idp_hint: idpHint,
+    samlBinding,
   });
 
   if (!response) {

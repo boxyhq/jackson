@@ -45,21 +45,25 @@ export class SSO {
     request,
     relayState,
     idp_hint,
+    samlBinding,
   }: {
     request: string;
     relayState: string;
+    samlBinding: 'HTTP-POST' | 'HTTP-Redirect';
     idp_hint?: string;
   }) => {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
+    const isPostBinding = samlBinding === 'HTTP-POST';
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     let app: SAMLFederationApp | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
 
-    try {
-      decodedRequest = await saml.decodeBase64(request, true);
+    console.log({ samlBinding });
 
-      const parsedSAMLRequest = await saml.parseSAMLRequest(decodedRequest, false);
+    try {
+      decodedRequest = await saml.decodeBase64(request, !isPostBinding);
+      const parsedSAMLRequest = await saml.parseSAMLRequest(decodedRequest, isPostBinding);
 
       id = parsedSAMLRequest.id;
       entityId = parsedSAMLRequest.audience;
@@ -67,7 +71,7 @@ export class SSO {
       providerName = parsedSAMLRequest.providerName;
 
       // Verify the request if it is signed
-      if (publicKey && !saml.hasValidSignature(request, publicKey, null)) {
+      if (publicKey && !saml.hasValidSignature(decodedRequest, publicKey, null)) {
         throw new JacksonError('Invalid SAML Request signature.', 400);
       }
 
@@ -87,6 +91,7 @@ export class SSO {
         originalParams: {
           RelayState: relayState,
           SAMLRequest: request,
+          samlBinding,
         },
         tenants: app.tenants,
       });
