@@ -63,7 +63,7 @@ const SSOTraceViewer: NextPage = () => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr className='hover:bg-gray-50'>
                   <th className='px-6 py-3'>{t('trace_id')}</th>
-                  <th className='px-6 py-3'>{t('error')}</th>
+                  <th className='px-6 py-3'>{t('description')}</th>
                   <th className='px-6 py-3'>{t('assertion_type')}</th>
                   <th className='px-6 py-3'>{t('timestamp')}</th>
                 </tr>
