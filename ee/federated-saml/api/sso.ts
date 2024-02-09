@@ -61,8 +61,8 @@ async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, bind
     throw new Error('Invalid protocol binding. We support only HTTP-POST and HTTP-Redirect.');
   }
 
-  if (!samlRequest || !relayState) {
-    throw new Error('SAMLRequest and RelayState are required to proceed.');
+  if (!samlRequest) {
+    throw new Error('SAMLRequest is required to proceed.');
   }
 
   const { samlFederatedController } = await jackson();
