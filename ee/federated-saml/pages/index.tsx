@@ -12,7 +12,6 @@ import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkOutline } from '@components/LinkOutline';
 import { IconButton } from '@components/IconButton';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
-import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import router from 'next/router';
 import LicenseRequired from '@components/LicenseRequired';
 import { errorToast } from '@components/Toaster';
@@ -61,12 +60,12 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('saml_federation_apps')}</h2>
         <div className='flex'>
-          <LinkPrimary className='m-2' Icon={PlusIcon} href='/admin/federated-saml/new'>
+          <LinkOutline href={'/.well-known/idp-configuration'} target='_blank' className='m-2'>
+            {t('idp_configuration')}
+          </LinkOutline>
+          <LinkPrimary className='m-2' href='/admin/federated-saml/new'>
             {t('new_saml_federation_app')}
           </LinkPrimary>
-          <LinkOutline href={'/.well-known/idp-configuration'} target='_blank' className='m-2'>
-            {t('view_idp_configuration')}
-          </LinkOutline>
         </div>
       </div>
       {noApps ? (

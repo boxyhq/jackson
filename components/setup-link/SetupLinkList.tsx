@@ -1,6 +1,5 @@
 import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
-import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import ArrowPathIcon from '@heroicons/react/24/outline/ArrowPathIcon';
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
 import EmptyState from '@components/EmptyState';
@@ -133,7 +132,7 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
       <div className='mb-5 flex items-center justify-between'>
         <h3>{description}</h3>
         <div>
-          <LinkPrimary Icon={PlusIcon} href={createSetupLinkUrl} data-testid='create-setup-link'>
+          <LinkPrimary href={createSetupLinkUrl} data-testid='create-setup-link'>
             {t('new_setup_link')}
           </LinkPrimary>
         </div>

@@ -1,6 +1,5 @@
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
-import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import EmptyState from '@components/EmptyState';
 import { useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
@@ -103,9 +102,6 @@ const ConnectionList = ({
           {t(isSettingsView ? 'admin_portal_sso' : 'enterprise_sso')}
         </h2>
         <div className='flex gap-2'>
-          <LinkPrimary Icon={PlusIcon} href={createConnectionUrl} data-testid='create-connection'>
-            {t('new_connection')}
-          </LinkPrimary>
           {!setupLinkToken && !isSettingsView && (
             <LinkPrimary
               Icon={LinkIcon}
@@ -114,6 +110,9 @@ const ConnectionList = ({
               {t('new_setup_link')}
             </LinkPrimary>
           )}
+          <LinkPrimary href={createConnectionUrl} data-testid='create-connection'>
+            {t('new_connection')}
+          </LinkPrimary>
         </div>
       </div>
       {idpEntityID && setupLinkToken && (

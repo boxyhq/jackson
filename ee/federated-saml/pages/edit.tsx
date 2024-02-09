@@ -109,7 +109,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
         <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('saml_federation_update_app')}</h2>
         <div>
           <LinkOutline href={'/.well-known/idp-configuration'} target='_blank' className='m-2'>
-            {t('view_idp_configuration')}
+            {t('idp_configuration')}
           </LinkOutline>
         </div>
       </div>

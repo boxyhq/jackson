@@ -2,7 +2,6 @@ import EmptyState from '@components/EmptyState';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
-import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import { useEffect } from 'react';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { useTranslation } from 'next-i18next';
@@ -72,14 +71,12 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
         <div className='flex gap-2'>
-          <LinkPrimary Icon={PlusIcon} href={createDirectoryUrl}>
-            {t('new_directory')}
-          </LinkPrimary>
           {!setupLinkToken && (
             <LinkPrimary Icon={LinkIcon} href='/admin/directory-sync/setup-link/new'>
               {t('new_setup_link')}
             </LinkPrimary>
           )}
+          <LinkPrimary href={createDirectoryUrl}>{t('new_directory')}</LinkPrimary>
         </div>
       </div>
       {noDirectories ? (
