@@ -61,6 +61,7 @@ export class SSO {
 
     try {
       decodedRequest = await saml.decodeBase64(request, !isPostBinding);
+
       const parsedSAMLRequest = await saml.parseSAMLRequest(decodedRequest, isPostBinding);
 
       id = parsedSAMLRequest.id;

@@ -3,6 +3,15 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { setErrorCookie } from '@lib/utils';
 
+type SAMLRequest = {
+  SAMLRequest: string;
+  RelayState: string;
+  samlBinding?: ProtocolBinding;
+  idp_hint?: string;
+};
+
+type ProtocolBinding = 'HTTP-POST' | 'HTTP-Redirect';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { method } = req;
@@ -20,21 +29,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } catch (err: any) {
     console.error('authorize error:', err);
-
     const { message, statusCode = 500 } = err;
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
     res.redirect(302, '/error');
   }
 }
-
-type SAMLRequest = {
-  SAMLRequest: string;
-  RelayState: string;
-  samlBinding?: ProtocolBinding;
-  idp_hint?: string;
-};
-
-type ProtocolBinding = 'HTTP-POST' | 'HTTP-Redirect';
 
 // Handle the SAML Request from Service Provider
 // This endpoint act as Single Sign On (SSO) URL
