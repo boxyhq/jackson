@@ -346,6 +346,10 @@ class DynamoDB implements DatabaseDriver {
 
     await Promise.all(keys.map((key) => this.delete(namespace, key)));
   }
+
+  async close(): Promise<void> {
+    await this.client.destroy();
+  }
 }
 
 export default {

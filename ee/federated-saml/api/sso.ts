@@ -9,7 +9,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     switch (method) {
       case 'GET':
-        return await handleGET(req, res);
+        await handleGET(req, res);
+        break;
       default:
         res.setHeader('Allow', 'GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -34,16 +35,22 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     idp_hint: string;
   };
 
-  const { redirect_url, authorize_form } = await samlFederatedController.sso.getAuthorizeUrl({
+  const response = await samlFederatedController.sso.getAuthorizeUrl({
     request: SAMLRequest,
     relayState: RelayState,
     idp_hint,
   });
 
-  if (redirect_url) {
-    res.redirect(302, redirect_url);
-  } else {
+  if (!response) {
+    throw new Error('Unable to create SAML Federated request. Error creating authorize url.');
+  }
+
+  if (response?.redirect_url) {
+    res.redirect(302, response.redirect_url);
+  }
+
+  if (response?.authorize_form) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(authorize_form);
+    res.send(response.authorize_form);
   }
 };

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import TagsInput from 'react-tagsinput';
 
 import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
@@ -14,6 +15,8 @@ import { ButtonPrimary } from '@components/ButtonPrimary';
 import { ButtonDanger } from '@components/ButtonDanger';
 import { LinkOutline } from '@components/LinkOutline';
 import LicenseRequired from '@components/LicenseRequired';
+
+import 'react-tagsinput/react-tagsinput.css';
 
 const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
@@ -29,11 +32,13 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     logoUrl: '',
     faviconUrl: '',
     primaryColor: '',
+    tenants: [],
+    mappings: [],
   });
 
   const { id } = router.query as { id: string };
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
+  const { data, error, isLoading, mutate } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
     `/api/admin/federated-saml/${id}`,
     fetcher,
     {
@@ -83,6 +88,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     }
 
     if ('data' in response) {
+      mutate();
       successToast(t('saml_federation_update_success'));
     }
   };
@@ -110,25 +116,28 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <div className='space-y-3'>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('tenant')}</span>
               </label>
               <input type='text' className='input-bordered input' defaultValue={app.tenant} disabled />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('product')}</span>
               </label>
               <input type='text' className='input-bordered input' defaultValue={app.product} disabled />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('entity_id')}</span>
               </label>
               <input type='url' className='input-bordered input' defaultValue={app.entityId} disabled />
+              <label className='label'>
+                <span className='label-text-alt'>{t('desc-entity-id')}</span>
+              </label>
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('name')}</span>
               </label>
@@ -141,7 +150,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 value={app.name}
               />
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('acs_url')}</span>
               </label>
@@ -154,10 +163,28 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 value={app.acsUrl}
               />
             </div>
+            <div className='form-control w-full'>
+              <label className='label'>
+                <span className='label-text'>{t('tenants')}</span>
+              </label>
+              <TagsInput
+                value={app.tenants || []}
+                onChange={(tags) => setApp({ ...app, tenants: tags })}
+                onlyUnique={true}
+                inputProps={{
+                  placeholder: t('enter_tenant'),
+                }}
+                focusedClassName='input-focused'
+                addOnBlur={true}
+              />
+              <label className='label'>
+                <span className='label-text-alt'>{t('tenants_mapping_description')}</span>
+              </label>
+            </div>
             <div className='pt-4'>
               <p className='text-base leading-6 text-gray-500'>{t('customize_branding')}:</p>
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('branding_logo_url_label')}</span>
               </label>
@@ -173,7 +200,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 <span className='label-text-alt'>{t('branding_logo_url_alt')}</span>
               </label>
             </div>
-            <div className='form-control w-full md:w-1/2'>
+            <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('branding_favicon_url_label')}</span>
               </label>

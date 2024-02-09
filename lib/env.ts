@@ -52,6 +52,9 @@ const db: DatabaseOption = {
   manualMigration: process.env.DB_MANUAL_MIGRATION === 'true',
 };
 
+/** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */
+export const boxyhqHosted = process.env.BOXYHQ_HOSTED === '1';
+
 const jacksonOptions: JacksonOption = {
   externalUrl,
   samlPath,
@@ -98,6 +101,11 @@ const jacksonOptions: JacksonOption = {
     },
   },
   setupLinkExpiryDays,
+  boxyhqHosted,
+  ory: {
+    projectId: process.env.ENTERPRISE_ORY_PROJECT_ID,
+    sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN,
+  },
 };
 
 const adminPortalSSODefaults = {
@@ -114,9 +122,4 @@ export { apiKeys };
 export { jacksonOptions };
 
 export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';
-
-/** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */
-export const boxyhqHosted = process.env.BOXYHQ_HOSTED === '1';
-
-/** List of group that have audit logging enabled. Not applicable to self-hosted instances. */
 export const auditLogEnabledGroup = process.env.AUDIT_LOG_TEAMS ? process.env.AUDIT_LOG_TEAMS.split(',') : [];

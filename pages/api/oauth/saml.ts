@@ -29,12 +29,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (redirect_url) {
       res.redirect(302, redirect_url);
-      return;
     }
 
     if (app_select_form) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.send(app_select_form);
+      res.send(app_select_form);
     }
 
     if (response_form) {
@@ -55,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.send(response_form);
+      res.send(response_form);
     }
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
@@ -63,6 +62,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
 
     res.redirect(302, '/error');
-    return;
   }
 }

@@ -3,19 +3,20 @@ import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
+import { generators } from 'openid-client';
 
-import type { JacksonOption, Storable, SAMLSSORecord, OIDCSSORecord } from '../typings';
+import type { JacksonOption, Storable, SAMLSSORecord, OIDCSSORecord, AttributeMapping } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
-import { createSAMLResponse } from '../saml/lib';
 import * as redirect from './oauth/redirect';
+import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
 
-export class SAMLHandler {
+export class SSOHandler {
   private connection: Storable;
   private session: Storable;
   private opts: JacksonOption;
@@ -45,6 +46,7 @@ export class SAMLHandler {
     entityId?: string;
     idp_hint?: string;
     samlFedAppId?: string;
+    tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
     | {
         connection: SAMLSSORecord | OIDCSSORecord;
@@ -56,31 +58,48 @@ export class SAMLHandler {
         postForm: string;
       }
   > {
-    const { authFlow, originalParams, tenant, product, idp_hint, entityId, samlFedAppId = '' } = params;
+    const {
+      authFlow,
+      originalParams,
+      tenant,
+      product,
+      idp_hint,
+      entityId,
+      tenants,
+      samlFedAppId = '',
+    } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
 
     // Find SAML connections for the app
-    if (tenant && product) {
-      connections = (
-        await this.connection.getByIndex({
-          name: IndexNames.TenantProduct,
-          value: dbutils.keyFromParts(tenant, product),
-        })
-      ).data;
+    if (tenants && tenants.length > 0 && product) {
+      const result = await Promise.all(
+        tenants.map((tenant) =>
+          this.connection.getByIndex({
+            name: IndexNames.TenantProduct,
+            value: dbutils.keyFromParts(tenant, product),
+          })
+        )
+      );
+
+      connections = result.flatMap((r) => r.data);
+    } else if (tenant && product) {
+      const result = await this.connection.getByIndex({
+        name: IndexNames.TenantProduct,
+        value: dbutils.keyFromParts(tenant, product),
+      });
+
+      connections = result.data;
+    } else if (entityId) {
+      const result = await this.connection.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+
+      connections = result.data;
     }
 
-    if (entityId) {
-      connections = (
-        await this.connection.getByIndex({
-          name: IndexNames.EntityID,
-          value: entityId,
-        })
-      ).data;
-    }
-
-    const noSSOConnectionErrMessage =
-      authFlow === 'oauth' ? 'No SSO connection found.' : 'No SAML connection found.';
+    const noSSOConnectionErrMessage = 'No SSO connection found.';
 
     if (!connections || connections.length === 0) {
       throw new JacksonError(noSSOConnectionErrMessage, 404);
@@ -136,9 +155,15 @@ export class SAMLHandler {
     return { connection: connections[0] };
   }
 
-  async createSAMLRequest(params: { connection: SAMLSSORecord; requestParams: Record<string, any> }) {
-    const { connection, requestParams } = params;
-
+  async createSAMLRequest({
+    connection,
+    requestParams,
+    mappings,
+  }: {
+    connection: SAMLSSORecord;
+    requestParams: Record<string, any>;
+    mappings: AttributeMapping[] | null;
+  }) {
     // We have a connection now, so we can create the SAML request
     const certificate = await getDefaultCertificate();
 
@@ -166,19 +191,14 @@ export class SAMLHandler {
         : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
     });
 
-    // Create a new session to store SP request information
-    const sessionId = crypto.randomBytes(16).toString('hex');
-
-    await this.session.put(sessionId, {
-      id: samlRequest.id,
+    const relayState = await this.createSession({
+      requestId: samlRequest.id,
       requested: {
         ...requestParams,
         client_id: connection.clientID,
       },
-      samlFederated: true,
+      mappings,
     });
-
-    const relayState = `${relayStatePrefix}${sessionId}`;
 
     let redirectUrl;
     let authorizeForm;
@@ -208,18 +228,85 @@ export class SAMLHandler {
     };
   }
 
-  createSAMLResponse = async (params: { profile: SAMLProfile; session: any }) => {
-    const { profile, session } = params;
+  async createOIDCRequest({
+    connection,
+    requestParams,
+    mappings,
+  }: {
+    connection: OIDCSSORecord;
+    requestParams: Record<string, any>;
+    mappings: AttributeMapping[] | null;
+  }) {
+    if (!this.opts.oidcPath) {
+      throw new JacksonError('OpenID response handler path (oidcPath) is not set', 400);
+    }
 
-    const certificate = await getDefaultCertificate();
+    const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
 
     try {
-      const responseSigned = await createSAMLResponse({
+      const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
+      const oidcClient = new oidcIssuer.Client({
+        client_id: clientId!,
+        client_secret: clientSecret,
+        redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
+        response_types: ['code'],
+      });
+
+      const oidcCodeVerifier = generators.codeVerifier();
+      const code_challenge = generators.codeChallenge(oidcCodeVerifier);
+      const oidcNonce = generators.nonce();
+
+      const relayState = await this.createSession({
+        requestId: connection.clientID,
+        requested: requestParams,
+        oidcCodeVerifier,
+        oidcNonce,
+        mappings,
+      });
+
+      const ssoUrl = oidcClient.authorizationUrl({
+        scope: 'openid email profile',
+        code_challenge,
+        code_challenge_method: 'S256',
+        state: relayState,
+        nonce: oidcNonce,
+      });
+
+      return {
+        redirect_url: ssoUrl,
+        authorize_form: null,
+      };
+    } catch (err: any) {
+      console.error(err);
+      throw new JacksonError(`Unable to complete OIDC request. - ${err.message}`, 400);
+    }
+  }
+
+  createSAMLResponse = async ({ profile, session }: { profile: SAMLProfile; session: any }) => {
+    const certificate = await getDefaultCertificate();
+
+    const mappedClaims = profile.claims;
+    if (session.mappings) {
+      session.mappings.forEach((elem) => {
+        const key = elem.key;
+        const value = elem.value;
+        if (mappedClaims.raw[value]) {
+          mappedClaims.raw[key] = mappedClaims.raw[value];
+        }
+      });
+      session.mappings.forEach((elem) => {
+        const value = elem.value;
+        delete mappedClaims.raw[value];
+      });
+    }
+
+    try {
+      const responseSigned = await saml.createSAMLResponse({
         audience: session.requested.entityId,
         acsUrl: session.requested.acsUrl,
         requestId: session.requested.id,
         issuer: `${this.opts.samlAudience}`,
-        profile,
+        claims: mappedClaims,
         ...certificate,
       });
 
@@ -236,8 +323,45 @@ export class SAMLHandler {
 
       return { responseForm };
     } catch (err) {
+      console.error('Error creating SAML response:', err);
       // TODO: Instead send saml response with status code
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
+  };
+
+  // Create a new session to store SP request information
+  private createSession = async ({
+    requestId,
+    requested,
+    oidcCodeVerifier,
+    oidcNonce,
+    mappings,
+  }: {
+    requestId: string;
+    requested: any;
+    oidcCodeVerifier?: string;
+    oidcNonce?: string;
+    mappings: AttributeMapping[] | null;
+  }) => {
+    const sessionId = crypto.randomBytes(16).toString('hex');
+
+    const session = {
+      id: requestId,
+      requested,
+      samlFederated: true,
+      mappings,
+    };
+
+    if (oidcCodeVerifier) {
+      session['oidcCodeVerifier'] = oidcCodeVerifier;
+    }
+
+    if (oidcNonce) {
+      session['oidcNonce'] = oidcNonce;
+    }
+
+    await this.session.put(sessionId, session);
+
+    return `${relayStatePrefix}${sessionId}`;
   };
 }

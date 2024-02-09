@@ -143,7 +143,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Update OIDC connection
     if (isOIDC) {
-      await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
+      await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body) as any);
 
       retraced.reportAdminPortalEvent({
         action: 'sso.connection.update',

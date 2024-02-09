@@ -18,21 +18,25 @@ import {
   UpdateSAMLConnectionParams,
   UpdateOIDCConnectionParams,
   GetByProductParams,
+  Index,
 } from '../typings';
 import { JacksonError } from './error';
 import { IndexNames, appID, transformConnections, transformConnection, isConnectionActive } from './utils';
 import oidcConnection from './connection/oidc';
 import samlConnection from './connection/saml';
+import { OryController } from '../ee/ory/ory';
 
 export class ConnectionAPIController implements IConnectionAPIController {
   private connectionStore: Storable;
   private opts: JacksonOption;
   private eventController: IEventController;
+  private oryController: OryController;
 
-  constructor({ connectionStore, opts, eventController }) {
+  constructor({ connectionStore, opts, eventController, oryController }) {
     this.connectionStore = connectionStore;
     this.opts = opts;
     this.eventController = eventController;
+    this.oryController = oryController;
   }
 
   /**
@@ -69,6 +73,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   nameParamPost:
    *     name: name
    *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   labelParamPost:
+   *     name: label
+   *     description: An internal label to identify the connection
    *     type: string
    *     in: formData
    *   descriptionParamPost:
@@ -135,6 +144,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: clientSecret of the application set up on the OpenID Provider
    *     in: formData
    *     type: string
+   *   sortOrder:
+   *    name: sortOrder
+   *    description: Indicate the position of the connection in the IdP selection screen
+   *    in: formData
+   *    type: number
+   *    required: false
    * /api/v1/sso:
    *   post:
    *     summary: Create SSO connection
@@ -147,6 +162,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - application/json
    *     parameters:
    *      - $ref: '#/parameters/nameParamPost'
+   *      - $ref: '#/parameters/labelParamPost'
    *      - $ref: '#/parameters/descriptionParamPost'
    *      - $ref: '#/parameters/encodedRawMetadataParamPost'
    *      - $ref: '#/parameters/rawMetadataParamPost'
@@ -159,6 +175,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/oidcMetadataPost'
    *      - $ref: '#/parameters/oidcClientIdPost'
    *      - $ref: '#/parameters/oidcClientSecretPost'
+   *      - $ref: '#/parameters/sortOrder'
    *     responses:
    *       200:
    *         description: Success
@@ -174,7 +191,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
   ): Promise<SAMLSSORecord> {
     metrics.increment('createConnection');
 
-    const connection = await samlConnection.create(body, this.connectionStore);
+    const connection = await samlConnection.create(body, this.connectionStore, this.oryController);
 
     await this.eventController.notify('sso.created', connection);
 
@@ -197,7 +214,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
       throw new JacksonError('Please set OpenID response handler path (oidcPath) on Jackson', 500);
     }
 
-    const connection = await oidcConnection.create(body, this.connectionStore);
+    const connection = await oidcConnection.create(body, this.connectionStore, this.oryController);
 
     await this.eventController.notify('sso.created', connection);
 
@@ -225,6 +242,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *   nameParamPatch:
    *     name: name
    *     description: Name/identifier for the connection
+   *     type: string
+   *     in: formData
+   *   labelParamPatch:
+   *     name: label
+   *     description: An internal label to identify the connection
    *     type: string
    *     in: formData
    *   descriptionParamPatch:
@@ -295,6 +317,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: formData
    *     required: false
    *     type: boolean
+   *   sortOrderParamPatch:
+   *     name: sortOrder
+   *     description: Indicate the position of the connection in the IdP selection screen
+   *     in: formData
+   *     type: number
+   *     required: false
    * /api/v1/sso:
    *   patch:
    *     summary: Update SSO Connection
@@ -307,6 +335,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/clientIDParamPatch'
    *       - $ref: '#/parameters/clientSecretParamPatch'
    *       - $ref: '#/parameters/nameParamPatch'
+   *       - $ref: '#/parameters/labelParamPatch'
    *       - $ref: '#/parameters/descriptionParamPatch'
    *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
    *       - $ref: '#/parameters/rawMetadataParamPatch'
@@ -320,6 +349,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/tenantParamPatch'
    *       - $ref: '#/parameters/productParamPatch'
    *       - $ref: '#/parameters/deactivatedParamPatch'
+   *       - $ref: '#/parameters/sortOrderParamPatch'
    *     responses:
    *       204:
    *         description: Success
@@ -334,7 +364,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const connection = await samlConnection.update(
       body,
       this.connectionStore,
-      this.getConnections.bind(this)
+      this.getConnections.bind(this),
+      this.oryController
     );
 
     if ('deactivated' in body) {
@@ -361,7 +392,8 @@ export class ConnectionAPIController implements IConnectionAPIController {
     const connection = await oidcConnection.update(
       body,
       this.connectionStore,
-      this.getConnections.bind(this)
+      this.getConnections.bind(this),
+      this.oryController
     );
 
     if ('deactivated' in body) {
@@ -406,6 +438,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: strategy
    *     type: string
    *     description: Strategy which can help to filter connections with tenant/product query
+   *  sortParamGet:
+   *     in: query
+   *     name: sort
+   *     type: string
+   *     description: If present, the connections will be sorted by `sortOrder`. It won't consider if pagination is used.
    * definitions:
    *   Connection:
    *      type: object
@@ -419,6 +456,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        name:
    *          type: string
    *          description: Connection name
+   *        label:
+   *          type: string
+   *          description: Connection label
    *        description:
    *          type: string
    *          description: Connection description
@@ -443,6 +483,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *        deactivated:
    *          type: boolean
    *          description: Connection status
+   *        sortOrder:
+   *          type: number
+   *          description: Connection sort order
    * responses:
    *   '200Get':
    *     description: Success
@@ -462,6 +505,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/productParamGet'
    *       - $ref: '#/parameters/clientIDParamGet'
    *       - $ref: '#/parameters/strategyParamGet'
+   *       - $ref: '#/parameters/sortParamGet'
    *     operationId: get-connections
    *     tags: [Single Sign On]
    *     responses:
@@ -481,61 +525,90 @@ export class ConnectionAPIController implements IConnectionAPIController {
 
     metrics.increment('getConnections');
 
+    let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
+
+    // Fetch connections by entityId
     if (entityId) {
-      const connections = await this.connectionStore.getByIndex({
+      const result = await this.connectionStore.getByIndex({
         name: IndexNames.EntityID,
         value: entityId,
       });
 
-      if (!connections || typeof connections !== 'object') {
-        return [];
+      if (!result || typeof result !== 'object') {
+        connections = [];
+      } else {
+        connections = result.data;
       }
-
-      return transformConnections(connections.data);
     }
 
-    if (clientID) {
-      const connection = await this.connectionStore.get(clientID);
+    // Fetch connections by clientID
+    else if (clientID) {
+      const result = await this.connectionStore.get(clientID);
 
-      if (!connection || typeof connection !== 'object') {
-        return [];
+      if (!result || typeof result !== 'object') {
+        connections = [];
+      } else {
+        connections = [result];
       }
-
-      return transformConnections([connection]);
     }
 
-    if (tenant && product) {
-      const connections = await this.connectionStore.getByIndex({
+    // Fetch connections by multiple tenants
+    else if (tenant && product && Array.isArray(tenant)) {
+      const tenants = tenant.filter((t) => t).filter((t, i, a) => a.indexOf(t) === i);
+
+      const result = await Promise.all(
+        tenants.map(async (t) =>
+          this.connectionStore.getByIndex({
+            name: IndexNames.TenantProduct,
+            value: dbutils.keyFromParts(t, product),
+          })
+        )
+      );
+
+      if (!result || !result.length) {
+        connections = [];
+      } else {
+        connections = result.flatMap((r) => r.data);
+      }
+    }
+
+    // Fetch connections by tenant and product
+    else if (tenant && product && !Array.isArray(tenant)) {
+      const result = await this.connectionStore.getByIndex({
         name: IndexNames.TenantProduct,
         value: dbutils.keyFromParts(tenant, product),
       });
 
-      if (!connections || !connections.data.length) {
-        return [];
+      if (!result || !result.data.length) {
+        connections = [];
+      } else {
+        connections = result.data;
       }
 
-      // filter if strategy is passed
-      const filteredConnections = strategy
-        ? connections.data.filter((connection) => {
-            if (strategy === 'saml') {
-              if (connection.idpMetadata) {
-                return true;
-              }
-            }
-            if (strategy === 'oidc') {
-              if (connection.oidcProvider) {
-                return true;
-              }
-            }
-            return false;
-          })
-        : connections.data;
+      // Filter connections by strategy
+      if (connections && connections.length > 0 && strategy) {
+        connections = connections.filter((connection) => {
+          if (strategy === 'saml') {
+            return 'idpMetadata' in connection;
+          }
 
-      if (!filteredConnections.length) {
-        return [];
+          if (strategy === 'oidc') {
+            return 'oidcProvider' in connection;
+          }
+
+          return false;
+        });
+      }
+    }
+
+    if (connections) {
+      const sort = 'sort' in body ? body.sort : false;
+
+      if (sort) {
+        connections.sort((a, b) => (b.sortOrder || 0) - (a.sortOrder || 0));
       }
 
-      return transformConnections(filteredConnections);
+      return transformConnections(connections);
     }
 
     throw new JacksonError('Please provide `clientID` or `tenant` and `product`.', 400);
@@ -778,5 +851,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
     );
 
     return { data: transformConnections(connections.data), pageToken };
+  }
+
+  public async getCount(idx?: Index) {
+    return await this.connectionStore.getCount(idx);
   }
 }

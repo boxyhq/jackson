@@ -1,8 +1,8 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.15.4",
+    "version": "1.18.6",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -63,6 +63,9 @@
             "$ref": "#/parameters/nameParamPost"
           },
           {
+            "$ref": "#/parameters/labelParamPost"
+          },
+          {
             "$ref": "#/parameters/descriptionParamPost"
           },
           {
@@ -97,6 +100,9 @@
           },
           {
             "$ref": "#/parameters/oidcClientSecretPost"
+          },
+          {
+            "$ref": "#/parameters/sortOrder"
           }
         ],
         "responses": {
@@ -133,6 +139,9 @@
           },
           {
             "$ref": "#/parameters/nameParamPatch"
+          },
+          {
+            "$ref": "#/parameters/labelParamPatch"
           },
           {
             "$ref": "#/parameters/descriptionParamPatch"
@@ -172,6 +181,9 @@
           },
           {
             "$ref": "#/parameters/deactivatedParamPatch"
+          },
+          {
+            "$ref": "#/parameters/sortOrderParamPatch"
           }
         ],
         "responses": {
@@ -203,6 +215,9 @@
           },
           {
             "$ref": "#/parameters/strategyParamGet"
+          },
+          {
+            "$ref": "#/parameters/sortParamGet"
           }
         ],
         "operationId": "get-connections",
@@ -649,7 +664,7 @@
         }
       }
     },
-    "/api/v1/saml-traces": {
+    "/api/v1/sso-traces": {
       "get": {
         "summary": "Get trace by ID",
         "parameters": [
@@ -671,13 +686,13 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/SAMLTrace"
+              "$ref": "#/definitions/SSOTrace"
             }
           }
         }
       }
     },
-    "/api/v1/saml-traces/product": {
+    "/api/v1/sso-traces/product": {
       "get": {
         "summary": "Get all traces for a product",
         "parameters": [
@@ -697,7 +712,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/SAMLTrace"
+                "$ref": "#/definitions/SSOTrace"
               }
             }
           }
@@ -1160,6 +1175,20 @@
             "in": "formData",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "tenants",
+            "description": "Mapping of tenants whose connections will be grouped under this SAML Federation app",
+            "in": "formData",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "name": "mappings",
+            "description": "Mapping of attributes from the IdP to SP",
+            "in": "formData",
+            "required": false,
+            "type": "array"
           }
         ],
         "tags": [
@@ -1282,6 +1311,20 @@
             "in": "formData",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "tenants",
+            "description": "Mapping of tenants whose connections will be grouped under this SAML Federation app",
+            "in": "formData",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "name": "mappings",
+            "description": "Mapping of attributes from the IdP to SP",
+            "in": "formData",
+            "required": false,
+            "type": "array"
           }
         ],
         "tags": [
@@ -1415,6 +1458,10 @@
           "type": "string",
           "description": "Connection name"
         },
+        "label": {
+          "type": "string",
+          "description": "Connection label"
+        },
         "description": {
           "type": "string",
           "description": "Connection description"
@@ -1446,6 +1493,10 @@
         "deactivated": {
           "type": "boolean",
           "description": "Connection status"
+        },
+        "sortOrder": {
+          "type": "number",
+          "description": "Connection sort order"
         }
       }
     },
@@ -1490,7 +1541,7 @@
         }
       }
     },
-    "SAMLTrace": {
+    "SSOTrace": {
       "type": "object",
       "properties": {
         "traceId": {
@@ -1719,6 +1770,12 @@
       "type": "string",
       "in": "formData"
     },
+    "labelParamPost": {
+      "name": "label",
+      "description": "An internal label to identify the connection",
+      "type": "string",
+      "in": "formData"
+    },
     "descriptionParamPost": {
       "name": "description",
       "description": "A short description for the connection not more than 100 characters",
@@ -1795,6 +1852,13 @@
       "in": "formData",
       "type": "string"
     },
+    "sortOrder": {
+      "name": "sortOrder",
+      "description": "Indicate the position of the connection in the IdP selection screen",
+      "in": "formData",
+      "type": "number",
+      "required": false
+    },
     "clientIDParamPatch": {
       "name": "clientID",
       "description": "Client ID for the connection",
@@ -1812,6 +1876,12 @@
     "nameParamPatch": {
       "name": "name",
       "description": "Name/identifier for the connection",
+      "type": "string",
+      "in": "formData"
+    },
+    "labelParamPatch": {
+      "name": "label",
+      "description": "An internal label to identify the connection",
       "type": "string",
       "in": "formData"
     },
@@ -1896,6 +1966,13 @@
       "required": false,
       "type": "boolean"
     },
+    "sortOrderParamPatch": {
+      "name": "sortOrder",
+      "description": "Indicate the position of the connection in the IdP selection screen",
+      "in": "formData",
+      "type": "number",
+      "required": false
+    },
     "tenantParamGet": {
       "in": "query",
       "name": "tenant",
@@ -1921,6 +1998,12 @@
       "name": "strategy",
       "type": "string",
       "description": "Strategy which can help to filter connections with tenant/product query"
+    },
+    "sortParamGet": {
+      "in": "query",
+      "name": "sort",
+      "type": "string",
+      "description": "If present, the connections will be sorted by `sortOrder`. It won't consider if pagination is used."
     },
     "clientIDDel": {
       "name": "clientID",

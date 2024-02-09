@@ -8,13 +8,18 @@ module.exports = {
   reactStrictMode: true,
   i18n,
   output: 'standalone',
-  webpack: (config, { webpack, isServer }) => {
+  webpack: (config, { dev, webpack, isServer }) => {
+    // Enable source maps in development mode and for server-side rendering
+    if (!dev && isServer) {
+      config.devtool = 'source-map';
+    }
+
     if (isServer) {
       // Module not found
       config.plugins.push(
         new webpack.IgnorePlugin({
           resourceRegExp:
-            /(^@google-cloud\/spanner|^@mongodb-js\/zstd|^aws-crt|^aws4$|^pg-native$|^mongodb-client-encryption$|^@sap\/hana-client$|^snappy$|^react-native-sqlite-storage$|^bson-ext$|^cardinal$|^kerberos$|^hdb-pool$|^sql.js$|^sqlite3$|^better-sqlite3$|^ioredis$|^typeorm-aurora-data-api-driver$|^pg-query-stream$|^oracledb$|^mysql$|^snappy\/package\.json$|^cloudflare:sockets$)/,
+            /(^@google-cloud\/spanner|^@mongodb-js\/zstd|^aws-crt|^aws4$|^pg-native$|^mongodb-client-encryption$|^@sap\/hana-client$|^@sap\/hana-client\/extension\/Stream$|^snappy$|^react-native-sqlite-storage$|^bson-ext$|^cardinal$|^kerberos$|^hdb-pool$|^sql.js$|^sqlite3$|^better-sqlite3$|^ioredis$|^typeorm-aurora-data-api-driver$|^pg-query-stream$|^oracledb$|^mysql$|^snappy\/package\.json$|^cloudflare:sockets$)/,
         })
       );
     }
@@ -91,6 +96,10 @@ module.exports = {
       {
         source: '/api/v1/directory-sync/:path*',
         destination: '/api/v1/dsync/:path*',
+      },
+      {
+        source: '/api/v1/saml-traces/:path*',
+        destination: '/api/v1/sso-traces/:path*',
       },
     ];
   },

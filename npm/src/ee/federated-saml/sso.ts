@@ -2,32 +2,41 @@ import saml from '@boxyhq/saml20';
 
 import { App } from './app';
 import { JacksonError } from '../../controller/error';
-import { SAMLHandler } from '../../controller/saml-handler';
-import type { JacksonOption, SAMLSSORecord, SAMLTracerInstance } from '../../typings';
-import { extractSAMLRequestAttributes } from '../../saml/lib';
+import { SSOHandler } from '../../controller/sso-handler';
+import type {
+  JacksonOption,
+  OIDCSSORecord,
+  SAMLFederationApp,
+  SAMLSSORecord,
+  SSOTracerInstance,
+} from '../../typings';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
+const isSAMLConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection is SAMLSSORecord => {
+  return 'idpMetadata' in connection;
+};
+
 export class SSO {
   private app: App;
-  private samlHandler: SAMLHandler;
-  private samlTracer: SAMLTracerInstance;
+  private ssoHandler: SSOHandler;
+  private ssoTracer: SSOTracerInstance;
   private opts: JacksonOption;
 
   constructor({
     app,
-    samlHandler,
-    samlTracer,
+    ssoHandler,
+    ssoTracer,
     opts,
   }: {
     app: App;
-    samlHandler: SAMLHandler;
-    samlTracer: SAMLTracerInstance;
+    ssoHandler: SSOHandler;
+    ssoTracer: SSOTracerInstance;
     opts: JacksonOption;
   }) {
     this.app = app;
-    this.samlHandler = samlHandler;
-    this.samlTracer = samlTracer;
+    this.ssoHandler = ssoHandler;
+    this.ssoTracer = ssoTracer;
     this.opts = opts;
   }
 
@@ -43,18 +52,19 @@ export class SSO {
   }) => {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    let connection: SAMLSSORecord | undefined;
-    let id, acsUrl, entityId, publicKey, providerName, decodedRequest, app;
+    let connection: SAMLSSORecord | OIDCSSORecord | undefined;
+    let app: SAMLFederationApp | undefined;
+    let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
 
     try {
-      const parsedSAMLRequest = await extractSAMLRequestAttributes(request);
+      decodedRequest = await saml.decodeBase64(request, true);
+
+      const parsedSAMLRequest = await saml.parseSAMLRequest(decodedRequest, false);
 
       id = parsedSAMLRequest.id;
-      acsUrl = parsedSAMLRequest.acsUrl;
-      entityId = parsedSAMLRequest.entityId;
+      entityId = parsedSAMLRequest.audience;
       publicKey = parsedSAMLRequest.publicKey;
       providerName = parsedSAMLRequest.providerName;
-      decodedRequest = parsedSAMLRequest.decodedRequest;
 
       // Verify the request if it is signed
       if (publicKey && !saml.hasValidSignature(request, publicKey, null)) {
@@ -62,12 +72,13 @@ export class SSO {
       }
 
       app = await this.app.getByEntityId(entityId);
+      acsUrl = parsedSAMLRequest.acsUrl || app.acsUrl; // acsUrl is optional in the SAMLRequest
 
       if (app.acsUrl !== acsUrl) {
         throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
       }
 
-      const response = await this.samlHandler.resolveConnection({
+      const response = await this.ssoHandler.resolveConnection({
         tenant: app.tenant,
         product: app.product,
         idp_hint,
@@ -77,6 +88,7 @@ export class SSO {
           RelayState: relayState,
           SAMLRequest: request,
         },
+        tenants: app.tenants,
       });
 
       // If there is a redirect URL, then we need to redirect to that URL
@@ -88,45 +100,55 @@ export class SSO {
       }
 
       // If there is a connection, use that connection
-      if ('connection' in response && 'idpMetadata' in response.connection) {
+      if ('connection' in response) {
         connection = response.connection;
       }
 
       if (!connection) {
-        throw new JacksonError('No SAML connection found.', 404);
+        throw new JacksonError('No SSO connection found.', 404);
       }
 
       if (!isConnectionActive(connection)) {
         throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
       }
 
-      return await this.samlHandler.createSAMLRequest({
-        connection,
-        requestParams: {
-          id,
-          acsUrl,
-          entityId,
-          publicKey,
-          providerName,
-          relayState,
-          tenant: app.tenant,
-          product: app.product,
-        },
-      });
+      const requestParams = {
+        id,
+        acsUrl,
+        entityId,
+        publicKey,
+        providerName,
+        relayState,
+        tenant: app.tenant,
+        product: app.product,
+      };
+
+      return isSAMLConnection(connection)
+        ? await this.ssoHandler.createSAMLRequest({
+            connection,
+            requestParams,
+            mappings: app.mappings,
+          })
+        : await this.ssoHandler.createOIDCRequest({
+            connection,
+            requestParams,
+            mappings: app.mappings,
+          });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
-      this.samlTracer.saveTrace({
+      this.ssoTracer.saveTrace({
         error: error_description,
         context: {
           tenant: app?.tenant || '',
           product: app?.product || '',
           clientID: connection?.clientID || '',
           isSAMLFederated: true,
+          relayState,
           providerName,
           acsUrl,
           entityId,
-          samlRequest: decodedRequest,
+          samlRequest: decodedRequest || request,
         },
       });
 

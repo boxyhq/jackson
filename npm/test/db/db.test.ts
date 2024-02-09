@@ -1,9 +1,11 @@
-import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable } from '../../src/typings';
+import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
 import tap from 'tap';
 import DB from '../../src/db/db';
+import { randomBytes } from 'crypto';
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
+const dbObjs: { [key: string]: DatabaseDriver } = {};
 const connectionStores: Storable[] = [];
 const ttlStores: Storable[] = [];
 const ttl = 2;
@@ -171,11 +173,12 @@ if (process.env.DYNAMODB_URL) {
 tap.before(async () => {
   for (const idx in dbs) {
     const opts = dbs[idx];
-    const db = await DB.new(opts);
+    const db = await DB.new(opts, true);
+    dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
 
     const randomSession = Date.now();
-    connectionStores.push(db.store('saml:config:' + randomSession));
-    ttlStores.push(db.store('oauth:session:' + randomSession, ttl));
+    connectionStores.push(db.store('saml:config:' + randomSession + randomBytes(4).toString('hex')));
+    ttlStores.push(db.store('oauth:session:' + randomSession + randomBytes(4).toString('hex'), ttl));
   }
 });
 
@@ -187,12 +190,13 @@ tap.test('dbs', async () => {
   for (const idx in connectionStores) {
     const connectionStore = connectionStores[idx];
     const ttlStore = ttlStores[idx];
-    let dbEngine = dbs[idx].engine!;
+    const dbEngine = dbs[idx].engine!;
+    let dbType = dbEngine;
     if (dbs[idx].type) {
-      dbEngine += ': ' + dbs[idx].type;
+      dbType += ': ' + dbs[idx].type;
     }
 
-    tap.test('put(): ' + dbEngine, async () => {
+    tap.test('put(): ' + dbType, async () => {
       await connectionStore.put(
         record1.id,
         record1,
@@ -207,6 +211,9 @@ tap.test('dbs', async () => {
           value: record1.name,
         }
       );
+
+      // wait 100ms to ensure that the record is written with a different timestamp
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       await connectionStore.put(
         record2.id,
@@ -224,7 +231,7 @@ tap.test('dbs', async () => {
       );
     });
 
-    tap.test('get(): ' + dbEngine, async (t) => {
+    tap.test('get(): ' + dbType, async (t) => {
       const ret1 = await connectionStore.get(record1.id);
       const ret2 = await connectionStore.get(record2.id);
 
@@ -232,7 +239,7 @@ tap.test('dbs', async () => {
       t.same(ret2, record2, 'unable to get record2');
     });
 
-    tap.test('getAll(): ' + dbEngine, async (t) => {
+    tap.test('getAll(): ' + dbType, async (t) => {
       const allRecords = await connectionStore.getAll();
       const allRecordOutput = {};
       let allRecordInput = {};
@@ -288,7 +295,7 @@ tap.test('dbs', async () => {
       }
     });
 
-    tap.test('getByIndex(): ' + dbEngine, async (t) => {
+    tap.test('getByIndex(): ' + dbType, async (t) => {
       const ret1 = await connectionStore.getByIndex({
         name: 'name',
         value: record1.name,
@@ -314,10 +321,11 @@ tap.test('dbs', async () => {
         0,
         1
       );
+      const numRec = dbEngine === 'dynamodb' ? 2 : 1;
       t.same(
         ret3.data.length,
-        dbEngine === 'dynamodb' ? 2 : 1,
-        "getByIndex pagination should get only 1 record, order doesn't matter"
+        numRec,
+        `getByIndex pagination should get only ${numRec} record, order doesn't matter`
       );
 
       const ret4 = await connectionStore.getByIndex(
@@ -331,8 +339,8 @@ tap.test('dbs', async () => {
       );
       t.same(
         ret4.data.length,
-        dbEngine === 'dynamodb' ? 2 : 1,
-        "getByIndex pagination should get only 1 record, order doesn't matter"
+        numRec,
+        `getByIndex pagination should get only ${numRec} record, order doesn't matter`
       );
 
       t.same(
@@ -371,7 +379,18 @@ tap.test('dbs', async () => {
       }
     });
 
-    tap.test('delete(): ' + dbEngine, async (t) => {
+    tap.test('getCount(): ' + dbType, async (t) => {
+      if (dbEngine !== 'sql' && dbEngine !== 'mongo' && dbEngine !== 'planetscale') {
+        console.log(`skipping getCount test for ${dbEngine}`);
+        return;
+      }
+      const count = await connectionStore.getCount();
+      t.equal(count, records.length);
+      const countByIndex = await connectionStore.getCount({ name: 'name', value: record1.name });
+      t.equal(countByIndex, 1);
+    });
+
+    tap.test('delete(): ' + dbType, async (t) => {
       await connectionStore.delete(record1.id);
 
       const ret0 = await connectionStore.getByIndex({
@@ -402,7 +421,7 @@ tap.test('dbs', async () => {
       t.same(ret4.data, [], 'delete for record2 failed');
     });
 
-    tap.test('ttl indexes: ' + dbEngine, async (t) => {
+    tap.test('ttl indexes: ' + dbType, async (t) => {
       try {
         await ttlStore.put(
           record1.id,
@@ -425,13 +444,13 @@ tap.test('dbs', async () => {
       }
     });
 
-    tap.test('ttl put(): ' + dbEngine, async () => {
+    tap.test('ttl put(): ' + dbType, async () => {
       await ttlStore.put(record1.id, record1);
 
       await ttlStore.put(record2.id, record2);
     });
 
-    tap.test('ttl get(): ' + dbEngine, async (t) => {
+    tap.test('ttl get(): ' + dbType, async (t) => {
       const ret1 = await ttlStore.get(record1.id);
       const ret2 = await ttlStore.get(record2.id);
 
@@ -439,7 +458,7 @@ tap.test('dbs', async () => {
       t.same(ret2, record2, 'unable to get record2');
     });
 
-    tap.test('ttl expiry: ' + dbEngine, async (t) => {
+    tap.test('ttl expiry: ' + dbType, async (t) => {
       // mongo runs ttl task every 60 seconds
       if (dbEngine.startsWith('mongo')) {
         return;
@@ -454,7 +473,7 @@ tap.test('dbs', async () => {
       t.same(ret2, null, 'ttl for record2 failed');
     });
 
-    tap.test('deleteMany(): ' + dbEngine, async (t) => {
+    tap.test('deleteMany(): ' + dbType, async (t) => {
       await connectionStore.put(
         record1.id,
         record1,
@@ -504,16 +523,28 @@ tap.test('dbs', async () => {
     });
   }
 
+  tap.test('close():', async () => {
+    for (const [, value] of Object.entries(dbObjs)) {
+      await value.close();
+    }
+  });
+
   tap.test('db.new() error', async (t) => {
     try {
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'mongo',
-      });
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'mongo',
+        },
+        true
+      );
 
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'sql',
-        url: tap.expectUncaughtException().toString(),
-      });
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'sql',
+          url: tap.expectUncaughtException().toString(),
+        },
+        true
+      );
 
       t.ok(
         <DatabaseOption>{
@@ -522,12 +553,20 @@ tap.test('dbs', async () => {
         },
         'db must have connection'
       );
-      await DB.new({
-        engine: <DatabaseEngine>'',
-      });
-      await DB.new(<DatabaseOption>{
-        engine: <DatabaseEngine>'somedb',
-      });
+
+      await DB.new(
+        {
+          engine: <DatabaseEngine>'',
+        },
+        true
+      );
+
+      await DB.new(
+        <DatabaseOption>{
+          engine: <DatabaseEngine>'somedb',
+        },
+        true
+      );
       t.fail('expecting an unsupported db error');
     } catch (err) {
       t.ok(err, 'got expected error');

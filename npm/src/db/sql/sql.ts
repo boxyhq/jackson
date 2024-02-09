@@ -232,6 +232,18 @@ class Sql implements DatabaseDriver {
     return { data: ret };
   }
 
+  async getCount(namespace: string, idx?: Index): Promise<number> {
+    const count =
+      idx !== undefined
+        ? await this.indexRepository.count({ where: { key: dbutils.keyForIndex(namespace, idx) } })
+        : await this.storeRepository.count({
+            where: {
+              namespace,
+            },
+          });
+    return count;
+  }
+
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       const dbKey = dbutils.key(namespace, key);
@@ -331,6 +343,10 @@ class Sql implements DatabaseDriver {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async close(): Promise<void> {
+    await this.dataSource.destroy();
   }
 }
 

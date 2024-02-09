@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from 'react';
 import getRawBody from 'raw-body';
 import { useRouter } from 'next/router';
@@ -8,7 +9,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 import Head from 'next/head';
 import { hexToOklch } from '@lib/color';
-import Image from 'next/image';
 import { PoweredBy } from '@components/PoweredBy';
 import { getPortalBranding, getProductBranding } from '@ee/branding/utils';
 import { boxyhqHosted } from '@lib/env';
@@ -17,6 +17,8 @@ interface Connection {
   name: string;
   product: string;
   clientID: string;
+  sortOrder: number | null;
+  deactivated: boolean;
 }
 
 export default function ChooseIdPConnection({
@@ -47,7 +49,7 @@ export default function ChooseIdPConnection({
 
         {branding?.logoUrl && (
           <div className='flex justify-center'>
-            <Image src={branding.logoUrl} alt={branding.companyName} width={50} height={50} />
+            <img src={branding.logoUrl} alt={branding.companyName} className='max-h-14' />
           </div>
         )}
 
@@ -208,15 +210,6 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     };
   }
 
-  // Otherwise, show the list of IdPs
-  let connections: (OIDCSSORecord | SAMLSSORecord)[] = [];
-
-  if (tenant && product) {
-    connections = await connectionAPIController.getConnections({ tenant, product });
-  } else if (entityId) {
-    connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
-  }
-
   // SAML federated app
   const samlFederationApp = samlFedAppId ? await samlFederatedController.app.get({ id: samlFedAppId }) : null;
 
@@ -224,6 +217,20 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     return {
       notFound: true,
     };
+  }
+
+  // Otherwise, show the list of IdPs
+  let connections: (OIDCSSORecord | SAMLSSORecord)[] = [];
+
+  if (samlFederationApp) {
+    const tenants = samlFederationApp?.tenants || [samlFederationApp.tenant];
+    const { product } = samlFederationApp;
+
+    connections = await connectionAPIController.getConnections({ tenant: tenants, product, sort: true });
+  } else if (tenant && product) {
+    connections = await connectionAPIController.getConnections({ tenant, product, sort: true });
+  } else if (entityId) {
+    connections = await connectionAPIController.getConnections({ entityId: decodeURIComponent(entityId) });
   }
 
   // Get the branding to use for the IdP selector screen
@@ -251,8 +258,13 @@ export const getServerSideProps = async ({ query, locale, req }) => {
       name,
       product: connection.product,
       clientID: connection.clientID,
+      sortOrder: connection.sortOrder || null,
+      deactivated: connection.deactivated || false,
     };
   });
+
+  // Filter out connections that are not enabled
+  connectionsTransformed = connectionsTransformed.filter((connection) => connection.deactivated !== true);
 
   // For idp-initiated flows, we need to parse the SAMLResponse from the request body and pass it to the component
   if (req.method == 'POST') {

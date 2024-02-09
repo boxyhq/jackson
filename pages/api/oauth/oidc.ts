@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { setErrorCookie } from '@lib/utils';
-import { OIDCAuthzResponsePayload } from '@boxyhq/saml-jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -12,11 +11,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { oauthController } = await jackson();
 
-    const { redirect_url } = await oauthController.oidcAuthzResponse(
-      req.query as unknown as OIDCAuthzResponsePayload
-    );
+    const { redirect_url, response_form } = await oauthController.oidcAuthzResponse(req.query);
+
     if (redirect_url) {
       res.redirect(302, redirect_url);
+    }
+
+    if (response_form) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(response_form);
     }
   } catch (err: any) {
     console.error('callback error:', err);

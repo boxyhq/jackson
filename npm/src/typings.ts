@@ -1,8 +1,8 @@
 import type { JWK } from 'jose';
-import type { IssuerMetadata } from 'openid-client';
+import type { CallbackParamsType, IssuerMetadata } from 'openid-client';
 
 export * from './ee/federated-saml/types';
-export * from './saml-tracer/types';
+export * from './sso-tracer/types';
 export * from './directory-sync/types';
 export * from './event/types';
 
@@ -10,13 +10,27 @@ import db from './db/db';
 
 export type DB = Awaited<ReturnType<typeof db.new>>;
 
-interface SSOConnection {
+export interface OryRes {
+  projectId?: string;
+  domains?: string[];
+  organizationId?: string;
+  error: any | undefined;
+}
+
+export interface OryConfig extends OryRes {
+  sdkToken?: string;
+}
+
+export interface SSOConnection {
   defaultRedirectUrl: string;
   redirectUrl: string[] | string;
   tenant: string;
   product: string;
   name?: string;
+  label?: string;
   description?: string;
+  ory?: OryConfig;
+  sortOrder?: number | null;
 }
 
 export interface SAMLSSOConnection extends SSOConnection {
@@ -83,8 +97,8 @@ export interface OIDCSSORecord extends SSOConnection {
     friendlyProviderName: string | null;
     discoveryUrl?: string;
     metadata?: IssuerMetadata;
-    clientId?: string;
-    clientSecret?: string;
+    clientId: string;
+    clientSecret: string;
   };
   deactivated?: boolean;
 }
@@ -106,7 +120,12 @@ type TenantProduct = {
   product: string;
 };
 
-export type GetConnectionsQuery = ClientIDQuery | TenantQuery | { entityId: string };
+export type GetConnectionsQuery =
+  | ClientIDQuery
+  | TenantQuery
+  | { entityId: string }
+  | { tenant: string[]; product: string; sort?: boolean };
+
 export type GetIDPEntityIDBody = TenantProduct;
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 
@@ -117,10 +136,13 @@ export type UpdateConnectionParams = TenantProduct & {
   clientID: string;
   clientSecret: string;
   name?: string;
+  label?: string;
   description?: string;
   defaultRedirectUrl?: string;
   redirectUrl?: string[] | string;
   deactivated?: boolean;
+  ory?: OryConfig;
+  sortOrder?: number | null;
 };
 
 export type UpdateSAMLConnectionParams = UpdateConnectionParams & {
@@ -169,6 +191,7 @@ export interface IConnectionAPIController {
   getConnectionsByProduct(
     body: GetByProductParams
   ): Promise<{ data: (SAMLSSORecord | OIDCSSORecord)[]; pageToken?: string }>;
+  getCount(idx?: Index): Promise<number | undefined>;
 }
 
 export interface IOAuthController {
@@ -176,15 +199,17 @@ export interface IOAuthController {
   samlResponse(
     body: SAMLResponsePayload
   ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }>;
-  oidcAuthzResponse(body: OIDCAuthzResponsePayload): Promise<{ redirect_url?: string }>;
+  oidcAuthzResponse(
+    body: OIDCAuthzResponsePayload
+  ): Promise<{ redirect_url?: string; response_form?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
 
 export interface IAdminController {
   getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string);
-  getAllSAMLTraces(pageOffset: number, pageLimit: number, pageToken?: string);
-  getSAMLTraceById(traceId: string);
+  getAllSSOTraces(pageOffset: number, pageLimit: number, pageToken?: string);
+  getSSOTraceById(traceId: string);
   getTracesByProduct(product: string, pageOffset: number, pageLimit: number, pageToken?: string);
 }
 
@@ -264,21 +289,7 @@ export interface SAMLResponsePayload {
   idp_hint?: string;
 }
 
-interface OIDCAuthzResponseSuccess {
-  code: string;
-  state: string;
-  error?: never;
-  error_description?: never;
-}
-
-interface OIDCAuthzResponseError {
-  code?: never;
-  state: string;
-  error: OAuthErrorHandlerParams['error'] | OIDCErrorCodes;
-  error_description?: string;
-}
-
-export type OIDCAuthzResponsePayload = OIDCAuthzResponseSuccess | OIDCAuthzResponseError;
+export type OIDCAuthzResponsePayload = CallbackParamsType;
 
 interface OAuthTokenReqBody {
   code: string;
@@ -349,7 +360,9 @@ export interface DatabaseDriver {
     pageToken?: string,
     sortOrder?: SortOrder
   ): Promise<Records>;
+  getCount?(namespace: string, idx?: Index): Promise<number | undefined>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
+  close(): Promise<void>;
 }
 
 export interface Storable {
@@ -369,6 +382,7 @@ export interface Storable {
     pageToken?: string,
     sortOrder?: SortOrder
   ): Promise<Records>;
+  getCount(idx?: Index): Promise<number | undefined>;
   deleteMany(keys: string[]): Promise<void>;
 }
 
@@ -452,6 +466,12 @@ export interface JacksonOption {
 
   /**  The number of days a setup link is valid for. Defaults to 3 days. */
   setupLinkExpiryDays?: number;
+  boxyhqHosted?: boolean;
+
+  ory?: {
+    projectId: string | undefined;
+    sdkToken: string | undefined;
+  };
 }
 
 export interface SLORequestParams {
@@ -492,7 +512,7 @@ export interface OAuthErrorHandlerParams {
     | 'server_error'
     | 'temporarily_unavailable'
     | OIDCErrorCodes;
-  error_description: string;
+  error_description?: string;
   redirect_uri: string;
   state?: string;
 }
@@ -591,4 +611,5 @@ export interface ProductConfig {
   primaryColor: string | null;
   faviconUrl: string | null;
   companyName: string | null;
+  ory: OryConfig | null;
 }

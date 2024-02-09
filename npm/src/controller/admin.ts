@@ -3,7 +3,7 @@ import {
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
-  SAMLTracerInstance,
+  SSOTracerInstance,
   Records,
   Trace,
 } from '../typings';
@@ -12,11 +12,11 @@ import { transformConnections } from './utils';
 
 export class AdminController implements IAdminController {
   private connectionStore: Storable;
-  private samlTracer: SAMLTracerInstance;
+  private ssoTracer: SSOTracerInstance;
 
-  constructor({ connectionStore, samlTracer }) {
+  constructor({ connectionStore, ssoTracer }) {
     this.connectionStore = connectionStore;
-    this.samlTracer = samlTracer;
+    this.ssoTracer = ssoTracer;
   }
 
   public async getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string) {
@@ -33,8 +33,8 @@ export class AdminController implements IAdminController {
     return { data: transformConnections(connectionList), pageToken: nextPageToken };
   }
 
-  public async getAllSAMLTraces(pageOffset: number, pageLimit: number, pageToken?: string) {
-    const { data: traces, pageToken: nextPageToken } = (await this.samlTracer.getAllTraces(
+  public async getAllSSOTraces(pageOffset: number, pageLimit: number, pageToken?: string) {
+    const { data: traces, pageToken: nextPageToken } = (await this.ssoTracer.getAllTraces(
       pageOffset,
       pageLimit,
       pageToken
@@ -47,8 +47,8 @@ export class AdminController implements IAdminController {
     return { data: traces, pageToken: nextPageToken };
   }
 
-  public async getSAMLTraceById(traceId: string) {
-    const trace = await this.samlTracer.getByTraceId(traceId);
+  public async getSSOTraceById(traceId: string) {
+    const trace = await this.ssoTracer.getByTraceId(traceId);
 
     if (!trace) {
       throw new JacksonError(`Trace with id ${traceId} not found`, 404);
@@ -63,6 +63,6 @@ export class AdminController implements IAdminController {
     pageLimit: number,
     pageToken?: string
   ) {
-    return await this.samlTracer.getTracesByProduct({ product, pageOffset, pageLimit, pageToken });
+    return await this.ssoTracer.getTracesByProduct({ product, pageOffset, pageLimit, pageToken });
   }
 }

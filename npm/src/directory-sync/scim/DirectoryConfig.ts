@@ -657,4 +657,8 @@ export class DirectoryConfig {
       return apiError(err);
     }
   }
+
+  public async getCount(idx?: Index) {
+    return await this.store().getCount(idx);
+  }
 }

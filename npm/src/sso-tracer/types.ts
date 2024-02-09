@@ -1,5 +1,5 @@
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
-import SAMLTracer from '.';
+import SSOTracer from '.';
 
 export interface Trace {
   traceId: string;
@@ -10,7 +10,7 @@ export interface Trace {
   };
 }
 
-export interface SAMLTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
+export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
   timestamp?: number /** Can be passed in from outside else will be set to Date.now() */;
   context: Trace['context'] & {
     tenant: string;
@@ -28,7 +28,15 @@ export interface SAMLTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     samlResponse?: string; // Raw SAML response from IdP
     issuer?: string; // Parsed issuer from samlResponse
     profile?: SAMLProfile; // Profile extracted from samlResponse
+    //  OPError attributes from OIDC provider authorization response: https://github.com/panva/node-openid-client/blob/main/docs/README.md#class-operror
+    error?: string;
+    error_description?: string;
+    error_uri?: string;
+    session_state_from_op_error?: string;
+    scope_from_op_error?: string;
+    stack?: string;
+    oidcTokenSet?: { id_token?: string; access_token?: string };
   };
 }
 
-export type SAMLTracerInstance = InstanceType<typeof SAMLTracer>;
+export type SSOTracerInstance = InstanceType<typeof SSOTracer>;

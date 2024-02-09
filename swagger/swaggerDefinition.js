@@ -1,7 +1,7 @@
 const packageInfo = require('../package.json');
 
 module.exports = {
-  openapi: '3.1.0',
+  openapi: '3.0.3',
   info: {
     title: 'Enterprise SSO & Directory Sync',
     version: packageInfo.version,

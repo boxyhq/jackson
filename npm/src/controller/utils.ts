@@ -366,3 +366,19 @@ export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | D
 
   return true;
 };
+
+export const validateSortOrder = (sortOrder: unknown) => {
+  if (sortOrder === null || sortOrder === '') {
+    return;
+  }
+
+  const _sortOrder = parseInt(sortOrder as string);
+
+  if (isNaN(_sortOrder)) {
+    throw new JacksonError('The field `sortOrder` must be a number.', 400);
+  }
+
+  if (_sortOrder < 0) {
+    throw new JacksonError('The field `sortOrder` must be a number greater than or equal to 0.', 400);
+  }
+};

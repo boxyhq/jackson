@@ -16,10 +16,11 @@ import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
 import checkLicense from './ee/common/checkLicense';
 import { BrandingController } from './ee/branding';
-import SAMLTracer from './saml-tracer';
+import SSOTracer from './sso-tracer';
 import EventController from './event';
 import { ProductController } from './ee/product';
 import { SecurityLogsConfigController } from './ee/security-logs';
+import { OryController } from './ee/ory/ory';
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -73,6 +74,7 @@ export const controllers = async (
   securityLogsConfigController: ISecurityLogsConfigController;
   checkLicense: () => Promise<boolean>;
   productController: ProductController;
+  close: () => Promise<void>;
 }> => {
   opts = defaultOpts(opts);
 
@@ -89,24 +91,21 @@ export const controllers = async (
   const securityLogsConfigStore = db.store('security:logs:config');
   const productStore = db.store('product:config');
 
-  const samlTracer = new SAMLTracer({ db });
+  const ssoTracer = new SSOTracer({ db });
   const eventController = new EventController({ opts });
+  const productController = new ProductController({ productStore, opts });
 
-  const connectionAPIController = new ConnectionAPIController({ connectionStore, opts, eventController });
-  const adminController = new AdminController({ connectionStore, samlTracer });
+  const oryController = new OryController({ opts, productController });
+  const connectionAPIController = new ConnectionAPIController({
+    connectionStore,
+    opts,
+    eventController,
+    oryController,
+  });
+  const adminController = new AdminController({ connectionStore, ssoTracer });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore, opts });
-  const productController = new ProductController({ productStore, opts });
-
-  if (!opts.noAnalytics) {
-    console.info(
-      'Anonymous analytics enabled. You can disable this by setting the DO_NOT_TRACK=1 or BOXYHQ_NO_ANALYTICS=1 environment variables'
-    );
-    const analyticsStore = db.store('_analytics:events');
-    const analyticsController = new AnalyticsController({ analyticsStore });
-    await analyticsController.init();
-  }
 
   // Create default certificate if it doesn't exist.
   await x509.init(certificateStore, opts);
@@ -116,7 +115,7 @@ export const controllers = async (
     sessionStore,
     codeStore,
     tokenStore,
-    samlTracer,
+    ssoTracer,
     opts,
   });
 
@@ -131,7 +130,7 @@ export const controllers = async (
   const directorySyncController = await initDirectorySync({ db, opts, eventController });
 
   // Enterprise Features
-  const samlFederatedController = await initFederatedSAML({ db, opts, samlTracer });
+  const samlFederatedController = await initFederatedSAML({ db, opts, ssoTracer });
   const brandingController = new BrandingController({ store: settingsStore, opts });
   const securityLogsConfig = new SecurityLogsConfigController({ store: securityLogsConfigStore, opts });
 
@@ -149,6 +148,19 @@ export const controllers = async (
 
       console.info(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
+  }
+
+  if (!opts.noAnalytics) {
+    console.info(
+      'Anonymous analytics enabled. You can disable this by setting the DO_NOT_TRACK=1 or BOXYHQ_NO_ANALYTICS=1 environment variables'
+    );
+    const analyticsStore = db.store('_analytics:events');
+    const analyticsController = new AnalyticsController({
+      analyticsStore,
+      connectionAPIController,
+      directorySyncController,
+    });
+    await analyticsController.init();
   }
 
   const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
@@ -173,6 +185,9 @@ export const controllers = async (
     },
     productController,
     securityLogsConfigController: securityLogsConfig,
+    close: async () => {
+      await db.close();
+    },
   };
 };
 

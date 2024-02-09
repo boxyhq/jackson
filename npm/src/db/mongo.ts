@@ -137,6 +137,17 @@ class Mongo implements DatabaseDriver {
     return { data: ret };
   }
 
+  async getCount(namespace: string, idx?: Index): Promise<number> {
+    const count =
+      idx !== undefined
+        ? await this.collection.countDocuments(
+            { indexes: dbutils.keyForIndex(namespace, idx) },
+            { hint: 'indexes_1' }
+          )
+        : await this.collection.countDocuments({ namespace }, { hint: 'namespace_1' });
+    return count;
+  }
+
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {
     const doc = <_Document>{
       value: val,
@@ -185,6 +196,10 @@ class Mongo implements DatabaseDriver {
     await this.collection.deleteMany({
       _id: { $in: dbKeys },
     });
+  }
+
+  async close(): Promise<void> {
+    await this.client.close();
   }
 }
 
