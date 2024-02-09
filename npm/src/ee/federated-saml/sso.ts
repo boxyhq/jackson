@@ -59,8 +59,6 @@ export class SSO {
     let app: SAMLFederationApp | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
 
-    console.log({ samlBinding });
-
     try {
       decodedRequest = await saml.decodeBase64(request, !isPostBinding);
       const parsedSAMLRequest = await saml.parseSAMLRequest(decodedRequest, isPostBinding);

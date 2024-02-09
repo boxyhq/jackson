@@ -58,8 +58,6 @@ async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, bind
     samlBinding = (req.query.samlBinding as ProtocolBinding) || samlBinding;
   }
 
-  console.log(req.query);
-
   if (!['HTTP-POST', 'HTTP-Redirect'].includes(samlBinding)) {
     throw new Error('Invalid protocol binding. We support only HTTP-POST and HTTP-Redirect.');
   }
