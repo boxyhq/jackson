@@ -130,10 +130,12 @@ export class SSO {
         ? await this.ssoHandler.createSAMLRequest({
             connection,
             requestParams,
+            mappings: app.mappings,
           })
         : await this.ssoHandler.createOIDCRequest({
             connection,
             requestParams,
+            mappings: app.mappings,
           });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);

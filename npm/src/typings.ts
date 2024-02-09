@@ -30,6 +30,7 @@ export interface SSOConnection {
   label?: string;
   description?: string;
   ory?: OryConfig;
+  sortOrder?: number | null;
 }
 
 export interface SAMLSSOConnection extends SSOConnection {
@@ -119,7 +120,12 @@ type TenantProduct = {
   product: string;
 };
 
-export type GetConnectionsQuery = ClientIDQuery | TenantQuery | { entityId: string };
+export type GetConnectionsQuery =
+  | ClientIDQuery
+  | TenantQuery
+  | { entityId: string }
+  | { tenant: string[]; product: string; sort?: boolean };
+
 export type GetIDPEntityIDBody = TenantProduct;
 export type DelConnectionsQuery = (ClientIDQuery & { clientSecret: string }) | TenantQuery;
 
@@ -136,6 +142,7 @@ export type UpdateConnectionParams = TenantProduct & {
   redirectUrl?: string[] | string;
   deactivated?: boolean;
   ory?: OryConfig;
+  sortOrder?: number | null;
 };
 
 export type UpdateSAMLConnectionParams = UpdateConnectionParams & {

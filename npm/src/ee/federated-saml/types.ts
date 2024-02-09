@@ -2,6 +2,11 @@ import SAMLFederation from '.';
 
 export type ISAMLFederationController = Awaited<ReturnType<typeof SAMLFederation>>;
 
+export type AttributeMapping = {
+  key: string;
+  value: string;
+};
+
 export type SAMLFederationApp = {
   id: string;
   name: string;
@@ -13,6 +18,7 @@ export type SAMLFederationApp = {
   faviconUrl: string | null;
   primaryColor: string | null;
   tenants?: string[]; // To support multiple tenants for a single app
+  mappings: AttributeMapping[] | null;
 };
 
 export type SAMLFederationAppWithMetadata = SAMLFederationApp & {
