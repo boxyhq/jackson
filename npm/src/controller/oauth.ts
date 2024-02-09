@@ -640,7 +640,7 @@ export class OAuthController implements IOAuthController {
 
         await this.sessionStore.delete(sessionId);
 
-        return { response_form: responseForm, profile: userProfile };
+        return { response_form: responseForm };
       }
 
       const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);
