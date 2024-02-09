@@ -3,14 +3,16 @@
   "version": "0.0.0",
   "description": "Package to deliver security logs to different SIEMs and other destination",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "sort": "npx sort-package-json"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/boxyhq/jackson.git"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "files": [
     "dist",
     "ENTERPRISE.md",
