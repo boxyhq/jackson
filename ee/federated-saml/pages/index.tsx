@@ -7,7 +7,7 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import EmptyState from '@components/EmptyState';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
+import { pageLimit, Pagination } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkOutline } from '@components/LinkOutline';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
