@@ -45,7 +45,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { token, service } = req.query as {
+  const { token, service, offset, limit, pageToken } = req.query as {
     offset: string;
     limit: string;
     pageToken?: string;
@@ -72,7 +72,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   // Get a setup link by service
   if (service) {
     const setupLinksPaginated = await setupLinkController.filterBy({
-      ...req.query,
+      service: service as any,
+      pageLimit: parseInt(limit),
+      pageOffset: parseInt(offset),
+      pageToken,
     });
 
     if (setupLinksPaginated.pageToken) {
