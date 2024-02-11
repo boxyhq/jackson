@@ -10,11 +10,11 @@ import { LinkPrimary } from '@components/LinkPrimary';
 import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkOutline } from '@components/LinkOutline';
-import { IconButton } from '@components/IconButton';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import router from 'next/router';
 import LicenseRequired from '@components/LicenseRequired';
 import { errorToast } from '@components/Toaster';
+import { Table } from '@components/table/Table';
 
 const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
@@ -74,53 +74,40 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
         </>
       ) : (
         <>
-          <div className='rounder border'>
-            <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
-              <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr className='hover:bg-gray-50'>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('name')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('tenant')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('product')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {apps &&
-                  apps.map((app) => {
-                    return (
-                      <tr
-                        key={app.id}
-                        className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                        <td className='break-all px-6 py-3'>{app.name}</td>
-                        <td className='break-all px-6 py-3'>{app.tenant}</td>
-                        <td className='break-all px-6'>{app.product}</td>
-                        <td className='px-6'>
-                          <span className='inline-flex items-baseline'>
-                            <IconButton
-                              tooltip={t('edit')}
-                              Icon={PencilIcon}
-                              className='hover:text-green-400'
-                              onClick={() => {
-                                router.push(`/admin/federated-saml/${app.id}/edit`);
-                              }}
-                            />
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                {noMoreResults && <NoMoreResults colSpan={4} />}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            noMoreResults={noMoreResults}
+            cols={[t('name'), t('tenant'), t('product'), t('actions')]}
+            body={apps.map((app) => {
+              return {
+                id: app.id,
+                cells: [
+                  {
+                    wrap: true,
+                    text: app.name,
+                  },
+                  {
+                    wrap: true,
+                    text: app.tenant,
+                  },
+                  {
+                    wrap: true,
+                    text: app.product,
+                  },
+                  {
+                    actions: [
+                      {
+                        text: t('edit'),
+                        onClick: () => {
+                          router.push(`/admin/federated-saml/${app.id}/edit`);
+                        },
+                        icon: <PencilIcon className='h-5 w-5' />,
+                      },
+                    ],
+                  },
+                ],
+              };
+            })}></Table>
+
           <Pagination
             itemsCount={apps.length}
             offset={paginate.offset}
