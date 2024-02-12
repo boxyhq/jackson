@@ -63,9 +63,9 @@ const SSOTraceViewer: NextPage = () => {
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr className='hover:bg-gray-50'>
                   <th className='px-6 py-3'>{t('trace_id')}</th>
-                  <th className='px-6 py-3'>{t('timestamp')}</th>
+                  <th className='px-6 py-3'>{t('description')}</th>
                   <th className='px-6 py-3'>{t('assertion_type')}</th>
-                  <th className='px-6 py-3'>{t('error')}</th>
+                  <th className='px-6 py-3'>{t('timestamp')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -74,18 +74,18 @@ const SSOTraceViewer: NextPage = () => {
                     <tr
                       key={traceId}
                       className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='px-6 py-3'>
+                      <td className='break-all px-6 py-3'>
                         <Link
                           href={`/admin/sso-tracer/${traceId}/inspect`}
                           className='link-primary link flex'>
                           {traceId}
                         </Link>
                       </td>
-                      <td className='whitespace-nowrap px-6 py-3'>{new Date(timestamp).toLocaleString()}</td>
+                      <td className='break-all px-6'>{error}</td>
                       <td className='px-6 py-3'>
                         {context?.samlResponse ? 'Response' : context?.samlRequest ? 'Request' : '-'}
                       </td>
-                      <td className='px-6'>{error}</td>
+                      <td className='break-all px-6 py-3'>{new Date(timestamp).toLocaleString()}</td>
                     </tr>
                   );
                 })}
