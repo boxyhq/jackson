@@ -40,7 +40,7 @@ export class SSOHandler {
   // If there is only one connection, return the connection
   async resolveConnection(params: {
     authFlow: 'oauth' | 'saml' | 'idp-initiated';
-    originalParams: Record<string, string>;
+    originalParams: Record<string, any>;
     tenant?: string;
     product?: string;
     entityId?: string;
