@@ -1,14 +1,11 @@
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
-import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
-import EmptyState from '@components/EmptyState';
 import { useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { IconButton } from '@components/IconButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
-import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
+import { pageLimit } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import useSWR from 'swr';
@@ -16,9 +13,9 @@ import { fetcher } from '@lib/ui/utils';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
 import type { ApiError, ApiSuccess } from 'types';
-import Badge from '@components/Badge';
+import { ConnectionList } from '@boxyhq/react-ui/sso';
 
-const ConnectionList = ({
+const SSOConnectionList = ({
   setupLinkToken,
   idpEntityID,
   isSettingsView = false,
@@ -28,20 +25,22 @@ const ConnectionList = ({
   isSettingsView?: boolean;
 }) => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
+  const { paginate, pageTokenMap, setPageTokenMap } = usePaginate();
   const router = useRouter();
+
+  // const offset = router.query.offset ? Number(router.query.offset) : 0;
 
   const displayTenantProduct = setupLinkToken ? false : true;
   let getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
       ? `/api/admin/connections?isSystemSSO`
-      : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
+      : `/api/admin/connections`;
 
   // Use the (next)pageToken mapped to the previous page offset to get the current page
-  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
-    getConnectionsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
-  }
+  // if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+  //   getConnectionsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  // }
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`
     : isSettingsView
@@ -71,8 +70,8 @@ const ConnectionList = ({
   }
 
   const connections = data?.data || [];
-  const noConnections = connections.length === 0 && paginate.offset === 0;
-  const noMoreResults = connections.length === 0 && paginate.offset > 0;
+  // const noConnections = connections.length === 0 && paginate.offset === 0;
+  // const noMoreResults = connections.length === 0 && paginate.offset > 0;
 
   if (connections && setupLinkToken && connections.length === 0) {
     router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
@@ -80,21 +79,21 @@ const ConnectionList = ({
   }
 
   // Find the display name for a connection
-  const connectionDisplayName = (connection: SAMLSSORecord | OIDCSSORecord) => {
-    if (connection.name) {
-      return connection.name;
-    }
+  // const connectionDisplayName = (connection: SAMLSSORecord | OIDCSSORecord) => {
+  //   if (connection.name) {
+  //     return connection.name;
+  //   }
 
-    if ('idpMetadata' in connection) {
-      return connection.idpMetadata.friendlyProviderName || connection.idpMetadata.provider;
-    }
+  //   if ('idpMetadata' in connection) {
+  //     return connection.idpMetadata.friendlyProviderName || connection.idpMetadata.provider;
+  //   }
 
-    if ('oidcProvider' in connection) {
-      return connection.oidcProvider.provider;
-    }
+  //   if ('oidcProvider' in connection) {
+  //     return connection.oidcProvider.provider;
+  //   }
 
-    return 'Unknown';
-  };
+  //   return 'Unknown';
+  // };
 
   return (
     <div>
@@ -123,12 +122,38 @@ const ConnectionList = ({
           </div>
         </div>
       )}
-      {noConnections ? (
+      {/* {noConnections ? (
         <EmptyState title={t('no_connections_found')} href={createConnectionUrl} />
-      ) : (
-        <>
-          <div className='rounder border'>
-            <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
+      ) : ( */}
+      {/* <> */}
+      {/* <div className='rounder border'> */}
+      <ConnectionList
+        urls={{
+          get: getConnectionsUrl,
+        }}
+        cols={!displayTenantProduct ? ['name', 'label', 'provider', 'type', 'status', 'actions'] : undefined}
+        paginate={{
+          itemsPerPage: pageLimit,
+          // handlePageChange: ({ offset }) => {
+          //   const currentOffset = router.query.offset;
+          //   if (currentOffset !== `${offset}`) {
+          //     router.query.offset = `${offset}`;
+          //     router.push(router);
+          //   }
+          // },
+        }}
+        handleActionClick={(action: 'edit', payload: any) => {
+          const isSystemSSO = payload?.isSystemSSO;
+          router.push(
+            setupLinkToken
+              ? `/setup/${setupLinkToken}/sso-connection/edit/${payload.clientID}`
+              : isSettingsView || isSystemSSO
+                ? `/admin/settings/sso-connection/edit/${payload.clientID}`
+                : `/admin/sso-connection/edit/${payload.clientID}`
+          );
+        }}
+      />
+      {/* <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr className='hover:bg-gray-50'>
                   <th scope='col' className='px-6 py-3'>
@@ -224,28 +249,28 @@ const ConnectionList = ({
                 })}
                 {noMoreResults && <NoMoreResults colSpan={5} />}
               </tbody>
-            </table>
-          </div>
-          {!isSettingsView && (
-            <Pagination
-              itemsCount={connections.length}
-              offset={paginate.offset}
-              onPrevClick={() => {
-                setPaginate({
-                  offset: paginate.offset - pageLimit,
-                });
-              }}
-              onNextClick={() => {
-                setPaginate({
-                  offset: paginate.offset + pageLimit,
-                });
-              }}
-            />
-          )}
-        </>
-      )}
+            </table> */}
+      {/* </div> */}
+      {/* {!isSettingsView && (
+        <Pagination
+          itemsCount={connections.length}
+          offset={paginate.offset}
+          onPrevClick={() => {
+            setPaginate({
+              offset: paginate.offset - pageLimit,
+            });
+          }}
+          onNextClick={() => {
+            setPaginate({
+              offset: paginate.offset + pageLimit,
+            });
+          }}
+        />
+      )} */}
+      {/* </> */}
+      {/* )} */}
     </div>
   );
 };
 
-export default ConnectionList;
+export default SSOConnectionList;
