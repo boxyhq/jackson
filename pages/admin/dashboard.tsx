@@ -1,6 +1,5 @@
+import { WellKnownURLs } from '@boxyhq/internal-ui/well-known';
 import type { GetServerSidePropsContext, NextPage } from 'next';
-
-import WellKnownURLs from '@components/connection/WellKnownURLs';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Dashboard: NextPage = () => {
