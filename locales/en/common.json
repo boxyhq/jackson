@@ -210,6 +210,7 @@
   "users": "Users",
   "groups": "Groups",
   "webhook_events": "Webhook Events",
+  "idp_configuration": "IdP Configuration",
   "retraced_project_created": "Project created successfully",
   "project_name": "Project name",
   "create_project": "Create Project",
