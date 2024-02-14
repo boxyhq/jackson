@@ -91,7 +91,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink:
   if (isSAML) {
     res.json({ data: await connectionAPIController.updateSAMLConnection(body) });
   } else if (isOIDC) {
-    res.json({ data: await connectionAPIController.updateOIDCConnection(oidcMetadataParse(body)) });
+    res.json({ data: await connectionAPIController.updateOIDCConnection(oidcMetadataParse(body) as any) });
   } else {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }

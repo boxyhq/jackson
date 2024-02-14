@@ -75,7 +75,7 @@ const Events: NextPage = () => {
     <>
       <LinkBack href='/admin/directory-sync' />
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{directory.name}</h2>
-      <div className='w-full md:w-3/4'>
+      <div className='w-full'>
         <DirectoryTab directory={directory} activeTab='events' />
         {noEvents ? (
           <EmptyState title={t('no_webhook_events_found')} />

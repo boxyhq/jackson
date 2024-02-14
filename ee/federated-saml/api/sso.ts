@@ -3,22 +3,33 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { setErrorCookie } from '@lib/utils';
 
+type SAMLRequest = {
+  SAMLRequest: string;
+  RelayState: string;
+  samlBinding?: ProtocolBinding;
+  idp_hint?: string;
+};
+
+type ProtocolBinding = 'HTTP-POST' | 'HTTP-Redirect';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { method } = req;
 
     switch (method) {
       case 'GET':
-        await handleGET(req, res);
+        await handleSAMLRequest(req, res, 'HTTP-Redirect');
+        break;
+      case 'POST':
+        await handleSAMLRequest(req, res, 'HTTP-POST');
         break;
       default:
-        res.setHeader('Allow', 'GET');
+        res.setHeader('Allow', 'GET, POST');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
     }
   } catch (err: any) {
     console.error('authorize error:', err);
     const { message, statusCode = 500 } = err;
-    // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
     res.redirect(302, '/error');
   }
@@ -26,19 +37,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Handle the SAML Request from Service Provider
 // This endpoint act as Single Sign On (SSO) URL
-const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, binding: ProtocolBinding) {
+  let samlRequest = '';
+  let relayState = '';
+  let idpHint: string | undefined;
+  let samlBinding = binding;
+
+  if (samlBinding === 'HTTP-POST') {
+    const { SAMLRequest, RelayState } = req.body as SAMLRequest;
+
+    samlRequest = SAMLRequest;
+    relayState = RelayState;
+  } else {
+    const { SAMLRequest, RelayState, idp_hint } = req.query as SAMLRequest;
+
+    samlRequest = SAMLRequest;
+    relayState = RelayState;
+    idpHint = idp_hint || undefined;
+    samlBinding = (req.query.samlBinding as ProtocolBinding) || samlBinding;
+  }
+
+  if (!['HTTP-POST', 'HTTP-Redirect'].includes(samlBinding)) {
+    throw new Error('Invalid protocol binding. We support only HTTP-POST and HTTP-Redirect.');
+  }
+
+  if (!samlRequest) {
+    throw new Error('SAMLRequest is required to proceed.');
+  }
+
   const { samlFederatedController } = await jackson();
 
-  const { SAMLRequest, RelayState, idp_hint } = req.query as {
-    SAMLRequest: string;
-    RelayState: string;
-    idp_hint: string;
-  };
-
   const response = await samlFederatedController.sso.getAuthorizeUrl({
-    request: SAMLRequest,
-    relayState: RelayState,
-    idp_hint,
+    request: samlRequest,
+    relayState,
+    idp_hint: idpHint,
+    samlBinding,
   });
 
   if (!response) {
@@ -53,4 +86,4 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(response.authorize_form);
   }
-};
+}

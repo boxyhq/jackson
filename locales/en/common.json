@@ -129,7 +129,6 @@
   "error_description_from_oidc_idp": "Error Description (from OIDC Provider)",
   "new_saml_federation_app": "New App",
   "view": "View",
-  "view_idp_configuration": "View IdP Configuration",
   "edit": "Edit",
   "settings": "Settings",
   "admin_portal_sso": "SSO for Admin Portal",

@@ -39,16 +39,16 @@
     "coverage-map": "map.js"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.507.0",
-    "@aws-sdk/credential-providers": "3.507.0",
-    "@aws-sdk/util-dynamodb": "3.507.0",
+    "@aws-sdk/client-dynamodb": "3.511.0",
+    "@aws-sdk/credential-providers": "3.511.0",
+    "@aws-sdk/util-dynamodb": "3.511.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.6",
     "@boxyhq/saml20": "1.4.10",
     "@googleapis/admin": "15.0.0",
     "axios": "1.6.7",
     "encoding": "0.1.13",
-    "jose": "5.2.1",
+    "jose": "5.2.2",
     "lodash": "4.17.21",
     "mixpanel": "0.18.0",
     "mongodb": "6.3.0",
@@ -64,9 +64,9 @@
     "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "8.4.0",
+    "@faker-js/faker": "8.4.1",
     "@types/lodash": "4.14.202",
-    "@types/node": "20.11.16",
+    "@types/node": "20.11.17",
     "@types/sinon": "17.0.3",
     "@types/tap": "15.0.11",
     "cross-env": "7.0.3",

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { DocumentMagnifyingGlassIcon, PlusIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
+import { DocumentMagnifyingGlassIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import EmptyState from '@components/EmptyState';
 import { useProjects } from '@lib/ui/retraced';
@@ -33,9 +33,7 @@ const ProjectList: NextPage = () => {
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('projects')}</h2>
-        <LinkPrimary Icon={PlusIcon} href={'/admin/retraced/projects/new'}>
-          {t('new_project')}
-        </LinkPrimary>
+        <LinkPrimary href={'/admin/retraced/projects/new'}>{t('new_project')}</LinkPrimary>
       </div>
       {noProjects ? (
         <EmptyState title={t('no_projects_found')} href='/admin/retraced/projects/new' />

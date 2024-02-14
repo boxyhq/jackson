@@ -2,7 +2,6 @@ import EmptyState from '@components/EmptyState';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
-import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import { useEffect } from 'react';
 import type { Directory } from '@boxyhq/saml-jackson';
 import { useTranslation } from 'next-i18next';
@@ -72,14 +71,12 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
         <div className='flex gap-2'>
-          <LinkPrimary Icon={PlusIcon} href={createDirectoryUrl}>
-            {t('new_directory')}
-          </LinkPrimary>
           {!setupLinkToken && (
             <LinkPrimary Icon={LinkIcon} href='/admin/directory-sync/setup-link/new'>
               {t('new_setup_link')}
             </LinkPrimary>
           )}
+          <LinkPrimary href={createDirectoryUrl}>{t('new_directory')}</LinkPrimary>
         </div>
       </div>
       {noDirectories ? (
@@ -121,16 +118,16 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                       <tr
                         key={directory.id}
                         className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                        <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
+                        <td className='break-all px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
                           {directory.name}
                         </td>
                         {displayTenantProduct && (
                           <>
-                            <td className='px-6'>{directory.tenant}</td>
-                            <td className='px-6'>{directory.product}</td>
+                            <td className='break-all px-6 py-3'>{directory.tenant}</td>
+                            <td className='break-all px-6 py-3'>{directory.product}</td>
                           </>
                         )}
-                        <td className='px-6'>{providers && providers[directory.type]}</td>
+                        <td className='px-6 py-3'>{providers && providers[directory.type]}</td>
                         <td className='px-6'>
                           {directory.deactivated ? (
                             <Badge color='warning' size='md'>
@@ -142,7 +139,7 @@ const DirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
                             </Badge>
                           )}
                         </td>
-                        <td className='px-6'>
+                        <td className='px-6 py-3'>
                           <span className='inline-flex items-baseline'>
                             <IconButton
                               tooltip={t('view')}
