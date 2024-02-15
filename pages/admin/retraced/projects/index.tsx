@@ -4,13 +4,13 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import EmptyState from '@components/EmptyState';
 import { useProjects } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
-import { IconButton } from '@components/IconButton';
 import { useTranslation } from 'next-i18next';
 import router from 'next/router';
-import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
+import { Pagination, pageLimit } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { errorToast } from '@components/Toaster';
+import { Table } from '@components/table/Table';
 
 const ProjectList: NextPage = () => {
   const { t } = useTranslation('common');
@@ -39,62 +39,47 @@ const ProjectList: NextPage = () => {
         <EmptyState title={t('no_projects_found')} href='/admin/retraced/projects/new' />
       ) : (
         <>
-          <div className='rounder border'>
-            <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
-              <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('name')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('id')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('created_at')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects?.map((project) => (
-                  <tr key={project.id} className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'>
-                    <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                      {project.name}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                      {project.id}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                      {project.created}
-                    </td>
-                    <td className='px-6 py-3'>
-                      <span className='inline-flex items-baseline'>
-                        <IconButton
-                          tooltip={t('configuration')}
-                          Icon={WrenchScrewdriverIcon}
-                          className='mr-3 hover:text-green-400'
-                          onClick={() => {
-                            router.push(`/admin/retraced/projects/${project.id}`);
-                          }}
-                        />
-                        <IconButton
-                          tooltip={t('view_events')}
-                          Icon={DocumentMagnifyingGlassIcon}
-                          className='mr-3 hover:text-green-400'
-                          onClick={() => {
-                            router.push(`/admin/retraced/projects/${project.id}/events`);
-                          }}
-                        />
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-                {noMoreResults && <NoMoreResults colSpan={4} />}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            noMoreResults={noMoreResults}
+            cols={[t('name'), t('id'), t('created_at'), t('actions')]}
+            body={projects.map((project) => {
+              return {
+                id: project.id,
+                cells: [
+                  {
+                    wrap: true,
+                    text: project.name,
+                  },
+                  {
+                    wrap: true,
+                    text: project.id,
+                  },
+                  {
+                    wrap: true,
+                    text: new Date(project.created).toLocaleString(),
+                  },
+                  {
+                    actions: [
+                      {
+                        text: t('configuration'),
+                        onClick: () => {
+                          router.push(`/admin/retraced/projects/${project.id}`);
+                        },
+                        icon: <WrenchScrewdriverIcon className='h-5 w-5' />,
+                      },
+                      {
+                        text: t('view_events'),
+                        onClick: () => {
+                          router.push(`/admin/retraced/projects/${project.id}/events`);
+                        },
+                        icon: <DocumentMagnifyingGlassIcon className='h-5 w-5' />,
+                      },
+                    ],
+                  },
+                ],
+              };
+            })}></Table>
+
           <Pagination
             itemsCount={projects.length}
             offset={paginate.offset}

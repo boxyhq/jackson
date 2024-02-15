@@ -10,13 +10,13 @@ import { errorToast, successToast } from '@components/Toaster';
 import { copyToClipboard, fetcher } from '@lib/ui/utils';
 import useSWR from 'swr';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { IconButton } from '@components/IconButton';
-import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
+import { Pagination, pageLimit } from '@components/Pagination';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import Loading from '@components/Loading';
 import type { SetupLinkService, SetupLink } from '@boxyhq/saml-jackson';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
 import { SetupLinkInfo } from './SetupLinkInfo';
+import { Table } from '@components/table/Table';
 
 const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
@@ -141,88 +141,70 @@ const SetupLinkList = ({ service }: { service: SetupLinkService }) => {
         <EmptyState title={t('no_setup_links_found')} href={createSetupLinkUrl} />
       ) : (
         <>
-          <div className='rounder border'>
-            <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
-              <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr className='hover:bg-gray-50'>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('tenant')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('product')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('validity')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {setupLinks.map((setupLink) => {
-                  return (
-                    <tr
-                      key={setupLink.setupID}
-                      className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='break-all  px-6 py-3 text-sm font-medium text-gray-900 dark:text-white'>
-                        {setupLink.tenant}
-                      </td>
-                      <td className='break-all  px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {setupLink.product}
-                      </td>
-                      <td className='px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        <p className={new Date(setupLink.validTill) < new Date() ? 'text-red-400' : ''}>
-                          {new Date(setupLink.validTill).toString()}
-                        </p>
-                      </td>
-                      <td className='px-6 py-3'>
-                        <span className='flex gap-3'>
-                          <IconButton
-                            tooltip={t('copy')}
-                            Icon={ClipboardDocumentIcon}
-                            className='hover:text-green-400'
-                            onClick={() => {
-                              copyToClipboard(setupLink.url);
-                              successToast(t('copied'));
-                            }}
-                          />
-                          <IconButton
-                            tooltip={t('view')}
-                            Icon={EyeIcon}
-                            className='hover:text-green-400'
-                            onClick={() => {
-                              showSetupLinkInfo(setupLink);
-                            }}
-                          />
-                          <IconButton
-                            tooltip={t('regenerate')}
-                            Icon={ArrowPathIcon}
-                            className='hover:text-green-400'
-                            onClick={() => {
-                              setSelectedSetupLink(setupLink);
-                              setShowRegenConfirmModal(true);
-                              setShowSetupLinkModal(false);
-                            }}
-                          />
-                          <IconButton
-                            tooltip={t('delete')}
-                            Icon={TrashIcon}
-                            className='hover:text-red-900'
-                            onClick={() => {
-                              setSelectedSetupLink(setupLink);
-                              setShowDelConfirmModal(true);
-                            }}
-                          />
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {noMoreResults && <NoMoreResults colSpan={4} />}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            noMoreResults={noMoreResults}
+            cols={[t('tenant'), t('product'), t('validity'), t('actions')]}
+            body={setupLinks.map((setupLink) => {
+              return {
+                id: setupLink.setupID,
+                cells: [
+                  {
+                    wrap: true,
+                    text: setupLink.tenant,
+                  },
+                  {
+                    wrap: true,
+                    text: setupLink.product,
+                  },
+                  {
+                    wrap: true,
+                    element: (
+                      <p className={new Date(setupLink.validTill) < new Date() ? 'text-red-400' : ''}>
+                        {new Date(setupLink.validTill).toLocaleString()}
+                      </p>
+                    ),
+                  },
+                  {
+                    actions: [
+                      {
+                        text: t('copy'),
+                        onClick: () => {
+                          copyToClipboard(setupLink.url);
+                          successToast(t('copied'));
+                        },
+                        icon: <ClipboardDocumentIcon className='h-5 w-5' />,
+                      },
+                      {
+                        text: t('view'),
+                        onClick: () => {
+                          showSetupLinkInfo(setupLink);
+                        },
+                        icon: <EyeIcon className='h-5 w-5' />,
+                      },
+                      {
+                        text: t('regenerate'),
+                        onClick: () => {
+                          setSelectedSetupLink(setupLink);
+                          setShowRegenConfirmModal(true);
+                          setShowSetupLinkModal(false);
+                        },
+                        icon: <ArrowPathIcon className='h-5 w-5' />,
+                      },
+                      {
+                        destructive: true,
+                        text: t('delete'),
+                        onClick: () => {
+                          setSelectedSetupLink(setupLink);
+                          setShowDelConfirmModal(true);
+                        },
+                        icon: <TrashIcon className='h-5 w-5' />,
+                      },
+                    ],
+                  },
+                ],
+              };
+            })}></Table>
+
           <Pagination
             itemsCount={setupLinks.length}
             offset={paginate.offset}
