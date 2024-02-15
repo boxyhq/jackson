@@ -1,42 +1,24 @@
 {
   "name": "@boxyhq/internal-ui",
-  "description": "Shared React UI components for BoxyHQ SaaS and Admin Portal",
   "version": "0.0.0",
-  "type": "module",
+  "description": "Shared React UI components for BoxyHQ SaaS and Admin Portal",
   "repository": {
     "type": "git",
-    "directory": "react",
-    "url": "https://github.com/boxyhq/ui"
-  },
-  "homepage": "https://github.com/boxyhq/ui",
-  "bugs": {
-    "url": "https://github.com/boxyhq/ui/issues?q=is%3Aopen+is%3Aissue+label%3Asdk"
+    "url": "https://github.com/boxyhq/jackson.git"
   },
   "files": [
-    "dist",
-    "index.d.ts",
-    "well-known.d.ts",
-    "federated-saml.d.ts",
-    "shared.d.ts"
+    "dist"
   ],
-  "types": "./index.d.ts",
+  "types": "./src/index.ts",
   "exports": {
     "./well-known": {
-      "types": "./dist/well-known/index.d.ts",
-      "import": "./dist/well-known.js"
-    },
-    "./federated-saml": {
-      "types": "./dist/federated-saml/index.d.ts",
-      "import": "./dist/federated-saml.js"
-    },
-    "./shared": {
-      "types": "./dist/shared/index.d.ts",
-      "import": "./dist/shared.js"
+      "import": "./src/well-known/index.ts"
     }
   },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build-watch": "vite build --watch",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "publish-local": "./dev/verdaccio.sh"
@@ -57,7 +39,7 @@
     "eslint-plugin-react-refresh": "0.4.5",
     "typescript": "5.3.3",
     "vite": "5.1.0",
-    "@boxyhq/saml-jackson": "1.18.7"
+    "@boxyhq/saml-jackson": "file:npm"
   },
   "peerDependencies": {
     "@heroicons/react": "2.1.1",

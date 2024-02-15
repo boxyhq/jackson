@@ -2,8 +2,8 @@ import { Button } from 'react-daisyui';
 import { useTranslation } from 'next-i18next';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { useFormik } from 'formik';
-import { defaultHeaders } from '@/utils/request';
-import { Card } from '@/shared';
+import { defaultHeaders } from '../utils/request';
+import { Card } from '../shared';
 
 type Branding = Pick<SAMLFederationApp, 'logoUrl' | 'faviconUrl' | 'primaryColor'>;
 

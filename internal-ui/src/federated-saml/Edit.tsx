@@ -3,8 +3,8 @@ import { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import TagsInput from 'react-tagsinput';
 import { useTranslation } from 'next-i18next';
 import { useFormik } from 'formik';
-import { Card } from '@/shared';
-import { defaultHeaders } from '@/utils/request';
+import { Card } from '../shared';
+import { defaultHeaders } from '../utils/request';
 
 type EditApp = Pick<SAMLFederationApp, 'name' | 'acsUrl' | 'tenants'>;
 

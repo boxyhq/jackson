@@ -1,6 +1,6 @@
 import useSWR from 'swr';
-import fetcher from '@/utils/fetcher';
-import { Loading, Table, EmptyState, Error } from '@/shared';
+import fetcher from '../utils/fetcher';
+import { Loading, Table, EmptyState, Error } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { PencilIcon } from '@heroicons/react/24/outline';
