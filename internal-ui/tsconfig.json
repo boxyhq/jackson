@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "moduleResolution": "Node",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "esModuleInterop": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "paths": {
+      "@/shared": ["src/shared/index.ts"],
+      "@/utils/*": ["src/utils/*"]
+    }
+  }
+}
