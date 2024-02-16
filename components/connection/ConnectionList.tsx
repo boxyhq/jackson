@@ -73,6 +73,12 @@ const ConnectionList = ({
   const noConnections = connections.length === 0 && paginate.offset === 0;
   const noMoreResults = connections.length === 0 && paginate.offset > 0;
 
+  // TODO: Redirect to create a new connection if there are no connections
+  // if (connections && setupLinkToken && connections.length === 0) {
+  //   router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
+  //   return null;
+  // }
+
   // Find the display name for a connection
   const connectionDisplayName = (connection: SAMLSSORecord | OIDCSSORecord) => {
     if (connection.name) {
