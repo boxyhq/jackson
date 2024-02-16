@@ -1,4 +1,4 @@
-import { WellKnownURLs } from '@boxyhq/internal-ui/well-known';
+import { WellKnownURLs } from '@boxyhq/internal-ui';
 import type { GetServerSidePropsContext, NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 

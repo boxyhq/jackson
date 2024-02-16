@@ -7,11 +7,7 @@ import typescript from '@rollup/plugin-typescript';
 export default defineConfig({
   build: {
     lib: {
-      entry: {
-        'well-known': resolve(__dirname, 'src/well-known/index.ts'),
-        'federated-saml': resolve(__dirname, 'src/federated-saml/index.ts'),
-        shared: resolve(__dirname, 'src/shared/index.ts'),
-      },
+      entry: resolve(__dirname, 'src/index.ts'),
       formats: ['es'],
     },
     rollupOptions: {
