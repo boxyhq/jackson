@@ -62,7 +62,7 @@
     "@retracedhq/retraced": "0.7.6",
     "@tailwindcss/typography": "0.5.10",
     "axios": "1.6.5",
-    "blockly": "10.3.1",
+    "blockly": "10.4.1",
     "chroma-js": "2.4.2",
     "classnames": "2.5.1",
     "cors": "2.8.5",
@@ -84,7 +84,7 @@
     "react-tagsinput": "3.20.3",
     "remark-gfm": "3.0.1",
     "sharp": "0.32.6",
-    "swr": "2.2.4"
+    "swr": "2.2.5"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "4.0.4",
