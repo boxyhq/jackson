@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 
 import { CreateSAMLConnection as CreateSAML, CreateOIDCConnection as CreateOIDC } from '@boxyhq/react-ui/sso';
 import styles from 'styles/sdk-override.module.css';
-import { errorToast } from '@components/Toaster';
+import { errorToast, successToast } from '@components/Toaster';
 
 interface CreateSSOConnectionProps {
   setupLinkToken: string;
@@ -13,6 +13,7 @@ const CreateSSOConnection = ({ setupLinkToken, idpType }: CreateSSOConnectionPro
   const router = useRouter();
 
   const onSuccess = () => {
+    successToast(`Connection created successfully`);
     router.push({
       pathname: '/setup/[token]/sso-connection',
       query: { token: setupLinkToken },
