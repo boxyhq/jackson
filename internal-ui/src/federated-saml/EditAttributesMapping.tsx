@@ -11,12 +11,12 @@ type Mappings = Pick<SAMLFederationApp, 'mappings'>;
 export const EditAttributesMapping = ({
   app,
   urls,
-  onSuccess,
+  onUpdate,
   onError,
 }: {
-  app: Mappings;
+  app: SAMLFederationApp;
   urls: { patch: string };
-  onSuccess?: (data: SAMLFederationApp) => void;
+  onUpdate?: (data: SAMLFederationApp) => void;
   onError?: (error: Error) => void;
 }) => {
   const { t } = useTranslation('common');
@@ -29,14 +29,14 @@ export const EditAttributesMapping = ({
     onSubmit: async (values) => {
       const rawResponse = await fetch(urls.patch, {
         method: 'PATCH',
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, id: app.id }),
         headers: defaultHeaders,
       });
 
       const response = await rawResponse.json();
 
       if (rawResponse.ok) {
-        onSuccess?.(response.data);
+        onUpdate?.(response.data);
       } else {
         onError?.(response.error);
       }
@@ -64,7 +64,7 @@ export const EditAttributesMapping = ({
             className='btn btn-primary btn-md'
             loading={formik.isSubmitting}
             disabled={!formik.dirty || !formik.isValid}>
-            {t('bui-fs-save-changes')}
+            {t('bui-shared-save-changes')}
           </Button>
         </Card.Footer>
       </Card>

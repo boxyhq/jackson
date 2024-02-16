@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { useFormik } from 'formik';
 import TagsInput from 'react-tagsinput';
 import { Card, Button } from 'react-daisyui';
@@ -22,7 +21,7 @@ export const NewFederatedSAMLApp = ({
   excludeFields,
 }: {
   samlAudience?: string;
-  urls: { post: string; cancel: string };
+  urls: { post: string };
   onSuccess?: (data: SAMLFederationApp) => void;
   onError?: (error: Error) => void;
   onEntityIdGenerated?: (entityId: string) => void;
@@ -78,7 +77,7 @@ export const NewFederatedSAMLApp = ({
       <Card className='p-6 rounded space-y-3'>
         <label className='form-control w-full'>
           <div className='label'>
-            <span className='label-text'>{t('bui-fs-name')}</span>
+            <span className='label-text'>{t('bui-shared-name')}</span>
           </div>
           <input
             type='text'
@@ -92,7 +91,7 @@ export const NewFederatedSAMLApp = ({
         </label>
         <label className='form-control w-full'>
           <div className='label'>
-            <span className='label-text'>{t('bui-fs-tenant')}</span>
+            <span className='label-text'>{t('bui-shared-tenant')}</span>
           </div>
           <input
             type='text'
@@ -107,7 +106,7 @@ export const NewFederatedSAMLApp = ({
         {!excludeFields?.includes('product') && (
           <label className='form-control w-full'>
             <div className='label'>
-              <span className='label-text'>{t('bui-fs-product')}</span>
+              <span className='label-text'>{t('bui-shared-product')}</span>
             </div>
             <input
               type='text'
@@ -194,9 +193,6 @@ export const NewFederatedSAMLApp = ({
           onAttributeMappingsChange={(mappings) => formik.setFieldValue('mappings', mappings)}
         />
         <div className='flex gap-2 justify-end pt-6'>
-          <Link href={urls.cancel} className='btn btn-secondary btn-outline btn-md'>
-            {t('bui-fs-cancel')}
-          </Link>
           <Button
             className='btn btn-primary btn-md'
             loading={formik.isSubmitting}

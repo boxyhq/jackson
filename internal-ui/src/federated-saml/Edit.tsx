@@ -12,12 +12,12 @@ export const Edit = ({
   app,
   urls,
   onError,
-  onSuccess,
+  onUpdate,
   excludeFields,
 }: {
   app: SAMLFederationApp;
   urls: { get: string; patch: string };
-  onSuccess?: (data: SAMLFederationApp) => void;
+  onUpdate?: (data: SAMLFederationApp) => void;
   onError?: (error: Error) => void;
   excludeFields?: 'product'[];
 }) => {
@@ -33,14 +33,14 @@ export const Edit = ({
     onSubmit: async (values) => {
       const rawResponse = await fetch(urls.patch, {
         method: 'PATCH',
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, id: app.id }),
         headers: defaultHeaders,
       });
 
       const response = await rawResponse.json();
 
       if (rawResponse.ok) {
-        onSuccess?.(response.data);
+        onUpdate?.(response.data);
       } else {
         onError?.(response.error);
       }
@@ -56,7 +56,7 @@ export const Edit = ({
               <div className='flex flex-col space-y-3'>
                 <label className='form-control w-full'>
                   <div className='label'>
-                    <span className='label-text'>{t('bui-fs-name')}</span>
+                    <span className='label-text'>{t('bui-shared-name')}</span>
                   </div>
                   <input
                     type='text'
@@ -70,7 +70,7 @@ export const Edit = ({
                 </label>
                 <label className='form-control w-full'>
                   <div className='label'>
-                    <span className='label-text'>{t('bui-fs-tenant')}</span>
+                    <span className='label-text'>{t('bui-shared-tenant')}</span>
                   </div>
                   <input
                     type='text'
@@ -82,7 +82,7 @@ export const Edit = ({
                 {!excludeFields?.includes('product') && (
                   <label className='form-control w-full'>
                     <div className='label'>
-                      <span className='label-text'>{t('bui-fs-product')}</span>
+                      <span className='label-text'>{t('bui-shared-product')}</span>
                     </div>
                     <input
                       type='text'
@@ -117,7 +117,7 @@ export const Edit = ({
                     disabled
                   />
                   <label className='label'>
-                    <span className='label-text-alt'>{t('bui-fs-entity-id-change-restriction')}</span>
+                    <span className='label-text-alt'>{t('bui-fs-entity-id-edit-desc')}</span>
                   </label>
                 </label>
                 <label className='form-control w-full'>
@@ -146,7 +146,7 @@ export const Edit = ({
                 className='btn btn-primary btn-md'
                 loading={formik.isSubmitting}
                 disabled={!formik.dirty || !formik.isValid}>
-                {t('bui-fs-save-changes')}
+                {t('bui-shared-save-changes')}
               </Button>
             </Card.Footer>
           </Card>

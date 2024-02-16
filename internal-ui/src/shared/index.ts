@@ -5,3 +5,8 @@ export { Table } from './Table';
 export { EmptyState } from './EmptyState';
 export { Error } from './Error';
 export { Badge } from './Badge';
+export { PageLayout } from './PageLayout';
+export { Pagination } from './Pagination';
+export { ButtonOutline } from './ButtonOutline';
+export { Modal } from './Modal';
+export { DeleteConfirmationModal } from './DeleteConfirmationModal';

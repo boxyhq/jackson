@@ -1,10 +1,12 @@
 import useSWR from 'swr';
 import fetcher from '../utils/fetcher';
-import { Loading, Table, EmptyState, Error } from '../shared';
+import { Loading, Table, EmptyState, Error, Pagination } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { TableBodyType } from '../shared/Table';
+import { pageLimit } from '../shared/Pagination';
+import { usePaginate } from '../hooks';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 
@@ -16,11 +18,18 @@ export const FederatedSAMLApps = ({
   urls: { get: string };
   excludeFields?: ExcludeFields[];
   onEdit?: (app: SAMLFederationApp) => void;
-  actions?: { text: string; onClick: () => void }[];
 }) => {
   const { t } = useTranslation('common');
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
 
-  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(urls.get, fetcher);
+  let getAppsUrl = `${urls.get}?offset=${paginate.offset}&limit=${pageLimit}`;
+
+  // For DynamoDB
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+  }
+
+  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(getAppsUrl, fetcher);
 
   if (isLoading) {
     return <Loading />;
@@ -34,11 +43,6 @@ export const FederatedSAMLApps = ({
     return null;
   }
 
-  const paginate = {
-    offset: 0,
-    limit: 25,
-  };
-
   const apps = data?.data || [];
   const noApps = apps.length === 0 && paginate.offset === 0;
   const noMoreResults = apps.length === 0 && paginate.offset > 0;
@@ -50,19 +54,19 @@ export const FederatedSAMLApps = ({
   let columns = [
     {
       key: 'name',
-      label: t('bui-fs-name'),
+      label: t('bui-shared-name'),
       wrap: true,
       dataIndex: 'name',
     },
     {
       key: 'tenant',
-      label: t('bui-fs-tenant'),
+      label: t('bui-shared-tenant'),
       wrap: true,
       dataIndex: 'tenant',
     },
     {
       key: 'product',
-      label: t('bui-fs-product'),
+      label: t('bui-shared-product'),
       wrap: true,
       dataIndex: 'product',
     },
@@ -88,13 +92,13 @@ export const FederatedSAMLApps = ({
   });
 
   // Action column & buttons
-  cols.push(t('bui-fs-actions'));
+  cols.push(t('bui-shared-actions'));
 
   body.forEach((row) => {
     row.cells.push({
       actions: [
         {
-          text: t('bui-fs-edit'),
+          text: t('bui-shared-edit'),
           onClick: () => onEdit?.(apps.find((app) => app.id === row.id)!),
           icon: <PencilIcon className='w-5' />,
         },
@@ -102,5 +106,23 @@ export const FederatedSAMLApps = ({
     });
   });
 
-  return <Table noMoreResults={noMoreResults} cols={cols} body={body} />;
+  return (
+    <>
+      <Table noMoreResults={noMoreResults} cols={cols} body={body} />
+      <Pagination
+        itemsCount={apps.length}
+        offset={paginate.offset}
+        onPrevClick={() => {
+          setPaginate({
+            offset: paginate.offset - pageLimit,
+          });
+        }}
+        onNextClick={() => {
+          setPaginate({
+            offset: paginate.offset + pageLimit,
+          });
+        }}
+      />
+    </>
+  );
 };

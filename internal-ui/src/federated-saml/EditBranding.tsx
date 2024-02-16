@@ -10,12 +10,12 @@ type Branding = Pick<SAMLFederationApp, 'logoUrl' | 'faviconUrl' | 'primaryColor
 export const EditBranding = ({
   app,
   urls,
-  onSuccess,
+  onUpdate,
   onError,
 }: {
-  app: Branding;
+  app: SAMLFederationApp;
   urls: { patch: string };
-  onSuccess?: (data: SAMLFederationApp) => void;
+  onUpdate?: (data: SAMLFederationApp) => void;
   onError?: (error: Error) => void;
 }) => {
   const { t } = useTranslation('common');
@@ -30,14 +30,14 @@ export const EditBranding = ({
     onSubmit: async (values) => {
       const rawResponse = await fetch(urls.patch, {
         method: 'PATCH',
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, id: app.id }),
         headers: defaultHeaders,
       });
 
       const response = await rawResponse.json();
 
       if (rawResponse.ok) {
-        onSuccess?.(response.data);
+        onUpdate?.(response.data);
       } else {
         onError?.(response.error);
       }
@@ -49,8 +49,8 @@ export const EditBranding = ({
       <Card>
         <Card.Body>
           <Card.Header>
-            <Card.Title>{t('bui-fs-edit-branding-title')}</Card.Title>
-            <Card.Description>{t('bui-fs-edit-branding-desc')}</Card.Description>
+            <Card.Title>{t('bui-fs-branding-title')}</Card.Title>
+            <Card.Description>{t('bui-fs-branding-desc')}</Card.Description>
           </Card.Header>
           <div className='flex flex-col'>
             <label className='form-control w-full'>
@@ -66,7 +66,7 @@ export const EditBranding = ({
                 onChange={formik.handleChange}
               />
               <label className='label'>
-                <span className='label-text-alt'>{t('bui-fs-favicon-url-desc')}</span>
+                <span className='label-text-alt'>{t('bui-fs-logo-url-desc')}</span>
               </label>
             </label>
             <label className='form-control w-full'>
@@ -112,7 +112,7 @@ export const EditBranding = ({
             className='btn btn-primary btn-md'
             loading={formik.isSubmitting}
             disabled={!formik.dirty || !formik.isValid}>
-            {t('bui-fs-save-changes')}
+            {t('bui-shared-save-changes')}
           </Button>
         </Card.Footer>
       </Card>
