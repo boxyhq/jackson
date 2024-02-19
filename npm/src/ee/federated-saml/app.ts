@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import type {
   Storable,
   JacksonOption,
@@ -13,7 +14,7 @@ import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
-const clientIdPrefix = 'fed_';
+const clientIDPrefix = 'fed_';
 
 type NewAppParams = Pick<
   SAMLFederationApp,
@@ -223,6 +224,11 @@ export class App {
       tenants: _tenants,
       mappings: mappings || [],
     };
+
+    if (type === 'oidc') {
+      app.clientID = `${clientIDPrefix}${id}`;
+      app.clientSecret = crypto.randomBytes(24).toString('hex');
+    }
 
     const indexes = [
       {

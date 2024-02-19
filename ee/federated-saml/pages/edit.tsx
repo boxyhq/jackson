@@ -24,6 +24,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const [loading, setLoading] = useState(false);
   const [app, setApp] = useState<SAMLFederationApp & Omit<AdminPortalBranding, 'companyName'>>({
     id: '',
+    type: 'saml',
     name: '',
     tenant: '',
     product: '',

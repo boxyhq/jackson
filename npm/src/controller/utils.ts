@@ -303,7 +303,7 @@ export const appID = (tenant: string, product: string) => {
 };
 
 export const fedAppID = (tenant: string, product: string, type?: string) => {
-  return appID(tenant, product) + (type === 'oidc' ? '_oidc' : '');
+  return (type === 'oidc' ? 'oidc_' : '') + appID(tenant, product);
 };
 
 // List of well known providers
