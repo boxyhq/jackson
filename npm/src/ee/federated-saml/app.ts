@@ -6,16 +6,18 @@ import type {
   GetByProductParams,
   AppRequestParams,
 } from '../../typings';
-import { appID } from '../../controller/utils';
+import { fedAppID } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
+const clientIdPrefix = 'fed_';
+
 type NewAppParams = Pick<
   SAMLFederationApp,
-  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings'
+  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings' | 'type' | 'redirectUrl'
 > & {
   logoUrl?: string;
   faviconUrl?: string;
@@ -138,6 +140,8 @@ export class App {
    */
   public async create({
     name,
+    type,
+    redirectUrl,
     tenant,
     product,
     acsUrl,
@@ -150,16 +154,25 @@ export class App {
   }: NewAppParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    if (!tenant || !product || !acsUrl || !entityId || !name) {
-      throw new JacksonError(
-        'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
-        400
-      );
+    if (type === 'saml') {
+      if (!tenant || !product || !acsUrl || !entityId || !name) {
+        throw new JacksonError(
+          'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
+          400
+        );
+      }
+    } else {
+      if (!tenant || !product || !redirectUrl || !name) {
+        throw new JacksonError(
+          'Missing required parameters. Required parameters are: name, tenant, product, redirectUrl',
+          400
+        );
+      }
     }
 
     validateTenantAndProduct(tenant, product);
 
-    const id = appID(tenant, product);
+    const id = fedAppID(tenant, product, type);
 
     // Check if an app already exists for the same tenant and product
     const foundApp = await this.store.get(id);
@@ -197,6 +210,8 @@ export class App {
 
     const app: SAMLFederationApp = {
       id,
+      type,
+      redirectUrl,
       name,
       tenant,
       product,
@@ -209,18 +224,21 @@ export class App {
       mappings: mappings || [],
     };
 
-    await this.store.put(
-      id,
-      app,
-      {
-        name: IndexNames.EntityID,
-        value: entityId,
-      },
+    const indexes = [
       {
         name: IndexNames.Product,
         value: product,
-      }
-    );
+      },
+    ];
+
+    if (type !== 'oidc') {
+      indexes.push({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+    }
+
+    await this.store.put(id, app, ...indexes);
 
     return app;
   }
@@ -270,7 +288,7 @@ export class App {
     }
 
     if ('tenant' in params && 'product' in params) {
-      const app = await this.store.get(appID(params.tenant, params.product));
+      const app = await this.store.get(fedAppID(params.tenant, params.product, params.type));
 
       if (!app) {
         throw new JacksonError('SAML Federation app not found', 404);
@@ -419,7 +437,7 @@ export class App {
   public async update(params: Partial<SAMLFederationApp>) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const { id, tenant, product } = params;
+    const { id, tenant, product, type } = params;
 
     if (!id && (!tenant || !product)) {
       throw new JacksonError('Provide either the `id` or `tenant` and `product` to update the app', 400);
@@ -430,7 +448,7 @@ export class App {
     if (id) {
       app = await this.get({ id });
     } else if (tenant && product) {
-      app = await this.get({ tenant, product });
+      app = await this.get({ tenant, product, type });
     }
 
     if (!app) {
@@ -443,6 +461,10 @@ export class App {
 
     if ('name' in params) {
       toUpdate['name'] = params.name;
+    }
+
+    if ('redirectUrl' in params) {
+      toUpdate['redirectUrl'] = params.redirectUrl;
     }
 
     if ('acsUrl' in params) {
@@ -551,7 +573,7 @@ export class App {
     }
 
     if ('tenant' in params && 'product' in params) {
-      const id = appID(params.tenant, params.product);
+      const id = fedAppID(params.tenant, params.product, params.type);
       return await this.store.delete(id);
     }
 

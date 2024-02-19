@@ -9,6 +9,10 @@ export type AttributeMapping = {
 
 export type SAMLFederationApp = {
   id: string;
+  type?: string;
+  clientId?: string;
+  clientSecret?: string;
+  redirectUrl?: string[] | string;
   name: string;
   tenant: string;
   product: string;
@@ -37,4 +41,5 @@ export type AppRequestParams =
   | {
       tenant: string;
       product: string;
+      type?: string;
     };

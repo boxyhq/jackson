@@ -302,6 +302,10 @@ export const appID = (tenant: string, product: string) => {
   return dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
 };
 
+export const fedAppID = (tenant: string, product: string, type?: string) => {
+  return appID(tenant, product) + (type === 'oidc' ? '_oidc' : '');
+};
+
 // List of well known providers
 const wellKnownProviders = {
   'okta.com': 'Okta',

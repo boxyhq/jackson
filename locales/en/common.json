@@ -1,4 +1,5 @@
 {
+  "select_app_type": "Select App Type",
   "entity-id-change-restriction": "You can't change this value once the app is created.",
   "desc-entity-id": "You can't change this value. Delete and create a new app if you need to change it.",
   "actions": "Actions",
