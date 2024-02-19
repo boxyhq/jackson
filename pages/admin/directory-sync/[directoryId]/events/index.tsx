@@ -1,7 +1,6 @@
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast } from '@components/Toaster';
 import Loading from '@components/Loading';
@@ -10,7 +9,6 @@ import { LinkBack } from '@components/LinkBack';
 import { DirectoryWebhookLogs } from '@boxyhq/internal-ui';
 
 const Events: NextPage = () => {
-  const { t } = useTranslation('common');
   const router = useRouter();
 
   const { directoryId } = router.query as { directoryId: string };
