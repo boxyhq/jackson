@@ -1,9 +1,11 @@
-import { useRouter } from 'next/router';
+import type { NextRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 
-export const usePaginate = () => {
-  const router = useRouter();
+// TODO:
+// https://nextjs.org/docs/messages/next-router-not-mounted
+// Accepting router is a temp workaround to handle Router not mounted error
 
+export const usePaginate = (router: NextRouter) => {
   const offset = router.query.offset ? Number(router.query.offset) : 0;
 
   const [paginate, setPaginate] = useState({ offset });

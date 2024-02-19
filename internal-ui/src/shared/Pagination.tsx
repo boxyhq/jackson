@@ -5,6 +5,9 @@ import { ButtonOutline } from './ButtonOutline';
 
 export const pageLimit = 15;
 
+// TODO:
+// Test pagination with DynamoDB
+
 export const Pagination = ({
   itemsCount,
   offset,

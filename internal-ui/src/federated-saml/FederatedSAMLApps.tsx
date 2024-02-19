@@ -1,12 +1,22 @@
 import useSWR from 'swr';
 import fetcher from '../utils/fetcher';
-import { Loading, Table, EmptyState, Error, Pagination } from '../shared';
+import {
+  Loading,
+  Table,
+  EmptyState,
+  Error,
+  Pagination,
+  PageHeader,
+  LinkOutline,
+  LinkPrimary,
+} from '../shared';
 import { useTranslation } from 'next-i18next';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate } from '../hooks';
+import { useRouter } from 'next/router';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 
@@ -18,13 +28,16 @@ export const FederatedSAMLApps = ({
   urls,
   excludeFields,
   onEdit,
+  actions,
 }: {
   urls: { get: string };
   excludeFields?: ExcludeFields[];
   onEdit?: (app: SAMLFederationApp) => void;
+  actions: { newApp: string; idpConfiguration: string };
 }) => {
+  const router = useRouter();
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router);
 
   let getAppsUrl = `${urls.get}?offset=${paginate.offset}&limit=${pageLimit}`;
 
@@ -112,6 +125,17 @@ export const FederatedSAMLApps = ({
 
   return (
     <>
+      <PageHeader
+        title={t('saml_federation_apps')}
+        actions={
+          <>
+            <LinkOutline href={actions.idpConfiguration} target='_blank'>
+              {t('idp_configuration')}
+            </LinkOutline>
+            <LinkPrimary href={actions.newApp}>{t('new_saml_federation_app')}</LinkPrimary>
+          </>
+        }
+      />
       <Table noMoreResults={noMoreResults} cols={cols} body={body} />
       <Pagination
         itemsCount={apps.length}

@@ -47,7 +47,8 @@
     "react-tagsinput": "3.20.3",
     "swr": "2.2.4",
     "formik": "2.4.5",
-    "classnames": "2.5.1"
+    "classnames": "2.5.1",
+    "react-syntax-highlighter": "15.5.0"
   },
   "publishConfig": {
     "main": "./dist/index.js",

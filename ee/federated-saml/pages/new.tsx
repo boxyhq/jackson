@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { LinkBack } from '@components/LinkBack';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
-import { NewFederatedSAMLApp, PageLayout } from '@boxyhq/internal-ui';
+import { NewFederatedSAMLApp } from '@boxyhq/internal-ui';
 
 import 'react-tagsinput/react-tagsinput.css';
 
@@ -19,18 +19,22 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
   }
 
   return (
-    <>
-      <LinkBack href='/admin/federated-saml' />
-      <PageLayout title={t('saml_federation_add_new_app')}>
-        <NewFederatedSAMLApp
-          urls={{ post: '/api/admin/federated-saml' }}
-          onSuccess={(data) => router.replace(`/admin/federated-saml/${data.id}/edit`)}
-          onError={(error) => errorToast(error.message)}
-          samlAudience={samlAudience}
-        />
-      </PageLayout>
-    </>
+    <NewFederatedSAMLApp
+      urls={{ post: '/api/admin/federated-saml' }}
+      onSuccess={(data) => router.replace(`/admin/federated-saml/${data.id}/edit`)}
+      onError={(error) => errorToast(error.message)}
+      samlAudience={samlAudience}
+    />
   );
+
+  // return (
+  //   <>
+  //     <LinkBack href='/admin/federated-saml' />
+  //     <PageLayout title={t('saml_federation_add_new_app')}>
+
+  //     </PageLayout>
+  //   </>
+  // );
 };
 
 export default NewApp;
