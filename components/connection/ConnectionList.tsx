@@ -4,12 +4,6 @@ import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { InputWithCopyButton } from '@components/ClipboardButton';
 import { pageLimit } from '@components/Pagination';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
-import useSWR from 'swr';
-import { fetcher } from '@lib/ui/utils';
-import Loading from '@components/Loading';
-import { errorToast } from '@components/Toaster';
-import type { ApiError, ApiSuccess } from 'types';
 import { ConnectionList } from '@boxyhq/react-ui/sso';
 
 const SSOConnectionList = ({
@@ -24,7 +18,7 @@ const SSOConnectionList = ({
   const { t } = useTranslation('common');
   const router = useRouter();
 
-  const displayTenantProduct = setupLinkToken ? false : true;
+  const isSetupLinkView = setupLinkToken ? true : false;
   const getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
@@ -36,28 +30,6 @@ const SSOConnectionList = ({
     : isSettingsView
       ? `/admin/settings/sso-connection/new`
       : '/admin/sso-connection/new';
-
-  const { data, error, isLoading } = useSWR<
-    ApiSuccess<((SAMLSSORecord | OIDCSSORecord) & { isSystemSSO?: boolean })[]>,
-    ApiError
-  >(getConnectionsUrl, fetcher, { revalidateOnFocus: false });
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
-    errorToast(error.message);
-    return null;
-  }
-
-  const connections = data?.data || [];
-
-  // TODO: Redirect to create a new connection if there are no connections
-  // if (connections && setupLinkToken && connections.length === 0) {
-  //   router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
-  //   return null;
-  // }
 
   return (
     <div>
@@ -91,7 +63,12 @@ const SSOConnectionList = ({
         urls={{
           get: getConnectionsUrl,
         }}
-        cols={!displayTenantProduct ? ['name', 'label', 'provider', 'type', 'status', 'actions'] : undefined}
+        cols={isSetupLinkView ? ['provider', 'type', 'status', 'actions'] : undefined}
+        handleListFetchComplete={(connections) => {
+          if (connections?.length === 0 && setupLinkToken) {
+            router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
+          }
+        }}
         paginate={{
           itemsPerPage: pageLimit,
           handlePageChange: ({ offset }) => {
