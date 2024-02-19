@@ -308,6 +308,7 @@ export class SSOHandler {
         issuer: `${this.opts.samlAudience}`,
         claims: mappedClaims,
         ...certificate,
+        flattenArray: true,
       });
 
       const responseForm = saml.createPostForm(session.requested.acsUrl, [

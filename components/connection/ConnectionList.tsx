@@ -53,10 +53,11 @@ const SSOConnectionList = ({
 
   const connections = data?.data || [];
 
-  if (connections && setupLinkToken && connections.length === 0) {
-    router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
-    return null;
-  }
+  // TODO: Redirect to create a new connection if there are no connections
+  // if (connections && setupLinkToken && connections.length === 0) {
+  //   router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
+  //   return null;
+  // }
 
   return (
     <div>

@@ -14,6 +14,6 @@ patches:
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.18.7
+    newTag: 1.18.9
   - name: boxyhq/mock-saml
     newTag: 1.3.4

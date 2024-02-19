@@ -277,5 +277,6 @@
   "id_token_from_oidc_idp": "ID Token (from OIDC Provider)",
   "access_token_from_oidc_idp": "Access Token (from OIDC Provider)",
   "session_state_from_oidc_idp": "Session State (from OIDC Provider)",
-  "scope_from_op_error": "Scope (from OIDC Provider)"
+  "scope_from_op_error": "Scope (from OIDC Provider)",
+  "sso_connection_created_successfully": "SSO Connection created successfully"
 }

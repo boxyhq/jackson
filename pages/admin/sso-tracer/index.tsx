@@ -6,12 +6,13 @@ import usePaginate from '@lib/ui/hooks/usePaginate';
 import { fetcher } from '@lib/ui/utils';
 import type { ApiSuccess, ApiError } from 'types';
 import type { Trace } from '@boxyhq/saml-jackson';
-import { pageLimit, Pagination, NoMoreResults } from '@components/Pagination';
+import { pageLimit, Pagination } from '@components/Pagination';
 import Loading from '@components/Loading';
 import { errorToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
 import EmptyState from '@components/EmptyState';
 import Link from 'next/link';
+import { Table } from '@components/table/Table';
 
 const SSOTraceViewer: NextPage = () => {
   const { t } = useTranslation('common');
@@ -58,55 +59,57 @@ const SSOTraceViewer: NextPage = () => {
         </>
       ) : (
         <>
-          <div className='rounder border'>
-            <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
-              <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr className='hover:bg-gray-50'>
-                  <th className='px-6 py-3'>{t('trace_id')}</th>
-                  <th className='px-6 py-3'>{t('description')}</th>
-                  <th className='px-6 py-3'>{t('assertion_type')}</th>
-                  <th className='px-6 py-3'>{t('timestamp')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {traces?.map(({ traceId, timestamp, context, error }) => {
-                  return (
-                    <tr
-                      key={traceId}
-                      className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='break-all px-6 py-3'>
-                        <Link
-                          href={`/admin/sso-tracer/${traceId}/inspect`}
-                          className='link-primary link flex'>
-                          {traceId}
-                        </Link>
-                      </td>
-                      <td className='break-all px-6'>{error}</td>
-                      <td className='px-6 py-3'>
-                        {context?.samlResponse ? 'Response' : context?.samlRequest ? 'Request' : '-'}
-                      </td>
-                      <td className='break-all px-6 py-3'>{new Date(timestamp).toLocaleString()}</td>
-                    </tr>
-                  );
-                })}
-                {noMoreResults && <NoMoreResults colSpan={4} />}
-              </tbody>
-            </table>
-            <Pagination
-              itemsCount={traces.length}
-              offset={paginate.offset}
-              onPrevClick={() => {
-                setPaginate({
-                  offset: paginate.offset - pageLimit,
-                });
-              }}
-              onNextClick={() => {
-                setPaginate({
-                  offset: paginate.offset + pageLimit,
-                });
-              }}
-            />
-          </div>
+          <Table
+            noMoreResults={noMoreResults}
+            cols={[t('trace_id'), t('description'), t('assertion_type'), t('timestamp')]}
+            body={traces.map((trace) => {
+              return {
+                id: trace.traceId,
+                cells: [
+                  {
+                    wrap: true,
+                    element: (
+                      <Link
+                        href={`/admin/sso-tracer/${trace.traceId}/inspect`}
+                        className='link-primary link flex'>
+                        {trace.traceId}
+                      </Link>
+                    ),
+                  },
+                  {
+                    wrap: true,
+                    text: trace.error,
+                  },
+                  {
+                    wrap: true,
+                    text: trace.context?.samlResponse
+                      ? 'Response'
+                      : trace?.context.samlRequest
+                        ? 'Request'
+                        : '-',
+                  },
+                  {
+                    wrap: true,
+                    text: new Date(trace.timestamp).toLocaleString(),
+                  },
+                ],
+              };
+            })}></Table>
+
+          <Pagination
+            itemsCount={traces.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
         </>
       )}
     </>
