@@ -12,6 +12,7 @@
     "declaration": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "experimentalDecorators": true,
   },
   "include": ["./src/**/*"],
   "exclude": ["dist", "build", "node_modules"],

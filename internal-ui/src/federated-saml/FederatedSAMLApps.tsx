@@ -10,6 +10,10 @@ import { usePaginate } from '../hooks';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 
+// TODO:
+// Fix pagination to work with DynamoDB
+// Fix issue with useRouter
+
 export const FederatedSAMLApps = ({
   urls,
   excludeFields,
