@@ -155,17 +155,17 @@ export class App {
   }: NewAppParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    if (type === 'saml') {
-      if (!tenant || !product || !acsUrl || !entityId || !name) {
+    if (type === 'oidc') {
+      if (!tenant || !product || !redirectUrl || !name) {
         throw new JacksonError(
-          'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
+          'Missing required parameters. Required parameters are: name, tenant, product, redirectUrl',
           400
         );
       }
     } else {
-      if (!tenant || !product || !redirectUrl || !name) {
+      if (!tenant || !product || !acsUrl || !entityId || !name) {
         throw new JacksonError(
-          'Missing required parameters. Required parameters are: name, tenant, product, redirectUrl',
+          'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
           400
         );
       }

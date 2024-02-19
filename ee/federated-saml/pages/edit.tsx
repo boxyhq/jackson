@@ -37,6 +37,9 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     mappings: [],
   });
 
+  const connectionIsSAML = app.type === 'saml';
+  const connectionIsOIDC = app.type === 'oidc';
+
   const { id } = router.query as { id: string };
 
   const { data, error, isLoading, mutate } = useSWR<ApiSuccess<SAMLFederationApp>, ApiError>(
@@ -129,15 +132,38 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
               </label>
               <input type='text' className='input-bordered input' defaultValue={app.product} disabled />
             </div>
-            <div className='form-control w-full'>
-              <label className='label'>
-                <span className='label-text'>{t('entity_id')}</span>
-              </label>
-              <input type='url' className='input-bordered input' defaultValue={app.entityId} disabled />
-              <label className='label'>
-                <span className='label-text-alt'>{t('desc-entity-id')}</span>
-              </label>
-            </div>
+            {connectionIsOIDC && (
+              <div className='form-control w-full'>
+                <label className='label'>
+                  <span className='label-text'>{t('client_id')}</span>
+                </label>
+                <input type='text' className='input-bordered input' defaultValue={app.clientID} disabled />
+              </div>
+            )}
+            {connectionIsOIDC && (
+              <div className='form-control w-full'>
+                <label className='label'>
+                  <span className='label-text'>{t('client_secret')}</span>
+                </label>
+                <input
+                  type='text'
+                  className='input-bordered input'
+                  defaultValue={app.clientSecret}
+                  disabled
+                />
+              </div>
+            )}
+            {connectionIsSAML && (
+              <div className='form-control w-full'>
+                <label className='label'>
+                  <span className='label-text'>{t('entity_id')}</span>
+                </label>
+                <input type='url' className='input-bordered input' defaultValue={app.entityId} disabled />
+                <label className='label'>
+                  <span className='label-text-alt'>{t('desc-entity-id')}</span>
+                </label>
+              </div>
+            )}
             <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('name')}</span>
@@ -151,19 +177,21 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 value={app.name}
               />
             </div>
-            <div className='form-control w-full'>
-              <label className='label'>
-                <span className='label-text'>{t('acs_url')}</span>
-              </label>
-              <input
-                type='url'
-                id='acsUrl'
-                className='input-bordered input'
-                required
-                onChange={onChange}
-                value={app.acsUrl}
-              />
-            </div>
+            {connectionIsSAML && (
+              <div className='form-control w-full'>
+                <label className='label'>
+                  <span className='label-text'>{t('acs_url')}</span>
+                </label>
+                <input
+                  type='url'
+                  id='acsUrl'
+                  className='input-bordered input'
+                  required
+                  onChange={onChange}
+                  value={app.acsUrl}
+                />
+              </div>
+            )}
             <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('tenants')}</span>
