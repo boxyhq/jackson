@@ -245,6 +245,7 @@
   "access_token_from_oidc_idp": "Access Token (from OIDC Provider)",
   "session_state_from_oidc_idp": "Session State (from OIDC Provider)",
   "scope_from_op_error": "Scope (from OIDC Provider)",
+  "sso_connection_created_successfully": "SSO Connection created successfully",
   "bui-wku-heading": "Here are the set of URIs you would need access to:",
   "bui-wku-idp-configuration-links": "Identity Provider Configuration links",
   "bui-wku-desc-idp-configuration": "Links for SAML/OIDC IdP setup",
