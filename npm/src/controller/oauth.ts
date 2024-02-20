@@ -95,6 +95,7 @@ export class OAuthController implements IOAuthController {
     let requestedScopes: string[] | undefined;
     let requestedOIDCFlow: boolean | undefined;
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
+    let fedApp: SAMLFederationApp | undefined;
 
     try {
       const tenant = 'tenant' in body ? body.tenant : undefined;
@@ -113,8 +114,6 @@ export class OAuthController implements IOAuthController {
 
       requestedScopes = getScopeValues(scope);
       requestedOIDCFlow = requestedScopes.includes('openid');
-
-      let app: SAMLFederationApp | undefined;
 
       if (tenant && product) {
         const response = await this.ssoHandler.resolveConnection({
@@ -177,19 +176,19 @@ export class OAuthController implements IOAuthController {
           // client_id is not encoded, so we look for the connection using the client_id
           // First we check if it's a federated connection
           if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
-            app = await this.samlFedApp.get({
+            fedApp = await this.samlFedApp.get({
               id: client_id.replace(clientIDFederatedPrefix, ''),
             });
 
             const response = await this.ssoHandler.resolveConnection({
-              tenant: app.tenant,
-              product: app.product,
+              tenant: fedApp.tenant,
+              product: fedApp.product,
               idp_hint,
               authFlow: 'oauth',
               originalParams: { ...body },
-              tenants: app.tenants,
-              samlFedAppId: app.id,
-              fedType: app.type,
+              tenants: fedApp.tenants,
+              samlFedAppId: fedApp.id,
+              fedType: fedApp.type,
             });
 
             if ('redirectUrl' in response) {
@@ -219,7 +218,7 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
-        if (!allowed.redirect(redirect_uri, app?.redirectUrl as string[])) {
+        if (!allowed.redirect(redirect_uri, fedApp?.redirectUrl as string[])) {
           throw new JacksonError('Redirect URL is not allowed.', 403);
         }
       }
@@ -456,6 +455,7 @@ export class OAuthController implements IOAuthController {
         code_challenge,
         code_challenge_method,
         requested,
+        oidcFederated: fedApp ? { redirectUrl: fedApp.redirectUrl, id: fedApp.id } : undefined,
       };
       await this.sessionStore.put(
         sessionId,
@@ -534,6 +534,7 @@ export class OAuthController implements IOAuthController {
     let issuer: string | undefined;
     let isIdPFlow: boolean | undefined;
     let isSAMLFederated: boolean | undefined;
+    let isOIDCFederated: boolean | undefined;
     let validateOpts: ValidateOption;
     let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
@@ -575,6 +576,7 @@ export class OAuthController implements IOAuthController {
       }
 
       isSAMLFederated = session && 'samlFederated' in session;
+      isOIDCFederated = session && 'oidcFederated' in session;
       const isSPFlow = !isIdPFlow && !isSAMLFederated;
 
       // IdP initiated SSO flow
@@ -603,10 +605,11 @@ export class OAuthController implements IOAuthController {
 
       // SP initiated SSO flow
       // Resolve if there are multiple matches for SP login
-      if (isSPFlow || isSAMLFederated) {
+      if (isSPFlow || isSAMLFederated || isOIDCFederated) {
         connection = connections.filter((c) => {
           return (
             c.clientID === session.requested.client_id ||
+            c.clientID === session.requested.idp_hint ||
             (c.tenant === session.requested.tenant && c.product === session.requested.product)
           );
         })[0];
@@ -621,7 +624,13 @@ export class OAuthController implements IOAuthController {
         session.redirect_uri &&
         !allowed.redirect(session.redirect_uri, connection.redirectUrl as string[])
       ) {
-        throw new JacksonError('Redirect URL is not allowed.', 403);
+        if (isOIDCFederated) {
+          if (!allowed.redirect(session.redirect_uri, session.oidcFederated?.redirectUrl as string[])) {
+            throw new JacksonError('Redirect URL is not allowed.', 403);
+          }
+        } else {
+          throw new JacksonError('Redirect URL is not allowed.', 403);
+        }
       }
 
       const { privateKey } = await getDefaultCertificate();
