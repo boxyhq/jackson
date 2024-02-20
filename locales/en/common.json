@@ -322,7 +322,7 @@
   "bui-dsync-webhook-secret": "Webhook Secret",
   "bui-dsync-scim-endpoint": "SCIM Endpoint",
   "bui-dsync-scim-token": "SCIM Token",
-  "bui-dsync-google-auth-url": "Google Auth URL",
+  "bui-dsync-google-auth-url": "The URL that you will need to authorize the application to access your Google Directory.",
   "bui-dsync-directory": "Directory",
   "bui-dsync-users": "Users",
   "bui-dsync-groups": "Groups",
