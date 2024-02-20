@@ -83,7 +83,7 @@ export const DirectoryUsers = ({
     },
     {
       key: 'actions',
-      label: t('bui-shared-actions'),
+      label: t('bui-dsync-actions'),
       wrap: true,
       dataIndex: null,
     },

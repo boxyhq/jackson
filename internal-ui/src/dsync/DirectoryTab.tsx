@@ -12,22 +12,22 @@ export const DirectoryTab = ({ activeTab, baseUrl }: { activeTab: Tabs; baseUrl:
 
   const menus = [
     {
-      name: t('directory'),
+      name: t('bui-dsync-directory'),
       href: baseUrl,
       active: activeTab === 'directory',
     },
     {
-      name: t('users'),
+      name: t('bui-dsync-users'),
       href: `${baseUrl}/users`,
       active: activeTab === 'users',
     },
     {
-      name: t('groups'),
+      name: t('bui-dsync-groups'),
       href: `${baseUrl}/groups`,
       active: activeTab === 'groups',
     },
     {
-      name: t('webhook_events'),
+      name: t('bui-dsync-webhook-events'),
       href: `${baseUrl}/events`,
       active: activeTab === 'events',
     },

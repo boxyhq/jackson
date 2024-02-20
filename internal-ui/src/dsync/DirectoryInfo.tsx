@@ -36,31 +36,31 @@ export const DirectoryInfo = ({
       <div className='my-3 rounded border'>
         <dl className='divide-y'>
           <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-            <dt className='text-sm font-medium text-gray-500'>{t('directory_id')}</dt>
+            <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-directory-id')}</dt>
             <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.id}</dd>
           </div>
           {!excludeFields.includes('tenant') && (
             <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='text-sm font-medium text-gray-500'>{t('tenant')}</dt>
+              <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-tenant')}</dt>
               <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.tenant}</dd>
             </div>
           )}
           {!excludeFields.includes('product') && (
             <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='text-sm font-medium text-gray-500'>{t('product')}</dt>
+              <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-product')}</dt>
               <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.product}</dd>
             </div>
           )}
           {!excludeFields.includes('webhook') && (
             <>
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                <dt className='text-sm font-medium text-gray-500'>{t('webhook_endpoint')}</dt>
+                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-webhook-endpoint')}</dt>
                 <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                   {directory.webhook.endpoint || '-'}
                 </dd>
               </div>
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                <dt className='text-sm font-medium text-gray-500'>{t('webhook_secret')}</dt>
+                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-webhook-secret')}</dt>
                 <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                   {directory.webhook.secret || '-'}
                 </dd>
@@ -72,10 +72,13 @@ export const DirectoryInfo = ({
       {directory.scim.endpoint && directory.scim.secret && (
         <div className='mt-4 space-y-4 rounded border p-6'>
           <div className='form-control'>
-            <InputWithCopyButton text={directory.scim.endpoint as string} label={t('scim_endpoint')} />
+            <InputWithCopyButton
+              text={directory.scim.endpoint as string}
+              label={t('bui-dsync-scim-endpoint')}
+            />
           </div>
           <div className='form-control'>
-            <InputWithCopyButton text={directory.scim.secret} label={t('scim_token')} />
+            <InputWithCopyButton text={directory.scim.secret} label={t('bui-dsync-scim-token')} />
           </div>
         </div>
       )}
@@ -83,7 +86,7 @@ export const DirectoryInfo = ({
         <div className='form-control mt-10'>
           <InputWithCopyButton
             text={`${urls.googleAuth}?directoryId=${directory.id}`}
-            label={t('dsync_google_auth_url')}
+            label={t('bui-dsync-google-auth-url')}
           />
         </div>
       )}
