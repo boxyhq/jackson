@@ -35,16 +35,20 @@ const DSyncDirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => 
           get: getDirectoriesUrl,
         }}
         cols={isSetupLinkView ? ['name', 'type', 'status', 'actions'] : undefined}
-        paginate={{
-          itemsPerPage: pageLimit,
-          handlePageChange: ({ offset }) => {
-            const currentOffset = router.query.offset;
-            if (currentOffset !== `${offset}`) {
-              router.query.offset = `${offset}`;
-              router.push(router);
-            }
-          },
-        }}
+        paginate={
+          !isSetupLinkView
+            ? {
+                itemsPerPage: pageLimit,
+                handlePageChange: ({ offset }) => {
+                  const currentOffset = router.query.offset;
+                  if (currentOffset !== `${offset}`) {
+                    router.query.offset = `${offset}`;
+                    router.push(router);
+                  }
+                },
+              }
+            : undefined
+        }
         handleActionClick={(action: 'view' | 'edit', directory: any) => {
           if (action === 'view') {
             router.push(

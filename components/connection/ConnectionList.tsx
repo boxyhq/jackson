@@ -69,16 +69,20 @@ const SSOConnectionList = ({
             router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
           }
         }}
-        paginate={{
-          itemsPerPage: pageLimit,
-          handlePageChange: ({ offset }) => {
-            const currentOffset = router.query.offset;
-            if (currentOffset !== `${offset}`) {
-              router.query.offset = `${offset}`;
-              router.push(router);
-            }
-          },
-        }}
+        paginate={
+          !isSetupLinkView
+            ? {
+                itemsPerPage: pageLimit,
+                handlePageChange: ({ offset }) => {
+                  const currentOffset = router.query.offset;
+                  if (currentOffset !== `${offset}`) {
+                    router.query.offset = `${offset}`;
+                    router.push(router);
+                  }
+                },
+              }
+            : undefined
+        }
         handleActionClick={(action: 'edit', payload: any) => {
           const isSystemSSO = payload?.isSystemSSO;
           router.push(
