@@ -4,7 +4,7 @@ import type { NextRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import type { WebhookEventLog } from '@boxyhq/saml-jackson';
-import { fetcher } from '../utils';
+import { fetcher, addQueryParamsToPath } from '../utils';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
 import { TableBodyType } from '../shared/Table';
@@ -38,12 +38,17 @@ export const DirectoryWebhookLogs = ({
   const [delModalVisible, setDelModalVisible] = useState(false);
   const { paginate, setPaginate, pageTokenMap } = usePaginate(router);
 
-  let getUrl = `${urls.getEvents}?offset=${paginate.offset}&limit=${pageLimit}`;
+  const params = {
+    offset: paginate.offset,
+    limit: pageLimit,
+  };
 
   // For DynamoDB
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
-    getUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+    params['pageToken'] = pageTokenMap[paginate.offset - pageLimit];
   }
+
+  const getUrl = addQueryParamsToPath(urls.getEvents, params);
 
   const { directory, isLoadingDirectory, directoryError } = useDirectory(urls.getDirectory);
   const { data, isLoading, error } = useSWR<{ data: WebhookEventLog[] }>(getUrl, fetcher);

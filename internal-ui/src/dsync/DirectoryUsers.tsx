@@ -33,8 +33,6 @@ export const DirectoryUsers = ({
 
   const getUrl = addQueryParamsToPath(urls.getUsers, params);
 
-  console.log('getUrl', getUrl);
-
   const { directory, isLoadingDirectory, directoryError } = useDirectory(urls.getDirectory);
   const { data, isLoading, error } = useSWR<{ data: User[] }>(getUrl, fetcher);
 
