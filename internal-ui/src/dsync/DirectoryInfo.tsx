@@ -29,8 +29,6 @@ export const DirectoryInfo = ({
     return null;
   }
 
-  const displayWebhook = directory.webhook.endpoint && directory.webhook.secret;
-
   return (
     <div className='py-2'>
       <PageHeader title={directory.name} />
@@ -58,13 +56,13 @@ export const DirectoryInfo = ({
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
                 <dt className='text-sm font-medium text-gray-500'>{t('webhook_endpoint')}</dt>
                 <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                  {directory.webhook.endpoint}
+                  {directory.webhook.endpoint || '-'}
                 </dd>
               </div>
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
                 <dt className='text-sm font-medium text-gray-500'>{t('webhook_secret')}</dt>
                 <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                  {directory.webhook.secret}
+                  {directory.webhook.secret || '-'}
                 </dd>
               </div>
             </>

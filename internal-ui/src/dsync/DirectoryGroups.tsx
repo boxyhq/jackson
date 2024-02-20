@@ -56,7 +56,7 @@ export const DirectoryGroups = ({
   const noGroups = groups.length === 0 && paginate.offset === 0;
   const noMoreResults = groups.length === 0 && paginate.offset > 0;
 
-  let columns = [
+  const columns = [
     {
       key: 'name',
       label: t('bui-dsync-name'),
