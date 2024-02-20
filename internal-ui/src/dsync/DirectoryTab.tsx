@@ -7,28 +7,28 @@ import { useTranslation } from 'next-i18next';
 
 type Tabs = 'directory' | 'users' | 'groups' | 'events';
 
-export const DirectoryTab = ({ directoryId, activeTab }: { directoryId: string; activeTab: Tabs }) => {
+export const DirectoryTab = ({ activeTab, baseUrl }: { activeTab: Tabs; baseUrl: string }) => {
   const { t } = useTranslation('common');
 
   const menus = [
     {
       name: t('directory'),
-      href: `/admin/directory-sync/${directoryId}`,
+      href: baseUrl,
       active: activeTab === 'directory',
     },
     {
       name: t('users'),
-      href: `/admin/directory-sync/${directoryId}/users`,
+      href: `${baseUrl}/users`,
       active: activeTab === 'users',
     },
     {
       name: t('groups'),
-      href: `/admin/directory-sync/${directoryId}/groups`,
+      href: `${baseUrl}/groups`,
       active: activeTab === 'groups',
     },
     {
       name: t('webhook_events'),
-      href: `/admin/directory-sync/${directoryId}/events`,
+      href: `${baseUrl}/events`,
       active: activeTab === 'events',
     },
   ];

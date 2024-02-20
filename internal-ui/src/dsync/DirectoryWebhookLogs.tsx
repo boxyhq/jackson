@@ -1,33 +1,41 @@
 import useSWR from 'swr';
-import fetcher from '../utils/fetcher';
-import { Loading, Table, EmptyState, Error, Pagination, PageHeader } from '../shared';
-import { useTranslation } from 'next-i18next';
-import type { WebhookEventLog } from '@boxyhq/saml-jackson';
-import { EyeIcon } from '@heroicons/react/24/outline';
-import { TableBodyType } from '../shared/Table';
-import { pageLimit } from '../shared/Pagination';
-import { usePaginate } from '../hooks';
-import { DirectoryTab } from './DirectoryTab';
-import type { NextRouter } from 'next/router';
 import { useEffect } from 'react';
-import { useDirectory } from '../hooks';
+import type { NextRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
+import { EyeIcon } from '@heroicons/react/24/outline';
+import type { WebhookEventLog } from '@boxyhq/saml-jackson';
+
+import fetcher from '../utils/fetcher';
+import { DirectoryTab } from '../dsync';
+import { usePaginate, useDirectory } from '../hooks';
+import {
+  Loading,
+  Table,
+  EmptyState,
+  Error,
+  Pagination,
+  PageHeader,
+  TableBodyType,
+  pageLimit,
+} from '../shared';
 
 // TODO:
 // Button to delete logs
+// onEdit -> onView
 
 export const DirectoryWebhookLogs = ({
   urls,
   onEdit,
   router,
 }: {
-  urls: { get: string; getDirectory: string };
+  urls: { getEvents: string; getDirectory: string; tabBase: string };
   onEdit?: (event: WebhookEventLog) => void;
   router: NextRouter;
 }) => {
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router);
 
-  let getUrl = `${urls.get}?offset=${paginate.offset}&limit=${pageLimit}`;
+  let getUrl = `${urls.getEvents}?offset=${paginate.offset}&limit=${pageLimit}`;
 
   // For DynamoDB
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
@@ -60,10 +68,6 @@ export const DirectoryWebhookLogs = ({
   const events = data?.data || [];
   const noEvents = events.length === 0 && paginate.offset === 0;
   const noMoreResults = events.length === 0 && paginate.offset > 0;
-
-  if (noEvents) {
-    return <EmptyState title={t('bui-dsync-no-events')} />;
-  }
 
   let columns = [
     {
@@ -132,22 +136,28 @@ export const DirectoryWebhookLogs = ({
   return (
     <div className='py-2'>
       <PageHeader title={directory.name} />
-      <DirectoryTab directoryId='hello' activeTab='events' />
-      <Table noMoreResults={noMoreResults} cols={cols} body={body} />
-      <Pagination
-        itemsCount={events.length}
-        offset={paginate.offset}
-        onPrevClick={() => {
-          setPaginate({
-            offset: paginate.offset - pageLimit,
-          });
-        }}
-        onNextClick={() => {
-          setPaginate({
-            offset: paginate.offset + pageLimit,
-          });
-        }}
-      />
+      <DirectoryTab activeTab='events' baseUrl={urls.tabBase} />
+      {noEvents ? (
+        <EmptyState title={t('bui-dsync-no-events')} />
+      ) : (
+        <>
+          <Table noMoreResults={noMoreResults} cols={cols} body={body} />
+          <Pagination
+            itemsCount={events.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };

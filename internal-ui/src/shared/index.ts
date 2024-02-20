@@ -13,3 +13,5 @@ export { PageHeader } from './PageHeader';
 export { LinkOutline } from './LinkOutline';
 export { LinkPrimary } from './LinkPrimary';
 export { LinkBack } from './LinkBack';
+export { TableBodyType } from './Table';
+export { pageLimit } from './Pagination';

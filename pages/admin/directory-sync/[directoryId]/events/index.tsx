@@ -1,34 +1,15 @@
-import type { NextPage, GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useTranslation } from 'next-i18next';
+import type { NextPage, GetServerSidePropsContext } from 'next';
+import { DirectoryWebhookLogs, LinkBack } from '@boxyhq/internal-ui';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { errorToast } from '@components/Toaster';
-import Loading from '@components/Loading';
-import useDirectory from '@lib/ui/hooks/useDirectory';
-import { LinkBack } from '@components/LinkBack';
-import { DirectoryWebhookLogs } from '@boxyhq/internal-ui';
 
 const Events: NextPage = () => {
-  const { t } = useTranslation('common');
   const router = useRouter();
 
-  const { directoryId } = router.query as { directoryId: string };
-
-  const { directory, isLoading, error } = useDirectory(directoryId);
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
-    errorToast(error.message);
-    return null;
-  }
-
-  if (!directory) {
-    return null;
-  }
+  const { directoryId } = router.query as {
+    directoryId: string;
+  };
 
   // const clearEvents = async () => {
   //   setLoading(true);
@@ -47,8 +28,9 @@ const Events: NextPage = () => {
       <LinkBack href='/admin/directory-sync' />
       <DirectoryWebhookLogs
         urls={{
-          get: `/api/admin/directory-sync/${directoryId}/events`,
+          getEvents: `/api/admin/directory-sync/${directoryId}/events`,
           getDirectory: `/api/admin/directory-sync/${directoryId}`,
+          tabBase: `/admin/directory-sync/${directoryId}`,
         }}
         onEdit={(event) => router.push(`/admin/directory-sync/${directoryId}/events/${event.id}`)}
         router={router}
