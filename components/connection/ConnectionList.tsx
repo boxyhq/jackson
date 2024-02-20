@@ -22,13 +22,13 @@ const SSOConnectionList = ({
   const getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
-      ? `/api/admin/connections?isSystemSSO`
-      : `/api/admin/connections`;
+      ? '/api/admin/connections?isSystemSSO'
+      : '/api/admin/connections';
 
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`
     : isSettingsView
-      ? `/admin/settings/sso-connection/new`
+      ? '/admin/settings/sso-connection/new'
       : '/admin/sso-connection/new';
 
   return (
