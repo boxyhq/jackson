@@ -7,14 +7,12 @@ import type {
   GetByProductParams,
   AppRequestParams,
 } from '../../typings';
-import { fedAppID } from '../../controller/utils';
+import { fedAppID, clientIDFederatedPrefix } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
-
-const clientIDPrefix = 'fed_';
 
 type NewAppParams = Pick<
   SAMLFederationApp,
@@ -226,7 +224,7 @@ export class App {
     };
 
     if (type === 'oidc') {
-      app.clientID = `${clientIDPrefix}${id}`;
+      app.clientID = `${clientIDFederatedPrefix}${id}`;
       app.clientSecret = crypto.randomBytes(24).toString('hex');
     }
 

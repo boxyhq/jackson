@@ -5,6 +5,7 @@ import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
 import { TokenSet, errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
+import { clientIDFederatedPrefix, clientIDOIDCPrefix } from './utils';
 
 import type {
   IOAuthController,
@@ -43,6 +44,7 @@ import { getDefaultCertificate } from '../saml/x509';
 import { SSOHandler } from './sso-handler';
 import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
+import { App } from '../ee/federated-saml/app';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -54,14 +56,16 @@ export class OAuthController implements IOAuthController {
   private ssoTracer: SSOTracerInstance;
   private opts: JacksonOption;
   private ssoHandler: SSOHandler;
+  private samlFedApp: App;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTracer, opts }) {
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTracer, opts, samlFedApp }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
     this.ssoTracer = ssoTracer;
     this.opts = opts;
+    this.samlFedApp = samlFedApp;
 
     this.ssoHandler = new SSOHandler({
       connection: connectionStore,
@@ -167,10 +171,43 @@ export class OAuthController implements IOAuthController {
             connection = response.connection;
           }
         } else {
-          connection = await this.connectionStore.get(client_id);
-          if (connection) {
-            requestedTenant = connection.tenant;
-            requestedProduct = connection.product;
+          // client_id is not encoded, so we look for the connection using the client_id
+          // First we check if it's a federated connection
+          if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
+            const app = await this.samlFedApp.get({
+              id: client_id.replace(clientIDFederatedPrefix, ''),
+            });
+
+            requestedTenant = app.tenant;
+            requestedProduct = app.product;
+
+            const response = await this.ssoHandler.resolveConnection({
+              tenant: app.tenant,
+              product: app.product,
+              idp_hint,
+              authFlow: 'oauth',
+              originalParams: { ...body },
+              tenants: app.tenants,
+              samlFedAppId: app.id,
+              fedType: app.type,
+            });
+
+            if ('redirectUrl' in response) {
+              return {
+                redirect_url: response.redirectUrl,
+              };
+            }
+
+            if ('connection' in response) {
+              connection = response.connection;
+            }
+          } else {
+            // If it's not a federated connection, we look for the connection using the client_id
+            connection = await this.connectionStore.get(client_id);
+            if (connection) {
+              requestedTenant = connection.tenant;
+              requestedProduct = connection.product;
+            }
           }
         }
       } else {

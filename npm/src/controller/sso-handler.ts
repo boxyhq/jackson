@@ -46,6 +46,7 @@ export class SSOHandler {
     entityId?: string;
     idp_hint?: string;
     samlFedAppId?: string;
+    fedType?: string;
     tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
     | {
@@ -67,9 +68,22 @@ export class SSOHandler {
       entityId,
       tenants,
       samlFedAppId = '',
+      fedType = '',
     } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
+    const noSSOConnectionErrMessage = 'No SSO connection found.';
+
+    // If an IdP is specified, find the connection for that IdP
+    if (idp_hint) {
+      const connection = await this.connection.get(idp_hint);
+
+      if (!connection) {
+        throw new JacksonError(noSSOConnectionErrMessage, 404);
+      }
+
+      return { connection };
+    }
 
     // Find SAML connections for the app
     if (tenants && tenants.length > 0 && product) {
@@ -99,21 +113,8 @@ export class SSOHandler {
       connections = result.data;
     }
 
-    const noSSOConnectionErrMessage = 'No SSO connection found.';
-
     if (!connections || connections.length === 0) {
       throw new JacksonError(noSSOConnectionErrMessage, 404);
-    }
-
-    // If an IdP is specified, find the connection for that IdP
-    if (idp_hint) {
-      const connection = connections.find((c) => c.clientID === idp_hint);
-
-      if (!connection) {
-        throw new JacksonError(noSSOConnectionErrMessage, 404);
-      }
-
-      return { connection };
     }
 
     // If more than one, redirect to the connection selection page
@@ -127,6 +128,7 @@ export class SSOHandler {
           product,
           authFlow: 'sp-initiated',
           samlFedAppId,
+          fedType,
           ...originalParams,
         });
 

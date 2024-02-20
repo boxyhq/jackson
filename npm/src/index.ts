@@ -107,6 +107,10 @@ export const controllers = async (
   // Create default certificate if it doesn't exist.
   await x509.init(certificateStore, opts);
 
+  // Enterprise Features
+  const samlFederatedController = await initFederatedSAML({ db, opts, ssoTracer });
+  const brandingController = new BrandingController({ store: settingsStore, opts });
+
   const oauthController = new OAuthController({
     connectionStore,
     sessionStore,
@@ -114,6 +118,7 @@ export const controllers = async (
     tokenStore,
     ssoTracer,
     opts,
+    samlFedApp: samlFederatedController.app,
   });
 
   const logoutController = new LogoutController({
@@ -125,10 +130,6 @@ export const controllers = async (
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSSOConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts, eventController });
-
-  // Enterprise Features
-  const samlFederatedController = await initFederatedSAML({ db, opts, ssoTracer });
-  const brandingController = new BrandingController({ store: settingsStore, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
