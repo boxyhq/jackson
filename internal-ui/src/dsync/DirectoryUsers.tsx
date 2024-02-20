@@ -3,7 +3,7 @@ import type { NextRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import type { User } from '@boxyhq/saml-jackson';
-import { fetcher } from '../utils';
+import { addQueryParamsToPath, fetcher } from '../utils';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
 import { TableBodyType } from '../shared/Table';
@@ -21,12 +21,19 @@ export const DirectoryUsers = ({
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap } = usePaginate(router);
 
-  let getUrl = `${urls.getUsers}?offset=${paginate.offset}&limit=${pageLimit}`;
+  const params = {
+    offset: paginate.offset,
+    limit: pageLimit,
+  };
 
   // For DynamoDB
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
-    getUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+    params['pageToken'] = pageTokenMap[paginate.offset - pageLimit];
   }
+
+  const getUrl = addQueryParamsToPath(urls.getUsers, params);
+
+  console.log('getUrl', getUrl);
 
   const { directory, isLoadingDirectory, directoryError } = useDirectory(urls.getDirectory);
   const { data, isLoading, error } = useSWR<{ data: User[] }>(getUrl, fetcher);

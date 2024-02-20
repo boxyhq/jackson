@@ -31,3 +31,15 @@ export const fetcher = async (url: string, queryParams = '') => {
 
   return resContent;
 };
+
+export const addQueryParamsToPath = (path: string, queryParams: Record<string, any>) => {
+  const hasQuery = path.includes('?');
+
+  const queryString = Object.keys(queryParams)
+    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
+    .join('&');
+
+  const newPath = hasQuery ? `${path}&${queryString}` : `${path}?${queryString}`;
+
+  return newPath;
+};
