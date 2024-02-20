@@ -12,7 +12,7 @@ const NewSSOConnection: NextPage<Props> = ({ adminPortalSSODefaults }) => {
   return <CreateConnection isSettingsView adminPortalSSODefaults={adminPortalSSODefaults} />;
 };
 
-export async function getStaticProps({ locale }: GetServerSidePropsContext) {
+export async function getServerSideProps({ locale }: GetServerSidePropsContext) {
   return {
     props: {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
