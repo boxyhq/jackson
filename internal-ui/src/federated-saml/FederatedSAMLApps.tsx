@@ -36,7 +36,7 @@ export const FederatedSAMLApps = ({
 }) => {
   const router = useRouter();
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router);
+  const { paginate, setPaginate, pageTokenMap } = usePaginate(router);
 
   let getAppsUrl = `${urls.getApps}?offset=${paginate.offset}&limit=${pageLimit}`;
 

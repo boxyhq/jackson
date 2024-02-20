@@ -47,7 +47,7 @@ export const DirectoryUsers = ({
   const noUsers = users.length === 0 && paginate.offset === 0;
   const noMoreResults = users.length === 0 && paginate.offset > 0;
 
-  let columns = [
+  const columns = [
     {
       key: 'first_name',
       label: t('bui-dsync-first-name'),
