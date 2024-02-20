@@ -21,6 +21,7 @@ import type {
   SSOTracerInstance,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
+  SAMLFederationApp,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -113,6 +114,8 @@ export class OAuthController implements IOAuthController {
       requestedScopes = getScopeValues(scope);
       requestedOIDCFlow = requestedScopes.includes('openid');
 
+      let app: SAMLFederationApp | undefined;
+
       if (tenant && product) {
         const response = await this.ssoHandler.resolveConnection({
           tenant,
@@ -174,12 +177,9 @@ export class OAuthController implements IOAuthController {
           // client_id is not encoded, so we look for the connection using the client_id
           // First we check if it's a federated connection
           if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
-            const app = await this.samlFedApp.get({
+            app = await this.samlFedApp.get({
               id: client_id.replace(clientIDFederatedPrefix, ''),
             });
-
-            requestedTenant = app.tenant;
-            requestedProduct = app.product;
 
             const response = await this.ssoHandler.resolveConnection({
               tenant: app.tenant,
@@ -219,7 +219,9 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
-        throw new JacksonError('Redirect URL is not allowed.', 403);
+        if (!allowed.redirect(redirect_uri, app?.redirectUrl as string[])) {
+          throw new JacksonError('Redirect URL is not allowed.', 403);
+        }
       }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);

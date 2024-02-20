@@ -122,15 +122,18 @@ export class SSOHandler {
       const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
 
       // SP initiated flow
-      if (['oauth', 'saml'].includes(authFlow) && tenant && product) {
-        const params = new URLSearchParams({
-          tenant,
-          product,
+      if (['oauth', 'saml'].includes(authFlow)) {
+        const qps = {
           authFlow: 'sp-initiated',
           samlFedAppId,
           fedType,
           ...originalParams,
-        });
+        };
+        if (tenant && product && fedType !== 'oidc') {
+          qps['tenant'] = tenant;
+          qps['product'] = product;
+        }
+        const params = new URLSearchParams(qps);
 
         return { redirectUrl: `${url}?${params}` };
       }

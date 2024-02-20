@@ -57,8 +57,7 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
 
     const redirectUrlList = (newApp.redirectUrlText as string)?.split(/\r\n|\r|\n/);
 
-    newApp.redirectUrl =
-      newApp.redirectUrlText && redirectUrlList ? JSON.stringify(redirectUrlList) : undefined;
+    newApp.redirectUrl = newApp.redirectUrlText && redirectUrlList ? redirectUrlList : undefined;
 
     setLoading(true);
 
