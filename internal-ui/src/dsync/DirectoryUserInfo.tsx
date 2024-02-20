@@ -2,7 +2,7 @@ import useSWR from 'swr';
 import type { User } from '@boxyhq/saml-jackson';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import fetcher from '../utils/fetcher';
+import { fetcher } from '../utils';
 import { useDirectory } from '../hooks';
 import { DirectoryTab } from '../dsync';
 import { Loading, Error, PageHeader } from '../shared';

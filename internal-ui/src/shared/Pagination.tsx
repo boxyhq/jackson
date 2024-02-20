@@ -3,10 +3,7 @@ import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon';
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon';
 import { ButtonOutline } from './ButtonOutline';
 
-export const pageLimit = 15;
-
-// TODO:
-// Test pagination with DynamoDB
+export const pageLimit = 2;
 
 export const Pagination = ({
   itemsCount,

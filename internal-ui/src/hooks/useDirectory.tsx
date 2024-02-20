@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import fetcher from '../utils/fetcher';
+import { fetcher } from '../utils';
 
 // TODO:
 // Add types to response

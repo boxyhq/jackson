@@ -1,13 +1,12 @@
 import useSWR from 'swr';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
-import fetcher from '../utils/fetcher';
 import { EditBranding } from './EditBranding';
 import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';
 import { DeleteCard, Loading, DeleteConfirmationModal } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { useState } from 'react';
-import { defaultHeaders } from '../utils/request';
+import { defaultHeaders, fetcher } from '../utils';
 import { PageHeader } from '../shared';
 
 export const EditFederatedSAMLApp = ({

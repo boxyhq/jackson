@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { copyToClipboard } from '../utils/common';
+import { copyToClipboard } from '../utils';
 import { IconButton } from './IconButton';
 import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
 

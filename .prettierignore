@@ -23,3 +23,5 @@ npm/package-lock.json
 **/LICENSE
 swagger/swagger.json
 e2e/state.json
+
+internal-ui/dist/**

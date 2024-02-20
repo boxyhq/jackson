@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import fetcher from '../utils/fetcher';
+import { fetcher } from '../utils';
 import {
   Loading,
   Table,
@@ -19,6 +19,9 @@ import { usePaginate } from '../hooks';
 import { useRouter } from 'next/router';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
+
+// TODO:
+// Handle the pageTokenMap for pagination
 
 export const FederatedSAMLApps = ({
   urls,
@@ -116,10 +119,6 @@ export const FederatedSAMLApps = ({
       ],
     });
   });
-
-  // if (noApps) {
-  //   return ;
-  // }
 
   return (
     <>

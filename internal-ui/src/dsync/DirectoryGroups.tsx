@@ -1,10 +1,9 @@
 import useSWR from 'swr';
-import { useEffect } from 'react';
 import type { NextRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import type { Group } from '@boxyhq/saml-jackson';
-import fetcher from '../utils/fetcher';
+import { fetcher } from '../utils';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
 import { TableBodyType } from '../shared/Table';
@@ -20,7 +19,7 @@ export const DirectoryGroups = ({
   router: NextRouter;
 }) => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router);
+  const { paginate, setPaginate, pageTokenMap } = usePaginate(router);
 
   let getUrl = `${urls.getGroups}?offset=${paginate.offset}&limit=${pageLimit}`;
 
@@ -31,14 +30,6 @@ export const DirectoryGroups = ({
 
   const { directory, isLoadingDirectory, directoryError } = useDirectory(urls.getDirectory);
   const { data, isLoading, error } = useSWR<{ data: Group[] }>(getUrl, fetcher);
-
-  const nextPageToken = ''; //data?.pageToken;
-
-  useEffect(() => {
-    if (nextPageToken) {
-      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
-    }
-  }, [nextPageToken, paginate.offset]);
 
   if (isLoading || isLoadingDirectory) {
     return <Loading />;

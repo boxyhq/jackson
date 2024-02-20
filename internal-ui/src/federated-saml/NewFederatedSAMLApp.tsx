@@ -4,7 +4,7 @@ import { Card, Button } from 'react-daisyui';
 import { useTranslation } from 'next-i18next';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
-import { defaultHeaders } from '../utils/request';
+import { defaultHeaders } from '../utils';
 import { AttributesMapping } from './AttributesMapping';
 import { PageHeader } from '../shared';
 
