@@ -8,16 +8,8 @@ import type { WebhookEventLog } from '@boxyhq/saml-jackson';
 import fetcher from '../utils/fetcher';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
-import {
-  Loading,
-  Table,
-  EmptyState,
-  Error,
-  Pagination,
-  PageHeader,
-  TableBodyType,
-  pageLimit,
-} from '../shared';
+import { TableBodyType } from '../shared/Table';
+import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
 
 // TODO:
 // Button to delete logs
@@ -69,7 +61,7 @@ export const DirectoryWebhookLogs = ({
   const noEvents = events.length === 0 && paginate.offset === 0;
   const noMoreResults = events.length === 0 && paginate.offset > 0;
 
-  let columns = [
+  const columns = [
     {
       key: 'webhook_endpoint',
       label: t('bui-dsync-webhook-endpoint'),

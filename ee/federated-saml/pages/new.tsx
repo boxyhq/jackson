@@ -26,7 +26,7 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
         onError={(error) => {
           errorToast(error.message);
         }}
-        onEntityIdGenerated={(entityId) => {
+        onEntityIdGenerated={() => {
           successToast(t('saml_federation_entity_id_generated'));
         }}
         samlAudience={samlAudience}
