@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { NextRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { EyeIcon } from '@heroicons/react/24/outline';
@@ -9,7 +9,17 @@ import fetcher from '../utils/fetcher';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
 import { TableBodyType } from '../shared/Table';
-import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
+import {
+  Loading,
+  Table,
+  EmptyState,
+  Error,
+  Pagination,
+  PageHeader,
+  pageLimit,
+  DeleteConfirmationModal,
+} from '../shared';
+import { ButtonDanger } from '../shared/ButtonDanger';
 
 // TODO:
 // Button to delete logs
@@ -17,13 +27,16 @@ import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } 
 export const DirectoryWebhookLogs = ({
   urls,
   onView,
+  onDelete,
   router,
 }: {
-  urls: { getEvents: string; getDirectory: string; tabBase: string };
+  urls: { getEvents: string; getDirectory: string; tabBase: string; deleteEvents?: string };
   onView?: (event: WebhookEventLog) => void;
+  onDelete?: () => void;
   router: NextRouter;
 }) => {
   const { t } = useTranslation('common');
+  const [delModalVisible, setDelModalVisible] = useState(false);
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router);
 
   let getUrl = `${urls.getEvents}?offset=${paginate.offset}&limit=${pageLimit}`;
@@ -124,6 +137,18 @@ export const DirectoryWebhookLogs = ({
     };
   });
 
+  const removeEvents = async () => {
+    if (!urls.deleteEvents) {
+      return;
+    }
+
+    await fetch(urls.deleteEvents, {
+      method: 'DELETE',
+    });
+
+    onDelete?.();
+  };
+
   return (
     <div className='py-2'>
       <PageHeader title={directory.name} />
@@ -132,6 +157,22 @@ export const DirectoryWebhookLogs = ({
         <EmptyState title={t('bui-dsync-no-events')} />
       ) : (
         <>
+          {urls.deleteEvents && (
+            <>
+              <div className='py-2 flex justify-end'>
+                <ButtonDanger onClick={() => setDelModalVisible(true)}>
+                  {t('bui-dsync-remove-events')}
+                </ButtonDanger>
+              </div>
+              <DeleteConfirmationModal
+                title={t('bui-dsync-delete-events-title')}
+                description={t('bui-dsync-delete-events-desc')}
+                visible={delModalVisible}
+                onConfirm={() => removeEvents()}
+                onCancel={() => setDelModalVisible(false)}
+              />
+            </>
+          )}
           <Table noMoreResults={noMoreResults} cols={cols} body={body} />
           <Pagination
             itemsCount={events.length}

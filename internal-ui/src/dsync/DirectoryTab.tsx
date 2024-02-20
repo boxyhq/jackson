@@ -2,9 +2,6 @@ import Link from 'next/link';
 import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 
-// TODO:
-// Handle display for setuplink view (hide the users, groups, events)
-
 type Tabs = 'directory' | 'users' | 'groups' | 'events';
 
 export const DirectoryTab = ({ activeTab, baseUrl }: { activeTab: Tabs; baseUrl: string }) => {

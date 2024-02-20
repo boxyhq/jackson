@@ -334,5 +334,8 @@
   "bui-dsync-active": "Active",
   "bui-dsync-suspended": "Suspended",
   "bui-dsync-status-code": "Status Code",
-  "bui-dsync-sent-at": "Sent At"
+  "bui-dsync-sent-at": "Sent At",
+  "bui-dsync-remove-events": "Remove Events",
+  "bui-dsync-delete-events-title": "Remove Webhook Events Logs",
+  "bui-dsync-delete-events-desc": "This action will permanently delete all webhook events log. Are you sure you want to proceed?"
 }

@@ -10,18 +10,6 @@ const Events: NextPage = () => {
     directoryId: string;
   };
 
-  // const clearEvents = async () => {
-  //   setLoading(true);
-
-  //   await fetch(`/api/admin/directory-sync/${directoryId}/events`, {
-  //     method: 'DELETE',
-  //   });
-
-  //   setLoading(false);
-
-  //   router.reload();
-  // };
-
   return (
     <>
       <LinkBack href='/admin/directory-sync' />
@@ -30,8 +18,10 @@ const Events: NextPage = () => {
           getEvents: `/api/admin/directory-sync/${directoryId}/events`,
           getDirectory: `/api/admin/directory-sync/${directoryId}`,
           tabBase: `/admin/directory-sync/${directoryId}`,
+          deleteEvents: `/api/admin/directory-sync/${directoryId}/events`,
         }}
         onView={(event) => router.push(`/admin/directory-sync/${directoryId}/events/${event.id}`)}
+        onDelete={() => router.reload()}
         router={router}
       />
     </>
