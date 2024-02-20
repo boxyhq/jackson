@@ -5,7 +5,7 @@ import { Badge } from './Badge';
 const tableWrapperClass = 'rounder border';
 const tableClass = 'w-full text-left text-sm text-gray-500 dark:text-gray-400';
 const trClass = 'border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800';
-const tdClassBase = 'px-6 py-3 text-sm text-gray-500 dark:text-gray-400';
+const tdClassBase = 'px-6 py-2 text-sm text-gray-500 dark:text-gray-400';
 const tdClass = `whitespace-nowrap ${tdClassBase}`;
 const tdClassWrap = `break-all ${tdClassBase}`;
 const theadClass = 'bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400';

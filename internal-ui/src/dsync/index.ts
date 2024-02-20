@@ -5,3 +5,4 @@ export { DirectoryGroupInfo } from './DirectoryGroupInfo';
 export { DirectoryWebhookLogs } from './DirectoryWebhookLogs';
 export { DirectoryWebhookLogInfo } from './DirectoryWebhookLogInfo';
 export { DirectoryTab } from './DirectoryTab';
+export { DirectoryInfo } from './DirectoryInfo';
