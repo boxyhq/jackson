@@ -1,4 +1,3 @@
-import React from 'react';
 import { useRouter } from 'next/router';
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import { DirectoryUserInfo, LinkBack } from '@boxyhq/internal-ui';

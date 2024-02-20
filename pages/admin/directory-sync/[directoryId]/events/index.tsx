@@ -1,4 +1,3 @@
-import React from 'react';
 import { useRouter } from 'next/router';
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import { DirectoryWebhookLogs, LinkBack } from '@boxyhq/internal-ui';
@@ -32,7 +31,7 @@ const Events: NextPage = () => {
           getDirectory: `/api/admin/directory-sync/${directoryId}`,
           tabBase: `/admin/directory-sync/${directoryId}`,
         }}
-        onEdit={(event) => router.push(`/admin/directory-sync/${directoryId}/events/${event.id}`)}
+        onView={(event) => router.push(`/admin/directory-sync/${directoryId}/events/${event.id}`)}
         router={router}
       />
     </>

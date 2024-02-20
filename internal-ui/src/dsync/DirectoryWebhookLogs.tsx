@@ -13,15 +13,14 @@ import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } 
 
 // TODO:
 // Button to delete logs
-// onEdit -> onView
 
 export const DirectoryWebhookLogs = ({
   urls,
-  onEdit,
+  onView,
   router,
 }: {
   urls: { getEvents: string; getDirectory: string; tabBase: string };
-  onEdit?: (event: WebhookEventLog) => void;
+  onView?: (event: WebhookEventLog) => void;
   router: NextRouter;
 }) => {
   const { t } = useTranslation('common');
@@ -101,7 +100,7 @@ export const DirectoryWebhookLogs = ({
             actions: [
               {
                 text: t('bui-dsync-view'),
-                onClick: () => onEdit?.(event),
+                onClick: () => onView?.(event),
                 icon: <EyeIcon className='w-5' />,
               },
             ],

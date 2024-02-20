@@ -131,7 +131,7 @@ export const DirectoryUsers = ({
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='users' baseUrl={urls.tabBase} />
       {noUsers ? (
-        <EmptyState title={t('bui-dsync-no-events')} />
+        <EmptyState title={t('bui-dsync-no-users')} />
       ) : (
         <>
           <Table noMoreResults={noMoreResults} cols={cols} body={body} />
