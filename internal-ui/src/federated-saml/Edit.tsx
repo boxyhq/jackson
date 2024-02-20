@@ -16,7 +16,7 @@ export const Edit = ({
   excludeFields,
 }: {
   app: SAMLFederationApp;
-  urls: { get: string; patch: string };
+  urls: { patch: string };
   onUpdate?: (data: SAMLFederationApp) => void;
   onError?: (error: Error) => void;
   excludeFields?: 'product'[];

@@ -1,8 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { NextPage, GetServerSidePropsContext } from 'next';
-
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { LinkBack } from '@components/LinkBack';
 import { DirectoryUsers } from '@boxyhq/internal-ui';
 

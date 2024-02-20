@@ -1,14 +1,10 @@
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { LinkBack } from '@components/LinkBack';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
-import { NewFederatedSAMLApp } from '@boxyhq/internal-ui';
+import { NewFederatedSAMLApp, LinkBack } from '@boxyhq/internal-ui';
 
 import 'react-tagsinput/react-tagsinput.css';
-
-// TODO:
-// Add toasts for success and error, entity id generation
 
 const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; samlAudience: string }) => {
   const router = useRouter();
@@ -19,22 +15,24 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
   }
 
   return (
-    <NewFederatedSAMLApp
-      urls={{ post: '/api/admin/federated-saml' }}
-      onSuccess={(data) => router.replace(`/admin/federated-saml/${data.id}/edit`)}
-      onError={(error) => errorToast(error.message)}
-      samlAudience={samlAudience}
-    />
+    <div className='space-y-4'>
+      <LinkBack href='/admin/federated-saml' />
+      <NewFederatedSAMLApp
+        urls={{ createApp: '/api/admin/federated-saml' }}
+        onSuccess={(data) => {
+          successToast(t('saml_federation_new_success'));
+          router.replace(`/admin/federated-saml/${data.id}/edit`);
+        }}
+        onError={(error) => {
+          errorToast(error.message);
+        }}
+        onEntityIdGenerated={(entityId) => {
+          successToast(t('saml_federation_entity_id_generated'));
+        }}
+        samlAudience={samlAudience}
+      />
+    </div>
   );
-
-  // return (
-  //   <>
-  //     <LinkBack href='/admin/federated-saml' />
-  //     <PageLayout title={t('saml_federation_add_new_app')}>
-
-  //     </PageLayout>
-  //   </>
-  // );
 };
 
 export default NewApp;

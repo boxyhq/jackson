@@ -4,20 +4,11 @@ import type { NextRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import type { User } from '@boxyhq/saml-jackson';
-
 import fetcher from '../utils/fetcher';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
-import {
-  Loading,
-  Table,
-  EmptyState,
-  Error,
-  Pagination,
-  PageHeader,
-  TableBodyType,
-  pageLimit,
-} from '../shared';
+import { TableBodyType } from '../shared/Table';
+import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
 
 export const DirectoryUsers = ({
   urls,

@@ -10,7 +10,7 @@ export const PageHeader = ({
   className?: string;
 }) => {
   return (
-    <div className={`flex flex-col py-2 ${className}`}>
+    <div className={`flex flex-col py-3 ${className}`}>
       <div className='flex justify-between items-center'>
         <h2 className='text-emphasis text-xl font-semibold tracking-wide'>{title}</h2>
         {actions && <div className='flex gap-4'>{actions}</div>}

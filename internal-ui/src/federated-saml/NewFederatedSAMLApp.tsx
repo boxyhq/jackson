@@ -6,7 +6,7 @@ import { SAMLFederationApp } from '@boxyhq/saml-jackson';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { defaultHeaders } from '../utils/request';
 import { AttributesMapping } from './AttributesMapping';
-import { LinkOutline, PageHeader, LinkBack } from '../shared';
+import { PageHeader } from '../shared';
 
 type NewSAMLFederationApp = Pick<
   SAMLFederationApp,
@@ -22,7 +22,7 @@ export const NewFederatedSAMLApp = ({
   excludeFields,
 }: {
   samlAudience?: string;
-  urls: { post: string };
+  urls: { createApp: string };
   onSuccess?: (data: SAMLFederationApp) => void;
   onError?: (error: Error) => void;
   onEntityIdGenerated?: (entityId: string) => void;
@@ -49,7 +49,7 @@ export const NewFederatedSAMLApp = ({
   const formik = useFormik<NewSAMLFederationApp>({
     initialValues: initialValues,
     onSubmit: async (values) => {
-      const rawResponse = await fetch(urls.post, {
+      const rawResponse = await fetch(urls.createApp, {
         method: 'POST',
         body: JSON.stringify(values),
         headers: defaultHeaders,
@@ -75,8 +75,7 @@ export const NewFederatedSAMLApp = ({
 
   return (
     <>
-      <LinkBack href='/admin/federated-saml' />
-      <PageHeader title={t('saml_federation_apps')} />
+      <PageHeader title={t('bui-fs-create-app')} />
       <form onSubmit={formik.handleSubmit} method='POST'>
         <Card className='p-6 rounded space-y-3'>
           <label className='form-control w-full'>

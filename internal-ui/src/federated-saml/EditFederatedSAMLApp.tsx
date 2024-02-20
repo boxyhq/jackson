@@ -8,8 +8,7 @@ import { DeleteCard, Loading, DeleteConfirmationModal } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { useState } from 'react';
 import { defaultHeaders } from '../utils/request';
-
-// TODO: mutate after patching
+import { PageHeader } from '../shared';
 
 export const EditFederatedSAMLApp = ({
   urls,
@@ -18,7 +17,7 @@ export const EditFederatedSAMLApp = ({
   onDelete,
   excludeFields,
 }: {
-  urls: { get: string; patch: string; delete: string };
+  urls: { getApp: string; updateApp: string; deleteApp: string };
   onUpdate?: (data: SAMLFederationApp) => void;
   onError?: (error: Error) => void;
   onDelete?: () => void;
@@ -27,7 +26,7 @@ export const EditFederatedSAMLApp = ({
   const { t } = useTranslation('common');
   const [delModalVisible, setDelModalVisible] = useState(false);
 
-  const { data, isLoading, error, mutate } = useSWR<{ data: SAMLFederationApp }>(urls.get, fetcher);
+  const { data, isLoading, error, mutate } = useSWR<{ data: SAMLFederationApp }>(urls.getApp, fetcher);
 
   if (isLoading) {
     return <Loading />;
@@ -46,7 +45,7 @@ export const EditFederatedSAMLApp = ({
 
   const deleteApp = async () => {
     try {
-      await fetch(urls.delete, { method: 'DELETE', headers: defaultHeaders });
+      await fetch(urls.deleteApp, { method: 'DELETE', headers: defaultHeaders });
       setDelModalVisible(false);
       onDelete?.();
     } catch (error: any) {
@@ -55,23 +54,51 @@ export const EditFederatedSAMLApp = ({
   };
 
   return (
-    <div className='flex flex-col gap-6'>
-      <Edit app={app} urls={urls} onError={onError} onUpdate={onUpdate} excludeFields={excludeFields} />
-      <EditAttributesMapping app={app} urls={{ patch: urls.patch }} onError={onError} onUpdate={onUpdate} />
-      <EditBranding app={app} urls={{ patch: urls.patch }} onError={onError} onUpdate={onUpdate} />
-      <DeleteCard
-        title={t('bui-fs-delete-app-title')}
-        description={t('bui-fs-delete-app-desc')}
-        buttonLabel={t('bui-shared-delete')}
-        onClick={() => setDelModalVisible(true)}
-      />
-      <DeleteConfirmationModal
-        title={t('bui-fs-delete-app-title')}
-        description={t('bui-fs-delete-app-desc')}
-        visible={delModalVisible}
-        onConfirm={() => deleteApp()}
-        onCancel={() => setDelModalVisible(false)}
-      />
-    </div>
+    <>
+      <PageHeader title={t('bui-fs-edit-app')} />
+      <div className='flex flex-col gap-6'>
+        <Edit
+          app={app}
+          urls={{ patch: urls.updateApp }}
+          onError={onError}
+          onUpdate={(data) => {
+            mutate({ data });
+            onUpdate?.(data);
+          }}
+          excludeFields={excludeFields}
+        />
+        <EditAttributesMapping
+          app={app}
+          urls={{ patch: urls.updateApp }}
+          onError={onError}
+          onUpdate={(data) => {
+            mutate({ data });
+            onUpdate?.(data);
+          }}
+        />
+        <EditBranding
+          app={app}
+          urls={{ patch: urls.updateApp }}
+          onError={onError}
+          onUpdate={(data) => {
+            mutate({ data });
+            onUpdate?.(data);
+          }}
+        />
+        <DeleteCard
+          title={t('bui-fs-delete-app-title')}
+          description={t('bui-fs-delete-app-desc')}
+          buttonLabel={t('bui-shared-delete')}
+          onClick={() => setDelModalVisible(true)}
+        />
+        <DeleteConfirmationModal
+          title={t('bui-fs-delete-app-title')}
+          description={t('bui-fs-delete-app-desc')}
+          visible={delModalVisible}
+          onConfirm={() => deleteApp()}
+          onCancel={() => setDelModalVisible(false)}
+        />
+      </div>
+    </>
   );
 };

@@ -20,17 +20,13 @@ import { useRouter } from 'next/router';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 
-// TODO:
-// Fix pagination to work with DynamoDB
-// Fix issue with useRouter
-
 export const FederatedSAMLApps = ({
   urls,
   excludeFields,
   onEdit,
   actions,
 }: {
-  urls: { get: string };
+  urls: { getApps: string };
   excludeFields?: ExcludeFields[];
   onEdit?: (app: SAMLFederationApp) => void;
   actions: { newApp: string; idpConfiguration: string };
@@ -39,14 +35,16 @@ export const FederatedSAMLApps = ({
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router);
 
-  let getAppsUrl = `${urls.get}?offset=${paginate.offset}&limit=${pageLimit}`;
+  let getAppsUrl = `${urls.getApps}?offset=${paginate.offset}&limit=${pageLimit}`;
 
   // For DynamoDB
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(getAppsUrl, fetcher);
+  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(getAppsUrl, fetcher, {
+    // revalidateOnFocus: true,
+  });
 
   if (isLoading) {
     return <Loading />;
@@ -63,10 +61,6 @@ export const FederatedSAMLApps = ({
   const apps = data?.data || [];
   const noApps = apps.length === 0 && paginate.offset === 0;
   const noMoreResults = apps.length === 0 && paginate.offset > 0;
-
-  if (noApps) {
-    return <EmptyState title={t('bui-fs-no-apps')} description={t('bui-fs-no-apps-desc')} />;
-  }
 
   let columns = [
     {
@@ -123,6 +117,10 @@ export const FederatedSAMLApps = ({
     });
   });
 
+  // if (noApps) {
+  //   return ;
+  // }
+
   return (
     <>
       <PageHeader
@@ -136,21 +134,27 @@ export const FederatedSAMLApps = ({
           </>
         }
       />
-      <Table noMoreResults={noMoreResults} cols={cols} body={body} />
-      <Pagination
-        itemsCount={apps.length}
-        offset={paginate.offset}
-        onPrevClick={() => {
-          setPaginate({
-            offset: paginate.offset - pageLimit,
-          });
-        }}
-        onNextClick={() => {
-          setPaginate({
-            offset: paginate.offset + pageLimit,
-          });
-        }}
-      />
+      {noApps ? (
+        <EmptyState title={t('bui-fs-no-apps')} description={t('bui-fs-no-apps-desc')} />
+      ) : (
+        <>
+          <Table noMoreResults={noMoreResults} cols={cols} body={body} />
+          <Pagination
+            itemsCount={apps.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
+        </>
+      )}
     </>
   );
 };

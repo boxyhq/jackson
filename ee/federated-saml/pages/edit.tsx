@@ -1,16 +1,10 @@
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { errorToast } from '@components/Toaster';
-import { LinkBack } from '@components/LinkBack';
-import { LinkOutline } from '@components/LinkOutline';
+import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
-import { EditFederatedSAMLApp, PageLayout } from '@boxyhq/internal-ui';
+import { EditFederatedSAMLApp, LinkBack } from '@boxyhq/internal-ui';
 
 import 'react-tagsinput/react-tagsinput.css';
-
-// TODO:
-// Add toasts for success and error
-// Add delete button
 
 const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const router = useRouter();
@@ -23,29 +17,26 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   }
 
   return (
-    <>
+    <div className='space-y-4'>
       <LinkBack href='/admin/federated-saml' />
-      <PageLayout
-        title={t('saml_federation_add_new_app')}
-        actions={
-          <>
-            <LinkOutline href={'/.well-known/idp-configuration'} target='_blank'>
-              {t('idp_configuration')}
-            </LinkOutline>
-          </>
-        }>
-        <EditFederatedSAMLApp
-          urls={{
-            patch: `/api/admin/federated-saml/${id}`,
-            get: `/api/admin/federated-saml/${id}`,
-            delete: `/api/admin/federated-saml/${id}`,
-          }}
-          onUpdate={() => {}}
-          onDelete={() => router.push('/admin/federated-saml')}
-          onError={(error) => errorToast(error.message)}
-        />
-      </PageLayout>
-    </>
+      <EditFederatedSAMLApp
+        urls={{
+          getApp: `/api/admin/federated-saml/${id}`,
+          updateApp: `/api/admin/federated-saml/${id}`,
+          deleteApp: `/api/admin/federated-saml/${id}`,
+        }}
+        onUpdate={() => {
+          successToast(t('saml_federation_update_success'));
+        }}
+        onDelete={() => {
+          successToast(t('saml_federation_delete_success'));
+          router.push('/admin/federated-saml');
+        }}
+        onError={(error) => {
+          errorToast(error.message);
+        }}
+      />
+    </div>
   );
 };
 
