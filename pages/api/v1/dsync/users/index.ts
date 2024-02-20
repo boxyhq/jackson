@@ -20,19 +20,17 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const searchParams = req.query as {
     tenant: string;
     product: string;
-    directoryId?: string;
-    offset?: string;
-    limit?: string;
+    directoryId: string;
+    offset: string;
+    limit: string;
+    pageToken: string;
   };
-
-  const pageOffset = parseInt(searchParams.offset || '0');
-  const pageLimit = parseInt(searchParams.limit || '15');
 
   let tenant = searchParams.tenant || '';
   let product = searchParams.product || '';
 
-  // If directoryId is provided, get the directory and use the tenant and product
-  if (searchParams.directoryId) {
+  // If tenant and product are not provided, retrieve the from directory
+  if ((!tenant || !product) && searchParams.directoryId) {
     const { data: directory } = await directorySyncController.directories.get(searchParams.directoryId);
 
     if (!directory) {
@@ -43,9 +41,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     product = directory.product;
   }
 
-  const { data, error } = await directorySyncController.users
-    .setTenantAndProduct(tenant, product)
-    .getAll({ directoryId: searchParams.directoryId, pageOffset, pageLimit });
+  const { data, error } = await directorySyncController.users.setTenantAndProduct(tenant, product).getAll({
+    pageOffset: parseInt(searchParams.offset || '0'),
+    pageLimit: parseInt(searchParams.limit || '15'),
+    pageToken: searchParams.pageToken || undefined,
+    directoryId: searchParams.directoryId,
+  });
 
   if (error) {
     return res.status(error.code).json({ error });

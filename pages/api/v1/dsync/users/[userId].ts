@@ -17,11 +17,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { tenant, product, userId } = req.query as { tenant: string; product: string; userId: string };
+  const searchParams = req.query as {
+    tenant: string;
+    product: string;
+    userId: string;
+    directoryId: string;
+  };
+
+  let tenant = searchParams.tenant || '';
+  let product = searchParams.product || '';
+
+  // If tenant and product are not provided, retrieve the from directory
+  if ((!tenant || !product) && searchParams.directoryId) {
+    const { data: directory } = await directorySyncController.directories.get(searchParams.directoryId);
+
+    if (!directory) {
+      return res.status(404).json({ error: { message: 'Directory not found.' } });
+    }
+
+    tenant = directory.tenant;
+    product = directory.product;
+  }
 
   const { data, error } = await directorySyncController.users
     .setTenantAndProduct(tenant, product)
-    .get(userId);
+    .get(searchParams.userId);
 
   if (error) {
     return res.status(error.code).json({ error });
