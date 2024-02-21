@@ -215,7 +215,7 @@ const Login = ({
           </div>
         </div>
         <Link href='/.well-known' className='my-3 text-sm underline underline-offset-4' target='_blank'>
-          {t('here_are_the_set_of_uris_you_would_need_access_to')}
+          {t('bui-wku-heading')}
         </Link>
       </div>
     </>
