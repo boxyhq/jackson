@@ -31,6 +31,8 @@ const SSOConnectionList = ({
       ? '/admin/settings/sso-connection/new'
       : '/admin/sso-connection/new';
 
+  const enablePagination = !isSettingsView && !isSetupLinkView;
+
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
@@ -70,7 +72,7 @@ const SSOConnectionList = ({
           }
         }}
         paginate={
-          !isSetupLinkView
+          enablePagination
             ? {
                 itemsPerPage: pageLimit,
                 handlePageChange: ({ offset }) => {
