@@ -121,13 +121,15 @@ export const FederatedSAMLApps = ({
   return (
     <>
       <PageHeader
-        title={t('saml_federation_apps')}
+        title={t('bui-fs-apps')}
         actions={
           <>
-            <LinkOutline href={actions.idpConfiguration} target='_blank'>
-              {t('idp_configuration')}
+            <LinkOutline href={actions.idpConfiguration} target='_blank' className='btn-md'>
+              {t('bui-fs-idp-config')}
             </LinkOutline>
-            <LinkPrimary href={actions.newApp}>{t('new_saml_federation_app')}</LinkPrimary>
+            <LinkPrimary href={actions.newApp} className='btn-md'>
+              {t('bui-fs-new-app')}
+            </LinkPrimary>
           </>
         }
       />

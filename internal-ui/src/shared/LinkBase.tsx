@@ -9,7 +9,7 @@ export interface LinkBaseProps extends LinkProps {
 
 export const LinkBase = ({ children, href, className, Icon, ...others }: LinkBaseProps) => {
   return (
-    <Link href={href} className={classNames('btn', className)} {...others}>
+    <Link href={href} className={classNames('btn', className)} {...others} passHref>
       {Icon && <Icon className='mr-1 h-4 w-4' aria-hidden />}
       {children}
     </Link>
