@@ -25,11 +25,13 @@ export const FederatedSAMLApps = ({
   excludeFields,
   onEdit,
   actions,
+  actionCols = [],
 }: {
   urls: { getApps: string };
   excludeFields?: ExcludeFields[];
   onEdit?: (app: SAMLFederationApp) => void;
   actions: { newApp: string; idpConfiguration: string };
+  actionCols?: { text: string; onClick: (app: SAMLFederationApp) => void; icon: JSX.Element }[];
 }) => {
   const { router } = useRouter();
   const { t } = useTranslation('common');
@@ -42,9 +44,7 @@ export const FederatedSAMLApps = ({
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(getAppsUrl, fetcher, {
-    // revalidateOnFocus: true,
-  });
+  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(getAppsUrl, fetcher);
 
   if (isLoading) {
     return <Loading />;
@@ -113,9 +113,16 @@ export const FederatedSAMLApps = ({
           onClick: () => onEdit?.(apps.find((app) => app.id === row.id)!),
           icon: <PencilIcon className='w-5' />,
         },
+        ...actionCols.map((actionCol) => ({
+          text: actionCol.text,
+          onClick: () => actionCol.onClick(apps.find((app) => app.id === row.id)!),
+          icon: actionCol.icon,
+        })),
       ],
     });
   });
+
+  console.log(body);
 
   return (
     <div className='space-y-3'>
