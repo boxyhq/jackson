@@ -71,8 +71,8 @@ export const NewFederatedSAMLApp = ({
     },
   });
 
-  const connectionIsSAML = formik.values.type === 'saml';
   const connectionIsOIDC = formik.values.type === 'oidc';
+  const connectionIsSAML = !connectionIsOIDC;
 
   const generateEntityId = () => {
     const id = crypto.randomUUID().replace(/-/g, '');

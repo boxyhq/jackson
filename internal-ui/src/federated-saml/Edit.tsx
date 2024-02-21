@@ -23,6 +23,9 @@ export const Edit = ({
 }) => {
   const { t } = useTranslation('common');
 
+  const connectionIsOIDC = app.type === 'oidc';
+  const connectionIsSAML = !connectionIsOIDC;
+
   const formik = useFormik<EditApp>({
     enableReinitialize: true,
     initialValues: {
@@ -92,34 +95,64 @@ export const Edit = ({
                     />
                   </label>
                 )}
-                <label className='form-control w-full'>
-                  <div className='label'>
-                    <span className='label-text'>{t('bui-fs-acs-url')}</span>
-                  </div>
-                  <input
-                    type='url'
-                    placeholder='https://your-sp.com/saml/acs'
-                    className='input input-bordered w-full text-sm'
-                    name='acsUrl'
-                    value={formik.values.acsUrl}
-                    onChange={formik.handleChange}
-                    required
-                  />
-                </label>
-                <label className='form-control w-full'>
-                  <div className='label'>
-                    <span className='label-text'>{t('bui-fs-entity-id')}</span>
-                  </div>
-                  <input
-                    type='text'
-                    className='input input-bordered w-full text-sm'
-                    value={app.entityId}
-                    disabled
-                  />
-                  <label className='label'>
-                    <span className='label-text-alt'>{t('bui-fs-entity-id-edit-desc')}</span>
+                {connectionIsOIDC && (
+                  <label className='form-control w-full'>
+                    <div className='label'>
+                      <span className='label-text'>{t('client_id')}</span>
+                    </div>
+                    <input
+                      type='text'
+                      className='input-bordered input'
+                      defaultValue={app.clientID}
+                      disabled
+                    />
                   </label>
-                </label>
+                )}
+                {connectionIsOIDC && (
+                  <label className='form-control w-full'>
+                    <div className='label'>
+                      <span className='label-text'>{t('client_secret')}</span>
+                    </div>
+                    <input
+                      type='text'
+                      className='input-bordered input'
+                      defaultValue={app.clientSecret}
+                      disabled
+                    />
+                  </label>
+                )}
+                {connectionIsSAML && (
+                  <label className='form-control w-full'>
+                    <div className='label'>
+                      <span className='label-text'>{t('bui-fs-entity-id')}</span>
+                    </div>
+                    <input
+                      type='text'
+                      className='input input-bordered w-full text-sm'
+                      value={app.entityId}
+                      disabled
+                    />
+                    <label className='label'>
+                      <span className='label-text-alt'>{t('bui-fs-entity-id-edit-desc')}</span>
+                    </label>
+                  </label>
+                )}
+                {connectionIsSAML && (
+                  <label className='form-control w-full'>
+                    <div className='label'>
+                      <span className='label-text'>{t('bui-fs-acs-url')}</span>
+                    </div>
+                    <input
+                      type='url'
+                      placeholder='https://your-sp.com/saml/acs'
+                      className='input input-bordered w-full text-sm'
+                      name='acsUrl'
+                      value={formik.values.acsUrl}
+                      onChange={formik.handleChange}
+                      required
+                    />
+                  </label>
+                )}
                 <label className='form-control w-full'>
                   <label className='label'>
                     <span className='label-text'>{t('bui-fs-tenants')}</span>
