@@ -20,7 +20,6 @@ const GroupsList: NextPage = () => {
           tabBase: `/admin/directory-sync/${directoryId}`,
         }}
         onView={(group) => router.push(`/admin/directory-sync/${directoryId}/groups/${group.id}`)}
-        router={router}
       />
     </>
   );

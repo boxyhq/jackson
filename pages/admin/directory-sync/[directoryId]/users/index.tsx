@@ -20,7 +20,6 @@ const UsersList: NextPage = () => {
           tabBase: `/admin/directory-sync/${directoryId}`,
         }}
         onView={(user) => router.push(`/admin/directory-sync/${directoryId}/users/${user.id}`)}
-        router={router}
       />
     </>
   );

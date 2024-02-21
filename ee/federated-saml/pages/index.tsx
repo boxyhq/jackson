@@ -12,7 +12,6 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
       urls={{ getApps: '/api/admin/federated-saml' }}
       onEdit={(app) => router.push(`/admin/federated-saml/${app.id}/edit`)}
       actions={{ newApp: '/admin/federated-saml/new', idpConfiguration: '/.well-known/idp-configuration' }}
-      router={router}
     />
   );
 };
