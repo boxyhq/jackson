@@ -1,4 +1,6 @@
 {
+  "validity": "Validity",
+  "documentation": "Documentation",
   "entity-id-change-restriction": "You can't change this value once the app is created.",
   "desc-entity-id": "You can't change this value. Delete and create a new app if you need to change it.",
   "actions": "Actions",
@@ -195,6 +197,7 @@
   "select_an_idp": "Select an Identity Provider to continue",
   "audit_logs": "Audit Logs",
   "privacy_vault": "Privacy Vault",
+  "policies": "Policies",
   "model_published_successfully": "Model published successfully",
   "model_publish_failed": "Model publish failed. Please try again!",
   "discard_and_retrieve_model": "Retrieve Model?",
@@ -245,7 +248,7 @@
   "setup_link_valid_till": "This link is valid till",
   "invalid_setup_link_alert": "Please contact your administrator to get a new setup link. If you are the administrator, visit the Admin Portal to create a new setup link for the service.",
   "boxyhq_admin_portal": "BoxyHQ Admin Portal",
-  "environment:": "Environment",
+  "environment": "Environment",
   "group_or_tenant": "Group (Tenant)",
   "id": "ID",
   "created_at": "Created At",
