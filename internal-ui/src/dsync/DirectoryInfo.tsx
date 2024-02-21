@@ -1,11 +1,14 @@
 import { useDirectory } from '../hooks';
 import { DirectoryTab } from '../dsync';
-import { Loading, Error, PageHeader } from '../shared';
+import { Loading, Error, PageHeader, Badge } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { InputWithCopyButton } from '../shared/InputWithCopyButton';
 import type { Directory } from '@boxyhq/saml-jackson';
 
 type ExcludeFields = keyof Pick<Directory, 'tenant' | 'product' | 'webhook'>;
+
+// TODO:
+// Add the toast after copying the google auth url
 
 export const DirectoryInfo = ({
   urls,
@@ -33,7 +36,7 @@ export const DirectoryInfo = ({
     <div className='py-2'>
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='directory' baseUrl={urls.tabBase} />
-      <div className='my-3 rounded border'>
+      <div className='rounded border'>
         <dl className='divide-y'>
           <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
             <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-directory-id')}</dt>
@@ -67,6 +70,18 @@ export const DirectoryInfo = ({
               </div>
             </>
           )}
+          {directory.type === 'google' && (
+            <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+              <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-authorized-status')}</dt>
+              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                {directory.google_access_token && directory.google_refresh_token ? (
+                  <Badge color='success'>{t('bui-dsync-authorized')}</Badge>
+                ) : (
+                  <Badge color='warning'>{t('bui-dsync-not-authorized')}</Badge>
+                )}
+              </dd>
+            </div>
+          )}
         </dl>
       </div>
       {directory.scim.endpoint && directory.scim.secret && (
@@ -83,7 +98,7 @@ export const DirectoryInfo = ({
         </div>
       )}
       {directory.type === 'google' && (
-        <div className='form-control mt-10'>
+        <div className='form-control mt-6'>
           <InputWithCopyButton
             text={`${urls.googleAuth}?directoryId=${directory.id}`}
             label={t('bui-dsync-google-auth-url')}

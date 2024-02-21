@@ -337,5 +337,8 @@
   "bui-dsync-sent-at": "Sent At",
   "bui-dsync-remove-events": "Remove Events",
   "bui-dsync-delete-events-title": "Remove Webhook Events Logs",
-  "bui-dsync-delete-events-desc": "This action will permanently delete all webhook events log. Are you sure you want to proceed?"
+  "bui-dsync-delete-events-desc": "This action will permanently delete all webhook events log. Are you sure you want to proceed?",
+  "bui-dsync-authorized-status": "Status",
+  "bui-dsync-authorized": "Authorized",
+  "bui-dsync-not-authorized": "Not Authorized"
 }

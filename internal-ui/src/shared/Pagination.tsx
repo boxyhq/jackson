@@ -29,6 +29,7 @@ export const Pagination = ({
   return (
     <div className='flex justify-center space-x-4 py-4'>
       <ButtonOutline
+        className='btn-md'
         Icon={ArrowLeftIcon}
         aria-label={t('bui-shared-previous') as string}
         onClick={onPrevClick}
@@ -36,6 +37,7 @@ export const Pagination = ({
         {t('bui-shared-previous')}
       </ButtonOutline>
       <ButtonOutline
+        className='btn-md'
         Icon={ArrowRightIcon}
         aria-label={t('bui-shared-next') as string}
         onClick={onNextClick}

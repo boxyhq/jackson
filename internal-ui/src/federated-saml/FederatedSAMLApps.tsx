@@ -16,25 +16,23 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate } from '../hooks';
-import { useRouter } from 'next/router';
+import type { NextRouter } from 'next/router';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
-
-// TODO:
-// Handle the pageTokenMap for pagination
 
 export const FederatedSAMLApps = ({
   urls,
   excludeFields,
   onEdit,
   actions,
+  router,
 }: {
   urls: { getApps: string };
   excludeFields?: ExcludeFields[];
   onEdit?: (app: SAMLFederationApp) => void;
   actions: { newApp: string; idpConfiguration: string };
+  router: NextRouter;
 }) => {
-  const router = useRouter();
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap } = usePaginate(router);
 
