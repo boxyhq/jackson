@@ -98,7 +98,7 @@ const SSOTraceInspector: NextPage = () => {
             )}
             {trace.context.redirectUri && (
               <DescriptionListItem
-                term={t(trace.context.isIDPFlow ? 'default_redirect_url' : 'redirect_uri')}
+                term={trace.context.isIDPFlow ? t('default_redirect_url') : t('redirect_uri')}
                 value={trace.context.redirectUri}
               />
             )}
@@ -207,7 +207,7 @@ const SSOTraceInspector: NextPage = () => {
             )}
             {trace.context.scope_from_op_error && (
               <DescriptionListItem
-                term={t('scope_from_oidc_idp')}
+                term={t('scope_from_op_error')}
                 value={trace.context.scope_from_op_error}
               />
             )}
