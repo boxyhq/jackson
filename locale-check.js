@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const regExp = /\bt\('(.*?)'/gm;
+const altRegExp = /\bi18nKey='(.*?)'/gm;
 
 const allStrings = {};
 
@@ -23,6 +24,15 @@ files.forEach((file) => {
     (fileContent.match(regExp) || []).forEach((match) => {
       const id = match.replace("t('", '').replace("'", '');
       // console.log('match:', match);
+      allStrings[id] = true;
+      if (!localeFile[id]) {
+        console.error(`Missing key: ${path.join(file.path, file.name)} - ${id}`);
+      }
+    });
+
+    (fileContent.match(altRegExp) || []).forEach((match) => {
+      const id = match.replace("i18nKey='", '').replace("'", '');
+      // console.log('match:', match, id);
       allStrings[id] = true;
       if (!localeFile[id]) {
         console.error(`Missing key: ${path.join(file.path, file.name)} - ${id}`);
