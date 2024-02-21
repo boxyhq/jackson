@@ -122,8 +122,6 @@ export const FederatedSAMLApps = ({
     });
   });
 
-  console.log(body);
-
   return (
     <div className='space-y-3'>
       <PageHeader

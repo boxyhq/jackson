@@ -200,7 +200,7 @@ export const NewFederatedSAMLApp = ({
               className='btn btn-primary btn-md'
               loading={formik.isSubmitting}
               disabled={!formik.dirty || !formik.isValid}>
-              {t('bui-fs-create-app')}
+              {t('bui-fs-create-app-btn')}
             </Button>
           </div>
         </Card>
