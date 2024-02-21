@@ -1,7 +1,6 @@
 import router from 'next/router';
 import LicenseRequired from '@components/LicenseRequired';
 import { FederatedSAMLApps } from '@boxyhq/internal-ui';
-import { PencilIcon } from '@heroicons/react/24/outline';
 
 const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   if (!hasValidLicense) {
