@@ -107,7 +107,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       items: [
         {
           href: '/admin/terminus',
-          text: t('Policies'),
+          text: t('policies'),
           active: asPath.includes('/admin/terminus'),
         },
       ],

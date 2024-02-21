@@ -207,7 +207,7 @@ const SSOTraceInspector: NextPage = () => {
             )}
             {trace.context.scope_from_op_error && (
               <DescriptionListItem
-                term={t('scope_from_oidc_idp')}
+                term={t('scope_from_op_error')}
                 value={trace.context.scope_from_op_error}
               />
             )}
