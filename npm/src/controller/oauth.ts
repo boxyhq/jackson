@@ -218,7 +218,11 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
-        if (!allowed.redirect(redirect_uri, fedApp?.redirectUrl as string[])) {
+        if (fedApp) {
+          if (!allowed.redirect(redirect_uri, fedApp.redirectUrl as string[])) {
+            throw new JacksonError('Redirect URL is not allowed.', 403);
+          }
+        } else {
           throw new JacksonError('Redirect URL is not allowed.', 403);
         }
       }
@@ -744,6 +748,7 @@ export class OAuthController implements IOAuthController {
     let oidcConnection: OIDCSSORecord | undefined;
     let session: any;
     let isSAMLFederated: boolean | undefined;
+    let isOIDCFederated: boolean | undefined;
     let redirect_uri: string | undefined;
     let profile;
 
@@ -762,6 +767,7 @@ export class OAuthController implements IOAuthController {
       }
 
       isSAMLFederated = session && 'samlFederated' in session;
+      isOIDCFederated = session && 'oidcFederated' in session;
 
       oidcConnection = await this.connectionStore.get(session.id);
 
@@ -776,7 +782,13 @@ export class OAuthController implements IOAuthController {
         }
 
         if (redirect_uri && !allowed.redirect(redirect_uri, oidcConnection.redirectUrl as string[])) {
-          throw new JacksonError('Redirect URL is not allowed.', 403);
+          if (isOIDCFederated) {
+            if (!allowed.redirect(redirect_uri, session.oidcFederated?.redirectUrl as string[])) {
+              throw new JacksonError('Redirect URL is not allowed.', 403);
+            }
+          } else {
+            throw new JacksonError('Redirect URL is not allowed.', 403);
+          }
         }
       }
     } catch (err) {
@@ -792,6 +804,7 @@ export class OAuthController implements IOAuthController {
           redirectUri: redirect_uri,
           relayState: RelayState,
           isSAMLFederated: !!isSAMLFederated,
+          isOIDCFederated: !!isOIDCFederated,
           requestedOIDCFlow: !!session?.requested?.oidc,
         },
       });
@@ -851,6 +864,7 @@ export class OAuthController implements IOAuthController {
           redirectUri: redirect_uri,
           relayState: RelayState,
           isSAMLFederated: !!isSAMLFederated,
+          isOIDCFederated: !!isOIDCFederated,
           acsUrl: session.requested.acsUrl,
           entityId: session.requested.entityId,
           requestedOIDCFlow: !!session.requested.oidc,
