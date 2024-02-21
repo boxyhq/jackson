@@ -441,6 +441,10 @@ export class OAuthController implements IOAuthController {
       }
       if (idp_hint) {
         requested.idp_hint = idp_hint;
+      } else {
+        if (fedApp) {
+          requested.idp_hint = connection.clientID;
+        }
       }
       if (requestedOIDCFlow) {
         requested.oidc = true;
