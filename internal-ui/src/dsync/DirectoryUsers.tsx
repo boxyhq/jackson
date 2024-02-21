@@ -123,7 +123,7 @@ export const DirectoryUsers = ({
   });
 
   return (
-    <div className='py-2'>
+    <>
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='users' baseUrl={urls.tabBase} />
       {noUsers ? (
@@ -147,6 +147,6 @@ export const DirectoryUsers = ({
           />
         </>
       )}
-    </div>
+    </>
   );
 };

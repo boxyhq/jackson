@@ -30,7 +30,7 @@ export const DirectoryUserInfo = ({
   const user = data.data;
 
   return (
-    <div className='py-2'>
+    <>
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='users' baseUrl={urls.tabBase} />
       <div className='text-sm'>
@@ -38,6 +38,6 @@ export const DirectoryUserInfo = ({
           {JSON.stringify(user, null, 2)}
         </SyntaxHighlighter>
       </div>
-    </div>
+    </>
   );
 };

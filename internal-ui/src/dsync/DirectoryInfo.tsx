@@ -33,7 +33,7 @@ export const DirectoryInfo = ({
   }
 
   return (
-    <div className='py-2'>
+    <>
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='directory' baseUrl={urls.tabBase} />
       <div className='rounded border'>
@@ -105,6 +105,6 @@ export const DirectoryInfo = ({
           />
         </div>
       )}
-    </div>
+    </>
   );
 };

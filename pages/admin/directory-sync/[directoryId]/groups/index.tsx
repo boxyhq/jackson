@@ -12,7 +12,7 @@ const GroupsList: NextPage = () => {
 
   return (
     <>
-      <LinkBack href='/admin/directory-sync' />
+      <LinkBack href='/admin/directory-sync' className='mb-3' />
       <DirectoryGroups
         urls={{
           getGroups: `/api/admin/directory-sync/${directoryId}/groups`,

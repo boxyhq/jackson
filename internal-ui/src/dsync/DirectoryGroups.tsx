@@ -96,7 +96,7 @@ export const DirectoryGroups = ({
   });
 
   return (
-    <div className='py-2'>
+    <>
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='groups' baseUrl={urls.tabBase} />
       {noGroups ? (
@@ -120,6 +120,6 @@ export const DirectoryGroups = ({
           />
         </>
       )}
-    </div>
+    </>
   );
 };

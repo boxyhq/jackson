@@ -4,9 +4,6 @@ import { DirectoryInfo, LinkBack } from '@boxyhq/internal-ui';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { dsyncGoogleAuthURL } from '@lib/env';
 
-// TODO:
-// Fix the toast for copying
-
 const DirectoryInfoPage: NextPage = () => {
   const router = useRouter();
 
@@ -14,7 +11,7 @@ const DirectoryInfoPage: NextPage = () => {
 
   return (
     <>
-      <LinkBack href='/admin/directory-sync' />
+      <LinkBack href='/admin/directory-sync' className='mb-3' />
       <DirectoryInfo
         urls={{
           getDirectory: `/api/admin/directory-sync/${directoryId}`,

@@ -14,7 +14,7 @@ const EventInfo: NextPage = () => {
 
   return (
     <>
-      <LinkBack href={`/admin/directory-sync/${directoryId}/events`} />
+      <LinkBack href={`/admin/directory-sync/${directoryId}/events`} className='mb-3' />
       <DirectoryWebhookLogInfo
         urls={{
           getEvent: `/api/admin/directory-sync/${directoryId}/events/${eventId}`,

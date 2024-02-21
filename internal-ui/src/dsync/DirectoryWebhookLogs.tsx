@@ -146,7 +146,7 @@ export const DirectoryWebhookLogs = ({
   };
 
   return (
-    <div className='py-2'>
+    <>
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='events' baseUrl={urls.tabBase} />
       {noEvents ? (
@@ -186,6 +186,6 @@ export const DirectoryWebhookLogs = ({
           />
         </>
       )}
-    </div>
+    </>
   );
 };

@@ -12,7 +12,7 @@ const UsersList: NextPage = () => {
 
   return (
     <>
-      <LinkBack href='/admin/directory-sync' />
+      <LinkBack href='/admin/directory-sync' className='mb-3' />
       <DirectoryUsers
         urls={{
           getUsers: `/api/admin/directory-sync/${directoryId}/users`,

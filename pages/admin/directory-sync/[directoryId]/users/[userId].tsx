@@ -13,7 +13,7 @@ const UserInfo: NextPage = () => {
 
   return (
     <>
-      <LinkBack href={`/admin/directory-sync/${directoryId}/users`} />
+      <LinkBack href={`/admin/directory-sync/${directoryId}/users`} className='mb-3' />
       <DirectoryUserInfo
         urls={{
           getUser: `/api/admin/directory-sync/${directoryId}/users/${userId}`,

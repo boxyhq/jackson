@@ -119,7 +119,7 @@ export const FederatedSAMLApps = ({
   });
 
   return (
-    <>
+    <div className='space-y-3'>
       <PageHeader
         title={t('bui-fs-apps')}
         actions={
@@ -154,6 +154,6 @@ export const FederatedSAMLApps = ({
           />
         </>
       )}
-    </>
+    </div>
   );
 };

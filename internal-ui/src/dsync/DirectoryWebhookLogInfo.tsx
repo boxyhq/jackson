@@ -31,7 +31,7 @@ export const DirectoryWebhookLogInfo = ({
   const event = data.data;
 
   return (
-    <div className='py-2'>
+    <>
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='events' baseUrl={urls.tabBase} />
       <div className='text-sm'>
@@ -39,6 +39,6 @@ export const DirectoryWebhookLogInfo = ({
           {JSON.stringify(event, null, 2)}
         </SyntaxHighlighter>
       </div>
-    </div>
+    </>
   );
 };
