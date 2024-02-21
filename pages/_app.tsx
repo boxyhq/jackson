@@ -12,6 +12,7 @@ import nextI18NextConfig from '../next-i18next.config.js';
 import { AccountLayout, SetupLinkLayout } from '@components/layouts';
 import '@boxyhq/react-ui/dist/style.css';
 import '../styles/globals.css';
+import { BUIProvider } from '@boxyhq/internal-ui';
 
 const unauthenticatedRoutes = [
   '/',
@@ -31,7 +32,8 @@ const isUnauthenticatedRoute = (pathname: string) => {
 };
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
-  const { pathname } = useRouter();
+  const router = useRouter();
+  const { pathname } = router;
 
   const { session, ...props } = pageProps;
 
@@ -61,12 +63,14 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   }
 
   return (
-    <SessionProvider session={session}>
-      <AccountLayout>
-        <Component {...props} />
-        <Toaster />
-      </AccountLayout>
-    </SessionProvider>
+    <BUIProvider value={{ router }}>
+      <SessionProvider session={session}>
+        <AccountLayout>
+          <Component {...props} />
+          <Toaster />
+        </AccountLayout>
+      </SessionProvider>
+    </BUIProvider>
   );
 }
 

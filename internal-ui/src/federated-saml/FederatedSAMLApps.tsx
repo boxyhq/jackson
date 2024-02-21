@@ -8,7 +8,7 @@ import {
   Pagination,
   PageHeader,
   LinkOutline,
-  LinkPrimary,
+  ButtonPrimary,
 } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
@@ -16,7 +16,7 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate } from '../hooks';
-import type { NextRouter } from 'next/router';
+import { useRouter } from '../hooks';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 
@@ -25,16 +25,15 @@ export const FederatedSAMLApps = ({
   excludeFields,
   onEdit,
   actions,
-  router,
 }: {
   urls: { getApps: string };
   excludeFields?: ExcludeFields[];
   onEdit?: (app: SAMLFederationApp) => void;
   actions: { newApp: string; idpConfiguration: string };
-  router: NextRouter;
 }) => {
+  const { router } = useRouter();
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap } = usePaginate(router);
+  const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
 
   let getAppsUrl = `${urls.getApps}?offset=${paginate.offset}&limit=${pageLimit}`;
 
@@ -127,9 +126,9 @@ export const FederatedSAMLApps = ({
             <LinkOutline href={actions.idpConfiguration} target='_blank' className='btn-md'>
               {t('bui-fs-idp-config')}
             </LinkOutline>
-            <LinkPrimary href={actions.newApp} className='btn-md'>
+            <ButtonPrimary onClick={() => router?.push(actions.newApp)} className='btn-md'>
               {t('bui-fs-new-app')}
-            </LinkPrimary>
+            </ButtonPrimary>
           </>
         }
       />
