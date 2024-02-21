@@ -1,4 +1,7 @@
 {
+  "client_id": "Client ID",
+  "client_secret": "Client Secret",
+  "select_app_type": "Select App Type",
   "actions": "Actions",
   "active": "Active",
   "all_your_apps_using_this_connection_will_stop_working": "All your apps using this connection will stop working.",
