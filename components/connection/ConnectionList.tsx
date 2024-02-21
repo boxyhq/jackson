@@ -100,7 +100,7 @@ const ConnectionList = ({
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>
-          {t(isSettingsView ? 'admin_portal_sso' : 'enterprise_sso')}
+          {isSettingsView ? t('admin_portal_sso') : t('enterprise_sso')}
         </h2>
         <div className='flex gap-2'>
           {!setupLinkToken && !isSettingsView && (
