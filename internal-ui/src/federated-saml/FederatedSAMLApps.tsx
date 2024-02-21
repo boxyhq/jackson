@@ -8,7 +8,7 @@ import {
   Pagination,
   PageHeader,
   LinkOutline,
-  LinkPrimary,
+  ButtonPrimary,
 } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
@@ -16,7 +16,7 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate } from '../hooks';
-import type { NextRouter } from 'next/router';
+import { useRouter } from '../hooks';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 
@@ -25,16 +25,17 @@ export const FederatedSAMLApps = ({
   excludeFields,
   onEdit,
   actions,
-  router,
+  actionCols = [],
 }: {
   urls: { getApps: string };
   excludeFields?: ExcludeFields[];
   onEdit?: (app: SAMLFederationApp) => void;
   actions: { newApp: string; idpConfiguration: string };
-  router: NextRouter;
+  actionCols?: { text: string; onClick: (app: SAMLFederationApp) => void; icon: JSX.Element }[];
 }) => {
+  const { router } = useRouter();
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap } = usePaginate(router);
+  const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
 
   let getAppsUrl = `${urls.getApps}?offset=${paginate.offset}&limit=${pageLimit}`;
 
@@ -43,9 +44,7 @@ export const FederatedSAMLApps = ({
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(getAppsUrl, fetcher, {
-    // revalidateOnFocus: true,
-  });
+  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(getAppsUrl, fetcher);
 
   if (isLoading) {
     return <Loading />;
@@ -114,9 +113,16 @@ export const FederatedSAMLApps = ({
           onClick: () => onEdit?.(apps.find((app) => app.id === row.id)!),
           icon: <PencilIcon className='w-5' />,
         },
+        ...actionCols.map((actionCol) => ({
+          text: actionCol.text,
+          onClick: () => actionCol.onClick(apps.find((app) => app.id === row.id)!),
+          icon: actionCol.icon,
+        })),
       ],
     });
   });
+
+  console.log(body);
 
   return (
     <div className='space-y-3'>
@@ -127,9 +133,9 @@ export const FederatedSAMLApps = ({
             <LinkOutline href={actions.idpConfiguration} target='_blank' className='btn-md'>
               {t('bui-fs-idp-config')}
             </LinkOutline>
-            <LinkPrimary href={actions.newApp} className='btn-md'>
+            <ButtonPrimary onClick={() => router?.push(actions.newApp)} className='btn-md'>
               {t('bui-fs-new-app')}
-            </LinkPrimary>
+            </ButtonPrimary>
           </>
         }
       />

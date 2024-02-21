@@ -14,3 +14,4 @@ export { LinkOutline } from './LinkOutline';
 export { LinkPrimary } from './LinkPrimary';
 export { LinkBack } from './LinkBack';
 export { pageLimit } from './Pagination';
+export { ButtonPrimary } from './ButtonPrimary';

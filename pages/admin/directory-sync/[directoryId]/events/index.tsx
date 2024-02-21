@@ -22,7 +22,6 @@ const Events: NextPage = () => {
         }}
         onView={(event) => router.push(`/admin/directory-sync/${directoryId}/events/${event.id}`)}
         onDelete={() => router.reload()}
-        router={router}
       />
     </>
   );

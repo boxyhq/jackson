@@ -1,5 +1,4 @@
 import useSWR from 'swr';
-import type { NextRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import type { User } from '@boxyhq/saml-jackson';
@@ -8,18 +7,18 @@ import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
 import { TableBodyType } from '../shared/Table';
 import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
+import { useRouter } from '../hooks';
 
 export const DirectoryUsers = ({
   urls,
   onView,
-  router,
 }: {
   urls: { getUsers: string; getDirectory: string; tabBase: string };
   onView?: (user: User) => void;
-  router: NextRouter;
 }) => {
+  const { router } = useRouter();
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap } = usePaginate(router);
+  const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
 
   const params = {
     offset: paginate.offset,
