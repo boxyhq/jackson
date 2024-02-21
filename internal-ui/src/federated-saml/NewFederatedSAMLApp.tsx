@@ -10,8 +10,8 @@ import { PageHeader } from '../shared';
 
 type NewSAMLFederationApp = Pick<
   SAMLFederationApp,
-  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings'
->;
+  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings' | 'type' | 'redirectUrl'
+> & { redirectUrlText: string };
 
 export const NewFederatedSAMLApp = ({
   samlAudience = 'https://saml.boxyhq.com',
@@ -31,6 +31,8 @@ export const NewFederatedSAMLApp = ({
   const { t } = useTranslation('common');
 
   const initialValues: NewSAMLFederationApp = {
+    type: 'saml',
+    redirectUrlText: '',
     name: '',
     tenant: '',
     product: '',
@@ -49,6 +51,10 @@ export const NewFederatedSAMLApp = ({
   const formik = useFormik<NewSAMLFederationApp>({
     initialValues: initialValues,
     onSubmit: async (values) => {
+      const redirectUrlList = (values.redirectUrlText as string)?.split(/\r\n|\r|\n/);
+      values.redirectUrl = values.redirectUrlText && redirectUrlList ? redirectUrlList : undefined;
+      values.redirectUrlText = '';
+
       const rawResponse = await fetch(urls.createApp, {
         method: 'POST',
         body: JSON.stringify(values),
@@ -65,6 +71,9 @@ export const NewFederatedSAMLApp = ({
     },
   });
 
+  const connectionIsSAML = formik.values.type === 'saml';
+  const connectionIsOIDC = formik.values.type === 'oidc';
+
   const generateEntityId = () => {
     const id = crypto.randomUUID().replace(/-/g, '');
     const entityId = `${samlAudience}/${id}`;
@@ -78,13 +87,45 @@ export const NewFederatedSAMLApp = ({
       <PageHeader title={t('bui-fs-create-app')} />
       <form onSubmit={formik.handleSubmit} method='POST'>
         <Card className='p-6 rounded space-y-3'>
+          <div className='mb-4 flex items-center'>
+            <div className='mr-2 py-3'>{t('select_app_type')}:</div>
+            <div className='flex w-52'>
+              <div className='form-control'>
+                <label className='label mr-4 cursor-pointer'>
+                  <input
+                    type='radio'
+                    name='type'
+                    value='saml'
+                    className='radio-primary radio'
+                    checked={formik.values.type === 'saml'}
+                    onChange={formik.handleChange}
+                  />
+                  <span className='label-text ml-1'>{t('saml')}</span>
+                </label>
+              </div>
+              <div className='form-control'>
+                <label className='label mr-4 cursor-pointer' data-testid='sso-type-oidc'>
+                  <input
+                    type='radio'
+                    name='type'
+                    value='oidc'
+                    className='radio-primary radio'
+                    checked={formik.values.type === 'oidc'}
+                    onChange={formik.handleChange}
+                  />
+                  <span className='label-text ml-1'>{t('oidc')}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
           <label className='form-control w-full'>
             <div className='label'>
               <span className='label-text'>{t('bui-shared-name')}</span>
             </div>
             <input
               type='text'
-              placeholder='Your app'
+              placeholder='acme'
               className='input input-bordered w-full text-sm'
               name='name'
               value={formik.values.name}
@@ -98,7 +139,7 @@ export const NewFederatedSAMLApp = ({
             </div>
             <input
               type='text'
-              placeholder='acme'
+              placeholder='example.com'
               className='input input-bordered w-full text-sm'
               name='tenant'
               value={formik.values.tenant}
@@ -122,49 +163,71 @@ export const NewFederatedSAMLApp = ({
               />
             </label>
           )}
-          <label className='form-control w-full'>
-            <div className='label'>
-              <span className='label-text'>{t('bui-fs-acs-url')}</span>
-            </div>
-            <input
-              type='url'
-              placeholder='https://your-sp.com/saml/acs'
-              className='input input-bordered w-full text-sm'
-              name='acsUrl'
-              value={formik.values.acsUrl}
-              onChange={formik.handleChange}
-              required
-            />
-          </label>
-          <label className='form-control w-full'>
-            <div className='label'>
-              <span className='label-text'>{t('bui-fs-entity-id')}</span>
-              <span className='label-text-alt'>
-                <div className='flex items-center gap-1'>
-                  <span
-                    className='cursor-pointer border-stone-600 border p-1 rounded'
-                    onClick={generateEntityId}>
-                    {t('bui-fs-generate-sp-entity-id')}
-                  </span>
-                  <div className='tooltip tooltip-left' data-tip={t('bui-fs-entity-id-instruction')}>
-                    <QuestionMarkCircleIcon className='h-5 w-5' />
-                  </div>
-                </div>
-              </span>
-            </div>
-            <input
-              type='text'
-              placeholder='https://your-sp.com/saml/entityId'
-              className='input input-bordered w-full text-sm'
-              name='entityId'
-              value={formik.values.entityId}
-              onChange={formik.handleChange}
-              required
-            />
-            <label className='label'>
-              <span className='label-text-alt'>{t('bui-fs-entity-id-change-restriction')}</span>
+          {connectionIsSAML && (
+            <label className='form-control w-full'>
+              <div className='label'>
+                <span className='label-text'>{t('bui-fs-acs-url')}</span>
+              </div>
+              <input
+                type='url'
+                placeholder='https://your-sp.com/saml/acs'
+                className='input input-bordered w-full text-sm'
+                name='acsUrl'
+                value={formik.values.acsUrl}
+                onChange={formik.handleChange}
+                required
+              />
             </label>
-          </label>
+          )}
+          {connectionIsOIDC && (
+            <label className='form-control w-full'>
+              <div className='label'>
+                <span className='label-text'>{t('allowed_redirect_url')}</span>
+              </div>
+              <textarea
+                name='redirectUrlText'
+                placeholder={'http://localhost:3366'}
+                value={formik.values.redirectUrlText}
+                // required={required}
+                // readOnly={readOnly}
+                // maxLength={maxLength}
+                onChange={formik.handleChange}
+                className={'textarea-bordered textarea h-24 w-full' + 'whitespace-pre'}
+                rows={3}
+              />
+            </label>
+          )}
+          {connectionIsSAML && (
+            <label className='form-control w-full'>
+              <div className='label'>
+                <span className='label-text'>{t('bui-fs-entity-id')}</span>
+                <span className='label-text-alt'>
+                  <div className='flex items-center gap-1'>
+                    <span
+                      className='cursor-pointer border-stone-600 border p-1 rounded'
+                      onClick={generateEntityId}>
+                      {t('bui-fs-generate-sp-entity-id')}
+                    </span>
+                    <div className='tooltip tooltip-left' data-tip={t('bui-fs-entity-id-instruction')}>
+                      <QuestionMarkCircleIcon className='h-5 w-5' />
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <input
+                type='text'
+                placeholder='https://your-sp.com/saml/entityId'
+                className='input input-bordered w-full text-sm'
+                name='entityId'
+                value={formik.values.entityId}
+                onChange={formik.handleChange}
+                required
+              />
+              <label className='label'>
+                <span className='label-text-alt'>{t('bui-fs-entity-id-change-restriction')}</span>
+              </label>
+            </label>
+          )}
           <label className='form-control w-full'>
             <label className='label'>
               <span className='label-text'>{t('bui-fs-tenants')}</span>
@@ -183,20 +246,23 @@ export const NewFederatedSAMLApp = ({
               <span className='label-text-alt'>{t('bui-fs-tenants-mapping-desc')}</span>
             </label>
           </label>
-          <label className='form-control w-full'>
-            <div className='label'>
-              <span className='label-text'>{t('bui-fs-attribute-mappings')}</span>
-            </div>
-            <div className='label'>
-              <span className='label-text-alt'>{t('bui-fs-attribute-mappings-desc')}</span>
-            </div>
-          </label>
-          <AttributesMapping
-            mappings={formik.values.mappings || []}
-            onAttributeMappingsChange={(mappings) => formik.setFieldValue('mappings', mappings)}
-          />
+          {connectionIsSAML && (
+            <label className='form-control w-full'>
+              <div className='label'>
+                <span className='label-text'>{t('bui-fs-attribute-mappings')}</span>
+              </div>
+              <div className='label'>
+                <span className='label-text-alt'>{t('bui-fs-attribute-mappings-desc')}</span>
+              </div>
+              <AttributesMapping
+                mappings={formik.values.mappings || []}
+                onAttributeMappingsChange={(mappings) => formik.setFieldValue('mappings', mappings)}
+              />
+            </label>
+          )}
           <div className='flex gap-2 justify-end pt-6'>
             <Button
+              type='submit'
               className='btn btn-primary btn-md'
               loading={formik.isSubmitting}
               disabled={!formik.dirty || !formik.isValid}>
