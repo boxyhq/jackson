@@ -315,6 +315,8 @@
   "bui-fs-apps": "SAML Federation Apps",
   "bui-fs-new-app": "New App",
   "bui-fs-idp-config": "IdP Configuration",
+  "bui-fs-saml-attributes": "SAML Attributes",
+  "bui-fs-oidc-attributes": "OIDC Attributes",
   "bui-dsync-name": "Name",
   "bui-dsync-actions": "Actions",
   "bui-dsync-view": "View",
