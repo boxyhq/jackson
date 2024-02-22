@@ -51,11 +51,12 @@
     "check-types": "tsc --pretty --noEmit",
     "check-format": "prettier --check .",
     "check-lint": "next lint && eslint -c .eslintrc.js --ext ts --ext tsx --ext js ./",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "locale-check": "node locale-check.js"
   },
   "dependencies": {
     "@boxyhq/metrics": "0.2.6",
-    "@boxyhq/react-ui": "3.3.36",
+    "@boxyhq/react-ui": "3.3.37",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.1.1",
     "@retracedhq/logs-viewer": "2.7.1",
@@ -92,9 +93,9 @@
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.6",
     "@types/node": "20.10.1",
-    "@types/react": "18.2.56",
+    "@types/react": "18.2.57",
     "@typescript-eslint/eslint-plugin": "7.0.2",
-    "@typescript-eslint/parser": "7.0.1",
+    "@typescript-eslint/parser": "7.0.2",
     "autoprefixer": "10.4.17",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
