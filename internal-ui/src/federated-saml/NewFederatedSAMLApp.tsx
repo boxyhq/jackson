@@ -7,11 +7,12 @@ import QuestionMarkCircleIcon from '@heroicons/react/24/outline/QuestionMarkCirc
 import { defaultHeaders } from '../utils';
 import { AttributesMapping } from './AttributesMapping';
 import { PageHeader } from '../shared';
+import { ItemList } from '../shared/ItemList';
 
 type NewSAMLFederationApp = Pick<
   SAMLFederationApp,
   'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings' | 'type' | 'redirectUrl'
-> & { redirectUrlText: string };
+>;
 
 export const NewFederatedSAMLApp = ({
   samlAudience = 'https://saml.boxyhq.com',
@@ -32,7 +33,6 @@ export const NewFederatedSAMLApp = ({
 
   const initialValues: NewSAMLFederationApp = {
     type: 'saml',
-    redirectUrlText: '',
     name: '',
     tenant: '',
     product: '',
@@ -51,9 +51,6 @@ export const NewFederatedSAMLApp = ({
   const formik = useFormik<NewSAMLFederationApp>({
     initialValues: initialValues,
     onSubmit: async (values) => {
-      const redirectUrlList = (values.redirectUrlText as string)?.split(/\r\n|\r|\n/);
-      values.redirectUrl = values.redirectUrlText && redirectUrlList ? redirectUrlList : undefined;
-      values.redirectUrlText = '';
 
       const rawResponse = await fetch(urls.createApp, {
         method: 'POST',
@@ -182,19 +179,11 @@ export const NewFederatedSAMLApp = ({
           {connectionIsOIDC && (
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('allowed_redirect_url')}</span>
+                <span className='label-text'>{t('allowed_redirect_url_new')}</span>
               </div>
-              <textarea
-                name='redirectUrlText'
-                placeholder={'http://localhost:3366'}
-                value={formik.values.redirectUrlText}
-                // required={required}
-                // readOnly={readOnly}
-                // maxLength={maxLength}
-                onChange={formik.handleChange}
-                className={'textarea-bordered textarea h-24 w-full' + 'whitespace-pre'}
-                rows={3}
-              />
+              <ItemList
+                currentlist={formik.values.redirectUrl || ['']}
+                onItemListChange={(newList) => formik.setFieldValue('redirectUrl', newList)}></ItemList>
             </label>
           )}
           {connectionIsSAML && (

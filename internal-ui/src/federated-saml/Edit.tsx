@@ -5,8 +5,9 @@ import { useTranslation } from 'next-i18next';
 import { useFormik } from 'formik';
 import { Card } from '../shared';
 import { defaultHeaders } from '../utils';
+import { ItemList } from '../shared/ItemList';
 
-type EditApp = Pick<SAMLFederationApp, 'name' | 'acsUrl' | 'tenants'>;
+type EditApp = Pick<SAMLFederationApp, 'name' | 'acsUrl' | 'tenants' | 'redirectUrl'>;
 
 export const Edit = ({
   app,
@@ -32,6 +33,7 @@ export const Edit = ({
       name: app.name || '',
       acsUrl: app.acsUrl || '',
       tenants: app.tenants || [],
+      redirectUrl: app.redirectUrl || [],
     },
     onSubmit: async (values) => {
       const rawResponse = await fetch(urls.patch, {
@@ -151,6 +153,16 @@ export const Edit = ({
                       onChange={formik.handleChange}
                       required
                     />
+                  </label>
+                )}
+                {connectionIsOIDC && (
+                  <label className='form-control w-full'>
+                    <div className='label'>
+                      <span className='label-text'>{t('allowed_redirect_url_new')}</span>
+                    </div>
+                    <ItemList
+                      currentlist={formik.values.redirectUrl || ['']}
+                      onItemListChange={(newList) => formik.setFieldValue('redirectUrl', newList)}></ItemList>
                   </label>
                 )}
                 <label className='form-control w-full'>
