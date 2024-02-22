@@ -12,7 +12,7 @@ import {
 } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate } from '../hooks';

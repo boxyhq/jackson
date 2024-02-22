@@ -2,7 +2,8 @@ import { ButtonLink } from '@components/ButtonLink';
 import { Dispatch, FormEvent, SetStateAction, useMemo, useState } from 'react';
 import { EditViewOnlyFields, getCommonFields } from './fieldCatalog';
 import { CopyToClipboardButton } from '@components/ClipboardButton';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
+import EyeSlashIcon from '@heroicons/react/24/outline/EyeSlashIcon';
 import { IconButton } from '@components/IconButton';
 import { useTranslation } from 'next-i18next';
 

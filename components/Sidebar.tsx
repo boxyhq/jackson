@@ -10,7 +10,7 @@ import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
 import Vault from '@components/logo/Vault';
-import { Cog8ToothIcon } from '@heroicons/react/24/outline';
+import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
 
 type SidebarProps = {
   isOpen: boolean;

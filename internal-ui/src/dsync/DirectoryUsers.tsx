@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import type { User } from '@boxyhq/saml-jackson';
 import { addQueryParamsToPath, fetcher } from '../utils';
 import { DirectoryTab } from '../dsync';

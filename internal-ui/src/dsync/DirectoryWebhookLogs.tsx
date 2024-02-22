@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import type { WebhookEventLog } from '@boxyhq/saml-jackson';
 import { fetcher, addQueryParamsToPath } from '../utils';
 import { DirectoryTab } from '../dsync';
