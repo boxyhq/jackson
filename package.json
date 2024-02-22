@@ -51,7 +51,8 @@
     "check-types": "tsc --pretty --noEmit",
     "check-format": "prettier --check .",
     "check-lint": "next lint && eslint -c .eslintrc.js --ext ts --ext tsx --ext js ./",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "locale-check": "node locale-check.js"
   },
   "dependencies": {
     "@boxyhq/internal-ui": "file:internal-ui",

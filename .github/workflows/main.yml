@@ -141,6 +141,7 @@ jobs:
       - run: npm install
       - run: npm run check-lint
       - run: npm run check-format
+      - run: npm run locale-check
       - run: npm run build
       - run: npm run test
         working-directory: ./npm
