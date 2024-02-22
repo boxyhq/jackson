@@ -40,7 +40,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
     product: setupLink.product,
   });
 
-  return res.json({ data: connections });
+  return res.json(connections);
 };
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
