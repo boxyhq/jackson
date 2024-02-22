@@ -18,7 +18,8 @@
     "build-watch": "vite build --watch",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "publish-local": "./dev/verdaccio.sh"
+    "publish-local": "./dev/verdaccio.sh",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "vite-tsconfig-paths": "4.3.1"
