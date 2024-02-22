@@ -2,18 +2,25 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
+  try {
+    switch (req.method) {
+      case 'GET':
+        await handleGET(req, res);
+        break;
+      case 'DELETE':
+        await handleDELETE(req, res);
+        break;
+      default:
+        res.setHeader('Allow', 'GET, DELETE');
+        res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
+    }
+  } catch (error: any) {
+    const { message, statusCode = 500 } = error;
+    return res.status(statusCode).json({ error: { message } });
   }
 }
 
-// Get the users
+// Get webhook events
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
@@ -41,16 +48,33 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     product = directory.product;
   }
 
-  const { data, error } = await directorySyncController.users.setTenantAndProduct(tenant, product).getAll({
+  const events = await directorySyncController.webhookLogs.setTenantAndProduct(tenant, product).getAll({
     pageOffset: parseInt(searchParams.offset || '0'),
     pageLimit: parseInt(searchParams.limit || '15'),
     pageToken: searchParams.pageToken || undefined,
     directoryId: searchParams.directoryId,
   });
 
+  return res.json({ data: events });
+};
+
+// Delete webhook events for a directory
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { directorySyncController } = await jackson();
+
+  const { directoryId } = req.query as {
+    directoryId: string;
+  };
+
+  const { data: directory, error } = await directorySyncController.directories.get(directoryId);
+
   if (error) {
     return res.status(error.code).json({ error });
   }
 
-  return res.status(200).json({ data });
+  await directorySyncController.webhookLogs
+    .setTenantAndProduct(directory.tenant, directory.product)
+    .deleteAll(directory.id);
+
+  return res.json({ data: null });
 };
