@@ -1,23 +1,12 @@
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
-import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
-import EmptyState from '@components/EmptyState';
-import { useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { IconButton } from '@components/IconButton';
 import { InputWithCopyButton } from '@components/ClipboardButton';
-import { Pagination, pageLimit, NoMoreResults } from '@components/Pagination';
-import usePaginate from '@lib/ui/hooks/usePaginate';
-import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
-import useSWR from 'swr';
-import { fetcher } from '@lib/ui/utils';
-import Loading from '@components/Loading';
-import { errorToast } from '@components/Toaster';
-import type { ApiError, ApiSuccess } from 'types';
-import Badge from '@components/Badge';
+import { pageLimit } from '@components/Pagination';
+import { ConnectionList } from '@boxyhq/react-ui/sso';
 
-const ConnectionList = ({
+const SSOConnectionList = ({
   setupLinkToken,
   idpEntityID,
   isSettingsView = false,
@@ -27,74 +16,22 @@ const ConnectionList = ({
   isSettingsView?: boolean;
 }) => {
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
   const router = useRouter();
 
-  const displayTenantProduct = setupLinkToken ? false : true;
-  let getConnectionsUrl = setupLinkToken
+  const isSetupLinkView = setupLinkToken ? true : false;
+  const getConnectionsUrl = setupLinkToken
     ? `/api/setup/${setupLinkToken}/sso-connection`
     : isSettingsView
-      ? `/api/admin/connections?isSystemSSO`
-      : `/api/admin/connections?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
+      ? '/api/admin/connections?isSystemSSO'
+      : '/api/admin/connections';
 
-  // Use the (next)pageToken mapped to the previous page offset to get the current page
-  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
-    getConnectionsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
-  }
   const createConnectionUrl = setupLinkToken
     ? `/setup/${setupLinkToken}/sso-connection/new`
     : isSettingsView
-      ? `/admin/settings/sso-connection/new`
+      ? '/admin/settings/sso-connection/new'
       : '/admin/sso-connection/new';
 
-  const { data, error, isLoading } = useSWR<
-    ApiSuccess<((SAMLSSORecord | OIDCSSORecord) & { isSystemSSO?: boolean })[]>,
-    ApiError
-  >(getConnectionsUrl, fetcher, { revalidateOnFocus: false });
-
-  const nextPageToken = data?.pageToken;
-  // store the nextPageToken against the pageOffset
-  useEffect(() => {
-    if (nextPageToken) {
-      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
-    }
-  }, [nextPageToken, paginate.offset]);
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
-    errorToast(error.message);
-    return null;
-  }
-
-  const connections = data?.data || [];
-  const noConnections = connections.length === 0 && paginate.offset === 0;
-  const noMoreResults = connections.length === 0 && paginate.offset > 0;
-
-  // TODO: Redirect to create a new connection if there are no connections
-  // if (connections && setupLinkToken && connections.length === 0) {
-  //   router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
-  //   return null;
-  // }
-
-  // Find the display name for a connection
-  const connectionDisplayName = (connection: SAMLSSORecord | OIDCSSORecord) => {
-    if (connection.name) {
-      return connection.name;
-    }
-
-    if ('idpMetadata' in connection) {
-      return connection.idpMetadata.friendlyProviderName || connection.idpMetadata.provider;
-    }
-
-    if ('oidcProvider' in connection) {
-      return connection.oidcProvider.provider;
-    }
-
-    return 'Unknown';
-  };
+  const enablePagination = !isSettingsView && !isSetupLinkView;
 
   return (
     <div>
@@ -123,125 +60,44 @@ const ConnectionList = ({
           </div>
         </div>
       )}
-      {noConnections ? (
-        <EmptyState title={t('no_connections_found')} href={createConnectionUrl} />
-      ) : (
-        <>
-          <div className='rounder border'>
-            <table className='w-full text-left text-sm text-gray-500 dark:text-gray-400'>
-              <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
-                <tr className='hover:bg-gray-50'>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('name')}
-                  </th>
-                  {displayTenantProduct && (
-                    <>
-                      <th scope='col' className='px-6 py-3'>
-                        {t('tenant')}
-                      </th>
-                      <th scope='col' className='px-6 py-3'>
-                        {t('product')}
-                      </th>
-                    </>
-                  )}
-                  <th scope='col' className='px-6 py-3'>
-                    {t('idp_type')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('status')}
-                  </th>
-                  <th scope='col' className='px-6 py-3'>
-                    {t('actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {connections.map((connection) => {
-                  const connectionIsSAML = 'idpMetadata' in connection;
-                  const connectionIsOIDC = 'oidcProvider' in connection;
-                  const isSystemSSO = connection?.isSystemSSO;
-                  return (
-                    <tr
-                      key={connection.clientID}
-                      className='border-b bg-white last:border-b-0 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800'>
-                      <td className='break-all px-6 py-3 text-sm text-gray-500 dark:text-gray-400'>
-                        {connectionDisplayName(connection)}
-                        {isSystemSSO && (
-                          <Badge
-                            color='info'
-                            className='ml-2 uppercase'
-                            aria-label='is an sso connection for the admin portal'
-                            size='xs'>
-                            {t('system')}
-                          </Badge>
-                        )}
-                      </td>
-                      {displayTenantProduct && (
-                        <>
-                          <td className='break-all px-6 py-3'>{connection.tenant}</td>
-                          <td className='break-all px-6 py-3'>{connection.product}</td>
-                        </>
-                      )}
-                      <td className='px-6 py-3'>
-                        {connectionIsOIDC ? 'OIDC' : connectionIsSAML ? 'SAML' : ''}
-                      </td>
-                      <td className='px-6'>
-                        {connection.deactivated ? (
-                          <Badge color='warning' size='md'>
-                            {t('inactive')}
-                          </Badge>
-                        ) : (
-                          <Badge color='success' size='md'>
-                            {t('active')}
-                          </Badge>
-                        )}
-                      </td>
-                      <td className='px-6 py-3'>
-                        <span className='inline-flex items-baseline'>
-                          <IconButton
-                            tooltip={t('edit')}
-                            Icon={PencilIcon}
-                            className='hover:text-green-400'
-                            data-testid='edit'
-                            onClick={() => {
-                              router.push(
-                                setupLinkToken
-                                  ? `/setup/${setupLinkToken}/sso-connection/edit/${connection.clientID}`
-                                  : isSettingsView || isSystemSSO
-                                    ? `/admin/settings/sso-connection/edit/${connection.clientID}`
-                                    : `/admin/sso-connection/edit/${connection.clientID}`
-                              );
-                            }}
-                          />
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {noMoreResults && <NoMoreResults colSpan={5} />}
-              </tbody>
-            </table>
-          </div>
-          {!isSettingsView && (
-            <Pagination
-              itemsCount={connections.length}
-              offset={paginate.offset}
-              onPrevClick={() => {
-                setPaginate({
-                  offset: paginate.offset - pageLimit,
-                });
-              }}
-              onNextClick={() => {
-                setPaginate({
-                  offset: paginate.offset + pageLimit,
-                });
-              }}
-            />
-          )}
-        </>
-      )}
+
+      <ConnectionList
+        urls={{
+          get: getConnectionsUrl,
+        }}
+        cols={isSetupLinkView ? ['provider', 'type', 'status', 'actions'] : undefined}
+        handleListFetchComplete={(connections) => {
+          if (connections?.length === 0 && setupLinkToken) {
+            router.replace(`/setup/${setupLinkToken}/sso-connection/new`);
+          }
+        }}
+        paginate={
+          enablePagination
+            ? {
+                itemsPerPage: pageLimit,
+                handlePageChange: ({ offset }) => {
+                  const currentOffset = router.query.offset;
+                  if (currentOffset !== `${offset}`) {
+                    router.query.offset = `${offset}`;
+                    router.push(router);
+                  }
+                },
+              }
+            : undefined
+        }
+        handleActionClick={(action: 'edit', payload: any) => {
+          const isSystemSSO = payload?.isSystemSSO;
+          router.push(
+            setupLinkToken
+              ? `/setup/${setupLinkToken}/sso-connection/edit/${payload.clientID}`
+              : isSettingsView || isSystemSSO
+                ? `/admin/settings/sso-connection/edit/${payload.clientID}`
+                : `/admin/sso-connection/edit/${payload.clientID}`
+          );
+        }}
+      />
     </div>
   );
 };
 
-export default ConnectionList;
+export default SSOConnectionList;

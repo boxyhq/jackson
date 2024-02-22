@@ -51,12 +51,13 @@
     "check-types": "tsc --pretty --noEmit",
     "check-format": "prettier --check .",
     "check-lint": "next lint && eslint -c .eslintrc.js --ext ts --ext tsx --ext js ./",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "locale-check": "node locale-check.js"
   },
   "dependencies": {
     "@boxyhq/internal-ui": "file:internal-ui",
     "@boxyhq/metrics": "0.2.6",
-    "@boxyhq/react-ui": "3.3.36",
+    "@boxyhq/react-ui": "3.3.37",
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.1.1",
     "@retracedhq/logs-viewer": "2.7.1",

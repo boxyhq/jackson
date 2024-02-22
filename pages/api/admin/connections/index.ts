@@ -57,7 +57,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (paginatedConnectionList.pageToken) {
     res.setHeader('jackson-pagetoken', paginatedConnectionList.pageToken);
   }
-  return res.json({ data: connections });
+  return res.json(connections);
 };
 
 // Create a new connection

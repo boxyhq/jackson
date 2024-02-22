@@ -10,6 +10,8 @@ const localeFile = require('./locales/en/common.json');
 const files = fs.readdirSync('./', { recursive: true, withFileTypes: true });
 //console.log('files:', files);
 
+let error = false;
+
 files.forEach((file) => {
   if (file.isDirectory()) {
     return;
@@ -26,6 +28,7 @@ files.forEach((file) => {
       // console.log('match:', match);
       allStrings[id] = true;
       if (!localeFile[id]) {
+        error = true;
         console.error(`Missing key: ${path.join(file.path, file.name)} - ${id}`);
       }
     });
@@ -35,6 +38,7 @@ files.forEach((file) => {
       // console.log('match:', match, id);
       allStrings[id] = true;
       if (!localeFile[id]) {
+        error = true;
         console.error(`Missing key: ${path.join(file.path, file.name)} - ${id}`);
       }
     });
@@ -43,6 +47,11 @@ files.forEach((file) => {
 
 Object.keys(localeFile).forEach((key) => {
   if (!allStrings[key]) {
+    error = true;
     console.error(`Unused key: ${key}`);
   }
 });
+
+if (error) {
+  process.exit(1);
+}
