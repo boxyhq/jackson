@@ -7,8 +7,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'GET':
         await handleGET(req, res);
         break;
+      case 'DELETE':
+        await handleDELETE(req, res);
+        break;
       default:
-        res.setHeader('Allow', 'GET');
+        res.setHeader('Allow', 'GET, DELETE');
         res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
     }
   } catch (error: any) {
@@ -53,4 +56,25 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   return res.json({ data: events });
+};
+
+// Delete webhook events for a directory
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { directorySyncController } = await jackson();
+
+  const { directoryId } = req.query as {
+    directoryId: string;
+  };
+
+  const { data: directory, error } = await directorySyncController.directories.get(directoryId);
+
+  if (error) {
+    return res.status(error.code).json({ error });
+  }
+
+  await directorySyncController.webhookLogs
+    .setTenantAndProduct(directory.tenant, directory.product)
+    .deleteAll(directory.id);
+
+  return res.json({ data: null });
 };
