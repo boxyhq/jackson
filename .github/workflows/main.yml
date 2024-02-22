@@ -427,12 +427,8 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
           check-latest: true
-      - run: npm install --legacy-peer-deps
-        if: ${{ matrix.package == 'npm'}}
-        working-directory: ./npm
-      - run: npm install
-        if: ${{ matrix.package == 'internal-ui'}}
-        working-directory: ./internal-ui
+      - run: ${{ matrix.package == 'internal-ui' && 'npm install' || matrix.package == 'npm' && 'npm install --legacy-peer-deps' }}
+        working-directory: ./${{ matrix.package }}
       - name: Publish ${{ matrix.package }}
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
