@@ -1,24 +1,24 @@
 import useSWR from 'swr';
-import { useTranslation } from 'next-i18next';
-import { EyeIcon } from '@heroicons/react/24/outline';
-import type { User } from '@boxyhq/saml-jackson';
-import { addQueryParamsToPath, fetcher } from '../utils';
-import { DirectoryTab } from '../dsync';
-import { usePaginate, useDirectory } from '../hooks';
-import { TableBodyType } from '../shared/Table';
-import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
-import { useRouter } from '../hooks';
-import { Trace } from '@boxyhq/saml-jackson';
 import { useEffect } from 'react';
+import { useTranslation } from 'next-i18next';
+import type { Trace } from '@boxyhq/saml-jackson';
 
-export type ApiSuccess<T> = { data: T; pageToken?: string };
+import { usePaginate, useRouter } from '../hooks';
+import type { ApiError, ApiSuccess } from '../types';
+import { addQueryParamsToPath, fetcher } from '../utils';
+import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
 
-export interface ApiError extends Error {
-  info?: string;
-  status: number;
-}
+// TODO:
+// Check pagination
+// Verify the columns are correct
 
-export const SSOTracers = ({ urls }: { urls: { getTracers: string }; onView: (user: Trace) => void }) => {
+export const SSOTracers = ({
+  urls,
+  onView,
+}: {
+  urls: { getTracers: string };
+  onView: (user: Trace) => void;
+}) => {
   const { router } = useRouter();
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router!);
@@ -34,7 +34,6 @@ export const SSOTracers = ({ urls }: { urls: { getTracers: string }; onView: (us
   }
 
   const getUrl = addQueryParamsToPath(urls.getTracers, params);
-
   const { data, isLoading, error } = useSWR<ApiSuccess<Trace[]>, ApiError>(getUrl, fetcher);
 
   const nextPageToken = data?.pageToken;
@@ -45,7 +44,85 @@ export const SSOTracers = ({ urls }: { urls: { getTracers: string }; onView: (us
     }
   }, [nextPageToken, paginate.offset]);
 
-  console.log({ data, isLoading, error });
+  if (isLoading) {
+    return <Loading />;
+  }
 
-  return <>Tracers</>;
+  if (error) {
+    return <Error message={error.message} />;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const traces = data?.data || [];
+  const noTraces = traces.length === 0 && paginate.offset === 0;
+  const noMoreResults = traces.length === 0 && paginate.offset > 0;
+
+  const cols = [
+    t('bui-trace-id'),
+    t('bui-trace-description'),
+    t('bui-trace-assertion-type'),
+    t('bui-trace-timestamp'),
+  ];
+
+  const body = traces.map((trace) => {
+    return {
+      id: trace.traceId,
+      cells: [
+        {
+          wrap: true,
+          element: (
+            <button className='link-primary link flex' onClick={() => onView(trace)}>
+              {trace.traceId}
+            </button>
+          ),
+        },
+        {
+          wrap: true,
+          text: trace.error,
+        },
+        {
+          wrap: true,
+          text: trace.context?.samlResponse
+            ? t('bui-trace-response')
+            : trace?.context.samlRequest
+              ? t('bui-trace-request')
+              : '-',
+        },
+        {
+          wrap: true,
+          text: new Date(trace.timestamp).toLocaleString(),
+        },
+      ],
+    };
+  });
+
+  return (
+    <div className='space-y-3'>
+      <PageHeader title={t('bui-trace-title')} />
+      {noTraces ? (
+        <EmptyState title={t('bui-trace-no-traces')} />
+      ) : (
+        <>
+          <Table noMoreResults={noMoreResults} cols={cols} body={body} />
+          <Pagination
+            itemsCount={traces.length}
+            offset={paginate.offset}
+            onPrevClick={() => {
+              setPaginate({
+                offset: paginate.offset - pageLimit,
+              });
+            }}
+            onNextClick={() => {
+              setPaginate({
+                offset: paginate.offset + pageLimit,
+              });
+            }}
+          />
+        </>
+      )}
+    </div>
+  );
 };

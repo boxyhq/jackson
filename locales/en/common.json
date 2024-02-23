@@ -88,7 +88,6 @@
   "setup_link_dsync_description": "Create a unique Setup Link to share with your customer so they can set up Directory Sync for your app.",
   "saml_federation": "SAML Federation",
   "sso_tracer": "SSO Tracer",
-  "no_sso_traces_found": "No SSO Traces recorded yet.",
   "trace_details": "Trace details",
   "trace_id": "Trace ID",
   "timestamp": "Timestamp",
@@ -319,5 +318,13 @@
   "bui-dsync-delete-events-desc": "This action will permanently delete all webhook events log. Are you sure you want to proceed?",
   "bui-dsync-authorized-status": "Status",
   "bui-dsync-authorized": "Authorized",
-  "bui-dsync-not-authorized": "Not Authorized"
+  "bui-dsync-not-authorized": "Not Authorized",
+  "bui-trace-title": "SSO Tracer",
+  "bui-trace-id": "Trace ID",
+  "bui-trace-description": "Description",
+  "bui-trace-assertion-type": "Assertion Type",
+  "bui-trace-timestamp": "Timestamp",
+  "bui-trace-response": "Response",
+  "bui-trace-request": "Request",
+  "bui-trace-no-traces": "No SSO Traces recorded yet."
 }
