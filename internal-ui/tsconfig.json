@@ -12,7 +12,10 @@
     "declaration": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "paths": {
+      "react": [ "./node_modules/@types/react" ]
+    }
   },
   "include": ["./src/**/*"],
   "exclude": ["dist", "build", "node_modules"],
