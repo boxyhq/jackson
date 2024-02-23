@@ -194,12 +194,10 @@ jobs:
         run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
-        if: github.ref == 'refs/heads/release'
         id: buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Set up QEMU
-        if: github.ref == 'refs/heads/release'
         uses: docker/setup-qemu-action@v3
 
       - name: Login to Docker Hub
