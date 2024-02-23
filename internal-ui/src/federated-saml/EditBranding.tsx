@@ -1,6 +1,6 @@
 import { Button } from 'react-daisyui';
 import { useTranslation } from 'next-i18next';
-import { SAMLFederationApp } from '@types';
+import { SAMLFederationApp } from '../../../npm/src/typings';
 import { useFormik } from 'formik';
 import { defaultHeaders } from '../utils';
 import { Card } from '../shared';

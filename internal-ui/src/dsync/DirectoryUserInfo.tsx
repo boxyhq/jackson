@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import type { User } from '@types';
+import type { User } from '../../../npm/src/typings';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { fetcher } from '../utils';
