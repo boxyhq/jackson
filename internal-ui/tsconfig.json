@@ -13,6 +13,9 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "experimentalDecorators": true,
+    "paths": {
+      "@types": ["../npm/src/typings.ts"],
+    },
   },
   "include": ["./src/**/*"],
   "exclude": ["dist", "build", "node_modules"],
