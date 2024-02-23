@@ -210,14 +210,13 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push
-        if: github.ref == 'refs/heads/release'
         id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: ./
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ github.ref == 'refs/heads/release' }}
           tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
