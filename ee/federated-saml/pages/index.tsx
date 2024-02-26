@@ -20,7 +20,7 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
 
-  let getAppsUrl = `/api/admin/federated-saml?offset=${paginate.offset}&limit=${pageLimit}`;
+  let getAppsUrl = `/api/admin/federated-saml?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
 
   // Use the (next)pageToken mapped to the previous page offset to get the current page
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
