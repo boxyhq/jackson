@@ -31,15 +31,26 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(201).json({ data: app });
 };
 
+type PaginateParams = ({ offset: string; limit: string } | { pageOffset: string; pageLimit: string }) & {
+  pageToken?: string;
+};
+
 // Get SAML Federation apps
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { pageOffset, pageLimit, pageToken } = req.query as {
-    pageOffset: string;
-    pageLimit: string;
-    pageToken?: string;
-  };
+  const params = req.query as PaginateParams;
+
+  let pageOffset, pageLimit;
+  if ('offset' in params && 'limit' in params) {
+    pageOffset = params.offset;
+    pageLimit = params.limit;
+  } else if ('pageOffset' in params && 'pageLimit' in params) {
+    pageOffset = params.pageOffset;
+    pageLimit = params.pageLimit;
+  }
+
+  const pageToken = params.pageToken;
 
   const apps = await samlFederatedController.app.getAll({
     pageOffset: +(pageOffset || 0),
