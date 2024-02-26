@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { PaginateApiParams } from 'types';
 
 import jackson from '@lib/jackson';
 
@@ -31,15 +32,11 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(201).json({ data: app });
 };
 
-type PaginateParams = ({ offset: string; limit: string } | { pageOffset: string; pageLimit: string }) & {
-  pageToken?: string;
-};
-
 // Get SAML Federation apps
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const params = req.query as PaginateParams;
+  const params = req.query as PaginateApiParams;
 
   let pageOffset, pageLimit;
   if ('offset' in params && 'limit' in params) {
