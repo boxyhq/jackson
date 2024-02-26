@@ -3,7 +3,7 @@ import { DirectoryTab } from '../dsync';
 import { Loading, Error, PageHeader, Badge } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { InputWithCopyButton } from '../shared/InputWithCopyButton';
-import type { Directory } from '../../../npm/src/typings';
+import type { Directory } from '../types';
 
 type ExcludeFields = keyof Pick<Directory, 'tenant' | 'product' | 'webhook'>;
 

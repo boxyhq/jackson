@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
-import { AttributeMapping } from '../../../npm/src/typings';
+import { AttributeMapping } from '../types';
 
 const standardAttributes = {
   saml: [

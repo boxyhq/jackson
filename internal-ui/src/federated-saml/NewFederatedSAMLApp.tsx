@@ -2,7 +2,7 @@ import { useFormik } from 'formik';
 import TagsInput from 'react-tagsinput';
 import { Card, Button } from 'react-daisyui';
 import { useTranslation } from 'next-i18next';
-import { SAMLFederationApp } from '../../../npm/src/typings';
+import { SAMLFederationApp } from '../types';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { defaultHeaders } from '../utils';
 import { AttributesMapping } from './AttributesMapping';

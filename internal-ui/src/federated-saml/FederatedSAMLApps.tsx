@@ -11,7 +11,7 @@ import {
   ButtonPrimary,
 } from '../shared';
 import { useTranslation } from 'next-i18next';
-import { SAMLFederationApp } from '../../../npm/src/typings';
+import { SAMLFederationApp } from '../types';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';

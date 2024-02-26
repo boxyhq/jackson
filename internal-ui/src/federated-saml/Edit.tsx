@@ -1,5 +1,5 @@
 import { Button } from 'react-daisyui';
-import { SAMLFederationApp } from '../../../npm/src/typings';
+import { SAMLFederationApp } from '../types';
 import TagsInput from 'react-tagsinput';
 import { useTranslation } from 'next-i18next';
 import { useFormik } from 'formik';

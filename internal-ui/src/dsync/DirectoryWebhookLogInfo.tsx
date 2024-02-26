@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import type { WebhookEventLog } from '../../../npm/src/typings';
+import type { WebhookEventLog } from '../types';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 

@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { SAMLFederationApp } from '../../../npm/src/typings';
+import { SAMLFederationApp } from '../types';
 import { EditBranding } from './EditBranding';
 import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';
