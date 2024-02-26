@@ -79,11 +79,3 @@ export const oidcMetadataParse = (
   }
   return body;
 };
-
-export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
-  if ('deactivated' in connection) {
-    return connection.deactivated === false;
-  }
-
-  return true;
-};
