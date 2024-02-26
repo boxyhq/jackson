@@ -18,7 +18,7 @@ const SSOTraceViewer: NextPage = () => {
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate();
 
-  let getSSOTracesUrl = `/api/admin/sso-tracer?offset=${paginate.offset}&limit=${pageLimit}`;
+  let getSSOTracesUrl = `/api/admin/sso-tracer?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
   // Use the (next)pageToken mapped to the previous page offset to get the current page
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
     getSSOTracesUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
