@@ -1,16 +1,15 @@
 import useSWR from 'swr';
 import { useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
-import type { Trace } from '@boxyhq/saml-jackson';
 
+import type { Trace } from '../types';
 import { usePaginate, useRouter } from '../hooks';
 import type { ApiError, ApiSuccess } from '../types';
 import { addQueryParamsToPath, fetcher } from '../utils';
 import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
 
 // TODO:
-// Check pagination
-// Verify the columns are correct
+// Fix the translation keys
 
 export const SSOTracers = ({
   urls,
