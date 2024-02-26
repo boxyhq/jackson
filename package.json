@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -84,7 +84,7 @@
     "react-syntax-highlighter": "15.5.0",
     "react-tagsinput": "3.20.3",
     "remark-gfm": "3.0.1",
-    "sharp": "0.32.6",
+    "sharp": "0.33.2",
     "swr": "2.2.5"
   },
   "devDependencies": {
@@ -93,13 +93,13 @@
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.6",
     "@types/node": "20.10.1",
-    "@types/react": "18.2.57",
+    "@types/react": "18.2.58",
     "@typescript-eslint/eslint-plugin": "7.0.2",
     "@typescript-eslint/parser": "7.0.2",
     "autoprefixer": "10.4.17",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
-    "eslint": "8.56.0",
+    "eslint": "8.57.0",
     "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.0.3",
