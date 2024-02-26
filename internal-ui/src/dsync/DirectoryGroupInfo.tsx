@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import type { Group } from '@boxyhq/saml-jackson';
+import type { Group } from '../types';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { fetcher } from '../utils';

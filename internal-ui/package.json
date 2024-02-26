@@ -25,7 +25,6 @@
     "vite-tsconfig-paths": "4.3.1"
   },
   "devDependencies": {
-    "@boxyhq/saml-jackson": "file:npm",
     "@rollup/plugin-typescript": "11.1.6",
     "@types/react": "18.2.56",
     "@vitejs/plugin-react": "4.2.1",

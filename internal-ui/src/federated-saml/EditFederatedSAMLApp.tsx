@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import type { SAMLFederationApp } from '../types';
 import { EditBranding } from './EditBranding';
 import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';

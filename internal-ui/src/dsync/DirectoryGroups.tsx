@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
-import type { Group } from '@boxyhq/saml-jackson';
+import type { Group } from '../types';
 import { fetcher, addQueryParamsToPath } from '../utils';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
