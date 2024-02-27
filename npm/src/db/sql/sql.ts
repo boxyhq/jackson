@@ -173,7 +173,7 @@ class Sql implements DatabaseDriver {
   ): Promise<Records> {
     const skipOffset = pageOffset === undefined || !dbutils.isNumeric(pageOffset);
     const skipLimit = pageLimit === undefined || !dbutils.isNumeric(pageLimit);
-    const capToMaxLimitAndStartFromZero = skipLimit || pageLimit > this.options.pageLimit!;
+    const capToMaxLimit = skipLimit || pageLimit > this.options.pageLimit!; // capped to 50 by default
 
     const res = await this.storeRepository.find({
       where: { namespace: namespace },
@@ -181,7 +181,7 @@ class Sql implements DatabaseDriver {
       order: {
         ['createdAt']: sortOrder || 'DESC',
       },
-      take: capToMaxLimitAndStartFromZero ? this.options.pageLimit : pageLimit,
+      take: capToMaxLimit ? this.options.pageLimit : pageLimit,
       skip: skipOffset ? 0 : pageOffset,
     });
 
