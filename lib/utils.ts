@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import micromatch from 'micromatch';
 import type { OIDCSSOConnectionWithDiscoveryUrl, OIDCSSOConnectionWithMetadata } from '@boxyhq/saml-jackson';
 import { JacksonError } from 'npm/src/controller/error';
+import type { PaginateApiParams } from 'types';
 
 export const validateEmailWithACL = (email: string) => {
   const NEXTAUTH_ACL = process.env.NEXTAUTH_ACL || undefined;
@@ -72,4 +73,25 @@ export const oidcMetadataParse = (
     }
   }
   return body;
+};
+
+export const parsePaginateApiParams = (params: PaginateApiParams) => {
+  let pageOffset, pageLimit;
+  if ('offset' in params && 'limit' in params) {
+    pageOffset = params.offset;
+    pageLimit = params.limit;
+  } else if ('pageOffset' in params && 'pageLimit' in params) {
+    pageOffset = params.pageOffset;
+    pageLimit = params.pageLimit;
+  }
+
+  pageOffset = parseInt(pageOffset);
+  pageLimit = parseInt(pageLimit);
+  const pageToken = params.pageToken;
+
+  return {
+    pageOffset,
+    pageLimit,
+    pageToken,
+  };
 };

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import type { IAdminController } from '@boxyhq/saml-jackson';
 import { PaginateApiParams } from 'types';
+import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -25,23 +26,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 // Get SAML Traces
 const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminController: IAdminController) => {
   const params = req.query as PaginateApiParams;
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(params);
 
-  let pageOffset, pageLimit;
-  if ('offset' in params && 'limit' in params) {
-    pageOffset = params.offset;
-    pageLimit = params.limit;
-  } else if ('pageOffset' in params && 'pageLimit' in params) {
-    pageOffset = params.pageOffset;
-    pageLimit = params.pageLimit;
-  }
-
-  const pageToken = params.pageToken;
-
-  const tracesPaginated = await adminController.getAllSSOTraces(
-    parseInt(pageOffset),
-    parseInt(pageLimit),
-    pageToken
-  );
+  const tracesPaginated = await adminController.getAllSSOTraces(pageOffset, pageLimit, pageToken);
 
   if (tracesPaginated.pageToken) {
     res.setHeader('jackson-pagetoken', tracesPaginated.pageToken);
