@@ -171,7 +171,9 @@ class Sql implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const skipOffset = pageOffset === undefined || !dbutils.isNumeric(pageOffset);
+    const skipLimit = pageLimit === undefined || !dbutils.isNumeric(pageLimit);
+    const capToMaxLimitAndStartFromZero = skipLimit || pageLimit > this.options.pageLimit;
 
     const res = await this.storeRepository.find({
       where: { namespace: namespace },
@@ -179,8 +181,8 @@ class Sql implements DatabaseDriver {
       order: {
         ['createdAt']: sortOrder || 'DESC',
       },
-      take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
-      skip: skipOffsetAndLimitValue ? 0 : pageOffset,
+      take: capToMaxLimitAndStartFromZero ? this.options.pageLimit : pageLimit,
+      skip: skipOffset ? 0 : pageOffset,
     });
 
     return { data: res || [] };
