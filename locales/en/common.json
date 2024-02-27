@@ -327,5 +327,13 @@
   "bui-tracer-access-token-from-oidc-idp": "Access Token (from OIDC Provider)",
   "bui-tracer-stack-trace": "Stack Trace",
   "bui-tracer-session-state-from-oidc-idp": "Session State (from OIDC Provider)",
-  "bui-tracer-scope-from-op-error": "Scope (from OIDC Provider)"
+  "bui-tracer-scope-from-op-error": "Scope (from OIDC Provider)",
+  "bui-sl-create-link": "Create Setup Link",
+  "bui-sl-dsync-name": "Name (Optional)",
+  "bui-sl-tenant": "Tenant",
+  "bui-sl-product": "Product",
+  "bui-sl-create": "Create Setup Link",
+  "bui-sl-expiry-days": "Expiry in days",
+  "bui-sl-default-redirect-url": "Default redirect URL",
+  "bui-sl-allowed-redirect-urls": "Allowed redirect URLs (newline separated)"
 }

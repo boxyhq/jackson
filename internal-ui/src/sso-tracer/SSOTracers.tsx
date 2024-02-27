@@ -8,9 +8,6 @@ import type { ApiError, ApiSuccess } from '../types';
 import { addQueryParamsToPath, fetcher } from '../utils';
 import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
 
-// TODO:
-// Fix the translation keys
-
 export const SSOTracers = ({
   urls,
   onView,

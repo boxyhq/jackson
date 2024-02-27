@@ -140,3 +140,18 @@ export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     oidcTokenSet?: { id_token?: string; access_token?: string };
   };
 }
+
+export type SetupLinkService = 'sso' | 'dsync';
+
+export type SetupLink = {
+  setupID: string;
+  tenant: string;
+  name?: string;
+  description?: string;
+  defaultRedirectUrl?: string;
+  redirectUrl?: string;
+  product: string;
+  url: string;
+  service: SetupLinkService;
+  validTill: number;
+};
