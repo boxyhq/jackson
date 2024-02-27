@@ -23,6 +23,20 @@ export const sleep = (ms: number): Promise<void> => {
 export function isNumeric(num) {
   return !isNaN(num);
 }
+export const normalizeOffsetAndLimit = ({
+  pageLimit,
+  pageOffset,
+  maxLimit,
+}: {
+  pageOffset?: number;
+  pageLimit?: number;
+  maxLimit: number;
+}) => {
+  const skipOffset = pageOffset === undefined || !isNumeric(pageOffset);
+  // options.pageLimit capped to 50 by default unless set from env
+  const capToMaxLimit = pageLimit === undefined || !isNumeric(pageLimit) || pageLimit > maxLimit;
+  return { skipOffset, capToMaxLimit };
+};
 export const indexPrefix = '_index';
 export const createdAtPrefix = '_createdAt';
 export const modifiedAtPrefix = '_modifiedAt';

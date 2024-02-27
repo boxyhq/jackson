@@ -171,9 +171,11 @@ class Sql implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const skipOffset = pageOffset === undefined || !dbutils.isNumeric(pageOffset);
-    const skipLimit = pageLimit === undefined || !dbutils.isNumeric(pageLimit);
-    const capToMaxLimit = skipLimit || pageLimit > this.options.pageLimit!; // capped to 50 by default
+    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
 
     const res = await this.storeRepository.find({
       where: { namespace: namespace },
@@ -197,21 +199,20 @@ class Sql implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const skipOffsetAndLimitValue = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
+    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
     const sort = {
       id: sortOrder || 'DESC',
     };
-    const res = skipOffsetAndLimitValue
-      ? await this.indexRepository.find({
-          where: { key: dbutils.keyForIndex(namespace, idx) },
-          order: sort,
-        })
-      : await this.indexRepository.find({
-          where: { key: dbutils.keyForIndex(namespace, idx) },
-          take: skipOffsetAndLimitValue ? this.options.pageLimit : pageLimit,
-          skip: skipOffsetAndLimitValue ? 0 : pageOffset,
-          order: sort,
-        });
+    const res = await this.indexRepository.find({
+      where: { key: dbutils.keyForIndex(namespace, idx) },
+      take: capToMaxLimit ? this.options.pageLimit : pageLimit,
+      skip: skipOffset ? 0 : pageOffset,
+      order: sort,
+    });
 
     const ret: Encrypted[] = [];
     if (res) {
