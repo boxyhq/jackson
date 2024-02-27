@@ -95,9 +95,9 @@
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.6",
     "@types/node": "20.10.1",
-    "@types/react": "18.2.58",
-    "@typescript-eslint/eslint-plugin": "7.0.2",
-    "@typescript-eslint/parser": "7.0.2",
+    "@types/react": "18.2.59",
+    "@typescript-eslint/eslint-plugin": "7.1.0",
+    "@typescript-eslint/parser": "7.1.0",
     "autoprefixer": "10.4.17",
     "cross-env": "7.0.3",
     "env-cmd": "10.1.0",
@@ -105,6 +105,7 @@
     "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.0.3",
+    "jose": "5.2.2",
     "postcss": "8.4.35",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.5.11",
@@ -113,8 +114,7 @@
     "tailwindcss": "3.4.1",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.2.2",
-    "jose": "5.2.2"
+    "typescript": "5.2.2"
   },
   "engines": {
     "node": ">=18.14.2",
