@@ -409,7 +409,7 @@ export interface DatabaseOption {
   ttl?: number;
   cleanupLimit?: number;
   encryptionKey?: string;
-  pageLimit: number;
+  pageLimit?: number;
   ssl?: any;
   dynamodb?: {
     region?: string;
