@@ -13,14 +13,11 @@ export const SetupLinkInfo = ({ setupLink, onClose }: { setupLink: SetupLink; on
       <Card className='border-primary'>
         <Card.Body>
           <div>
-            <InputWithCopyButton
-              text={setupLink.url}
-              label='Share this link with your customers to allow them to set up the integration'
-            />
+            <InputWithCopyButton text={setupLink.url} label={t('bui-sl-share-info')} />
           </div>
           <div>
             <Button size='sm' color='primary' onClick={onClose}>
-              Close
+              {t('bui-sl-btn-close')}
             </Button>
           </div>
         </Card.Body>

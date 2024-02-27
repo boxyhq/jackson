@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { SSOForm } from './SSOForm';
 import { PageHeader } from '../shared';
 import { DSyncForm } from './DSyncForm';
-import type { SetupLinkService } from '../types';
+import type { SetupLinkService, SetupLink } from '../types';
 
 export const NewSetupLink = ({
   urls,
@@ -16,7 +16,7 @@ export const NewSetupLink = ({
   urls: { createLink: string };
   service: SetupLinkService;
   expiryDays: number;
-  onCreate: (data: any) => void;
+  onCreate: (data: SetupLink) => void;
   onError: (error: Error) => void;
   excludeFields?: 'product'[];
 }) => {

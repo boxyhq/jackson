@@ -8,7 +8,7 @@ import type { SetupLink } from '../types';
 import { defaultHeaders } from '../utils';
 import { SetupLinkInfo } from './SetupLinkInfo';
 
-type CreateSetupLinkInput = {
+interface CreateSetupLinkInput {
   name: string;
   tenant: string;
   product: string;
@@ -17,10 +17,7 @@ type CreateSetupLinkInput = {
   regenerate: boolean;
   redirectUrl: string;
   defaultRedirectUrl: string;
-};
-
-// TODO:
-// Combine with DSyncForm
+}
 
 export const SSOForm = ({
   urls,
@@ -74,17 +71,14 @@ export const SSOForm = ({
       <form onSubmit={formik.handleSubmit} method='POST'>
         <Card>
           <Card.Body>
-            <Card.Description>
-              Create a unique Setup Link to share with your customers so they can set Enterprise SSO
-              connection with your app.
-            </Card.Description>
+            <Card.Description>{t('bui-sl-sso-desc')}</Card.Description>
             <label className='form-control w-full'>
               <div className='label'>
                 <span className='label-text'>{t('bui-sl-dsync-name')}</span>
               </div>
               <input
                 type='text'
-                placeholder='Connection for acme'
+                placeholder={t('bui-sl-sso-name-placeholder')!}
                 className='input input-bordered w-full text-sm'
                 name='name'
                 onChange={formik.handleChange}
@@ -164,7 +158,11 @@ export const SSOForm = ({
             </label>
           </Card.Body>
           <Card.Footer>
-            <Button type='submit' className='btn btn-primary btn-md'>
+            <Button
+              type='submit'
+              className='btn btn-primary btn-md'
+              loading={formik.isSubmitting}
+              disabled={!formik.dirty || !formik.isValid}>
               {t('bui-sl-create')}
             </Button>
           </Card.Footer>

@@ -8,14 +8,14 @@ import type { SetupLink } from '../types';
 import { defaultHeaders } from '../utils';
 import { SetupLinkInfo } from './SetupLinkInfo';
 
-type CreateSetupLinkInput = {
+interface CreateSetupLinkInput {
   name: string;
   tenant: string;
   product: string;
   expiryDays: number;
   service: 'dsync';
   regenerate: boolean;
-};
+}
 
 export const DSyncForm = ({
   urls,
@@ -67,17 +67,14 @@ export const DSyncForm = ({
       <form onSubmit={formik.handleSubmit} method='POST'>
         <Card>
           <Card.Body>
-            <Card.Description>
-              Create a unique Setup Link to share with your customers so they can set Directory Sync
-              connection with your app.
-            </Card.Description>
+            <Card.Description>{t('bui-sl-dsync-desc')}</Card.Description>
             <label className='form-control w-full'>
               <div className='label'>
                 <span className='label-text'>{t('bui-sl-dsync-name')}</span>
               </div>
               <input
                 type='text'
-                placeholder='Directory for acme'
+                placeholder={t('bui-sl-dsync-name-placeholder')!}
                 className='input input-bordered w-full text-sm'
                 name='name'
                 onChange={formik.handleChange}
@@ -130,7 +127,11 @@ export const DSyncForm = ({
             </label>
           </Card.Body>
           <Card.Footer>
-            <Button type='submit' className='btn btn-primary btn-md'>
+            <Button
+              type='submit'
+              className='btn btn-primary btn-md'
+              loading={formik.isSubmitting}
+              disabled={!formik.dirty || !formik.isValid}>
               {t('bui-sl-create')}
             </Button>
           </Card.Footer>
