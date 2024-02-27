@@ -9,7 +9,7 @@
 <h3 align="center" >
     <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>· Explore the docs »</strong></a>
     <br />
-    <a href="https://boxyhq.com/saas-registration" rel="dofollow"><strong>· SaaS Early Access »</strong></a>
+    <a href="https://app.eu.boxyhq.com/auth/join?utm_source=github&utm_campaign=repo" rel="dofollow"><strong>· SaaS Sign Up »</strong></a>
 </h3>
 
 # ⭐️ SAML Jackson: Enterprise SSO made simple
