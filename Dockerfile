@@ -21,6 +21,7 @@ FROM base AS builder
 WORKDIR /app
 
 COPY --from=deps /app/npm ./npm
+COPY --from=deps /app/internal-ui ./internal-ui
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
