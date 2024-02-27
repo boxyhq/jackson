@@ -2,3 +2,4 @@ node_modules
 dist
 npm/dist
 npm/migration
+internal-ui/dist

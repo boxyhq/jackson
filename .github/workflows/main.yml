@@ -407,6 +407,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20]
+        package: [npm, internal-ui]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -424,9 +425,8 @@ jobs:
           cache: 'npm'
           check-latest: true
       - run: npm install --legacy-peer-deps
-        working-directory: ./npm
-
-      - name: Publish NPM
+        working-directory: ./${{ matrix.package }}
+      - name: Publish ${{ matrix.package }}
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
@@ -436,6 +436,6 @@ jobs:
           json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
           npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
-        working-directory: ./npm
+        working-directory: ./${{ matrix.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

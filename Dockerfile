@@ -10,6 +10,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
+COPY internal-ui internal-ui
 COPY migrate.sh prebuild.ts ./
 RUN npm install
 
@@ -20,6 +21,7 @@ FROM base AS builder
 WORKDIR /app
 
 COPY --from=deps /app/npm ./npm
+COPY --from=deps /app/internal-ui ./internal-ui
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
