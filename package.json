@@ -105,6 +105,7 @@
     "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.0.3",
+    "jose": "5.2.2",
     "postcss": "8.4.35",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.5.11",
@@ -113,8 +114,7 @@
     "tailwindcss": "3.4.1",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.2.2",
-    "jose": "5.2.2"
+    "typescript": "5.2.2"
   },
   "engines": {
     "node": ">=18.14.2",
