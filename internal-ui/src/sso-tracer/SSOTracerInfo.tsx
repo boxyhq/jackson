@@ -8,9 +8,6 @@ import type { SSOTrace } from '../types';
 import { Loading, Error, PageHeader, Badge } from '../shared';
 import { CopyToClipboardButton } from '../shared/InputWithCopyButton';
 
-// TODO:
-// Fix the translation keys
-
 const ListItem = ({ term, value }: { term: string; value: string | JSX.Element }) => (
   <div className='grid grid-cols-3 py-3'>
     <dt className='text-sm font-medium text-gray-500'>{term}</dt>
@@ -42,65 +39,73 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
   return (
     <div className='space-y-3'>
-      <PageHeader title={`${t('bui-trace-title')} - ${trace.traceId}`} />
+      <PageHeader title={`${t('bui-tracer-title')} - ${trace.traceId}`} />
       <dl className='divide-y'>
-        <ListItem term={t('trace_id')} value={trace.traceId} />
+        <ListItem term={t('bui-tracer-id')} value={trace.traceId} />
 
-        <ListItem term={t('assertion_type')} value={assertionType} />
+        <ListItem term={t('bui-tracer-assertion-type')} value={assertionType} />
 
         <ListItem
-          term={t('sp_protocol')}
+          term={t('bui-tracer-sp-protocol')}
           value={
             <Badge
               color='primary'
               size='md'
               className='font-mono uppercase text-white'
-              aria-label='SP Protocol'>
+              aria-label={t('bui-tracer-sp-protocol')!}>
               {trace.context.requestedOIDCFlow
                 ? 'OIDC'
                 : trace.context.isSAMLFederated
-                  ? t('saml_federation')
+                  ? t('bui-tracer-saml-federation')
                   : trace.context.isIdPFlow
-                    ? t('idp_login')
-                    : 'OAuth 2.0'}
+                    ? t('bui-tracer-idp-login')
+                    : t('bui-tracer-oauth2')}
             </Badge>
           }
         />
 
         {typeof trace.timestamp === 'number' && (
-          <ListItem term={t('timestamp')} value={new Date(trace.timestamp).toLocaleString()} />
+          <ListItem term={t('bui-tracer-timestamp')} value={new Date(trace.timestamp).toLocaleString()} />
         )}
 
-        <ListItem term={t('error')} value={trace.error} />
+        <ListItem term={t('bui-tracer-error')} value={trace.error} />
 
-        {trace.context.tenant && <ListItem term={t('tenant')} value={trace.context.tenant} />}
+        {trace.context.tenant && <ListItem term={t('bui-tracer-tenant')} value={trace.context.tenant} />}
 
-        {trace.context.product && <ListItem term={t('product')} value={trace.context.product} />}
+        {trace.context.product && <ListItem term={t('bui-tracer-product')} value={trace.context.product} />}
 
-        {trace.context.relayState && <ListItem term={t('relay_state')} value={trace.context.relayState} />}
+        {trace.context.relayState && (
+          <ListItem term={t('bui-tracer-relay-state')} value={trace.context.relayState} />
+        )}
 
         {trace.context.redirectUri && (
           <ListItem
-            term={trace.context.isIDPFlow ? t('default_redirect_url') : t('redirect_uri')}
+            term={
+              trace.context.isIDPFlow ? t('bui-tracer-default-redirect-url') : t('bui-tracer-redirect-uri')
+            }
             value={trace.context.redirectUri}
           />
         )}
 
         {trace.context.clientID && (
-          <ListItem term={t('sso_connection_client_id')} value={trace.context.clientID} />
+          <ListItem term={t('bui-tracer-sso-connection-client-id')} value={trace.context.clientID} />
         )}
 
-        {trace.context.issuer && <ListItem term={t('issuer')} value={trace.context.issuer} />}
+        {trace.context.issuer && <ListItem term={t('bui-tracer-issuer')} value={trace.context.issuer} />}
 
-        {trace.context.acsUrl && <ListItem term={t('acs_url')} value={trace.context.acsUrl} />}
+        {trace.context.acsUrl && <ListItem term={t('bui-tracer-acs-url')} value={trace.context.acsUrl} />}
 
-        {trace.context.entityId && <ListItem term={t('trace_entity_id')} value={trace.context.entityId} />}
+        {trace.context.entityId && (
+          <ListItem term={t('bui-tracer-entity-id')} value={trace.context.entityId} />
+        )}
 
-        {trace.context.providerName && <ListItem term={t('provider')} value={trace.context.providerName} />}
+        {trace.context.providerName && (
+          <ListItem term={t('bui-tracer-provider')} value={trace.context.providerName} />
+        )}
 
         {assertionType === 'Response' && trace.context.samlResponse && (
           <ListItem
-            term={t('saml_response')}
+            term={t('bui-tracer-saml-response')}
             value={
               <>
                 <CopyToClipboardButton text={trace.context.samlResponse}></CopyToClipboardButton>
@@ -114,7 +119,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
         {assertionType === 'Request' && trace.context.samlRequest && (
           <ListItem
-            term={t('saml_request')}
+            term={t('bui-tracer-saml-request')}
             value={
               <>
                 <CopyToClipboardButton text={trace.context.samlRequest}></CopyToClipboardButton>
@@ -128,7 +133,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
         {typeof trace.context.profile === 'object' && trace.context.profile && (
           <ListItem
-            term={t('profile')}
+            term={t('bui-tracer-profile')}
             value={
               <SyntaxHighlighter language='json' style={materialOceanic}>
                 {JSON.stringify(trace.context.profile)}
@@ -138,14 +143,19 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
         )}
 
         {trace.context.error_description && (
-          <ListItem term={t('error_description_from_oidc_idp')} value={trace.context.error_description} />
+          <ListItem
+            term={t('bui-tracer-error-description-from-oidc-idp')}
+            value={trace.context.error_description}
+          />
         )}
 
-        {trace.context.error_uri && <ListItem term={t('error_uri')} value={trace.context.error_uri} />}
+        {trace.context.error_uri && (
+          <ListItem term={t('bui-tracer-error-uri')} value={trace.context.error_uri} />
+        )}
 
         {trace.context.oidcTokenSet?.id_token && (
           <ListItem
-            term={t('id_token_from_oidc_idp')}
+            term={t('bui-tracer-id-token-from-oidc-idp')}
             value={
               <>
                 <CopyToClipboardButton text={trace.context.oidcTokenSet.id_token}></CopyToClipboardButton>
@@ -159,7 +169,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
         {trace.context.oidcTokenSet?.access_token && (
           <ListItem
-            term={t('access_token_from_oidc_idp')}
+            term={t('bui-tracer-access-token-from-oidc-idp')}
             value={
               <>
                 <CopyToClipboardButton text={trace.context.oidcTokenSet.access_token}></CopyToClipboardButton>
@@ -173,7 +183,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
         {trace.context.stack && (
           <ListItem
-            term={t('stack_trace')}
+            term={t('bui-tracer-stack-trace')}
             value={
               <SyntaxHighlighter language='shell' style={materialOceanic}>
                 {trace.context.stack}
@@ -184,13 +194,13 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
         {trace.context.session_state_from_op_error && (
           <ListItem
-            term={t('session_state_from_oidc_idp')}
+            term={t('bui-tracer-session-state-from-oidc-idp')}
             value={trace.context.session_state_from_op_error}
           />
         )}
 
         {trace.context.scope_from_op_error && (
-          <ListItem term={t('scope_from_op_error')} value={trace.context.scope_from_op_error} />
+          <ListItem term={t('bui-tracer-scope-from-op-error')} value={trace.context.scope_from_op_error} />
         )}
       </dl>
     </div>

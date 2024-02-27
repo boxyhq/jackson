@@ -60,10 +60,10 @@ export const SSOTracers = ({
   const noMoreResults = traces.length === 0 && paginate.offset > 0;
 
   const cols = [
-    t('bui-trace-id'),
-    t('bui-trace-description'),
-    t('bui-trace-assertion-type'),
-    t('bui-trace-timestamp'),
+    t('bui-tracer-id'),
+    t('bui-tracer-description'),
+    t('bui-tracer-assertion-type'),
+    t('bui-tracer-timestamp'),
   ];
 
   const body = traces.map((trace) => {
@@ -85,9 +85,9 @@ export const SSOTracers = ({
         {
           wrap: true,
           text: trace.context?.samlResponse
-            ? t('bui-trace-response')
+            ? t('bui-tracer-response')
             : trace?.context.samlRequest
-              ? t('bui-trace-request')
+              ? t('bui-tracer-request')
               : '-',
         },
         {
@@ -100,9 +100,9 @@ export const SSOTracers = ({
 
   return (
     <div className='space-y-3'>
-      <PageHeader title={t('bui-trace-title')} />
+      <PageHeader title={t('bui-tracer-title')} />
       {noTraces ? (
-        <EmptyState title={t('bui-trace-no-traces')} />
+        <EmptyState title={t('bui-tracer-no-traces')} />
       ) : (
         <>
           <Table noMoreResults={noMoreResults} cols={cols} body={body} />
