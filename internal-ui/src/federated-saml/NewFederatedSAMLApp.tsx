@@ -51,7 +51,6 @@ export const NewFederatedSAMLApp = ({
   const formik = useFormik<NewSAMLFederationApp>({
     initialValues: initialValues,
     onSubmit: async (values) => {
-
       const rawResponse = await fetch(urls.createApp, {
         method: 'POST',
         body: JSON.stringify(values),
@@ -122,7 +121,7 @@ export const NewFederatedSAMLApp = ({
             </div>
             <input
               type='text'
-              placeholder='acme'
+              placeholder='Your app'
               className='input input-bordered w-full text-sm'
               name='name'
               value={formik.values.name}
