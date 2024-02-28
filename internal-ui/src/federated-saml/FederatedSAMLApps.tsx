@@ -37,7 +37,7 @@ export const FederatedSAMLApps = ({
   const { t } = useTranslation('common');
   const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
 
-  let getAppsUrl = `${urls.getApps}?offset=${paginate.offset}&limit=${pageLimit}`;
+  let getAppsUrl = `${urls.getApps}?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
 
   // For DynamoDB
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
