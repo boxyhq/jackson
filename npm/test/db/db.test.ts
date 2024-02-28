@@ -272,33 +272,23 @@ tap.test('dbs', async () => {
     });
 
     tap.test('getAll(): ' + dbType, async (t) => {
-      const allRecords = await connectionStore.getAll();
-      const allRecordOutput = {};
-      let allRecordInput = {};
-      for (const keyValue in records) {
-        const keyVal = records[keyValue.toString()];
-        allRecordOutput[keyVal];
-      }
-      for (const keyValue in allRecords.data) {
-        const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecords.data[keyVal]];
-      }
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
-      allRecordInput = {};
-      let allRecordsWithPagination = await connectionStore.getAll(0, 2);
-      for (const keyValue in allRecordsWithPagination.data) {
-        const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPagination.data[keyVal]];
-      }
-
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
-      allRecordsWithPagination = await connectionStore.getAll(0, 0);
-      for (const keyValue in allRecordsWithPagination.data) {
-        const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPagination.data[keyVal]];
-      }
-
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
+      const testMessage =
+        dbType === 'dynamodb' // dynamodb doesn't support sort order
+          ? 'should return all the records upto options.pageLimit'
+          : 'should return all the records upto options.pageLimit in DESC order by creation time';
+      const wanted = dbType === 'dynamodb' ? records.slice(1, 3) : [...records].reverse().slice(0, 2);
+      // getAll without pagination params
+      t.same((await connectionStore.getAll()).data, wanted, `without pagination params ` + testMessage);
+      // getAll with pagination params
+      t.same((await connectionStore.getAll(0, 2)).data, wanted, `with pagination params ` + testMessage);
+      // getAll with pageLimit set to 0
+      t.same((await connectionStore.getAll(0, 0)).data, wanted, `with pageLimit set to 0 ` + testMessage);
+      // getAll with pageLimit > options.pageLimit
+      t.same(
+        (await connectionStore.getAll(0, 3)).data,
+        wanted,
+        `with pageLimit > options.pageLimit ` + testMessage
+      );
 
       const oneRecordWithPagination = await connectionStore.getAll(0, 1);
       t.same(
@@ -323,7 +313,7 @@ tap.test('dbs', async () => {
         t.match(sortedRecordsAsc, [record1, record2], 'records are sorted in ASC order');
 
         const { data: sortedRecordsDesc } = await connectionStore.getAll(0, 2, undefined, 'DESC');
-        t.match(sortedRecordsDesc, [record2, record1], 'records are sorted in DESC order');
+        t.match(sortedRecordsDesc, [record3, record2], 'records are sorted in DESC order');
       }
     });
 
