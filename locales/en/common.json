@@ -28,7 +28,6 @@
   "idp_entity_id": "IdP Entity ID",
   "login_with_sso": "Login with SSO",
   "login_success_toast": "A sign in link has been sent to your email address.",
-  "link_generated": "Link Generated",
   "name": "Name",
   "new_directory": "New Directory",
   "new_setup_link": "New Setup Link",
