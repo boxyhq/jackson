@@ -4,7 +4,7 @@
   "description": "Shared React UI components for BoxyHQ SaaS and Admin Portal",
   "repository": {
     "type": "git",
-    "url": "https://github.com/boxyhq/jackson.git"
+    "url": "git+https://github.com/boxyhq/jackson.git"
   },
   "files": [
     "dist"
