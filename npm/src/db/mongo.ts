@@ -86,10 +86,20 @@ class Mongo implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
+    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
+
     const docs = await this.collection
       .find(
         { namespace: namespace },
-        { sort: { createdAt: sortOrder === 'ASC' ? 1 : -1 }, skip: pageOffset, limit: pageLimit }
+        {
+          sort: { createdAt: sortOrder === 'ASC' ? 1 : -1 },
+          skip: skipOffset ? 0 : pageOffset,
+          limit: capToMaxLimit ? this.options.pageLimit : pageLimit,
+        }
       )
       .toArray();
 
@@ -103,31 +113,31 @@ class Mongo implements DatabaseDriver {
   async getByIndex(
     namespace: string,
     idx: Index,
-    offset?: number,
-    limit?: number,
+    pageOffset?: number,
+    pageLimit?: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
     const sort: Sort = { createdAt: sortOrder === 'ASC' ? 'asc' : 'desc' };
-    const docs =
-      dbutils.isNumeric(offset) && dbutils.isNumeric(limit)
-        ? await this.collection
-            .find(
-              {
-                indexes: dbutils.keyForIndex(namespace, idx),
-              },
-              { sort, skip: offset, limit: limit }
-            )
-            .toArray()
-        : await this.collection
-            .find(
-              {
-                indexes: dbutils.keyForIndex(namespace, idx),
-              },
-              { sort }
-            )
-            .toArray();
+    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
+
+    const docs = await this.collection
+      .find(
+        {
+          indexes: dbutils.keyForIndex(namespace, idx),
+        },
+        {
+          sort,
+          skip: skipOffset ? 0 : pageOffset,
+          limit: capToMaxLimit ? this.options.pageLimit : pageLimit,
+        }
+      )
+      .toArray();
 
     const ret: string[] = [];
     for (const doc of docs || []) {
