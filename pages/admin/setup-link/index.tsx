@@ -4,7 +4,8 @@ import { SetupLinks } from '@boxyhq/internal-ui';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import type { GetServerSidePropsContext, NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { successToast } from '@components/Toaster';
+
+import { errorToast, successToast } from '@components/Toaster';
 
 const serviceMap = {
   sso: 'sso-connection',
@@ -31,8 +32,17 @@ const SetupLinksIndexPage: NextPage = () => {
       service={service}
       urls={{ getLinks: '/api/admin/setup-links', deleteLink: '/api/admin/setup-links' }}
       actions={{ newLink: `/admin/${serviceMap[service]}/setup-link/new` }}
-      onCopy={(setupLink) => {
+      onCopy={() => {
         successToast('Link copied to clipboard');
+      }}
+      onRegenerate={() => {
+        successToast('Link regenerated');
+      }}
+      onError={(error) => {
+        errorToast(error.message);
+      }}
+      onDelete={() => {
+        successToast('Link deleted');
       }}
     />
   );

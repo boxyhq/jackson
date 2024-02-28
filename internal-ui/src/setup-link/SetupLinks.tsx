@@ -29,6 +29,7 @@ type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 // TODO:
 // Apply excludeFields
 // Test pagination with mutate
+// Check dsync name is used properly
 
 export const SetupLinks = ({
   urls,
@@ -36,12 +37,18 @@ export const SetupLinks = ({
   actions,
   service,
   onCopy,
+  onRegenerate,
+  onError,
+  onDelete,
 }: {
   urls: { getLinks: string; deleteLink: string };
   excludeFields?: ExcludeFields[];
   actions: { newLink: string };
   service: SetupLinkService;
   onCopy: (setupLink: SetupLink) => void;
+  onRegenerate: (setupLink: SetupLink) => void;
+  onError: (error: Error) => void;
+  onDelete: (setupLink: SetupLink) => void;
 }) => {
   const { router } = useRouter();
   const { t } = useTranslation('common');
@@ -155,16 +162,23 @@ export const SetupLinks = ({
       return;
     }
 
-    await fetch(`${urls.deleteLink}?setupID=${setupLink.setupID}`, {
+    const rawResponse = await fetch(`${urls.deleteLink}?setupID=${setupLink.setupID}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    setDelModal(false);
-    setSetupLink(null);
-    mutate();
+    const response = await rawResponse.json();
+
+    if (rawResponse.ok) {
+      setDelModal(false);
+      setSetupLink(null);
+      onDelete(setupLink);
+      await mutate();
+    } else {
+      onError(response.error);
+    }
   };
 
   // Regenerate a setup link
@@ -173,31 +187,32 @@ export const SetupLinks = ({
       return;
     }
 
-    // const { tenant, product, service } = selectedSetupLink;
+    const { tenant, product, service } = setupLink;
 
     const rawResponse = await fetch('/api/admin/setup-links', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...setupLink, regenerate: true }),
+      body: JSON.stringify({
+        tenant,
+        product,
+        service,
+        regenerate: true,
+      }),
     });
 
     const response = await rawResponse.json();
 
-    // Add callback
-
-    // if ('error' in response) {
-    //   errorToast(response.error.message);
-    //   return;
-    // }
-
-    // if ('data' in response) {
-    //   setShowRegenConfirmModal(false);
-    //   await mutate();
-    //   showSetupLinkInfo(response.data);
-    //   successToast(t('link_regenerated'));
-    // }
+    if (rawResponse.ok) {
+      onRegenerate(response.data);
+      setShowRegenModal(false);
+      await mutate();
+      setSetupLink(response.data);
+      setShowSetupLink(true);
+    } else {
+      onError(response.error);
+    }
   };
 
   return (
