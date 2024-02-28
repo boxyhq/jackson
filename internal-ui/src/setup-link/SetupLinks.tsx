@@ -26,11 +26,6 @@ import { SetupLinkInfoModal } from './SetupLinkInfoModal';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 
-// TODO:
-// Apply excludeFields
-// Test pagination with mutate
-// Check dsync name is used properly
-
 export const SetupLinks = ({
   urls,
   excludeFields,
@@ -41,7 +36,7 @@ export const SetupLinks = ({
   onError,
   onDelete,
 }: {
-  urls: { getLinks: string; deleteLink: string };
+  urls: { getLinks: string; deleteLink: string; regenerateLink: string };
   excludeFields?: ExcludeFields[];
   actions: { newLink: string };
   service: SetupLinkService;
@@ -83,7 +78,7 @@ export const SetupLinks = ({
   const noLinks = links.length === 0 && paginate.offset === 0;
   const noMoreResults = links.length === 0 && paginate.offset > 0;
 
-  const cols = [
+  let cols = [
     t('bui-sl-tenant'),
     t('bui-sl-product'),
     t('bui-sl-validity'),
@@ -91,68 +86,79 @@ export const SetupLinks = ({
     t('bui-sl-actions'),
   ];
 
+  // Exclude fields
+  cols = cols.filter((col) => !excludeFields?.includes(col.toLowerCase() as ExcludeFields));
+
   const body: TableBodyType[] = links.map((setupLink) => {
+    const cells: TableBodyType['cells'] = [
+      {
+        wrap: true,
+        text: setupLink.tenant,
+      },
+    ];
+
+    if (!excludeFields?.includes('product')) {
+      cells.push({
+        wrap: true,
+        text: setupLink.product,
+      });
+    }
+
+    cells.push(
+      {
+        wrap: false,
+        text: new Date(setupLink.validTill).toLocaleString(),
+      },
+      {
+        wrap: false,
+        element: new Date(setupLink.validTill).toLocaleString() ? (
+          <Badge color='primary'>{t('bui-sl-active')}</Badge>
+        ) : (
+          <Badge color='warning'>{t('bui-sl-expired')}</Badge>
+        ),
+      },
+      {
+        actions: [
+          {
+            text: t('bui-sl-copy'),
+            onClick: () => {
+              copyToClipboard(setupLink.url);
+              onCopy(setupLink);
+            },
+            icon: <ClipboardDocumentIcon className='h-5 w-5' />,
+          },
+          {
+            text: t('bui-sl-view'),
+            onClick: () => {
+              setSetupLink(setupLink);
+              setShowSetupLink(true);
+            },
+            icon: <EyeIcon className='h-5 w-5' />,
+          },
+          {
+            text: t('bui-sl-regenerate'),
+            onClick: () => {
+              setSetupLink(setupLink);
+              setShowRegenModal(true);
+            },
+            icon: <ArrowPathIcon className='h-5 w-5' />,
+          },
+          {
+            destructive: true,
+            text: t('bui-sl-delete'),
+            onClick: () => {
+              setSetupLink(setupLink);
+              setDelModal(true);
+            },
+            icon: <TrashIcon className='h-5 w-5' />,
+          },
+        ],
+      }
+    );
+
     return {
       id: setupLink.setupID,
-      cells: [
-        {
-          wrap: true,
-          text: setupLink.tenant,
-        },
-        {
-          wrap: true,
-          text: setupLink.product,
-        },
-        {
-          wrap: false,
-          text: new Date(setupLink.validTill).toLocaleString(),
-        },
-        {
-          wrap: false,
-          element: new Date(setupLink.validTill).toLocaleString() ? (
-            <Badge color='primary'>{t('bui-sl-active')}</Badge>
-          ) : (
-            <Badge color='warning'>{t('bui-sl-expired')}</Badge>
-          ),
-        },
-        {
-          actions: [
-            {
-              text: t('bui-sl-copy'),
-              onClick: () => {
-                copyToClipboard(setupLink.url);
-                onCopy(setupLink);
-              },
-              icon: <ClipboardDocumentIcon className='h-5 w-5' />,
-            },
-            {
-              text: t('bui-sl-view'),
-              onClick: () => {
-                setSetupLink(setupLink);
-                setShowSetupLink(true);
-              },
-              icon: <EyeIcon className='h-5 w-5' />,
-            },
-            {
-              text: t('bui-sl-regenerate'),
-              onClick: () => {
-                setSetupLink(setupLink);
-                setShowRegenModal(true);
-              },
-              icon: <ArrowPathIcon className='h-5 w-5' />,
-            },
-            {
-              destructive: true,
-              text: t('bui-sl-delete'),
-              onClick: () => {
-                setSetupLink(setupLink);
-                setDelModal(true);
-              },
-              icon: <TrashIcon className='h-5 w-5' />,
-            },
-          ],
-        },
-      ],
+      cells,
     };
   });
 
@@ -189,7 +195,7 @@ export const SetupLinks = ({
 
     const { tenant, product, service } = setupLink;
 
-    const rawResponse = await fetch('/api/admin/setup-links', {
+    const rawResponse = await fetch(urls.regenerateLink, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

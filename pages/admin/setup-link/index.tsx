@@ -12,6 +12,9 @@ const serviceMap = {
   dsync: 'directory-sync',
 } as const;
 
+// TODO:
+// Add missing translations
+
 const SetupLinksIndexPage: NextPage = () => {
   const router = useRouter();
 
@@ -30,7 +33,11 @@ const SetupLinksIndexPage: NextPage = () => {
   return (
     <SetupLinks
       service={service}
-      urls={{ getLinks: '/api/admin/setup-links', deleteLink: '/api/admin/setup-links' }}
+      urls={{
+        getLinks: '/api/admin/setup-links',
+        deleteLink: '/api/admin/setup-links',
+        regenerateLink: '/api/admin/setup-links',
+      }}
       actions={{ newLink: `/admin/${serviceMap[service]}/setup-link/new` }}
       onCopy={() => {
         successToast('Link copied to clipboard');

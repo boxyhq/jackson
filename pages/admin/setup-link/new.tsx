@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { notFound } from 'next/navigation';
 import { useTranslation } from 'next-i18next';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import { LinkBack, NewSetupLink } from '@boxyhq/internal-ui';
@@ -8,27 +9,33 @@ import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'nex
 import { setupLinkExpiryDays } from '@lib/env';
 import { errorToast, successToast } from '@components/Toaster';
 
-const serviceMaps = {
-  'sso-connection': 'sso',
-  'directory-sync': 'dsync',
-};
+const serviceMap = {
+  sso: 'sso-connection',
+  dsync: 'directory-sync',
+} as const;
+
+// TODO:
+// Add missing translations
 
 const SetupLinkCreatePage = ({ expiryDays }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { t } = useTranslation('common');
 
-  // Extract the service name from the path
-  const serviceName = router.asPath.split('/')[2];
+  let service: SetupLinkService | null = null;
 
-  const service = serviceMaps[serviceName] as SetupLinkService;
+  if (router.asPath.includes('sso-connection')) {
+    service = 'sso';
+  } else if (router.asPath.includes('directory-sync')) {
+    service = 'dsync';
+  }
 
   if (!service) {
-    return null;
+    return notFound();
   }
 
   return (
     <div className='space-y-4'>
-      <LinkBack href={`/admin/${serviceName}/setup-link`} />
+      <LinkBack href={`/admin/${serviceMap[service]}/setup-link`} />
       <NewSetupLink
         urls={{ createLink: '/api/admin/setup-links' }}
         service={service}
