@@ -4,7 +4,7 @@ import { ButtonOutline } from './ButtonOutline';
 import { ButtonDanger } from './ButtonDanger';
 import { ButtonBase } from './ButtonBase';
 
-export const DeleteConfirmationModal = ({
+export const ConfirmationModal = ({
   visible,
   title,
   description,

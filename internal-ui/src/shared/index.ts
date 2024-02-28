@@ -8,7 +8,7 @@ export { Badge } from './Badge';
 export { Pagination } from './Pagination';
 export { ButtonOutline } from './ButtonOutline';
 export { Modal } from './Modal';
-export { DeleteConfirmationModal } from './DeleteConfirmationModal';
+export { ConfirmationModal } from './ConfirmationModal';
 export { PageHeader } from './PageHeader';
 export { LinkOutline } from './LinkOutline';
 export { LinkPrimary } from './LinkPrimary';

@@ -355,5 +355,9 @@
   "bui-sl-view": "View",
   "bui-sl-copy": "Copy",
   "bui-sl-regenerate": "Regenerate",
-  "bui-sl-delete": "Delete"
+  "bui-sl-delete": "Delete",
+  "bui-sl-delete-link-title": "Delete Setup Link",
+  "bui-sl-delete-link-desc": "This action cannot be undone. This will permanently delete the Setup Link.",
+  "bui-sl-regen-link-title": "Regenerate Setup Link",
+  "bui-sl-regen-link-desc": "This action cannot be undone. This will permanently delete the existing Setup Link and generate a new one."
 }
