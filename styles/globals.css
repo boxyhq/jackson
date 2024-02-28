@@ -59,6 +59,10 @@ a {
   .modal-box {
     @apply rounded;
   }
+
+  .card {
+    @apply rounded;
+  }
 }
 
 .react-datepicker {

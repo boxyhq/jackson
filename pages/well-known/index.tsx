@@ -1,14 +1,11 @@
+import { WellKnownURLs } from '@boxyhq/internal-ui';
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-import WellKnownURLs from '@components/connection/WellKnownURLs';
-
 const WellKnownURLsIndex: NextPage = () => {
   return (
-    <div className='my-10 mx-5 flex justify-center'>
-      <div className='flex flex-col'>
-        <WellKnownURLs />
-      </div>
+    <div className='mx-auto max-w-5xl px-4 py-10'>
+      <WellKnownURLs />
     </div>
   );
 };

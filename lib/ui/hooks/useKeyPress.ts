@@ -24,6 +24,7 @@ export default function useKeyPress(targetKey: string): boolean {
       window.removeEventListener('keydown', downHandler);
       window.removeEventListener('keyup', upHandler);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty array ensures that effect is only run on mount and unmount
   return keyPressed;
 }
