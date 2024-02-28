@@ -44,7 +44,7 @@ jobs:
       OPENID_JWS_ALG: RS256
       OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
-      PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
+      PLANETSCALE_URL: mysql://root:mysql@localhost:3308/mysql
       DYNAMODB_URL: 'http://localhost:8000'
       BOXYHQ_NO_ANALYTICS: '1'
       IDP_ENABLED: true
@@ -78,6 +78,13 @@ jobs:
         image: mongo:4.4.28
         ports:
           - 27017:27017
+      planetscale:
+        image: mysql:8.0.31
+        ports:
+          - 3308:3306
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: mysql
       mysql:
         image: mysql:8.0.31
         ports:
@@ -94,7 +101,6 @@ jobs:
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
       mssql:
         image: mcr.microsoft.com/azure-sql-edge:1.0.6
-        #image: mcr.microsoft.com/mssql/server:2019-latest
         ports:
           - 1433:1433
         env:
@@ -143,6 +149,8 @@ jobs:
       - run: npm run check-format
       - run: npm run locale-check
       - run: npm run build
+      - run: npm run db:migration:run:planetscale
+        working-directory: ./npm
       - run: npm run test
         working-directory: ./npm
       - name: Install playwright browser dependencies
