@@ -3,9 +3,6 @@ import { useRouter } from 'next/router';
 import { SSOTracerInfo, LinkBack } from '@boxyhq/internal-ui';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-// TODO:
-// Add back button
-
 const SSOTraceInspector: NextPage = () => {
   const router = useRouter();
 
