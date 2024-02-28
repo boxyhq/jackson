@@ -9,8 +9,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     switch (method) {
       case 'GET':
         return await handleGET(req, res);
-      case 'PUT':
-        return await handlePUT(req, res);
+      case 'PATCH':
+        return await handlePATCH(req, res);
       case 'DELETE':
         return await handleDELETE(req, res);
       default:
@@ -44,7 +44,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Update SAML Federation app
-const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
   const updatedApp = await samlFederatedController.app.update(req.body);

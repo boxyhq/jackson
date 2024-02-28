@@ -46,3 +46,5 @@ publishTag.txt
 _dev/docker/dynamodb/shared-local-instance.db
 public/terminus/sprites.png
 **/.tap/**
+
+internal-ui/dist
