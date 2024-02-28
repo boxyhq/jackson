@@ -39,7 +39,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
   return (
     <div className='space-y-3'>
-      <PageHeader title={`${t('bui-tracer-title')} - ${trace.traceId}`} />
+      <PageHeader title={t('bui-tracer-title')} />
       <dl className='divide-y'>
         <ListItem term={t('bui-tracer-id')} value={trace.traceId} />
 
