@@ -8,12 +8,11 @@ import type {
   PaginationParams,
 } from '../../typings';
 import { Base } from './Base';
+import { webhookEventTTL } from '../utils';
 
 type GetAllParams = PaginationParams & {
   directoryId?: string;
 };
-
-export const eventTTL = 60; // 7 days
 
 export class WebhookEventsLogger extends Base {
   constructor({ db }: { db: DatabaseStore }) {
@@ -87,8 +86,8 @@ export class WebhookEventsLogger extends Base {
     }
   }
 
-  // Get the store for the logs
+  // Get the store for the events
   private eventStore() {
-    return this.store('logs', eventTTL);
+    return this.store('logs', webhookEventTTL);
   }
 }
