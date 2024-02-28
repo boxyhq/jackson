@@ -59,14 +59,19 @@ class Mem implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
     const returnValue: string[] = [];
-    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
 
-    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
+
+    const skip = skipOffset ? 0 : pageOffset;
+    let take = capToMaxLimit ? this.options.pageLimit : pageLimit;
     let count = 0;
 
-    take += skip;
+    take! += skip!;
 
     if (namespace) {
       const index = dbutils.keyFromParts(dbutils.createdAtPrefix, namespace);
@@ -79,11 +84,11 @@ class Mem implements DatabaseDriver {
       const iterator: IterableIterator<string> = sortOrder === 'ASC' ? val.values() : val.reverse().values();
 
       for (const value of iterator) {
-        if (count >= take) {
+        if (count >= take!) {
           break;
         }
 
-        if (count >= skip) {
+        if (count >= skip!) {
           returnValue.push(this.store[dbutils.keyFromParts(namespace, value)]);
         }
 
@@ -103,30 +108,31 @@ class Mem implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
+    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
 
-    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
+    const skip = skipOffset ? 0 : pageOffset;
+    let take = capToMaxLimit ? this.options.pageLimit : pageLimit;
+
     let count = 0;
 
-    take += skip;
+    take! += skip!;
     const dbKeys = Array.from((await this.indexes[dbutils.keyForIndex(namespace, idx)]) || []) as string[];
     const iterator: IterableIterator<string> =
       sortOrder === 'ASC' ? dbKeys.values() : dbKeys.reverse().values();
     const ret: string[] = [];
     for (const dbKey of iterator || []) {
-      if (offsetAndLimitValueCheck) {
-        ret.push(await this.get(namespace, dbKey));
-      } else {
-        if (count >= take) {
-          break;
-        }
-        if (count >= skip) {
-          ret.push(await this.get(namespace, dbKey));
-        }
-
-        count++;
+      if (count >= take!) {
+        break;
       }
+      if (count >= skip!) {
+        ret.push(await this.get(namespace, dbKey));
+      }
+
+      count++;
     }
 
     return { data: ret };

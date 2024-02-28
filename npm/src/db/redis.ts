@@ -44,9 +44,16 @@ class Redis implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const offset = pageOffset ? Number(pageOffset) : 0;
-    const count = pageLimit ? Number(pageLimit) : this.options.pageLimit;
     const sortedSetKey = dbutils.keyFromParts(dbutils.createdAtPrefix, namespace);
+
+    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
+
+    const offset = skipOffset ? 0 : pageOffset;
+    const count = capToMaxLimit ? this.options.pageLimit : pageLimit;
 
     const zRangeOptions = {
       BY: 'SCORE',
@@ -93,10 +100,17 @@ class Redis implements DatabaseDriver {
     _?: string
   ): Promise<Records> {
     const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
-    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
+
+    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
+    const skip = skipOffset ? 0 : pageOffset;
+    let take = capToMaxLimit ? this.options.pageLimit : pageLimit;
+
     let count = 0;
-    take += skip;
+    take! += skip!;
     const returnValue: string[] = [];
     const keyArray: string[] = [];
     const idxKey = dbutils.keyForIndex(namespace, idx);
@@ -107,10 +121,10 @@ class Redis implements DatabaseDriver {
         count + 1
       )) {
         if (dbKeys.indexOf(value) !== -1) {
-          if (count >= take) {
+          if (count >= take!) {
             break;
           }
-          if (count >= skip) {
+          if (count >= skip!) {
             keyArray.push(dbutils.keyFromParts(namespace, value));
           }
           count++;
