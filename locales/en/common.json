@@ -341,5 +341,8 @@
   "bui-sl-delete-link-title": "Delete Setup Link",
   "bui-sl-delete-link-desc": "This action cannot be undone. This will permanently delete the Setup Link.",
   "bui-sl-regen-link-title": "Regenerate Setup Link",
-  "bui-sl-regen-link-desc": "This action cannot be undone. This will permanently delete the existing Setup Link and generate a new one."
+  "bui-sl-regen-link-desc": "This action cannot be undone. This will permanently delete the existing Setup Link and generate a new one.",
+  "bui-sl-link-expired": "This link has expired",
+  "bui-sl-link-expire-on": "This link will expire on {{expiresAt}}.",
+  "bui-sl-share-link-info": "Share this link with your customer to setup their service"
 }

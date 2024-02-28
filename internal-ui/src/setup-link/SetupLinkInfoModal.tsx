@@ -22,15 +22,12 @@ export const SetupLinkInfoModal = ({
   return (
     <Modal visible={visible} title={`Setup Link for ${setupLink.tenant}`}>
       <div className='pt-3'>
-        <InputWithCopyButton
-          label='Share this link with your customer to setup their service'
-          text={setupLink.url}
-        />
+        <InputWithCopyButton label={t('bui-sl-share-link-info')} text={setupLink.url} />
       </div>
       {!isExpired ? (
-        <p className='text-sm text-gray-500 mt-3'>{`This link will expire on ${expiresAt}.`}</p>
+        <p className='text-sm text-gray-500 mt-3'>{t('bui-sl-link-expire-on', { expiresAt })}</p>
       ) : (
-        <p>This link has expired</p>
+        <p>{t('bui-sl-link-expired')}</p>
       )}
       <div className='modal-action'>
         <Button color='secondary' variant='outline' type='button' size='md' onClick={() => onClose()}>
