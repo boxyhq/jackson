@@ -98,6 +98,7 @@ function BlocklyComponent(props) {
     }
 
     retrieveModel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryWorkspace, toolbox, blocklyDiv, roles, props]);
 
   return (

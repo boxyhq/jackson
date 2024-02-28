@@ -149,6 +149,8 @@ jobs:
       - run: npm run check-format
       - run: npm run locale-check
       - run: npm run build
+      - run: npm run db:migration:run:planetscale
+        working-directory: ./npm
       - run: npm run test
         working-directory: ./npm
       - name: Install playwright browser dependencies
