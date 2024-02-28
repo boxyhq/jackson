@@ -14,9 +14,6 @@ const serviceMap = {
   dsync: 'directory-sync',
 } as const;
 
-// TODO:
-// Add missing translations
-
 const SetupLinkCreatePage = ({ expiryDays }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { t } = useTranslation('common');
@@ -41,7 +38,7 @@ const SetupLinkCreatePage = ({ expiryDays }: InferGetServerSidePropsType<typeof 
         service={service}
         expiryDays={expiryDays}
         onCreate={() => {
-          successToast(t('link_generated'));
+          successToast(t('setup-link-created'));
         }}
         onError={(error) => errorToast(error.message)}
       />

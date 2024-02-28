@@ -29,7 +29,6 @@
   "login_with_sso": "Login with SSO",
   "login_success_toast": "A sign in link has been sent to your email address.",
   "link_generated": "Link Generated",
-
   "name": "Name",
   "new_directory": "New Directory",
   "new_setup_link": "New Setup Link",
@@ -174,6 +173,10 @@
   "no_saml_response_try_again": "No SAMLResponse found. Please try again.",
   "sso_connection_created_successfully": "SSO Connection created successfully",
   "saml_federation_entity_id_generated": "SP Entity ID generated",
+  "setup-link-created": "A new setup link created.",
+  "setup-link-regenerated": "The setup link regenerated.",
+  "setup-link-copied": "The setup link copied to the clipboard.",
+  "setup-link-deleted": "The setup link deleted.",
   "bui-shared-name": "Name",
   "bui-shared-tenant": "Tenant",
   "bui-shared-product": "Product",

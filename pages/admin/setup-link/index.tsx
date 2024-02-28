@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { notFound } from 'next/navigation';
+import { useTranslation } from 'next-i18next';
 import { SetupLinks } from '@boxyhq/internal-ui';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import type { GetServerSidePropsContext, NextPage } from 'next';
@@ -12,11 +13,9 @@ const serviceMap = {
   dsync: 'directory-sync',
 } as const;
 
-// TODO:
-// Add missing translations
-
 const SetupLinksIndexPage: NextPage = () => {
   const router = useRouter();
+  const { t } = useTranslation('common');
 
   let service: SetupLinkService | null = null;
 
@@ -40,16 +39,16 @@ const SetupLinksIndexPage: NextPage = () => {
       }}
       actions={{ newLink: `/admin/${serviceMap[service]}/setup-link/new` }}
       onCopy={() => {
-        successToast('Link copied to clipboard');
+        successToast(t('setup-link-copied'));
       }}
       onRegenerate={() => {
-        successToast('Link regenerated');
+        successToast(t('setup-link-regenerated'));
+      }}
+      onDelete={() => {
+        successToast(t('setup-link-deleted'));
       }}
       onError={(error) => {
         errorToast(error.message);
-      }}
-      onDelete={() => {
-        successToast('Link deleted');
       }}
     />
   );
