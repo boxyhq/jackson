@@ -243,6 +243,24 @@ tap.test('dbs', async () => {
           value: record2.name,
         }
       );
+
+      // wait 100ms to ensure that the record is written with a different timestamp
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      await connectionStore.put(
+        record3.id,
+        record3,
+        {
+          // secondary index on city
+          name: 'city',
+          value: record3.city,
+        },
+        {
+          // secondary index on name
+          name: 'name',
+          value: record3.name,
+        }
+      );
     });
 
     tap.test('get(): ' + dbType, async (t) => {
