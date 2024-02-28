@@ -22,17 +22,24 @@ const record2 = {
   city: 'London',
 };
 
-const records = [record1, record2];
+const record3 = {
+  id: '3',
+  name: 'Samuel Jackson',
+  city: 'Delhi',
+};
+
+const records = [record1, record2, record3];
 
 const memDbConfig = <DatabaseOption>{
   engine: 'mem',
   ttl: 1,
+  pageLimit: 2,
 };
 
 const redisDbConfig = <DatabaseOption>{
   engine: 'redis',
   url: 'redis://localhost:6379',
-  pageLimit: 50,
+  pageLimit: 2,
 };
 
 const postgresDbConfig = <DatabaseOption>{
@@ -41,11 +48,13 @@ const postgresDbConfig = <DatabaseOption>{
   type: 'postgres',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const mongoDbConfig = <DatabaseOption>{
   engine: 'mongo',
   url: 'mongodb://localhost:27017/jackson',
+  pageLimit: 2,
 };
 
 const mysqlDbConfig = <DatabaseOption>{
@@ -54,6 +63,7 @@ const mysqlDbConfig = <DatabaseOption>{
   type: 'mysql',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const planetscaleDbConfig = <DatabaseOption>{
@@ -61,6 +71,7 @@ const planetscaleDbConfig = <DatabaseOption>{
   url: process.env.PLANETSCALE_URL,
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
   // ssl: {
   //   rejectUnauthorized: true,
   // },
@@ -72,6 +83,7 @@ const mariadbDbConfig = <DatabaseOption>{
   type: 'mariadb',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const mssqlDbConfig = <DatabaseOption>{
@@ -80,6 +92,7 @@ const mssqlDbConfig = <DatabaseOption>{
   url: 'sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const dynamoDbConfig = <DatabaseOption>{
@@ -87,6 +100,7 @@ const dynamoDbConfig = <DatabaseOption>{
   url: process.env.DYNAMODB_URL,
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
   dynamodb: {
     region: 'us-east-1',
     readCapacityUnits: 5,
