@@ -24,7 +24,7 @@ export interface TableBodyCell {
     text: string;
     color: string;
   };
-  element?: React.ReactElement;
+  element?: React.JSX.Element;
   actions?: {
     text: string;
     icon: React.JSX.Element;

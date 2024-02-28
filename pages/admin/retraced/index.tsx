@@ -18,6 +18,7 @@ const Retraced: NextPage<Props> = ({ host }: Props) => {
       return;
     }
     router.push('/admin/retraced/projects');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   if (!host) {
