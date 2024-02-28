@@ -34,7 +34,8 @@ export const normalizeOffsetAndLimit = ({
 }) => {
   const skipOffset = pageOffset === undefined || !isNumeric(pageOffset);
   // options.pageLimit capped to 50 by default unless set from env
-  const capToMaxLimit = pageLimit === undefined || !isNumeric(pageLimit) || pageLimit > maxLimit;
+  const capToMaxLimit =
+    pageLimit === undefined || pageLimit === 0 || !isNumeric(pageLimit) || pageLimit > maxLimit;
   return { skipOffset, capToMaxLimit };
 };
 export const indexPrefix = '_index';
