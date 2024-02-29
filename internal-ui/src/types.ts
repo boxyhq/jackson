@@ -146,12 +146,8 @@ export type SetupLinkService = 'sso' | 'dsync';
 export type SetupLink = {
   setupID: string;
   tenant: string;
-  name?: string;
-  description?: string;
-  defaultRedirectUrl?: string;
-  redirectUrl?: string;
   product: string;
+  validTill: number;
   url: string;
   service: SetupLinkService;
-  validTill: number;
 };

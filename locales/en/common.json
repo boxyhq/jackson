@@ -309,6 +309,8 @@
   "bui-tracer-stack-trace": "Stack Trace",
   "bui-tracer-session-state-from-oidc-idp": "Session State (from OIDC Provider)",
   "bui-tracer-scope-from-op-error": "Scope (from OIDC Provider)",
+  "bui-sl-sso-name": "Name (Optional)",
+  "bui-sl-sso-description": "Description (Optional)",
   "bui-sl-create-link": "Create Setup Link",
   "bui-sl-dsync-name": "Name (Optional)",
   "bui-sl-tenant": "Tenant",
@@ -343,5 +345,7 @@
   "bui-sl-regen-link-desc": "This action cannot be undone. This will permanently delete the existing Setup Link and generate a new one.",
   "bui-sl-link-expired": "This link has expired",
   "bui-sl-link-expire-on": "This link will expire on {{expiresAt}}.",
-  "bui-sl-share-link-info": "Share this link with your customer to setup their service"
+  "bui-sl-share-link-info": "Share this link with your customer to setup their service",
+  "bui-sl-webhook-url": "Webhook URL",
+  "bui-sl-webhook-secret": "Webhook Secret"
 }

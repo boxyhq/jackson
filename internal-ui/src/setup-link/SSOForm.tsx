@@ -10,6 +10,7 @@ import { SetupLinkInfo } from './SetupLinkInfo';
 
 interface CreateSetupLinkInput {
   name: string;
+  description: string;
   tenant: string;
   product: string;
   expiryDays: number;
@@ -38,6 +39,7 @@ export const SSOForm = ({
   const formik = useFormik<CreateSetupLinkInput>({
     initialValues: {
       name: '',
+      description: '',
       tenant: '',
       product: '',
       expiryDays,
@@ -74,7 +76,7 @@ export const SSOForm = ({
             <Card.Description>{t('bui-sl-sso-desc')}</Card.Description>
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-sl-dsync-name')}</span>
+                <span className='label-text'>{t('bui-sl-sso-name')}</span>
               </div>
               <input
                 type='text'
@@ -83,6 +85,18 @@ export const SSOForm = ({
                 name='name'
                 onChange={formik.handleChange}
                 value={formik.values.name}
+              />
+            </label>
+            <label className='form-control w-full'>
+              <div className='label'>
+                <span className='label-text'>{t('bui-sl-sso-description')}</span>
+              </div>
+              <input
+                type='text'
+                className='input input-bordered w-full text-sm'
+                name='description'
+                onChange={formik.handleChange}
+                value={formik.values.description}
               />
             </label>
             <label className='form-control w-full'>

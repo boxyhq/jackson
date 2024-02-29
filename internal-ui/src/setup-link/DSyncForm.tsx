@@ -12,6 +12,8 @@ interface CreateSetupLinkInput {
   name: string;
   tenant: string;
   product: string;
+  webhook_url: string;
+  webhook_secret: string;
   expiryDays: number;
   service: 'dsync';
   regenerate: boolean;
@@ -38,6 +40,8 @@ export const DSyncForm = ({
       name: '',
       tenant: '',
       product: '',
+      webhook_url: '',
+      webhook_secret: '',
       expiryDays,
       service: 'dsync',
       regenerate: false,
@@ -111,6 +115,34 @@ export const DSyncForm = ({
                 />
               </label>
             )}
+            <label className='form-control w-full'>
+              <div className='label'>
+                <span className='label-text'>{t('bui-sl-webhook-url')}</span>
+              </div>
+              <input
+                type='url'
+                placeholder='https://yourapp.com/webhook'
+                className='input input-bordered w-full text-sm'
+                name='webhook_url'
+                required
+                onChange={formik.handleChange}
+                value={formik.values.webhook_url}
+              />
+            </label>
+            <label className='form-control w-full'>
+              <div className='label'>
+                <span className='label-text'>{t('bui-sl-webhook-secret')}</span>
+              </div>
+              <input
+                type='password'
+                placeholder='your-secret'
+                className='input input-bordered w-full text-sm'
+                name='webhook_secret'
+                required
+                onChange={formik.handleChange}
+                value={formik.values.webhook_secret}
+              />
+            </label>
             <label className='form-control w-full'>
               <div className='label'>
                 <span className='label-text'>{t('bui-sl-expiry-days')}</span>

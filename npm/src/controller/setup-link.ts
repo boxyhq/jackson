@@ -151,29 +151,33 @@ export class SetupLinkController {
    *          $ref:  '#/definitions/SetupLink'
    */
   async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
-    const {
-      tenant,
-      product,
-      service,
-      name,
-      description,
-      defaultRedirectUrl,
-      regenerate,
-      redirectUrl,
-      expiryDays,
-    } = body;
+    // TODO:
+    // Update the swagger spec to include the new fields
+
+    const { name, tenant, product, service, expiryDays, regenerate } = body;
 
     validateTenantAndProduct(tenant, product);
-
-    if (defaultRedirectUrl || redirectUrl) {
-      const redirectUrlList = extractRedirectUrls(redirectUrl || '');
-      validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
-    }
-
     throwIfInvalidService(service);
 
-    const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
-    const token = crypto.randomBytes(24).toString('hex');
+    if (!tenant || !product) {
+      throw new JacksonError('Must provide tenant and product', 400);
+    }
+
+    if (service === 'sso') {
+      const { defaultRedirectUrl, redirectUrl } = body;
+
+      if (!defaultRedirectUrl || !redirectUrl) {
+        throw new JacksonError('Must provide defaultRedirectUrl and redirectUrl', 400);
+      }
+
+      validateRedirectUrl({ defaultRedirectUrl, redirectUrlList: extractRedirectUrls(redirectUrl || '') });
+    } else if (service === 'dsync') {
+      const { webhook_url, webhook_secret } = body;
+
+      if (!webhook_url || !webhook_secret) {
+        throw new JacksonError('Must provide webhook_url and webhook_secret', 400);
+      }
+    }
 
     const existing: SetupLink[] = (
       await this.setupLinkStore.getByIndex({
@@ -191,20 +195,30 @@ export class SetupLinkController {
       await this.setupLinkStore.delete(existing[0].setupID);
     }
 
+    const token = crypto.randomBytes(24).toString('hex');
     const expiryInDays = expiryDays || this.opts.setupLinkExpiryDays || 3;
+    const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
 
-    const setupLink = {
+    const setupLink: SetupLink = {
       setupID,
       tenant,
       product,
       service,
       name,
-      description,
-      redirectUrl,
-      defaultRedirectUrl,
       validTill: calculateExpiryTimestamp(expiryInDays),
       url: `${this.opts.externalUrl}/setup/${token}`,
     };
+
+    if (service === 'sso') {
+      const { defaultRedirectUrl, redirectUrl, description } = body;
+      setupLink.defaultRedirectUrl = defaultRedirectUrl;
+      setupLink.redirectUrl = redirectUrl;
+      setupLink.description = description || '';
+    } else if (service === 'dsync') {
+      const { webhook_url, webhook_secret } = body;
+      setupLink.webhook_url = webhook_url;
+      setupLink.webhook_secret = webhook_secret;
+    }
 
     await this.setupLinkStore.put(
       setupID,
