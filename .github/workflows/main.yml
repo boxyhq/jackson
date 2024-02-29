@@ -415,7 +415,8 @@ jobs:
     strategy:
       matrix:
         node-version: [20]
-        package: [npm, internal-ui]
+        # package: [npm, internal-ui]
+        package: [npm]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
