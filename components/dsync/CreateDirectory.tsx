@@ -164,7 +164,6 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                     onChange={onChange}
                   />
                 </div>
-
                 <div className='form-control w-full'>
                   <label className='label'>
                     <span className='label-text'>{t('webhook_url')}</span>
