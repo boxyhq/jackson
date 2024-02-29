@@ -151,9 +151,6 @@ export class SetupLinkController {
    *          $ref:  '#/definitions/SetupLink'
    */
   async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
-    // TODO:
-    // Update the swagger spec to include the new fields
-
     const { name, tenant, product, service, expiryDays, regenerate } = body;
 
     validateTenantAndProduct(tenant, product);
