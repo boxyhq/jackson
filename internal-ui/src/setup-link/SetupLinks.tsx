@@ -173,12 +173,15 @@ export const SetupLinks = ({
       return;
     }
 
-    const rawResponse = await fetch(`${urls.deleteLink}?setupID=${setupLink.setupID}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const rawResponse = await fetch(
+      `${urls.deleteLink}?id=${setupLink.setupID}&service=${setupLink.service}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     const response = await rawResponse.json();
 
