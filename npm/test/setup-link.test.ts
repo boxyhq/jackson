@@ -1,6 +1,6 @@
 import tap from 'tap';
 import { jacksonOptions } from './utils';
-import { ISetupLinkController } from 'npm/src';
+import { ISetupLinkController } from '../src';
 
 let setupLinkController: ISetupLinkController;
 const product = 'jackson';
@@ -64,5 +64,36 @@ tap.test('Setup link controller', async (t) => {
 
     t.ok(setupLink);
     t.match(expireInDays(setupLink.validTill), 10);
+  });
+
+  t.test('Create a new setup link for sso service', async (t) => {
+    const setupLink = await setupLinkController.create({
+      name: 'sso for acme',
+      tenant: 'acme',
+      product,
+      service: 'sso',
+      description: 'sso setup link for acme',
+      defaultRedirectUrl: 'https://acme.com',
+      redirectUrl: JSON.stringify(['https://acme.com', 'https://acme.com/login']),
+    });
+
+    t.ok(setupLink);
+    t.match(setupLink.redirectUrl, ['https://acme.com', 'https://acme.com/login']);
+    t.match(setupLink.defaultRedirectUrl, 'https://acme.com');
+  });
+
+  t.test('Create a new setup link for dsync service', async (t) => {
+    const setupLink = await setupLinkController.create({
+      name: 'dsync for acme',
+      tenant: 'acme',
+      product,
+      service: 'dsync',
+      webhook_url: 'https://acme.com/webhook',
+      webhook_secret: 'webhook-secret',
+    });
+
+    t.ok(setupLink);
+    t.match(setupLink.webhook_url, 'https://acme.com/webhook');
+    t.match(setupLink.webhook_secret, 'webhook-secret');
   });
 });
