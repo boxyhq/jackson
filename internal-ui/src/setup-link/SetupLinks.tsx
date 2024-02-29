@@ -201,17 +201,13 @@ export const SetupLinks = ({
       return;
     }
 
-    const { tenant, product, service } = setupLink;
-
     const rawResponse = await fetch(urls.regenerateLink, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        tenant,
-        product,
-        service,
+        ...setupLink,
         regenerate: true,
       }),
     });
