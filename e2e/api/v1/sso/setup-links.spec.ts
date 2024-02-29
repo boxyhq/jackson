@@ -16,6 +16,8 @@ test('create the setup link', async ({ request }) => {
     data: {
       tenant,
       product,
+      redirectUrl: ['http://localhost:3000'],
+      defaultRedirectUrl: 'http://localhost:3000/default',
     },
   });
 
@@ -103,6 +105,8 @@ test('delete the setup link by id', async ({ request }) => {
     data: {
       tenant,
       product,
+      redirectUrl: ['http://localhost:3000'],
+      defaultRedirectUrl: 'http://localhost:3000/default',
     },
   });
 
@@ -136,6 +140,8 @@ test('get the setup links by product', async ({ request }) => {
     data: {
       tenant: 'tenant-2',
       product,
+      redirectUrl: ['http://localhost:3000'],
+      defaultRedirectUrl: 'http://localhost:3000/default',
     },
   });
 
@@ -143,6 +149,8 @@ test('get the setup links by product', async ({ request }) => {
     data: {
       tenant: 'tenant-3',
       product,
+      redirectUrl: ['http://localhost:3000'],
+      defaultRedirectUrl: 'http://localhost:3000/default',
     },
   });
 
