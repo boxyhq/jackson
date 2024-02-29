@@ -21,6 +21,8 @@ import EventController from './event';
 import { ProductController } from './ee/product';
 import { OryController } from './ee/ory/ory';
 
+const tracerTTL = 7 * 24 * 60 * 60;
+
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
     ...opts,
@@ -87,8 +89,9 @@ export const controllers = async (
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
   const productStore = db.store('product:config');
+  const tracerStore = db.store('saml:tracer', tracerTTL);
 
-  const ssoTracer = new SSOTracer({ db });
+  const ssoTracer = new SSOTracer({ tracerStore });
   const eventController = new EventController({ opts });
   const productController = new ProductController({ productStore, opts });
 

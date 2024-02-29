@@ -12,7 +12,20 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react/jsx-runtime', 'react-dom', 'next', 'next-i18next'],
+      external: [
+        'react',
+        'react/jsx-runtime',
+        'react-dom',
+        '@heroicons/react',
+        'classnames',
+        'formik',
+        'next',
+        'next-i18next',
+        'react-daisyui',
+        'react-syntax-highlighter',
+        'react-tagsinput',
+        'swr',
+      ],
     },
   },
   plugins: [

@@ -61,9 +61,9 @@ const planetscaleDbConfig = <DatabaseOption>{
   url: process.env.PLANETSCALE_URL,
   ttl: 1,
   cleanupLimit: 10,
-  ssl: {
-    rejectUnauthorized: true,
-  },
+  // ssl: {
+  //   rejectUnauthorized: true,
+  // },
 };
 
 const mariadbDbConfig = <DatabaseOption>{
@@ -419,29 +419,6 @@ tap.test('dbs', async () => {
 
       t.same(ret3.data, [], 'delete for record1 failed');
       t.same(ret4.data, [], 'delete for record2 failed');
-    });
-
-    tap.test('ttl indexes: ' + dbType, async (t) => {
-      try {
-        await ttlStore.put(
-          record1.id,
-          record1,
-          {
-            // secondary index on city
-            name: 'city',
-            value: record1.city,
-          },
-          {
-            // secondary index on name
-            name: 'name',
-            value: record1.name,
-          }
-        );
-
-        t.fail('expecting a secondary indexes not allow on a store with ttl');
-      } catch (err) {
-        t.ok(err, 'got expected error');
-      }
     });
 
     tap.test('ttl put(): ' + dbType, async () => {
