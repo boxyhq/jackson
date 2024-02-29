@@ -1,9 +1,10 @@
+import { useTranslation } from 'next-i18next';
+import ArrowTopRightOnSquareIcon from '@heroicons/react/24/outline/ArrowTopRightOnSquareIcon';
+
 import { useDirectory } from '../hooks';
 import { DirectoryTab } from '../dsync';
-import { Loading, Error, PageHeader, Badge } from '../shared';
-import { useTranslation } from 'next-i18next';
-import { InputWithCopyButton } from '../shared/InputWithCopyButton';
 import type { Directory } from '../types';
+import { Loading, Error, PageHeader, Badge, Alert, InputWithCopyButton, LinkPrimary } from '../shared';
 
 type ExcludeFields = keyof Pick<Directory, 'tenant' | 'product' | 'webhook'>;
 
@@ -13,9 +14,13 @@ type ExcludeFields = keyof Pick<Directory, 'tenant' | 'product' | 'webhook'>;
 export const DirectoryInfo = ({
   urls,
   excludeFields = [],
+  hideTabs = false,
+  displayGoogleAuthButton = false,
 }: {
   urls: { getDirectory: string; tabBase: string; googleAuth: string };
   excludeFields?: ExcludeFields[];
+  hideTabs?: boolean;
+  displayGoogleAuthButton?: boolean;
 }) => {
   const { t } = useTranslation('common');
   const { directory, isLoadingDirectory, directoryError } = useDirectory(urls.getDirectory);
@@ -32,11 +37,30 @@ export const DirectoryInfo = ({
     return null;
   }
 
+  const authorizedGoogle = directory.google_access_token && directory.google_refresh_token;
+
   return (
     <>
       <PageHeader title={directory.name} />
-      <DirectoryTab activeTab='directory' baseUrl={urls.tabBase} />
-      <div className='rounded border'>
+      {!hideTabs && <DirectoryTab activeTab='directory' baseUrl={urls.tabBase} />}
+      {!authorizedGoogle && displayGoogleAuthButton && (
+        <div className='mt-5'>
+          <Alert variant='success' className='bg-white border-error'>
+            <div className='space-y-3'>
+              <p className='text-sm text-gray-600'>{t('bui-dsync-authorization-google-desc')}</p>
+              <LinkPrimary
+                href={`${urls.googleAuth}?directoryId=${directory.id}`}
+                target='_blank'
+                className='btn-md'
+                Icon={ArrowTopRightOnSquareIcon}
+                rel='noopener noreferrer'>
+                {t('bui-dsync-authorization-google')}
+              </LinkPrimary>
+            </div>
+          </Alert>
+        </div>
+      )}
+      <div className={`rounded border ${hideTabs ? 'mt-5' : ''}`}>
         <dl className='divide-y'>
           <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
             <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-directory-id')}</dt>
@@ -74,7 +98,7 @@ export const DirectoryInfo = ({
             <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
               <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-authorized-status')}</dt>
               <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                {directory.google_access_token && directory.google_refresh_token ? (
+                {authorizedGoogle ? (
                   <Badge color='success'>{t('bui-dsync-authorized')}</Badge>
                 ) : (
                   <Badge color='warning'>{t('bui-dsync-not-authorized')}</Badge>

@@ -15,3 +15,5 @@ export { LinkPrimary } from './LinkPrimary';
 export { LinkBack } from './LinkBack';
 export { pageLimit } from './Pagination';
 export { ButtonPrimary } from './ButtonPrimary';
+export { Alert } from './Alert';
+export { InputWithCopyButton } from './InputWithCopyButton';
