@@ -6,7 +6,7 @@ import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
 import ArrowPathIcon from '@heroicons/react/24/outline/ArrowPathIcon';
 import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
 
-import { copyToClipboard, fetcher } from '../utils';
+import { addQueryParamsToPath, copyToClipboard, fetcher } from '../utils';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate, useRouter } from '../hooks';
@@ -53,13 +53,18 @@ export const SetupLinks = ({
   const [setupLink, setSetupLink] = useState<SetupLink | null>(null);
   const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
 
-  let getLinksUrl = `${urls.getLinks}?offset=${paginate.offset}&limit=${pageLimit}&service=${service}`;
+  const params = {
+    pageOffset: paginate.offset,
+    pageLimit: pageLimit,
+    service,
+  };
 
   // For DynamoDB
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
-    getLinksUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
+    params['pageToken'] = pageTokenMap[paginate.offset - pageLimit];
   }
 
+  const getLinksUrl = addQueryParamsToPath(urls.getLinks, params);
   const { data, isLoading, error, mutate } = useSWR<{ data: SetupLink[] }>(getLinksUrl, fetcher);
 
   if (isLoading) {
