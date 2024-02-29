@@ -103,13 +103,7 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                 <label className='label'>
                   <span className='label-text'>{t('directory_name')}</span>
                 </label>
-                <input
-                  type='text'
-                  id='name'
-                  className='input-bordered input w-full'
-                  required
-                  onChange={onChange}
-                />
+                <input type='text' id='name' className='input-bordered input w-full' onChange={onChange} />
               </div>
             )}
             <div className='form-control w-full'>
@@ -140,6 +134,7 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                   value={directory.google_domain}
                   pattern='^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$'
                   title='Please enter a valid domain (e.g: boxyhq.com)'
+                  required
                 />
               </div>
             )}
@@ -179,7 +174,7 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                     id='webhook_url'
                     className='input-bordered input w-full'
                     onChange={onChange}
-                    value={directory.webhook_url}
+                    required
                   />
                 </div>
                 <div className='form-control w-full'>
@@ -191,6 +186,7 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                     id='webhook_secret'
                     className='input-bordered input w-full'
                     onChange={onChange}
+                    required
                   />
                 </div>
               </>
