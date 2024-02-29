@@ -43,7 +43,7 @@ export const DirectoryInfo = ({
     <>
       <PageHeader title={directory.name} />
       {!hideTabs && <DirectoryTab activeTab='directory' baseUrl={urls.tabBase} />}
-      {!authorizedGoogle && displayGoogleAuthButton && (
+      {directory.type === 'google' && !authorizedGoogle && displayGoogleAuthButton && (
         <div className='mt-5'>
           <Alert variant='success' className='bg-white border-error'>
             <div className='space-y-3'>
