@@ -319,5 +319,7 @@
   "bui-dsync-delete-events-desc": "This action will permanently delete all webhook events log. Are you sure you want to proceed?",
   "bui-dsync-authorized-status": "Status",
   "bui-dsync-authorized": "Authorized",
-  "bui-dsync-not-authorized": "Not Authorized"
+  "bui-dsync-not-authorized": "Not Authorized",
+  "bui-dsync-authorization-google": "Authorize Google Workspace",
+  "bui-dsync-authorization-google-desc": "You should authorize Google Workspace to sync your directory. Click the button below start the authorization process. Make sure you have the necessary permissions to authorize Google Workspace."
 }
