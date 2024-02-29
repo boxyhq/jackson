@@ -434,6 +434,10 @@ jobs:
           check-latest: true
       - run: ${{ matrix.package == 'internal-ui' && 'npm install' || matrix.package == 'npm' && 'npm install --legacy-peer-deps' }}
         working-directory: ./${{ matrix.package }}
+      - name: Build ${{ matrix.package }}
+        if: github.ref != 'refs/heads/release' || !contains(github.ref, 'refs/tags/beta-v')
+        run: npm run build
+        working-directory: ./${{ matrix.package }}
       - name: Publish ${{ matrix.package }}
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
