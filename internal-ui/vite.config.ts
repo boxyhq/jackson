@@ -16,7 +16,7 @@ export default defineConfig({
         'react',
         'react/jsx-runtime',
         'react-dom',
-        /next\/*.*/,
+        'next',
         'next-i18next',
         'swr',
         /@heroicons\/react\/.*/,
