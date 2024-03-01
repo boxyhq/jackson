@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import type { Group } from '../types';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
-import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/esm';
+import { materialOceanic } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { fetcher } from '../utils';
 import { useDirectory } from '../hooks';
 import { DirectoryTab } from '../dsync';
