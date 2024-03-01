@@ -23,7 +23,6 @@ export default defineConfig({
         'classnames',
         'formik',
         'react-daisyui',
-        /react-syntax-highlighter\/*.*/,
         'react-tagsinput',
       ],
     },
