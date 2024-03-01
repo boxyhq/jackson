@@ -111,6 +111,38 @@ export class SetupLinkController {
    *     in: formData
    *     type: string
    *     required: true
+   *   webhookUrlParamPost:
+   *     name: webhook_url
+   *     description: The URL to send the directory sync events to
+   *     in: formData
+   *     type: string
+   *     required: true
+   *   webhookSecretParamPost:
+   *     name: webhook_secret
+   *     description: The secret to sign the directory sync events
+   *     in: formData
+   *     type: string
+   *     required: true
+   *   nameParamPost:
+   *     name: name
+   *     description: Name of connection
+   *     in: formData
+   *     type: string
+   *     required: false
+   *   expiryDaysParamPost:
+   *     name: expiryDays
+   *     description: Days in number for the setup link to expire
+   *     default: 3
+   *     in: formData
+   *     type: number
+   *     required: false
+   *   regenerateParamPost:
+   *     name: regenerate
+   *     description: If passed as true, it will remove the existing setup link and create a new one.
+   *     in: formData
+   *     default: false
+   *     type: boolean
+   *     required: false
    * /api/v1/sso/setuplinks:
    *   post:
    *    summary: Create a Setup Link
@@ -122,10 +154,13 @@ export class SetupLinkController {
    *      - application/x-www-form-urlencoded
    *      - application/json
    *    parameters:
+   *      - $ref: '#/parameters/nameParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
    *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
    *      - $ref: '#/parameters/redirectUrlParamPost'
+   *      - $ref: '#/parameters/expiryDaysParamPost'
+   *      - $ref: '#/parameters/regenerateParamPost'
    *    responses:
    *      200:
    *        description: Success
@@ -142,8 +177,13 @@ export class SetupLinkController {
    *      - application/x-www-form-urlencoded
    *      - application/json
    *    parameters:
+   *      - $ref: '#/parameters/nameParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
+   *      - $ref: '#/parameters/webhookUrlParamPost'
+   *      - $ref: '#/parameters/webhookSecretParamPost'
+   *      - $ref: '#/parameters/expiryDaysParamPost'
+   *      - $ref: '#/parameters/regenerateParamPost'
    *    responses:
    *      200:
    *        description: Success
