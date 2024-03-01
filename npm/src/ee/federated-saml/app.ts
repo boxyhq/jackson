@@ -123,6 +123,16 @@ export class App {
    *         in: formData
    *         required: false
    *         type: array
+   *       - name: type
+   *         description: If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'
+   *         in: formData
+   *         required: false
+   *         type: array
+   *       - name: redirectUrl
+   *         description: If creating an OIDC app, provide the redirect URL
+   *         in: formData
+   *         required: false
+   *         type: array
    *     tags: [SAML Federation]
    *     produces:
    *      - application/json
