@@ -49,9 +49,11 @@ export const SSOForm = ({
       defaultRedirectUrl: '',
     },
     onSubmit: async (values) => {
+      const redirectUrlList = values.redirectUrl.split(/\r\n|\r|\n/);
+
       const rawResponse = await fetch(urls.createLink, {
         method: 'POST',
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, redirectUrl: JSON.stringify(redirectUrlList) }),
         headers: defaultHeaders,
       });
 
