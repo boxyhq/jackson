@@ -116,11 +116,12 @@ export const SetupLinks = ({
       },
       {
         wrap: false,
-        element: new Date(setupLink.validTill).toLocaleString() ? (
-          <Badge color='primary'>{t('bui-sl-active')}</Badge>
-        ) : (
-          <Badge color='warning'>{t('bui-sl-expired')}</Badge>
-        ),
+        element:
+          new Date(setupLink.validTill) > new Date() ? (
+            <Badge color='primary'>{t('bui-sl-active')}</Badge>
+          ) : (
+            <Badge color='warning'>{t('bui-sl-expired')}</Badge>
+          ),
       },
       {
         actions: [

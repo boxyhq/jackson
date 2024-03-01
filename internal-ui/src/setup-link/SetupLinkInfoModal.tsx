@@ -27,7 +27,7 @@ export const SetupLinkInfoModal = ({
       {!isExpired ? (
         <p className='text-sm text-gray-500 mt-3'>{t('bui-sl-link-expire-on', { expiresAt })}</p>
       ) : (
-        <p>{t('bui-sl-link-expired')}</p>
+        <p className='text-sm text-red-500 mt-3'>{t('bui-sl-link-expired')}</p>
       )}
       <div className='modal-action'>
         <Button color='secondary' variant='outline' type='button' size='md' onClick={() => onClose()}>
