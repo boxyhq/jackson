@@ -71,7 +71,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml:
    *   post:
-   *     summary: Create a SAML Federation app
+   *     summary: Create an Identity Federation app
    *     parameters:
    *       - name: name
    *         description: Name
@@ -114,7 +114,7 @@ export class App {
    *         required: false
    *         type: string
    *       - name: tenants
-   *         description: Mapping of tenants whose connections will be grouped under this SAML Federation app
+   *         description: Mapping of tenants whose connections will be grouped under this Identity Federation app
    *         in: formData
    *         required: false
    *         type: array
@@ -133,7 +133,7 @@ export class App {
    *         in: formData
    *         required: false
    *         type: array
-   *     tags: [SAML Federation]
+   *     tags: [Identity Federation]
    *     produces:
    *      - application/json
    *     consumes:
@@ -261,7 +261,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml:
    *   get:
-   *     summary: Get a SAML Federation app
+   *     summary: Get an Identity Federation app
    *     parameters:
    *       - name: id
    *         description: App ID
@@ -279,7 +279,7 @@ export class App {
    *         required: false
    *         type: string
    *     tags:
-   *       - SAML Federation
+   *       - Identity Federation
    *     produces:
    *       - application/json
    *     responses:
@@ -295,7 +295,7 @@ export class App {
       const app = await this.store.get(params.id);
 
       if (!app) {
-        throw new JacksonError('SAML Federation app not found', 404);
+        throw new JacksonError('Identity Federation app not found', 404);
       }
 
       return app as SAMLFederationApp;
@@ -305,7 +305,7 @@ export class App {
       const app = await this.store.get(fedAppID(params.tenant, params.product, params.type));
 
       if (!app) {
-        throw new JacksonError('SAML Federation app not found', 404);
+        throw new JacksonError('Identity Federation app not found', 404);
       }
 
       return app as SAMLFederationApp;
@@ -318,7 +318,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml/product:
    *   get:
-   *     summary: Get SAML Federation apps by product
+   *     summary: Get Identity Federation apps by product
    *     parameters:
    *       - name: product
    *         description: Product
@@ -326,7 +326,7 @@ export class App {
    *         required: true
    *         type: string
    *     tags:
-   *       - SAML Federation
+   *       - Identity Federation
    *     produces:
    *       - application/json
    *     responses:
@@ -373,7 +373,7 @@ export class App {
     ).data;
 
     if (!apps || apps.length === 0) {
-      throw new JacksonError('SAML Federation app not found', 404);
+      throw new JacksonError('Identity Federation app not found', 404);
     }
 
     return apps[0];
@@ -383,7 +383,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml:
    *   patch:
-   *     summary: Update a SAML Federation app
+   *     summary: Update an Identity Federation app
    *     parameters:
    *       - name: id
    *         description: App ID
@@ -426,7 +426,7 @@ export class App {
    *         required: false
    *         type: string
    *       - name: tenants
-   *         description: Mapping of tenants whose connections will be grouped under this SAML Federation app
+   *         description: Mapping of tenants whose connections will be grouped under this Identity Federation app
    *         in: formData
    *         required: false
    *         type: array
@@ -436,7 +436,7 @@ export class App {
    *         required: false
    *         type: array
    *     tags:
-   *       - SAML Federation
+   *       - Identity Federation
    *     produces:
    *       - application/json
    *     consumes:
@@ -466,7 +466,7 @@ export class App {
     }
 
     if (!app) {
-      throw new JacksonError('SAML Federation app not found', 404);
+      throw new JacksonError('Identity Federation app not found', 404);
     }
 
     const toUpdate: Partial<SAMLFederationApp> = {};
@@ -552,7 +552,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml:
    *   delete:
-   *     summary: Delete a SAML Federation app
+   *     summary: Delete an Identity Federation app
    *     parameters:
    *       - name: id
    *         description: App ID
@@ -570,7 +570,7 @@ export class App {
    *         required: false
    *         type: string
    *     tags:
-   *       - SAML Federation
+   *       - Identity Federation
    *     produces:
    *       - application/json
    *     responses:

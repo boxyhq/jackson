@@ -53,7 +53,7 @@
     "check-format": "prettier --check .",
     "check-lint": "next lint && eslint -c .eslintrc.js --ext ts --ext tsx --ext js ./",
     "format": "prettier --write .",
-    "locale-check": "node locale-check.js"
+    "check-locale": "node check-locale.js"
   },
   "dependencies": {
     "@boxyhq/internal-ui": "file:internal-ui",
