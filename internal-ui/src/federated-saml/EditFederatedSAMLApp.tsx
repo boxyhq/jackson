@@ -3,7 +3,7 @@ import type { SAMLFederationApp } from '../types';
 import { EditBranding } from './EditBranding';
 import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';
-import { DeleteCard, Loading, DeleteConfirmationModal } from '../shared';
+import { DeleteCard, Loading, ConfirmationModal } from '../shared';
 import { useTranslation } from 'next-i18next';
 import { useState } from 'react';
 import { defaultHeaders, fetcher } from '../utils';
@@ -95,7 +95,7 @@ export const EditFederatedSAMLApp = ({
           buttonLabel={t('bui-shared-delete')}
           onClick={() => setDelModalVisible(true)}
         />
-        <DeleteConfirmationModal
+        <ConfirmationModal
           title={t('bui-fs-delete-app-title')}
           description={t('bui-fs-delete-app-desc')}
           visible={delModalVisible}

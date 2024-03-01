@@ -178,7 +178,7 @@ export const NewFederatedSAMLApp = ({
           {connectionIsOIDC && (
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('allowed_redirect_url_new')}</span>
+                <span className='label-text'>{t('bui-sl-allowed-redirect-urls-new')}</span>
               </div>
               <ItemList
                 currentlist={formik.values.redirectUrl || ['']}
