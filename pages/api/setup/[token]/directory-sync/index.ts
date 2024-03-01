@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { DirectoryType, SetupLink } from '@boxyhq/saml-jackson';
+import type { SetupLink } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -31,16 +31,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { directorySyncController } = await jackson();
 
-  const { name, type, webhook_url, webhook_secret } = req.body;
+  const { type, google_domain } = req.body;
 
-  const { data, error } = await directorySyncController.directories.create({
-    name,
+  const directory = {
+    type,
+    google_domain,
+    name: setupLink.name,
     tenant: setupLink.tenant,
     product: setupLink.product,
-    type: type as DirectoryType,
-    webhook_url,
-    webhook_secret,
-  });
+    webhook_url: setupLink.webhook_url,
+    webhook_secret: setupLink.webhook_secret,
+  };
+
+  const { data, error } = await directorySyncController.directories.create(directory);
 
   if (data) {
     return res.status(201).json({ data });

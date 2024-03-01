@@ -15,7 +15,7 @@ import {
   Pagination,
   PageHeader,
   pageLimit,
-  DeleteConfirmationModal,
+  ConfirmationModal,
 } from '../shared';
 import { ButtonDanger } from '../shared/ButtonDanger';
 import { useRouter } from '../hooks';
@@ -156,7 +156,7 @@ export const DirectoryWebhookLogs = ({
                   {t('bui-dsync-remove-events')}
                 </ButtonDanger>
               </div>
-              <DeleteConfirmationModal
+              <ConfirmationModal
                 title={t('bui-dsync-delete-events-title')}
                 description={t('bui-dsync-delete-events-desc')}
                 visible={delModalVisible}

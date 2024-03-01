@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.18.6",
+    "version": "1.19.2",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -450,6 +450,9 @@
         ],
         "parameters": [
           {
+            "$ref": "#/parameters/nameParamPost"
+          },
+          {
             "$ref": "#/parameters/tenantParamPost"
           },
           {
@@ -460,6 +463,12 @@
           },
           {
             "$ref": "#/parameters/redirectUrlParamPost"
+          },
+          {
+            "$ref": "#/parameters/expiryDaysParamPost"
+          },
+          {
+            "$ref": "#/parameters/regenerateParamPost"
           }
         ],
         "responses": {
@@ -543,10 +552,25 @@
         ],
         "parameters": [
           {
+            "$ref": "#/parameters/nameParamPost"
+          },
+          {
             "$ref": "#/parameters/tenantParamPost"
           },
           {
             "$ref": "#/parameters/productParamPost"
+          },
+          {
+            "$ref": "#/parameters/webhookUrlParamPost"
+          },
+          {
+            "$ref": "#/parameters/webhookSecretParamPost"
+          },
+          {
+            "$ref": "#/parameters/expiryDaysParamPost"
+          },
+          {
+            "$ref": "#/parameters/regenerateParamPost"
           }
         ],
         "responses": {
@@ -1766,9 +1790,10 @@
   "parameters": {
     "nameParamPost": {
       "name": "name",
-      "description": "Name/identifier for the connection",
+      "description": "Name of connection",
       "type": "string",
-      "in": "formData"
+      "in": "formData",
+      "required": false
     },
     "labelParamPost": {
       "name": "label",
@@ -2034,6 +2059,36 @@
       "in": "query",
       "type": "string",
       "description": "Strategy which can help to filter connections with tenant/product query"
+    },
+    "webhookUrlParamPost": {
+      "name": "webhook_url",
+      "description": "The URL to send the directory sync events to",
+      "in": "formData",
+      "type": "string",
+      "required": true
+    },
+    "webhookSecretParamPost": {
+      "name": "webhook_secret",
+      "description": "The secret to sign the directory sync events",
+      "in": "formData",
+      "type": "string",
+      "required": true
+    },
+    "expiryDaysParamPost": {
+      "name": "expiryDays",
+      "description": "Days in number for the setup link to expire",
+      "default": 3,
+      "in": "formData",
+      "type": "number",
+      "required": false
+    },
+    "regenerateParamPost": {
+      "name": "regenerate",
+      "description": "If passed as true, it will remove the existing setup link and create a new one.",
+      "in": "formData",
+      "default": false,
+      "type": "boolean",
+      "required": false
     },
     "setupLinkId": {
       "name": "id",
