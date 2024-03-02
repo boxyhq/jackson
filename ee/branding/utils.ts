@@ -2,7 +2,7 @@ import jackson from '@lib/jackson';
 import { boxyhqHosted } from '@lib/env';
 
 // BoxyHQ branding
-export const boxyhqBranding = {
+const boxyhqBranding = {
   logoUrl: '/logo.png',
   faviconUrl: '/favicon.ico',
   companyName: 'BoxyHQ',

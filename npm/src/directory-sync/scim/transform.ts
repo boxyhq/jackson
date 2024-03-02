@@ -1,6 +1,6 @@
 import { Directory, DirectorySyncEvent, DirectorySyncEventType, Group, User } from '../../typings';
 
-export const transformUser = (user: User): User => {
+const transformUser = (user: User): User => {
   return {
     id: user.id,
     first_name: user.first_name,
@@ -11,7 +11,7 @@ export const transformUser = (user: User): User => {
   };
 };
 
-export const transformGroup = (group: Group): Group => {
+const transformGroup = (group: Group): Group => {
   return {
     id: group.id,
     name: group.name,
@@ -19,7 +19,7 @@ export const transformGroup = (group: Group): Group => {
   };
 };
 
-export const transformUserGroup = (user: User, group: Group): User & { group: Group } => {
+const transformUserGroup = (user: User, group: Group): User & { group: Group } => {
   return {
     ...transformUser(user),
     group: transformGroup(group),

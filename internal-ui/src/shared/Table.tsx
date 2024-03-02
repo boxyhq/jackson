@@ -38,7 +38,7 @@ export interface TableBodyType {
   cells: TableBodyCell[];
 }
 
-export const TableBody = ({
+const TableBody = ({
   cols,
   body,
   noMoreResults,

@@ -147,7 +147,7 @@ jobs:
       - run: npm install
       - run: npm run check-lint
       - run: npm run check-format
-      - run: npm run locale-check
+      - run: npm run check-locale
       - run: npm run build
       - run: npm run db:migration:run:planetscale
         working-directory: ./npm
