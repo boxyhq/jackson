@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 
 import { CreateSAMLConnection as CreateSAML, CreateOIDCConnection as CreateOIDC } from '@boxyhq/react-ui/sso';
-import styles from '../../styles/sdk-override.module.css';
+import styles from 'styles/sdk-override.module.css';
 import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
 
