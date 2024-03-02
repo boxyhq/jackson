@@ -75,7 +75,7 @@ export function excludeFallback(formObj: FormObj) {
   };
 }
 
-export function getHandleChange(
+function getHandleChange(
   setFormObj: Dispatch<SetStateAction<FormObj>>,
   opts: { key?: string; formObjParentKey?: string } = {}
 ) {
