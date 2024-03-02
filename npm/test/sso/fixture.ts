@@ -19,7 +19,7 @@ export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
 };
 
-export const code_verifier = generators.codeVerifier();
+const code_verifier = generators.codeVerifier();
 export const authz_request_normal_with_code_challenge: Partial<OAuthReqBodyWithClientId> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
