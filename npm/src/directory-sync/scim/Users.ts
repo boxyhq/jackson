@@ -1,5 +1,3 @@
-import { randomUUID } from 'crypto';
-
 import type { User, DatabaseStore, PaginationParams, Response } from '../../typings';
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
