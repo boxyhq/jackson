@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { oidcMetadataParse, strategyChecker } from '@lib/utils';
+import { oidcMetadataParse, parsePaginateApiParams, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
+import { PaginateApiParams } from 'types';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -26,20 +27,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController, connectionAPIController } = await jackson();
 
-  const { pageOffset, pageLimit, isSystemSSO, pageToken } = req.query as {
-    pageOffset: string;
-    pageLimit: string;
+  const { isSystemSSO } = req.query as {
     isSystemSSO?: string; // if present will be '' else undefined
-    pageToken?: string;
   };
+
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query as PaginateApiParams);
 
   const { tenant: adminPortalSSOTenant, product: adminPortalSSOProduct } = adminPortalSSODefaults;
 
-  const paginatedConnectionList = await adminController.getAllConnection(
-    +(pageOffset || 0),
-    +(pageLimit || 0),
-    pageToken
-  );
+  const paginatedConnectionList = await adminController.getAllConnection(pageOffset, pageLimit, pageToken);
 
   const connections =
     isSystemSSO === undefined
