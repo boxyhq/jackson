@@ -183,7 +183,7 @@ class DynamoDB implements DatabaseDriver {
   }
 
   async getAll(namespace: string, _?: number, pageLimit?: number, pageToken?: string): Promise<Records> {
-    const { capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { limit: Limit } = dbutils.normalizeOffsetAndLimit({
       pageLimit,
       maxLimit: this.options.pageLimit!,
     });
@@ -194,7 +194,7 @@ class DynamoDB implements DatabaseDriver {
           ':namespace': { S: namespace },
         },
         TableName: tableName,
-        Limit: capToMaxLimit ? this.options.pageLimit : pageLimit,
+        Limit,
         ExclusiveStartKey: pageToken ? JSON.parse(Buffer.from(pageToken, 'base64').toString()) : undefined,
       })
     );

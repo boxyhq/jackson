@@ -46,14 +46,11 @@ class Redis implements DatabaseDriver {
   ): Promise<Records> {
     const sortedSetKey = dbutils.keyFromParts(dbutils.createdAtPrefix, namespace);
 
-    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { offset, limit: count } = dbutils.normalizeOffsetAndLimit({
       pageOffset,
       pageLimit,
       maxLimit: this.options.pageLimit!,
     });
-
-    const offset = skipOffset ? 0 : pageOffset;
-    const count = capToMaxLimit ? this.options.pageLimit : pageLimit;
 
     const zRangeOptions = {
       BY: 'SCORE',
@@ -99,15 +96,12 @@ class Redis implements DatabaseDriver {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string
   ): Promise<Records> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-
-    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { offset: skip, limit } = dbutils.normalizeOffsetAndLimit({
       pageOffset,
       pageLimit,
       maxLimit: this.options.pageLimit!,
     });
-    const skip = skipOffset ? 0 : pageOffset;
-    let take = capToMaxLimit ? this.options.pageLimit : pageLimit;
+    let take = limit;
 
     let count = 0;
     take! += skip!;
@@ -115,40 +109,30 @@ class Redis implements DatabaseDriver {
     const keyArray: string[] = [];
     const idxKey = dbutils.keyForIndex(namespace, idx);
     const dbKeys = await this.client.sMembers(dbutils.keyFromParts(dbutils.indexPrefix, idxKey));
-    if (!offsetAndLimitValueCheck) {
-      for await (const { value } of this.client.zScanIterator(
-        dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
-        count + 1
-      )) {
-        if (dbKeys.indexOf(value) !== -1) {
-          if (count >= take!) {
-            break;
-          }
-          if (count >= skip!) {
-            keyArray.push(dbutils.keyFromParts(namespace, value));
-          }
-          count++;
+    for await (const { value } of this.client.zScanIterator(
+      dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
+      count + 1
+    )) {
+      if (dbKeys.indexOf(value) !== -1) {
+        if (count >= take!) {
+          break;
         }
-      }
-      if (keyArray.length > 0) {
-        const value = await this.client.MGET(keyArray);
-        for (let i = 0; i < value.length; i++) {
-          const valueObject = JSON.parse(value[i].toString());
-          if (valueObject !== null && valueObject !== '') {
-            returnValue.push(valueObject);
-          }
+        if (count >= skip!) {
+          keyArray.push(dbutils.keyFromParts(namespace, value));
         }
+        count++;
       }
-      return { data: returnValue || [] };
-    } else {
-      const ret: string[] = [];
-      for (const dbKey of dbKeys || []) {
-        if (offsetAndLimitValueCheck) {
-          ret.push(await this.get(namespace, dbKey));
-        }
-      }
-      return { data: ret };
     }
+    if (keyArray.length > 0) {
+      const value = await this.client.MGET(keyArray);
+      for (let i = 0; i < value.length; i++) {
+        const valueObject = JSON.parse(value[i].toString());
+        if (valueObject !== null && valueObject !== '') {
+          returnValue.push(valueObject);
+        }
+      }
+    }
+    return { data: returnValue || [] };
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {

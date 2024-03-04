@@ -86,7 +86,7 @@ class Mongo implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { offset: skip, limit } = dbutils.normalizeOffsetAndLimit({
       pageOffset,
       pageLimit,
       maxLimit: this.options.pageLimit!,
@@ -97,8 +97,8 @@ class Mongo implements DatabaseDriver {
         { namespace: namespace },
         {
           sort: { createdAt: sortOrder === 'ASC' ? 1 : -1 },
-          skip: skipOffset ? 0 : pageOffset,
-          limit: capToMaxLimit ? this.options.pageLimit : pageLimit,
+          skip,
+          limit,
         }
       )
       .toArray();
@@ -120,7 +120,7 @@ class Mongo implements DatabaseDriver {
     sortOrder?: SortOrder
   ): Promise<Records> {
     const sort: Sort = { createdAt: sortOrder === 'ASC' ? 'asc' : 'desc' };
-    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { offset: skip, limit } = dbutils.normalizeOffsetAndLimit({
       pageOffset,
       pageLimit,
       maxLimit: this.options.pageLimit!,
@@ -133,8 +133,8 @@ class Mongo implements DatabaseDriver {
         },
         {
           sort,
-          skip: skipOffset ? 0 : pageOffset,
-          limit: capToMaxLimit ? this.options.pageLimit : pageLimit,
+          skip,
+          limit,
         }
       )
       .toArray();

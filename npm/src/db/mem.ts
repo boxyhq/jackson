@@ -61,14 +61,13 @@ class Mem implements DatabaseDriver {
   ): Promise<Records> {
     const returnValue: string[] = [];
 
-    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { offset: skip, limit } = dbutils.normalizeOffsetAndLimit({
       pageOffset,
       pageLimit,
       maxLimit: this.options.pageLimit!,
     });
 
-    const skip = skipOffset ? 0 : pageOffset;
-    let take = capToMaxLimit ? this.options.pageLimit : pageLimit;
+    let take = limit;
     let count = 0;
 
     take! += skip!;
@@ -108,14 +107,13 @@ class Mem implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { offset: skip, limit } = dbutils.normalizeOffsetAndLimit({
       pageOffset,
       pageLimit,
       maxLimit: this.options.pageLimit!,
     });
 
-    const skip = skipOffset ? 0 : pageOffset;
-    let take = capToMaxLimit ? this.options.pageLimit : pageLimit;
+    let take = limit;
 
     let count = 0;
 

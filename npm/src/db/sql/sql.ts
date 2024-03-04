@@ -171,7 +171,7 @@ class Sql implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { offset: skip, limit: take } = dbutils.normalizeOffsetAndLimit({
       pageOffset,
       pageLimit,
       maxLimit: this.options.pageLimit!,
@@ -183,8 +183,8 @@ class Sql implements DatabaseDriver {
       order: {
         ['createdAt']: sortOrder || 'DESC',
       },
-      take: capToMaxLimit ? this.options.pageLimit : pageLimit,
-      skip: skipOffset ? 0 : pageOffset,
+      take,
+      skip,
     });
 
     return { data: res || [] };
@@ -199,7 +199,7 @@ class Sql implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const { skipOffset, capToMaxLimit } = dbutils.normalizeOffsetAndLimit({
+    const { offset: skip, limit: take } = dbutils.normalizeOffsetAndLimit({
       pageOffset,
       pageLimit,
       maxLimit: this.options.pageLimit!,
@@ -209,8 +209,8 @@ class Sql implements DatabaseDriver {
     };
     const res = await this.indexRepository.find({
       where: { key: dbutils.keyForIndex(namespace, idx) },
-      take: capToMaxLimit ? this.options.pageLimit : pageLimit,
-      skip: skipOffset ? 0 : pageOffset,
+      take,
+      skip,
       order: sort,
     });
 
