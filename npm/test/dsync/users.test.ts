@@ -82,6 +82,7 @@ tap.test('Directory users /', async (t) => {
           familyName: 'M',
         },
         city: 'New York',
+        roles: ['viewer', 'editor'],
       };
 
       const { status, data: updatedUser } = await directorySync.requests.handle(
@@ -92,6 +93,7 @@ tap.test('Directory users /', async (t) => {
       t.equal(status, 200);
       t.hasStrict(updatedUser, toUpdate);
       t.match(updatedUser.city, toUpdate.city);
+      t.match(updatedUser.roles, toUpdate.roles);
 
       // Make sure the user was updated
       const { data: user } = await directorySync.requests.handle(requests.getById(directory, createdUser.id));
@@ -99,6 +101,7 @@ tap.test('Directory users /', async (t) => {
       t.ok(user);
       t.hasStrict(user, toUpdate);
       t.match(user.city, toUpdate.city);
+      t.match(user.roles, toUpdate.roles);
     });
 
     t.test('Should be able to delete the user using PATCH request', async (t) => {
@@ -177,6 +180,57 @@ tap.test('Directory users /', async (t) => {
       const { data: users } = await directorySync.users.getAll();
 
       t.equal(users?.length, 0);
+    });
+
+    t.test('Should be able to add & remove roles to the user', async (t) => {
+      // Create a user with no roles
+      const { data: createdUser } = await directorySync.requests.handle(
+        requests.create(directory, users[1]),
+        async (event) => {
+          t.equal(event.event, 'user.created');
+          t.notOk('roles' in event.data);
+        }
+      );
+
+      // Add roles to the user
+      await directorySync.requests.handle(
+        requests.updateById(directory, createdUser.id, {
+          ...users[1],
+          roles: ['viewer'],
+        }),
+        async (event) => {
+          t.equal(event.event, 'user.updated');
+          t.equal(
+            'roles' in event.data && event.data.roles?.every((role: string) => ['viewer'].includes(role)),
+            true
+          );
+        }
+      );
+
+      // Update the user with new roles
+      await directorySync.requests.handle(
+        requests.updateById(directory, createdUser.id, {
+          ...users[1],
+          roles: 'viewer,editor',
+        }),
+        async (event) => {
+          t.equal(event.event, 'user.updated');
+          t.equal(
+            'roles' in event.data &&
+              event.data.roles?.every((role: string) => ['viewer', 'editor'].includes(role)),
+            true
+          );
+        }
+      );
+
+      // Remove roles from the user
+      await directorySync.requests.handle(
+        requests.updateById(directory, createdUser.id, users[1]),
+        async (event) => {
+          t.equal(event.event, 'user.updated');
+          t.ok(!('roles' in event.data));
+        }
+      );
     });
   });
 });
