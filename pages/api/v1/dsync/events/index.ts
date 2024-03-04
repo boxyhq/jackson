@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { PaginateApiParams } from 'types';
+import { parsePaginateApiParams } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -28,13 +30,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     tenant: string;
     product: string;
     directoryId: string;
-    offset: string;
-    limit: string;
-    pageToken: string;
   };
 
   let tenant = searchParams.tenant || '';
   let product = searchParams.product || '';
+
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query as PaginateApiParams);
 
   // If tenant and product are not provided, retrieve the from directory
   if ((!tenant || !product) && searchParams.directoryId) {
@@ -49,9 +50,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const events = await directorySyncController.webhookLogs.setTenantAndProduct(tenant, product).getAll({
-    pageOffset: parseInt(searchParams.offset || '0'),
-    pageLimit: parseInt(searchParams.limit || '15'),
-    pageToken: searchParams.pageToken || undefined,
+    pageOffset,
+    pageLimit,
+    pageToken,
     directoryId: searchParams.directoryId,
   });
 
