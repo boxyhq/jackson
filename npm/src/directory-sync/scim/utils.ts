@@ -3,6 +3,14 @@ import _ from 'lodash';
 import { DirectorySyncProviders } from '../../typings';
 import type { DirectoryType, User, UserPatchOperation, GroupPatchOperation } from '../../typings';
 
+const parseUserRoles = (roles: string | string[]) => {
+  if (typeof roles === 'string') {
+    return roles.split(',');
+  }
+
+  return roles;
+};
+
 export const parseGroupOperation = (operation: GroupPatchOperation) => {
   const { op, path, value } = operation;
 
@@ -97,21 +105,28 @@ export const parseUserPatchRequest = (operation: UserPatchOperation) => {
 
 // Extract standard attributes from the user body
 export const extractStandardUserAttributes = (body: any) => {
-  const { name, emails, userName, active, userId } = body as {
+  const { name, emails, userName, active, userId, roles } = body as {
     name?: { givenName: string; familyName: string };
     emails?: { value: string }[];
     userName: string;
     active: boolean;
     userId?: string;
+    roles?: string | string[];
   };
 
-  return {
+  const userAttributes: Omit<User, 'raw'> = {
     first_name: name && 'givenName' in name ? name.givenName : '',
     last_name: name && 'familyName' in name ? name.familyName : '',
     email: emails && emails.length > 0 ? emails[0].value : userName,
     active: active || true,
-    id: userId, // For non-SCIM providers, the id will exist in the body
+    id: userId || '', // For non-SCIM providers, the id will exist in the body
   };
+
+  if (roles) {
+    userAttributes['roles'] = parseUserRoles(roles);
+  }
+
+  return userAttributes;
 };
 
 // Update raw user attributes
