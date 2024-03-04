@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
+import { parsePaginateApiParams } from '@lib/utils';
+import { PaginateApiParams } from 'types';
 
 const service: SetupLinkService = 'dsync';
 
@@ -27,16 +29,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { product, pageOffset, pageLimit, pageToken } = req.query as {
+  const { product } = req.query as {
     product: string;
-    pageOffset: string;
-    pageLimit: string;
-    pageToken?: string;
   };
 
   if (!product) {
     throw new Error('Please provide a product');
   }
+
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query as PaginateApiParams);
 
   const setupLinks = await setupLinkController.filterBy({
     product,

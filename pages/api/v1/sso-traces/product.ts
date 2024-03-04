@@ -1,5 +1,7 @@
 import jackson from '@lib/jackson';
+import { parsePaginateApiParams } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { PaginateApiParams } from 'types';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -21,19 +23,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController } = await jackson();
 
-  const { product, pageOffset, pageLimit, pageToken } = req.query as {
+  const { product } = req.query as {
     product: string;
-    pageOffset: string;
-    pageLimit: string;
-    pageToken?: string;
   };
 
-  const traces = await adminController.getTracesByProduct(
-    product,
-    parseInt(pageOffset),
-    parseInt(pageLimit),
-    pageToken
-  );
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query as PaginateApiParams);
+
+  const traces = await adminController.getTracesByProduct(product, pageOffset, pageLimit, pageToken);
 
   res.json(traces);
 };
