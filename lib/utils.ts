@@ -1,12 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import micromatch from 'micromatch';
-import type {
-  Directory,
-  OIDCSSOConnectionWithDiscoveryUrl,
-  OIDCSSOConnectionWithMetadata,
-  OIDCSSORecord,
-  SAMLSSORecord,
-} from '@boxyhq/saml-jackson';
+import type { OIDCSSOConnectionWithDiscoveryUrl, OIDCSSOConnectionWithMetadata } from '@boxyhq/saml-jackson';
 import { JacksonError } from 'npm/src/controller/error';
 
 export const validateEmailWithACL = (email: string) => {
@@ -78,12 +72,4 @@ export const oidcMetadataParse = (
     }
   }
   return body;
-};
-
-export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
-  if ('deactivated' in connection) {
-    return connection.deactivated === false;
-  }
-
-  return true;
 };
