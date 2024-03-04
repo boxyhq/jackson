@@ -147,7 +147,7 @@ jobs:
       - run: npm install
       - run: npm run check-lint
       - run: npm run check-format
-      - run: npm run locale-check
+      - run: npm run check-locale
       - run: npm run build
       - run: npm run db:migration:run:planetscale
         working-directory: ./npm
@@ -432,7 +432,11 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
           check-latest: true
-      - run: npm install --legacy-peer-deps
+      - run: ${{ matrix.package == 'internal-ui' && 'npm install' || matrix.package == 'npm' && 'npm install --legacy-peer-deps' }}
+        working-directory: ./${{ matrix.package }}
+      - name: Build ${{ matrix.package }}
+        if: github.ref != 'refs/heads/release' && !contains(github.ref, 'refs/tags/beta-v')
+        run: npm run build
         working-directory: ./${{ matrix.package }}
       - name: Publish ${{ matrix.package }}
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')

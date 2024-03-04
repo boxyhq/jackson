@@ -4,7 +4,7 @@
   "description": "Shared React UI components for BoxyHQ SaaS and Admin Portal",
   "repository": {
     "type": "git",
-    "url": "https://github.com/boxyhq/jackson.git"
+    "url": "git+https://github.com/boxyhq/jackson.git"
   },
   "files": [
     "dist"
@@ -26,11 +26,21 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "11.1.6",
+    "@types/node": "20.11.22",
     "@types/react": "18.2.56",
+    "@typescript-eslint/eslint-plugin": "7.1.0",
+    "@typescript-eslint/parser": "7.1.0",
     "@vitejs/plugin-react": "4.2.1",
-    "autoprefixer": "10.4.17",
+    "eslint": "8.57.0",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-react-refresh": "0.4.5",
+    "prettier": "3.2.5",
+    "react-daisyui": "5.0.0",
     "typescript": "5.3.3",
     "vite": "5.1.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.12.0"
   },
   "peerDependencies": {
     "@heroicons/react": "2.1.1",

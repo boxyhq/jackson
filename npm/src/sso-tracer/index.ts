@@ -54,8 +54,8 @@ const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
 class SSOTracer {
   tracerStore: Storable;
 
-  constructor({ db }) {
-    this.tracerStore = db.store('saml:tracer');
+  constructor({ tracerStore }) {
+    this.tracerStore = tracerStore;
     // Clean up stale traces at the start
     this.cleanUpStaleTraces();
     // Set timer to run every day

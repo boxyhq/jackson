@@ -35,6 +35,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
       ...setupLink,
       tenant: undefined,
       product: undefined,
+      webhook_url: undefined,
+      webhook_secret: undefined,
       ...branding,
     },
   });

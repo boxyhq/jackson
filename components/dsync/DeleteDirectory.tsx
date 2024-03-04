@@ -7,13 +7,23 @@ import { errorToast, successToast } from '@components/Toaster';
 import ConfirmationModal from '@components/ConfirmationModal';
 import { ButtonDanger } from '@components/ButtonDanger';
 
-export const DeleteDirectory = ({ directoryId }: { directoryId: Directory['id'] }) => {
+export const DeleteDirectory = ({
+  directoryId,
+  setupLinkToken,
+}: {
+  directoryId: Directory['id'];
+  setupLinkToken?: string;
+}) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [delModalVisible, setDelModalVisible] = useState(false);
 
   const deleteDirectory = async () => {
-    const rawResponse = await fetch(`/api/admin/directory-sync/${directoryId}`, {
+    const deleteUrl = setupLinkToken
+      ? `/api/setup/${setupLinkToken}/directory-sync/${directoryId}`
+      : `/api/admin/directory-sync/${directoryId}`;
+
+    const rawResponse = await fetch(deleteUrl, {
       method: 'DELETE',
     });
 
@@ -25,8 +35,12 @@ export const DeleteDirectory = ({ directoryId }: { directoryId: Directory['id'] 
     }
 
     if ('data' in response) {
+      const redirectUrl = setupLinkToken
+        ? `/setup/${setupLinkToken}/directory-sync`
+        : '/admin/directory-sync';
+
       successToast(t('directory_connection_deleted_successfully'));
-      router.replace('/admin/directory-sync');
+      router.replace(redirectUrl);
     }
   };
 

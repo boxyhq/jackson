@@ -3,7 +3,8 @@ import { useTranslation } from 'next-i18next';
 import { useContext } from 'react';
 import { BUIContext } from '../provider';
 
-type Tabs = 'directory' | 'users' | 'groups' | 'events';
+const allTabs = ['directory', 'users', 'groups', 'events'] as const;
+export type Tabs = (typeof allTabs)[number];
 
 export const DirectoryTab = ({ activeTab, baseUrl }: { activeTab: Tabs; baseUrl: string }) => {
   const { t } = useTranslation('common');

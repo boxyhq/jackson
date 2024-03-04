@@ -36,9 +36,9 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { setupID } = req.query as { setupID: string };
+  const { id } = req.query as { id: string };
 
-  await setupLinkController.remove({ id: setupID });
+  await setupLinkController.remove({ id });
 
   return res.json({ data: {} });
 };

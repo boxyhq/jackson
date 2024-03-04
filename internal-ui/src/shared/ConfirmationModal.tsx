@@ -4,7 +4,7 @@ import { ButtonOutline } from './ButtonOutline';
 import { ButtonDanger } from './ButtonDanger';
 import { ButtonBase } from './ButtonBase';
 
-export const DeleteConfirmationModal = ({
+export const ConfirmationModal = ({
   visible,
   title,
   description,
@@ -30,13 +30,15 @@ export const DeleteConfirmationModal = ({
   return (
     <Modal visible={visible} title={title} description={description}>
       <div className='modal-action'>
-        <ButtonOutline onClick={onCancel}>{t('cancel')}</ButtonOutline>
+        <ButtonOutline onClick={onCancel} className='btn-md'>
+          {t('cancel')}
+        </ButtonOutline>
         {overrideDeleteButton ? (
-          <ButtonBase color='secondary' onClick={onConfirm} data-testid={dataTestId}>
+          <ButtonBase color='secondary' onClick={onConfirm} data-testid={dataTestId} className='btn-md'>
             {buttonText}
           </ButtonBase>
         ) : (
-          <ButtonDanger onClick={onConfirm} data-testid={dataTestId}>
+          <ButtonDanger onClick={onConfirm} data-testid={dataTestId} className='btn-md'>
             {buttonText}
           </ButtonDanger>
         )}
