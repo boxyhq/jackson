@@ -16,9 +16,9 @@ export class ProductController {
 
     const productConfig = (await this.productStore.get(productId)) as ProductConfig;
 
-    if (!productConfig) {
-      console.error(`Product config not found for ${productId}`);
-    }
+    // if (!productConfig) {
+    //   console.error(`Product config not found for ${productId}`);
+    // }
 
     return {
       ...productConfig,

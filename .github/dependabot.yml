@@ -13,6 +13,10 @@ updates:
     directory: '/npm'
     schedule:
       interval: 'daily'
+  - package-ecosystem: 'npm'
+    directory: '/internal-ui'
+    schedule:
+      interval: 'daily'
   - package-ecosystem: 'docker'
     directory: '/'
     schedule:
