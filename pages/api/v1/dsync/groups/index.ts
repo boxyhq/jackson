@@ -23,7 +23,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     tenant: string;
     product: string;
     directoryId: string;
-    pageToken: string;
   };
 
   let tenant = searchParams.tenant || '';
