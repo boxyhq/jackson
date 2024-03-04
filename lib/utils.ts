@@ -77,12 +77,17 @@ export const oidcMetadataParse = (
 
 export const parsePaginateApiParams = (params: PaginateApiParams) => {
   let pageOffset, pageLimit;
-  if ('offset' in params && 'limit' in params) {
-    pageOffset = params.offset;
-    pageLimit = params.limit;
-  } else if ('pageOffset' in params && 'pageLimit' in params) {
+
+  if ('pageOffset' in params) {
     pageOffset = params.pageOffset;
+  } else if ('offset' in params) {
+    pageOffset = params.offset;
+  }
+
+  if ('pageLimit' in params) {
     pageLimit = params.pageLimit;
+  } else if ('limit' in params) {
+    pageLimit = params.limit;
   }
 
   pageOffset = parseInt(pageOffset);
