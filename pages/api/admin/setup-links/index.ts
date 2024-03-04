@@ -75,8 +75,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     const setupLinksPaginated = await setupLinkController.filterBy({
       service: service as any,
       pageOffset,
-      pageToken,
       pageLimit,
+      pageToken,
     });
 
     if (setupLinksPaginated.pageToken) {
