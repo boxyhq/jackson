@@ -7,6 +7,7 @@ const transformUser = (user: User): User => {
     last_name: user.last_name,
     email: user.email,
     active: user.active,
+    ...('roles' in user ? { roles: user.roles } : undefined),
     raw: user.raw,
   };
 };
