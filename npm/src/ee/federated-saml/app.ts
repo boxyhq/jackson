@@ -303,10 +303,18 @@ export class App {
    *     responses:
    *        200:
    *          description: Success
-   *          schema:
-   *            type: array
-   *            items:
-   *              $ref:  '#/definitions/SAMLFederationApp'
+   *          content:
+   *            application/json:
+   *               schema:
+   *                 type: object
+   *                 properties:
+   *                   data:
+   *                     type: array
+   *                     items:
+   *                       $ref: '#/definitions/SAMLFederationApp'
+   *                   pageToken:
+   *                     type: string
+   *                     description: token for pagination
    */
   public async getByProduct({ product, pageOffset, pageLimit, pageToken }: GetByProductParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
