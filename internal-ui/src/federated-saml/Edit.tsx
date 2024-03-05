@@ -100,7 +100,7 @@ export const Edit = ({
                 {connectionIsOIDC && (
                   <label className='form-control w-full'>
                     <div className='label'>
-                      <span className='label-text'>{t('client_id')}</span>
+                      <span className='label-text'>{t('bui-fs-client-id')}</span>
                     </div>
                     <input
                       type='text'
@@ -113,7 +113,7 @@ export const Edit = ({
                 {connectionIsOIDC && (
                   <label className='form-control w-full'>
                     <div className='label'>
-                      <span className='label-text'>{t('client_secret')}</span>
+                      <span className='label-text'>{t('bui-fs-client-secret')}</span>
                     </div>
                     <input
                       type='text'

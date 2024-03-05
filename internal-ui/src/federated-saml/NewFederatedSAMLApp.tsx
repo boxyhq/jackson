@@ -84,7 +84,7 @@ export const NewFederatedSAMLApp = ({
       <form onSubmit={formik.handleSubmit} method='POST'>
         <Card className='p-6 rounded space-y-3'>
           <div className='mb-4 flex items-center'>
-            <div className='mr-2 py-3'>{t('select_app_type')}:</div>
+            <div className='mr-2 py-3'>{t('bui-fs-select-app-type')}:</div>
             <div className='flex w-52'>
               <div className='form-control'>
                 <label className='label mr-4 cursor-pointer'>
@@ -96,7 +96,7 @@ export const NewFederatedSAMLApp = ({
                     checked={formik.values.type === 'saml'}
                     onChange={formik.handleChange}
                   />
-                  <span className='label-text ml-1'>{t('saml')}</span>
+                  <span className='label-text ml-1'>{t('bui-fs-saml')}</span>
                 </label>
               </div>
               <div className='form-control'>
@@ -109,7 +109,7 @@ export const NewFederatedSAMLApp = ({
                     checked={formik.values.type === 'oidc'}
                     onChange={formik.handleChange}
                   />
-                  <span className='label-text ml-1'>{t('oidc')}</span>
+                  <span className='label-text ml-1'>{t('bui-fs-oidc')}</span>
                 </label>
               </div>
             </div>
