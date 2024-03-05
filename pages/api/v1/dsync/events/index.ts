@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { PaginateApiParams } from 'types';
 import { parsePaginateApiParams } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -35,7 +34,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   let tenant = searchParams.tenant || '';
   let product = searchParams.product || '';
 
-  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query as PaginateApiParams);
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   // If tenant and product are not provided, retrieve the from directory
   if ((!tenant || !product) && searchParams.directoryId) {

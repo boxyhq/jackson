@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { PaginateApiParams } from 'types';
 
 import jackson from '@lib/jackson';
 import { parsePaginateApiParams } from '@lib/utils';
@@ -37,7 +36,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query as PaginateApiParams);
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   const apps = await samlFederatedController.app.getAll({
     pageOffset,

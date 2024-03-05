@@ -7,10 +7,4 @@ export interface ApiError extends Error {
 
 export type ApiResponse<T = any> = ApiSuccess<T> | { error: ApiError };
 
-export type PaginateApiParams = (
-  | {
-      offset: string;
-      limit: string;
-    }
-  | { pageOffset: string; pageLimit: string }
-) & { pageToken?: string };
+export type PaginateApiParams = { pageOffset: number; pageLimit: number } & { pageToken?: string };

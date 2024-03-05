@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { PaginateApiParams } from 'types';
 import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -52,7 +51,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     service: string;
   };
 
-  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query as PaginateApiParams);
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   if (!token && !service) {
     return res.status(404).json({
