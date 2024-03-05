@@ -175,6 +175,7 @@ export const Edit = ({
                     onlyUnique={true}
                     inputProps={{
                       placeholder: t('bui-fs-enter-tenant'),
+                      autocomplete: 'off',
                     }}
                     focusedClassName='input-focused'
                     addOnBlur={true}

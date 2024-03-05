@@ -226,6 +226,7 @@ export const NewFederatedSAMLApp = ({
               onlyUnique={true}
               inputProps={{
                 placeholder: t('bui-fs-enter-tenant'),
+                autocomplete: 'off',
               }}
               focusedClassName='input-focused'
               addOnBlur={true}
