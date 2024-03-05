@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { SetupLink } from '@boxyhq/saml-jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
@@ -9,11 +8,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.query as { token: string };
 
   try {
-    const setupLink = await setupLinkController.getByToken(token);
+    await setupLinkController.getByToken(token);
 
     switch (method) {
       case 'GET':
-        return await handleGET(req, res, setupLink);
+        return await handleGET(req, res);
       default:
         res.setHeader('Allow', 'GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -25,7 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
   const { id } = req.query as { id: string };

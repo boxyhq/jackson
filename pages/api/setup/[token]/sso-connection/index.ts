@@ -18,9 +18,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       case 'POST':
         return await handlePOST(req, res, setupLink);
       case 'PATCH':
-        return await handlePATCH(req, res, setupLink);
+        return await handlePATCH(req, res);
       case 'DELETE':
-        return await handleDELETE(req, res, setupLink);
+        return await handleDELETE(req, res);
       default:
         res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -88,7 +88,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
   res.status(201).json({ data: null });
 };
 
-const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
   const { clientID, clientSecret } = req.query as { clientID: string; clientSecret: string };
@@ -98,7 +98,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink
   res.json({ data: null });
 };
 
-const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
   const {
