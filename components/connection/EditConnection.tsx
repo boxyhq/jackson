@@ -194,7 +194,8 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
         <form onSubmit={save}>
           <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 lg:border-none lg:p-0'>
             <div className='flex flex-col gap-0 lg:flex-row lg:gap-4'>
-              <div className='w-full rounded border-gray-200 dark:border-gray-700 lg:w-3/5 lg:border lg:p-3'>
+              <div
+                className={`w-full rounded border-gray-200 dark:border-gray-700 lg:border lg:p-3 ${readOnlyFields.length > 0 ? 'lg:w-3/5' : ''}`}>
                 {filteredFieldsByConnection
                   .filter((field) => field.attributes.editable !== false)
                   .filter(({ attributes: { hideInSetupView } }) => (setupLinkToken ? !hideInSetupView : true))
