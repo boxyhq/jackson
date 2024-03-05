@@ -128,14 +128,14 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     ...(isSAML ? { metadataUrl, encodedRawMetadata } : undefined),
     ...(isOIDC
       ? {
-          oidcProvider: {
-            clientId: oidcClientId,
-            clientSecret: oidcClientSecret,
-            discoveryUrl: oidcDiscoveryUrl,
-          },
+          oidcClientId,
+          oidcClientSecret,
+          oidcDiscoveryUrl,
         }
       : undefined),
   };
+
+  console.log(body);
 
   if (isSAML) {
     await connectionAPIController.updateSAMLConnection(body as any);
