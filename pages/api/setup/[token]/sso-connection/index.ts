@@ -124,7 +124,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const body = {
     ...connection,
-    deactivated,
+    ...('deactivated' in req.body ? { deactivated } : undefined),
     ...(isSAML ? { metadataUrl, encodedRawMetadata } : undefined),
     ...(isOIDC
       ? {
@@ -135,8 +135,6 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
       : undefined),
   };
 
-  console.log(body);
-
   if (isSAML) {
     await connectionAPIController.updateSAMLConnection(body as any);
   } else if (isOIDC) {
@@ -145,7 +143,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
 
-  res.json({ data: null });
+  res.status(204).end();
 };
 
 export default handler;
