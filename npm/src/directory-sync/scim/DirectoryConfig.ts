@@ -133,6 +133,24 @@ export class DirectoryConfig {
    *     in: query
    *     required: false
    *     type: string
+   *   pageOffset:
+   *     name: Page Offset
+   *     description: Starting point from which the set of records are retrieved
+   *     in: query
+   *     required: false
+   *     type: string
+   *   pageLimit:
+   *     name: Page Limit
+   *     description: Number of records to be fetched for the page
+   *     in: query
+   *     required: false
+   *     type: string
+   *   pageToken:
+   *     name: Page Token
+   *     description: Token used for DynamoDB pagination
+   *     in: query
+   *     required: false
+   *     type: string
    */
 
   /**

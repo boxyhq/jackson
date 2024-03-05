@@ -197,6 +197,9 @@ export class Users extends Base {
    *       - $ref: '#/parameters/tenant'
    *       - $ref: '#/parameters/product'
    *       - $ref: '#/parameters/directoryId'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
    *     produces:
