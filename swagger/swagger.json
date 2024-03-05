@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.19.2",
+    "version": "1.20.2",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -1052,6 +1052,15 @@
           },
           {
             "$ref": "#/parameters/directoryId"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
@@ -1696,6 +1705,18 @@
         "raw": {
           "type": "object",
           "description": "Raw group attributes from the Identity Provider"
+        },
+        "pageOffset": {
+          "type": "string",
+          "description": "Starting point from which the set of records are retrieved"
+        },
+        "pageLimit": {
+          "type": "string",
+          "description": "Number of records to be fetched for the page"
+        },
+        "pageToken": {
+          "type": "string",
+          "description": "Token used for DynamoDB pagination"
         }
       }
     },

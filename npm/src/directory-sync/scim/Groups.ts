@@ -32,6 +32,15 @@ interface CreateGroupParams {
  *        raw:
  *          type: object
  *          description: Raw group attributes from the Identity Provider
+ *        pageOffset:
+ *          type: string
+ *          description: Starting point from which the set of records are retrieved
+ *        pageLimit:
+ *          type: string
+ *          description: Number of records to be fetched for the page
+ *        pageToken:
+ *          type: string
+ *          description: Token used for DynamoDB pagination
  */
 export class Groups extends Base {
   constructor({ db }: { db: DatabaseStore }) {
@@ -207,6 +216,9 @@ export class Groups extends Base {
    *       - $ref: '#/parameters/tenant'
    *       - $ref: '#/parameters/product'
    *       - $ref: '#/parameters/directoryId'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
    *     produces:
