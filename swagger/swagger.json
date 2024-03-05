@@ -722,10 +722,19 @@
         "parameters": [
           {
             "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
-          "SAML Traces"
+          "SSO Traces"
         ],
         "produces": [
           "application/json"
@@ -1128,6 +1137,15 @@
           },
           {
             "$ref": "#/parameters/directoryId"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
@@ -1430,6 +1448,15 @@
             "in": "query",
             "required": true,
             "type": "string"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
@@ -1705,18 +1732,6 @@
         "raw": {
           "type": "object",
           "description": "Raw group attributes from the Identity Provider"
-        },
-        "pageOffset": {
-          "type": "string",
-          "description": "Starting point from which the set of records are retrieved"
-        },
-        "pageLimit": {
-          "type": "string",
-          "description": "Number of records to be fetched for the page"
-        },
-        "pageToken": {
-          "type": "string",
-          "description": "Token used for DynamoDB pagination"
         }
       }
     },
@@ -2142,6 +2157,27 @@
     "directoryId": {
       "name": "directory id",
       "description": "Directory ID",
+      "in": "query",
+      "required": false,
+      "type": "string"
+    },
+    "pageOffset": {
+      "name": "Page Offset",
+      "description": "Starting point from which the set of records are retrieved",
+      "in": "query",
+      "required": false,
+      "type": "string"
+    },
+    "pageLimit": {
+      "name": "Page Limit",
+      "description": "Number of records to be fetched for the page",
+      "in": "query",
+      "required": false,
+      "type": "string"
+    },
+    "pageToken": {
+      "name": "Page Token",
+      "description": "Token used for DynamoDB pagination",
       "in": "query",
       "required": false,
       "type": "string"

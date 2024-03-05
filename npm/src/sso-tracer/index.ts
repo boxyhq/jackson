@@ -164,8 +164,11 @@ class SSOTracer {
    *     summary: Get all traces for a product
    *     parameters:
    *      - $ref: '#/parameters/product'
+   *      - $ref: '#/parameters/pageOffset'
+   *      - $ref: '#/parameters/pageLimit'
+   *      - $ref: '#/parameters/pageToken'
    *     tags:
-   *       - SAML Traces
+   *       - SSO Traces
    *     produces:
    *       - application/json
    *     responses:

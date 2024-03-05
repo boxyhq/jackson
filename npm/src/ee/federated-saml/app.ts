@@ -293,6 +293,9 @@ export class App {
    *         in: query
    *         required: true
    *         type: string
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - SAML Federation
    *     produces:

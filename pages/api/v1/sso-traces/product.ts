@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Get the saml traces filtered by the product
+// Get the sso traces filtered by the product
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController } = await jackson();
 
