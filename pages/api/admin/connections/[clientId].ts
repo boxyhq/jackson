@@ -1,10 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { withAdmin } from '@lib/withAdmin';
+import { adminHandler } from '@lib/api/adminHandler';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await withAdmin(req, res, {
+  await adminHandler(req, res, {
     GET: handleGET,
   });
 };
@@ -18,6 +19,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   };
 
   const connections = await connectionAPIController.getConnections({ clientID: clientId });
+
+  if (!connections || connections.length === 0) {
+    throw new ApiError(404, 'Connection not found');
+  }
 
   res.json({ data: connections[0] });
 };

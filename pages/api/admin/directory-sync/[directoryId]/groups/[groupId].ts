@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { withAdmin } from '@lib/withAdmin';
+import { adminHandler } from '@lib/api/adminHandler';
 import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await withAdmin(req, res, {
+  await adminHandler(req, res, {
     GET: handleGET,
   });
 };

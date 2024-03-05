@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 import { terminusOptions } from '@lib/env';
-import { withAdmin } from '@lib/withAdmin';
+import { adminHandler } from '@lib/api/adminHandler';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await withAdmin(req, res, {
+  await adminHandler(req, res, {
     GET: getModel,
     POST: saveModel,
   });
