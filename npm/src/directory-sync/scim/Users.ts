@@ -207,10 +207,18 @@ export class Users extends Base {
    *     responses:
    *       200:
    *         description: Success
-   *         schema:
-   *           type: array
-   *           items:
-   *             $ref: '#/definitions/User'
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/User'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getAll({
     pageOffset,

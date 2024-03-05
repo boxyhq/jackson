@@ -295,7 +295,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/200Get"
+            "$ref": "#/responses/200GetByProduct"
           },
           "400": {
             "$ref": "#/responses/400Get"
@@ -1041,10 +1041,23 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Directory"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Directory"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1117,10 +1130,23 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Group"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Group"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1193,10 +1219,23 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/User"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/User"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1229,10 +1268,23 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Group"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Event"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1893,6 +1945,28 @@
     },
     "401Get": {
       "description": "Unauthorized"
+    },
+    "200GetByProduct": {
+      "description": "Success",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Connection"
+                }
+              },
+              "pageToken": {
+                "type": "string",
+                "description": "token for pagination"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "parameters": {

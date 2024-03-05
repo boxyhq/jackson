@@ -806,12 +806,20 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *          type: object
    *          description: OIDC IdP metadata
    * responses:
-   *   '200Get':
+   *   '200GetByProduct':
    *     description: Success
-   *     schema:
-   *       type: array
-   *       items:
-   *         $ref: '#/definitions/Connection'
+   *     content:
+   *      application/json:
+   *         schema:
+   *           type: object
+   *           properties:
+   *             data:
+   *               type: array
+   *               items:
+   *                 $ref: '#/definitions/Connection'
+   *             pageToken:
+   *               type: string
+   *               description: token for pagination
    *   '400Get':
    *     description: Please provide a `product`.
    *   '401Get':
@@ -828,7 +836,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     tags: [Single Sign On]
    *     responses:
    *      '200':
-   *        $ref: '#/responses/200Get'
+   *        $ref: '#/responses/200GetByProduct'
    *      '400':
    *        $ref: '#/responses/400Get'
    *      '401':

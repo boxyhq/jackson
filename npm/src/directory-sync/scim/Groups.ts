@@ -217,10 +217,18 @@ export class Groups extends Base {
    *     responses:
    *       200:
    *         description: Success
-   *         schema:
-   *           type: array
-   *           items:
-   *             $ref: '#/definitions/Group'
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/Group'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getAll(
     params: PaginationParams & {

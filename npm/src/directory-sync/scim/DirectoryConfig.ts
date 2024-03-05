@@ -630,10 +630,18 @@ export class DirectoryConfig {
    *     responses:
    *       '200':
    *         description: Success
-   *         schema:
-   *           type: array
-   *           items:
-   *             $ref:  '#/definitions/Directory'
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/Directory'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async filterBy(
     params: FilterByParams = {}
