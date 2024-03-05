@@ -38,7 +38,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.update(directoryId, { deactivated });
 
   if (data) {
-    return res.status(200).json({ data });
+    return res.json({ data: null });
   }
 
   if (error) {
@@ -55,7 +55,17 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
   if (data) {
-    return res.json({ data });
+    return res.json({
+      data: {
+        id: data.id,
+        type: data.type,
+        name: data.name,
+        deactivated: data.deactivated,
+        scim: data.scim,
+        google_domain: data.google_domain,
+        google_authorized: data.google_access_token && data.google_refresh_token, // Indicate if the Google authorization is complete
+      },
+    });
   }
 
   if (error) {

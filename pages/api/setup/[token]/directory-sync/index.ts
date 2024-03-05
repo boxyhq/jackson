@@ -46,7 +46,11 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
   const { data, error } = await directorySyncController.directories.create(directory);
 
   if (data) {
-    return res.status(201).json({ data });
+    return res.status(201).json({
+      data: {
+        id: data.id,
+      },
+    });
   }
 
   if (error) {
@@ -58,31 +62,22 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { directorySyncController } = await jackson();
 
-  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
-
-  const pageOffset = parseInt(offset);
-  const pageLimit = parseInt(limit);
-
-  const {
-    data,
-    error,
-    pageToken: nextPageToken,
-  } = await directorySyncController.directories.getAll({
-    pageOffset,
-    pageLimit,
-    pageToken,
-  });
-
-  if (nextPageToken) {
-    res.setHeader('jackson-pagetoken', nextPageToken);
-  }
+  const { data, error } = await directorySyncController.directories.getByTenantAndProduct(
+    setupLink.tenant,
+    setupLink.product
+  );
 
   if (data) {
-    const filteredData = data.filter(
-      (directory) => directory.tenant === setupLink.tenant && directory.product === setupLink.product
-    );
+    const directories = data.map((directory) => {
+      return {
+        id: directory.id,
+        type: directory.type,
+        name: directory.name,
+        deactivated: directory.deactivated,
+      };
+    });
 
-    return res.status(200).json({ data: filteredData });
+    return res.json({ data: directories });
   }
 
   if (error) {
