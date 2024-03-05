@@ -278,6 +278,15 @@
         "parameters": [
           {
             "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "operationId": "get-connections-by-product",
@@ -644,6 +653,15 @@
         "parameters": [
           {
             "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "operationId": "get-sso-setup-link-by-product",
@@ -669,6 +687,15 @@
         "parameters": [
           {
             "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "operationId": "get-dsync-setup-link-by-product",
@@ -994,6 +1021,15 @@
         "parameters": [
           {
             "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [

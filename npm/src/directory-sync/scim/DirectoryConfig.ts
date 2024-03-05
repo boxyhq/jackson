@@ -620,6 +620,9 @@ export class DirectoryConfig {
    *     summary: Get directory connections by product
    *     parameters:
    *      - $ref: '#/parameters/product'
+   *      - $ref: '#/parameters/pageOffset'
+   *      - $ref: '#/parameters/pageLimit'
+   *      - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
    *     produces:

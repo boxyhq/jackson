@@ -821,6 +821,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     summary: Get SSO Connections by product
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     operationId: get-connections-by-product
    *     tags: [Single Sign On]
    *     responses:
