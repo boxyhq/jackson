@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
-import { DocumentMagnifyingGlassIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
+import DocumentMagnifyingGlassIcon from '@heroicons/react/24/outline/DocumentMagnifyingGlassIcon';
+import WrenchScrewdriverIcon from '@heroicons/react/24/outline/WrenchScrewdriverIcon';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import EmptyState from '@components/EmptyState';
 import { useProjects } from '@lib/ui/retraced';

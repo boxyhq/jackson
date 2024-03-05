@@ -5,7 +5,7 @@ import ArrowTopRightOnSquareIcon from '@heroicons/react/20/solid/ArrowTopRightOn
 
 export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
   const { t } = useTranslation('common');
-  const [view, setView] = useState<'idp-config' | 'auth' | 'saml-fed'>('idp-config');
+  const [view, setView] = useState<'idp-config' | 'auth' | 'identity-fed'>('idp-config');
 
   const viewText = t('bui-wku-view');
   const downloadText = t('bui-wku-download');
@@ -48,18 +48,25 @@ export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
       type: 'auth',
     },
     {
-      title: t('bui-wku-idp-metadata'),
-      description: t('bui-wku-idp-metadata-desc'),
+      title: t('bui-wku-saml-idp-metadata'),
+      description: t('bui-wku-saml-idp-metadata-desc'),
       href: `${baseUrl}/.well-known/idp-metadata`,
       buttonText: viewText,
-      type: 'saml-fed',
+      type: 'identity-fed',
     },
     {
-      title: t('bui-wku-idp-configuration'),
-      description: t('bui-wku-idp-config-desc'),
+      title: t('bui-wku-saml-idp-configuration'),
+      description: t('bui-wku-saml-idp-config-desc'),
       href: `${baseUrl}/.well-known/idp-configuration`,
       buttonText: viewText,
-      type: 'saml-fed',
+      type: 'identity-fed',
+    },
+    {
+      title: t('bui-wku-oidc-federation'),
+      description: t('bui-wku-oidc-federation-desc'),
+      href: `${baseUrl}/.well-known/openid-configuration`,
+      buttonText: viewText,
+      type: 'identity-fed',
     },
   ];
 
@@ -84,11 +91,11 @@ export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
           label={t('bui-wku-auth-integration-links')}
         />
         <Tab
-          isActive={view === 'saml-fed'}
-          setIsActive={() => setView('saml-fed')}
-          title={t('bui-wku-saml-federation-links')}
-          description={t('bui-wku-desc-saml-federation')}
-          label={t('bui-wku-saml-federation-links')}
+          isActive={view === 'identity-fed'}
+          setIsActive={() => setView('identity-fed')}
+          title={t('bui-wku-identity-federation-links')}
+          description={t('bui-wku-desc-identity-federation')}
+          label={t('bui-wku-identity-federation-links')}
         />
       </div>
       <div className='space-y-3 mt-8'>

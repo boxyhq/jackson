@@ -23,7 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-// Create new SAML Federation app
+// Create new Identity Federation app
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
@@ -32,7 +32,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(201).json({ data: app });
 };
 
-// Get SAML Federation apps
+// Get Identity Federation apps
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 

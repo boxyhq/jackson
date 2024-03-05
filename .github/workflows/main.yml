@@ -146,6 +146,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - run: npm install
       - run: npm run check-lint
+      - run: npm run check-types
       - run: npm run check-format
       - run: npm run check-locale
       - run: npm run build

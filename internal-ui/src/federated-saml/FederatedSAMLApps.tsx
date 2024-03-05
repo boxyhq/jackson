@@ -12,7 +12,7 @@ import {
 } from '../shared';
 import { useTranslation } from 'next-i18next';
 import type { SAMLFederationApp } from '../types';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate } from '../hooks';
@@ -30,7 +30,7 @@ export const FederatedSAMLApps = ({
   urls: { getApps: string };
   excludeFields?: ExcludeFields[];
   onEdit?: (app: SAMLFederationApp) => void;
-  actions: { newApp: string; idpConfiguration: string };
+  actions: { newApp: string; samlConfiguration: string; oidcConfiguration: string };
   actionCols?: { text: string; onClick: (app: SAMLFederationApp) => void; icon: JSX.Element }[];
 }) => {
   const { router } = useRouter();
@@ -128,8 +128,11 @@ export const FederatedSAMLApps = ({
         title={t('bui-fs-apps')}
         actions={
           <>
-            <LinkOutline href={actions.idpConfiguration} target='_blank' className='btn-md'>
-              {t('bui-fs-idp-config')}
+            <LinkOutline href={actions.oidcConfiguration} target='_blank' className='btn-md'>
+              {t('bui-fs-oidc-config')}
+            </LinkOutline>
+            <LinkOutline href={actions.samlConfiguration} target='_blank' className='btn-md'>
+              {t('bui-fs-saml-config')}
             </LinkOutline>
             <ButtonPrimary onClick={() => router?.push(actions.newApp)} className='btn-md'>
               {t('bui-fs-new-app')}

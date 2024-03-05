@@ -1306,7 +1306,7 @@
     },
     "/api/v1/federated-saml": {
       "post": {
-        "summary": "Create a SAML Federation app",
+        "summary": "Create an Identity Federation app",
         "parameters": [
           {
             "name": "name",
@@ -1366,7 +1366,7 @@
           },
           {
             "name": "tenants",
-            "description": "Mapping of tenants whose connections will be grouped under this SAML Federation app",
+            "description": "Mapping of tenants whose connections will be grouped under this Identity Federation app",
             "in": "formData",
             "required": false,
             "type": "array"
@@ -1377,10 +1377,24 @@
             "in": "formData",
             "required": false,
             "type": "array"
+          },
+          {
+            "name": "type",
+            "description": "If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'",
+            "in": "formData",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "name": "redirectUrl",
+            "description": "If creating an OIDC app, provide the redirect URL",
+            "in": "formData",
+            "required": false,
+            "type": "array"
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1402,7 +1416,7 @@
         }
       },
       "get": {
-        "summary": "Get a SAML Federation app",
+        "summary": "Get an Identity Federation app",
         "parameters": [
           {
             "name": "id",
@@ -1427,7 +1441,7 @@
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1442,7 +1456,7 @@
         }
       },
       "patch": {
-        "summary": "Update a SAML Federation app",
+        "summary": "Update an Identity Federation app",
         "parameters": [
           {
             "name": "id",
@@ -1502,7 +1516,7 @@
           },
           {
             "name": "tenants",
-            "description": "Mapping of tenants whose connections will be grouped under this SAML Federation app",
+            "description": "Mapping of tenants whose connections will be grouped under this Identity Federation app",
             "in": "formData",
             "required": false,
             "type": "array"
@@ -1516,7 +1530,7 @@
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1535,7 +1549,7 @@
         }
       },
       "delete": {
-        "summary": "Delete a SAML Federation app",
+        "summary": "Delete an Identity Federation app",
         "parameters": [
           {
             "name": "id",
@@ -1560,7 +1574,7 @@
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1577,7 +1591,7 @@
     },
     "/api/v1/federated-saml/product": {
       "get": {
-        "summary": "Get SAML Federation apps by product",
+        "summary": "Get Identity Federation apps by product",
         "parameters": [
           {
             "name": "product",
@@ -1597,7 +1611,7 @@
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"

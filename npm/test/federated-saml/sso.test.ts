@@ -76,6 +76,7 @@ tap.test('Federated SAML flow', async (t) => {
       const response = await samlFederatedController.sso.getAuthorizeUrl({
         request: samlRequestFromSP,
         relayState: relayStateFromSP,
+        samlBinding: 'HTTP-Redirect',
       });
 
       // Extract relay state created by Jackson
