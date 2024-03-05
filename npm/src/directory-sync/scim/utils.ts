@@ -118,7 +118,7 @@ export const extractStandardUserAttributes = (body: any) => {
     first_name: name && 'givenName' in name ? name.givenName : '',
     last_name: name && 'familyName' in name ? name.familyName : '',
     email: emails && emails.length > 0 ? emails[0].value : userName,
-    active: active || true,
+    active: 'active' in body ? active : true,
     id: userId || '', // For non-SCIM providers, the id will exist in the body
   };
 
