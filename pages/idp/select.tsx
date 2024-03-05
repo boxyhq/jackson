@@ -182,13 +182,14 @@ export const getServerSideProps = async ({ query, locale, req }) => {
 
   const paramsToRelay = { ...query } as { [key: string]: string };
 
-  const { authFlow, entityId, tenant, product, idp_hint, samlFedAppId } = query as {
+  const { authFlow, entityId, tenant, product, idp_hint, samlFedAppId, fedType } = query as {
     authFlow: 'sp-initiated' | 'idp-initiated';
     tenant?: string;
     product?: string;
     idp_hint?: string;
     entityId?: string;
     samlFedAppId?: string;
+    fedType?: string;
   };
 
   if (!['sp-initiated', 'idp-initiated'].includes(authFlow)) {
@@ -200,7 +201,10 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   // The user has selected an IdP to continue with
   if (idp_hint) {
     const params = new URLSearchParams(paramsToRelay);
-    const destination = samlFedAppId ? `/api/federated-saml/sso?${params}` : `/api/oauth/authorize?${params}`;
+    const destination =
+      samlFedAppId && fedType !== 'oidc'
+        ? `/api/federated-saml/sso?${params}`
+        : `/api/oauth/authorize?${params}`;
 
     return {
       redirect: {

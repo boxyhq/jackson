@@ -8,7 +8,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
-import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
+import ArrowsRightLeftIcon from '@heroicons/react/24/outline/ArrowsRightLeftIcon';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 

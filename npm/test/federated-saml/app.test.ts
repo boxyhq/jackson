@@ -22,7 +22,7 @@ tap.test('Federated SAML App', async () => {
     acsUrl: serviceProvider.acsUrl,
   });
 
-  tap.test('Should be able to create a new SAML Federation app', async (t) => {
+  tap.test('Should be able to create a new Identity Federation app', async (t) => {
     t.ok(app);
     t.match(app.id, appId);
     t.match(app.tenant, tenant);
@@ -31,14 +31,14 @@ tap.test('Federated SAML App', async () => {
     t.match(app.acsUrl, serviceProvider.acsUrl);
   });
 
-  tap.test('Should be able to get the SAML Federation app by id', async (t) => {
+  tap.test('Should be able to get the Identity Federation app by id', async (t) => {
     const response = await samlFederatedController.app.get({ id: app.id });
 
     t.ok(response);
     t.match(response.id, app.id);
   });
 
-  tap.test('Should be able to get the SAML Federation app by entity id', async (t) => {
+  tap.test('Should be able to get the Identity Federation app by entity id', async (t) => {
     const response = await samlFederatedController.app.getByEntityId(serviceProvider.entityId);
 
     t.ok(response);
@@ -62,7 +62,7 @@ tap.test('Federated SAML App', async () => {
     t.match(apps.data[0], app);
   });
 
-  tap.test('Should be able to update the SAML Federation app', async (t) => {
+  tap.test('Should be able to update the Identity Federation app', async (t) => {
     // Update by id
     const response = await samlFederatedController.app.update({
       id: app.id,
@@ -135,7 +135,7 @@ tap.test('Federated SAML App', async () => {
     t.match(updatedApp.primaryColor, null);
   });
 
-  tap.test('Should be able to get all SAML Federation apps', async (t) => {
+  tap.test('Should be able to get all Identity Federation apps', async (t) => {
     const response = await samlFederatedController.app.getAll({});
 
     t.ok(response);
