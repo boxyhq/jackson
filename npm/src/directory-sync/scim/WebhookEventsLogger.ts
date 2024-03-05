@@ -43,6 +43,28 @@ export class WebhookEventsLogger extends Base {
     return await this.eventStore().get(id);
   }
 
+  /**
+   * @swagger
+   * /api/v1/dsync/events:
+   *   get:
+   *     summary: Get event logs for a directory
+   *     parameters:
+   *       - $ref: '#/parameters/directoryId'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
+   *     tags:
+   *       - Directory Sync
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Success
+   *         schema:
+   *           type: array
+   *           items:
+   *             $ref: '#/definitions/Group'
+   */
   // Get the event logs for a directory paginated
   public async getAll(params: GetAllParams = {}) {
     const { pageOffset, pageLimit, directoryId } = params;

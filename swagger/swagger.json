@@ -1167,6 +1167,42 @@
         }
       }
     },
+    "/api/v1/dsync/events": {
+      "get": {
+        "summary": "Get event logs for a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/directoryId"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Group"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/federated-saml": {
       "post": {
         "summary": "Create a SAML Federation app",
