@@ -1,4 +1,4 @@
-import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
+import { DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
 import tap from 'tap';
 import DB from '../../src/db/db';
 import { randomBytes } from 'crypto';
