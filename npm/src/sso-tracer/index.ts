@@ -174,10 +174,18 @@ class SSOTracer {
    *     responses:
    *       '200':
    *         description: Success
-   *         schema:
-   *           type: array
-   *           items:
-   *             $ref:  '#/definitions/SSOTrace'
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/SSOTrace'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getTracesByProduct(params: GetByProductParams) {
     const { product, pageOffset, pageLimit, pageToken } = params;
