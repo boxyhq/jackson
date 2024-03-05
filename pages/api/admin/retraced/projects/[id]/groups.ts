@@ -3,23 +3,15 @@ import axios from 'axios';
 
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
+import { withAdmin } from '@lib/withAdmin';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await getGroups(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({
-        data: null,
-        error: { message: `Method ${method} Not Allowed` },
-      });
-  }
+  await withAdmin(req, res, {
+    GET: handleGET,
+  });
 }
 
-const getGroups = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken(req);
 
   const { id: projectId, environmentId } = req.query;
@@ -39,7 +31,7 @@ const getGroups = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   );
 
-  return res.status(200).json({
+  res.json({
     data,
     error: null,
   });

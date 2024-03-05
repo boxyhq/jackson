@@ -1,17 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import { withAdmin } from '@lib/withAdmin';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await withAdmin(req, res, {
+    GET: handleGET,
+  });
 };
 
 // Get connection by clientID
@@ -22,15 +17,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     clientId: string;
   };
 
-  try {
-    const connections = await connectionAPIController.getConnections({ clientID: clientId });
+  const connections = await connectionAPIController.getConnections({ clientID: clientId });
 
-    return res.json({ data: connections[0] });
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  res.json({ data: connections[0] });
 };
 
 export default handler;

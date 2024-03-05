@@ -1,28 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { IAdminController } from '@boxyhq/saml-jackson';
+import { withAdmin } from '@lib/withAdmin';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  try {
-    const { adminController } = await jackson();
-    switch (method) {
-      case 'GET':
-        return await handleGET(req, res, adminController);
-      default:
-        res.setHeader('Allow', 'GET');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await withAdmin(req, res, {
+    GET: handleGET,
+  });
 };
 
 // Get SAML Traces
-const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminController: IAdminController) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { adminController } = await jackson();
+
   const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
 
   const pageOffset = parseInt(offset);
@@ -34,7 +23,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminControl
     res.setHeader('jackson-pagetoken', tracesPaginated.pageToken);
   }
 
-  return res.json({ data: tracesPaginated.data });
+  res.json({ data: tracesPaginated.data });
 };
 
 export default handler;

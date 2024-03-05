@@ -1,16 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { withAdmin } from '@lib/withAdmin';
+import { ApiError } from 'next/dist/server/api-utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await withAdmin(req, res, {
+    GET: handleGET,
+  });
 };
 
 // Get the details of a user
@@ -19,23 +15,21 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { directoryId, userId } = req.query as { directoryId: string; userId: string };
 
-  const { data: directory } = await directorySyncController.directories.get(directoryId);
+  const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
-  if (!directory) {
-    return res.status(404).json({ error: { message: 'Directory not found.' } });
+  if (error) {
+    throw new ApiError(error.code, error.message);
   }
 
-  const { data: user, error } = await directorySyncController.users
+  const { data: user, error: userError } = await directorySyncController.users
     .setTenantAndProduct(directory.tenant, directory.product)
     .get(userId);
 
-  if (error) {
-    return res.status(400).json({ error });
+  if (userError) {
+    throw new ApiError(userError.code, userError.message);
   }
 
-  if (user) {
-    return res.status(200).json({ data: user });
-  }
+  res.json({ data: user });
 };
 
 export default handler;

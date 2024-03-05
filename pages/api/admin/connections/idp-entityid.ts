@@ -1,16 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { withAdmin } from '@lib/withAdmin';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await withAdmin(req, res, {
+    GET: handleGET,
+  });
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -21,7 +16,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     product: req.body.product,
   });
 
-  return res.json({ data: { idpEntityID } });
+  res.json({ data: { idpEntityID } });
 };
 
 export default handler;
