@@ -31,11 +31,24 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
   const { id } = req.query as { id: string };
 
   const connections = await connectionAPIController.getConnections({
-    tenant: setupLink.tenant,
-    product: setupLink.product,
+    clientID: id,
   });
 
-  return res.json({ data: connections.filter((l) => l.clientID === id)[0] });
+  if (!connections || connections.length === 0) {
+    res.status(404).json({ error: { message: `Connection not found` } });
+  }
+
+  const connection = connections[0];
+
+  res.json({
+    data: {
+      clientID: connection.clientID,
+      clientSecret: connection.clientSecret,
+      deactivated: connection.deactivated,
+      ...('idpMetadata' in connection ? { idpMetadata: {}, metadataUrl: connection.metadataUrl } : undefined),
+      ...('oidcProvider' in connection ? { oidcProvider: connection.oidcProvider } : undefined),
+    },
+  });
 };
 
 export default handler;

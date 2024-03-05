@@ -45,14 +45,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
       clientID: connection.clientID,
       name: connection.name,
       deactivated: connection.deactivated,
-      ...('oidcProvider' in connection
-        ? {
-            oidcProvider: {
-              provider: connection.oidcProvider.provider,
-              friendlyProviderName: connection.oidcProvider.friendlyProviderName,
-            },
-          }
-        : undefined),
       ...('idpMetadata' in connection
         ? {
             idpMetadata: {
@@ -61,10 +53,18 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
             },
           }
         : undefined),
+      ...('oidcProvider' in connection
+        ? {
+            oidcProvider: {
+              provider: connection.oidcProvider.provider,
+              friendlyProviderName: connection.oidcProvider.friendlyProviderName,
+            },
+          }
+        : undefined),
     };
   });
 
-  return res.json(_connections);
+  res.json(_connections);
 };
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
@@ -79,51 +79,73 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
 
   if (isSAML) {
     await connectionAPIController.createSAMLConnection(body);
-    res.status(201).json({ data: null });
   } else if (isOIDC) {
     await connectionAPIController.createOIDCConnection(oidcMetadataParse(body));
-    res.status(201).json({ data: null });
+  } else {
+    throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
 
-  throw { message: 'Missing SSO connection params', statusCode: 400 };
+  res.status(201).json({ data: null });
 };
 
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { connectionAPIController } = await jackson();
 
-  const body = {
-    ...req.query,
-    tenant: setupLink.tenant,
-    product: setupLink.product,
-  };
+  const { clientID, clientSecret } = req.query as { clientID: string; clientSecret: string };
 
-  await connectionAPIController.deleteConnections(body);
+  await connectionAPIController.deleteConnections({ clientID, clientSecret });
 
-  return res.json({ data: null });
+  res.json({ data: null });
 };
 
 const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { connectionAPIController } = await jackson();
 
-  const body = {
-    ...req.body,
-    ...setupLink,
-  };
+  const {
+    deactivated,
+    clientID,
+    metadataUrl,
+    encodedRawMetadata,
+    oidcClientId,
+    oidcClientSecret,
+    oidcDiscoveryUrl,
+  } = req.body;
 
-  const { isSAML, isOIDC } = strategyChecker(req);
+  const connections = await connectionAPIController.getConnections({
+    clientID,
+  });
 
-  // TODO:
-  // Don't pass entire body to update functions
-
-  if (isSAML) {
-    await connectionAPIController.updateSAMLConnection(body);
-    res.json({ data: null });
-  } else if (isOIDC) {
-    await connectionAPIController.updateOIDCConnection(oidcMetadataParse(body));
-    res.json({ data: null });
+  if (!connections || connections.length === 0) {
+    throw { message: 'Connection not found', statusCode: 404 };
   }
 
-  throw { message: 'Missing SSO connection params', statusCode: 400 };
+  const { isSAML, isOIDC } = strategyChecker(req);
+  const connection = connections[0];
+
+  const body = {
+    ...connection,
+    deactivated,
+    ...(isSAML ? { metadataUrl, encodedRawMetadata } : undefined),
+    ...(isOIDC
+      ? {
+          oidcProvider: {
+            clientId: oidcClientId,
+            clientSecret: oidcClientSecret,
+            discoveryUrl: oidcDiscoveryUrl,
+          },
+        }
+      : undefined),
+  };
+
+  if (isSAML) {
+    await connectionAPIController.updateSAMLConnection(body as any);
+  } else if (isOIDC) {
+    await connectionAPIController.updateOIDCConnection(oidcMetadataParse(body as any));
+  } else {
+    throw { message: 'Missing SSO connection params', statusCode: 400 };
+  }
+
+  res.json({ data: null });
 };
 
 export default handler;

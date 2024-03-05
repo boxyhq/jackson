@@ -38,11 +38,11 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.update(directoryId, { deactivated });
 
   if (data) {
-    return res.json({ data: null });
+    res.json({ data: null });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 
@@ -55,7 +55,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
   if (data) {
-    return res.json({
+    res.json({
       data: {
         id: data.id,
         type: data.type,
@@ -69,7 +69,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 
@@ -82,10 +82,10 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { error } = await directorySyncController.directories.delete(directoryId);
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 
-  return res.json({ data: null });
+  res.json({ data: null });
 };
 
 export default handler;

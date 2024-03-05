@@ -46,7 +46,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
   const { data, error } = await directorySyncController.directories.create(directory);
 
   if (data) {
-    return res.status(201).json({
+    res.status(201).json({
       data: {
         id: data.id,
       },
@@ -54,7 +54,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 
@@ -77,11 +77,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
       };
     });
 
-    return res.json({ data: directories });
+    res.json({ data: directories });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 
