@@ -232,5 +232,32 @@ tap.test('Directory users /', async (t) => {
         }
       );
     });
+
+    // Activate and deactivate user
+    t.test('Should be able to activate and deactivate the user', async (t) => {
+      // Deactivate the user
+      await directorySync.requests.handle(
+        requests.updateById(directory, createdUser.id, {
+          ...users[1],
+          active: false,
+        }),
+        async (event) => {
+          t.equal(event.event, 'user.updated');
+          t.ok('active' in event.data && event.data.active === false);
+        }
+      );
+
+      // Activate the user
+      await directorySync.requests.handle(
+        requests.updateById(directory, createdUser.id, {
+          ...users[1],
+          active: true,
+        }),
+        async (event) => {
+          t.equal(event.event, 'user.updated');
+          t.ok('active' in event.data && event.data.active === true);
+        }
+      );
+    });
   });
 });
