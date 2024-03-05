@@ -20,8 +20,8 @@ export const SSOTracers = ({
   const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router!);
 
   const params = {
-    offset: paginate.offset,
-    limit: pageLimit,
+    pageOffset: paginate.offset,
+    pageLimit,
   };
 
   // For DynamoDB
