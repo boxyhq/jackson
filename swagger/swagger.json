@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.20.2",
+    "version": "1.20.5",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
