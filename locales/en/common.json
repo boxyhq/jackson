@@ -48,7 +48,7 @@
   "send_magic_link": "Send Magic Link",
   "setup_links": "Setup Links",
   "tenant": "Tenant",
-  "update_directory": "Update Directory",
+  "edit_directory": "Edit Directory",
   "webhook_secret": "Webhook secret",
   "webhook_url": "Webhook URL",
   "download": "Download",

@@ -114,7 +114,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
     <div>
       <LinkBack href={backUrl} />
       <div className='flex items-center justify-between'>
-        <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('update_directory')}</h2>
+        <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('edit_directory')}</h2>
         <ToggleConnectionStatus connection={directory} setupLinkToken={setupLinkToken} />
       </div>
       {!setupLinkToken && (
