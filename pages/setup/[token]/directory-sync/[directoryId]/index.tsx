@@ -24,6 +24,7 @@ const DirectoryDetailsPage: NextPage = () => {
           }}
           hideTabs={true}
           displayGoogleAuthButton={true}
+          excludeFields={['id', 'tenant', 'product', 'webhook']}
         />
       </div>
     </div>
