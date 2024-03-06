@@ -5,6 +5,7 @@ import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
 import { TokenSet, errors, generators } from 'openid-client';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
+import { clientIDFederatedPrefix, clientIDOIDCPrefix } from './utils';
 
 import type {
   IOAuthController,
@@ -20,6 +21,7 @@ import type {
   SSOTracerInstance,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
+  SAMLFederationApp,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -43,6 +45,7 @@ import { getDefaultCertificate } from '../saml/x509';
 import { SSOHandler } from './sso-handler';
 import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
+import { App } from '../ee/federated-saml/app';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -54,14 +57,16 @@ export class OAuthController implements IOAuthController {
   private ssoTracer: SSOTracerInstance;
   private opts: JacksonOption;
   private ssoHandler: SSOHandler;
+  private samlFedApp: App;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTracer, opts }) {
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTracer, opts, samlFedApp }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
     this.ssoTracer = ssoTracer;
     this.opts = opts;
+    this.samlFedApp = samlFedApp;
 
     this.ssoHandler = new SSOHandler({
       connection: connectionStore,
@@ -90,6 +95,7 @@ export class OAuthController implements IOAuthController {
     let requestedScopes: string[] | undefined;
     let requestedOIDCFlow: boolean | undefined;
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
+    let fedApp: SAMLFederationApp | undefined;
 
     try {
       const tenant = 'tenant' in body ? body.tenant : undefined;
@@ -167,10 +173,40 @@ export class OAuthController implements IOAuthController {
             connection = response.connection;
           }
         } else {
-          connection = await this.connectionStore.get(client_id);
-          if (connection) {
-            requestedTenant = connection.tenant;
-            requestedProduct = connection.product;
+          // client_id is not encoded, so we look for the connection using the client_id
+          // First we check if it's a federated connection
+          if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
+            fedApp = await this.samlFedApp.get({
+              id: client_id.replace(clientIDFederatedPrefix, ''),
+            });
+
+            const response = await this.ssoHandler.resolveConnection({
+              tenant: fedApp.tenant,
+              product: fedApp.product,
+              idp_hint,
+              authFlow: 'oauth',
+              originalParams: { ...body },
+              tenants: fedApp.tenants,
+              samlFedAppId: fedApp.id,
+              fedType: fedApp.type,
+            });
+
+            if ('redirectUrl' in response) {
+              return {
+                redirect_url: response.redirectUrl,
+              };
+            }
+
+            if ('connection' in response) {
+              connection = response.connection;
+            }
+          } else {
+            // If it's not a federated connection, we look for the connection using the client_id
+            connection = await this.connectionStore.get(client_id);
+            if (connection) {
+              requestedTenant = connection.tenant;
+              requestedProduct = connection.product;
+            }
           }
         }
       } else {
@@ -182,7 +218,13 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
-        throw new JacksonError('Redirect URL is not allowed.', 403);
+        if (fedApp) {
+          if (!allowed.redirect(redirect_uri, fedApp.redirectUrl as string[])) {
+            throw new JacksonError('Redirect URL is not allowed.', 403);
+          }
+        } else {
+          throw new JacksonError('Redirect URL is not allowed.', 403);
+        }
       }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
@@ -399,6 +441,10 @@ export class OAuthController implements IOAuthController {
       }
       if (idp_hint) {
         requested.idp_hint = idp_hint;
+      } else {
+        if (fedApp) {
+          requested.idp_hint = connection.clientID;
+        }
       }
       if (requestedOIDCFlow) {
         requested.oidc = true;
@@ -417,6 +463,7 @@ export class OAuthController implements IOAuthController {
         code_challenge,
         code_challenge_method,
         requested,
+        oidcFederated: fedApp ? { redirectUrl: fedApp.redirectUrl, id: fedApp.id } : undefined,
       };
       await this.sessionStore.put(
         sessionId,
@@ -495,6 +542,7 @@ export class OAuthController implements IOAuthController {
     let issuer: string | undefined;
     let isIdPFlow: boolean | undefined;
     let isSAMLFederated: boolean | undefined;
+    let isOIDCFederated: boolean | undefined;
     let validateOpts: ValidateOption;
     let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
@@ -536,6 +584,7 @@ export class OAuthController implements IOAuthController {
       }
 
       isSAMLFederated = session && 'samlFederated' in session;
+      isOIDCFederated = session && 'oidcFederated' in session;
       const isSPFlow = !isIdPFlow && !isSAMLFederated;
 
       // IdP initiated SSO flow
@@ -564,10 +613,11 @@ export class OAuthController implements IOAuthController {
 
       // SP initiated SSO flow
       // Resolve if there are multiple matches for SP login
-      if (isSPFlow || isSAMLFederated) {
+      if (isSPFlow || isSAMLFederated || isOIDCFederated) {
         connection = connections.filter((c) => {
           return (
             c.clientID === session.requested.client_id ||
+            c.clientID === session.requested.idp_hint ||
             (c.tenant === session.requested.tenant && c.product === session.requested.product)
           );
         })[0];
@@ -582,7 +632,13 @@ export class OAuthController implements IOAuthController {
         session.redirect_uri &&
         !allowed.redirect(session.redirect_uri, connection.redirectUrl as string[])
       ) {
-        throw new JacksonError('Redirect URL is not allowed.', 403);
+        if (isOIDCFederated) {
+          if (!allowed.redirect(session.redirect_uri, session.oidcFederated?.redirectUrl as string[])) {
+            throw new JacksonError('Redirect URL is not allowed.', 403);
+          }
+        } else {
+          throw new JacksonError('Redirect URL is not allowed.', 403);
+        }
       }
 
       const { privateKey } = await getDefaultCertificate();
@@ -696,6 +752,7 @@ export class OAuthController implements IOAuthController {
     let oidcConnection: OIDCSSORecord | undefined;
     let session: any;
     let isSAMLFederated: boolean | undefined;
+    let isOIDCFederated: boolean | undefined;
     let redirect_uri: string | undefined;
     let profile;
 
@@ -714,6 +771,7 @@ export class OAuthController implements IOAuthController {
       }
 
       isSAMLFederated = session && 'samlFederated' in session;
+      isOIDCFederated = session && 'oidcFederated' in session;
 
       oidcConnection = await this.connectionStore.get(session.id);
 
@@ -728,7 +786,13 @@ export class OAuthController implements IOAuthController {
         }
 
         if (redirect_uri && !allowed.redirect(redirect_uri, oidcConnection.redirectUrl as string[])) {
-          throw new JacksonError('Redirect URL is not allowed.', 403);
+          if (isOIDCFederated) {
+            if (!allowed.redirect(redirect_uri, session.oidcFederated?.redirectUrl as string[])) {
+              throw new JacksonError('Redirect URL is not allowed.', 403);
+            }
+          } else {
+            throw new JacksonError('Redirect URL is not allowed.', 403);
+          }
         }
       }
     } catch (err) {
@@ -744,6 +808,7 @@ export class OAuthController implements IOAuthController {
           redirectUri: redirect_uri,
           relayState: RelayState,
           isSAMLFederated: !!isSAMLFederated,
+          isOIDCFederated: !!isOIDCFederated,
           requestedOIDCFlow: !!session?.requested?.oidc,
         },
       });
@@ -803,6 +868,7 @@ export class OAuthController implements IOAuthController {
           redirectUri: redirect_uri,
           relayState: RelayState,
           isSAMLFederated: !!isSAMLFederated,
+          isOIDCFederated: !!isOIDCFederated,
           acsUrl: session.requested.acsUrl,
           entityId: session.requested.entityId,
           requestedOIDCFlow: !!session.requested.oidc,

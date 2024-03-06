@@ -42,6 +42,9 @@ export const EditFederatedSAMLApp = ({
 
   const app = data?.data;
 
+  const connectionIsOIDC = app.type === 'oidc';
+  const connectionIsSAML = !connectionIsOIDC;
+
   const deleteApp = async () => {
     try {
       await fetch(urls.deleteApp, { method: 'DELETE', headers: defaultHeaders });
@@ -66,15 +69,17 @@ export const EditFederatedSAMLApp = ({
           }}
           excludeFields={excludeFields}
         />
-        <EditAttributesMapping
-          app={app}
-          urls={{ patch: urls.updateApp }}
-          onError={onError}
-          onUpdate={(data) => {
-            mutate({ data });
-            onUpdate?.(data);
-          }}
-        />
+        {connectionIsSAML && (
+          <EditAttributesMapping
+            app={app}
+            urls={{ patch: urls.updateApp }}
+            onError={onError}
+            onUpdate={(data) => {
+              mutate({ data });
+              onUpdate?.(data);
+            }}
+          />
+        )}
         <EditBranding
           app={app}
           urls={{ patch: urls.updateApp }}
