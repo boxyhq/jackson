@@ -120,10 +120,13 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const { isSAML, isOIDC } = strategyChecker(req);
-  const connection = connections[0];
+  const { tenant, product, clientSecret } = connections[0];
 
   const body = {
-    ...connection,
+    tenant,
+    product,
+    clientID,
+    clientSecret,
     ...('deactivated' in req.body ? { deactivated } : undefined),
     ...(isSAML ? { metadataUrl, encodedRawMetadata } : undefined),
     ...(isOIDC
