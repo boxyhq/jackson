@@ -113,7 +113,7 @@ class SSOTracer {
    *         required: true
    *         type: string
    *     tags:
-   *       - SAML Traces
+   *       - SSO Trace
    *     produces:
    *       - application/json
    *     responses:

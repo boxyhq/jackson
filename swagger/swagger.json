@@ -728,7 +728,7 @@
           }
         ],
         "tags": [
-          "SAML Traces"
+          "SSO Trace"
         ],
         "produces": [
           "application/json"
