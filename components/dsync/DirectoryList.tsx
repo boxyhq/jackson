@@ -2,8 +2,8 @@ import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import { useTranslation } from 'next-i18next';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { useRouter } from 'next/router';
-import { pageLimit } from '@components/Pagination';
 import { DirectoryList } from '@boxyhq/react-ui/dsync';
+import { pageLimit } from '@boxyhq/internal-ui';
 
 const DSyncDirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
