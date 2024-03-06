@@ -35,8 +35,8 @@ export const DirectoryWebhookLogs = ({
   const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
 
   const params = {
-    offset: paginate.offset,
-    limit: pageLimit,
+    pageOffset: paginate.offset,
+    pageLimit,
   };
 
   // For DynamoDB

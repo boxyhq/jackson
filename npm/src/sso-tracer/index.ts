@@ -113,7 +113,7 @@ class SSOTracer {
    *         required: true
    *         type: string
    *     tags:
-   *       - SAML Traces
+   *       - SSO Traces
    *     produces:
    *       - application/json
    *     responses:
@@ -164,17 +164,28 @@ class SSOTracer {
    *     summary: Get all traces for a product
    *     parameters:
    *      - $ref: '#/parameters/product'
+   *      - $ref: '#/parameters/pageOffset'
+   *      - $ref: '#/parameters/pageLimit'
+   *      - $ref: '#/parameters/pageToken'
    *     tags:
-   *       - SAML Traces
+   *       - SSO Traces
    *     produces:
    *       - application/json
    *     responses:
    *       '200':
    *         description: Success
-   *         schema:
-   *           type: array
-   *           items:
-   *             $ref:  '#/definitions/SSOTrace'
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/SSOTrace'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getTracesByProduct(params: GetByProductParams) {
     const { product, pageOffset, pageLimit, pageToken } = params;
