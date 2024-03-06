@@ -34,7 +34,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (!connections || connections.length === 0) {
-    res.status(404).json({ error: { message: `Connection not found` } });
+    res.status(404).json({ error: { message: 'Connection not found.' } });
   }
 
   const connection = connections[0];
