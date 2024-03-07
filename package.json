@@ -95,7 +95,6 @@
     "swr": "2.2.5"
   },
   "devDependencies": {
-    "@apidevtools/swagger-cli": "4.0.4",
     "@playwright/test": "1.41.2",
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.6",
