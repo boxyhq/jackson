@@ -114,6 +114,7 @@ export type User = {
   first_name: string;
   last_name: string;
   active: boolean;
+  roles?: string[];
   raw?: any;
 };
 
