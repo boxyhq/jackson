@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { adminHandler } from '@lib/api/adminHandler';
+import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await adminHandler(req, res, {
@@ -10,7 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-// Create new SAML Federation app
+// Create new Identity Federation app
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
@@ -19,16 +20,17 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(201).json({ data: app });
 };
 
-// Get SAML Federation apps
+// Get Identity Federation apps
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
-  const pageOffset = parseInt(offset);
-  const pageLimit = parseInt(limit);
-
-  const apps = await samlFederatedController.app.getAll({ pageOffset, pageLimit, pageToken });
+  const apps = await samlFederatedController.app.getAll({
+    pageOffset,
+    pageLimit,
+    pageToken,
+  });
 
   if (apps.pageToken) {
     res.setHeader('jackson-pagetoken', apps.pageToken);

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { adminHandler } from '@lib/api/adminHandler';
+import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await adminHandler(req, res, {
@@ -12,10 +13,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController } = await jackson();
 
-  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
-
-  const pageOffset = parseInt(offset);
-  const pageLimit = parseInt(limit);
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   const tracesPaginated = await adminController.getAllSSOTraces(pageOffset, pageLimit, pageToken);
 

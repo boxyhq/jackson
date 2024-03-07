@@ -48,10 +48,13 @@ export const ToggleConnectionStatus: FC<Props> = (props) => {
       }
     );
 
-    const response: ApiResponse = await res.json();
+    if (!res.ok) {
+      const response: ApiResponse = await res.json();
 
-    if ('error' in response) {
-      errorToast(response.error.message);
+      if ('error' in response) {
+        errorToast(response.error.message);
+      }
+
       return;
     }
 

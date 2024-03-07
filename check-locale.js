@@ -8,7 +8,6 @@ const allStrings = {};
 const localeFile = require('./locales/en/common.json');
 
 const files = fs.readdirSync('./', { recursive: true, withFileTypes: true });
-//console.log('files:', files);
 
 let error = false;
 
@@ -25,7 +24,6 @@ files.forEach((file) => {
 
     (fileContent.match(regExp) || []).forEach((match) => {
       const id = match.replace("t('", '').replace("'", '');
-      // console.log('match:', match);
       allStrings[id] = true;
       if (!localeFile[id]) {
         error = true;
@@ -35,7 +33,6 @@ files.forEach((file) => {
 
     (fileContent.match(altRegExp) || []).forEach((match) => {
       const id = match.replace("i18nKey='", '').replace("'", '');
-      // console.log('match:', match, id);
       allStrings[id] = true;
       if (!localeFile[id]) {
         error = true;

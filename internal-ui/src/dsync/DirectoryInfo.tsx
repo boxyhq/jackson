@@ -6,10 +6,7 @@ import { DirectoryTab } from '../dsync';
 import type { Directory } from '../types';
 import { Loading, Error, PageHeader, Badge, Alert, InputWithCopyButton, LinkPrimary } from '../shared';
 
-type ExcludeFields = keyof Pick<Directory, 'tenant' | 'product' | 'webhook'>;
-
-// TODO:
-// Add the toast after copying the google auth url
+type ExcludeFields = keyof Pick<Directory, 'id' | 'tenant' | 'product' | 'webhook'>;
 
 export const DirectoryInfo = ({
   urls,
@@ -37,7 +34,9 @@ export const DirectoryInfo = ({
     return null;
   }
 
-  const authorizedGoogle = directory.google_access_token && directory.google_refresh_token;
+  const authorizedGoogle =
+    directory?.google_authorized || (directory?.google_access_token && directory?.google_refresh_token);
+  const hideInfo = excludeFields.length === 4 && directory.type != 'google';
 
   return (
     <>
@@ -60,62 +59,66 @@ export const DirectoryInfo = ({
           </Alert>
         </div>
       )}
-      <div className={`rounded border ${hideTabs ? 'mt-5' : ''}`}>
-        <dl className='divide-y'>
-          <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-            <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-directory-id')}</dt>
-            <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.id}</dd>
-          </div>
-          {!excludeFields.includes('tenant') && (
-            <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-tenant')}</dt>
-              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.tenant}</dd>
-            </div>
-          )}
-          {!excludeFields.includes('product') && (
-            <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-              <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-product')}</dt>
-              <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.product}</dd>
-            </div>
-          )}
-          {!excludeFields.includes('webhook') && (
-            <>
+      {!hideInfo && (
+        <div className={`rounded border ${hideTabs ? 'mt-5' : ''}`}>
+          <dl className='divide-y'>
+            {!excludeFields.includes('id') && (
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-webhook-endpoint')}</dt>
-                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                  {directory.webhook.endpoint || '-'}
-                </dd>
+                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-directory-id')}</dt>
+                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.id}</dd>
               </div>
+            )}
+            {!excludeFields.includes('tenant') && (
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-webhook-secret')}</dt>
-                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                  {directory.webhook.secret || '-'}
-                </dd>
+                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-tenant')}</dt>
+                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.tenant}</dd>
               </div>
-            </>
-          )}
-          {directory.type === 'google' && (
-            <>
+            )}
+            {!excludeFields.includes('product') && (
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-authorized-status')}</dt>
-                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                  {authorizedGoogle ? (
-                    <Badge color='success'>{t('bui-dsync-authorized')}</Badge>
-                  ) : (
-                    <Badge color='warning'>{t('bui-dsync-not-authorized')}</Badge>
-                  )}
-                </dd>
+                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-product')}</dt>
+                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.product}</dd>
               </div>
-              <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-google-domain')}</dt>
-                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
-                  {directory.google_domain || '-'}
-                </dd>
-              </div>
-            </>
-          )}
-        </dl>
-      </div>
+            )}
+            {!excludeFields.includes('webhook') && (
+              <>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-webhook-endpoint')}</dt>
+                  <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                    {directory.webhook.endpoint || '-'}
+                  </dd>
+                </div>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-webhook-secret')}</dt>
+                  <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                    {directory.webhook.secret || '-'}
+                  </dd>
+                </div>
+              </>
+            )}
+            {directory.type === 'google' && (
+              <>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-authorized-status')}</dt>
+                  <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                    {authorizedGoogle ? (
+                      <Badge color='success'>{t('bui-dsync-authorized')}</Badge>
+                    ) : (
+                      <Badge color='warning'>{t('bui-dsync-not-authorized')}</Badge>
+                    )}
+                  </dd>
+                </div>
+                <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
+                  <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-google-domain')}</dt>
+                  <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                    {directory.google_domain || '-'}
+                  </dd>
+                </div>
+              </>
+            )}
+          </dl>
+        </div>
+      )}
       {directory.scim.endpoint && directory.scim.secret && (
         <div className='mt-4 space-y-4 rounded border p-6'>
           <div className='form-control'>

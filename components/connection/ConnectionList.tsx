@@ -3,8 +3,8 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { InputWithCopyButton } from '@components/ClipboardButton';
-import { pageLimit } from '@components/Pagination';
 import { ConnectionList } from '@boxyhq/react-ui/sso';
+import { pageLimit } from '@boxyhq/internal-ui';
 
 const SSOConnectionList = ({
   setupLinkToken,

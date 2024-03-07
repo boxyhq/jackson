@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import type { User } from '../types';
 import { addQueryParamsToPath, fetcher } from '../utils';
 import { DirectoryTab } from '../dsync';
@@ -21,8 +21,8 @@ export const DirectoryUsers = ({
   const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
 
   const params = {
-    offset: paginate.offset,
-    limit: pageLimit,
+    pageOffset: paginate.offset,
+    pageLimit,
   };
 
   // For DynamoDB

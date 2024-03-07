@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.19.2",
+    "version": "1.20.5",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -278,6 +278,15 @@
         "parameters": [
           {
             "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "operationId": "get-connections-by-product",
@@ -286,7 +295,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/200Get"
+            "$ref": "#/responses/200GetByProduct"
           },
           "400": {
             "$ref": "#/responses/400Get"
@@ -644,6 +653,15 @@
         "parameters": [
           {
             "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "operationId": "get-sso-setup-link-by-product",
@@ -669,6 +687,15 @@
         "parameters": [
           {
             "$ref": "#/parameters/productParamGet"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "operationId": "get-dsync-setup-link-by-product",
@@ -701,7 +728,7 @@
           }
         ],
         "tags": [
-          "SAML Traces"
+          "SSO Traces"
         ],
         "produces": [
           "application/json"
@@ -722,10 +749,19 @@
         "parameters": [
           {
             "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
-          "SAML Traces"
+          "SSO Traces"
         ],
         "produces": [
           "application/json"
@@ -733,10 +769,23 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/SSOTrace"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/SSOTrace"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -985,6 +1034,15 @@
         "parameters": [
           {
             "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
@@ -996,10 +1054,23 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Directory"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Directory"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1052,6 +1123,15 @@
           },
           {
             "$ref": "#/parameters/directoryId"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
@@ -1063,10 +1143,23 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Group"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Group"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1119,6 +1212,15 @@
           },
           {
             "$ref": "#/parameters/directoryId"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
@@ -1130,10 +1232,72 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/User"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/User"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/events": {
+      "get": {
+        "summary": "Get event logs for a directory",
+        "parameters": [
+          {
+            "$ref": "#/parameters/directoryId"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Event"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1142,7 +1306,7 @@
     },
     "/api/v1/federated-saml": {
       "post": {
-        "summary": "Create a SAML Federation app",
+        "summary": "Create an Identity Federation app",
         "parameters": [
           {
             "name": "name",
@@ -1202,7 +1366,7 @@
           },
           {
             "name": "tenants",
-            "description": "Mapping of tenants whose connections will be grouped under this SAML Federation app",
+            "description": "Mapping of tenants whose connections will be grouped under this Identity Federation app",
             "in": "formData",
             "required": false,
             "type": "array"
@@ -1213,10 +1377,24 @@
             "in": "formData",
             "required": false,
             "type": "array"
+          },
+          {
+            "name": "type",
+            "description": "If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'",
+            "in": "formData",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "name": "redirectUrl",
+            "description": "If creating an OIDC app, provide the redirect URL",
+            "in": "formData",
+            "required": false,
+            "type": "array"
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1238,7 +1416,7 @@
         }
       },
       "get": {
-        "summary": "Get a SAML Federation app",
+        "summary": "Get an Identity Federation app",
         "parameters": [
           {
             "name": "id",
@@ -1263,7 +1441,7 @@
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1278,7 +1456,7 @@
         }
       },
       "patch": {
-        "summary": "Update a SAML Federation app",
+        "summary": "Update an Identity Federation app",
         "parameters": [
           {
             "name": "id",
@@ -1338,7 +1516,7 @@
           },
           {
             "name": "tenants",
-            "description": "Mapping of tenants whose connections will be grouped under this SAML Federation app",
+            "description": "Mapping of tenants whose connections will be grouped under this Identity Federation app",
             "in": "formData",
             "required": false,
             "type": "array"
@@ -1352,7 +1530,7 @@
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1371,7 +1549,7 @@
         }
       },
       "delete": {
-        "summary": "Delete a SAML Federation app",
+        "summary": "Delete an Identity Federation app",
         "parameters": [
           {
             "name": "id",
@@ -1396,7 +1574,7 @@
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1413,7 +1591,7 @@
     },
     "/api/v1/federated-saml/product": {
       "get": {
-        "summary": "Get SAML Federation apps by product",
+        "summary": "Get Identity Federation apps by product",
         "parameters": [
           {
             "name": "product",
@@ -1421,10 +1599,19 @@
             "in": "query",
             "required": true,
             "type": "string"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
           }
         ],
         "tags": [
-          "SAML Federation"
+          "Identity Federation"
         ],
         "produces": [
           "application/json"
@@ -1432,10 +1619,23 @@
         "responses": {
           "200": {
             "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/SAMLFederationApp"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/SAMLFederationApp"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1728,6 +1928,53 @@
         }
       }
     },
+    "Event": {
+      "type": "object",
+      "example": {
+        "id": "id1",
+        "webhook_endpoint": "https://example.com/webhook",
+        "created_at": "2024-03-05T17:06:26.074Z",
+        "status_code": 200,
+        "delivered": true,
+        "payload": {
+          "directory_id": "58b5cd9dfaa39d47eb8f5f88631f9a629a232016",
+          "event": "user.created",
+          "tenant": "boxyhq",
+          "product": "jackson",
+          "data": {
+            "id": "038e767b-9bc6-4dbd-975e-fbc38a8e7d82",
+            "first_name": "Deepak",
+            "last_name": "Prabhakara",
+            "email": "deepak@boxyhq.com",
+            "active": true,
+            "raw": {
+              "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:User"
+              ],
+              "userName": "deepak@boxyhq.com",
+              "name": {
+                "givenName": "Deepak",
+                "familyName": "Prabhakara"
+              },
+              "emails": [
+                {
+                  "primary": true,
+                  "value": "deepak@boxyhq.com",
+                  "type": "work"
+                }
+              ],
+              "title": "CEO",
+              "displayName": "Deepak Prabhakara",
+              "locale": "en-US",
+              "externalId": "00u1ldzzogFkXFmvT5d7",
+              "groups": [],
+              "active": true,
+              "id": "038e767b-9bc6-4dbd-975e-fbc38a8e7d82"
+            }
+          }
+        }
+      }
+    },
     "SAMLFederationApp": {
       "type": "object",
       "properties": {
@@ -1785,6 +2032,28 @@
     },
     "401Get": {
       "description": "Unauthorized"
+    },
+    "200GetByProduct": {
+      "description": "Success",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Connection"
+                }
+              },
+              "pageToken": {
+                "type": "string",
+                "description": "token for pagination"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "parameters": {
@@ -2121,6 +2390,27 @@
     "directoryId": {
       "name": "directory id",
       "description": "Directory ID",
+      "in": "query",
+      "required": false,
+      "type": "string"
+    },
+    "pageOffset": {
+      "name": "pageOffset",
+      "description": "Starting point from which the set of records are retrieved",
+      "in": "query",
+      "required": false,
+      "type": "string"
+    },
+    "pageLimit": {
+      "name": "pageLimit",
+      "description": "Number of records to be fetched for the page",
+      "in": "query",
+      "required": false,
+      "type": "string"
+    },
+    "pageToken": {
+      "name": "pageToken",
+      "description": "Token used for DynamoDB pagination",
       "in": "query",
       "required": false,
       "type": "string"

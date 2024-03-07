@@ -3,6 +3,7 @@ import type { DirectoryType } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
 import { adminHandler } from '@lib/api/adminHandler';
 import { ApiError } from '@lib/error';
+import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await adminHandler(req, res, {
@@ -36,19 +37,15 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { pageOffset, pageLimit, pageToken } = req.query as {
-    pageOffset: string;
-    pageLimit: string;
-    pageToken?: string;
-  };
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   const {
     data,
     error,
     pageToken: nextPageToken,
   } = await directorySyncController.directories.getAll({
-    pageOffset: +(pageOffset || 0),
-    pageLimit: +(pageLimit || 0),
+    pageOffset,
+    pageLimit,
     pageToken,
   });
 

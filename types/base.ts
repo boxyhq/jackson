@@ -1,10 +1,10 @@
-export type ApiError = {
-  code?: string;
-  message: string;
-  values: { [key: string]: string };
-};
+export type ApiSuccess<T> = { data: T; pageToken?: string };
 
-export type ApiResponse<T> = {
-  data: T | null;
-  error: ApiError | null;
-};
+export interface ApiError extends Error {
+  info?: string;
+  status: number;
+}
+
+export type ApiResponse<T = any> = ApiSuccess<T> | { error: ApiError };
+
+export type PaginateApiParams = { pageOffset: number; pageLimit: number } & { pageToken?: string };
