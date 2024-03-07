@@ -393,6 +393,9 @@ export class SetupLinkController {
    *     summary: Get the Setup Links by product
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     operationId: get-sso-setup-link-by-product
    *     tags: [Setup Links | Single Sign On]
    *     responses:
@@ -407,6 +410,9 @@ export class SetupLinkController {
    *     summary: Get the Setup Links by product
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     operationId: get-dsync-setup-link-by-product
    *     tags: [Setup Links | Directory Sync]
    *     responses:

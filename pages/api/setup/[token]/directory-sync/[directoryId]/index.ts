@@ -38,11 +38,11 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.update(directoryId, { deactivated });
 
   if (data) {
-    return res.status(200).json({ data });
+    res.json({ data: null });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 
@@ -55,11 +55,21 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
   if (data) {
-    return res.json({ data });
+    res.json({
+      data: {
+        id: data.id,
+        type: data.type,
+        name: data.name,
+        deactivated: data.deactivated,
+        scim: data.scim,
+        google_domain: data.google_domain,
+        google_authorized: data.google_access_token && data.google_refresh_token, // Indicate if the Google authorization is complete
+      },
+    });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 
@@ -72,10 +82,10 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { error } = await directorySyncController.directories.delete(directoryId);
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 
-  return res.json({ data: null });
+  res.json({ data: null });
 };
 
 export default handler;

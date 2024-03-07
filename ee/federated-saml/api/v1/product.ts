@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import { parsePaginateApiParams } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -22,17 +23,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
-  const { product, pageOffset, pageLimit, pageToken } = req.query as {
+  const { product } = req.query as {
     product: string;
-    pageOffset: string;
-    pageLimit: string;
-    pageToken?: string;
   };
+
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   const apps = await samlFederatedController.app.getByProduct({
     product,
-    pageOffset: parseInt(pageOffset),
-    pageLimit: parseInt(pageLimit),
+    pageOffset,
+    pageLimit,
     pageToken,
   });
 

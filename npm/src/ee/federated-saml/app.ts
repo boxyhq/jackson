@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import type {
   Storable,
   JacksonOption,
@@ -6,7 +7,7 @@ import type {
   GetByProductParams,
   AppRequestParams,
 } from '../../typings';
-import { appID } from '../../controller/utils';
+import { fedAppID, clientIDFederatedPrefix } from '../../controller/utils';
 import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
@@ -15,7 +16,7 @@ import { throwIfInvalidLicense } from '../common/checkLicense';
 
 type NewAppParams = Pick<
   SAMLFederationApp,
-  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings'
+  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings' | 'type' | 'redirectUrl'
 > & {
   logoUrl?: string;
   faviconUrl?: string;
@@ -70,7 +71,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml:
    *   post:
-   *     summary: Create a SAML Federation app
+   *     summary: Create an Identity Federation app
    *     parameters:
    *       - name: name
    *         description: Name
@@ -113,7 +114,7 @@ export class App {
    *         required: false
    *         type: string
    *       - name: tenants
-   *         description: Mapping of tenants whose connections will be grouped under this SAML Federation app
+   *         description: Mapping of tenants whose connections will be grouped under this Identity Federation app
    *         in: formData
    *         required: false
    *         type: array
@@ -122,7 +123,17 @@ export class App {
    *         in: formData
    *         required: false
    *         type: array
-   *     tags: [SAML Federation]
+   *       - name: type
+   *         description: If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'
+   *         in: formData
+   *         required: false
+   *         type: array
+   *       - name: redirectUrl
+   *         description: If creating an OIDC app, provide the redirect URL
+   *         in: formData
+   *         required: false
+   *         type: array
+   *     tags: [Identity Federation]
    *     produces:
    *      - application/json
    *     consumes:
@@ -138,6 +149,8 @@ export class App {
    */
   public async create({
     name,
+    type,
+    redirectUrl,
     tenant,
     product,
     acsUrl,
@@ -150,16 +163,25 @@ export class App {
   }: NewAppParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    if (!tenant || !product || !acsUrl || !entityId || !name) {
-      throw new JacksonError(
-        'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
-        400
-      );
+    if (type === 'oidc') {
+      if (!tenant || !product || !redirectUrl || !name) {
+        throw new JacksonError(
+          'Missing required parameters. Required parameters are: name, tenant, product, redirectUrl',
+          400
+        );
+      }
+    } else {
+      if (!tenant || !product || !acsUrl || !entityId || !name) {
+        throw new JacksonError(
+          'Missing required parameters. Required parameters are: name, tenant, product, acsUrl, entityId',
+          400
+        );
+      }
     }
 
     validateTenantAndProduct(tenant, product);
 
-    const id = appID(tenant, product);
+    const id = fedAppID(tenant, product, type);
 
     // Check if an app already exists for the same tenant and product
     const foundApp = await this.store.get(id);
@@ -197,6 +219,8 @@ export class App {
 
     const app: SAMLFederationApp = {
       id,
+      type,
+      redirectUrl,
       name,
       tenant,
       product,
@@ -209,18 +233,26 @@ export class App {
       mappings: mappings || [],
     };
 
-    await this.store.put(
-      id,
-      app,
-      {
-        name: IndexNames.EntityID,
-        value: entityId,
-      },
+    if (type === 'oidc') {
+      app.clientID = `${clientIDFederatedPrefix}${id}`;
+      app.clientSecret = crypto.randomBytes(24).toString('hex');
+    }
+
+    const indexes = [
       {
         name: IndexNames.Product,
         value: product,
-      }
-    );
+      },
+    ];
+
+    if (type !== 'oidc') {
+      indexes.push({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
+    }
+
+    await this.store.put(id, app, ...indexes);
 
     return app;
   }
@@ -229,7 +261,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml:
    *   get:
-   *     summary: Get a SAML Federation app
+   *     summary: Get an Identity Federation app
    *     parameters:
    *       - name: id
    *         description: App ID
@@ -247,7 +279,7 @@ export class App {
    *         required: false
    *         type: string
    *     tags:
-   *       - SAML Federation
+   *       - Identity Federation
    *     produces:
    *       - application/json
    *     responses:
@@ -263,17 +295,17 @@ export class App {
       const app = await this.store.get(params.id);
 
       if (!app) {
-        throw new JacksonError('SAML Federation app not found', 404);
+        throw new JacksonError('Identity Federation app not found', 404);
       }
 
       return app as SAMLFederationApp;
     }
 
     if ('tenant' in params && 'product' in params) {
-      const app = await this.store.get(appID(params.tenant, params.product));
+      const app = await this.store.get(fedAppID(params.tenant, params.product, params.type));
 
       if (!app) {
-        throw new JacksonError('SAML Federation app not found', 404);
+        throw new JacksonError('Identity Federation app not found', 404);
       }
 
       return app as SAMLFederationApp;
@@ -286,24 +318,35 @@ export class App {
    * @swagger
    * /api/v1/federated-saml/product:
    *   get:
-   *     summary: Get SAML Federation apps by product
+   *     summary: Get Identity Federation apps by product
    *     parameters:
    *       - name: product
    *         description: Product
    *         in: query
    *         required: true
    *         type: string
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     tags:
-   *       - SAML Federation
+   *       - Identity Federation
    *     produces:
    *       - application/json
    *     responses:
    *        200:
    *          description: Success
-   *          schema:
-   *            type: array
-   *            items:
-   *              $ref:  '#/definitions/SAMLFederationApp'
+   *          content:
+   *            application/json:
+   *               schema:
+   *                 type: object
+   *                 properties:
+   *                   data:
+   *                     type: array
+   *                     items:
+   *                       $ref: '#/definitions/SAMLFederationApp'
+   *                   pageToken:
+   *                     type: string
+   *                     description: token for pagination
    */
   public async getByProduct({ product, pageOffset, pageLimit, pageToken }: GetByProductParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
@@ -341,7 +384,7 @@ export class App {
     ).data;
 
     if (!apps || apps.length === 0) {
-      throw new JacksonError('SAML Federation app not found', 404);
+      throw new JacksonError('Identity Federation app not found', 404);
     }
 
     return apps[0];
@@ -351,7 +394,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml:
    *   patch:
-   *     summary: Update a SAML Federation app
+   *     summary: Update an Identity Federation app
    *     parameters:
    *       - name: id
    *         description: App ID
@@ -394,7 +437,7 @@ export class App {
    *         required: false
    *         type: string
    *       - name: tenants
-   *         description: Mapping of tenants whose connections will be grouped under this SAML Federation app
+   *         description: Mapping of tenants whose connections will be grouped under this Identity Federation app
    *         in: formData
    *         required: false
    *         type: array
@@ -404,7 +447,7 @@ export class App {
    *         required: false
    *         type: array
    *     tags:
-   *       - SAML Federation
+   *       - Identity Federation
    *     produces:
    *       - application/json
    *     consumes:
@@ -419,7 +462,7 @@ export class App {
   public async update(params: Partial<SAMLFederationApp>) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const { id, tenant, product } = params;
+    const { id, tenant, product, type } = params;
 
     if (!id && (!tenant || !product)) {
       throw new JacksonError('Provide either the `id` or `tenant` and `product` to update the app', 400);
@@ -430,11 +473,11 @@ export class App {
     if (id) {
       app = await this.get({ id });
     } else if (tenant && product) {
-      app = await this.get({ tenant, product });
+      app = await this.get({ tenant, product, type });
     }
 
     if (!app) {
-      throw new JacksonError('SAML Federation app not found', 404);
+      throw new JacksonError('Identity Federation app not found', 404);
     }
 
     const toUpdate: Partial<SAMLFederationApp> = {};
@@ -443,6 +486,10 @@ export class App {
 
     if ('name' in params) {
       toUpdate['name'] = params.name;
+    }
+
+    if ('redirectUrl' in params) {
+      toUpdate['redirectUrl'] = params.redirectUrl;
     }
 
     if ('acsUrl' in params) {
@@ -516,7 +563,7 @@ export class App {
    * @swagger
    * /api/v1/federated-saml:
    *   delete:
-   *     summary: Delete a SAML Federation app
+   *     summary: Delete an Identity Federation app
    *     parameters:
    *       - name: id
    *         description: App ID
@@ -534,7 +581,7 @@ export class App {
    *         required: false
    *         type: string
    *     tags:
-   *       - SAML Federation
+   *       - Identity Federation
    *     produces:
    *       - application/json
    *     responses:
@@ -551,7 +598,7 @@ export class App {
     }
 
     if ('tenant' in params && 'product' in params) {
-      const id = appID(params.tenant, params.product);
+      const id = fedAppID(params.tenant, params.product, params.type);
       return await this.store.delete(id);
     }
 

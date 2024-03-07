@@ -1,12 +1,13 @@
 import type { NextPage } from 'next';
-import { DocumentMagnifyingGlassIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
+import DocumentMagnifyingGlassIcon from '@heroicons/react/24/outline/DocumentMagnifyingGlassIcon';
+import WrenchScrewdriverIcon from '@heroicons/react/24/outline/WrenchScrewdriverIcon';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import EmptyState from '@components/EmptyState';
 import { useProjects } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
 import { useTranslation } from 'next-i18next';
 import router from 'next/router';
-import { Pagination, pageLimit } from '@components/Pagination';
+import { Pagination, pageLimit } from '@boxyhq/internal-ui';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { errorToast } from '@components/Toaster';

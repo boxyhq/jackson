@@ -26,10 +26,10 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "11.1.6",
-    "@types/node": "20.11.22",
-    "@types/react": "18.2.56",
-    "@typescript-eslint/eslint-plugin": "7.1.0",
-    "@typescript-eslint/parser": "7.1.0",
+    "@types/node": "20.11.24",
+    "@types/react": "18.2.63",
+    "@typescript-eslint/eslint-plugin": "7.1.1",
+    "@typescript-eslint/parser": "7.1.1",
     "@vitejs/plugin-react": "4.2.1",
     "eslint": "8.57.0",
     "eslint-plugin-react-hooks": "4.6.0",
@@ -37,21 +37,21 @@
     "prettier": "3.2.5",
     "react-daisyui": "5.0.0",
     "typescript": "5.3.3",
-    "vite": "5.1.0"
+    "vite": "5.1.5"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.12.0"
+    "@rollup/rollup-linux-x64-gnu": "4.12.1"
   },
   "peerDependencies": {
-    "@heroicons/react": "2.1.1",
-    "classnames": "2.5.1",
-    "formik": "2.4.5",
-    "next": "14.1.0",
-    "next-i18next": "13.3.0",
-    "react": "18.2.0",
-    "react-daisyui": "5.0.0",
-    "react-syntax-highlighter": "15.5.0",
-    "react-tagsinput": "3.20.3",
-    "swr": "2.2.5"
+    "@heroicons/react": ">=2.1.1",
+    "classnames": ">=2.5.1",
+    "formik": ">=2.4.5",
+    "next": ">=14.1.0",
+    "next-i18next": ">=13.3.0",
+    "react": ">=18.2.0",
+    "react-daisyui": ">=5.0.0",
+    "react-syntax-highlighter": ">=15.5.0",
+    "react-tagsinput": ">=3.20.3",
+    "swr": ">=2.2.5"
   }
 }

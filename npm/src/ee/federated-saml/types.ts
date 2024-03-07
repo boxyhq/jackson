@@ -9,6 +9,10 @@ export type AttributeMapping = {
 
 export type SAMLFederationApp = {
   id: string;
+  type?: string;
+  clientID?: string;
+  clientSecret?: string;
+  redirectUrl?: string[] | string;
   name: string;
   tenant: string;
   product: string;
@@ -18,7 +22,7 @@ export type SAMLFederationApp = {
   faviconUrl: string | null;
   primaryColor: string | null;
   tenants?: string[]; // To support multiple tenants for a single app
-  mappings: AttributeMapping[] | null;
+  mappings?: AttributeMapping[] | null;
 };
 
 export type SAMLFederationAppWithMetadata = SAMLFederationApp & {
@@ -37,4 +41,5 @@ export type AppRequestParams =
   | {
       tenant: string;
       product: string;
+      type?: string;
     };

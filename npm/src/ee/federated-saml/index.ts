@@ -3,7 +3,7 @@ import { App } from './app';
 import type { JacksonOption, SSOTracerInstance } from '../../typings';
 import { SSOHandler } from '../../controller/sso-handler';
 
-// This is the main entry point for the SAML Federation module
+// This is the main entry point for the Identity Federation module
 const SAMLFederation = async ({
   db,
   opts,

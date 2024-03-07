@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import type { IAdminController } from '@boxyhq/saml-jackson';
+import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -23,10 +24,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Get SAML Traces
 const handleGET = async (req: NextApiRequest, res: NextApiResponse, adminController: IAdminController) => {
-  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
-
-  const pageOffset = parseInt(offset);
-  const pageLimit = parseInt(limit);
+  const params = req.query;
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(params);
 
   const tracesPaginated = await adminController.getAllSSOTraces(pageOffset, pageLimit, pageToken);
 
