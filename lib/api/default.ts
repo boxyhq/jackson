@@ -7,7 +7,7 @@ type Handlers = {
   [method in HTTPMethod]?: (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 };
 
-export const adminHandler = async (req: NextApiRequest, res: NextApiResponse, handlers: Handlers) => {
+export const defaultHandler = async (req: NextApiRequest, res: NextApiResponse, handlers: Handlers) => {
   try {
     // Get the handler for the request
     const handler = handlers[req.method as HTTPMethod];

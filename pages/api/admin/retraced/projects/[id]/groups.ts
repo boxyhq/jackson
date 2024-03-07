@@ -3,10 +3,10 @@ import axios from 'axios';
 
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
-import { adminHandler } from '@lib/api/adminHandler';
+import { defaultHandler } from '@lib/api';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await adminHandler(req, res, {
+  await defaultHandler(req, res, {
     GET: handleGET,
   });
 }

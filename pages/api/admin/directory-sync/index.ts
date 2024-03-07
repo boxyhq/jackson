@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { DirectoryType } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
-import { adminHandler } from '@lib/api/adminHandler';
+import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
 import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await adminHandler(req, res, {
+  await defaultHandler(req, res, {
     GET: handleGET,
     POST: handlePOST,
   });

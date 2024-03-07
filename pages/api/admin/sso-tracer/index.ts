@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { adminHandler } from '@lib/api/adminHandler';
+import { defaultHandler } from '@lib/api';
 import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await adminHandler(req, res, {
+  await defaultHandler(req, res, {
     GET: handleGET,
   });
 };

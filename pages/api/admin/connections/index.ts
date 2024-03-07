@@ -3,11 +3,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, parsePaginateApiParams, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
-import { adminHandler } from '@lib/api/adminHandler';
+import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await adminHandler(req, res, {
+  await defaultHandler(req, res, {
     GET: handleGET,
     POST: handlePOST,
     PATCH: handlePATCH,
