@@ -128,7 +128,7 @@ export class DirectoryConfig {
    *     required: true
    *     type: string
    *   directoryId:
-   *     name: directory id
+   *     name: directoryId
    *     description: Directory ID
    *     in: query
    *     required: false
