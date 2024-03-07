@@ -19,7 +19,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   const pageOffset = parseInt(offset);
@@ -45,7 +45,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   await directorySyncController.webhookLogs

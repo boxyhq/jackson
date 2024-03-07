@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { adminHandler } from '@lib/api/adminHandler';
-import { ApiError } from 'next/dist/server/api-utils';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await adminHandler(req, res, {
@@ -18,7 +18,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   const { data: user, error: userError } = await directorySyncController.users
@@ -26,7 +26,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     .get(userId);
 
   if (userError) {
-    throw new ApiError(userError.code, userError.message);
+    throw new ApiError(userError.message, userError.code);
   }
 
   res.json({ data: user });

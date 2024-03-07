@@ -15,7 +15,7 @@ export const adminHandler = async (req: NextApiRequest, res: NextApiResponse, ha
 
     if (!handler) {
       res.setHeader('Allow', allowedMethods);
-      throw new ApiError(405, `Method ${req.method} not allowed.`);
+      throw new ApiError(`Method ${req.method} not allowed.`, 405);
     }
 
     // Call the handler

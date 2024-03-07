@@ -18,7 +18,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   const { data: group, error: groupError } = await directorySyncController.groups
@@ -26,7 +26,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     .get(groupId);
 
   if (groupError) {
-    throw new ApiError(groupError.code, groupError.message);
+    throw new ApiError(groupError.message, groupError.code);
   }
 
   res.json({ data: group });

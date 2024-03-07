@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { adminHandler } from '@lib/api/adminHandler';
-import { ApiError } from 'next/dist/server/api-utils';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await adminHandler(req, res, {
@@ -20,7 +20,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.update(directoryId, req.body);
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   res.json({ data });
@@ -35,7 +35,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   res.json({ data });
@@ -50,7 +50,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { error } = await directorySyncController.directories.delete(directoryId);
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   res.json({ data: null });

@@ -56,7 +56,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { isSAML, isOIDC } = strategyChecker(req);
 
   if (!isSAML && !isOIDC) {
-    throw new ApiError(400, 'Missing SSO connection params');
+    throw new ApiError('Missing SSO connection params', 400);
   }
 
   // Create SAML connection
@@ -79,7 +79,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { isSAML, isOIDC } = strategyChecker(req);
 
   if (!isSAML && !isOIDC) {
-    throw new ApiError(400, 'Missing SSO connection params');
+    throw new ApiError('Missing SSO connection params', 400);
   }
 
   // Update SAML connection

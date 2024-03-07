@@ -28,7 +28,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   res.status(201).json({ data });
@@ -54,7 +54,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   res.json({ data });

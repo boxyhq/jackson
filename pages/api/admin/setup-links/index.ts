@@ -42,7 +42,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   if (!token && !service) {
-    throw new ApiError(400, 'Either token or service is required');
+    throw new ApiError('Either token or service is required', 400);
   }
 
   // Get a setup link by token

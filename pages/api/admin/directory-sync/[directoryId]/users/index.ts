@@ -18,7 +18,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    throw new ApiError(error.code, error.message);
+    throw new ApiError(error.message, error.code);
   }
 
   const pageOffset = parseInt(offset);
@@ -29,7 +29,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     .getAll({ pageOffset, pageLimit, directoryId });
 
   if (usersError) {
-    throw new ApiError(usersError.code, usersError.message);
+    throw new ApiError(usersError.message, usersError.code);
   }
 
   res.json({ data: users });

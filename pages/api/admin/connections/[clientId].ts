@@ -21,7 +21,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const connections = await connectionAPIController.getConnections({ clientID: clientId });
 
   if (!connections || connections.length === 0) {
-    throw new ApiError(404, 'Connection not found');
+    throw new ApiError('Connection not found', 404);
   }
 
   res.json({ data: connections[0] });
