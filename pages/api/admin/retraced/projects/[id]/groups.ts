@@ -7,11 +7,11 @@ import { defaultHandler } from '@lib/api';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await defaultHandler(req, res, {
-    GET: handleGET,
+    GET: getGroups,
   });
 }
 
-const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+const getGroups = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken(req);
 
   const { id: projectId, environmentId } = req.query;

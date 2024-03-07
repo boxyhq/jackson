@@ -8,12 +8,12 @@ import { defaultHandler } from '@lib/api';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await defaultHandler(req, res, {
-    GET: handleGET,
-    POST: handlePOST,
+    GET: getProjects,
+    POST: createProject,
   });
 }
 
-const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
+const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken(req);
 
   const { name } = req.body;
@@ -35,7 +35,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken(req);
 
   const { offset, limit } = req.query as {

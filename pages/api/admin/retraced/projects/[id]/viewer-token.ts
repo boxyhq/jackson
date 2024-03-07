@@ -6,12 +6,12 @@ import { defaultHandler } from '@lib/api';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await defaultHandler(req, res, {
-    GET: handleGET,
+    GET: getViewerToken,
   });
 }
 
 // Get A viewer token and send it to the client, the client will use this token to initialize the logs-viewer
-const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+const getViewerToken = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id: projectId, groupId, token } = req.query;
 
   // TODO: Move to global
