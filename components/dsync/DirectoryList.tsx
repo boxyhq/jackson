@@ -39,12 +39,18 @@ const DSyncDirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => 
           !isSetupLinkView
             ? {
                 itemsPerPage: pageLimit,
-                handlePageChange: ({ offset }) => {
-                  const currentOffset = router.query.offset;
-                  if (currentOffset !== `${offset}`) {
-                    router.query.offset = `${offset}`;
-                    router.push(router);
-                  }
+                handlePageChange: (payload) => {
+                  router.push(
+                    {
+                      pathname: router.pathname,
+                      query: {
+                        ...router.query,
+                        ...payload,
+                      },
+                    },
+                    undefined,
+                    { shallow: true }
+                  );
                 },
               }
             : undefined
