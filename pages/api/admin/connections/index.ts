@@ -66,7 +66,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   // Create OIDC connection
-  else if (isOIDC) {
+  else {
     const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
     res.status(201).json({ data: connection });
   }
@@ -89,7 +89,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   // Update OIDC connection
-  else if (isOIDC) {
+  else {
     await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
     res.status(204).end();
   }
