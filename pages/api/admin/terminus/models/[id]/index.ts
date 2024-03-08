@@ -24,9 +24,7 @@ const getModel = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  // TODO:
-  // Not sure 201 is the right status code here
-  res.status(201).json({
+  res.json({
     data,
     error: null,
   });
