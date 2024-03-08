@@ -49,6 +49,7 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Chrome'],
         baseURL: 'http://localhost:5225',
         storageState: './e2e/state.json',
+        channel: 'chrome',
       },
     },
     // {
