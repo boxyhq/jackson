@@ -23,7 +23,7 @@ export const defaultHandler = async (req: NextApiRequest, res: NextApiResponse, 
     return;
   } catch (error: any) {
     const message = error.message || 'An server error occurred.';
-    const status = error.status || 500;
+    const status = error.statusCode || 500;
 
     console.error(`${req.method} ${req.url} - ${status} - ${message}`);
 
