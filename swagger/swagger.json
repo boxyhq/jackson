@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.20.5",
+    "version": "1.20.6",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -1088,11 +1088,7 @@
             "$ref": "#/parameters/product"
           },
           {
-            "name": "groupId",
-            "description": "Group ID",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "$ref": "#/parameters/groupId"
           }
         ],
         "tags": [
@@ -1157,6 +1153,60 @@
                     "pageToken": {
                       "type": "string",
                       "description": "token for pagination"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dsync/groups/{groupId}/members": {
+      "get": {
+        "summary": "Get list of members in a group",
+        "parameters": [
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
+          },
+          {
+            "$ref": "#/parameters/groupId"
+          },
+          {
+            "$ref": "#/parameters/directoryId"
+          },
+          {
+            "$ref": "#/parameters/pageOffset"
+          },
+          {
+            "$ref": "#/parameters/pageLimit"
+          },
+          {
+            "$ref": "#/parameters/pageToken"
+          }
+        ],
+        "tags": [
+          "Directory Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Member"
+                      }
                     }
                   }
                 }
@@ -1899,6 +1949,15 @@
         }
       }
     },
+    "Member": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "description": "ID of the user"
+        }
+      }
+    },
     "User": {
       "type": "object",
       "properties": {
@@ -2388,7 +2447,7 @@
       "type": "string"
     },
     "directoryId": {
-      "name": "directory id",
+      "name": "directoryId",
       "description": "Directory ID",
       "in": "query",
       "required": false,
@@ -2413,6 +2472,13 @@
       "description": "Token used for DynamoDB pagination",
       "in": "query",
       "required": false,
+      "type": "string"
+    },
+    "groupId": {
+      "name": "groupId",
+      "description": "Group ID",
+      "in": "path",
+      "required": true,
       "type": "string"
     }
   },

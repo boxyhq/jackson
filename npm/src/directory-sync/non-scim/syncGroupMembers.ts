@@ -77,7 +77,7 @@ export class SyncGroupMembers {
 
   // Get all existing members for a group from the Jackson store
   async getAllExistingMembers(group: Group) {
-    const existingMembers: GroupMembership['user_id'][] = [];
+    const existingMembers: Pick<GroupMembership, 'user_id'>[] = [];
     const pageLimit = 500;
     let pageOffset = 0;
 
