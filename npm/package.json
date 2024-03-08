@@ -44,7 +44,7 @@
     "@aws-sdk/util-dynamodb": "3.529.1",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.6",
-    "@boxyhq/saml20": "1.4.13",
+    "@boxyhq/saml20": "1.4.14",
     "@googleapis/admin": "15.0.0",
     "axios": "1.6.7",
     "encoding": "0.1.13",
@@ -60,8 +60,7 @@
     "redis": "4.6.13",
     "reflect-metadata": "0.2.1",
     "ripemd160": "2.0.2",
-    "typeorm": "0.3.20",
-    "xmlbuilder": "15.1.1"
+    "typeorm": "0.3.20"
   },
   "devDependencies": {
     "@faker-js/faker": "8.4.1",

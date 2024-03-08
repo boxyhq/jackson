@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import saml from '@boxyhq/saml20';
-import xmlbuilder from 'xmlbuilder';
 import * as dbutils from '../db/utils';
 import claims from '../saml/claims';
 
@@ -25,58 +24,6 @@ export const extractSAMLResponseAttributes = async (
   attributes.claims.idHash = dbutils.keyDigest(attributes.claims.id);
 
   return attributes;
-};
-
-// Create Metadata XML
-export const createMetadataXML = async ({
-  ssoUrl,
-  entityId,
-  x509cert,
-}: {
-  ssoUrl: string;
-  entityId: string;
-  x509cert: string;
-}): Promise<string> => {
-  x509cert = saml.stripCertHeaderAndFooter(x509cert);
-
-  const today = new Date();
-  const nodes = {
-    'md:EntityDescriptor': {
-      '@xmlns:md': 'urn:oasis:names:tc:SAML:2.0:metadata',
-      '@entityID': entityId,
-      '@validUntil': new Date(today.setFullYear(today.getFullYear() + 10)).toISOString(),
-      'md:IDPSSODescriptor': {
-        '@WantAuthnRequestsSigned': false,
-        '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-        'md:KeyDescriptor': {
-          '@use': 'signing',
-          'ds:KeyInfo': {
-            '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-            'ds:X509Data': {
-              'ds:X509Certificate': {
-                '#text': x509cert,
-              },
-            },
-          },
-        },
-        'md:NameIDFormat': {
-          '#text': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-        },
-        'md:SingleSignOnService': [
-          {
-            '@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-            '@Location': ssoUrl,
-          },
-          {
-            '@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-            '@Location': ssoUrl,
-          },
-        ],
-      },
-    },
-  };
-
-  return xmlbuilder.create(nodes, { encoding: 'UTF-8', standalone: false }).end({ pretty: true });
 };
 
 export type ValidateOption = {

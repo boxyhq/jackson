@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import saml from '@boxyhq/saml20';
+
 import type {
   Storable,
   JacksonOption,
@@ -8,7 +10,6 @@ import type {
   AppRequestParams,
 } from '../../typings';
 import { fedAppID, clientIDFederatedPrefix } from '../../controller/utils';
-import { createMetadataXML } from '../../saml/lib';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
@@ -614,10 +615,11 @@ export class App {
     const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
     const entityId = `${this.opts.samlAudience}`;
 
-    const xml = await createMetadataXML({
+    const xml = saml.createIdPMetadataXML({
       entityId,
       ssoUrl,
       x509cert: publicKey,
+      wantAuthnRequestsSigned: false,
     });
 
     return {
