@@ -53,7 +53,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   // Get a setup link by service
-  if (service) {
+  else if (service) {
     const setupLinksPaginated = await setupLinkController.filterBy({
       service: service as any,
       pageOffset,
