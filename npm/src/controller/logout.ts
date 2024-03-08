@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
-import xmlbuilder from 'xmlbuilder';
 import { deflateRaw } from 'zlib';
 import * as dbutils from '../db/utils';
 
@@ -60,7 +59,11 @@ export class LogoutController {
       throw new JacksonError(`${provider} doesn't support SLO or disabled by IdP.`, 400);
     }
 
-    const { id, xml } = buildRequestXML(nameId, this.opts.samlAudience!, slo.redirectUrl as string);
+    const { id, xml } = saml.createLogoutRequest({
+      nameId,
+      providerName: this.opts.samlAudience!,
+      sloUrl: slo.redirectUrl as string,
+    });
     const sessionId = crypto.randomBytes(16).toString('hex');
 
     let logoutUrl: string | null = null;
@@ -148,34 +151,6 @@ export class LogoutController {
     };
   }
 }
-
-// Create the XML for the SLO Request
-const buildRequestXML = (nameId: string, providerName: string, sloUrl: string) => {
-  const id = '_' + crypto.randomBytes(10).toString('hex');
-
-  const xml: Record<string, any> = {
-    'samlp:LogoutRequest': {
-      '@xmlns:samlp': 'urn:oasis:names:tc:SAML:2.0:protocol',
-      '@xmlns:saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
-      '@ID': id,
-      '@Version': '2.0',
-      '@IssueInstant': new Date().toISOString(),
-      '@Destination': sloUrl,
-      'saml:Issuer': {
-        '#text': providerName,
-      },
-      'saml:NameID': {
-        '@Format': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
-        '#text': nameId,
-      },
-    },
-  };
-
-  return {
-    id,
-    xml: xmlbuilder.create(xml).end({}),
-  };
-};
 
 // Sign the XML
 const signXML = async (xml: string, signingKey: string, publicKey: string): Promise<string> => {
