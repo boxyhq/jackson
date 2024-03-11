@@ -1,4 +1,5 @@
 import type { EventPayloadSchema, Webhook } from '../typings';
+import { jacksonOptions } from '@lib/env';
 import crypto from 'crypto';
 import axios from './axios';
 
@@ -21,6 +22,10 @@ export const sendPayloadToWebhook = async (
   webhook: Webhook,
   payload: EventPayloadSchema | EventPayloadSchema[]
 ) => {
+  if (jacksonOptions.dsync?.debugWebhooks) {
+    console.log('Sending payload to webhook:', JSON.stringify(payload, null, 2));
+  }
+
   return await axios.post(webhook.endpoint, payload, {
     headers: {
       'Content-Type': 'application/json',
