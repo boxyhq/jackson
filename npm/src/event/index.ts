@@ -18,9 +18,11 @@ import {
 
 export default class Event {
   private webhook: JacksonOption['webhook'];
+  private dsync: JacksonOption['dsync'];
 
   constructor({ opts }: { opts: JacksonOption }) {
     this.webhook = opts.webhook;
+    this.dsync = opts.dsync;
   }
 
   async notify<T extends EventType>(
@@ -60,6 +62,6 @@ export default class Event {
       return;
     }
 
-    return await sendPayloadToWebhook(webhook, payload);
+    return await sendPayloadToWebhook(webhook, payload, this.dsync?.debugWebhooks);
   }
 }

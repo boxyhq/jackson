@@ -217,7 +217,7 @@ export class EventProcessor {
     const payload = events.map(({ event }) => event);
 
     try {
-      return await sendPayloadToWebhook(webhook, payload);
+      return await sendPayloadToWebhook(webhook, payload, this.opts?.dsync?.debugWebhooks);
     } catch (err: any) {
       console.error(`Error sending payload to webhook: ${err.message}`);
       throw err;
