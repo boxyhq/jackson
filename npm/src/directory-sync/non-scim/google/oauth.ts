@@ -29,7 +29,7 @@ export class GoogleAuth {
     const authClient = new OAuth2Client(
       googleProvider?.clientId,
       googleProvider?.clientSecret,
-      googleProvider?.callbackUrl
+      googleProvider?.callbackUrl ?? `${this.opts.externalUrl}${googleProvider?.callbackPath}`
     );
 
     authClient.setCredentials({

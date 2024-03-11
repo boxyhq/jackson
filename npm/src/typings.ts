@@ -459,7 +459,9 @@ export interface JacksonOption {
       google: {
         clientId: string;
         clientSecret: string;
-        callbackUrl: string;
+        authorizePath: string;
+        callbackPath: string;
+        callbackUrl?: string;
       };
     };
   };
