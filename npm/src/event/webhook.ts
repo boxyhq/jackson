@@ -1,5 +1,4 @@
 import type { EventPayloadSchema, Webhook } from '../typings';
-import { jacksonOptions } from '@lib/env';
 import crypto from 'crypto';
 import axios from './axios';
 
@@ -20,9 +19,10 @@ export const createSignatureString = (secret: string, payload: any) => {
 
 export const sendPayloadToWebhook = async (
   webhook: Webhook,
-  payload: EventPayloadSchema | EventPayloadSchema[]
+  payload: EventPayloadSchema | EventPayloadSchema[],
+  debugWebhooks: boolean | undefined
 ) => {
-  if (jacksonOptions.dsync?.debugWebhooks) {
+  if (debugWebhooks) {
     console.log('Sending payload to webhook:', JSON.stringify(payload, null, 2));
   }
 
