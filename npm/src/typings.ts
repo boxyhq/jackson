@@ -461,7 +461,6 @@ export interface JacksonOption {
         clientSecret: string;
         authorizePath: string;
         callbackPath: string;
-        callbackUrl?: string;
       };
     };
   };
