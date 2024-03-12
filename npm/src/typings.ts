@@ -455,12 +455,14 @@ export interface JacksonOption {
   webhook?: Webhook;
   dsync?: {
     webhookBatchSize?: number;
+    webhookBatchCronInterval?: number;
     debugWebhooks?: boolean;
     providers?: {
       google: {
         clientId: string;
         clientSecret: string;
         callbackUrl: string;
+        cronInterval?: number;
       };
     };
   };
