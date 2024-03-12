@@ -455,6 +455,7 @@ export interface JacksonOption {
   webhook?: Webhook;
   dsync?: {
     webhookBatchSize?: number;
+    debugWebhooks?: boolean;
     providers?: {
       google: {
         clientId: string;
