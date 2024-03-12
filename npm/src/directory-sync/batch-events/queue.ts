@@ -40,7 +40,7 @@ interface DirectoryEventsParams {
 }
 
 let isJobRunning = false;
-const lockKey = os.hostname();
+let lockKey = '';
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
 
 export class EventProcessor {
@@ -56,6 +56,10 @@ export class EventProcessor {
     this.eventStore = eventStore;
     this.directories = directories;
     this.webhookLogs = webhookLogs;
+
+    if (!lockKey) {
+      lockKey = randomUUID();
+    }
   }
 
   // Push the new event to the database
