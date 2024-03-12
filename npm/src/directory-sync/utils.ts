@@ -16,6 +16,7 @@ import { JacksonError } from '../controller/error';
 
 export const eventLockTTL = 6;
 export const webhookEventTTL = 7 * 24 * 60 * 60;
+export const eventLockKey = 'dsync-event-lock';
 
 interface Payload {
   directory: Directory;
