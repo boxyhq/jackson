@@ -92,6 +92,7 @@ const jacksonOptions: JacksonOption = {
     webhookBatchSize: process.env.DSYNC_WEBHOOK_BATCH_SIZE
       ? Number(process.env.DSYNC_WEBHOOK_BATCH_SIZE)
       : undefined,
+    debugWebhooks: process.env.DSYNC_DEBUG_WEBHOOKS === 'true',
     providers: {
       google: {
         clientId: process.env.DSYNC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || '',

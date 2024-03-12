@@ -75,7 +75,7 @@ export const handleEventCallback = async ({
 
     try {
       // Send the event to the webhook (synchronously)
-      await sendPayloadToWebhook(directory.webhook, event);
+      await sendPayloadToWebhook(directory.webhook, event, opts.dsync?.debugWebhooks);
     } catch (err: any) {
       status = err.response ? err.response.status : 500;
     }
