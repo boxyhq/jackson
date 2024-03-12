@@ -21,7 +21,7 @@ export class EventLock {
     try {
       const lock = await this.get();
 
-      if (lock) {
+      if (lock && !this.isExpired(lock)) {
         return lock.key === key;
       }
 
@@ -84,6 +84,6 @@ export class EventLock {
     const currentDate = new Date();
     const diffSeconds = (currentDate.getTime() - lockDate.getTime()) / 1000;
 
-    return diffSeconds > eventLockTTL;
+    return diffSeconds > eventLockTTL * 2;
   }
 }
