@@ -1,4 +1,5 @@
 import type { Storable } from '../../typings';
+import { eventLockKey, eventLockTTL } from '../utils';
 
 interface Lock {
   key: string;
@@ -57,13 +58,11 @@ export class EventLock {
       created_at: new Date().toISOString(),
     };
 
-    await this.lockStore.put(key, record);
+    await this.lockStore.put(eventLockKey, record);
   }
 
   async get() {
-    const { data } = (await this.lockStore.getAll()) as { data: Lock[] };
-
-    return data.length > 0 ? data[0] : null;
+    return (await this.lockStore.get(eventLockKey)) as Lock;
   }
 
   async release(key: string) {
@@ -77,6 +76,14 @@ export class EventLock {
       return;
     }
 
-    await this.lockStore.delete(key);
+    await this.lockStore.delete(eventLockKey);
+  }
+
+  isExpired(lock: Lock) {
+    const lockDate = new Date(lock.created_at);
+    const currentDate = new Date();
+    const diffSeconds = (currentDate.getTime() - lockDate.getTime()) / 1000;
+
+    return diffSeconds > eventLockTTL;
   }
 }
