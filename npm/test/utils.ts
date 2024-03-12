@@ -41,8 +41,8 @@ const jacksonOptions = <JacksonOption>{
       google: {
         clientId: 'GOOGLE_CLIENT_ID',
         clientSecret: 'GOOGLE_CLIENT_SECRET',
-        authorizePath: 'GOOGLE_AUTHORIZE_PATH',
-        callbackPath: 'GOOGLE_CALLBACK_PATH',
+        authorizePath: '/GOOGLE_AUTHORIZE_PATH',
+        callbackPath: '/GOOGLE_CALLBACK_PATH',
       },
     },
   },
