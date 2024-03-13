@@ -331,14 +331,16 @@ export class Groups extends Base {
 
   // Delete all groups from a directory
   async deleteAll(directoryId: string) {
-    const index = {
-      name: indexNames.directoryId,
-      value: directoryId,
-    };
-
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const { data: groups } = await this.store('groups').getByIndex(index, 0, this.bulkDeleteBatchSize);
+      const { data: groups } = await this.store('groups').getByIndex(
+        {
+          name: indexNames.directoryId,
+          value: directoryId,
+        },
+        0,
+        this.bulkDeleteBatchSize
+      );
 
       if (!groups || groups.length === 0) {
         break;
@@ -356,14 +358,16 @@ export class Groups extends Base {
 
   // Remove all users from a group
   public async removeAllUsers(groupId: string) {
-    const index = {
-      name: 'groupId',
-      value: groupId,
-    };
-
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const { data: members } = await this.store('members').getByIndex(index, 0, this.bulkDeleteBatchSize);
+      const { data: members } = await this.store('members').getByIndex(
+        {
+          name: 'groupId',
+          value: groupId,
+        },
+        0,
+        this.bulkDeleteBatchSize
+      );
 
       if (!members || members.length === 0) {
         break;
