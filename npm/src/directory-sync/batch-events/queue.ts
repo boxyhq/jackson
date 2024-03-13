@@ -269,7 +269,6 @@ export class EventProcessor {
     console.error('All events in the batch have failed. Please check the system.');
   }
 
-  //A function to invoke the process function using setTimeout
   public async processWithTimeout() {
     const cronInterval = this.opts.dsync?.webhookBatchCronInterval;
 
