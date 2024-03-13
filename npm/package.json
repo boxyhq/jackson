@@ -45,7 +45,7 @@
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.6",
     "@boxyhq/saml20": "1.4.14",
-    "@googleapis/admin": "15.0.0",
+    "@googleapis/admin": "16.0.0",
     "axios": "1.6.7",
     "encoding": "0.1.13",
     "jose": "5.2.3",
