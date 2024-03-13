@@ -437,6 +437,7 @@ export interface JacksonOption {
       private: string;
       public: string;
     };
+    requestProfileScope?: boolean; // defaults to true
   };
   certs?: {
     publicKey: string;

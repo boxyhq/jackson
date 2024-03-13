@@ -51,6 +51,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 
   newOpts.openid = newOpts.openid || {};
   newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
+  newOpts.openid.requestProfileScope = newOpts.openid?.requestProfileScope ?? true;
 
   newOpts.boxyhqLicenseKey = newOpts.boxyhqLicenseKey || undefined;
 

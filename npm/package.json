@@ -45,7 +45,7 @@
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.6",
     "@boxyhq/saml20": "1.4.14",
-    "@googleapis/admin": "15.0.0",
+    "@googleapis/admin": "16.0.0",
     "axios": "1.6.7",
     "encoding": "0.1.13",
     "jose": "5.2.3",
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "8.4.1",
-    "@types/lodash": "4.14.202",
+    "@types/lodash": "4.17.0",
     "@types/node": "20.11.26",
     "@types/sinon": "17.0.3",
     "@types/tap": "15.0.11",
