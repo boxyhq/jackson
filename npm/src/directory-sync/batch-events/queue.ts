@@ -41,6 +41,7 @@ interface DirectoryEventsParams {
 let isJobRunning = false;
 let lockKey = '';
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
+let timeoutId: NodeJS.Timeout;
 
 export class EventProcessor {
   private eventStore: Storable;
@@ -59,6 +60,9 @@ export class EventProcessor {
     if (!lockKey) {
       lockKey = randomUUID();
     }
+
+    this.processWithTimeout = this.processWithTimeout.bind(this);
+    this.processWithTimeout();
   }
 
   // Push the new event to the database
@@ -188,6 +192,7 @@ export class EventProcessor {
     }
 
     isJobRunning = false;
+    this.processWithTimeout();
   }
 
   // Fetch next batch of events from the database
@@ -262,5 +267,27 @@ export class EventProcessor {
   private async notifyAllEventsFailed() {
     metrics.increment('dsyncEventsBatchFailed');
     console.error('All events in the batch have failed. Please check the system.');
+  }
+
+  //A function to invoke the process function using setTimeout
+  public async processWithTimeout() {
+    const cronInterval = this.opts.dsync?.webhookBatchCronInterval;
+
+    if (!cronInterval) {
+      return;
+    }
+
+    if (isJobRunning) {
+      return;
+    }
+
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      console.log('Timeout expired. Invoking process', new Date().toISOString());
+      this.process();
+    }, cronInterval * 1000);
   }
 }
