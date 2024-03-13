@@ -407,8 +407,11 @@ export class OAuthController implements IOAuthController {
         oidcCodeVerifier = generators.codeVerifier();
         const code_challenge = generators.codeChallenge(oidcCodeVerifier);
         oidcNonce = generators.nonce();
+        const standardScopes = this.opts.openid?.requestProfileScope
+          ? ['openid', 'email', 'profile']
+          : ['openid', 'email'];
         ssoUrl = oidcClient.authorizationUrl({
-          scope: [...requestedScopes, 'openid', 'email', 'profile']
+          scope: [...requestedScopes, ...standardScopes]
             .filter((value, index, self) => self.indexOf(value) === index) // filter out duplicates
             .join(' '),
           code_challenge,
