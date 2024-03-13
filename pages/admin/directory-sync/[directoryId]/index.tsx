@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import type { NextPage, GetServerSidePropsContext } from 'next';
 import { DirectoryInfo, LinkBack } from '@boxyhq/internal-ui';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { dsyncGoogleAuthURL } from '@lib/env';
 
 const DirectoryInfoPage: NextPage = () => {
   const router = useRouter();
@@ -16,7 +15,6 @@ const DirectoryInfoPage: NextPage = () => {
         urls={{
           getDirectory: `/api/admin/directory-sync/${directoryId}`,
           tabBase: `/admin/directory-sync/${directoryId}`,
-          googleAuth: dsyncGoogleAuthURL,
         }}
       />
     </>

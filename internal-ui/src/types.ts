@@ -58,6 +58,7 @@ export type Directory = {
   google_domain?: string;
   google_access_token?: string;
   google_refresh_token?: string;
+  google_authorization_url?: string;
 };
 
 export type User = {
