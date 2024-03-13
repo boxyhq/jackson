@@ -286,7 +286,6 @@ export class EventProcessor {
     }
 
     timeoutId = setTimeout(() => {
-      console.log('Timeout expired. Invoking process', new Date().toISOString());
       this.process();
     }, cronInterval * 1000);
   }
