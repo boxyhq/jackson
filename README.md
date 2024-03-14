@@ -1,4 +1,4 @@
-# SAML Jackson: Open Source Enterprise SSO And DirectorySync
+# SAML Jackson: Open Source Enterprise SSO And Directory Sync
 
 <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge" alt="OpenSSF Best Practices Badge"></a>
 <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="NPM downloads badge" ></a>
@@ -27,7 +27,7 @@ For complete documentation, visit [boxyhq.com/docs/directory-sync/overview](http
 
 If you find this project helpful, please consider supporting us by starring [the repository](https://github.com/boxyhq/jackson) and sharing it with others. This helps others find the project, grow the community and ensure the long term health of the project. 🙏
 
-- [SAML Jackson: Open Source Enterprise SSO And DirectorySync](#saml-jackson-open-source-enterprise-sso-and-directorysync)
+- [SAML Jackson: Open Source Enterprise SSO And Directory Sync](#saml-jackson-open-source-enterprise-sso-and-directory-sync)
   - [Directory Sync](#directory-sync)
   - [🌟 Why star this repository?](#-why-star-this-repository)
   - [🚀 Getting Started with SAML Jackson](#-getting-started-with-saml-jackson)
@@ -172,7 +172,8 @@ For full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.
 
 ### Try A Demo
 
-Try our hosted demo showcasing the SAML service provider (SP) initiated [login flow here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
+- Try our hosted demo showcasing the SAML service provider (SP) initiated [login flow here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
+- Try an Identity Provider (IdP) initiated [login flow here](https://mocksaml.com/saml/login).
 
 ### Easy Cloud Deployment
 
