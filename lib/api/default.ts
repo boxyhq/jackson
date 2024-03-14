@@ -22,7 +22,7 @@ export const defaultHandler = async (req: NextApiRequest, res: NextApiResponse, 
     await handler(req, res);
     return;
   } catch (error: any) {
-    const message = error.message || 'An server error occurred.';
+    const message = error.message || 'Internal Server Error';
     const status = error.statusCode || 500;
 
     console.error(`${req.method} ${req.url} - ${status} - ${message}`);
