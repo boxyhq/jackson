@@ -3,23 +3,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, parsePaginateApiParams, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
+import { defaultHandler } from '@lib/api';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    case 'POST':
-      return await handlePOST(req, res);
-    case 'PATCH':
-      return await handlePATCH(req, res);
-    case 'DELETE':
-      return await handleDELETE(req, res);
-    default:
-      res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+    PATCH: handlePATCH,
+    DELETE: handleDELETE,
+  });
 };
 
 // Get all connections
@@ -52,7 +45,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   if (paginatedConnectionList.pageToken) {
     res.setHeader('jackson-pagetoken', paginatedConnectionList.pageToken);
   }
-  return res.json(connections);
+
+  res.json(connections);
 };
 
 // Create a new connection
@@ -62,27 +56,19 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { isSAML, isOIDC } = strategyChecker(req);
 
   if (!isSAML && !isOIDC) {
-    return res.status(400).json({ error: { message: 'Missing SSO connection params' } });
+    throw new ApiError('Missing SSO connection params', 400);
   }
 
-  try {
-    // Create SAML connection
-    if (isSAML) {
-      const connection = await connectionAPIController.createSAMLConnection(req.body);
+  // Create SAML connection
+  if (isSAML) {
+    const connection = await connectionAPIController.createSAMLConnection(req.body);
+    res.status(201).json({ data: connection });
+  }
 
-      return res.status(201).json({ data: connection });
-    }
-
-    // Create OIDC connection
-    if (isOIDC) {
-      const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
-
-      return res.status(201).json({ data: connection });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
+  // Create OIDC connection
+  else {
+    const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
+    res.status(201).json({ data: connection });
   }
 };
 
@@ -93,27 +79,19 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { isSAML, isOIDC } = strategyChecker(req);
 
   if (!isSAML && !isOIDC) {
-    return res.status(400).json({ error: { message: 'Missing SSO connection params' } });
+    throw new ApiError('Missing SSO connection params', 400);
   }
 
-  try {
-    // Update SAML connection
-    if (isSAML) {
-      await connectionAPIController.updateSAMLConnection(req.body);
+  // Update SAML connection
+  if (isSAML) {
+    await connectionAPIController.updateSAMLConnection(req.body);
+    res.status(204).end();
+  }
 
-      return res.status(204).end();
-    }
-
-    // Update OIDC connection
-    if (isOIDC) {
-      await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body) as any);
-
-      return res.status(204).end();
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
+  // Update OIDC connection
+  else {
+    await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
+    res.status(204).end();
   }
 };
 
@@ -126,15 +104,9 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     clientSecret: string;
   };
 
-  try {
-    await connectionAPIController.deleteConnections({ clientID, clientSecret });
+  await connectionAPIController.deleteConnections({ clientID, clientSecret });
 
-    return res.status(200).json({ data: null });
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  res.json({ data: null });
 };
 
 export default handler;

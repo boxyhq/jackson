@@ -1,16 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { defaultHandler } from '@lib/api';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+  });
 };
 
 // Get the details of a group
@@ -19,23 +15,21 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { directoryId, groupId } = req.query as { directoryId: string; groupId: string };
 
-  const { data: directory } = await directorySyncController.directories.get(directoryId);
+  const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
-  if (!directory) {
-    return res.status(404).json({ error: { message: 'Directory not found.' } });
+  if (error) {
+    throw new ApiError(error.message, error.code);
   }
 
-  const { data: group, error } = await directorySyncController.groups
+  const { data: group, error: groupError } = await directorySyncController.groups
     .setTenantAndProduct(directory.tenant, directory.product)
     .get(groupId);
 
-  if (error) {
-    return res.status(400).json({ error });
+  if (groupError) {
+    throw new ApiError(groupError.message, groupError.code);
   }
 
-  if (group) {
-    return res.status(200).json({ data: group });
-  }
+  res.json({ data: group });
 };
 
 export default handler;

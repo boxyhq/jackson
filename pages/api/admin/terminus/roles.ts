@@ -1,20 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 import { terminusOptions } from '@lib/env';
+import { defaultHandler } from '@lib/api';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await getRoles(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({
-        data: null,
-        error: { message: `Method ${method} Not Allowed` },
-      });
-  }
+  await defaultHandler(req, res, {
+    GET: getRoles,
+  });
 }
 
 const getRoles = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -25,7 +17,7 @@ const getRoles = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  return res.status(201).json({
+  res.json({
     data,
     error: null,
   });
