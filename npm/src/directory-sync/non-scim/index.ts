@@ -17,18 +17,99 @@ interface SyncParams {
   opts: JacksonOption;
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
+  eventCallback: EventCallback;
 }
 
 let isJobRunning = false;
 let timeoutId: NodeJS.Timeout;
 
-// Method to start the directory sync process
-// This method will be called by the directory sync cron job
-export const startSync = async (syncParams: SyncParams, callback: EventCallback) => {
-  const cronInterval = syncParams.opts.dsync?.providers?.google.cronInterval;
+export class SyncProviders {
+  private userController: IUsers;
+  private groupController: IGroups;
+  private directories: IDirectoryConfig;
+  private requestHandler: IRequestHandler;
+  private opts: JacksonOption;
+  private cronInterval: number | undefined;
+  private eventCallback: EventCallback | null;
 
-  const processWithTimeout = async () => {
-    if (!cronInterval) {
+  constructor({
+    userController,
+    groupController,
+    opts,
+    directories,
+    requestHandler,
+    eventCallback,
+  }: SyncParams) {
+    this.userController = userController;
+    this.groupController = groupController;
+    this.directories = directories;
+    this.requestHandler = requestHandler;
+    this.eventCallback = eventCallback;
+    this.opts = opts;
+    this.cronInterval = this.opts.dsync?.providers?.google.cronInterval;
+
+    if (this.cronInterval) {
+      this.scheduleSync = this.scheduleSync.bind(this);
+      this.scheduleSync();
+    }
+  }
+
+  // Start the sync process
+  public async startSync(callback: EventCallback) {
+    this.eventCallback = callback || this.eventCallback;
+
+    if (isJobRunning) {
+      console.info('A sync process is already running. Skipping the sync process');
+      return;
+    }
+
+    isJobRunning = true;
+
+    const { directory: provider } = newGoogleProvider({ directories: this.directories, opts: this.opts });
+
+    const startTime = Date.now();
+
+    console.info('Starting the sync process');
+
+    const allDirectories = await provider.getDirectories();
+
+    if (allDirectories.length === 0) {
+      console.info('No directories found. Skipping the sync process');
+      return;
+    }
+
+    try {
+      for (const directory of allDirectories) {
+        const params = {
+          directory,
+          provider,
+          userController: this.userController,
+          groupController: this.groupController,
+          requestHandler: this.requestHandler,
+          callback: this.eventCallback,
+        };
+
+        await new SyncUsers(params).sync();
+        await new SyncGroups(params).sync();
+        await new SyncGroupMembers(params).sync();
+      }
+    } catch (e: any) {
+      console.error(e);
+    }
+
+    const endTime = Date.now();
+    console.info(`Sync process completed in ${(endTime - startTime) / 1000} seconds`);
+
+    isJobRunning = false;
+
+    if (this.cronInterval) {
+      this.scheduleSync();
+    }
+  }
+
+  // Schedule the next sync process
+  private scheduleSync() {
+    if (!this.cronInterval) {
       return;
     }
 
@@ -40,67 +121,6 @@ export const startSync = async (syncParams: SyncParams, callback: EventCallback)
       clearTimeout(timeoutId);
     }
 
-    timeoutId = setTimeout(async () => {
-      await syncDirectories(syncParams, callback);
-      processWithTimeout();
-    }, cronInterval * 1000);
-  };
-
-  if (isJobRunning) {
-    console.info('Sync job is already running. Skipping the current job');
-    return;
+    timeoutId = setTimeout(() => this.startSync(this.eventCallback!), this.cronInterval * 1000);
   }
-
-  if (cronInterval) {
-    processWithTimeout();
-  } else {
-    await syncDirectories(syncParams, callback);
-  }
-};
-
-const syncDirectories = async (syncParams: SyncParams, callback: EventCallback) => {
-  if (isJobRunning) {
-    return;
-  }
-
-  isJobRunning = true;
-
-  const { userController, groupController, opts, directories, requestHandler } = syncParams;
-  const { directory: provider } = newGoogleProvider({ directories, opts });
-
-  const startTime = Date.now();
-
-  console.info('Starting the sync process');
-
-  const allDirectories = await provider.getDirectories();
-
-  if (allDirectories.length === 0) {
-    console.info('No directories found. Skipping the sync process');
-    return;
-  }
-
-  try {
-    for (const directory of allDirectories) {
-      const params = {
-        directory,
-        userController,
-        groupController,
-        provider,
-        requestHandler,
-        callback,
-      };
-
-      await new SyncUsers(params).sync();
-      await new SyncGroups(params).sync();
-      await new SyncGroupMembers(params).sync();
-    }
-  } catch (e: any) {
-    console.error(e);
-  } finally {
-    isJobRunning = false;
-  }
-
-  const endTime = Date.now();
-  console.info(`Sync process completed in ${(endTime - startTime) / 1000} seconds`);
-  isJobRunning = false;
-};
+}

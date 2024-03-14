@@ -8,7 +8,7 @@ import { getDirectorySyncProviders } from './scim/utils';
 import { RequestHandler } from './request';
 import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { newGoogleProvider } from './non-scim/google';
-import { startSync } from './non-scim';
+import { SyncProviders } from './non-scim';
 import { storeNamespacePrefix } from '../controller/utils';
 import { eventLockTTL, handleEventCallback } from './utils';
 import { EventProcessor } from './batch-events/queue';
@@ -59,6 +59,15 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     eventProcessor,
   });
 
+  const syncProviders = new SyncProviders({
+    userController: users,
+    groupController: groups,
+    opts,
+    directories,
+    requestHandler,
+    eventCallback,
+  });
+
   return {
     users,
     groups,
@@ -71,18 +80,7 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
       batch: eventProcessor,
     },
     google: googleProvider.oauth,
-    sync: async (callback: EventCallback) => {
-      return await startSync(
-        {
-          userController: users,
-          groupController: groups,
-          opts,
-          directories,
-          requestHandler,
-        },
-        callback || eventCallback
-      );
-    },
+    sync: syncProviders.startSync.bind(syncProviders),
   };
 };
 
