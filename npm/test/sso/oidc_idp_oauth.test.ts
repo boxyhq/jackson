@@ -45,6 +45,38 @@ tap.test('[OIDCProvider]', async (t) => {
     context.state = params.get('state');
   });
 
+  t.test('[authorize] Should omit profile scope if openid.requestProfileScope is set to false', async (t) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    oauthController.opts.openid.requestProfileScope = false;
+    const response = (await oauthController.authorize(<OAuthReq>authz_request_oidc_provider)) as {
+      redirect_url: string;
+    };
+    const params = new URLSearchParams(new URL(response.redirect_url!).search);
+    t.ok('redirect_url' in response, 'got the Idp authorize URL');
+    t.ok(params.has('state'), 'state present');
+    t.match(params.get('scope')?.includes('profile'), false, 'profile scope should be absent');
+  });
+
+  t.test(
+    '[authorize] Should include profile scope if openid.requestProfileScope is set to false but request contains scope param',
+    async (t) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      oauthController.opts.openid.requestProfileScope = false;
+      const response = (await oauthController.authorize(<OAuthReq>{
+        ...authz_request_oidc_provider,
+        scope: 'openid email profile',
+      })) as {
+        redirect_url: string;
+      };
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.ok(params.has('state'), 'state present');
+      t.match(params.get('scope')?.includes('profile'), true, 'profile scope should be absent');
+    }
+  );
+
   t.test('[authorize] Should return error if `oidcPath` is not set', async (t) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

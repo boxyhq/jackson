@@ -3,6 +3,8 @@ import type { DatabaseEngine, DatabaseOption, DatabaseType, JacksonOption } from
 const samlPath = '/api/oauth/saml';
 const oidcPath = '/api/oauth/oidc';
 const idpDiscoveryPath = '/idp/select';
+const googleDSyncAuthorizePath = '/api/scim/oauth/authorize';
+const googleDSyncCallbackPath = '/api/scim/oauth/callback';
 
 const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5225');
@@ -69,6 +71,7 @@ const jacksonOptions: JacksonOption = {
       private: process.env.OPENID_RSA_PRIVATE_KEY || '',
       public: process.env.OPENID_RSA_PUBLIC_KEY || '',
     },
+    requestProfileScope: process.env.OIDC_REQUEST_PROFILE_SCOPE === 'false' ? false : true,
   },
   certs: {
     publicKey: process.env.PUBLIC_KEY || '',
@@ -95,7 +98,8 @@ const jacksonOptions: JacksonOption = {
       google: {
         clientId: process.env.DSYNC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || '',
         clientSecret: process.env.DSYNC_GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET || '',
-        callbackUrl: process.env.DSYNC_GOOGLE_REDIRECT_URI || process.env.GOOGLE_REDIRECT_URI || '',
+        authorizePath: googleDSyncAuthorizePath,
+        callbackPath: googleDSyncCallbackPath,
       },
     },
   },
@@ -119,5 +123,3 @@ export { retraced as retracedOptions };
 export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
-
-export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';

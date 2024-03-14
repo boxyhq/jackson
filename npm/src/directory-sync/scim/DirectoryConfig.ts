@@ -606,6 +606,10 @@ export class DirectoryConfig {
       directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
     }
 
+    if (directory.type === 'google') {
+      directory.google_authorization_url = `${this.opts.externalUrl}${this.opts.dsync?.providers?.google.authorizePath}`;
+    }
+
     if (!('deactivated' in directory)) {
       directory.deactivated = false;
     }

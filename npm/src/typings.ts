@@ -437,6 +437,7 @@ export interface JacksonOption {
       private: string;
       public: string;
     };
+    requestProfileScope?: boolean; // defaults to true
   };
   certs?: {
     publicKey: string;
@@ -460,7 +461,8 @@ export interface JacksonOption {
       google: {
         clientId: string;
         clientSecret: string;
-        callbackUrl: string;
+        authorizePath: string;
+        callbackPath: string;
       };
     };
   };

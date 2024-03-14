@@ -60,7 +60,7 @@ tap.test('generate the Google API authorization URL', async (t) => {
       prompt: 'consent',
       response_type: 'code',
       client_id: 'GOOGLE_CLIENT_ID',
-      redirect_uri: `GOOGLE_REDIRECT_URI`,
+      redirect_uri: `${jacksonOptions.externalUrl}${jacksonOptions.dsync?.providers?.google.callbackPath}`,
       state: JSON.stringify({ directoryId: directory.id }),
       scope:
         'https://www.googleapis.com/auth/admin.directory.user.readonly https://www.googleapis.com/auth/admin.directory.group.readonly https://www.googleapis.com/auth/admin.directory.group.member.readonly',
