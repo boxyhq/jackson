@@ -14,7 +14,7 @@ export const DirectoryInfo = ({
   hideTabs = false,
   displayGoogleAuthButton = false,
 }: {
-  urls: { getDirectory: string; tabBase: string; googleAuth: string };
+  urls: { getDirectory: string; tabBase: string };
   excludeFields?: ExcludeFields[];
   hideTabs?: boolean;
   displayGoogleAuthButton?: boolean;
@@ -48,7 +48,7 @@ export const DirectoryInfo = ({
             <div className='space-y-3'>
               <p className='text-sm text-gray-600'>{t('bui-dsync-authorization-google-desc')}</p>
               <LinkPrimary
-                href={`${urls.googleAuth}?directoryId=${directory.id}`}
+                href={`${directory.google_authorization_url}?directoryId=${directory.id}`}
                 target='_blank'
                 className='btn-md'
                 Icon={ArrowTopRightOnSquareIcon}
@@ -135,7 +135,7 @@ export const DirectoryInfo = ({
       {directory.type === 'google' && (
         <div className='form-control mt-6'>
           <InputWithCopyButton
-            text={`${urls.googleAuth}?directoryId=${directory.id}`}
+            text={`${directory.google_authorization_url}?directoryId=${directory.id}`}
             label={t('bui-dsync-google-auth-url')}
           />
         </div>

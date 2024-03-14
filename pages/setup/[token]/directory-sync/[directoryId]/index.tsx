@@ -4,8 +4,6 @@ import { useRouter } from 'next/router';
 import { DirectoryInfo, LinkBack } from '@boxyhq/internal-ui';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-import { dsyncGoogleAuthURL } from '@lib/env';
-
 const DirectoryDetailsPage: NextPage = () => {
   const router = useRouter();
   const { token, directoryId } = router.query as { token: string; directoryId: string };
@@ -20,7 +18,6 @@ const DirectoryDetailsPage: NextPage = () => {
           urls={{
             getDirectory: `/api/setup/${token}/directory-sync/${directoryId}`,
             tabBase: '',
-            googleAuth: dsyncGoogleAuthURL,
           }}
           hideTabs={true}
           displayGoogleAuthButton={true}

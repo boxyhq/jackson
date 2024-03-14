@@ -63,7 +63,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
         deactivated: data.deactivated,
         scim: data.scim,
         google_domain: data.google_domain,
-        google_authorized: data.google_access_token && data.google_refresh_token, // Indicate if the Google authorization is complete
+        google_authorized: data.google_access_token && data.google_refresh_token, // Indicate if the Google authorization is complete,
+        google_authorization_url: data.google_authorization_url && data.google_authorization_url,
       },
     });
   }
