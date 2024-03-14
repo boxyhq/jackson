@@ -52,6 +52,13 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     webhookLogs,
   });
 
+  const eventCallback = await handleEventCallback({
+    opts,
+    directories,
+    webhookLogs,
+    eventProcessor,
+  });
+
   return {
     users,
     groups,
@@ -60,12 +67,7 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     requests: requestHandler,
     providers: getProviders,
     events: {
-      callback: await handleEventCallback({
-        opts,
-        directories,
-        webhookLogs,
-        eventProcessor,
-      }),
+      callback: eventCallback,
       batch: eventProcessor,
     },
     google: googleProvider.oauth,
@@ -78,7 +80,7 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
           directories,
           requestHandler,
         },
-        callback
+        callback || eventCallback
       );
     },
   };

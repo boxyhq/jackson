@@ -49,6 +49,7 @@ export class EventProcessor {
   private opts: JacksonOption;
   private directories: IDirectoryConfig;
   private webhookLogs: IWebhookEventsLogger;
+  private cronInterval: number | undefined;
 
   constructor({ opts, eventStore, eventLock, directories, webhookLogs }: DirectoryEventsParams) {
     this.opts = opts;
@@ -56,13 +57,16 @@ export class EventProcessor {
     this.eventStore = eventStore;
     this.directories = directories;
     this.webhookLogs = webhookLogs;
+    this.cronInterval = this.opts.dsync?.webhookBatchCronInterval;
 
     if (!lockKey) {
       lockKey = randomUUID();
     }
 
-    this.processWithTimeout = this.processWithTimeout.bind(this);
-    this.processWithTimeout();
+    if (this.cronInterval) {
+      this.scheduleWorker = this.scheduleWorker.bind(this);
+      this.scheduleWorker();
+    }
   }
 
   // Push the new event to the database
@@ -192,7 +196,10 @@ export class EventProcessor {
     }
 
     isJobRunning = false;
-    this.processWithTimeout();
+
+    if (this.cronInterval) {
+      this.scheduleWorker();
+    }
   }
 
   // Fetch next batch of events from the database
@@ -269,10 +276,8 @@ export class EventProcessor {
     console.error('All events in the batch have failed. Please check the system.');
   }
 
-  public async processWithTimeout() {
-    const cronInterval = this.opts.dsync?.webhookBatchCronInterval;
-
-    if (!cronInterval) {
+  public async scheduleWorker() {
+    if (!this.cronInterval) {
       return;
     }
 
@@ -284,8 +289,6 @@ export class EventProcessor {
       clearTimeout(timeoutId);
     }
 
-    timeoutId = setTimeout(() => {
-      this.process();
-    }, cronInterval * 1000);
+    timeoutId = setTimeout(() => this.process(), this.cronInterval * 1000);
   }
 }
