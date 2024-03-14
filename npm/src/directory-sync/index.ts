@@ -1,4 +1,4 @@
-import type { JacksonOption, IEventController, EventCallback, DB } from '../typings';
+import type { JacksonOption, IEventController, DB } from '../typings';
 import { DirectoryConfig } from './scim/DirectoryConfig';
 import { DirectoryUsers } from './scim/DirectoryUsers';
 import { DirectoryGroups } from './scim/DirectoryGroups';
