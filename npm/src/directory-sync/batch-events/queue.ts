@@ -59,12 +59,6 @@ export class EventProcessor {
     this.webhookLogs = webhookLogs;
     this.cronInterval = this.opts.dsync?.webhookBatchCronInterval;
 
-    // if (!lockKey) {
-    //   lockKey = randomUUID();
-    // }
-
-    console.log('lockKey', lockKey);
-
     if (this.cronInterval) {
       this.scheduleWorker = this.scheduleWorker.bind(this);
       this.scheduleWorker();
