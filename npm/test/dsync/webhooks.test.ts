@@ -12,8 +12,6 @@ import { createSignatureString } from '../../src/event/webhook';
 
 let directorySync: IDirectorySyncController;
 let directory: Directory;
-let eventCallback: EventCallback;
-
 const fakeDirectory = getFakeDirectory();
 
 const webhook: Directory['webhook'] = {
@@ -47,8 +45,6 @@ tap.before(async () => {
 
   directorySync.webhookLogs.setTenantAndProduct(directory.tenant, directory.product);
   directorySync.users.setTenantAndProduct(directory.tenant, directory.product);
-
-  eventCallback = directorySync.events.callback;
 });
 
 tap.teardown(async () => {
@@ -80,7 +76,7 @@ tap.test('Webhook Events /', async (t) => {
       });
 
       // Create a user
-      await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
+      await directorySync.requests.handle(usersRequest.create(directory, users[0]));
 
       const events = await directorySync.webhookLogs.getAll();
 
@@ -102,7 +98,7 @@ tap.test('Webhook Events /', async (t) => {
       });
 
       // Create a user
-      await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
+      await directorySync.requests.handle(usersRequest.create(directory, users[0]));
 
       const events = await directorySync.webhookLogs.getAll();
 
@@ -116,7 +112,7 @@ tap.test('Webhook Events /', async (t) => {
 
     t.test('Should be able to get an event by id', async (t) => {
       // Create a user
-      await directorySync.requests.handle(usersRequest.create(directory, users[0]), eventCallback);
+      await directorySync.requests.handle(usersRequest.create(directory, users[0]));
 
       const logs = await directorySync.webhookLogs.getAll();
 
@@ -132,20 +128,17 @@ tap.test('Webhook Events /', async (t) => {
 
       // Create the user
       const { data: createdUser } = await directorySync.requests.handle(
-        usersRequest.create(directory, users[0]),
-        eventCallback
+        usersRequest.create(directory, users[0])
       );
 
       // Update the user
       const { data: updatedUser } = await directorySync.requests.handle(
-        usersRequest.updateById(directory, createdUser.id, users[0]),
-        eventCallback
+        usersRequest.updateById(directory, createdUser.id, users[0])
       );
 
       // Delete the user
       const { data: deletedUser } = await directorySync.requests.handle(
-        usersRequest.deleteById(directory, createdUser.id),
-        eventCallback
+        usersRequest.deleteById(directory, createdUser.id)
       );
 
       mock.verify();
@@ -184,20 +177,17 @@ tap.test('Webhook Events /', async (t) => {
 
       // Create the group
       const { data: createdGroup } = await directorySync.requests.handle(
-        groupRequest.create(directory, groups[0]),
-        eventCallback
+        groupRequest.create(directory, groups[0])
       );
 
       // Update the group
       const { data: updatedGroup } = await directorySync.requests.handle(
-        groupRequest.updateById(directory, createdGroup.id, groups[0]),
-        eventCallback
+        groupRequest.updateById(directory, createdGroup.id, groups[0])
       );
 
       // Delete the group
       const { data: deletedGroup } = await directorySync.requests.handle(
-        groupRequest.deleteById(directory, createdGroup.id),
-        eventCallback
+        groupRequest.deleteById(directory, createdGroup.id)
       );
 
       mock.verify();
@@ -235,20 +225,17 @@ tap.test('Webhook Events /', async (t) => {
 
     // Create the user
     const { data: createdUser } = await directorySync.requests.handle(
-      usersRequest.create(directory, users[0]),
-      eventCallback
+      usersRequest.create(directory, users[0])
     );
 
     // Create the group
     const { data: createdGroup } = await directorySync.requests.handle(
-      groupRequest.create(directory, groups[0]),
-      eventCallback
+      groupRequest.create(directory, groups[0])
     );
 
     // Add the user to the group
     await directorySync.requests.handle(
-      groupRequest.addMembers(directory, createdGroup.id, [{ value: createdUser.id }]),
-      eventCallback
+      groupRequest.addMembers(directory, createdGroup.id, [{ value: createdUser.id }])
     );
 
     // Remove the user from the group
@@ -258,8 +245,7 @@ tap.test('Webhook Events /', async (t) => {
         createdGroup.id,
         [{ value: createdUser.id }],
         `members[value eq "${createdUser.id}"]`
-      ),
-      eventCallback
+      )
     );
 
     mock.verify();

@@ -378,8 +378,6 @@ tap.test('Sync 5', async (t) => {
 
   t.strictSame(events.length, 2);
 
-  console.log(events);
-
   t.strictSame(events[0].event, 'group.user_removed');
   t.strictSame(events[0].data.id, fakeGoogleDirectory.users[0].id);
   t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
