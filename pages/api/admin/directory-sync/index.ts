@@ -1,20 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { DirectoryType } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
+import { defaultHandler } from '@lib/api';
+import { ApiError } from '@lib/error';
 import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case 'POST':
-      return await handlePOST(req, res);
-    case 'GET':
-      return await handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'POST, GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+  });
 };
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -32,13 +27,11 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     google_domain,
   });
 
-  if (data) {
-    return res.status(201).json({ data });
+  if (error) {
+    throw new ApiError(error.message, error.code);
   }
 
-  if (error) {
-    return res.status(error.code).json({ error });
-  }
+  res.status(201).json({ data });
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -60,13 +53,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('jackson-pagetoken', nextPageToken);
   }
 
-  if (data) {
-    return res.status(200).json({ data });
+  if (error) {
+    throw new ApiError(error.message, error.code);
   }
 
-  if (error) {
-    return res.status(error.code).json({ error });
-  }
+  res.json({ data });
 };
 
 export default handler;

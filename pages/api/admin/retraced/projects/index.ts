@@ -4,21 +4,13 @@ import axios from 'axios';
 import type { Project } from 'types/retraced';
 import { getToken } from '@lib/retraced';
 import { retracedOptions } from '@lib/env';
+import { defaultHandler } from '@lib/api';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await getProjects(req, res);
-    case 'POST':
-      return await createProject(req, res);
-    default:
-      res.setHeader('Allow', 'GET, POST');
-      res.status(405).json({
-        error: { message: `Method ${method} Not Allowed` },
-      });
-  }
+  await defaultHandler(req, res, {
+    GET: getProjects,
+    POST: createProject,
+  });
 }
 
 const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -38,39 +30,31 @@ const createProject = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   );
 
-  return res.status(201).json({
+  res.status(201).json({
     data,
   });
 };
 
 const getProjects = async (req: NextApiRequest, res: NextApiResponse) => {
-  try {
-    const token = await getToken(req);
+  const token = await getToken(req);
 
-    const { offset, limit } = req.query as {
-      offset: string;
-      limit: string;
-    };
+  const { offset, limit } = req.query as {
+    offset: string;
+    limit: string;
+  };
 
-    const { data } = await axios.get<{ projects: Project[] }>(
-      `${retracedOptions?.hostUrl}/admin/v1/projects?offset=${+(offset || 0)}&limit=${+(limit || 0)}`,
-      {
-        headers: {
-          Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
-        },
-      }
-    );
-
-    return res.status(200).json({
-      data,
-    });
-  } catch (ex: any) {
-    return res.status(500).json({
-      error: {
-        message: ex?.message || ex?.response?.message || ex,
+  const { data } = await axios.get<{ projects: Project[] }>(
+    `${retracedOptions?.hostUrl}/admin/v1/projects?offset=${+(offset || 0)}&limit=${+(limit || 0)}`,
+    {
+      headers: {
+        Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
       },
-    });
-  }
+    }
+  );
+
+  res.json({
+    data,
+  });
 };
 
 export default handler;
