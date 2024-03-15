@@ -94,6 +94,7 @@ export class OAuthController implements IOAuthController {
     let requestedProduct;
     let requestedScopes: string[] | undefined;
     let requestedOIDCFlow: boolean | undefined;
+    let isOIDCFederated: boolean | undefined;
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     let fedApp: SAMLFederationApp | undefined;
 
@@ -176,6 +177,7 @@ export class OAuthController implements IOAuthController {
           // client_id is not encoded, so we look for the connection using the client_id
           // First we check if it's a federated connection
           if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
+            isOIDCFederated = true;
             fedApp = await this.samlFedApp.get({
               id: client_id.replace(clientIDFederatedPrefix, ''),
             });
@@ -236,6 +238,7 @@ export class OAuthController implements IOAuthController {
           product: requestedProduct || '',
           clientID: connection?.clientID || '',
           requestedOIDCFlow,
+          isOIDCFederated,
           redirectUri: redirect_uri,
         },
       });

@@ -19,6 +19,7 @@ export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     redirectUri?: string;
     requestedOIDCFlow?: boolean; // Type of OAuth client request
     isSAMLFederated?: boolean; // true if hit the SAML Federation flow
+    isOIDCFederated?: boolean; // true if hit the OIDC Federation flow
     isIDPFlow?: boolean; // true if IdP Login flow
     relayState?: string; // RelayState in SP flow
     providerName?: string; // SAML Federation SP
