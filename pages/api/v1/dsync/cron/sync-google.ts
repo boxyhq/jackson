@@ -7,7 +7,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { directorySyncController } = await jackson();
 
-    directorySyncController.sync(directorySyncController.events.callback);
+    directorySyncController.sync();
 
     res.json({ message: 'Sync started' });
   } catch (e: any) {

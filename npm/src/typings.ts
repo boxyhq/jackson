@@ -7,6 +7,7 @@ export * from './directory-sync/types';
 export * from './event/types';
 
 import db from './db/db';
+import { EventCallback } from './typings';
 
 export type DB = Awaited<ReturnType<typeof db.new>>;
 
@@ -467,6 +468,7 @@ export interface JacksonOption {
         cronInterval?: number;
       };
     };
+    callback?: EventCallback;
   };
 
   /**  The number of days a setup link is valid for. Defaults to 3 days. */

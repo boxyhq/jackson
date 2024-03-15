@@ -31,7 +31,6 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
 
   const directoryUsers = new DirectoryUsers({ directories, users });
   const directoryGroups = new DirectoryGroups({ directories, users, groups });
-  const requestHandler = new RequestHandler(directoryUsers, directoryGroups);
 
   // Fetch the supported providers
   const getProviders = () => {
@@ -52,20 +51,32 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     webhookLogs,
   });
 
-  const eventCallback = await handleEventCallback({
+  // Internal callback handles sending webhooks
+  const internalCallback = await handleEventCallback({
     opts,
     directories,
     webhookLogs,
     eventProcessor,
   });
 
+  // Use the provided callback (Embedded) or fallback to the internal callback (Hosted)
+  const _callback = opts.dsync?.callback || internalCallback;
+
+  // SCIM handler
+  const requestHandler = new RequestHandler({
+    directoryUsers,
+    directoryGroups,
+    eventCallback: _callback,
+  });
+
+  // Google sync handler
   const syncProviders = new SyncProviders({
     userController: users,
     groupController: groups,
     opts,
     directories,
     requestHandler,
-    eventCallback,
+    eventCallback: _callback,
   });
 
   return {
@@ -76,7 +87,6 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     requests: requestHandler,
     providers: getProviders,
     events: {
-      callback: eventCallback,
       batch: eventProcessor,
     },
     google: googleProvider.oauth,

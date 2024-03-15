@@ -30,7 +30,7 @@ export class SyncProviders {
   private requestHandler: IRequestHandler;
   private opts: JacksonOption;
   private cronInterval: number | undefined;
-  private eventCallback: EventCallback | null;
+  private eventCallback: EventCallback;
 
   constructor({
     userController,
@@ -55,9 +55,7 @@ export class SyncProviders {
   }
 
   // Start the sync process
-  public async startSync(callback: EventCallback) {
-    this.eventCallback = callback || this.eventCallback;
-
+  public async startSync() {
     if (isJobRunning) {
       console.info('A sync process is already running. Skipping the sync process');
       return;
@@ -121,6 +119,6 @@ export class SyncProviders {
       clearTimeout(timeoutId);
     }
 
-    timeoutId = setTimeout(() => this.startSync(this.eventCallback!), this.cronInterval * 1000);
+    timeoutId = setTimeout(() => this.startSync(), this.cronInterval * 1000);
   }
 }
