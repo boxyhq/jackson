@@ -1,6 +1,6 @@
 import tap from 'tap';
 import nock from 'nock';
-import type { DirectorySyncEvent } from '@boxyhq/saml-jackson';
+import type { DirectorySyncEvent, JacksonOption } from '@boxyhq/saml-jackson';
 
 import { jacksonOptions } from '../utils';
 import { IDirectorySyncController, DirectoryType } from '../../src/typings';
@@ -148,8 +148,19 @@ const mockGroupMembersAPI = (groupKey: string, members: any[]) => {
     .reply(200, { members });
 };
 
+let events: DirectorySyncEvent[] = [];
+
 tap.before(async () => {
-  directorySyncController = (await (await import('../../src/index')).default(jacksonOptions))
+  const options: JacksonOption = {
+    ...jacksonOptions,
+    dsync: {
+      callback: async (event: DirectorySyncEvent) => {
+        events.push(event);
+      },
+    },
+  };
+
+  directorySyncController = (await (await import('../../src/index')).default(options))
     .directorySyncController;
 
   await directorySyncController.directories.create(directoryPayload);
@@ -160,7 +171,7 @@ tap.teardown(async () => {
 });
 
 tap.test('Sync 1', async (t) => {
-  const events: DirectorySyncEvent[] = [];
+  events = [];
 
   // Mock necessary API calls
   mockUsersAPI(fakeGoogleDirectory.users);
@@ -168,9 +179,7 @@ tap.test('Sync 1', async (t) => {
   mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
   mockGroupMembersAPI('sales', fakeGoogleDirectory.members.sales);
 
-  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-    events.push(event);
-  });
+  await directorySyncController.sync();
 
   nock.cleanAll();
 
@@ -223,7 +232,7 @@ tap.test('Sync 1', async (t) => {
 });
 
 tap.test('Sync 2', async (t) => {
-  const events: DirectorySyncEvent[] = [];
+  events = [];
 
   // Update user
   fakeGoogleDirectory.users[0].name.givenName = 'Eliza Updated';
@@ -236,9 +245,7 @@ tap.test('Sync 2', async (t) => {
   mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
   mockGroupMembersAPI('sales', fakeGoogleDirectory.members.sales);
 
-  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-    events.push(event);
-  });
+  await directorySyncController.sync();
 
   nock.cleanAll();
 
@@ -256,7 +263,7 @@ tap.test('Sync 2', async (t) => {
 });
 
 tap.test('Sync 3', async (t) => {
-  const events: DirectorySyncEvent[] = [];
+  events = [];
 
   // Delete the last user
   const deleteUser = fakeGoogleDirectory.users.pop();
@@ -271,9 +278,7 @@ tap.test('Sync 3', async (t) => {
   mockGroupsAPI(fakeGoogleDirectory.groups);
   mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
 
-  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-    events.push(event);
-  });
+  await directorySyncController.sync();
 
   nock.cleanAll();
 
@@ -291,7 +296,7 @@ tap.test('Sync 3', async (t) => {
 });
 
 tap.test('Sync 4', async (t) => {
-  const events: DirectorySyncEvent[] = [];
+  events = [];
 
   // Add new user
   const newUser = {
@@ -321,9 +326,7 @@ tap.test('Sync 4', async (t) => {
   mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
   mockGroupMembersAPI('marketing', fakeGoogleDirectory.members.marketing);
 
-  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-    events.push(event);
-  });
+  await directorySyncController.sync();
 
   nock.cleanAll();
 
@@ -350,7 +353,7 @@ tap.test('Sync 4', async (t) => {
 });
 
 tap.test('Sync 5', async (t) => {
-  const events: DirectorySyncEvent[] = [];
+  events = [];
 
   // Remove elizasmith from the engineering group
   fakeGoogleDirectory.members.engineering.shift();
@@ -369,13 +372,13 @@ tap.test('Sync 5', async (t) => {
   mockGroupMembersAPI('engineering', fakeGoogleDirectory.members.engineering);
   mockGroupMembersAPI('marketing', fakeGoogleDirectory.members.marketing);
 
-  await directorySyncController.sync(async (event: DirectorySyncEvent) => {
-    events.push(event);
-  });
+  await directorySyncController.sync();
 
   nock.cleanAll();
 
   t.strictSame(events.length, 2);
+
+  console.log(events);
 
   t.strictSame(events[0].event, 'group.user_removed');
   t.strictSame(events[0].data.id, fakeGoogleDirectory.users[0].id);
