@@ -1,4 +1,4 @@
-import { IDirectorySyncController, Directory, DirectorySyncEvent, EventCallback } from '../../src/typings';
+import { IDirectorySyncController, Directory, DirectorySyncEvent } from '../../src/typings';
 import tap from 'tap';
 import groups from './data/groups';
 import users from './data/users';
