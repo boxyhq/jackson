@@ -126,5 +126,4 @@ export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
 
-export const dsyncGoogleAuthURL = externalUrl + '/api/scim/oauth/authorize';
 export const auditLogEnabledGroup = process.env.AUDIT_LOG_TEAMS ? process.env.AUDIT_LOG_TEAMS.split(',') : [];
