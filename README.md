@@ -111,7 +111,7 @@ For the rest of the setup, we will use a PostgreSQL database. The easiest way to
 
 Now that we have our database setup we can start the development server. But before we do, there is one more thing we need to do.
 
-To log in to the admin portal either need some preloaded connections, [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
+To log in to the admin portal we either need some preloaded connections, [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
 
 In your `.env` find the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable. We need to provide a email:password combination we can then use to log in to the admin portal. For example:
 
