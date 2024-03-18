@@ -51,7 +51,6 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-
   res.json({ data: {} });
 };
 

@@ -107,11 +107,11 @@ const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
             text: getDisplayTypeFromSinkType(config.type),
           };
         } else {
-        return {
-          wrap: column.wrap,
-          text: config[dataIndex],
-        };
-      }
+          return {
+            wrap: column.wrap,
+            text: config[dataIndex],
+          };
+        }
       }),
     };
   });

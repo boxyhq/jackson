@@ -139,7 +139,6 @@ export const controllers = async (
   const spConfig = new SPSSOConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts, eventController });
 
-
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
   if (preLoadedConnection && preLoadedConnection.length > 0) {
