@@ -53,13 +53,15 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
               size='md'
               className='font-mono uppercase text-white'
               aria-label={t('bui-tracer-sp-protocol')!}>
-              {trace.context.requestedOIDCFlow
-                ? 'OIDC'
+              {trace.context.isOIDCFederated
+                ? t('bui-tracer-oidc-federation')
                 : trace.context.isSAMLFederated
                   ? t('bui-tracer-saml-federation')
-                  : trace.context.isIdPFlow
-                    ? t('bui-tracer-idp-login')
-                    : t('bui-tracer-oauth2')}
+                  : trace.context.requestedOIDCFlow
+                    ? 'OIDC'
+                    : trace.context.isIdPFlow
+                      ? t('bui-tracer-idp-login')
+                      : t('bui-tracer-oauth2')}
             </Badge>
           }
         />
