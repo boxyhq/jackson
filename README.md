@@ -103,7 +103,7 @@ openssl rand -base64 24 # 24 is correct, because of the base64 encoding we will 
 
 #### Database
 
-For the rest of the setup, we will use a PostgreSQL database. The easiest way to get PostgreSQL up and running on MacOS is using Posgres.app. You can download it from [https://postgresapp.com/](https://postgresapp.com/).
+For the rest of the setup, we will use a PostgreSQL database. The easiest way to get PostgreSQL up and running on macOS is using Posgres.app. You can download it from [https://postgresapp.com/](https://postgresapp.com/).
 
 > For other operating systems and alternative options for MacOS, please see the [documentation available on the Prisma webiste](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database).
 
