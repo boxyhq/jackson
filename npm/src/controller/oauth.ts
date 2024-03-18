@@ -614,6 +614,9 @@ export class OAuthController implements IOAuthController {
         // Found a connection
         if ('connection' in response) {
           connection = response.connection as SAMLSSORecord;
+          if (!isConnectionActive(connection)) {
+            throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
+          }
         }
       }
 
