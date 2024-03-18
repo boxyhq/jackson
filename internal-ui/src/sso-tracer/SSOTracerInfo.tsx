@@ -92,7 +92,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
         {trace.context.redirectUri && (
           <ListItem
             term={
-              trace.context.isIDPFlow ? t('bui-tracer-default-redirect-url') : t('bui-tracer-redirect-uri')
+              trace.context.isIdPFlow ? t('bui-tracer-default-redirect-url') : t('bui-tracer-redirect-uri')
             }
             value={trace.context.redirectUri}
           />
