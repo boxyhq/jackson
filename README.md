@@ -101,7 +101,7 @@ DB_MANUAL_MIGRATION=true
 This is to indicate that we will be running the migrations manually. We also need to set the value for the `DB_ENCRYPTION_KEY` environment variable. You can use openssl to generate a random 32 character key for this purpose:
 
 ```bash
-openssl rand -base64 24
+openssl rand -base64 24 # 24 is correct, because of the base64 encoding we will end up with a 32 character key
 ```
 
 > On macOS and Unix based systems the `openssl` library and command should be available by default. On Windows, you can use the `openssl` command from the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install). Alternatively, you can find more information on the [OpenSSL GitHub repository](https://github.com/openssl/openssl?tab=readme-ov-file#download).
