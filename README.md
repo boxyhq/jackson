@@ -131,7 +131,7 @@ Open `http://localhost:5225` in your browser and you should be redirected to the
 http://localhost:5225/admin/auth/login?callbackUrl=http%3A%2F%2Flocalhost%3A5225%2Fadmin%2Fsso-connection&error=SessionRequired
 ```
 
-At the login screen you can now use the username and password you set in the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable to log in. Click "Sign In" and you should be logged in and see the SSO Connections page with no connections configured. We have reached Hello SAML Jackson!
+At the login screen you can now use the username and password you set in the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable to log in. Click "Sign In" and you should be logged in and see the SSO Connections page with no configured connections. We have reached Hello SAML Jackson!
 
 ### Documentation
 
