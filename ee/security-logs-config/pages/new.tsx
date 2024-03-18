@@ -65,7 +65,7 @@ const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => 
           <div className='flex flex-col space-y-3'>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>{t('type')}</span>
+                <span className='label-text'>{t('bui-shared-type')}</span>
               </label>
               <select
                 className='select-bordered select w-full'

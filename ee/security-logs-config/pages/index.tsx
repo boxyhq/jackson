@@ -59,25 +59,25 @@ const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const columns = [
     {
       key: 'name',
-      label: t('bui-dsync-name'),
+      label: t('bui-shared-name'),
       wrap: true,
       dataIndex: 'name',
     },
     {
       key: 'type',
-      label: t('bui-dsync-type'),
+      label: t('bui-shared-type'),
       wrap: true,
       dataIndex: 'type',
     },
     {
       key: 'tenant',
-      label: t('bui-dsync-tenant'),
+      label: t('bui-shared-tenant'),
       wrap: true,
       dataIndex: 'tenant',
     },
     {
       key: 'actions',
-      label: t('bui-dsync-actions'),
+      label: t('bui-shared-actions'),
       wrap: true,
       dataIndex: null,
     },
