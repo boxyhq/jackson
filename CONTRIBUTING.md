@@ -48,7 +48,7 @@ git clone https://github.com/your-username/jackson.git
 
 ### 3. Setup
 
-See our README for instructions on setting up the project.
+See our [README](README.md) for instructions on setting up the project.
 
 ## Contribution
 
