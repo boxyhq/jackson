@@ -91,7 +91,7 @@ Create a `.env` from the existing `.env.example` file in the root of the project
 cp .env.example .env
 ```
 
-We will leave all the environment variables at their defaults, except for the following two variables. Firstly, we need to set the value for the `DB_ENCRYPTION_KEY` environment variable. You can use openssl to generate a random 32 character key for this purpose:
+We will leave all the environment variables at their defaults, except for two variables. Firstly, we need to set the value for the `DB_ENCRYPTION_KEY` environment variable. You can use openssl to generate a random 32 character key for this purpose:
 
 ```bash
 openssl rand -base64 24 # 24 is correct, because of the base64 encoding we will end up with a 32 character key
