@@ -2,6 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const regExp = /\bt\('(.*?)'/gm;
 const altRegExp = /\bi18nKey='(.*?)'/gm;
+const exceptionList = [
+  'splunk_event_collector_url',
+  'splunk_hec_endpoint_placeholder',
+  'default_token',
+  'default_token_placeholder',
+];
 
 const allStrings = {};
 
@@ -43,7 +49,7 @@ files.forEach((file) => {
 });
 
 Object.keys(localeFile).forEach((key) => {
-  if (!allStrings[key]) {
+  if (!allStrings[key] && !exceptionList.includes(key)) {
     error = true;
     console.error(`Unused key: ${key}`);
   }
