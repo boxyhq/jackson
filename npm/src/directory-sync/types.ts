@@ -62,6 +62,7 @@ export type Directory = {
   google_domain?: string;
   google_access_token?: string;
   google_refresh_token?: string;
+  google_authorization_url?: string;
 };
 
 export type DirectorySyncGroupMember = { value: string; email?: string };
@@ -114,6 +115,7 @@ export type User = {
   first_name: string;
   last_name: string;
   active: boolean;
+  roles?: string[];
   raw?: any;
 };
 

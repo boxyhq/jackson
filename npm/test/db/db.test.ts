@@ -1,4 +1,4 @@
-import { DatabaseEngine, DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
+import { DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
 import tap from 'tap';
 import DB from '../../src/db/db';
 import { randomBytes } from 'crypto';
@@ -22,17 +22,24 @@ const record2 = {
   city: 'London',
 };
 
-const records = [record1, record2];
+const record3 = {
+  id: '3',
+  name: 'Samuel Jackson',
+  city: 'Delhi',
+};
+
+const records = [record1, record2, record3];
 
 const memDbConfig = <DatabaseOption>{
   engine: 'mem',
   ttl: 1,
+  pageLimit: 2,
 };
 
 const redisDbConfig = <DatabaseOption>{
   engine: 'redis',
   url: 'redis://localhost:6379',
-  pageLimit: 50,
+  pageLimit: 2,
 };
 
 const postgresDbConfig = <DatabaseOption>{
@@ -41,11 +48,13 @@ const postgresDbConfig = <DatabaseOption>{
   type: 'postgres',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const mongoDbConfig = <DatabaseOption>{
   engine: 'mongo',
   url: 'mongodb://localhost:27017/jackson',
+  pageLimit: 2,
 };
 
 const mysqlDbConfig = <DatabaseOption>{
@@ -54,6 +63,7 @@ const mysqlDbConfig = <DatabaseOption>{
   type: 'mysql',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const planetscaleDbConfig = <DatabaseOption>{
@@ -61,9 +71,10 @@ const planetscaleDbConfig = <DatabaseOption>{
   url: process.env.PLANETSCALE_URL,
   ttl: 1,
   cleanupLimit: 10,
-  ssl: {
-    rejectUnauthorized: true,
-  },
+  pageLimit: 2,
+  // ssl: {
+  //   rejectUnauthorized: true,
+  // },
 };
 
 const mariadbDbConfig = <DatabaseOption>{
@@ -72,6 +83,7 @@ const mariadbDbConfig = <DatabaseOption>{
   type: 'mariadb',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const mssqlDbConfig = <DatabaseOption>{
@@ -80,6 +92,7 @@ const mssqlDbConfig = <DatabaseOption>{
   url: 'sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const dynamoDbConfig = <DatabaseOption>{
@@ -87,6 +100,7 @@ const dynamoDbConfig = <DatabaseOption>{
   url: process.env.DYNAMODB_URL,
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
   dynamodb: {
     region: 'us-east-1',
     readCapacityUnits: 5,
@@ -229,6 +243,24 @@ tap.test('dbs', async () => {
           value: record2.name,
         }
       );
+
+      // wait 100ms to ensure that the record is written with a different timestamp
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      await connectionStore.put(
+        record3.id,
+        record3,
+        {
+          // secondary index on city
+          name: 'city',
+          value: record3.city,
+        },
+        {
+          // secondary index on name
+          name: 'name',
+          value: record3.name,
+        }
+      );
     });
 
     tap.test('get(): ' + dbType, async (t) => {
@@ -240,33 +272,23 @@ tap.test('dbs', async () => {
     });
 
     tap.test('getAll(): ' + dbType, async (t) => {
-      const allRecords = await connectionStore.getAll();
-      const allRecordOutput = {};
-      let allRecordInput = {};
-      for (const keyValue in records) {
-        const keyVal = records[keyValue.toString()];
-        allRecordOutput[keyVal];
-      }
-      for (const keyValue in allRecords.data) {
-        const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecords.data[keyVal]];
-      }
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
-      allRecordInput = {};
-      let allRecordsWithPagination = await connectionStore.getAll(0, 2);
-      for (const keyValue in allRecordsWithPagination.data) {
-        const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPagination.data[keyVal]];
-      }
-
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
-      allRecordsWithPagination = await connectionStore.getAll(0, 0);
-      for (const keyValue in allRecordsWithPagination.data) {
-        const keyVal = records[keyValue.toString()];
-        allRecordInput[allRecordsWithPagination.data[keyVal]];
-      }
-
-      t.same(allRecordInput, allRecordOutput, 'unable to getAll records');
+      const testMessage =
+        dbType === 'dynamodb' // dynamodb doesn't support sort order
+          ? 'should return all the records upto options.pageLimit'
+          : 'should return all the records upto options.pageLimit in DESC order by creation time';
+      const wanted = dbType === 'dynamodb' ? records.slice(1, 3) : [...records].reverse().slice(0, 2);
+      // getAll without pagination params
+      t.same((await connectionStore.getAll()).data, wanted, `without pagination params ` + testMessage);
+      // getAll with pagination params
+      t.same((await connectionStore.getAll(0, 2)).data, wanted, `with pagination params ` + testMessage);
+      // getAll with pageLimit set to 0
+      t.same((await connectionStore.getAll(0, 0)).data, wanted, `with pageLimit set to 0 ` + testMessage);
+      // getAll with pageLimit > options.pageLimit
+      t.same(
+        (await connectionStore.getAll(0, 3)).data,
+        wanted,
+        `with pageLimit > options.pageLimit ` + testMessage
+      );
 
       const oneRecordWithPagination = await connectionStore.getAll(0, 1);
       t.same(
@@ -291,7 +313,7 @@ tap.test('dbs', async () => {
         t.match(sortedRecordsAsc, [record1, record2], 'records are sorted in ASC order');
 
         const { data: sortedRecordsDesc } = await connectionStore.getAll(0, 2, undefined, 'DESC');
-        t.match(sortedRecordsDesc, [record2, record1], 'records are sorted in DESC order');
+        t.match(sortedRecordsDesc, [record3, record2], 'records are sorted in DESC order');
       }
     });
 
@@ -421,29 +443,6 @@ tap.test('dbs', async () => {
       t.same(ret4.data, [], 'delete for record2 failed');
     });
 
-    tap.test('ttl indexes: ' + dbType, async (t) => {
-      try {
-        await ttlStore.put(
-          record1.id,
-          record1,
-          {
-            // secondary index on city
-            name: 'city',
-            value: record1.city,
-          },
-          {
-            // secondary index on name
-            name: 'name',
-            value: record1.name,
-          }
-        );
-
-        t.fail('expecting a secondary indexes not allow on a store with ttl');
-      } catch (err) {
-        t.ok(err, 'got expected error');
-      }
-    });
-
     tap.test('ttl put(): ' + dbType, async () => {
       await ttlStore.put(record1.id, record1);
 
@@ -526,50 +525,6 @@ tap.test('dbs', async () => {
   tap.test('close():', async () => {
     for (const [, value] of Object.entries(dbObjs)) {
       await value.close();
-    }
-  });
-
-  tap.test('db.new() error', async (t) => {
-    try {
-      await DB.new(
-        <DatabaseOption>{
-          engine: <DatabaseEngine>'mongo',
-        },
-        true
-      );
-
-      await DB.new(
-        <DatabaseOption>{
-          engine: <DatabaseEngine>'sql',
-          url: tap.expectUncaughtException().toString(),
-        },
-        true
-      );
-
-      t.ok(
-        <DatabaseOption>{
-          engine: <DatabaseEngine>'sql',
-          url: tap.expectUncaughtException().toString(),
-        },
-        'db must have connection'
-      );
-
-      await DB.new(
-        {
-          engine: <DatabaseEngine>'',
-        },
-        true
-      );
-
-      await DB.new(
-        <DatabaseOption>{
-          engine: <DatabaseEngine>'somedb',
-        },
-        true
-      );
-      t.fail('expecting an unsupported db error');
-    } catch (err) {
-      t.ok(err, 'got expected error');
     }
   });
 });

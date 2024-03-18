@@ -5,7 +5,7 @@ import { deflateRaw } from 'zlib';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import { generators } from 'openid-client';
 
-import type { JacksonOption, Storable, SAMLSSORecord, OIDCSSORecord, AttributeMapping } from '../typings';
+import type { JacksonOption, Storable, SAMLSSORecord, OIDCSSORecord, SAMLFederationApp } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
@@ -40,12 +40,13 @@ export class SSOHandler {
   // If there is only one connection, return the connection
   async resolveConnection(params: {
     authFlow: 'oauth' | 'saml' | 'idp-initiated';
-    originalParams: Record<string, string>;
+    originalParams: Record<string, any>;
     tenant?: string;
     product?: string;
     entityId?: string;
     idp_hint?: string;
     samlFedAppId?: string;
+    fedType?: string;
     tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
     | {
@@ -67,9 +68,22 @@ export class SSOHandler {
       entityId,
       tenants,
       samlFedAppId = '',
+      fedType = '',
     } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
+    const noSSOConnectionErrMessage = 'No SSO connection found.';
+
+    // If an IdP is specified, find the connection for that IdP
+    if (idp_hint) {
+      const connection = await this.connection.get(idp_hint);
+
+      if (!connection) {
+        throw new JacksonError(noSSOConnectionErrMessage, 404);
+      }
+
+      return { connection };
+    }
 
     // Find SAML connections for the app
     if (tenants && tenants.length > 0 && product) {
@@ -99,21 +113,8 @@ export class SSOHandler {
       connections = result.data;
     }
 
-    const noSSOConnectionErrMessage = 'No SSO connection found.';
-
     if (!connections || connections.length === 0) {
       throw new JacksonError(noSSOConnectionErrMessage, 404);
-    }
-
-    // If an IdP is specified, find the connection for that IdP
-    if (idp_hint) {
-      const connection = connections.find((c) => c.clientID === idp_hint);
-
-      if (!connection) {
-        throw new JacksonError(noSSOConnectionErrMessage, 404);
-      }
-
-      return { connection };
     }
 
     // If more than one, redirect to the connection selection page
@@ -121,14 +122,18 @@ export class SSOHandler {
       const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
 
       // SP initiated flow
-      if (['oauth', 'saml'].includes(authFlow) && tenant && product) {
-        const params = new URLSearchParams({
-          tenant,
-          product,
+      if (['oauth', 'saml'].includes(authFlow)) {
+        const qps = {
           authFlow: 'sp-initiated',
           samlFedAppId,
+          fedType,
           ...originalParams,
-        });
+        };
+        if (tenant && product && fedType !== 'oidc') {
+          qps['tenant'] = tenant;
+          qps['product'] = product;
+        }
+        const params = new URLSearchParams(qps);
 
         return { redirectUrl: `${url}?${params}` };
       }
@@ -162,7 +167,7 @@ export class SSOHandler {
   }: {
     connection: SAMLSSORecord;
     requestParams: Record<string, any>;
-    mappings: AttributeMapping[] | null;
+    mappings: SAMLFederationApp['mappings'];
   }) {
     // We have a connection now, so we can create the SAML request
     const certificate = await getDefaultCertificate();
@@ -235,7 +240,7 @@ export class SSOHandler {
   }: {
     connection: OIDCSSORecord;
     requestParams: Record<string, any>;
-    mappings: AttributeMapping[] | null;
+    mappings: SAMLFederationApp['mappings'];
   }) {
     if (!this.opts.oidcPath) {
       throw new JacksonError('OpenID response handler path (oidcPath) is not set', 400);
@@ -308,6 +313,7 @@ export class SSOHandler {
         issuer: `${this.opts.samlAudience}`,
         claims: mappedClaims,
         ...certificate,
+        flattenArray: true,
       });
 
       const responseForm = saml.createPostForm(session.requested.acsUrl, [
@@ -341,7 +347,7 @@ export class SSOHandler {
     requested: any;
     oidcCodeVerifier?: string;
     oidcNonce?: string;
-    mappings: AttributeMapping[] | null;
+    mappings: SAMLFederationApp['mappings'];
   }) => {
     const sessionId = crypto.randomBytes(16).toString('hex');
 

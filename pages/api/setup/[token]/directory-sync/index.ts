@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { DirectoryType, SetupLink } from '@boxyhq/saml-jackson';
+import type { SetupLink } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -31,23 +31,30 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { directorySyncController } = await jackson();
 
-  const { name, type, webhook_url, webhook_secret } = req.body;
+  const { type, google_domain } = req.body;
 
-  const { data, error } = await directorySyncController.directories.create({
-    name,
+  const directory = {
+    type,
+    google_domain,
+    name: setupLink.name,
     tenant: setupLink.tenant,
     product: setupLink.product,
-    type: type as DirectoryType,
-    webhook_url,
-    webhook_secret,
-  });
+    webhook_url: setupLink.webhook_url,
+    webhook_secret: setupLink.webhook_secret,
+  };
+
+  const { data, error } = await directorySyncController.directories.create(directory);
 
   if (data) {
-    return res.status(201).json({ data });
+    res.status(201).json({
+      data: {
+        id: data.id,
+      },
+    });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 
@@ -55,35 +62,26 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { directorySyncController } = await jackson();
 
-  const { offset, limit, pageToken } = req.query as { offset: string; limit: string; pageToken?: string };
-
-  const pageOffset = parseInt(offset);
-  const pageLimit = parseInt(limit);
-
-  const {
-    data,
-    error,
-    pageToken: nextPageToken,
-  } = await directorySyncController.directories.getAll({
-    pageOffset,
-    pageLimit,
-    pageToken,
-  });
-
-  if (nextPageToken) {
-    res.setHeader('jackson-pagetoken', nextPageToken);
-  }
+  const { data, error } = await directorySyncController.directories.getByTenantAndProduct(
+    setupLink.tenant,
+    setupLink.product
+  );
 
   if (data) {
-    const filteredData = data.filter(
-      (directory) => directory.tenant === setupLink.tenant && directory.product === setupLink.product
-    );
+    const directories = data.map((directory) => {
+      return {
+        id: directory.id,
+        type: directory.type,
+        name: directory.name,
+        deactivated: directory.deactivated,
+      };
+    });
 
-    return res.status(200).json({ data: filteredData });
+    res.json({ data: directories });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 

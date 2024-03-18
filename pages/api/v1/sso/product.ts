@@ -1,4 +1,5 @@
 import jackson from '@lib/jackson';
+import { parsePaginateApiParams } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -23,17 +24,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  const { product, pageOffset, pageLimit, pageToken } = req.query as {
+  const { product } = req.query as {
     product: string;
-    pageOffset: string;
-    pageLimit: string;
-    pageToken?: string;
   };
+
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   const connections = await connectionAPIController.getConnectionsByProduct({
     product,
-    pageOffset: parseInt(pageOffset),
-    pageLimit: parseInt(pageLimit),
+    pageOffset,
+    pageLimit,
     pageToken,
   });
 

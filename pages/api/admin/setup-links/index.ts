@@ -2,27 +2,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import retraced from '@ee/retraced';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
+import { defaultHandler } from '@lib/api';
+import { ApiError } from '@lib/error';
+import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  try {
-    switch (method) {
-      case 'POST':
-        return await handlePOST(req, res);
-      case 'GET':
-        return await handleGET(req, res);
-      case 'DELETE':
-        return await handleDELETE(req, res);
-      default:
-        res.setHeader('Allow', 'POST, GET, DELETE');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+    DELETE: handleDELETE,
+  });
 };
 
 // Create a new setup link
@@ -42,68 +31,65 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  return res.status(201).json({ data: setupLink });
+  res.status(201).json({ data: setupLink });
 };
 
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
-  const { setupID } = req.query as { setupID: string };
+  const { id } = req.query as { id: string };
 
-  const setupLink = await setupLinkController.get(setupID);
-
-  await setupLinkController.remove({ id: setupID });
+  const setupLink = await setupLinkController.get(id);
+  await setupLinkController.remove({ id });
 
   retraced.reportAdminPortalEvent({
     action: `${setupLink.service}.setuplink.delete`,
     crud: 'd',
     req,
     target: {
-      id: setupID,
+      id,
     },
   });
 
-  return res.json({ data: {} });
+
+  res.json({ data: {} });
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
   const { token, service } = req.query as {
-    offset: string;
-    limit: string;
-    pageToken?: string;
     token: string;
     service: string;
   };
 
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
+
   if (!token && !service) {
-    return res.status(404).json({
-      error: {
-        message: 'Setup link is invalid',
-        code: 404,
-      },
-    });
+    throw new ApiError('Either token or service is required', 400);
   }
 
   // Get a setup link by token
   if (token) {
     const setupLink = await setupLinkController.getByToken(token);
 
-    return res.json({ data: setupLink });
+    res.json({ data: setupLink });
   }
 
   // Get a setup link by service
-  if (service) {
+  else if (service) {
     const setupLinksPaginated = await setupLinkController.filterBy({
-      ...req.query,
+      service: service as any,
+      pageOffset,
+      pageLimit,
+      pageToken,
     });
 
     if (setupLinksPaginated.pageToken) {
       res.setHeader('jackson-pagetoken', setupLinksPaginated.pageToken);
     }
 
-    return res.json({ data: setupLinksPaginated.data });
+    res.json({ data: setupLinksPaginated.data });
   }
 };
 

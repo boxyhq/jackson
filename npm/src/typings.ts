@@ -437,6 +437,7 @@ export interface JacksonOption {
       private: string;
       public: string;
     };
+    requestProfileScope?: boolean; // defaults to true
   };
   certs?: {
     publicKey: string;
@@ -455,11 +456,13 @@ export interface JacksonOption {
   webhook?: Webhook;
   dsync?: {
     webhookBatchSize?: number;
+    debugWebhooks?: boolean;
     providers?: {
       google: {
         clientId: string;
         clientSecret: string;
-        callbackUrl: string;
+        authorizePath: string;
+        callbackPath: string;
       };
     };
   };
@@ -548,18 +551,6 @@ export interface ApiError {
   code: number;
 }
 
-export type SetupLinkCreatePayload = {
-  tenant: string;
-  product: string;
-  name?: string;
-  description?: string;
-  defaultRedirectUrl?: string;
-  redirectUrl?: string;
-  service: SetupLinkService;
-  regenerate?: boolean;
-  expiryDays?: number;
-};
-
 export type SetupLink = {
   setupID: string;
   tenant: string;
@@ -571,7 +562,21 @@ export type SetupLink = {
   url: string;
   service: SetupLinkService;
   validTill: number;
+  webhook_url?: string;
+  webhook_secret?: string;
 };
+
+export type SetupLinkCreatePayload =
+  | (Pick<SetupLink, 'name' | 'tenant' | 'product' | 'webhook_url' | 'webhook_secret'> & {
+      service: 'dsync';
+      regenerate?: boolean;
+      expiryDays?: number;
+    })
+  | (Pick<SetupLink, 'name' | 'tenant' | 'product' | 'description' | 'defaultRedirectUrl' | 'redirectUrl'> & {
+      service: 'sso';
+      regenerate?: boolean;
+      expiryDays?: number;
+    });
 
 export type SetupLinkService = 'sso' | 'dsync';
 

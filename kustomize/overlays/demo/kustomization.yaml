@@ -5,8 +5,6 @@ bases:
 
 resources:
   - ./secrets.yaml
-  - ./mocksaml-secrets.yaml
-  - ./mocksaml-deployment.yaml
 
 patches:
   - ./jackson-deployment.yaml
@@ -14,6 +12,4 @@ patches:
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.18.7
-  - name: boxyhq/mock-saml
-    newTag: 1.3.4
+    newTag: 1.21.1

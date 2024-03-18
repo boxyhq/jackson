@@ -128,8 +128,26 @@ export class DirectoryConfig {
    *     required: true
    *     type: string
    *   directoryId:
-   *     name: directory id
+   *     name: directoryId
    *     description: Directory ID
+   *     in: query
+   *     required: false
+   *     type: string
+   *   pageOffset:
+   *     name: pageOffset
+   *     description: Starting point from which the set of records are retrieved
+   *     in: query
+   *     required: false
+   *     type: string
+   *   pageLimit:
+   *     name: pageLimit
+   *     description: Number of records to be fetched for the page
+   *     in: query
+   *     required: false
+   *     type: string
+   *   pageToken:
+   *     name: pageToken
+   *     description: Token used for DynamoDB pagination
    *     in: query
    *     required: false
    *     type: string
@@ -588,6 +606,10 @@ export class DirectoryConfig {
       directory.scim.endpoint = `${this.opts.externalUrl}${directory.scim.path}`;
     }
 
+    if (directory.type === 'google') {
+      directory.google_authorization_url = `${this.opts.externalUrl}${this.opts.dsync?.providers?.google.authorizePath}`;
+    }
+
     if (!('deactivated' in directory)) {
       directory.deactivated = false;
     }
@@ -602,6 +624,9 @@ export class DirectoryConfig {
    *     summary: Get directory connections by product
    *     parameters:
    *      - $ref: '#/parameters/product'
+   *      - $ref: '#/parameters/pageOffset'
+   *      - $ref: '#/parameters/pageLimit'
+   *      - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
    *     produces:
@@ -609,10 +634,18 @@ export class DirectoryConfig {
    *     responses:
    *       '200':
    *         description: Success
-   *         schema:
-   *           type: array
-   *           items:
-   *             $ref:  '#/definitions/Directory'
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/Directory'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async filterBy(
     params: FilterByParams = {}

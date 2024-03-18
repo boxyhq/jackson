@@ -15,7 +15,7 @@ export const init = async (store: Storable, opts: JacksonOption) => {
   return await getDefaultCertificate();
 };
 
-export const generateCertificate = () => {
+const generateCertificate = () => {
   const today = new Date();
   const keys = pki.rsa.generateKeyPair(2048);
   const cert = pki.createCertificate();

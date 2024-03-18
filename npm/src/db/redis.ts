@@ -44,9 +44,13 @@ class Redis implements DatabaseDriver {
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
-    const offset = pageOffset ? Number(pageOffset) : 0;
-    const count = pageLimit ? Number(pageLimit) : this.options.pageLimit;
     const sortedSetKey = dbutils.keyFromParts(dbutils.createdAtPrefix, namespace);
+
+    const { offset, limit: count } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
 
     const zRangeOptions = {
       BY: 'SCORE',
@@ -92,49 +96,43 @@ class Redis implements DatabaseDriver {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string
   ): Promise<Records> {
-    const offsetAndLimitValueCheck = !dbutils.isNumeric(pageOffset) && !dbutils.isNumeric(pageLimit);
-    let take = Number(offsetAndLimitValueCheck ? this.options.pageLimit : pageLimit);
-    const skip = Number(offsetAndLimitValueCheck ? 0 : pageOffset);
+    const { offset: skip, limit } = dbutils.normalizeOffsetAndLimit({
+      pageOffset,
+      pageLimit,
+      maxLimit: this.options.pageLimit!,
+    });
+    let take = limit;
+
     let count = 0;
-    take += skip;
+    take! += skip!;
     const returnValue: string[] = [];
     const keyArray: string[] = [];
     const idxKey = dbutils.keyForIndex(namespace, idx);
     const dbKeys = await this.client.sMembers(dbutils.keyFromParts(dbutils.indexPrefix, idxKey));
-    if (!offsetAndLimitValueCheck) {
-      for await (const { value } of this.client.zScanIterator(
-        dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
-        count + 1
-      )) {
-        if (dbKeys.indexOf(value) !== -1) {
-          if (count >= take) {
-            break;
-          }
-          if (count >= skip) {
-            keyArray.push(dbutils.keyFromParts(namespace, value));
-          }
-          count++;
+    for await (const { value } of this.client.zScanIterator(
+      dbutils.keyFromParts(dbutils.createdAtPrefix, namespace),
+      count + 1
+    )) {
+      if (dbKeys.indexOf(value) !== -1) {
+        if (count >= take!) {
+          break;
         }
-      }
-      if (keyArray.length > 0) {
-        const value = await this.client.MGET(keyArray);
-        for (let i = 0; i < value.length; i++) {
-          const valueObject = JSON.parse(value[i].toString());
-          if (valueObject !== null && valueObject !== '') {
-            returnValue.push(valueObject);
-          }
+        if (count >= skip!) {
+          keyArray.push(dbutils.keyFromParts(namespace, value));
         }
+        count++;
       }
-      return { data: returnValue || [] };
-    } else {
-      const ret: string[] = [];
-      for (const dbKey of dbKeys || []) {
-        if (offsetAndLimitValueCheck) {
-          ret.push(await this.get(namespace, dbKey));
-        }
-      }
-      return { data: ret };
     }
+    if (keyArray.length > 0) {
+      const value = await this.client.MGET(keyArray);
+      for (let i = 0; i < value.length; i++) {
+        const valueObject = JSON.parse(value[i].toString());
+        if (valueObject !== null && valueObject !== '') {
+          returnValue.push(valueObject);
+        }
+      }
+    }
+    return { data: returnValue || [] };
   }
 
   async put(namespace: string, key: string, val: Encrypted, ttl = 0, ...indexes: any[]): Promise<void> {

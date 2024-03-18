@@ -19,8 +19,13 @@ export const createSignatureString = (secret: string, payload: any) => {
 
 export const sendPayloadToWebhook = async (
   webhook: Webhook,
-  payload: EventPayloadSchema | EventPayloadSchema[]
+  payload: EventPayloadSchema | EventPayloadSchema[],
+  debugWebhooks: boolean | undefined
 ) => {
+  if (debugWebhooks) {
+    console.log('Sending payload to webhook:', JSON.stringify(payload, null, 2));
+  }
+
   return await axios.post(webhook.endpoint, payload, {
     headers: {
       'Content-Type': 'application/json',

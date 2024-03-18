@@ -111,6 +111,38 @@ export class SetupLinkController {
    *     in: formData
    *     type: string
    *     required: true
+   *   webhookUrlParamPost:
+   *     name: webhook_url
+   *     description: The URL to send the directory sync events to
+   *     in: formData
+   *     type: string
+   *     required: true
+   *   webhookSecretParamPost:
+   *     name: webhook_secret
+   *     description: The secret to sign the directory sync events
+   *     in: formData
+   *     type: string
+   *     required: true
+   *   nameParamPost:
+   *     name: name
+   *     description: Name of connection
+   *     in: formData
+   *     type: string
+   *     required: false
+   *   expiryDaysParamPost:
+   *     name: expiryDays
+   *     description: Days in number for the setup link to expire
+   *     default: 3
+   *     in: formData
+   *     type: number
+   *     required: false
+   *   regenerateParamPost:
+   *     name: regenerate
+   *     description: If passed as true, it will remove the existing setup link and create a new one.
+   *     in: formData
+   *     default: false
+   *     type: boolean
+   *     required: false
    * /api/v1/sso/setuplinks:
    *   post:
    *    summary: Create a Setup Link
@@ -122,10 +154,13 @@ export class SetupLinkController {
    *      - application/x-www-form-urlencoded
    *      - application/json
    *    parameters:
+   *      - $ref: '#/parameters/nameParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
    *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
    *      - $ref: '#/parameters/redirectUrlParamPost'
+   *      - $ref: '#/parameters/expiryDaysParamPost'
+   *      - $ref: '#/parameters/regenerateParamPost'
    *    responses:
    *      200:
    *        description: Success
@@ -142,8 +177,13 @@ export class SetupLinkController {
    *      - application/x-www-form-urlencoded
    *      - application/json
    *    parameters:
+   *      - $ref: '#/parameters/nameParamPost'
    *      - $ref: '#/parameters/tenantParamPost'
    *      - $ref: '#/parameters/productParamPost'
+   *      - $ref: '#/parameters/webhookUrlParamPost'
+   *      - $ref: '#/parameters/webhookSecretParamPost'
+   *      - $ref: '#/parameters/expiryDaysParamPost'
+   *      - $ref: '#/parameters/regenerateParamPost'
    *    responses:
    *      200:
    *        description: Success
@@ -151,29 +191,30 @@ export class SetupLinkController {
    *          $ref:  '#/definitions/SetupLink'
    */
   async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
-    const {
-      tenant,
-      product,
-      service,
-      name,
-      description,
-      defaultRedirectUrl,
-      regenerate,
-      redirectUrl,
-      expiryDays,
-    } = body;
+    const { name, tenant, product, service, expiryDays, regenerate } = body;
 
     validateTenantAndProduct(tenant, product);
-
-    if (defaultRedirectUrl || redirectUrl) {
-      const redirectUrlList = extractRedirectUrls(redirectUrl || '');
-      validateRedirectUrl({ defaultRedirectUrl, redirectUrlList });
-    }
-
     throwIfInvalidService(service);
 
-    const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
-    const token = crypto.randomBytes(24).toString('hex');
+    if (!tenant || !product) {
+      throw new JacksonError('Must provide tenant and product', 400);
+    }
+
+    if (service === 'sso') {
+      const { defaultRedirectUrl, redirectUrl } = body;
+
+      if (!defaultRedirectUrl || !redirectUrl) {
+        throw new JacksonError('Must provide defaultRedirectUrl and redirectUrl', 400);
+      }
+
+      validateRedirectUrl({ defaultRedirectUrl, redirectUrlList: extractRedirectUrls(redirectUrl || '') });
+    } else if (service === 'dsync') {
+      const { webhook_url, webhook_secret } = body;
+
+      if (!webhook_url || !webhook_secret) {
+        throw new JacksonError('Must provide webhook_url and webhook_secret', 400);
+      }
+    }
 
     const existing: SetupLink[] = (
       await this.setupLinkStore.getByIndex({
@@ -191,20 +232,30 @@ export class SetupLinkController {
       await this.setupLinkStore.delete(existing[0].setupID);
     }
 
+    const token = crypto.randomBytes(24).toString('hex');
     const expiryInDays = expiryDays || this.opts.setupLinkExpiryDays || 3;
+    const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
 
-    const setupLink = {
+    const setupLink: SetupLink = {
       setupID,
       tenant,
       product,
       service,
       name,
-      description,
-      redirectUrl,
-      defaultRedirectUrl,
       validTill: calculateExpiryTimestamp(expiryInDays),
       url: `${this.opts.externalUrl}/setup/${token}`,
     };
+
+    if (service === 'sso') {
+      const { defaultRedirectUrl, redirectUrl, description } = body;
+      setupLink.defaultRedirectUrl = defaultRedirectUrl;
+      setupLink.redirectUrl = redirectUrl;
+      setupLink.description = description || '';
+    } else if (service === 'dsync') {
+      const { webhook_url, webhook_secret } = body;
+      setupLink.webhook_url = webhook_url;
+      setupLink.webhook_secret = webhook_secret;
+    }
 
     await this.setupLinkStore.put(
       setupID,
@@ -342,6 +393,9 @@ export class SetupLinkController {
    *     summary: Get the Setup Links by product
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     operationId: get-sso-setup-link-by-product
    *     tags: [Setup Links | Single Sign On]
    *     responses:
@@ -356,6 +410,9 @@ export class SetupLinkController {
    *     summary: Get the Setup Links by product
    *     parameters:
    *       - $ref: '#/parameters/productParamGet'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     operationId: get-dsync-setup-link-by-product
    *     tags: [Setup Links | Directory Sync]
    *     responses:

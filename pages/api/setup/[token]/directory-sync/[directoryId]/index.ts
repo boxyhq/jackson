@@ -11,12 +11,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await setupLinkController.getByToken(token);
 
     switch (method) {
-      case 'PUT':
-        return await handlePUT(req, res);
+      case 'PATCH':
+        return await handlePATCH(req, res);
       case 'GET':
         return await handleGET(req, res);
+      case 'DELETE':
+        return await handleDELETE(req, res);
       default:
-        res.setHeader('Allow', 'PUT, GET');
+        res.setHeader('Allow', 'PATCH, GET, DELETE');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
     }
   } catch (error: any) {
@@ -27,28 +29,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Update a directory configuration
-const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
   const { directoryId } = req.query as { directoryId: string };
+  const { deactivated } = req.body;
 
-  const { name, webhook_url, webhook_secret, log_webhook_events } = req.body;
-
-  const { data, error } = await directorySyncController.directories.update(directoryId as string, {
-    name,
-    log_webhook_events,
-    webhook: {
-      endpoint: webhook_url,
-      secret: webhook_secret,
-    },
-  });
+  const { data, error } = await directorySyncController.directories.update(directoryId, { deactivated });
 
   if (data) {
-    return res.status(201).json({ data });
+    res.json({ data: null });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
 };
 
@@ -61,12 +55,38 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
   if (data) {
-    return res.json({ data });
+    res.json({
+      data: {
+        id: data.id,
+        type: data.type,
+        name: data.name,
+        deactivated: data.deactivated,
+        scim: data.scim,
+        google_domain: data.google_domain,
+        google_authorized: data.google_access_token && data.google_refresh_token, // Indicate if the Google authorization is complete,
+        google_authorization_url: data.google_authorization_url && data.google_authorization_url,
+      },
+    });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    res.status(error.code).json({ error });
   }
+};
+
+// Delete a directory configuration
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { directorySyncController } = await jackson();
+
+  const { directoryId } = req.query as { directoryId: string };
+
+  const { error } = await directorySyncController.directories.delete(directoryId);
+
+  if (error) {
+    res.status(error.code).json({ error });
+  }
+
+  res.json({ data: null });
 };
 
 export default handler;

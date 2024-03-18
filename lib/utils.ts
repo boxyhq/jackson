@@ -1,13 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import micromatch from 'micromatch';
-import type {
-  Directory,
-  OIDCSSOConnectionWithDiscoveryUrl,
-  OIDCSSOConnectionWithMetadata,
-  OIDCSSORecord,
-  SAMLSSORecord,
-} from '@boxyhq/saml-jackson';
+import type { OIDCSSOConnectionWithDiscoveryUrl, OIDCSSOConnectionWithMetadata } from '@boxyhq/saml-jackson';
 import { JacksonError } from 'npm/src/controller/error';
+import type { PaginateApiParams } from 'types';
 
 export const validateEmailWithACL = (email: string) => {
   const NEXTAUTH_ACL = process.env.NEXTAUTH_ACL || undefined;
@@ -80,10 +75,28 @@ export const oidcMetadataParse = (
   return body;
 };
 
-export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
-  if ('deactivated' in connection) {
-    return connection.deactivated === false;
+export const parsePaginateApiParams = (params: NextApiRequest['query']): PaginateApiParams => {
+  let pageOffset, pageLimit;
+
+  if ('pageOffset' in params) {
+    pageOffset = params.pageOffset;
+  } else if ('offset' in params) {
+    pageOffset = params.offset;
   }
 
-  return true;
+  if ('pageLimit' in params) {
+    pageLimit = params.pageLimit;
+  } else if ('limit' in params) {
+    pageLimit = params.limit;
+  }
+
+  pageOffset = parseInt(pageOffset);
+  pageLimit = parseInt(pageLimit);
+  const pageToken = params.pageToken as string;
+
+  return {
+    pageOffset,
+    pageLimit,
+    pageToken,
+  };
 };

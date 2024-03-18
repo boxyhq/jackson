@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import type { SetupLink } from '@boxyhq/saml-jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
@@ -9,11 +8,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.query as { token: string };
 
   try {
-    const setupLink = await setupLinkController.getByToken(token);
+    await setupLinkController.getByToken(token);
 
     switch (method) {
       case 'GET':
-        return await handleGET(req, res, setupLink);
+        return await handleGET(req, res);
       default:
         res.setHeader('Allow', 'GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -25,17 +24,30 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
   const { id } = req.query as { id: string };
 
   const connections = await connectionAPIController.getConnections({
-    tenant: setupLink.tenant,
-    product: setupLink.product,
+    clientID: id,
   });
 
-  return res.json({ data: connections.filter((l) => l.clientID === id)[0] });
+  if (!connections || connections.length === 0) {
+    res.status(404).json({ error: { message: 'Connection not found.' } });
+  }
+
+  const connection = connections[0];
+
+  res.json({
+    data: {
+      clientID: connection.clientID,
+      clientSecret: connection.clientSecret,
+      deactivated: connection.deactivated,
+      ...('idpMetadata' in connection ? { idpMetadata: {}, metadataUrl: connection.metadataUrl } : undefined),
+      ...('oidcProvider' in connection ? { oidcProvider: connection.oidcProvider } : undefined),
+    },
+  });
 };
 
 export default handler;

@@ -22,6 +22,8 @@ import { ProductController } from './ee/product';
 import { SecurityLogsConfigController } from './ee/security-logs';
 import { OryController } from './ee/ory/ory';
 
+const tracerTTL = 7 * 24 * 60 * 60;
+
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
     ...opts,
@@ -50,6 +52,7 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 
   newOpts.openid = newOpts.openid || {};
   newOpts.openid.jwsAlg = newOpts.openid.jwsAlg || 'RS256';
+  newOpts.openid.requestProfileScope = newOpts.openid?.requestProfileScope ?? true;
 
   newOpts.boxyhqLicenseKey = newOpts.boxyhqLicenseKey || undefined;
 
@@ -90,8 +93,9 @@ export const controllers = async (
   const settingsStore = db.store('portal:settings');
   const securityLogsConfigStore = db.store('security:logs:config');
   const productStore = db.store('product:config');
+  const tracerStore = db.store('saml:tracer', tracerTTL);
 
-  const ssoTracer = new SSOTracer({ db });
+  const ssoTracer = new SSOTracer({ tracerStore });
   const eventController = new EventController({ opts });
   const productController = new ProductController({ productStore, opts });
 
@@ -117,6 +121,7 @@ export const controllers = async (
     tokenStore,
     ssoTracer,
     opts,
+    samlFedApp: samlFederatedController.app,
   });
 
   const logoutController = new LogoutController({

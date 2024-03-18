@@ -12,6 +12,7 @@ import type {
 import { parseUserPatchRequest, extractStandardUserAttributes, updateRawUserAttributes } from './utils';
 import { sendEvent } from '../utils';
 import { isConnectionActive } from '../../controller/utils';
+import { randomUUID } from 'crypto';
 
 interface DirectoryUsersParams {
   directories: IDirectoryConfig;
@@ -29,24 +30,28 @@ export class DirectoryUsers {
   }
 
   public async create(directory: Directory, body: any): Promise<DirectorySyncResponse> {
-    const { id, first_name, last_name, email, active } = extractStandardUserAttributes(body);
+    const userAttributes = extractStandardUserAttributes(body);
 
     // Check if the user already exists
-    const { data: users } = await this.users.search(email, directory.id);
+    const { data: users } = await this.users.search(userAttributes.email, directory.id);
 
     if (users && users.length > 0) {
       return this.respondWithError({ code: 409, message: 'User already exists' });
     }
 
-    const { data: user } = await this.users.create({
+    const newUser = {
+      ...userAttributes,
       directoryId: directory.id,
-      id,
-      first_name,
-      last_name,
-      email,
-      active,
       raw: 'rawAttributes' in body ? body.rawAttributes : body,
-    });
+    };
+
+    if (!newUser.id) {
+      newUser.id = randomUUID();
+    }
+
+    newUser.raw['id'] = newUser.id;
+
+    const { data: user } = await this.users.create(newUser);
 
     await sendEvent('user.created', { directory, user }, this.callback);
 
@@ -64,13 +69,11 @@ export class DirectoryUsers {
   }
 
   public async update(directory: Directory, user: User, body: any): Promise<DirectorySyncResponse> {
-    const { name, emails, active } = body;
+    const userAttributes = extractStandardUserAttributes(body);
 
     const { data: updatedUser } = await this.users.update(user.id, {
-      first_name: name.givenName,
-      last_name: name.familyName,
-      email: emails[0].value,
-      active,
+      ...userAttributes,
+      id: user.id,
       raw: 'rawAttributes' in body ? body.rawAttributes : body,
     });
 
@@ -104,10 +107,7 @@ export class DirectoryUsers {
     }
 
     const { data: updatedUser } = await this.users.update(user.id, {
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      active: user.active,
+      ...user,
       ...attributes,
       raw: updateRawUserAttributes(user.raw, rawAttributes),
     });

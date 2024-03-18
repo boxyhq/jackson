@@ -2,4 +2,3 @@
 bases:
   - ../../../base/services/internal
   - ./jackson-service.yaml
-  - ./mocksaml-service.yaml

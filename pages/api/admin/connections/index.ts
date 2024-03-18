@@ -1,46 +1,34 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { oidcMetadataParse, strategyChecker } from '@lib/utils';
+import { oidcMetadataParse, parsePaginateApiParams, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
 import retraced from '@ee/retraced';
+import { defaultHandler } from '@lib/api';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    case 'POST':
-      return await handlePOST(req, res);
-    case 'PATCH':
-      return await handlePATCH(req, res);
-    case 'DELETE':
-      return await handleDELETE(req, res);
-    default:
-      res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+    PATCH: handlePATCH,
+    DELETE: handleDELETE,
+  });
 };
 
 // Get all connections
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController, connectionAPIController } = await jackson();
 
-  const { pageOffset, pageLimit, isSystemSSO, pageToken } = req.query as {
-    pageOffset: string;
-    pageLimit: string;
+  const { isSystemSSO } = req.query as {
     isSystemSSO?: string; // if present will be '' else undefined
-    pageToken?: string;
   };
+
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   const { tenant: adminPortalSSOTenant, product: adminPortalSSOProduct } = adminPortalSSODefaults;
 
-  const paginatedConnectionList = await adminController.getAllConnection(
-    +(pageOffset || 0),
-    +(pageLimit || 0),
-    pageToken
-  );
+  const paginatedConnectionList = await adminController.getAllConnection(pageOffset, pageLimit, pageToken);
 
   const connections =
     isSystemSSO === undefined
@@ -59,7 +47,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('jackson-pagetoken', paginatedConnectionList.pageToken);
   }
 
-  return res.json({ data: connections });
+  res.json(connections);
 };
 
 // Create a new connection
@@ -69,47 +57,40 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { isSAML, isOIDC } = strategyChecker(req);
 
   if (!isSAML && !isOIDC) {
-    return res.status(400).json({ error: { message: 'Missing SSO connection params' } });
+    throw new ApiError('Missing SSO connection params', 400);
   }
 
-  try {
-    // Create SAML connection
-    if (isSAML) {
-      const connection = await connectionAPIController.createSAMLConnection(req.body);
+  // Create SAML connection
+  if (isSAML) {
+    const connection = await connectionAPIController.createSAMLConnection(req.body);
 
-      retraced.reportAdminPortalEvent({
-        action: 'sso.connection.create',
-        crud: 'c',
-        req,
-        target: {
-          id: connection.clientID,
-          type: 'SAML Connection',
-        },
-      });
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.create',
+      crud: 'c',
+      req,
+      target: {
+        id: connection.clientID,
+        type: 'SAML Connection',
+      },
+    });
 
-      return res.status(201).json({ data: connection });
-    }
+    res.status(201).json({ data: connection });
+  }
+  // Create OIDC connection
+  else {
+    const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
 
-    // Create OIDC connection
-    if (isOIDC) {
-      const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.create',
+      crud: 'c',
+      req,
+      target: {
+        id: connection.clientID,
+        type: 'OIDC Connection',
+      },
+    });
 
-      retraced.reportAdminPortalEvent({
-        action: 'sso.connection.create',
-        crud: 'c',
-        req,
-        target: {
-          id: connection.clientID,
-          type: 'OIDC Connection',
-        },
-      });
-
-      return res.status(201).json({ data: connection });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
+    res.status(201).json({ data: connection });
   }
 };
 
@@ -120,47 +101,40 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { isSAML, isOIDC } = strategyChecker(req);
 
   if (!isSAML && !isOIDC) {
-    return res.status(400).json({ error: { message: 'Missing SSO connection params' } });
+    throw new ApiError('Missing SSO connection params', 400);
   }
 
-  try {
-    // Update SAML connection
-    if (isSAML) {
-      await connectionAPIController.updateSAMLConnection(req.body);
+  // Update SAML connection
+  if (isSAML) {
+    await connectionAPIController.updateSAMLConnection(req.body);
 
-      retraced.reportAdminPortalEvent({
-        action: 'sso.connection.update',
-        crud: 'u',
-        req,
-        target: {
-          id: req.body.clientID,
-          type: 'SAML Connection',
-        },
-      });
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.update',
+      crud: 'u',
+      req,
+      target: {
+        id: req.body.clientID,
+        type: 'SAML Connection',
+      },
+    });
 
-      return res.status(204).end();
-    }
+    res.status(204).end();
+  }
+  // Update OIDC connection
+  else {
+    await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
 
-    // Update OIDC connection
-    if (isOIDC) {
-      await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body) as any);
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.update',
+      crud: 'u',
+      req,
+      target: {
+        id: req.body.clientID,
+        type: 'OIDC Connection',
+      },
+    });
 
-      retraced.reportAdminPortalEvent({
-        action: 'sso.connection.update',
-        crud: 'u',
-        req,
-        target: {
-          id: req.body.clientID,
-          type: 'OIDC Connection',
-        },
-      });
-
-      return res.status(204).end();
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
+    res.status(204).end();
   }
 };
 
@@ -173,24 +147,18 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     clientSecret: string;
   };
 
-  try {
-    await connectionAPIController.deleteConnections({ clientID, clientSecret });
+  await connectionAPIController.deleteConnections({ clientID, clientSecret });
 
-    retraced.reportAdminPortalEvent({
-      action: 'sso.connection.delete',
-      crud: 'd',
-      req,
-      target: {
-        id: clientID,
-      },
-    });
+  retraced.reportAdminPortalEvent({
+    action: 'sso.connection.delete',
+    crud: 'd',
+    req,
+    target: {
+      id: clientID,
+    },
+  });
 
-    return res.status(200).json({ data: null });
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  res.json({ data: null });
 };
 
 export default handler;

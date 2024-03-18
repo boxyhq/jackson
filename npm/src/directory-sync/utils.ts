@@ -15,6 +15,7 @@ import { transformEventPayload } from './scim/transform';
 import { JacksonError } from '../controller/error';
 
 export const eventLockTTL = 6;
+export const webhookEventTTL = 7 * 24 * 60 * 60;
 
 interface Payload {
   directory: Directory;
@@ -74,7 +75,7 @@ export const handleEventCallback = async ({
 
     try {
       // Send the event to the webhook (synchronously)
-      await sendPayloadToWebhook(directory.webhook, event);
+      await sendPayloadToWebhook(directory.webhook, event, opts.dsync?.debugWebhooks);
     } catch (err: any) {
       status = err.response ? err.response.status : 500;
     }

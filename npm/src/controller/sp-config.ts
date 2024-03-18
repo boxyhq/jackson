@@ -1,7 +1,6 @@
 import type { JacksonOption } from '../typings';
 
 import saml20 from '@boxyhq/saml20';
-import xmlbuilder from 'xmlbuilder';
 import { getDefaultCertificate } from '../saml/x509';
 
 // Service Provider SSO Configuration
@@ -66,61 +65,7 @@ export class SPSSOConfig {
   public async toXMLMetadata(encryption = false): Promise<string> {
     const { entityId, acsUrl, publicKeyString } = await this.get();
 
-    const today = new Date();
-
-    const keyDescriptor: any[] = [
-      {
-        '@use': 'signing',
-        'ds:KeyInfo': {
-          '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-          'ds:X509Data': {
-            'ds:X509Certificate': {
-              '#text': publicKeyString,
-            },
-          },
-        },
-      },
-    ];
-
-    if (encryption) {
-      keyDescriptor.push({
-        '@use': 'encryption',
-        'ds:KeyInfo': {
-          '@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-          'ds:X509Data': {
-            'ds:X509Certificate': {
-              '#text': publicKeyString,
-            },
-          },
-        },
-        'md:EncryptionMethod': {
-          '@Algorithm': 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
-        },
-      });
-    }
-
-    const nodes = {
-      'md:EntityDescriptor': {
-        '@xmlns:md': 'urn:oasis:names:tc:SAML:2.0:metadata',
-        '@entityID': entityId,
-        '@validUntil': new Date(today.setFullYear(today.getFullYear() + 10)).toISOString(),
-        'md:SPSSODescriptor': {
-          //'@WantAuthnRequestsSigned': true,
-          '@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-          'md:KeyDescriptor': keyDescriptor,
-          'md:NameIDFormat': {
-            '#text': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-          },
-          'md:AssertionConsumerService': {
-            '@index': 1,
-            '@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-            '@Location': acsUrl,
-          },
-        },
-      },
-    };
-
-    return xmlbuilder.create(nodes, { encoding: 'UTF-8', standalone: false }).end({ pretty: true });
+    return saml20.createSPMetadataXML({ entityId, acsUrl, publicKeyString, encryption });
   }
 }
 

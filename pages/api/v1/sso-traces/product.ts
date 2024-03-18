@@ -1,4 +1,5 @@
 import jackson from '@lib/jackson';
+import { parsePaginateApiParams } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -17,23 +18,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Get the saml traces filtered by the product
+// Get the sso traces filtered by the product
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController } = await jackson();
 
-  const { product, pageOffset, pageLimit, pageToken } = req.query as {
+  const { product } = req.query as {
     product: string;
-    pageOffset: string;
-    pageLimit: string;
-    pageToken?: string;
   };
 
-  const traces = await adminController.getTracesByProduct(
-    product,
-    parseInt(pageOffset),
-    parseInt(pageLimit),
-    pageToken
-  );
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
+
+  const traces = await adminController.getTracesByProduct(product, pageOffset, pageLimit, pageToken);
 
   res.json(traces);
 };

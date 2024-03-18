@@ -1,5 +1,4 @@
 import InformationCircleIcon from '@heroicons/react/24/outline/InformationCircleIcon';
-import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
 import { useTranslation } from 'next-i18next';
 import { LinkPrimary } from '@components/LinkPrimary';
 
@@ -22,11 +21,7 @@ const EmptyState = ({
       <InformationCircleIcon className='h-10 w-10' />
       <h4 className='text-center'>{title}</h4>
       {description && <p className='text-center text-gray-500'>{description}</p>}
-      {href && (
-        <LinkPrimary Icon={PlusIcon} href={href}>
-          {t('create_new')}
-        </LinkPrimary>
-      )}
+      {href && <LinkPrimary href={href}>{t('create_new')}</LinkPrimary>}
     </div>
   );
 };

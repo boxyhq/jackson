@@ -18,9 +18,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       case 'POST':
         return await handlePOST(req, res, setupLink);
       case 'PATCH':
-        return await handlePATCH(req, res, setupLink);
+        return await handlePATCH(req, res);
       case 'DELETE':
-        return await handleDELETE(req, res, setupLink);
+        return await handleDELETE(req, res);
       default:
         res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -40,7 +40,31 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
     product: setupLink.product,
   });
 
-  return res.json({ data: connections });
+  const _connections = connections.map((connection) => {
+    return {
+      clientID: connection.clientID,
+      name: connection.name,
+      deactivated: connection.deactivated,
+      ...('idpMetadata' in connection
+        ? {
+            idpMetadata: {
+              provider: connection.idpMetadata.provider,
+              friendlyProviderName: connection.idpMetadata.friendlyProviderName,
+            },
+          }
+        : undefined),
+      ...('oidcProvider' in connection
+        ? {
+            oidcProvider: {
+              provider: connection.oidcProvider.provider,
+              friendlyProviderName: connection.oidcProvider.friendlyProviderName,
+            },
+          }
+        : undefined),
+    };
+  });
+
+  res.json(_connections);
 };
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
@@ -54,47 +78,75 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
   const { isSAML, isOIDC } = strategyChecker(req);
 
   if (isSAML) {
-    return res.status(201).json({ data: await connectionAPIController.createSAMLConnection(body) });
+    await connectionAPIController.createSAMLConnection(body);
   } else if (isOIDC) {
-    return res
-      .status(201)
-      .json({ data: await connectionAPIController.createOIDCConnection(oidcMetadataParse(body)) });
+    await connectionAPIController.createOIDCConnection(oidcMetadataParse(body));
   } else {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
+
+  res.status(201).json({ data: null });
 };
 
-const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  const body = {
-    ...req.query,
-    tenant: setupLink.tenant,
-    product: setupLink.product,
-  };
+  const { clientID, clientSecret } = req.query as { clientID: string; clientSecret: string };
 
-  await connectionAPIController.deleteConnections(body);
+  await connectionAPIController.deleteConnections({ clientID, clientSecret });
 
-  return res.json({ data: null });
+  res.json({ data: null });
 };
 
-const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
-  const body = {
-    ...req.body,
-    ...setupLink,
-  };
+  const {
+    deactivated,
+    clientID,
+    metadataUrl,
+    encodedRawMetadata,
+    oidcClientId,
+    oidcClientSecret,
+    oidcDiscoveryUrl,
+  } = req.body;
+
+  const connections = await connectionAPIController.getConnections({
+    clientID,
+  });
+
+  if (!connections || connections.length === 0) {
+    throw { message: 'Connection not found', statusCode: 404 };
+  }
 
   const { isSAML, isOIDC } = strategyChecker(req);
+  const { tenant, product, clientSecret } = connections[0];
+
+  const body = {
+    tenant,
+    product,
+    clientID,
+    clientSecret,
+    ...('deactivated' in req.body ? { deactivated } : undefined),
+    ...(isSAML ? { metadataUrl, encodedRawMetadata } : undefined),
+    ...(isOIDC
+      ? {
+          oidcClientId,
+          oidcClientSecret,
+          oidcDiscoveryUrl,
+        }
+      : undefined),
+  };
 
   if (isSAML) {
-    res.json({ data: await connectionAPIController.updateSAMLConnection(body) });
+    await connectionAPIController.updateSAMLConnection(body as any);
   } else if (isOIDC) {
-    res.json({ data: await connectionAPIController.updateOIDCConnection(oidcMetadataParse(body) as any) });
+    await connectionAPIController.updateOIDCConnection(oidcMetadataParse(body as any));
   } else {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
+
+  res.status(204).end();
 };
 
 export default handler;

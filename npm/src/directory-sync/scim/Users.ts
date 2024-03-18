@@ -1,5 +1,3 @@
-import { randomUUID } from 'crypto';
-
 import type { User, DatabaseStore, PaginationParams, Response } from '../../typings';
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
@@ -9,16 +7,6 @@ const indexNames = {
   directoryIdUsername: 'directoryIdUsername',
   directoryId: 'directoryId',
 };
-
-interface CreateUserParams {
-  directoryId: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  active: boolean;
-  raw: any;
-  id?: string;
-}
 
 /**
  * @swagger
@@ -51,21 +39,8 @@ export class Users extends Base {
   }
 
   // Create a new user
-  public async create(params: CreateUserParams): Promise<Response<User>> {
-    const { directoryId, first_name, last_name, email, active, raw, id: userId } = params;
-
-    const id = userId || randomUUID();
-
-    raw['id'] = id;
-
-    const user = {
-      id,
-      first_name,
-      last_name,
-      email,
-      active,
-      raw,
-    };
+  public async create(user: User & { directoryId: string }): Promise<Response<User>> {
+    const { directoryId, id, email } = user;
 
     try {
       await this.store('users').put(
@@ -125,33 +100,19 @@ export class Users extends Base {
   }
 
   // Update the user data
-  public async update(
-    id: string,
-    param: {
-      first_name: string;
-      last_name: string;
-      email: string;
-      active: boolean;
-      raw: object;
-    }
-  ): Promise<Response<User>> {
-    const { first_name, last_name, email, active, raw } = param;
+  public async update(id: string, user: User): Promise<Response<User>> {
+    const { raw } = user;
 
     raw['id'] = id;
 
-    const user = {
-      id,
-      first_name,
-      last_name,
-      email,
-      active,
+    const updatedUser = {
+      ...user,
       raw,
     };
 
     try {
-      await this.store('users').put(id, user);
-
-      return { data: user, error: null };
+      await this.store('users').put(id, updatedUser);
+      return { data: updatedUser, error: null };
     } catch (err: any) {
       return apiError(err);
     }
@@ -197,6 +158,9 @@ export class Users extends Base {
    *       - $ref: '#/parameters/tenant'
    *       - $ref: '#/parameters/product'
    *       - $ref: '#/parameters/directoryId'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
    *     produces:
@@ -204,10 +168,18 @@ export class Users extends Base {
    *     responses:
    *       200:
    *         description: Success
-   *         schema:
-   *           type: array
-   *           items:
-   *             $ref: '#/definitions/User'
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/User'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getAll({
     pageOffset,

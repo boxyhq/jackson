@@ -95,21 +95,17 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
     <div>
       <LinkBack href={backUrl} />
       <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('new_directory')}</h2>
-      <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 md:w-3/4 md:max-w-lg'>
+      <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <form onSubmit={onSubmit}>
           <div className='flex flex-col space-y-3'>
-            <div className='form-control w-full'>
-              <label className='label'>
-                <span className='label-text'>{t('directory_name')}</span>
-              </label>
-              <input
-                type='text'
-                id='name'
-                className='input-bordered input w-full'
-                required
-                onChange={onChange}
-              />
-            </div>
+            {!setupLinkToken && (
+              <div className='form-control w-full'>
+                <label className='label'>
+                  <span className='label-text'>{t('directory_name')}</span>
+                </label>
+                <input type='text' id='name' className='input-bordered input w-full' onChange={onChange} />
+              </div>
+            )}
             <div className='form-control w-full'>
               <label className='label'>
                 <span className='label-text'>{t('directory_provider')}</span>
@@ -138,6 +134,7 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                   value={directory.google_domain}
                   pattern='^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$'
                   title='Please enter a valid domain (e.g: boxyhq.com)'
+                  required
                 />
               </div>
             )}
@@ -167,32 +164,33 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
                     onChange={onChange}
                   />
                 </div>
+                <div className='form-control w-full'>
+                  <label className='label'>
+                    <span className='label-text'>{t('webhook_url')}</span>
+                  </label>
+                  <input
+                    type='text'
+                    id='webhook_url'
+                    className='input-bordered input w-full'
+                    onChange={onChange}
+                    required
+                  />
+                </div>
+                <div className='form-control w-full'>
+                  <label className='label'>
+                    <span className='label-text'>{t('webhook_secret')}</span>
+                  </label>
+                  <input
+                    type='text'
+                    id='webhook_secret'
+                    className='input-bordered input w-full'
+                    onChange={onChange}
+                    required
+                  />
+                </div>
               </>
             )}
-            <div className='form-control w-full'>
-              <label className='label'>
-                <span className='label-text'>{t('webhook_url')}</span>
-              </label>
-              <input
-                type='text'
-                id='webhook_url'
-                className='input-bordered input w-full'
-                onChange={onChange}
-                value={directory.webhook_url}
-              />
-            </div>
-            <div className='form-control w-full'>
-              <label className='label'>
-                <span className='label-text'>{t('webhook_secret')}</span>
-              </label>
-              <input
-                type='text'
-                id='webhook_secret'
-                className='input-bordered input w-full'
-                onChange={onChange}
-              />
-            </div>
-            <div>
+            <div className='flex justify-end'>
               <ButtonPrimary loading={loading}>{t('create_directory')}</ButtonPrimary>
             </div>
           </div>

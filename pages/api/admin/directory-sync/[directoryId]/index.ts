@@ -1,21 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import retraced from '@ee/retraced';
+import { defaultHandler } from '@lib/api';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case 'PATCH':
-      return await handlePATCH(req, res);
-    case 'GET':
-      return await handleGET(req, res);
-    case 'DELETE':
-      return await handleDELETE(req, res);
-    default:
-      res.setHeader('Allow', 'GET, PATCH, DELETE');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    PATCH: handlePATCH,
+    DELETE: handleDELETE,
+  });
 };
 
 // Update a directory configuration
@@ -35,13 +29,13 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
         id: directoryId,
       },
     });
-
-    return res.status(200).json({ data });
   }
 
   if (error) {
-    return res.status(error.code).json({ error });
+    throw new ApiError(error.message, error.code);
   }
+
+  res.json({ data });
 };
 
 // Get a directory configuration
@@ -52,13 +46,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { data, error } = await directorySyncController.directories.get(directoryId);
 
-  if (data) {
-    return res.status(200).json({ data });
+  if (error) {
+    throw new ApiError(error.message, error.code);
   }
 
-  if (error) {
-    return res.status(error.code).json({ error });
-  }
+  res.json({ data });
 };
 
 // Delete a directory configuration
@@ -70,7 +62,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { error } = await directorySyncController.directories.delete(directoryId);
 
   if (error) {
-    return res.status(error.code).json({ error });
+    throw new ApiError(error.message, error.code);
   }
 
   retraced.reportAdminPortalEvent({
@@ -82,7 +74,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  return res.json({ data: null });
+  res.json({ data: null });
 };
 
 export default handler;

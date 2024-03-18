@@ -44,7 +44,7 @@ jobs:
       OPENID_JWS_ALG: RS256
       OPENID_RSA_PUBLIC_KEY: ${{ secrets.OPENID_RSA_PUBLIC_KEY }}
       OPENID_RSA_PRIVATE_KEY: ${{ secrets.OPENID_RSA_PRIVATE_KEY }}
-      PLANETSCALE_URL: ${{ secrets.PLANETSCALE_URL }}
+      PLANETSCALE_URL: mysql://root:mysql@localhost:3308/mysql
       DYNAMODB_URL: 'http://localhost:8000'
       BOXYHQ_NO_ANALYTICS: '1'
       IDP_ENABLED: true
@@ -78,6 +78,13 @@ jobs:
         image: mongo:4.4.28
         ports:
           - 27017:27017
+      planetscale:
+        image: mysql:8.0.31
+        ports:
+          - 3308:3306
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: mysql
       mysql:
         image: mysql:8.0.31
         ports:
@@ -94,7 +101,6 @@ jobs:
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
       mssql:
         image: mcr.microsoft.com/azure-sql-edge:1.0.6
-        #image: mcr.microsoft.com/mssql/server:2019-latest
         ports:
           - 1433:1433
         env:
@@ -140,8 +146,12 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - run: npm install
       - run: npm run check-lint
+      - run: npm run check-types
       - run: npm run check-format
+      - run: npm run check-locale
       - run: npm run build
+      - run: npm run db:migration:run:planetscale
+        working-directory: ./npm
       - run: npm run test
         working-directory: ./npm
       - name: Install playwright browser dependencies
@@ -193,12 +203,10 @@ jobs:
         run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
-        if: github.ref == 'refs/heads/release'
         id: buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Set up QEMU
-        if: github.ref == 'refs/heads/release'
         uses: docker/setup-qemu-action@v3
 
       - name: Login to Docker Hub
@@ -209,14 +217,13 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push
-        if: github.ref == 'refs/heads/release'
         id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: ./
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ github.ref == 'refs/heads/release' }}
           tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
@@ -409,6 +416,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20]
+        package: [npm, internal-ui]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -425,10 +433,13 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
           check-latest: true
-      - run: npm install --legacy-peer-deps
-        working-directory: ./npm
-
-      - name: Publish NPM
+      - run: ${{ matrix.package == 'internal-ui' && 'npm install' || matrix.package == 'npm' && 'npm install --legacy-peer-deps' }}
+        working-directory: ./${{ matrix.package }}
+      - name: Build ${{ matrix.package }}
+        if: github.ref != 'refs/heads/release' && !contains(github.ref, 'refs/tags/beta-v')
+        run: npm run build
+        working-directory: ./${{ matrix.package }}
+      - name: Publish ${{ matrix.package }}
         if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
@@ -438,7 +449,7 @@ jobs:
           json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
           npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
-        working-directory: ./npm
+        working-directory: ./${{ matrix.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

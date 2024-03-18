@@ -1,21 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { defaultHandler } from '@lib/api';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  try {
-    switch (method) {
-      case 'GET':
-        return await handleGET(req, res);
-      default:
-        res.setHeader('Allow', 'GET');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+  });
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -26,18 +17,14 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
   if (error) {
-    return res.status(error.code).json({ error });
-  }
-
-  if (!directory) {
-    return res.status(404).json({ error: { message: 'Directory not found.' } });
+    throw new ApiError(error.message, error.code);
   }
 
   const event = await directorySyncController.webhookLogs
     .setTenantAndProduct(directory.tenant, directory.product)
     .get(eventId);
 
-  return res.status(200).json({ data: event });
+  res.json({ data: event });
 };
 
 export default handler;

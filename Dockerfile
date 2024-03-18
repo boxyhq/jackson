@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:20.11.0-alpine3.19
+ARG NODEJS_IMAGE=node:20.11.1-alpine3.19
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
@@ -10,9 +10,10 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json  ./
 COPY npm npm
+COPY internal-ui internal-ui
 COPY migrate.sh prebuild.ts ./
 RUN npm install
-
+RUN npm rebuild --arch=x64 --platform=linux --libc=musl sharp
 
 
 # Rebuild the source code only when needed
@@ -20,6 +21,7 @@ FROM base AS builder
 WORKDIR /app
 
 COPY --from=deps /app/npm ./npm
+COPY --from=deps /app/internal-ui ./internal-ui
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 

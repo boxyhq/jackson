@@ -54,6 +54,8 @@ export const storeNamespacePrefix = {
 };
 
 export const relayStatePrefix = 'boxyhq_jackson_';
+export const clientIDFederatedPrefix = 'fed_';
+export const clientIDOIDCPrefix = 'oidc_';
 
 export const validateAbsoluteUrl = (url, message) => {
   try {
@@ -303,6 +305,10 @@ export const validateTenantAndProduct = (tenant: string, product: string) => {
 
 export const appID = (tenant: string, product: string) => {
   return dbutils.keyDigest(dbutils.keyFromParts(tenant, product));
+};
+
+export const fedAppID = (tenant: string, product: string, type?: string) => {
+  return (type === 'oidc' ? clientIDOIDCPrefix : '') + appID(tenant, product);
 };
 
 // List of well known providers

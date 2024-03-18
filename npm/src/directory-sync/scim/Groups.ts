@@ -19,6 +19,17 @@ interface CreateGroupParams {
 
 /**
  * @swagger
+ * parameters:
+ *   groupId:
+ *     name: groupId
+ *     description: Group ID
+ *     in: path
+ *     required: true
+ *     type: string
+ */
+
+/**
+ * @swagger
  * definitions:
  *   Group:
  *      type: object
@@ -80,11 +91,7 @@ export class Groups extends Base {
    *     parameters:
    *       - $ref: '#/parameters/tenant'
    *       - $ref: '#/parameters/product'
-   *       - name: groupId
-   *         description: Group ID
-   *         in: path
-   *         required: true
-   *         type: string
+   *       - $ref: '#/parameters/groupId'
    *     tags:
    *       - Directory Sync
    *     produces:
@@ -207,6 +214,9 @@ export class Groups extends Base {
    *       - $ref: '#/parameters/tenant'
    *       - $ref: '#/parameters/product'
    *       - $ref: '#/parameters/directoryId'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
    *     produces:
@@ -214,10 +224,18 @@ export class Groups extends Base {
    *     responses:
    *       200:
    *         description: Success
-   *         schema:
-   *           type: array
-   *           items:
-   *             $ref: '#/definitions/Group'
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/Group'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getAll(
     params: PaginationParams & {
@@ -248,24 +266,62 @@ export class Groups extends Base {
   }
 
   /**
-   * Get members of a group paginated
-   * @param groupId
-   * @returns
+   * @swagger
+   * definitions:
+   *   Member:
+   *      type: object
+   *      properties:
+   *        user_id:
+   *          type: string
+   *          description: ID of the user
+   * /api/v1/dsync/groups/{groupId}/members:
+   *   get:
+   *     summary: Get list of members in a group
+   *     parameters:
+   *       - $ref: '#/parameters/tenant'
+   *       - $ref: '#/parameters/product'
+   *       - $ref: '#/parameters/groupId'
+   *       - $ref: '#/parameters/directoryId'
+   *       - $ref: '#/parameters/pageOffset'
+   *       - $ref: '#/parameters/pageLimit'
+   *       - $ref: '#/parameters/pageToken'
+   *     tags:
+   *       - Directory Sync
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/definitions/Member'
    */
   public async getGroupMembers(
     parmas: { groupId: string } & PaginationParams
-  ): Promise<Response<GroupMembership['user_id'][]>> {
+  ): Promise<Response<Pick<GroupMembership, 'user_id'>[]>> {
     const { groupId, pageOffset, pageLimit } = parmas;
 
     try {
-      const { data: members } = await this.store('members').getByIndex(
+      const { data } = (await this.store('members').getByIndex(
         {
           name: 'groupId',
           value: groupId,
         },
         pageOffset,
         pageLimit
-      );
+      )) as { data: GroupMembership[] };
+
+      const members = data.map((member) => {
+        return {
+          user_id: member.user_id,
+        };
+      });
 
       return { data: members, error: null };
     } catch (err: any) {

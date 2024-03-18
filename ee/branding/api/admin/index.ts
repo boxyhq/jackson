@@ -2,31 +2,19 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import retraced from '@ee/retraced';
+import { defaultHandler } from '@lib/api';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  try {
-    switch (method) {
-      case 'POST':
-        return await handlePOST(req, res);
-      case 'GET':
-        return await handleGET(req, res);
-      default:
-        res.setHeader('Allow', 'POST, GET');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+  });
 };
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { brandingController } = await jackson();
 
-  const brandingUpdated = await brandingController.update(req.body);
+  const { logoUrl, faviconUrl, companyName, primaryColor } = req.body;
 
   retraced.reportAdminPortalEvent({
     action: 'portal.branding.update',
@@ -34,15 +22,15 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     req,
   });
 
-  return res.json({
-    data: brandingUpdated,
+  res.json({
+    data: await brandingController.update({ logoUrl, faviconUrl, companyName, primaryColor }),
   });
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { brandingController } = await jackson();
 
-  return res.json({ data: await brandingController.get() });
+  res.json({ data: await brandingController.get() });
 };
 
 export default handler;

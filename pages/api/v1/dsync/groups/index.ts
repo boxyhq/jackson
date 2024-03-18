@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { parsePaginateApiParams } from '@lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -17,20 +18,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { tenant, product, directoryId, offset, limit } = req.query as {
+  const searchParams = req.query as {
     tenant: string;
     product: string;
-    directoryId?: string;
-    offset?: string;
-    limit?: string;
+    directoryId: string;
   };
 
-  const pageOffset = parseInt(offset || '0');
-  const pageLimit = parseInt(limit || '15');
+  let tenant = searchParams.tenant || '';
+  let product = searchParams.product || '';
 
-  const { data, error } = await directorySyncController.groups
-    .setTenantAndProduct(tenant, product)
-    .getAll({ directoryId, pageLimit, pageOffset });
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
+
+  // If tenant and product are not provided, retrieve the from directory
+  if ((!tenant || !product) && searchParams.directoryId) {
+    const { data: directory } = await directorySyncController.directories.get(searchParams.directoryId);
+
+    if (!directory) {
+      return res.status(404).json({ error: { message: 'Directory not found.' } });
+    }
+
+    tenant = directory.tenant;
+    product = directory.product;
+  }
+
+  const { data, error } = await directorySyncController.groups.setTenantAndProduct(tenant, product).getAll({
+    pageOffset,
+    pageLimit,
+    pageToken,
+    directoryId: searchParams.directoryId,
+  });
 
   if (error) {
     return res.status(error.code).json({ error });
