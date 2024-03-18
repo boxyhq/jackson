@@ -289,6 +289,7 @@ export class OAuthController implements IOAuthController {
           product: requestedProduct,
           clientID: connection.clientID,
           requestedOIDCFlow,
+          isOIDCFederated,
           redirectUri: redirect_uri,
         },
       });
@@ -333,6 +334,7 @@ export class OAuthController implements IOAuthController {
               product: requestedProduct as string,
               clientID: connection.clientID,
               requestedOIDCFlow,
+              isOIDCFederated,
               redirectUri: redirect_uri,
             },
           });
@@ -369,6 +371,7 @@ export class OAuthController implements IOAuthController {
             product: requestedProduct,
             clientID: connection.clientID,
             requestedOIDCFlow,
+            isOIDCFederated,
             redirectUri: redirect_uri,
           },
         });
@@ -523,6 +526,7 @@ export class OAuthController implements IOAuthController {
           product: requestedProduct as string,
           clientID: connection.clientID,
           requestedOIDCFlow,
+          isOIDCFederated,
           redirectUri: redirect_uri,
           samlRequest: samlReq?.request || '',
         },
