@@ -11,6 +11,7 @@ WORKDIR /app
 COPY package.json package-lock.json  ./
 COPY npm npm
 COPY internal-ui internal-ui
+COPY ee/security-sinks ee/security-sinks
 COPY migrate.sh prebuild.ts ./
 RUN npm install
 RUN npm rebuild --arch=x64 --platform=linux --libc=musl sharp
@@ -22,6 +23,7 @@ WORKDIR /app
 
 COPY --from=deps /app/npm ./npm
 COPY --from=deps /app/internal-ui ./internal-ui
+COPY --from=deps /app/ee/security-sinks ./ee/security-sinks
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
