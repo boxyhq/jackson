@@ -113,7 +113,7 @@ Now that we have our database setup we can start the development server. But bef
 
 To log in to the admin portal we either need some preloaded connections, [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
 
-In your `.env` find the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable. We need to provide a email:password combination we can then use to log in to the admin portal. For example:
+In your `.env` find the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable. We need to provide an `email:password` combination that we can then use to log in to the admin portal. For example:
 
 ```bash
 NEXTAUTH_ADMIN_CREDENTIALS=admin@example.com:password
