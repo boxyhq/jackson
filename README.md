@@ -67,7 +67,6 @@ Let's get you to Hello SAML Jackson in no time.
 #### Prerequisites
 
 - [Node.js](https://nodejs.org/en) at version `18.14.2` or higher
-- [Docker and Docker Compose](https://www.docker.com/products/docker-desktop/) (Optional, for local development)
 
 > It is generally a good idea to install and maintain Node.js versions using a version manager like [nvm](https://github.com/nvm-sh/nvm) or [nvs](https://github.com/jasongin/nvs) on Windows. More [information available here](https://schalkneethling.com/posts/installing-node-and-managing-versions).
 
