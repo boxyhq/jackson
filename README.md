@@ -114,32 +114,6 @@ For the rest of the setup, we will use a PostgreSQL database. The easiest way to
 
 > For other operating systems and alternative options for MacOS, please see the [documentation available on the Prisma webiste](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database).
 
-Once you have the database up and running, we need to prepare and run our migrations. Everything we need to do this is inside the `npm` directory.
-
-```bash
-cd npm
-```
-
-Install the required Node.js dependencies using:
-
-```bash
-# we are specifying the --legacy-peer-deps flag to work around an optional peerDependecy conflict in typeorm
-npm i --legacy-peer-deps
-```
-
-With your PostgreSQL database running, you can now run the migrations:
-
-```bash
-npm run db:migration:run:postgres
-```
-
-You should see output the ends with something like this:
-
-```bash
-Migration namespace1692817789888 has been  executed successfully.
-query: COMMIT
-```
-
 #### Start the development server
 
 Now that we have our database setup and our migrations run, we can start the development server. But before we do, there is one more thing we need to do.
