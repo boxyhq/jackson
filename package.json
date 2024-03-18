@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -67,9 +67,9 @@
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.1.1",
     "@retracedhq/logs-viewer": "2.7.1",
-    "@retracedhq/retraced": "0.7.7",
+    "@retracedhq/retraced": "0.7.8",
     "@tailwindcss/typography": "0.5.10",
-    "axios": "1.6.7",
+    "axios": "1.6.8",
     "blockly": "10.4.3",
     "chroma-js": "2.4.2",
     "classnames": "2.5.1",
@@ -110,7 +110,7 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.0.3",
     "jose": "5.2.3",
-    "postcss": "8.4.35",
+    "postcss": "8.4.36",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.5.12",
     "release-it": "17.1.1",
