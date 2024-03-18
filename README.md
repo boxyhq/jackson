@@ -109,7 +109,7 @@ For the rest of the setup, we will use a PostgreSQL database. The easiest way to
 
 #### Start the development server
 
-Now that we have our database setup and our migrations run, we can start the development server. But before we do, there is one more thing we need to do.
+Now that we have our database setup we can start the development server. But before we do, there is one more thing we need to do.
 
 To log in to the admin portal either need some preloaded connections, [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
 
