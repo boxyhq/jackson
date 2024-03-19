@@ -1,6 +1,30 @@
 # Contributing to Jackson
 
-We appreciate your interest in contributing to Jackson, and your contributions are integral to enhancing the project. Whether you are addressing a bug, implementing new features, or suggesting improvements, your involvement is highly valued and essential.
+We appreciate your interest in contributing to Jackson, and your contributions are integral to enhancing the project. Whether addressing a bug, implementing new features, or suggesting improvements, your involvement is highly valued and essential.
+
+- [Contributing to Jackson](#contributing-to-jackson)
+  - [Code Style](#code-style)
+  - [Getting Started](#getting-started)
+    - [1. Fork the Repository](#1-fork-the-repository)
+    - [2. Clone the Repository](#2-clone-the-repository)
+    - [3. Setup](#3-setup)
+  - [Contribution](#contribution)
+    - [Creating a New Branch](#creating-a-new-branch)
+    - [Staging Your Changes](#staging-your-changes)
+    - [Committing Your Changes](#committing-your-changes)
+    - [Pushing Your Changes](#pushing-your-changes)
+  - [Create a Pull Request](#create-a-pull-request)
+  - [Review and Feedback](#review-and-feedback)
+  - [Merging](#merging)
+    - [Celebrate!](#celebrate)
+  - [Bug Reports](#bug-reports)
+  - [Feature Requests](#feature-requests)
+  - [Testing](#testing)
+  - [Good First Issues](#good-first-issues)
+  - [Development](#development)
+  - [Code Of Conduct](#code-of-conduct)
+  - [License](#license)
+  - [Additional Tips](#additional-tips)
 
 ## Code Style
 
@@ -24,54 +48,26 @@ git clone https://github.com/your-username/jackson.git
 
 ### 3. Setup
 
-Navigate to the project folder and install the necessary dependencies:
-
-```shell
-cd jackson
-```
-
-#### Install Dependencies
-
-```shell
-npm install
-```
-
-#### Configure Environment Variables
-
-```shell
-cp .env.example .env
-npm run dev
-```
-
-Please update the .env file with your values. Refer to the complete list of [Environment Variables](https://boxyhq.com/docs/jackson/deploy/env-variables) for guidance.
-
-### 4. Build and Run
-
-Ensure that the project is prepared for development:
-
-```shell
-npm run build
-npm run start
-```
-
-Visit [http://localhost:5225](http://localhost:5225) in your browser. If you encounter a sign-in page, you've successfully reached the Admin Portal.
-
-For a comprehensive understanding of the deployment process, consult our documentation [here](https://boxyhq.com/docs/jackson/deploy/).
+See our [README](README.md) for instructions on setting up the project.
 
 ## Contribution
 
 ### Creating a New Branch
 
-Begin by creating a new branch where you will work on your changes. You can do this with the following command:
+Begin by creating a new branch where you will work on your changes. You should always aim to start by creating an issue that describes the problem you are solving or the feature you are implementing. This will help ensure that the maintainers are aware of your work and can provide feedback.
+
+Let's say that your issue title is "Support Custom Postgres Schema" and is issue number `#1818`. The ideal format for your branch name would be `1818-support-custom-postgres-schema`.
+
+You can create a new branch with the following command:
 
 ```shell
-git checkout -b your-branch-name
+git switch -c 1818-support-custom-postgres-schema
 ```
 
-Alternatively, you can create a branch using:
+For older versions of Git, use:
 
 ```shell
-git branch your-branch-name
+git checkout -b 1818-support-custom-postgres-schema
 ```
 
 ### Staging Your Changes
@@ -116,7 +112,7 @@ After submitting your pull request, maintainers and other contributors will revi
 
 ## Merging
 
-Once your pull request is approved, it will be merged into the main repository.
+Once your pull request is approved, it will be merged into the main branch of the project.
 
 #### Celebrate!
 
@@ -155,7 +151,8 @@ Jackson is an open-source project released under the [Apache License 2.0](https:
 
 ## Additional Tips
 
-1. Be responsive to feedback from maintainers.
-2. Don't hesitate to seek help if needed in the discussion forum or any related platform.
+1. Be patient. Your contributions are important, and we will do our best to review them in a timely manner.
+2. Be responsive to feedback from maintainers.
+3. Don't hesitate to seek help if needed in the discussion forum or any related platform.
 
-#### Happy contributing!
+**Happy contributing!**
