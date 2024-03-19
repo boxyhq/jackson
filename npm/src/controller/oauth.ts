@@ -420,11 +420,25 @@ export class OAuthController implements IOAuthController {
           login_hint,
         });
       } catch (err: unknown) {
+        const error_description = (err as errors.OPError)?.error || getErrorMessage(err);
+        // Save the error trace
+        const traceId = await this.ssoTracer.saveTrace({
+          error: error_description,
+          context: {
+            tenant: requestedTenant as string,
+            product: requestedProduct as string,
+            clientID: connection.clientID,
+            requestedOIDCFlow,
+            isOIDCFederated,
+            redirectUri: redirect_uri,
+          },
+        });
+
         if (err) {
           return {
             redirect_url: OAuthErrorResponse({
               error: 'server_error',
-              error_description: (err as errors.OPError)?.error || getErrorMessage(err),
+              error_description: traceId ? `${traceId}: ${error_description}` : error_description,
               redirect_uri,
               state,
             }),
