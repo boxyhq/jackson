@@ -13,7 +13,7 @@ SAML Jackson bridges or proxies a SAML login flow to OAuth 2.0 or OpenID Connect
 
 > We now also support OpenID Connect providers.
 
-![A quick demo of the admin portal without sound to show an overview of what to expect. It shows features such as SSO, ability to set up SSO connections, Setup Links, Directory sync, and more](samljackson480.gif)
+![A quick demo of the admin portal without sound to show an overview of what to expect. It shows features such as SSO, the ability to set up SSO connections, Setup Links, Directory sync, and more](samljackson480.gif)
 
 ## Directory Sync
 
@@ -25,7 +25,7 @@ For complete documentation, visit [boxyhq.com/docs/directory-sync/overview](http
 
 ## 🌟 Why star this repository?
 
-If you find this project helpful, please consider supporting us by starring [the repository](https://github.com/boxyhq/jackson) and sharing it with others. This helps others find the project, grow the community and ensure the long term health of the project. 🙏
+If you find this project helpful, please consider supporting us by starring [the repository](https://github.com/boxyhq/jackson) and sharing it with others. This helps others find the project, grow the community and ensure the long-term health of the project. 🙏
 
 - [SAML Jackson: Open Source Enterprise SSO And Directory Sync](#saml-jackson-open-source-enterprise-sso-and-directory-sync)
   - [Directory Sync](#directory-sync)
@@ -62,7 +62,7 @@ There are two ways to integrate SAML Jackson into an application. Depending on y
 
 ### Try A Demo
 
-- Try our hosted demo showcasing the SAML service provider (SP) initiated [login flow here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
+- Try our hosted demo showcasing the SAML service provider (SP) initiated [login flow here](https://saml-demo.boxyhq.com), which uses our [Mock SAML](https://mocksaml.com) IdP service.
 - Try an Identity Provider (IdP) initiated [login flow here](https://mocksaml.com/saml/login).
 
 ### Deploying SAML Jackson as a separate service locally
@@ -100,9 +100,9 @@ cp .env.example .env
 
 #### Database
 
-For the rest of the setup, we will use a PostgreSQL database. The easiest way to get PostgreSQL up and running on macOS is using Posgres.app. You can download it from [https://postgresapp.com/](https://postgresapp.com/).
+For the rest of the setup, we will use a PostgreSQL database. The easiest way to get PostgreSQL up and running on macOS is by using Postgres.app. You can download it from [https://postgresapp.com/](https://postgresapp.com/).
 
-> For other operating systems and alternative options for MacOS, please see the [documentation available on the Prisma webiste](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database).
+> For other operating systems and alternative options for MacOS, please see the [documentation available on the Prisma website](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database).
 
 #### Start the development server
 
@@ -122,17 +122,13 @@ Now we can start the development server:
 npm run dev
 ```
 
-Open `http://localhost:5225` in your browser and you should be redirected to the following URL:
-
-```bash
-http://localhost:5225/admin/auth/login?callbackUrl=http%3A%2F%2Flocalhost%3A5225%2Fadmin%2Fsso-connection&error=SessionRequired
-```
+Open `http://localhost:5225` in your browser and you should be redirected to the login screen.
 
 At the login screen you can now use the username and password you set in the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable to log in. Click "Sign In" and you should be logged in and see the SSO Connections page with no configured connections. We have reached Hello SAML Jackson!
 
 ### Documentation
 
-For full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
+For the full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
 
 ### Easy Cloud Deployment
 
@@ -164,7 +160,7 @@ npm run test:e2e
 </picture>
 </a>
 
-BoxyHQ is on a mission to democratize enterprise readiness for developers one building block at a time. We are building a suite of security building blocks that are easy to use and integrate into your applications. Our goal is to make being enterprise ready accessible to all developers, founders, and those responsible for the security of their internal applications regardless of their security expertise.
+BoxyHQ is on a mission to democratize enterprise readiness for developers one building block at a time. We are building a suite of security building blocks that are easy to use and integrate into your applications. Our goal is to make being enterprise-ready accessible to all developers, founders, and those responsible for the security of their internal applications regardless of their security expertise.
 
 <a href="https://twitter.com/BoxyHQ"><img src="https://img.shields.io/twitter/follow/boxyhq?style=social" alt="Follow us on Twitter/X"></a>
 <a href="https://www.linkedin.com/company/boxyhq"><img src="https://img.shields.io/badge/LinkedIn-blue" alt="Connect with us on LinkedIn"></a>
