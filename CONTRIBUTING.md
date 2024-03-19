@@ -1,6 +1,6 @@
 # Contributing to Jackson
 
-We appreciate your interest in contributing to Jackson, and your contributions are integral to enhancing the project. Whether you are addressing a bug, implementing new features, or suggesting improvements, your involvement is highly valued and essential.
+We appreciate your interest in contributing to Jackson, and your contributions are integral to enhancing the project. Whether addressing a bug, implementing new features, or suggesting improvements, your involvement is highly valued and essential.
 
 - [Contributing to Jackson](#contributing-to-jackson)
   - [Code Style](#code-style)
