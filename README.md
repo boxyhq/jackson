@@ -73,7 +73,7 @@ Let's get you to Hello SAML Jackson in no time.
 
 - [Node.js](https://nodejs.org/en) at version `18.14.2` or higher
 
-> It is generally a good idea to install and maintain Node.js versions using a version manager like [nvm](https://github.com/nvm-sh/nvm) or [nvs](https://github.com/jasongin/nvs) on Windows. More [information available here](https://schalkneethling.com/posts/installing-node-and-managing-versions).
+> It is generally a good idea to install and maintain Node.js versions using a version manager like [nvm](https://github.com/nvm-sh/nvm) or [nvs](https://github.com/jasongin/nvs) on Windows. More [information is available here](https://schalkneethling.com/posts/installing-node-and-managing-versions).
 
 #### Clone the repository
 
@@ -124,7 +124,7 @@ npm run dev
 
 Open `http://localhost:5225` in your browser and you should be redirected to the login screen.
 
-At the login screen you can now use the username and password you set in the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable to log in. Click "Sign In" and you should be logged in and see the SSO Connections page with no configured connections. We have reached Hello SAML Jackson!
+At the login screen, you can now use the username and password you set in the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable to log in. Click "Sign In" and you should be logged in and see the SSO Connections page with no configured connections. We have reached Hello SAML Jackson!
 
 ### Documentation
 
