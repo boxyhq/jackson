@@ -391,18 +391,11 @@ export class OAuthController implements IOAuthController {
     let oidcCodeVerifier: string | undefined;
     let oidcNonce: string | undefined;
     if (connectionIsOIDC) {
-      if (!this.opts.oidcPath) {
-        return {
-          redirect_url: OAuthErrorResponse({
-            error: 'server_error',
-            error_description: 'OpenID response handler path (oidcPath) is not set',
-            redirect_uri,
-            state,
-          }),
-        };
-      }
       const { discoveryUrl, metadata, clientId, clientSecret } = (connection as OIDCSSORecord).oidcProvider;
       try {
+        if (!this.opts.oidcPath) {
+          throw new JacksonError('OpenID response handler path (oidcPath) is not set');
+        }
         const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
         const oidcClient = new oidcIssuer.Client({
           client_id: clientId as string,
