@@ -228,6 +228,10 @@ export class OAuthController implements IOAuthController {
           throw new JacksonError('Redirect URL is not allowed.', 403);
         }
       }
+
+      if (!isConnectionActive(connection)) {
+        throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
+      }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Save the error trace
@@ -243,10 +247,6 @@ export class OAuthController implements IOAuthController {
         },
       });
       throw err;
-    }
-
-    if (!isConnectionActive(connection)) {
-      throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
     }
 
     const isMissingJWTKeysForOIDCFlow =
