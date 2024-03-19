@@ -10,8 +10,8 @@ import micromatch from 'micromatch';
 import nextI18NextConfig from '../next-i18next.config.js';
 
 import { AccountLayout, SetupLinkLayout } from '@components/layouts';
-import '@boxyhq/react-ui/dist/style.css';
 import '../styles/globals.css';
+import '@boxyhq/react-ui/dist/style.css';
 import { BUIProvider } from '@boxyhq/internal-ui';
 
 const unauthenticatedRoutes = [
