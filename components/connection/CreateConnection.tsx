@@ -2,10 +2,10 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import {
   saveConnection,
-  fieldCatalogFilterByConnection,
-  renderFieldList,
+  // fieldCatalogFilterByConnection,
+  // renderFieldList,
   useFieldCatalog,
-  excludeFallback,
+  // excludeFallback,
   type AdminPortalSSODefaults,
   type FormObj,
   type FieldCatalogItem,
@@ -14,8 +14,9 @@ import { mutate } from 'swr';
 import { ApiResponse } from 'types';
 import { errorToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
-import { ButtonPrimary } from '@components/ButtonPrimary';
+// import { ButtonPrimary } from '@components/ButtonPrimary';
 import { LinkBack } from '@components/LinkBack';
+import { CreateSSOConnection } from '@boxyhq/react-ui/sso';
 
 function getInitialState(connectionType, fieldCatalog: FieldCatalogItem[]) {
   const _state = {};
@@ -49,63 +50,63 @@ const CreateConnection = ({
 }) => {
   const fieldCatalog = useFieldCatalog({ isSettingsView });
   const { t } = useTranslation('common');
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  // const router = useRouter();
+  // const [loading, setLoading] = useState(false);
 
   // STATE: New connection type
   const [newConnectionType, setNewConnectionType] = useState<'saml' | 'oidc'>('saml');
 
-  const handleNewConnectionTypeChange = (event) => {
-    setNewConnectionType(event.target.value);
-  };
+  // const handleNewConnectionTypeChange = (event) => {
+  //   setNewConnectionType(event.target.value);
+  // };
 
-  const connectionIsSAML = newConnectionType === 'saml';
-  const connectionIsOIDC = newConnectionType === 'oidc';
+  // const connectionIsSAML = newConnectionType === 'saml';
+  // const connectionIsOIDC = newConnectionType === 'oidc';
 
-  const backUrl = setupLinkToken
-    ? null
-    : isSettingsView
-      ? '/admin/settings/sso-connection'
-      : '/admin/sso-connection';
-  const redirectUrl = setupLinkToken
-    ? `/setup/${setupLinkToken}/sso-connection`
-    : isSettingsView
-      ? '/admin/settings/sso-connection'
-      : '/admin/sso-connection';
-  const mutationUrl = setupLinkToken
-    ? `/api/setup/${setupLinkToken}/sso-connection`
-    : isSettingsView
-      ? '/api/admin/connections?isSystemSSO'
-      : '/api/admin/connections';
+  // const backUrl = setupLinkToken
+  //   ? null
+  //   : isSettingsView
+  //     ? '/admin/settings/sso-connection'
+  //     : '/admin/sso-connection';
+  // const redirectUrl = setupLinkToken
+  //   ? `/setup/${setupLinkToken}/sso-connection`
+  //   : isSettingsView
+  //     ? '/admin/settings/sso-connection'
+  //     : '/admin/sso-connection';
+  // const mutationUrl = setupLinkToken
+  //   ? `/api/setup/${setupLinkToken}/sso-connection`
+  //   : isSettingsView
+  //     ? '/api/admin/connections?isSystemSSO'
+  //     : '/api/admin/connections';
 
   // FORM LOGIC: SUBMIT
-  const save = async (event: React.FormEvent) => {
-    event.preventDefault();
+  // const save = async (event: React.FormEvent) => {
+  //   event.preventDefault();
 
-    setLoading(true);
+  //   setLoading(true);
 
-    await saveConnection({
-      formObj: formObj,
-      connectionIsSAML: connectionIsSAML,
-      connectionIsOIDC: connectionIsOIDC,
-      setupLinkToken,
-      callback: async (rawResponse) => {
-        setLoading(false);
+  //   await saveConnection({
+  //     formObj: formObj,
+  //     connectionIsSAML: connectionIsSAML,
+  //     connectionIsOIDC: connectionIsOIDC,
+  //     setupLinkToken,
+  //     callback: async (rawResponse) => {
+  //       setLoading(false);
 
-        const response: ApiResponse = await rawResponse.json();
+  //       const response: ApiResponse = await rawResponse.json();
 
-        if ('error' in response) {
-          errorToast(response.error.message);
-          return;
-        }
+  //       if ('error' in response) {
+  //         errorToast(response.error.message);
+  //         return;
+  //       }
 
-        if (rawResponse.ok) {
-          await mutate(mutationUrl);
-          router.replace(redirectUrl);
-        }
-      },
-    });
-  };
+  //       if (rawResponse.ok) {
+  //         await mutate(mutationUrl);
+  //         router.replace(redirectUrl);
+  //       }
+  //     },
+  //   });
+  // };
 
   // STATE: FORM
   const [formObj, setFormObj] = useState<FormObj>(() =>
@@ -133,7 +134,19 @@ const CreateConnection = ({
   return (
     <>
       {backUrl && <LinkBack href={backUrl} />}
-      <div>
+      <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
+        {t('create_sso_connection')}
+      </h2>
+      <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+        <CreateSSOConnection
+          variant={{ saml: 'advanced', oidc: 'advanced' }}
+          urls={{
+            post: setupLinkToken ? `/api/setup/${setupLinkToken}/sso-connection` : '/api/admin/connections',
+          }}
+          excludeFields={{ saml: ['label'], oidc: ['label'] }}
+        />
+      </div>
+      {/* <div>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 dark:text-white md:text-xl'>
           {t('create_sso_connection')}
         </h2>
@@ -182,7 +195,7 @@ const CreateConnection = ({
             </div>
           </div>
         </form>
-      </div>
+      </div> */}
     </>
   );
 };
