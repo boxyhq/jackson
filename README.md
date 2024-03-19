@@ -17,7 +17,7 @@ SAML Jackson bridges or proxies a SAML login flow to OAuth 2.0 or OpenID Connect
 
 ## Directory Sync
 
-As mentioned above, SAML Jackson also supports Directory Sync based on the SCIM 2.0 protocol.
+SAML Jackson also supports Directory Sync based on the SCIM 2.0 protocol.
 
 Directory sync helps organizations automate the provisioning and de-provisioning of their users. As a result, it streamlines the user lifecycle management process by saving valuable organizational hours, creating a single truth source of the user identity data, and facilitating them to keep the data secure.
 
@@ -31,6 +31,7 @@ If you find this project helpful, please consider supporting us by starring [the
   - [Directory Sync](#directory-sync)
   - [🌟 Why star this repository?](#-why-star-this-repository)
   - [🚀 Getting Started with SAML Jackson](#-getting-started-with-saml-jackson)
+    - [Try A Demo](#try-a-demo)
     - [Deploying SAML Jackson as a separate service locally](#deploying-saml-jackson-as-a-separate-service-locally)
       - [Prerequisites](#prerequisites)
       - [Clone the repository](#clone-the-repository)
@@ -39,7 +40,6 @@ If you find this project helpful, please consider supporting us by starring [the
       - [Database](#database)
       - [Start the development server](#start-the-development-server)
     - [Documentation](#documentation)
-    - [Try A Demo](#try-a-demo)
     - [Easy Cloud Deployment](#easy-cloud-deployment)
   - [Videos](#videos)
   - [End-to-End (E2E) tests](#end-to-end-e2e-tests)
@@ -59,6 +59,11 @@ There are two ways to integrate SAML Jackson into an application. Depending on y
 
 1. [As a separate service](https://boxyhq.com/docs/jackson/deploy/service) ([Next.js](https://nextjs.org/) application) This includes an admin portal out of the box for managing SSO and Directory Sync connections.
 2. [NPM library](https://boxyhq.com/docs/jackson/deploy/npm-library) as an embedded library in your application.
+
+### Try A Demo
+
+- Try our hosted demo showcasing the SAML service provider (SP) initiated [login flow here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
+- Try an Identity Provider (IdP) initiated [login flow here](https://mocksaml.com/saml/login).
 
 ### Deploying SAML Jackson as a separate service locally
 
@@ -91,14 +96,6 @@ Create a `.env` from the existing `.env.example` file in the root of the project
 cp .env.example .env
 ```
 
-We will leave all the environment variables at their defaults, except for two variables. Firstly, we need to set the value for the `DB_ENCRYPTION_KEY` environment variable. You can use openssl to generate a random 32 character key for this purpose:
-
-```bash
-openssl rand -base64 24 # 24 is correct, because of the base64 encoding we will end up with a 32 character key
-```
-
-> On macOS and Unix based systems the `openssl` library and command should be available by default. On Windows, you can use the `openssl` command from the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install). Alternatively, you can find more information on the [OpenSSL GitHub repository](https://github.com/openssl/openssl?tab=readme-ov-file#download).
-
 > **Environment variable documentation:** Have a look at https://boxyhq.com/docs/jackson/deploy/env-variables for all of the available environment variables.
 
 #### Database
@@ -109,7 +106,7 @@ For the rest of the setup, we will use a PostgreSQL database. The easiest way to
 
 #### Start the development server
 
-Now that we have our database setup we can start the development server. But before we do, there is one more thing we need to do.
+Now that we have our database running we can start the development server. But before we do, we need a way to log into the admin portal.
 
 To log in to the admin portal we either need some preloaded connections, [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
 
@@ -136,11 +133,6 @@ At the login screen you can now use the username and password you set in the `NE
 ### Documentation
 
 For full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
-
-### Try A Demo
-
-- Try our hosted demo showcasing the SAML service provider (SP) initiated [login flow here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
-- Try an Identity Provider (IdP) initiated [login flow here](https://mocksaml.com/saml/login).
 
 ### Easy Cloud Deployment
 
