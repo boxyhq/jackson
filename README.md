@@ -35,7 +35,7 @@ If you find this project helpful, please consider supporting us by starring [the
     - [Deploying SAML Jackson as a separate service locally](#deploying-saml-jackson-as-a-separate-service-locally)
       - [Prerequisites](#prerequisites)
       - [Clone the repository](#clone-the-repository)
-      - [Install JavaScript dependencies](#install-javascript-dependencies)
+      - [Install dependencies](#install-dependencies)
       - [Setup environment variables](#setup-environment-variables)
       - [Database](#database)
       - [Start the development server](#start-the-development-server)
@@ -82,7 +82,7 @@ git clone https://github.com/boxyhq/jackson.git
 cd jackson
 ```
 
-#### Install JavaScript dependencies
+#### Install dependencies
 
 ```bash
 npm i
@@ -108,7 +108,7 @@ For the rest of the setup, we will use a PostgreSQL database. The easiest way to
 
 Now that we have our database running we can start the development server. But before we do, we need a way to log into the admin portal.
 
-To log in to the admin portal we either need some [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
+To log in to the admin portal we either need to [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
 
 In your `.env` find the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable. We need to provide an `email:password` combination that we can then use to log in to the admin portal. For example:
 
