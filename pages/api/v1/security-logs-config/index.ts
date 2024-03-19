@@ -1,1 +1,1 @@
-export { default } from '../../../../ee/security-logs-config/api/index';
+export { default } from '@ee/security-logs-config/api/index';
