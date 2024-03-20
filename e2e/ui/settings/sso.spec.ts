@@ -30,7 +30,7 @@ test.describe('Admin Portal SSO - SAML', () => {
     const metadataUrlInput = page.getByLabel('Metadata URL');
     await metadataUrlInput.fill(MOCKSAML_METADATA_URL);
     // submit the form
-    await page.getByLabel('Save').click();
+    await page.getByRole('button', { name: /save/i }).click();
     // check if the added connection appears in the connection list
     await expect(page.getByText(TEST_SAML_SSO_CONNECTION_NAME)).toBeVisible();
   });
@@ -94,7 +94,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
         // Find the new connection button and click on it
         await page.getByTestId('create-connection').click();
         // Toggle connection type to OIDC
-        await page.getByTestId('sso-type-oidc').click();
+        await page.getByLabel('OIDC').check();
         // Fill the name for the connection
         const nameInput = page.getByLabel('Connection name (Optional)');
         await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
@@ -125,7 +125,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
         const clientSecretInput = page.getByLabel('Client Secret');
         await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
         // submit the form
-        await page.getByLabel('Save').click();
+        await page.getByRole('button', { name: /save/i }).click();
         // check if the added connection appears in the connection list
         await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).toBeVisible();
       });
