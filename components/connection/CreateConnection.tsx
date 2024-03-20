@@ -7,11 +7,9 @@ import { CreateSSOConnection } from '@boxyhq/react-ui/sso';
 import { BOXYHQ_UI_CSS } from '@components/styles';
 
 const CreateConnection = ({
-  setupLinkToken,
   isSettingsView = false,
   adminPortalSSODefaults,
 }: {
-  setupLinkToken?: string;
   idpEntityID?: string;
   isSettingsView?: boolean;
   adminPortalSSODefaults?: AdminPortalSSODefaults;
@@ -19,13 +17,9 @@ const CreateConnection = ({
   const { t } = useTranslation('common');
   const router = useRouter();
 
-  const redirectUrl = setupLinkToken
-    ? `/setup/${setupLinkToken}/sso-connection`
-    : isSettingsView
-      ? '/admin/settings/sso-connection'
-      : '/admin/sso-connection';
+  const redirectUrl = isSettingsView ? '/admin/settings/sso-connection' : '/admin/sso-connection';
 
-  const backUrl = setupLinkToken ? null : redirectUrl;
+  const backUrl = redirectUrl;
 
   return (
     <>
@@ -38,7 +32,7 @@ const CreateConnection = ({
           defaults={isSettingsView ? adminPortalSSODefaults : undefined}
           variant={{ saml: 'advanced', oidc: 'advanced' }}
           urls={{
-            post: setupLinkToken ? `/api/setup/${setupLinkToken}/sso-connection` : '/api/admin/connections',
+            post: '/api/admin/connections',
           }}
           excludeFields={{ saml: ['label'], oidc: ['label'] }}
           successCallback={() => router.replace(redirectUrl)}
