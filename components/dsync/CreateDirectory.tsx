@@ -8,10 +8,15 @@ import { BOXYHQ_UI_CSS } from '@components/styles';
 
 interface CreateDirectoryProps {
   setupLinkToken?: string;
-  defaultWebhookEndpoint: string | undefined;
+  defaultWebhookEndpoint?: string;
+  defaultWebhookSecret?: string;
 }
 
-const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirectoryProps) => {
+const CreateDirectory = ({
+  setupLinkToken,
+  defaultWebhookEndpoint,
+  defaultWebhookSecret,
+}: CreateDirectoryProps) => {
   const { t } = useTranslation('common');
   const router = useRouter();
 
@@ -25,6 +30,7 @@ const CreateDirectory = ({ setupLinkToken, defaultWebhookEndpoint }: CreateDirec
         <CreateDSync
           displayHeader={false}
           defaultWebhookEndpoint={defaultWebhookEndpoint}
+          defaultWebhookSecret={defaultWebhookSecret}
           classNames={BOXYHQ_UI_CSS}
           successCallback={({ connection }) => {
             successToast(t('directory_created_successfully'));
