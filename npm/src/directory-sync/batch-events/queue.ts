@@ -10,7 +10,6 @@ import type {
   EventLock,
   IWebhookEventsLogger,
 } from '../../typings';
-import { eventLockTTL } from '../utils';
 import { sendPayloadToWebhook } from '../../event/webhook';
 import { isConnectionActive } from '../../controller/utils';
 import { JacksonError } from '../../controller/error';
@@ -41,7 +40,6 @@ interface DirectoryEventsParams {
 
 let isJobRunning = false;
 const lockKey = randomUUID();
-const lockRenewalInterval = (eventLockTTL / 2) * 1000;
 let intervalId: NodeJS.Timeout;
 
 export class EventProcessor {
@@ -91,11 +89,6 @@ export class EventProcessor {
   }
 
   private async _process() {
-    // Renew the lock periodically
-    const intervalId = setInterval(async () => {
-      this.eventLock.renew(lockKey);
-    }, lockRenewalInterval);
-
     const batchSize = this.opts.dsync?.webhookBatchSize || 50;
 
     // eslint-disable-next-line no-constant-condition
@@ -104,7 +97,6 @@ export class EventProcessor {
       const eventsCount = events.length;
 
       if (eventsCount === 0) {
-        clearInterval(intervalId);
         await this.eventLock.release(lockKey);
         break;
       }

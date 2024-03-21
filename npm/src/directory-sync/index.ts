@@ -12,7 +12,7 @@ import { SyncProviders } from './non-scim';
 import { storeNamespacePrefix } from '../controller/utils';
 import { eventLockTTL, handleEventCallback } from './utils';
 import { EventProcessor } from './batch-events/queue';
-import { EventLock } from './batch-events/lock';
+import { EventLock, getGlobalLock } from './batch-events/lock';
 
 const directorySync = async (params: { db: DB; opts: JacksonOption; eventController: IEventController }) => {
   const { db, opts, eventController } = params;
@@ -42,7 +42,7 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
   // Batch send events
   const eventStore = db.store(storeNamespacePrefix.dsync.events);
   const lockStore = db.store(storeNamespacePrefix.dsync.lock, eventLockTTL);
-  const eventLock = new EventLock({ lockStore });
+  const eventLock = getGlobalLock({ lockStore });
   const eventProcessor = new EventProcessor({
     opts,
     eventStore,

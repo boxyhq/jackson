@@ -1,6 +1,8 @@
 import type { Storable } from '../../typings';
 import { eventLockKey, eventLockTTL } from '../utils';
 
+const lockRenewalInterval = (eventLockTTL / 2) * 1000;
+
 interface Lock {
   key: string;
   created_at: string;
@@ -10,8 +12,18 @@ interface LockParams {
   lockStore: Storable;
 }
 
+let globalLock: EventLock | undefined;
+export const getGlobalLock = ({ lockStore }: LockParams) => {
+  if (!globalLock) {
+    globalLock = new EventLock({ lockStore });
+  }
+  return globalLock;
+};
+
 export class EventLock {
   private lockStore: Storable;
+  private key: string | undefined;
+  private intervalId: NodeJS.Timeout | undefined;
 
   constructor({ lockStore }: LockParams) {
     this.lockStore = lockStore;
@@ -19,6 +31,7 @@ export class EventLock {
 
   public async acquire(key: string) {
     try {
+      this.key = key;
       const lock = await this.get();
 
       if (lock && !this.isExpired(lock)) {
@@ -27,6 +40,11 @@ export class EventLock {
 
       await this.add(key);
 
+      // Renew the lock periodically
+      this.intervalId = setInterval(async () => {
+        this.renew(this.key!);
+      }, lockRenewalInterval);
+
       return true;
     } catch (e: any) {
       console.error(`Error acquiring lock for ${key}: ${e}`);
@@ -34,7 +52,7 @@ export class EventLock {
     }
   }
 
-  public async renew(key: string) {
+  private async renew(key: string) {
     try {
       const lock = await this.get();
 
@@ -52,7 +70,7 @@ export class EventLock {
     }
   }
 
-  async add(key: string) {
+  private async add(key: string) {
     const record = {
       key,
       created_at: new Date().toISOString(),
@@ -61,11 +79,15 @@ export class EventLock {
     await this.lockStore.put(eventLockKey, record);
   }
 
-  async get() {
+  private async get() {
     return (await this.lockStore.get(eventLockKey)) as Lock;
   }
 
-  async release(key: string) {
+  public async release(key: string) {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+
     const lock = await this.get();
 
     if (!lock) {
@@ -79,11 +101,11 @@ export class EventLock {
     await this.lockStore.delete(eventLockKey);
   }
 
-  isExpired(lock: Lock) {
+  private isExpired(lock: Lock) {
     const lockDate = new Date(lock.created_at);
     const currentDate = new Date();
     const diffSeconds = (currentDate.getTime() - lockDate.getTime()) / 1000;
 
-    return diffSeconds > eventLockTTL * 2;
+    return diffSeconds > eventLockTTL;
   }
 }
