@@ -6,6 +6,7 @@ import type {
   IRequestHandler,
   JacksonOption,
   EventCallback,
+  EventLock,
 } from '../../typings';
 import { SyncUsers } from './syncUsers';
 import { SyncGroups } from './syncGroups';
@@ -18,6 +19,7 @@ interface SyncParams {
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
   eventCallback: EventCallback;
+  eventLock: EventLock;
 }
 
 let isJobRunning = false;
@@ -31,6 +33,7 @@ export class SyncProviders {
   private opts: JacksonOption;
   private cronInterval: number | undefined;
   private eventCallback: EventCallback;
+  private eventLock: EventLock;
 
   constructor({
     userController,
@@ -39,6 +42,7 @@ export class SyncProviders {
     directories,
     requestHandler,
     eventCallback,
+    eventLock,
   }: SyncParams) {
     this.userController = userController;
     this.groupController = groupController;
@@ -47,6 +51,7 @@ export class SyncProviders {
     this.eventCallback = eventCallback;
     this.opts = opts;
     this.cronInterval = this.opts.dsync?.providers?.google.cronInterval;
+    this.eventLock = eventLock;
 
     if (this.cronInterval) {
       this.scheduleSync = this.scheduleSync.bind(this);
@@ -57,7 +62,11 @@ export class SyncProviders {
   // Start the sync process
   public async startSync() {
     if (isJobRunning) {
-      console.info('A sync process is already running. Skipping the sync process');
+      console.info('A sync process is already running, skipping.');
+      return;
+    }
+
+    if (!(await this.eventLock.acquire())) {
       return;
     }
 
@@ -89,6 +98,8 @@ export class SyncProviders {
     } catch (e: any) {
       console.error(' Error processing Google sync:', e);
     }
+
+    await this.eventLock.release();
 
     const endTime = Date.now();
     console.info(`Sync process completed in ${(endTime - startTime) / 1000} seconds`);

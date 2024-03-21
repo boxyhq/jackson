@@ -39,7 +39,6 @@ interface DirectoryEventsParams {
 }
 
 let isJobRunning = false;
-const lockKey = randomUUID();
 let intervalId: NodeJS.Timeout;
 
 export class EventProcessor {
@@ -97,7 +96,7 @@ export class EventProcessor {
       const eventsCount = events.length;
 
       if (eventsCount === 0) {
-        await this.eventLock.release(lockKey);
+        await this.eventLock.release();
         break;
       }
 
@@ -173,10 +172,11 @@ export class EventProcessor {
   // Process the events and send them to the webhooks as a batch
   public async process() {
     if (isJobRunning) {
+      console.info('A batch process is already running, skipping.');
       return;
     }
 
-    if (!(await this.eventLock.acquire(lockKey))) {
+    if (!(await this.eventLock.acquire())) {
       return;
     }
 

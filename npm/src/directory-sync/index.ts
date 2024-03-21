@@ -77,6 +77,7 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     directories,
     requestHandler,
     eventCallback: _callback,
+    eventLock,
   });
 
   return {
