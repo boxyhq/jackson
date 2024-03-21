@@ -10,9 +10,9 @@ import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { newGoogleProvider } from './non-scim/google';
 import { SyncProviders } from './non-scim';
 import { storeNamespacePrefix } from '../controller/utils';
-import { eventLockTTL, handleEventCallback } from './utils';
+import { eventLockKey, eventLockTTL, googleLockKey, handleEventCallback } from './utils';
 import { EventProcessor } from './batch-events/queue';
-import { getGlobalLock } from './batch-events/lock';
+import { EventLock } from './batch-events/lock';
 
 const directorySync = async (params: { db: DB; opts: JacksonOption; eventController: IEventController }) => {
   const { db, opts, eventController } = params;
@@ -42,7 +42,8 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
   // Batch send events
   const eventStore = db.store(storeNamespacePrefix.dsync.events);
   const lockStore = db.store(storeNamespacePrefix.dsync.lock, eventLockTTL);
-  const eventLock = getGlobalLock({ lockStore });
+  const eventLock = new EventLock({ lockKey: eventLockKey, lockStore });
+  const googleLock = new EventLock({ lockKey: googleLockKey, lockStore });
   const eventProcessor = new EventProcessor({
     opts,
     eventStore,
@@ -77,7 +78,7 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
     directories,
     requestHandler,
     eventCallback: _callback,
-    eventLock,
+    eventLock: googleLock,
   });
 
   return {

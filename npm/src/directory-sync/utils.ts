@@ -15,8 +15,9 @@ import { transformEventPayload } from './scim/transform';
 import { JacksonError } from '../controller/error';
 
 export const eventLockTTL = 30;
-export const webhookEventTTL = 7 * 24 * 60 * 60;
+export const webhookLogsTTL = 7 * 24 * 60 * 60;
 export const eventLockKey = 'dsync-event-lock';
+export const googleLockKey = 'dsync-google-lock';
 
 interface Payload {
   directory: Directory;

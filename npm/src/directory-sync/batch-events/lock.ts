@@ -1,9 +1,9 @@
 import { randomUUID } from 'crypto';
 import type { Storable } from '../../typings';
-import { eventLockKey, eventLockTTL } from '../utils';
+import { eventLockTTL } from '../utils';
 
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
-const lockKey = randomUUID();
+const instanceKey = randomUUID();
 
 interface Lock {
   key: string;
@@ -12,23 +12,17 @@ interface Lock {
 
 interface LockParams {
   lockStore: Storable;
+  lockKey: string;
 }
-
-let globalLock: EventLock | undefined;
-export const getGlobalLock = ({ lockStore }: LockParams) => {
-  if (!globalLock) {
-    globalLock = new EventLock({ lockStore });
-  }
-  return globalLock;
-};
 
 export class EventLock {
   private lockStore: Storable;
+  private lockKey: string;
   private intervalId: NodeJS.Timeout | undefined;
-  private count: number = 0;
 
-  constructor({ lockStore }: LockParams) {
+  constructor({ lockKey, lockStore }: LockParams) {
     this.lockStore = lockStore;
+    this.lockKey = lockKey;
   }
 
   public async acquire() {
@@ -36,7 +30,7 @@ export class EventLock {
       const lock = await this.get();
 
       if (lock && !this.isExpired(lock)) {
-        return lock.key === lockKey;
+        return lock.key === instanceKey;
       }
 
       await this.add();
@@ -48,11 +42,9 @@ export class EventLock {
         }, lockRenewalInterval);
       }
 
-      this.count++;
-
       return true;
     } catch (e: any) {
-      console.error(`Error acquiring lock for ${lockKey}: ${e}`);
+      console.error(`Error acquiring lock for ${instanceKey}: ${e}`);
       return false;
     }
   }
@@ -65,33 +57,31 @@ export class EventLock {
         return;
       }
 
-      if (lock.key != lockKey) {
+      if (lock.key != instanceKey) {
         return;
       }
 
       await this.add();
     } catch (e: any) {
-      console.error(`Error renewing lock for ${lockKey}: ${e}`);
+      console.error(`Error renewing lock for ${instanceKey}: ${e}`);
     }
   }
 
   private async add() {
     const record = {
-      key: lockKey,
+      key: instanceKey,
       created_at: new Date().toISOString(),
     };
 
-    await this.lockStore.put(eventLockKey, record);
+    await this.lockStore.put(this.lockKey, record);
   }
 
   private async get() {
-    return (await this.lockStore.get(eventLockKey)) as Lock;
+    return (await this.lockStore.get(this.lockKey)) as Lock;
   }
 
   public async release() {
-    this.count--;
-
-    if (this.intervalId && this.count === 0) {
+    if (this.intervalId) {
       clearInterval(this.intervalId);
     }
 
@@ -101,11 +91,11 @@ export class EventLock {
       return;
     }
 
-    if (lock.key != lockKey) {
+    if (lock.key != instanceKey) {
       return;
     }
 
-    await this.lockStore.delete(eventLockKey);
+    await this.lockStore.delete(this.lockKey);
   }
 
   private isExpired(lock: Lock) {
