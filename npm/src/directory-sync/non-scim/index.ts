@@ -21,7 +21,7 @@ interface SyncParams {
 }
 
 let isJobRunning = false;
-let timeoutId: NodeJS.Timeout;
+let intervalId: NodeJS.Timeout;
 
 export class SyncProviders {
   private userController: IUsers;
@@ -67,11 +67,11 @@ export class SyncProviders {
 
     const startTime = Date.now();
 
-    const allDirectories = await provider.getDirectories();
-
-    console.info(`Starting the sync process for ${allDirectories.length} directories`);
-
     try {
+      const allDirectories = await provider.getDirectories();
+
+      console.info(`Starting the sync process for ${allDirectories.length} directories`);
+
       for (const directory of allDirectories) {
         const params = {
           directory,
@@ -87,7 +87,7 @@ export class SyncProviders {
         await new SyncGroupMembers(params).sync();
       }
     } catch (e: any) {
-      console.error(e);
+      console.error(' Error processing Google sync:', e);
     }
 
     const endTime = Date.now();
@@ -106,10 +106,10 @@ export class SyncProviders {
       return;
     }
 
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+    if (intervalId) {
+      clearInterval(intervalId);
     }
 
-    timeoutId = setTimeout(() => this.startSync(), this.cronInterval * 1000);
+    intervalId = setInterval(() => this.startSync(), this.cronInterval * 1000);
   }
 }

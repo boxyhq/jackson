@@ -42,7 +42,7 @@ interface DirectoryEventsParams {
 let isJobRunning = false;
 const lockKey = randomUUID();
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
-let timeoutId: NodeJS.Timeout;
+let intervalId: NodeJS.Timeout;
 
 export class EventProcessor {
   private eventStore: Storable;
@@ -90,28 +90,13 @@ export class EventProcessor {
     return record;
   }
 
-  // Process the events and send them to the webhooks as a batch
-  public async process() {
-    if (isJobRunning) {
-      return;
-    }
-
-    if (!(await this.eventLock.acquire(lockKey))) {
-      return;
-    }
-
-    isJobRunning = true;
-
+  private async _process() {
     // Renew the lock periodically
     const intervalId = setInterval(async () => {
       this.eventLock.renew(lockKey);
     }, lockRenewalInterval);
 
-    const batchSize = this.opts.dsync?.webhookBatchSize;
-
-    if (!batchSize) {
-      throw new JacksonError('Batch size not defined');
-    }
+    const batchSize = this.opts.dsync?.webhookBatchSize || 50;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -190,6 +175,25 @@ export class EventProcessor {
           throw new JacksonError(message, status);
         }
       }
+    }
+  }
+
+  // Process the events and send them to the webhooks as a batch
+  public async process() {
+    if (isJobRunning) {
+      return;
+    }
+
+    if (!(await this.eventLock.acquire(lockKey))) {
+      return;
+    }
+
+    isJobRunning = true;
+
+    try {
+      this._process();
+    } catch (e: any) {
+      console.error(' Error processing webhooks batch:', e);
     }
 
     isJobRunning = false;
@@ -278,14 +282,10 @@ export class EventProcessor {
       return;
     }
 
-    if (isJobRunning) {
-      return;
+    if (intervalId) {
+      clearInterval(intervalId);
     }
 
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    timeoutId = setTimeout(() => this.process(), this.cronInterval * 1000);
+    intervalId = setInterval(() => this.process(), this.cronInterval * 1000);
   }
 }

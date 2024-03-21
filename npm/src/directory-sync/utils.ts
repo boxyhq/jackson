@@ -14,7 +14,7 @@ import { sendPayloadToWebhook } from '../event/webhook';
 import { transformEventPayload } from './scim/transform';
 import { JacksonError } from '../controller/error';
 
-export const eventLockTTL = 6;
+export const eventLockTTL = 30;
 export const webhookEventTTL = 7 * 24 * 60 * 60;
 export const eventLockKey = 'dsync-event-lock';
 
