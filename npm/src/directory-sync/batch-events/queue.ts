@@ -7,7 +7,7 @@ import type {
   IDirectoryConfig,
   Storable,
   JacksonOption,
-  EventLock,
+  CronLock,
   IWebhookEventsLogger,
 } from '../../typings';
 import { sendPayloadToWebhook } from '../../event/webhook';
@@ -33,7 +33,7 @@ interface QueuedEvent {
 interface DirectoryEventsParams {
   opts: JacksonOption;
   eventStore: Storable;
-  eventLock: EventLock;
+  eventLock: CronLock;
   directories: IDirectoryConfig;
   webhookLogs: IWebhookEventsLogger;
 }
@@ -43,7 +43,7 @@ let intervalId: NodeJS.Timeout;
 
 export class EventProcessor {
   private eventStore: Storable;
-  private eventLock: EventLock;
+  private eventLock: CronLock;
   private opts: JacksonOption;
   private directories: IDirectoryConfig;
   private webhookLogs: IWebhookEventsLogger;

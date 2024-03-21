@@ -6,7 +6,7 @@ import type {
   IRequestHandler,
   JacksonOption,
   EventCallback,
-  EventLock,
+  CronLock,
 } from '../../typings';
 import { SyncUsers } from './syncUsers';
 import { SyncGroups } from './syncGroups';
@@ -19,7 +19,7 @@ interface SyncParams {
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
   eventCallback: EventCallback;
-  eventLock: EventLock;
+  eventLock: CronLock;
 }
 
 let isJobRunning = false;
@@ -33,7 +33,7 @@ export class SyncProviders {
   private opts: JacksonOption;
   private cronInterval: number | undefined;
   private eventCallback: EventCallback;
-  private eventLock: EventLock;
+  private eventLock: CronLock;
 
   constructor({
     userController,

@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
-import type { Storable } from '../../typings';
-import { eventLockTTL } from '../utils';
+import type { Storable } from '../typings';
+import { eventLockTTL } from '../directory-sync/utils';
 
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
 const instanceKey = randomUUID();
@@ -12,17 +12,17 @@ interface Lock {
 
 interface LockParams {
   lockStore: Storable;
-  lockKey: string;
+  key: string;
 }
 
-export class EventLock {
+export class CronLock {
   private lockStore: Storable;
-  private lockKey: string;
+  private key: string;
   private intervalId: NodeJS.Timeout | undefined;
 
-  constructor({ lockKey, lockStore }: LockParams) {
+  constructor({ key, lockStore }: LockParams) {
     this.lockStore = lockStore;
-    this.lockKey = lockKey;
+    this.key = key;
   }
 
   public async acquire() {
@@ -73,11 +73,11 @@ export class EventLock {
       created_at: new Date().toISOString(),
     };
 
-    await this.lockStore.put(this.lockKey, record);
+    await this.lockStore.put(this.key, record);
   }
 
   private async get() {
-    return (await this.lockStore.get(this.lockKey)) as Lock;
+    return (await this.lockStore.get(this.key)) as Lock;
   }
 
   public async release() {
@@ -95,7 +95,7 @@ export class EventLock {
       return;
     }
 
-    await this.lockStore.delete(this.lockKey);
+    await this.lockStore.delete(this.key);
   }
 
   private isExpired(lock: Lock) {
