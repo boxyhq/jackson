@@ -12,6 +12,7 @@
   "confirmation_modal_description": "This action cannot be undone. This will permanently delete the Connection.",
   "create_new": "Create New",
   "create_sso_connection": "Create SSO Connection",
+  "create_dsync_connection": "Create DSync Connection",
   "delete": "Delete",
   "delete_the_connection": "Delete the Connection?",
   "delete_this_connection": "Delete this Connection",
