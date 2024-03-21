@@ -12,7 +12,7 @@ import { SyncProviders } from './non-scim';
 import { storeNamespacePrefix } from '../controller/utils';
 import { eventLockTTL, handleEventCallback } from './utils';
 import { EventProcessor } from './batch-events/queue';
-import { EventLock, getGlobalLock } from './batch-events/lock';
+import { getGlobalLock } from './batch-events/lock';
 
 const directorySync = async (params: { db: DB; opts: JacksonOption; eventController: IEventController }) => {
   const { db, opts, eventController } = params;
