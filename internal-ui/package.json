@@ -26,18 +26,18 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "11.1.6",
-    "@types/node": "20.11.28",
-    "@types/react": "18.2.66",
-    "@typescript-eslint/eslint-plugin": "7.2.0",
-    "@typescript-eslint/parser": "7.2.0",
+    "@types/node": "20.11.30",
+    "@types/react": "18.2.67",
+    "@typescript-eslint/eslint-plugin": "7.3.1",
+    "@typescript-eslint/parser": "7.3.1",
     "@vitejs/plugin-react": "4.2.1",
     "eslint": "8.57.0",
     "eslint-plugin-react-hooks": "4.6.0",
     "eslint-plugin-react-refresh": "0.4.6",
     "prettier": "3.2.5",
     "react-daisyui": "5.0.0",
-    "typescript": "5.4.2",
-    "vite": "5.1.6"
+    "typescript": "5.4.3",
+    "vite": "5.2.2"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.13.0"

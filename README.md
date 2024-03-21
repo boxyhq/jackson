@@ -1,76 +1,19 @@
-<a href="https://boxyhq.com/enterprise-sso">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/.github/assets/66887028/df1c9904-df2f-4515-b403-58b14a0e9093">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/.github/assets/66887028/e093a466-72ea-41c6-a292-4c39a150facd">
-  <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1">
-</picture>
-</a>
+# SAML Jackson: Open Source Enterprise SSO And Directory Sync
 
-<h3 align="center" >
-    <a href="https://boxyhq.com/docs/jackson/overview" rel="dofollow"><strong>· Explore the docs »</strong></a>
-    <br />
-    <a href="https://app.eu.boxyhq.com/auth/join?utm_source=github&utm_campaign=repo" rel="dofollow"><strong>· SaaS Sign Up »</strong></a>
-</h3>
+<a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge" alt="OpenSSF Best Practices Badge"></a>
+<a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="NPM downloads badge" ></a>
+<a href="https://hub.docker.com/r/boxyhq/jackson"><img src="https://img.shields.io/docker/pulls/boxyhq/jackson" alt="Docker pull statistics badge"></a>
+<a href="https://github.com/boxyhq/jackson/blob/main/LICENSE"><img src="https://img.shields.io/github/license/boxyhq/jackson" alt="Apache 2.0 license badge"></a>
+<a href="https://github.com/boxyhq/jackson/issues"><img src="https://img.shields.io/github/issues/boxyhq/jackson" alt="Open Github issues badge"></a>
+<a href="https://github.com/boxyhq/jackson/stargazers"><img src="https://img.shields.io/github/stars/boxyhq/jackson" alt="Github stargazers"></a>
+<a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/node/v/@boxyhq/saml-jackson" alt="Nodejs version support badge"></a>
+<a href="https://raw.githubusercontent.com/boxyhq/jackson/main/swagger/swagger.json"><img src="https://img.shields.io/swagger/valid/3.0?specUrl=https%3A%2F%2Fraw.githubusercontent.com%2Fboxyhq%2Fjackson%2Fmain%2Fswagger%2Fswagger.json" alt="Swagger Validator badge"></a>
 
-# ⭐️ SAML Jackson: Enterprise SSO made simple
+SAML Jackson bridges or proxies a SAML login flow to OAuth 2.0 or OpenID Connect, abstracting away all the complexities of the SAML protocol. It also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.
 
-<p>
-    <a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge"></a>
-    <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="npm" ></a>
-    <a href="https://hub.docker.com/r/boxyhq/jackson"><img src="https://img.shields.io/docker/pulls/boxyhq/jackson" alt="Docker pull"></a>
-    <a href="https://github.com/boxyhq/jackson/stargazers"><img src="https://img.shields.io/github/stars/boxyhq/jackson" alt="Github stargazers"></a>
-    <a href="https://github.com/boxyhq/jackson/issues"><img src="https://img.shields.io/github/issues/boxyhq/jackson" alt="Github issues"></a>
-    <a href="https://github.com/boxyhq/jackson/blob/main/LICENSE"><img src="https://img.shields.io/github/license/boxyhq/jackson" alt="license"></a>
-    <a href="https://twitter.com/BoxyHQ"><img src="https://img.shields.io/twitter/follow/boxyhq?style=social" alt="Twitter"></a>
-    <a href="https://www.linkedin.com/company/boxyhq"><img src="https://img.shields.io/badge/LinkedIn-blue" alt="LinkedIn"></a>
-    <a href="https://discord.gg/uyb7pYt4Pa"><img src="https://img.shields.io/discord/877585485235630130" alt="Discord"></a>
-    <a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/node/v/@boxyhq/saml-jackson" alt="node-current"></a>
-    <a href="https://raw.githubusercontent.com/boxyhq/jackson/main/swagger/swagger.json"><img src="https://img.shields.io/swagger/valid/3.0?specUrl=https%3A%2F%2Fraw.githubusercontent.com%2Fboxyhq%2Fjackson%2Fmain%2Fswagger%2Fswagger.json" alt="Swagger Validator"></a>
-</p>
+> We now also support OpenID Connect providers.
 
-[![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,DB_ENCRYPTION_KEY,DB_TTL,DB_CLEANUP_LIMIT,JACKSON_API_KEYS,EXTERNAL_URL,IDP_ENABLED,SAML_AUDIENCE,CLIENT_SECRET_VERIFIER,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,SMTP_FROM,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXTAUTH_ACL&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.EXTERNAL_URL%20(Usually%20https%3A%2F%2F%3Cproject-name-from-above%3E.vercel.app)%20can%20be%20set%20after%20deployment%20from%20the%20project%20dashboard.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/deploy/env-variables>)
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-## 🚀 Getting Started with SAML Jackson
-
-Please star ⭐ the repo to support us! 😀
-
-Streamline your web application's authentication with Jackson, an SSO service supporting SAML and OpenID Connect protocols. Beyond enterprise-grade Single Sign-On, it also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.
-
-There are two ways to integrate SAML Jackson into an application. Depending on your use case, you can choose either of them. <br>
-
-1. [separate service](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) (Next.js application) Admin Portal out of the box for managing SSO and Directory Sync connections.
-2. [NPM library](https://boxyhq.com/docs/jackson/deploy/#as-a-separate-service) as an embedded library in your application.
-
-SAML/OIDC SSO service
-
-Jackson implements the SAML login flow as an OAuth 2.0 or OpenID Connect flow, abstracting away all the complexities of the SAML protocol. Integrate SAML with just a few lines of code. We also now support OpenID Connect providers.
-
-Try our hosted demo showcasing the SAML SP login flow [here](https://saml-demo.boxyhq.com), no SAML configuration required thanks to our [Mock SAML](https://mocksaml.com) service.
-
-## 🎦 Videos
-
-- SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A) (split into chapters to easily find what you are looking for)
-- SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
-
-## ✨ Demo
-
-- SAML IdP login flow showcasing self hosted [Mock SAML](https://mocksaml.com/saml/login)
-- SAML [demo flow](https://saml-demo.boxyhq.com/)
-
-## Here is what deploying SSO looks like with and without BoxyHQ
-
-<div align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/jackson/assets/66887028/2abf9852-8d0a-4116-9899-e85703be2fbb">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/jackson/assets/66887028/6aa15c53-7719-4eb4-870a-4a3c3d4c1f32">
-  <img alt="BoxyHQ Banner" src="https://github.com/boxyhq/jackson/assets/66887028/1dae6821-d8a5-4302-832f-f1736e284e8c">
-</picture>
-</div>
-
-## Documentation
-
-For full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
+![A quick demo of the admin portal without sound to show an overview of what to expect. It shows features such as SSO, the ability to set up SSO connections, Setup Links, Directory sync, and more](samljackson480.gif)
 
 ## Directory Sync
 
@@ -80,38 +23,126 @@ Directory sync helps organizations automate the provisioning and de-provisioning
 
 For complete documentation, visit [boxyhq.com/docs/directory-sync/overview](https://boxyhq.com/docs/directory-sync/overview)
 
-## Observability
+## 🌟 Why star this repository?
 
-We support first-class observability on the back of OpenTelemetry, refer [here](https://boxyhq.com/docs/jackson/observability) for more details.
+If you find this project helpful, please consider supporting us by starring [the repository](https://github.com/boxyhq/jackson) and sharing it with others. This helps others find the project, grow the community and ensure the long-term health of the project. 🙏
 
-## SBOM Reports (Software Bill Of Materials)
+- [SAML Jackson: Open Source Enterprise SSO And Directory Sync](#saml-jackson-open-source-enterprise-sso-and-directory-sync)
+  - [Directory Sync](#directory-sync)
+  - [🌟 Why star this repository?](#-why-star-this-repository)
+  - [🚀 Getting Started with SAML Jackson](#-getting-started-with-saml-jackson)
+    - [Try A Demo](#try-a-demo)
+    - [Deploying SAML Jackson as a separate service locally](#deploying-saml-jackson-as-a-separate-service-locally)
+      - [Prerequisites](#prerequisites)
+      - [Clone the repository](#clone-the-repository)
+      - [Install dependencies](#install-dependencies)
+      - [Setup environment variables](#setup-environment-variables)
+      - [Database](#database)
+      - [Start the development server](#start-the-development-server)
+    - [Documentation](#documentation)
+    - [Easy Cloud Deployment](#easy-cloud-deployment)
+  - [Videos](#videos)
+  - [End-to-End (E2E) tests](#end-to-end-e2e-tests)
+  - [About BoxyHQ](#about-boxyhq)
+  - [Security And Observability](#security-and-observability)
+    - [Observability](#observability)
+    - [SBOM Reports (Software Bill Of Materials)](#sbom-reports-software-bill-of-materials)
+    - [Container Signing and Verification](#container-signing-and-verification)
+    - [🛡️ Reporting Security Issues](#️-reporting-security-issues)
+  - [Contributing](#contributing)
+  - [💫 Support](#-support)
+  - [📌 License](#-license)
 
-We support SBOM reports, refer [here](https://boxyhq.com/docs/jackson/sbom) for more details.
+## 🚀 Getting Started with SAML Jackson
 
-## Container Signing and Verification
+There are two ways to integrate SAML Jackson into an application. Depending on your use case, you can choose either of them. <br>
 
-We support container image verification using cosign, refer [here](https://boxyhq.com/docs/jackson/container-signing) for more details.
+1. [As a separate service](https://boxyhq.com/docs/jackson/deploy/service) ([Next.js](https://nextjs.org/) application) This includes an admin portal out of the box for managing SSO and Directory Sync connections.
+2. [NPM library](https://boxyhq.com/docs/jackson/deploy/npm-library) as an embedded library in your application.
 
-### Development Setup
+### Try A Demo
+
+- Try our hosted demo showcasing the SAML service provider (SP) initiated [login flow here](https://saml-demo.boxyhq.com), which uses our [Mock SAML](https://mocksaml.com) IdP service.
+- Try an Identity Provider (IdP) initiated [login flow here](https://mocksaml.com/saml/login).
+
+### Deploying SAML Jackson as a separate service locally
+
+Let's get you to Hello SAML Jackson in no time.
+
+#### Prerequisites
+
+- [Node.js](https://nodejs.org/en) at version `18.14.2` or higher
+
+> It is generally a good idea to install and maintain Node.js versions using a version manager like [nvm](https://github.com/nvm-sh/nvm) or [nvs](https://github.com/jasongin/nvs) on Windows. More [information is available here](https://schalkneethling.com/posts/installing-node-and-managing-versions).
+
+#### Clone the repository
+
+```bash
+git clone https://github.com/boxyhq/jackson.git
+cd jackson
+```
+
+#### Install dependencies
+
+```bash
+npm i
+```
+
+#### Setup environment variables
+
+Create a `.env` from the existing `.env.example` file in the root of the project.
+
+```bash
+cp .env.example .env
+```
+
+> **Environment variable documentation:** Have a look at https://boxyhq.com/docs/jackson/deploy/env-variables for all of the available environment variables.
 
 #### Database
 
-To get up and running, we have a [docker-compose setup](_dev/docker-compose.yml) that will spawn all the supported databases. Ensure that the docker daemon is running on your machine and then run: `npm run dev-dbs`. In case you need a fresh start, destroy the docker containers using: `npm run dev-dbs-destroy` and run: `npm run dev-dbs`.
+For the rest of the setup, we will use a PostgreSQL database. The easiest way to get PostgreSQL up and running on macOS is by using Postgres.app. You can download it from [https://postgresapp.com/](https://postgresapp.com/).
 
-#### Development server
+> For other operating systems and alternative options for MacOS, please see the [documentation available on the Prisma website](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database).
 
-Copy the `.env.example` to `.env.local` and populate the values. Have a look at https://boxyhq.com/docs/jackson/deploy/env-variables for the available environment variables.
+#### Start the development server
 
-Run the dev server:
+Now that we have our database running we can start the development server. But before we do, we need a way to log into the admin portal.
 
-```zsh
-# Install the packages
-npm install
-# Start the server
+To log in to the admin portal we either need to [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
+
+In your `.env` find the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable. We need to provide an `email:password` combination that we can then use to log in to the admin portal. For example:
+
+```bash
+NEXTAUTH_ADMIN_CREDENTIALS=admin@example.com:password
+```
+
+Now we can start the development server:
+
+```bash
 npm run dev
 ```
 
-#### End-to-End (E2E) tests
+Open `http://localhost:5225` in your browser and you should be redirected to the login screen.
+
+At the login screen, you can now use the username and password you set in the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable to log in. Click "Sign In" and you should be logged in and see the SSO Connections page with no configured connections. We have reached Hello SAML Jackson!
+
+### Documentation
+
+For the full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
+
+### Easy Cloud Deployment
+
+Deploy SAML Jackson to the cloud with a single click using the following providers:
+
+[![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,DB_ENCRYPTION_KEY,DB_TTL,DB_CLEANUP_LIMIT,JACKSON_API_KEYS,EXTERNAL_URL,IDP_ENABLED,SAML_AUDIENCE,CLIENT_SECRET_VERIFIER,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,SMTP_FROM,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXTAUTH_ACL&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.EXTERNAL_URL%20(Usually%20https%3A%2F%2F%3Cproject-name-from-above%3E.vercel.app)%20can%20be%20set%20after%20deployment%20from%20the%20project%20dashboard.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/deploy/env-variables>)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+## Videos
+
+- SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A) (split into chapters to easily find what you are looking for)
+- SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
+
+## End-to-End (E2E) tests
 
 Create a `.env.test.local` file and populate the values. To execute the tests run:
 
@@ -119,33 +150,56 @@ Create a `.env.test.local` file and populate the values. To execute the tests ru
 npm run test:e2e
 ```
 
-## 🖳 Contributing
+## About BoxyHQ
 
-Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
+<a href="https://boxyhq.com/enterprise-sso">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/.github/assets/66887028/df1c9904-df2f-4515-b403-58b14a0e9093">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/.github/assets/66887028/e093a466-72ea-41c6-a292-4c39a150facd">
+  <img alt="BoxyHQ - Security building blocks for developers" src="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1" height="auto" width="400" />
+</picture>
+</a>
 
-Please try to create bug reports that are:
+BoxyHQ is on a mission to democratize enterprise readiness for developers one building block at a time. We are building a suite of security building blocks that are easy to use and integrate into your applications. Our goal is to make being enterprise-ready accessible to all developers, founders, and those responsible for the security of their internal applications regardless of their security expertise.
 
-- _Reproducible._ Include steps to reproduce the problem.
-- _Specific._ Include as much detail as possible: which version, what environment, etc.
-- _Unique._ Do not duplicate existing opened issues.
-- _Scoped to a Single Bug._ One bug per report.
+<a href="https://twitter.com/BoxyHQ"><img src="https://img.shields.io/twitter/follow/boxyhq?style=social" alt="Follow us on Twitter/X"></a>
+<a href="https://www.linkedin.com/company/boxyhq"><img src="https://img.shields.io/badge/LinkedIn-blue" alt="Connect with us on LinkedIn"></a>
+
+Community is core to our mission. We are building a community of developers, security enthusiasts, and founders who are passionate about security and building secure applications. We are building in the open and would love for you to join us on this journey.
+
+Join the community on Discord today.
+
+<a href="https://discord.gg/uyb7pYt4Pa"><img src="https://img.shields.io/discord/877585485235630130" alt="Join the community on Discord"></a>
+
+## Security And Observability
+
+### Observability
+
+We support first-class observability on the back of OpenTelemetry, refer [here](https://boxyhq.com/docs/jackson/observability) for more details.
+
+### SBOM Reports (Software Bill Of Materials)
+
+We support SBOM reports, refer [here](https://boxyhq.com/docs/jackson/sbom) for more details.
+
+### Container Signing and Verification
+
+We support container image verification using cosign, refer [here](https://boxyhq.com/docs/jackson/container-signing) for more details.
+
+### 🛡️ Reporting Security Issues
+
+[Responsible Disclosure](SECURITY.md)
+
+## Contributing
+
+Thank you for your interest in contributing to SAML Jackson! We are excited to welcome contributions from the community. Please refer to our [contributing guidelines](CONTRIBUTING.md) for more information.
 
 ## 💫 Support
 
 Reach out to the maintainers at one of the following places:
 
 - [GitHub Discussions](https://github.com/boxyhq/jackson/discussions)
-- [GitHub Issues](https://github.com/boxyhq/jackson/issues) (Bug reports, Contributions)
-
-## 🤩 Community
-
-- [Discord](https://discord.gg/uyb7pYt4Pa) (For live discussion with the Open-Source Community and BoxyHQ team)
-- [Twitter](https://twitter.com/BoxyHQ) (Follow us)
-- [Youtube](https://www.youtube.com/@boxyhq) (Watch community events and tutorials)
-
-## 🛡️ Reporting Security Issues
-
-[Responsible Disclosure](SECURITY.md)
+- [GitHub Issues](https://github.com/boxyhq/jackson/issues)
+- [Discord](https://discord.gg/uyb7pYt4Pa)
 
 ## 📌 License
 

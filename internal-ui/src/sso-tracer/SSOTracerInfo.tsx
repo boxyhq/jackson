@@ -37,6 +37,23 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
   const trace = data.data;
   const assertionType = trace.context.samlResponse ? 'Response' : trace.context.samlRequest ? 'Request' : '-';
 
+  let badgeText = '';
+  if (trace.context.isOIDCFederated) {
+    if (trace.context.requestedOIDCFlow) {
+      badgeText = t('bui-tracer-oidc-federation');
+    } else {
+      badgeText = t('bui-tracer-oauth2-federation');
+    }
+  } else if (trace.context.isSAMLFederated) {
+    badgeText = t('bui-tracer-saml-federation');
+  } else if (trace.context.isIdPFlow) {
+    badgeText = t('bui-tracer-idp-login');
+  } else if (trace.context.requestedOIDCFlow) {
+    badgeText = t('bui-tracer-oidc');
+  } else {
+    badgeText = t('bui-tracer-oauth2');
+  }
+
   return (
     <div className='space-y-3'>
       <PageHeader title={t('bui-tracer-title')} />
@@ -53,13 +70,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
               size='md'
               className='font-mono uppercase text-white'
               aria-label={t('bui-tracer-sp-protocol')!}>
-              {trace.context.requestedOIDCFlow
-                ? 'OIDC'
-                : trace.context.isSAMLFederated
-                  ? t('bui-tracer-saml-federation')
-                  : trace.context.isIdPFlow
-                    ? t('bui-tracer-idp-login')
-                    : t('bui-tracer-oauth2')}
+              {badgeText}
             </Badge>
           }
         />
@@ -81,7 +92,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
         {trace.context.redirectUri && (
           <ListItem
             term={
-              trace.context.isIDPFlow ? t('bui-tracer-default-redirect-url') : t('bui-tracer-redirect-uri')
+              trace.context.isIdPFlow ? t('bui-tracer-default-redirect-url') : t('bui-tracer-redirect-uri')
             }
             value={trace.context.redirectUri}
           />
