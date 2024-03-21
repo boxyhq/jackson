@@ -53,25 +53,25 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   } else {
     // Get counts for product
     // If type is not provided, get counts for both sso and dsync
-    const ssoPromises =
-      !type || type === 'sso'
-        ? products.map((product) =>
-            connectionAPIController.getCount({ name: IndexNames.Product, value: product })
-          )
-        : [];
-    const dsyncPromises =
-      !type || type === 'dsync'
-        ? products.map((product) =>
-            directorySyncController.directories.getCount({ name: IndexNames.Product, value: product })
-          )
-        : [];
+    let sso_connections_count = 0;
+    let dsync_connections_count = 0;
 
-    const ssoCounts = await Promise.all(ssoPromises);
-    const dsyncCounts = await Promise.all(dsyncPromises);
+    for (const product of products) {
+      if (product) {
+        if (!type || type === 'sso') {
+          const count = await connectionAPIController.getCount({ name: IndexNames.Product, value: product });
+          sso_connections_count += count || 0;
+        }
 
-    // reduce the outputs and calculate final count
-    const sso_connections_count = ssoCounts.reduce((a, b) => (a || 0) + (b || 0), 0);
-    const dsync_connections_count = dsyncCounts.reduce((a, b) => (a || 0) + (b || 0), 0);
+        if (!type || type === 'dsync') {
+          const count = await directorySyncController.directories.getCount({
+            name: IndexNames.Product,
+            value: product,
+          });
+          dsync_connections_count += count || 0;
+        }
+      }
+    }
 
     return res.json({
       data: {
