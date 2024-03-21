@@ -110,7 +110,7 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.0.3",
     "jose": "5.2.3",
-    "postcss": "8.4.37",
+    "postcss": "8.4.38",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.5.12",
     "release-it": "17.1.1",
