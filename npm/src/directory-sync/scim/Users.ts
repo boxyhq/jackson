@@ -2,11 +2,7 @@ import type { User, DatabaseStore, PaginationParams, Response } from '../../typi
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
 import { keyFromParts } from '../../db/utils';
-
-const indexNames = {
-  directoryIdUsername: 'directoryIdUsername',
-  directoryId: 'directoryId',
-};
+import { indexNames } from './utils';
 
 /**
  * @swagger

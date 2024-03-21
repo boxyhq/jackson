@@ -9,6 +9,7 @@ import type {
 } from '../../typings';
 import { Base } from './Base';
 import { webhookEventTTL } from '../utils';
+import { indexNames } from './utils';
 
 type GetAllParams = PaginationParams & {
   directoryId?: string;
@@ -81,7 +82,7 @@ export class WebhookEventsLogger extends Base {
     };
 
     await this.eventStore().put(id, log, {
-      name: 'directoryId',
+      name: indexNames.directoryId,
       value: directory.id,
     });
 
@@ -130,7 +131,7 @@ export class WebhookEventsLogger extends Base {
 
     if (directoryId) {
       const index = {
-        name: 'directoryId',
+        name: indexNames.directoryId,
         value: directoryId,
       };
 
@@ -152,7 +153,7 @@ export class WebhookEventsLogger extends Base {
     while (true) {
       const { data: events } = await this.eventStore().getByIndex(
         {
-          name: 'directoryId',
+          name: indexNames.directoryId,
           value: directoryId,
         },
         0,

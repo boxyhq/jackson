@@ -15,6 +15,7 @@ import { sendPayloadToWebhook } from '../../event/webhook';
 import { isConnectionActive } from '../../controller/utils';
 import { JacksonError } from '../../controller/error';
 import * as metrics from '../../opentelemetry/metrics';
+import { indexNames } from '../scim/utils';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -79,7 +80,7 @@ export class EventProcessor {
 
     const index = [
       {
-        name: 'directoryId',
+        name: indexNames.directoryId,
         value: event.directory_id,
       },
     ];

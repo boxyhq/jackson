@@ -4,11 +4,7 @@ import type { Group, DatabaseStore, PaginationParams, Response, GroupMembership 
 import * as dbutils from '../../db/utils';
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
-
-const indexNames = {
-  directoryIdDisplayname: 'directoryIdDisplayname',
-  directoryId: 'directoryId',
-};
+import { indexNames } from './utils';
 
 interface CreateGroupParams {
   directoryId: string;
@@ -171,7 +167,7 @@ export class Groups extends Base {
         user_id: userId,
       },
       {
-        name: 'groupId',
+        name: indexNames.groupId,
         value: groupId,
       }
     );
@@ -310,7 +306,7 @@ export class Groups extends Base {
     try {
       const { data } = (await this.store('members').getByIndex(
         {
-          name: 'groupId',
+          name: indexNames.groupId,
           value: groupId,
         },
         pageOffset,
@@ -362,7 +358,7 @@ export class Groups extends Base {
     while (true) {
       const { data: members } = await this.store('members').getByIndex(
         {
-          name: 'groupId',
+          name: indexNames.groupId,
           value: groupId,
         },
         0,
