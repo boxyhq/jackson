@@ -67,14 +67,9 @@ export class SyncProviders {
 
     const startTime = Date.now();
 
-    console.info('Starting the sync process');
-
     const allDirectories = await provider.getDirectories();
 
-    if (allDirectories.length === 0) {
-      console.info('No directories found. Skipping the sync process');
-      return;
-    }
+    console.info(`Starting the sync process for ${allDirectories.length} directories`);
 
     try {
       for (const directory of allDirectories) {
@@ -108,10 +103,6 @@ export class SyncProviders {
   // Schedule the next sync process
   private scheduleSync() {
     if (!this.cronInterval) {
-      return;
-    }
-
-    if (isJobRunning) {
       return;
     }
 

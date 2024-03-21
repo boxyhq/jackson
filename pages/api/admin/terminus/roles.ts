@@ -13,7 +13,6 @@ const getRoles = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data } = await axios.get<any>(`${terminusOptions.hostUrl}/v1/manage/roles`, {
     headers: {
       Authorization: `api-key ${terminusOptions.adminToken}`,
-      'x-access-token': terminusOptions.adminToken,
     },
   });
 
