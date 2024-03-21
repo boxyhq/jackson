@@ -36,7 +36,7 @@
     "eslint-plugin-react-refresh": "0.4.6",
     "prettier": "3.2.5",
     "react-daisyui": "5.0.0",
-    "typescript": "5.4.2",
+    "typescript": "5.4.3",
     "vite": "5.2.2"
   },
   "optionalDependencies": {
