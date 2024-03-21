@@ -38,8 +38,12 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController, directorySyncController } = await jackson();
+
+  // Products must be an array of strings
   const products = req.body.products as string[];
   const type = req.body.type ? (req.body.type as 'sso' | 'dsync') : undefined;
+
+  // Validate products
   if (!products) {
     throw { message: 'Missing products', statusCode: 400 };
   } else if (!Array.isArray(products)) {
@@ -47,6 +51,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   } else if (products.length > 50) {
     throw { message: 'Products must not exceed 50', statusCode: 400 };
   } else {
+    // Get counts for product
+    // If type is not provided, get counts for both sso and dsync
     const ssoPromises =
       !type || type === 'sso'
         ? products.map((product) =>
@@ -63,6 +69,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     const ssoCounts = await Promise.all(ssoPromises);
     const dsyncCounts = await Promise.all(dsyncPromises);
 
+    // reduce the outputs and calculate final count
     const sso_connections_count = ssoCounts.reduce((a, b) => (a || 0) + (b || 0), 0);
     const dsync_connections_count = dsyncCounts.reduce((a, b) => (a || 0) + (b || 0), 0);
 
