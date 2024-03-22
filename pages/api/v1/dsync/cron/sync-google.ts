@@ -7,9 +7,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { directorySyncController } = await jackson();
 
-    await directorySyncController.sync(directorySyncController.events.callback);
+    directorySyncController.sync();
 
-    res.status(200).json({ message: 'Sync completed' });
+    res.json({ message: 'Sync started' });
   } catch (e: any) {
     res.status(500).json({ message: e.message || 'Sync failed' });
   }

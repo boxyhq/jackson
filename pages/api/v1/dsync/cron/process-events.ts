@@ -7,9 +7,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { directorySyncController } = await jackson();
 
-    await directorySyncController.events.batch.process();
+    directorySyncController.events.batch.process();
 
-    res.status(200).json({ message: 'Processing completed' });
+    res.json({ message: 'Processing started' });
   } catch (e: any) {
     res.status(500).json({ message: e.message || 'Processing failed' });
   }

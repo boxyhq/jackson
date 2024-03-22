@@ -6,6 +6,7 @@ import type {
   IRequestHandler,
   JacksonOption,
   EventCallback,
+  CronLock,
 } from '../../typings';
 import { SyncUsers } from './syncUsers';
 import { SyncGroups } from './syncGroups';
@@ -17,46 +18,109 @@ interface SyncParams {
   opts: JacksonOption;
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
+  eventCallback: EventCallback;
+  eventLock: CronLock;
 }
 
-// Method to start the directory sync process
-// This method will be called by the directory sync cron job
-export const startSync = async (params: SyncParams, callback: EventCallback) => {
-  const { userController, groupController, opts, directories, requestHandler } = params;
+let isJobRunning = false;
+let intervalId: NodeJS.Timeout;
 
-  const { directory: provider } = newGoogleProvider({ directories, opts });
+export class SyncProviders {
+  private userController: IUsers;
+  private groupController: IGroups;
+  private directories: IDirectoryConfig;
+  private requestHandler: IRequestHandler;
+  private opts: JacksonOption;
+  private cronInterval: number | undefined;
+  private eventCallback: EventCallback;
+  private eventLock: CronLock;
 
-  const startTime = Date.now();
+  constructor({
+    userController,
+    groupController,
+    opts,
+    directories,
+    requestHandler,
+    eventCallback,
+    eventLock,
+  }: SyncParams) {
+    this.userController = userController;
+    this.groupController = groupController;
+    this.directories = directories;
+    this.requestHandler = requestHandler;
+    this.eventCallback = eventCallback;
+    this.opts = opts;
+    this.cronInterval = this.opts.dsync?.providers?.google.cronInterval;
+    this.eventLock = eventLock;
 
-  console.info('Starting the sync process');
-
-  const allDirectories = await provider.getDirectories();
-
-  if (allDirectories.length === 0) {
-    console.info('No directories found. Skipping the sync process');
-    return;
-  }
-
-  try {
-    for (const directory of allDirectories) {
-      const params = {
-        directory,
-        userController,
-        groupController,
-        provider,
-        requestHandler,
-        callback,
-      };
-
-      await new SyncUsers(params).sync();
-      await new SyncGroups(params).sync();
-      await new SyncGroupMembers(params).sync();
+    if (this.cronInterval) {
+      this.scheduleSync = this.scheduleSync.bind(this);
+      this.scheduleSync();
     }
-  } catch (e: any) {
-    console.error(e);
   }
 
-  const endTime = Date.now();
+  // Start the sync process
+  public async startSync() {
+    if (isJobRunning) {
+      console.info('A sync process is already running, skipping.');
+      return;
+    }
 
-  console.info(`Sync process completed in ${(endTime - startTime) / 1000} seconds`);
-};
+    if (!(await this.eventLock.acquire())) {
+      return;
+    }
+
+    isJobRunning = true;
+
+    const { directory: provider } = newGoogleProvider({ directories: this.directories, opts: this.opts });
+
+    const startTime = Date.now();
+
+    try {
+      const allDirectories = await provider.getDirectories();
+
+      console.info(`Starting the sync process for ${allDirectories.length} directories`);
+
+      for (const directory of allDirectories) {
+        const params = {
+          directory,
+          provider,
+          userController: this.userController,
+          groupController: this.groupController,
+          requestHandler: this.requestHandler,
+          callback: this.eventCallback,
+        };
+
+        await new SyncUsers(params).sync();
+        await new SyncGroups(params).sync();
+        await new SyncGroupMembers(params).sync();
+      }
+    } catch (e: any) {
+      console.error(' Error processing Google sync:', e);
+    }
+
+    await this.eventLock.release();
+
+    const endTime = Date.now();
+    console.info(`Sync process completed in ${(endTime - startTime) / 1000} seconds`);
+
+    isJobRunning = false;
+
+    if (this.cronInterval) {
+      this.scheduleSync();
+    }
+  }
+
+  // Schedule the next sync process
+  private scheduleSync() {
+    if (!this.cronInterval) {
+      return;
+    }
+
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+
+    intervalId = setInterval(() => this.startSync(), this.cronInterval * 1000);
+  }
+}

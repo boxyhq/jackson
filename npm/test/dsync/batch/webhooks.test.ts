@@ -56,13 +56,11 @@ tap.before(async () => {
     log_webhook_events: true,
   });
 
-  const eventCallback = directorySync.events.callback;
-
   // Add some users to generate events
-  await directorySync.requests.handle(requests.create(directory1, users[0]), eventCallback);
-  await directorySync.requests.handle(requests.create(directory1, users[1]), eventCallback);
-  await directorySync.requests.handle(requests.create(directory2, users[1]), eventCallback);
-  await directorySync.requests.handle(requests.create(directory2, users[0]), eventCallback);
+  await directorySync.requests.handle(requests.create(directory1, users[0]));
+  await directorySync.requests.handle(requests.create(directory1, users[1]));
+  await directorySync.requests.handle(requests.create(directory2, users[1]));
+  await directorySync.requests.handle(requests.create(directory2, users[0]));
 });
 
 tap.teardown(async () => {
