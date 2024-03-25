@@ -91,7 +91,7 @@
     "react-syntax-highlighter": "15.5.0",
     "react-tagsinput": "3.20.3",
     "remark-gfm": "3.0.1",
-    "sharp": "0.33.2",
+    "sharp": "0.33.3",
     "swr": "2.2.5"
   },
   "devDependencies": {
