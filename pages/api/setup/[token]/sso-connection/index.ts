@@ -109,6 +109,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     oidcClientId,
     oidcClientSecret,
     oidcDiscoveryUrl,
+    oidcMetadata,
   } = req.body;
 
   const connections = await connectionAPIController.getConnections({
@@ -134,6 +135,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
           oidcClientId,
           oidcClientSecret,
           oidcDiscoveryUrl,
+          oidcMetadata,
         }
       : undefined),
   };
