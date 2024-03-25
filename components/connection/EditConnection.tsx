@@ -41,46 +41,82 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
             {t('edit_sso_connection')}
           </h2>
         </div>
-
-        {connectionIsSAML && (
-          <EditSAMLConnection
-            displayHeader={false}
-            excludeFields={['label']}
-            classNames={BOXYHQ_UI_CSS}
-            variant='advanced'
-            urls={{
-              delete: apiUrl,
-              patch: apiUrl,
-              get: connectionFetchUrl,
-            }}
-            successCallback={({ operation }) =>
-              operation === 'UPDATE'
-                ? successToast(t('saved'))
-                : operation === 'DELETE'
-                  ? successToast(t('sso_connection_deleted_successfully'))
-                  : successToast(t('copied'))
-            }
-            errorCallback={(errMessage) => errorToast(errMessage)}
-          />
-        )}
-        {connectionIsOIDC && (
-          <EditOIDCConnection
-            variant='advanced'
-            urls={{
-              delete: apiUrl,
-              patch: apiUrl,
-              get: connectionFetchUrl,
-            }}
-            successCallback={({ operation }) =>
-              operation === 'UPDATE'
-                ? successToast(t('saved'))
-                : operation === 'DELETE'
-                  ? successToast(t('sso_connection_deleted_successfully'))
-                  : successToast(t('copied'))
-            }
-            errorCallback={(errMessage) => errorToast(errMessage)}
-          />
-        )}
+        <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+          {connectionIsSAML && (
+            <EditSAMLConnection
+              displayHeader={false}
+              excludeFields={['label']}
+              classNames={BOXYHQ_UI_CSS}
+              variant='advanced'
+              urls={{
+                delete: apiUrl,
+                patch: apiUrl,
+                get: connectionFetchUrl,
+              }}
+              successCallback={({ operation }) => {
+                operation === 'UPDATE'
+                  ? successToast(t('saved'))
+                  : operation === 'DELETE'
+                    ? successToast(t('sso_connection_deleted_successfully'))
+                    : successToast(t('copied'));
+                if (operation !== 'COPY') {
+                  router.replace(
+                    setupLinkToken
+                      ? `/setup/${setupLinkToken}/sso-connection`
+                      : isSettingsView
+                        ? '/admin/settings/sso-connection'
+                        : '/admin/sso-connection'
+                  );
+                }
+              }}
+              errorCallback={(errMessage) => errorToast(errMessage)}
+            />
+          )}
+          {connectionIsOIDC && (
+            <EditOIDCConnection
+              displayHeader={false}
+              variant='advanced'
+              excludeFields={
+                setupLinkToken
+                  ? [
+                      'name',
+                      'tenant',
+                      'description',
+                      'defaultRedirectUrl',
+                      'redirectUrl',
+                      'product',
+                      'oidcClientId',
+                      'label',
+                      'sortOrder',
+                    ]
+                  : ['label']
+              }
+              classNames={BOXYHQ_UI_CSS}
+              urls={{
+                delete: apiUrl,
+                patch: apiUrl,
+                get: connectionFetchUrl,
+              }}
+              successCallback={({ operation }) => {
+                operation === 'UPDATE'
+                  ? successToast(t('saved'))
+                  : operation === 'DELETE'
+                    ? successToast(t('sso_connection_deleted_successfully'))
+                    : successToast(t('copied'));
+                if (operation !== 'COPY') {
+                  router.replace(
+                    setupLinkToken
+                      ? `/setup/${setupLinkToken}/sso-connection`
+                      : isSettingsView
+                        ? '/admin/settings/sso-connection'
+                        : '/admin/sso-connection'
+                  );
+                }
+              }}
+              errorCallback={(errMessage) => errorToast(errMessage)}
+            />
+          )}
+        </div>
       </div>
     </>
   );
