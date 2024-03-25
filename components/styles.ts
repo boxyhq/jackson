@@ -10,8 +10,8 @@ export const BOXYHQ_UI_CSS = {
   textarea: styles['sdk-input'],
   confirmationPrompt: {
     button: {
-      ctoa: 'btn-md',
-      cancel: 'btn-md btn-outline',
+      ctoa: 'btn btn-md',
+      cancel: 'btn btn-md btn-outline',
     },
   },
   secretInput: 'input input-bordered',
