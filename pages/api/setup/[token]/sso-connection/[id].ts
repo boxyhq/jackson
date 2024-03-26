@@ -44,6 +44,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
       clientID: connection.clientID,
       clientSecret: connection.clientSecret,
       deactivated: connection.deactivated,
+      ...('forceAuthn' in connection ? { forceAuthn: connection.forceAuthn } : undefined),
       ...('idpMetadata' in connection ? { idpMetadata: {}, metadataUrl: connection.metadataUrl } : undefined),
       ...('oidcProvider' in connection ? { oidcProvider: connection.oidcProvider } : undefined),
     },
