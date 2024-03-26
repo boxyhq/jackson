@@ -68,89 +68,10 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
           errorCallback={(errMessage) => {
             errorToast(errMessage);
           }}
-          hideSave={true}
+          hideSave={setupLinkToken ? true : false}
           classNames={BOXYHQ_UI_CSS}
         />
       </div>
-      {/* {!setupLinkToken && (
-        <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-          <form onSubmit={onSubmit}>
-            <div className='flex flex-col space-y-3'>
-              <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text'>{t('directory_name')}</span>
-                </label>
-                <input
-                  type='text'
-                  id='name'
-                  className='input-bordered input w-full'
-                  required
-                  onChange={onChange}
-                  value={directoryUpdated.name}
-                />
-              </div>
-              {directory.type === 'google' && (
-                <div className='form-control w-full'>
-                  <label className='label'>
-                    <span className='label-text'>{t('directory_domain')}</span>
-                  </label>
-                  <input
-                    type='text'
-                    id='google_domain'
-                    className='input-bordered input w-full'
-                    onChange={onChange}
-                    value={directoryUpdated.google_domain}
-                  />
-                </div>
-              )}
-              <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text'>{t('webhook_url')}</span>
-                </label>
-                <input
-                  type='text'
-                  id='webhook.endpoint'
-                  className='input-bordered input w-full'
-                  onChange={onChange}
-                  value={directoryUpdated.webhook.endpoint}
-                />
-              </div>
-              <div className='form-control w-full'>
-                <label className='label'>
-                  <span className='label-text'>{t('webhook_secret')}</span>
-                </label>
-                <input
-                  type='text'
-                  id='webhook.secret'
-                  className='input-bordered input w-full'
-                  onChange={onChange}
-                  value={directoryUpdated.webhook.secret}
-                />
-              </div>
-              <div className='form-control w-full py-2'>
-                <div className='flex items-center'>
-                  <input
-                    id='log_webhook_events'
-                    type='checkbox'
-                    checked={directoryUpdated.log_webhook_events}
-                    onChange={onChange}
-                    className='h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600'
-                  />
-                  <label className='ml-2 text-sm font-medium text-gray-900 dark:text-gray-300'>
-                    {t('enable_webhook_events_logging')}
-                  </label>
-                </div>
-              </div>
-              <div>
-                <ButtonPrimary type='submit' loading={loading}>
-                  {t('save_changes')}
-                </ButtonPrimary>
-              </div>
-            </div>
-          </form>
-        </div>
-      )}
-      <DeleteDirectory directoryId={directoryId} setupLinkToken={setupLinkToken} /> */}
     </div>
   );
 };
