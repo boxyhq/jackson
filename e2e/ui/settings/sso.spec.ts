@@ -78,8 +78,8 @@ test.describe('Admin Portal SSO - SAML', () => {
     const editButton = page.getByText(TEST_SAML_SSO_CONNECTION_NAME).locator('..').getByLabel('Edit');
     await editButton.click();
     // click the delete and confirm deletion
-    await page.getByTestId('delete-connection').click();
-    await page.getByTestId('confirm-delete').click();
+    await page.getByRole('button', { name: 'Delete' }).click();
+    await page.getByRole('button', { name: 'Confirm' }).click();
     // check that the SSO connection is deleted from the connection list
     await expect(page.getByText(TEST_SAML_SSO_CONNECTION_NAME)).not.toBeVisible();
   });
@@ -154,8 +154,8 @@ test.describe('Admin Portal SSO - OIDC', () => {
         const editButton = page.getByText(TEST_OIDC_SSO_CONNECTION_NAME).locator('..').getByLabel('Edit');
         await editButton.click();
         // click the delete and confirm deletion
-        await page.getByTestId('delete-connection').click();
-        await page.getByTestId('confirm-delete').click();
+        await page.getByRole('button', { name: 'Delete' }).click();
+        await page.getByRole('button', { name: 'Confirm' }).click();
         // check that the SSO connection is deleted from the connection list
         await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).not.toBeVisible();
       });
