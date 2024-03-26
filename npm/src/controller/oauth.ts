@@ -479,7 +479,14 @@ export class OAuthController implements IOAuthController {
         code_challenge,
         code_challenge_method,
         requested,
-        oidcFederated: fedApp ? { redirectUrl: fedApp.redirectUrl, id: fedApp.id } : undefined,
+        oidcFederated: fedApp
+          ? {
+              redirectUrl: fedApp.redirectUrl,
+              id: fedApp.id,
+              clientID: fedApp.clientID,
+              clientSecret: fedApp.clientSecret,
+            }
+          : undefined,
       };
       await this.sessionStore.put(
         sessionId,
@@ -1049,6 +1056,16 @@ export class OAuthController implements IOAuthController {
 
       if (codeVal.session.code_challenge !== cv) {
         throw new JacksonError('Invalid code_verifier', 401);
+      }
+
+      // For Federation flow, we need to verify the client_secret
+      if (client_id?.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
+        if (
+          client_id !== codeVal.session?.oidcFederated?.clientID ||
+          client_secret !== codeVal.session?.oidcFederated?.clientSecret
+        ) {
+          throw new JacksonError('Invalid client_id or client_secret', 401);
+        }
       }
     } else if (client_id && client_secret) {
       // check if we have an encoded client_id
