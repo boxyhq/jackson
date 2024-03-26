@@ -8,7 +8,7 @@ import { WebhookEventsLogger } from './scim/WebhookEventsLogger';
 import { ApiError } from '../typings';
 import { RequestHandler } from './request';
 import { EventProcessor } from './batch-events/queue';
-import { EventLock as Lock } from './batch-events/lock';
+import { CronLock as Lock } from '../cron/lock';
 
 export type IDirectorySyncController = Awaited<ReturnType<typeof directorySync>>;
 export type IDirectoryConfig = InstanceType<typeof DirectoryConfig>;
@@ -19,7 +19,7 @@ export type IGroups = InstanceType<typeof Groups>;
 export type IWebhookEventsLogger = InstanceType<typeof WebhookEventsLogger>;
 export type IRequestHandler = InstanceType<typeof RequestHandler>;
 export type IEventProcessor = InstanceType<typeof EventProcessor>;
-export type EventLock = InstanceType<typeof Lock>;
+export type CronLock = InstanceType<typeof Lock>;
 
 export type DirectorySyncEventType =
   | 'user.created'

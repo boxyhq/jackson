@@ -1,4 +1,3 @@
-import os from 'os';
 import _ from 'lodash';
 import { randomUUID } from 'crypto';
 
@@ -8,14 +7,14 @@ import type {
   IDirectoryConfig,
   Storable,
   JacksonOption,
-  EventLock,
+  CronLock,
   IWebhookEventsLogger,
 } from '../../typings';
-import { eventLockTTL } from '../utils';
 import { sendPayloadToWebhook } from '../../event/webhook';
 import { isConnectionActive } from '../../controller/utils';
 import { JacksonError } from '../../controller/error';
 import * as metrics from '../../opentelemetry/metrics';
+import { indexNames } from '../scim/utils';
 
 enum EventStatus {
   PENDING = 'PENDING',
@@ -34,21 +33,21 @@ interface QueuedEvent {
 interface DirectoryEventsParams {
   opts: JacksonOption;
   eventStore: Storable;
-  eventLock: EventLock;
+  eventLock: CronLock;
   directories: IDirectoryConfig;
   webhookLogs: IWebhookEventsLogger;
 }
 
 let isJobRunning = false;
-const lockKey = os.hostname();
-const lockRenewalInterval = (eventLockTTL / 2) * 1000;
+let intervalId: NodeJS.Timeout;
 
 export class EventProcessor {
   private eventStore: Storable;
-  private eventLock: EventLock;
+  private eventLock: CronLock;
   private opts: JacksonOption;
   private directories: IDirectoryConfig;
   private webhookLogs: IWebhookEventsLogger;
+  private cronInterval: number | undefined;
 
   constructor({ opts, eventStore, eventLock, directories, webhookLogs }: DirectoryEventsParams) {
     this.opts = opts;
@@ -56,6 +55,12 @@ export class EventProcessor {
     this.eventStore = eventStore;
     this.directories = directories;
     this.webhookLogs = webhookLogs;
+    this.cronInterval = this.opts.dsync?.webhookBatchCronInterval;
+
+    if (this.cronInterval) {
+      this.scheduleWorker = this.scheduleWorker.bind(this);
+      this.scheduleWorker();
+    }
   }
 
   // Push the new event to the database
@@ -72,7 +77,7 @@ export class EventProcessor {
 
     const index = [
       {
-        name: 'directoryId',
+        name: indexNames.directoryId,
         value: event.directory_id,
       },
     ];
@@ -82,28 +87,8 @@ export class EventProcessor {
     return record;
   }
 
-  // Process the events and send them to the webhooks as a batch
-  public async process() {
-    if (isJobRunning) {
-      return;
-    }
-
-    if (!(await this.eventLock.acquire(lockKey))) {
-      return;
-    }
-
-    isJobRunning = true;
-
-    // Renew the lock periodically
-    const intervalId = setInterval(async () => {
-      this.eventLock.renew(lockKey);
-    }, lockRenewalInterval);
-
-    const batchSize = this.opts.dsync?.webhookBatchSize;
-
-    if (!batchSize) {
-      throw new JacksonError('Batch size not defined');
-    }
+  private async _process() {
+    const batchSize = this.opts.dsync?.webhookBatchSize || 50;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -111,8 +96,7 @@ export class EventProcessor {
       const eventsCount = events.length;
 
       if (eventsCount === 0) {
-        clearInterval(intervalId);
-        await this.eventLock.release(lockKey);
+        await this.eventLock.release();
         break;
       }
 
@@ -183,8 +167,32 @@ export class EventProcessor {
         }
       }
     }
+  }
+
+  // Process the events and send them to the webhooks as a batch
+  public async process() {
+    if (isJobRunning) {
+      console.info('A batch process is already running, skipping.');
+      return;
+    }
+
+    if (!(await this.eventLock.acquire())) {
+      return;
+    }
+
+    isJobRunning = true;
+
+    try {
+      this._process();
+    } catch (e: any) {
+      console.error(' Error processing webhooks batch:', e);
+    }
 
     isJobRunning = false;
+
+    if (this.cronInterval) {
+      this.scheduleWorker();
+    }
   }
 
   // Fetch next batch of events from the database
@@ -259,5 +267,17 @@ export class EventProcessor {
   private async notifyAllEventsFailed() {
     metrics.increment('dsyncEventsBatchFailed');
     console.error('All events in the batch have failed. Please check the system.');
+  }
+
+  public async scheduleWorker() {
+    if (!this.cronInterval) {
+      return;
+    }
+
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+
+    intervalId = setInterval(() => this.process(), this.cronInterval * 1000);
   }
 }

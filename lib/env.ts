@@ -93,6 +93,9 @@ const jacksonOptions: JacksonOption = {
     webhookBatchSize: process.env.DSYNC_WEBHOOK_BATCH_SIZE
       ? Number(process.env.DSYNC_WEBHOOK_BATCH_SIZE)
       : undefined,
+    webhookBatchCronInterval: process.env.DSYNC_WEBHOOK_BATCH_CRON_INTERVAL
+      ? Number(process.env.DSYNC_WEBHOOK_BATCH_CRON_INTERVAL)
+      : undefined,
     debugWebhooks: process.env.DSYNC_DEBUG_WEBHOOKS === 'true',
     providers: {
       google: {
@@ -100,6 +103,9 @@ const jacksonOptions: JacksonOption = {
         clientSecret: process.env.DSYNC_GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET || '',
         authorizePath: googleDSyncAuthorizePath,
         callbackPath: googleDSyncCallbackPath,
+        cronInterval: process.env.DSYNC_GOOGLE_CRON_INTERVAL
+          ? Number(process.env.DSYNC_GOOGLE_CRON_INTERVAL)
+          : undefined,
       },
     },
   },

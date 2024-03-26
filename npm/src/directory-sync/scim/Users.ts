@@ -2,11 +2,7 @@ import type { User, DatabaseStore, PaginationParams, Response } from '../../typi
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
 import { keyFromParts } from '../../db/utils';
-
-const indexNames = {
-  directoryIdUsername: 'directoryIdUsername',
-  directoryId: 'directoryId',
-};
+import { indexNames } from './utils';
 
 /**
  * @swagger
@@ -215,14 +211,16 @@ export class Users extends Base {
 
   // Delete all users from a directory
   async deleteAll(directoryId: string) {
-    const index = {
-      name: indexNames.directoryId,
-      value: directoryId,
-    };
-
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const { data: users } = await this.store('users').getByIndex(index, 0, this.bulkDeleteBatchSize);
+      const { data: users } = await this.store('users').getByIndex(
+        {
+          name: indexNames.directoryId,
+          value: directoryId,
+        },
+        0,
+        this.bulkDeleteBatchSize
+      );
 
       if (!users || users.length === 0) {
         break;

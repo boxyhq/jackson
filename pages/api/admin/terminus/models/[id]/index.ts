@@ -20,7 +20,6 @@ const getModel = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data } = await axios.get<any>(getTerminusUrl(id), {
     headers: {
       Authorization: `api-key ${terminusOptions.adminToken}`,
-      'x-access-token': terminusOptions.adminToken, // TODO: Remove this
     },
   });
 
@@ -36,7 +35,6 @@ const saveModel = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data } = await axios.post<any>(getTerminusUrl(id), req.body, {
     headers: {
       Authorization: `api-key ${terminusOptions.adminToken}`,
-      'x-access-token': terminusOptions.adminToken, // TODO: Remove this
     },
   });
 
