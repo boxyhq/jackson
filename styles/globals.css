@@ -60,6 +60,10 @@ a {
     @apply text-white;
   }
 
+  .btn-error:focus-visible {
+    @apply outline-error;
+  }
+
   .modal-box {
     @apply rounded;
   }
