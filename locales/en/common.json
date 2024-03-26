@@ -158,6 +158,8 @@
   "bui-shared-next": "Next",
   "bui-shared-previous": "Previous",
   "bui-shared-delete": "Delete",
+  "bui-shared-hide": "Hide",
+  "bui-shared-show": "Show",
   "bui-wku-heading": "Here are the set of URIs you would need access to:",
   "bui-wku-idp-configuration-links": "Identity Provider Configuration links",
   "bui-wku-desc-idp-configuration": "Links for SAML/OIDC IdP setup",

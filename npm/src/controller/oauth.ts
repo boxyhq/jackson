@@ -479,7 +479,14 @@ export class OAuthController implements IOAuthController {
         code_challenge,
         code_challenge_method,
         requested,
-        oidcFederated: fedApp ? { redirectUrl: fedApp.redirectUrl, id: fedApp.id } : undefined,
+        oidcFederated: fedApp
+          ? {
+              redirectUrl: fedApp.redirectUrl,
+              id: fedApp.id,
+              clientID: fedApp.clientID,
+              clientSecret: fedApp.clientSecret,
+            }
+          : undefined,
       };
       await this.sessionStore.put(
         sessionId,
@@ -1010,11 +1017,24 @@ export class OAuthController implements IOAuthController {
    *             token_type: bearer
    *             expires_in: 300
    */
-  public async token(body: OAuthTokenReq): Promise<OAuthTokenRes> {
+  public async token(body: OAuthTokenReq, authHeader?: string | null): Promise<OAuthTokenRes> {
+    let basic_client_id: string | undefined;
+    let basic_client_secret: string | undefined;
+    try {
+      if (authHeader) {
+        // Authorization: Basic {Base64(<client_id>:<client_secret>)}
+        const base64Credentials = authHeader.split(' ')[1];
+        const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+        [basic_client_id, basic_client_secret] = credentials.split(':');
+      }
+    } catch (err) {
+      // no-op
+    }
+
     const { code, grant_type = 'authorization_code', redirect_uri } = body;
     const client_id = 'client_id' in body ? body.client_id : undefined;
-    const client_secret = 'client_secret' in body ? body.client_secret : undefined;
-    const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
+    const client_secret = 'client_secret' in body ? body.client_secret : basic_client_id;
+    const code_verifier = 'code_verifier' in body ? body.code_verifier : basic_client_secret;
 
     metrics.increment('oauthToken');
 
@@ -1049,6 +1069,16 @@ export class OAuthController implements IOAuthController {
 
       if (codeVal.session.code_challenge !== cv) {
         throw new JacksonError('Invalid code_verifier', 401);
+      }
+
+      // For Federation flow, we need to verify the client_secret
+      if (client_id?.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
+        if (
+          client_id !== codeVal.session?.oidcFederated?.clientID ||
+          client_secret !== codeVal.session?.oidcFederated?.clientSecret
+        ) {
+          throw new JacksonError('Invalid client_id or client_secret', 401);
+        }
       }
     } else if (client_id && client_secret) {
       // check if we have an encoded client_id
