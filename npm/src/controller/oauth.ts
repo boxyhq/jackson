@@ -1017,11 +1017,24 @@ export class OAuthController implements IOAuthController {
    *             token_type: bearer
    *             expires_in: 300
    */
-  public async token(body: OAuthTokenReq): Promise<OAuthTokenRes> {
+  public async token(body: OAuthTokenReq, authHeader?: string | null): Promise<OAuthTokenRes> {
+    let basic_client_id: string | undefined;
+    let basic_client_secret: string | undefined;
+    try {
+      if (authHeader) {
+        // Authorization: Basic {Base64(<client_id>:<client_secret>)}
+        const base64Credentials = authHeader.split(' ')[1];
+        const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+        [basic_client_id, basic_client_secret] = credentials.split(':');
+      }
+    } catch (err) {
+      // no-op
+    }
+
     const { code, grant_type = 'authorization_code', redirect_uri } = body;
     const client_id = 'client_id' in body ? body.client_id : undefined;
-    const client_secret = 'client_secret' in body ? body.client_secret : undefined;
-    const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
+    const client_secret = 'client_secret' in body ? body.client_secret : basic_client_id;
+    const code_verifier = 'code_verifier' in body ? body.code_verifier : basic_client_secret;
 
     metrics.increment('oauthToken');
 

@@ -12,7 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const { oauthController } = await jackson();
-    const result = await oauthController.token(req.body);
+    const authHeader = req.headers['authorization'];
+    const result = await oauthController.token(req.body, authHeader);
 
     res.json(result);
   } catch (err: any) {
