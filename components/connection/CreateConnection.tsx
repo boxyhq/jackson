@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router';
-import { type AdminPortalSSODefaults } from './utils';
 import { errorToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
 import { LinkBack } from '@components/LinkBack';
 import { CreateSSOConnection } from '@boxyhq/react-ui/sso';
 import { BOXYHQ_UI_CSS } from '@components/styles';
+import { AdminPortalSSODefaults } from '@lib/utils';
 
 const CreateConnection = ({
   isSettingsView = false,
