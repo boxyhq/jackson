@@ -45,7 +45,21 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
           {connectionIsSAML && (
             <EditSAMLConnection
               displayHeader={false}
-              excludeFields={['label']}
+              displayInfo={setupLinkToken ? false : true}
+              excludeFields={
+                setupLinkToken
+                  ? [
+                      'name',
+                      'tenant',
+                      'description',
+                      'defaultRedirectUrl',
+                      'redirectUrl',
+                      'product',
+                      'label',
+                      'sortOrder',
+                    ]
+                  : ['label']
+              }
               classNames={BOXYHQ_UI_CSS}
               variant='advanced'
               urls={{
@@ -75,6 +89,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
           {connectionIsOIDC && (
             <EditOIDCConnection
               displayHeader={false}
+              displayInfo={setupLinkToken ? false : true}
               variant='advanced'
               excludeFields={
                 setupLinkToken
