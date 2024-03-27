@@ -1032,9 +1032,9 @@ export class OAuthController implements IOAuthController {
     }
 
     const { code, grant_type = 'authorization_code', redirect_uri } = body;
-    const client_id = 'client_id' in body ? body.client_id : undefined;
-    const client_secret = 'client_secret' in body ? body.client_secret : basic_client_id;
-    const code_verifier = 'code_verifier' in body ? body.code_verifier : basic_client_secret;
+    const client_id = 'client_id' in body ? body.client_id : basic_client_id;
+    const client_secret = 'client_secret' in body ? body.client_secret : basic_client_secret;
+    const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
     metrics.increment('oauthToken');
 
