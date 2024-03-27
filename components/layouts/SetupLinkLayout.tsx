@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import InvalidSetupLinkAlert from '@components/setup-link/InvalidSetupLinkAlert';
-import Loading from '@components/Loading';
+import { Loading } from '@boxyhq/internal-ui';
 import useSetupLink from '@lib/ui/hooks/useSetupLink';
 import { useTranslation } from 'next-i18next';
 import { hexToOklch } from '@lib/color';

@@ -4,8 +4,7 @@ import { useTranslation } from 'next-i18next';
 import type { Directory } from '@boxyhq/saml-jackson';
 import type { ApiResponse } from 'types';
 import { errorToast, successToast } from '@components/Toaster';
-import ConfirmationModal from '@components/ConfirmationModal';
-import { ButtonDanger } from '@boxyhq/internal-ui';
+import { ButtonDanger, ConfirmationModal } from '@boxyhq/internal-ui';
 
 export const DeleteDirectory = ({
   directoryId,

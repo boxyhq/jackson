@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import Loading from '@components/Loading';
+import { Loading } from '@boxyhq/internal-ui';
 import useSetupLink from '@lib/ui/hooks/useSetupLink';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 

@@ -11,8 +11,7 @@ Blockly.setLocale(locale);
 
 import { generateModel } from '@components/terminus/blocks/generator';
 import { errorToast, successToast } from '@components/Toaster';
-import ConfirmationModal from '@components/ConfirmationModal';
-import { ButtonBase, ButtonPrimary } from '@boxyhq/internal-ui';
+import { ButtonBase, ButtonPrimary, ConfirmationModal } from '@boxyhq/internal-ui';
 
 function BlocklyComponent(props) {
   const { t } = useTranslation('common');

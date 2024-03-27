@@ -1,4 +1,4 @@
-import EmptyState from './EmptyState';
+import { EmptyState } from '@boxyhq/internal-ui';
 
 const LicenseRequired = () => {
   return (
