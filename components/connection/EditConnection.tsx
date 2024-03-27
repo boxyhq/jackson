@@ -45,6 +45,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
           {connectionIsSAML && (
             <EditSAMLConnection
               displayHeader={false}
+              displayIdpMetadata={true}
               displayInfo={setupLinkToken ? false : true}
               excludeFields={
                 setupLinkToken

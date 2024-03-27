@@ -233,7 +233,8 @@ export class SetupLinkController {
     }
 
     const token = crypto.randomBytes(24).toString('hex');
-    const expiryInDays = expiryDays || this.opts.setupLinkExpiryDays || 3;
+    const expiryInDays =
+      typeof expiryDays === 'number' && expiryDays > 0 ? expiryDays : this.opts.setupLinkExpiryDays || 3;
     const setupID = dbutils.keyDigest(dbutils.keyFromParts(tenant, product, service));
 
     const setupLink: SetupLink = {
