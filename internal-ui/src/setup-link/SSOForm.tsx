@@ -168,6 +168,7 @@ export const SSOForm = ({
                 className='input input-bordered w-full text-sm'
                 name='expiryDays'
                 required
+                min={1}
                 onChange={formik.handleChange}
                 value={formik.values.expiryDays}
               />
