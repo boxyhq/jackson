@@ -17,7 +17,7 @@ import { jacksonOptions } from '@lib/env';
 import { identityProviders } from '@lib/constants';
 import Footer from '@components/setup-link-instructions/Footer';
 import NextButton from '@components/setup-link-instructions/NextButton';
-import { InputWithCopyButton } from '@components/ClipboardButton';
+import { InputWithCopyButton } from '@boxyhq/internal-ui';
 import PreviousButton from '@components/setup-link-instructions/PreviousButton';
 import CreateSSOConnection from '@components/setup-link-instructions/CreateSSOConnection';
 import SelectIdentityProviders from '@components/setup-link-instructions/SelectIdentityProviders';

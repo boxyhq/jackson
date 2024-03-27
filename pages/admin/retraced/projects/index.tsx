@@ -7,11 +7,10 @@ import { useProjects } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
 import { useTranslation } from 'next-i18next';
 import router from 'next/router';
-import { Pagination, pageLimit } from '@boxyhq/internal-ui';
+import { Pagination, pageLimit, Table } from '@boxyhq/internal-ui';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import { LinkPrimary } from '@components/LinkPrimary';
 import { errorToast } from '@components/Toaster';
-import { Table } from '@components/table/Table';
 
 const ProjectList: NextPage = () => {
   const { t } = useTranslation('common');

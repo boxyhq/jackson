@@ -2,7 +2,7 @@ import type { Project } from 'types/retraced';
 import CodeSnippet from '@components/retraced/CodeSnippet';
 import { useState } from 'react';
 import { Select } from 'react-daisyui';
-import { InputWithCopyButton } from '@components/ClipboardButton';
+import { InputWithCopyButton } from '@boxyhq/internal-ui';
 import { useTranslation } from 'next-i18next';
 
 const ProjectDetails = (props: { project: Project; host?: string }) => {

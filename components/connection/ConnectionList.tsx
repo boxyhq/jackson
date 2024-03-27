@@ -2,9 +2,8 @@ import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { LinkPrimary } from '@components/LinkPrimary';
-import { InputWithCopyButton } from '@components/ClipboardButton';
 import { ConnectionList } from '@boxyhq/react-ui/sso';
-import { pageLimit } from '@boxyhq/internal-ui';
+import { InputWithCopyButton, pageLimit } from '@boxyhq/internal-ui';
 
 const SSOConnectionList = ({
   setupLinkToken,

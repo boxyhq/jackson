@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import { useTranslation, Trans } from 'next-i18next';
 import jackson from '@lib/jackson';
-import { InputWithCopyButton } from '@components/ClipboardButton';
+import { InputWithCopyButton } from '@boxyhq/internal-ui';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Toaster } from '@components/Toaster';
 
