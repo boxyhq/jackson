@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
-import { LinkBack } from '@components/LinkBack';
+import { LinkBack } from '@boxyhq/internal-ui';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import { EditSAMLConnection, EditOIDCConnection } from '@boxyhq/react-ui/sso';
 import { BOXYHQ_UI_CSS } from '@components/styles';

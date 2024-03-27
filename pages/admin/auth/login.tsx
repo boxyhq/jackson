@@ -7,7 +7,7 @@ import { useSession, getCsrfToken, signIn, SessionProvider } from 'next-auth/rea
 import { useTranslation, Trans } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toaster';
-import { ButtonOutline } from '@components/ButtonOutline';
+import { ButtonOutline } from '@boxyhq/internal-ui';
 import Loading from '@components/Loading';
 import { Login as SSOLogin } from '@boxyhq/react-ui/sso';
 import { adminPortalSSODefaults } from '@lib/env';

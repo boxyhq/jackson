@@ -5,7 +5,7 @@ import ProjectDetails from '@components/retraced/ProjectDetails';
 import { useProject } from '@lib/ui/retraced';
 import Loading from '@components/Loading';
 import ErrorMessage from '@components/Error';
-import { LinkBack } from '@components/LinkBack';
+import { LinkBack } from '@boxyhq/internal-ui';
 import { retracedOptions } from '@lib/env';
 
 export interface Props {

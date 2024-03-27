@@ -9,11 +9,10 @@ import { maskSetup } from '@components/terminus/blocks/customblocks';
 import locale from 'blockly/msg/en';
 Blockly.setLocale(locale);
 
-import { ButtonPrimary } from '@components/ButtonPrimary';
 import { generateModel } from '@components/terminus/blocks/generator';
 import { errorToast, successToast } from '@components/Toaster';
 import ConfirmationModal from '@components/ConfirmationModal';
-import { ButtonBase } from '@components/ButtonBase';
+import { ButtonBase, ButtonPrimary } from '@boxyhq/internal-ui';
 
 function BlocklyComponent(props) {
   const { t } = useTranslation('common');

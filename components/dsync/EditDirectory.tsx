@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
-import { LinkBack } from '@components/LinkBack';
+import { LinkBack } from '@boxyhq/internal-ui';
 import Loading from '@components/Loading';
 import useDirectory from '@lib/ui/hooks/useDirectory';
 import { EditDirectory as EditDSync } from '@boxyhq/react-ui/dsync';

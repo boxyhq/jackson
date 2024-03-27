@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
-import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonPrimary } from '@boxyhq/internal-ui';
 import { errorToast, successToast } from '@components/Toaster';
 import type { ApiResponse } from 'types';
 import type { AdminPortalBranding } from '@boxyhq/saml-jackson';

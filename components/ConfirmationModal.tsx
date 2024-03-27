@@ -1,8 +1,6 @@
 import Modal from './Modal';
 import { useTranslation } from 'next-i18next';
-import { ButtonOutline } from './ButtonOutline';
-import { ButtonDanger } from './ButtonDanger';
-import { ButtonBase } from './ButtonBase';
+import { ButtonBase, ButtonDanger, ButtonOutline } from '@boxyhq/internal-ui';
 
 interface Props {
   visible: boolean;
