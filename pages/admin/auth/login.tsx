@@ -125,11 +125,11 @@ const Login = ({
                 <div className='mt-6'>
                   <div className='flex flex-col gap-3'>
                     <label className='block text-sm font-medium' htmlFor='email'>
-                      {t('email')}
+                      {t('bui-shared-email')}
                       <label>
                         <input
                           type='email'
-                          placeholder={t('email')}
+                          placeholder={t('bui-shared-email')}
                           className='input-bordered input mt-2 w-full rounded-md'
                           required
                           onChange={(e) => {

@@ -57,7 +57,7 @@ export const DeleteDirectory = ({
           onClick={() => {
             setDelModalVisible(true);
           }}>
-          {t('delete')}
+          {t('bui-shared-delete')}
         </ButtonDanger>
       </section>
       <ConfirmationModal

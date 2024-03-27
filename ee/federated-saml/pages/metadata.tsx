@@ -59,7 +59,7 @@ const Metadata = ({ metadata, hasValidLicense }: MetadataProps) => {
                 <InputWithCopyButton text={metadata.ssoUrl} label={t('sso_url')} />
               </div>
               <div className='form-control w-full'>
-                <InputWithCopyButton text={metadata.entityId} label={t('entity_id')} />
+                <InputWithCopyButton text={metadata.entityId} label={t('bui-fs-entity-id')} />
               </div>
               <div className='form-control w-full'>
                 <label className='label'>
@@ -70,7 +70,7 @@ const Metadata = ({ metadata, hasValidLicense }: MetadataProps) => {
                         href='/.well-known/saml.cer'
                         target='_blank'
                         className='label-text font-bold text-gray-500 hover:link-primary'>
-                        {t('download')}
+                        {t('bui-wku-download')}
                       </Link>
                       <CopyToClipboardButton text={metadata.x509cert.trim()} />
                     </span>

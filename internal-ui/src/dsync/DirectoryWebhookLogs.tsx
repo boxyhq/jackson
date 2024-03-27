@@ -86,7 +86,7 @@ export const DirectoryWebhookLogs = ({
     },
     {
       key: 'actions',
-      label: t('bui-dsync-actions'),
+      label: t('bui-shared-actions'),
       wrap: true,
       dataIndex: null,
     },

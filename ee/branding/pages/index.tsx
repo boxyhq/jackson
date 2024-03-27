@@ -142,7 +142,7 @@ const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
               </label>
             </div>
             <div className='mt-5'>
-              <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
+              <ButtonPrimary loading={loading}>{t('bui-shared-save-changes')}</ButtonPrimary>
             </div>
           </div>
         </form>

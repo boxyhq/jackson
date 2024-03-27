@@ -45,7 +45,7 @@ const SSOConnectionList = ({
               Icon={LinkIcon}
               href='/admin/sso-connection/setup-link/new'
               data-testid='create-setup-link'>
-              {t('new_setup_link')}
+              {t('bui-sl-new-link')}
             </LinkPrimary>
           )}
           <LinkPrimary href={createConnectionUrl} data-testid='create-connection'>

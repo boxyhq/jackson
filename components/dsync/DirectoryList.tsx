@@ -24,7 +24,7 @@ const DSyncDirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => 
         <div className='flex gap-2'>
           {!setupLinkToken && (
             <LinkPrimary Icon={LinkIcon} href='/admin/directory-sync/setup-link/new'>
-              {t('new_setup_link')}
+              {t('bui-sl-new-link')}
             </LinkPrimary>
           )}
           <LinkPrimary href={createDirectoryUrl}>{t('new_directory')}</LinkPrimary>

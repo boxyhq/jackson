@@ -66,7 +66,7 @@ export const DirectoryUsers = ({
     },
     {
       key: 'email',
-      label: t('bui-dsync-email'),
+      label: t('bui-shared-email'),
       wrap: true,
       dataIndex: 'email',
     },
@@ -78,7 +78,7 @@ export const DirectoryUsers = ({
     },
     {
       key: 'actions',
-      label: t('bui-dsync-actions'),
+      label: t('bui-shared-actions'),
       wrap: true,
       dataIndex: null,
     },
@@ -107,7 +107,7 @@ export const DirectoryUsers = ({
         if (dataIndex === 'active') {
           return {
             badge: {
-              text: user[dataIndex] ? t('bui-dsync-active') : t('bui-dsync-suspended'),
+              text: user[dataIndex] ? t('bui-shared-active') : t('bui-dsync-suspended'),
               color: user[dataIndex] ? 'success' : 'warning',
             },
           };

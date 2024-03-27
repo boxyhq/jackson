@@ -49,7 +49,7 @@ export const TableBody = ({
       <tbody>
         <tr>
           <td colSpan={cols.length} className='px-6 py-3 text-center text-sm text-gray-500'>
-            {t('no_more_results')}
+            {t('bui-shared-no-more-results')}
           </td>
         </tr>
       </tbody>

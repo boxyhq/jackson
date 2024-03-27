@@ -9,7 +9,7 @@ export const CopyToClipboardButton = ({ text }: { text: string }) => {
 
   return (
     <IconButton
-      tooltip={t('copy')}
+      tooltip={t('bui-shared-copy')}
       Icon={ClipboardDocumentIcon}
       className='hover:text-primary'
       onClick={() => {

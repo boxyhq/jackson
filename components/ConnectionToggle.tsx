@@ -51,7 +51,7 @@ export const ConnectionToggle: FC<Props> = (props) => {
   return (
     <>
       <label className='label cursor-pointer'>
-        <span className='label-text mr-2'>{active ? t('active') : t('inactive')}</span>
+        <span className='label-text mr-2'>{active ? t('bui-shared-active') : t('inactive')}</span>
         <input
           type='checkbox'
           className='toggle-success toggle'

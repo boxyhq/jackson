@@ -42,7 +42,7 @@ const ProjectList: NextPage = () => {
         <>
           <Table
             noMoreResults={noMoreResults}
-            cols={[t('name'), t('id'), t('created_at'), t('actions')]}
+            cols={[t('bui-shared-name'), t('id'), t('created_at'), t('bui-shared-actions')]}
             body={projects.map((project) => {
               return {
                 id: project.id,
