@@ -78,7 +78,7 @@ export const DirectoryGroups = ({
           return {
             actions: [
               {
-                text: t('bui-dsync-view'),
+                text: t('bui-shared-view'),
                 onClick: () => onView?.(group),
                 icon: <EyeIcon className='w-5' />,
               },

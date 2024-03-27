@@ -72,7 +72,7 @@ export const DirectoryUsers = ({
     },
     {
       key: 'status',
-      label: t('bui-dsync-status'),
+      label: t('bui-shared-status'),
       wrap: true,
       dataIndex: 'active',
     },
@@ -96,7 +96,7 @@ export const DirectoryUsers = ({
           return {
             actions: [
               {
-                text: t('bui-dsync-view'),
+                text: t('bui-shared-view'),
                 onClick: () => onView?.(user),
                 icon: <EyeIcon className='w-5' />,
               },

@@ -78,7 +78,7 @@ export const SSOForm = ({
             <Card.Description>{t('bui-sl-sso-desc')}</Card.Description>
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-sl-sso-name')}</span>
+                <span className='label-text'>{t('bui-sl-name')}</span>
               </div>
               <input
                 type='text'
@@ -103,7 +103,7 @@ export const SSOForm = ({
             </label>
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-sl-tenant')}</span>
+                <span className='label-text'>{t('bui-shared-tenant')}</span>
               </div>
               <input
                 type='text'
@@ -118,7 +118,7 @@ export const SSOForm = ({
             {!excludeFields?.includes('product') && (
               <label className='form-control w-full'>
                 <div className='label'>
-                  <span className='label-text'>{t('bui-sl-product')}</span>
+                  <span className='label-text'>{t('bui-shared-product')}</span>
                 </div>
                 <input
                   type='text'
@@ -179,7 +179,7 @@ export const SSOForm = ({
               className='btn btn-primary btn-md'
               loading={formik.isSubmitting}
               disabled={!formik.dirty || !formik.isValid}>
-              {t('bui-sl-create')}
+              {t('bui-sl-create-link')}
             </Button>
           </Card.Footer>
         </Card>

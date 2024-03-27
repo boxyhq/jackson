@@ -84,10 +84,10 @@ export const SetupLinks = ({
   const noMoreResults = links.length === 0 && paginate.offset > 0;
 
   let cols = [
-    t('bui-sl-tenant'),
-    t('bui-sl-product'),
+    t('bui-shared-tenant'),
+    t('bui-shared-product'),
     t('bui-sl-validity'),
-    t('bui-sl-status'),
+    t('bui-shared-status'),
     t('bui-sl-actions'),
   ];
 
@@ -134,7 +134,7 @@ export const SetupLinks = ({
             icon: <ClipboardDocumentIcon className='h-5 w-5' />,
           },
           {
-            text: t('bui-sl-view'),
+            text: t('bui-shared-view'),
             onClick: () => {
               setSetupLink(setupLink);
               setShowSetupLink(true);

@@ -104,7 +104,7 @@ export const DirectoryWebhookLogs = ({
           return {
             actions: [
               {
-                text: t('bui-dsync-view'),
+                text: t('bui-shared-view'),
                 onClick: () => onView?.(event),
                 icon: <EyeIcon className='w-5' />,
               },
