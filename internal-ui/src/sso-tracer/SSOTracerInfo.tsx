@@ -37,6 +37,23 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
   const trace = data.data;
   const assertionType = trace.context.samlResponse ? 'Response' : trace.context.samlRequest ? 'Request' : '-';
 
+  let badgeText = '';
+  if (trace.context.isOIDCFederated) {
+    if (trace.context.requestedOIDCFlow) {
+      badgeText = t('bui-shared-oidc-federation');
+    } else {
+      badgeText = t('bui-tracer-oauth2-federation');
+    }
+  } else if (trace.context.isSAMLFederated) {
+    badgeText = t('bui-tracer-saml-federation');
+  } else if (trace.context.isIdPFlow) {
+    badgeText = t('bui-tracer-idp-login');
+  } else if (trace.context.requestedOIDCFlow) {
+    badgeText = t('bui-shared-oidc');
+  } else {
+    badgeText = t('bui-tracer-oauth2');
+  }
+
   return (
     <div className='space-y-3'>
       <PageHeader title={t('bui-tracer-title')} />
@@ -53,13 +70,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
               size='md'
               className='font-mono uppercase text-white'
               aria-label={t('bui-tracer-sp-protocol')!}>
-              {trace.context.requestedOIDCFlow
-                ? 'OIDC'
-                : trace.context.isSAMLFederated
-                  ? t('bui-tracer-saml-federation')
-                  : trace.context.isIdPFlow
-                    ? t('bui-tracer-idp-login')
-                    : t('bui-tracer-oauth2')}
+              {badgeText}
             </Badge>
           }
         />
@@ -70,9 +81,9 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
         <ListItem term={t('bui-tracer-error')} value={trace.error} />
 
-        {trace.context.tenant && <ListItem term={t('bui-tracer-tenant')} value={trace.context.tenant} />}
+        {trace.context.tenant && <ListItem term={t('bui-shared-tenant')} value={trace.context.tenant} />}
 
-        {trace.context.product && <ListItem term={t('bui-tracer-product')} value={trace.context.product} />}
+        {trace.context.product && <ListItem term={t('bui-shared-product')} value={trace.context.product} />}
 
         {trace.context.relayState && (
           <ListItem term={t('bui-tracer-relay-state')} value={trace.context.relayState} />
@@ -81,7 +92,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
         {trace.context.redirectUri && (
           <ListItem
             term={
-              trace.context.isIDPFlow ? t('bui-tracer-default-redirect-url') : t('bui-tracer-redirect-uri')
+              trace.context.isIdPFlow ? t('bui-tracer-default-redirect-url') : t('bui-tracer-redirect-uri')
             }
             value={trace.context.redirectUri}
           />
@@ -93,7 +104,7 @@ export const SSOTracerInfo = ({ urls }: { urls: { getTracer: string } }) => {
 
         {trace.context.issuer && <ListItem term={t('bui-tracer-issuer')} value={trace.context.issuer} />}
 
-        {trace.context.acsUrl && <ListItem term={t('bui-tracer-acs-url')} value={trace.context.acsUrl} />}
+        {trace.context.acsUrl && <ListItem term={t('bui-shared-acs-url')} value={trace.context.acsUrl} />}
 
         {trace.context.entityId && (
           <ListItem term={t('bui-tracer-entity-id')} value={trace.context.entityId} />

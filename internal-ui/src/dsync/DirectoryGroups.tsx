@@ -54,13 +54,13 @@ export const DirectoryGroups = ({
   const columns = [
     {
       key: 'name',
-      label: t('bui-dsync-name'),
+      label: t('bui-shared-name'),
       wrap: true,
       dataIndex: 'name',
     },
     {
       key: 'actions',
-      label: t('bui-dsync-actions'),
+      label: t('bui-shared-actions'),
       wrap: true,
       dataIndex: null,
     },
@@ -78,7 +78,7 @@ export const DirectoryGroups = ({
           return {
             actions: [
               {
-                text: t('bui-dsync-view'),
+                text: t('bui-shared-view'),
                 onClick: () => onView?.(group),
                 icon: <EyeIcon className='w-5' />,
               },

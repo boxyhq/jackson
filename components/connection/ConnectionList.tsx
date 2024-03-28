@@ -1,10 +1,8 @@
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { LinkPrimary } from '@components/LinkPrimary';
-import { InputWithCopyButton } from '@components/ClipboardButton';
 import { ConnectionList } from '@boxyhq/react-ui/sso';
-import { pageLimit } from '@boxyhq/internal-ui';
+import { InputWithCopyButton, pageLimit, LinkPrimary } from '@boxyhq/internal-ui';
 
 const SSOConnectionList = ({
   setupLinkToken,
@@ -45,7 +43,7 @@ const SSOConnectionList = ({
               Icon={LinkIcon}
               href='/admin/sso-connection/setup-link/new'
               data-testid='create-setup-link'>
-              {t('new_setup_link')}
+              {t('bui-sl-new-link')}
             </LinkPrimary>
           )}
           <LinkPrimary href={createConnectionUrl} data-testid='create-connection'>

@@ -12,4 +12,4 @@ patches:
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.21.2
+    newTag: 1.21.4

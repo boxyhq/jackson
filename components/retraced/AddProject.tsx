@@ -2,7 +2,7 @@ import { useState } from 'react';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { successToast, errorToast } from '@components/Toaster';
-import { LinkBack } from '@components/LinkBack';
+import { LinkBack } from '@boxyhq/internal-ui';
 import { useTranslation } from 'next-i18next';
 
 const AddProject = () => {

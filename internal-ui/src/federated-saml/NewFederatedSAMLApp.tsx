@@ -109,7 +109,7 @@ export const NewFederatedSAMLApp = ({
                     checked={formik.values.type === 'oidc'}
                     onChange={formik.handleChange}
                   />
-                  <span className='label-text ml-1'>{t('bui-fs-oidc')}</span>
+                  <span className='label-text ml-1'>{t('bui-shared-oidc')}</span>
                 </label>
               </div>
             </div>
@@ -162,7 +162,7 @@ export const NewFederatedSAMLApp = ({
           {connectionIsSAML && (
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-fs-acs-url')}</span>
+                <span className='label-text'>{t('bui-shared-acs-url')}</span>
               </div>
               <input
                 type='url'
@@ -226,7 +226,7 @@ export const NewFederatedSAMLApp = ({
               onlyUnique={true}
               inputProps={{
                 placeholder: t('bui-fs-enter-tenant'),
-                autocomplete: 'off',
+                autoComplete: 'off',
               }}
               focusedClassName='input-focused'
               addOnBlur={true}

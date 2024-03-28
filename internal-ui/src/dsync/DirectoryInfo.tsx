@@ -70,13 +70,13 @@ export const DirectoryInfo = ({
             )}
             {!excludeFields.includes('tenant') && (
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-tenant')}</dt>
+                <dt className='text-sm font-medium text-gray-500'>{t('bui-shared-tenant')}</dt>
                 <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.tenant}</dd>
               </div>
             )}
             {!excludeFields.includes('product') && (
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-product')}</dt>
+                <dt className='text-sm font-medium text-gray-500'>{t('bui-shared-product')}</dt>
                 <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>{directory.product}</dd>
               </div>
             )}
@@ -89,7 +89,7 @@ export const DirectoryInfo = ({
                   </dd>
                 </div>
                 <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-webhook-secret')}</dt>
+                  <dt className='text-sm font-medium text-gray-500'>{t('bui-shared-webhook-secret')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {directory.webhook.secret || '-'}
                   </dd>
@@ -99,7 +99,7 @@ export const DirectoryInfo = ({
             {directory.type === 'google' && (
               <>
                 <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
-                  <dt className='text-sm font-medium text-gray-500'>{t('bui-dsync-authorized-status')}</dt>
+                  <dt className='text-sm font-medium text-gray-500'>{t('bui-shared-status')}</dt>
                   <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
                     {authorizedGoogle ? (
                       <Badge color='success'>{t('bui-dsync-authorized')}</Badge>

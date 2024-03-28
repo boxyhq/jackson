@@ -3,6 +3,13 @@ import _ from 'lodash';
 import { DirectorySyncProviders } from '../../typings';
 import type { DirectoryType, User, UserPatchOperation, GroupPatchOperation } from '../../typings';
 
+export const indexNames = {
+  directoryIdUsername: 'directoryIdUsername',
+  directoryIdDisplayname: 'directoryIdDisplayname',
+  directoryId: 'directoryId',
+  groupId: 'groupId',
+};
+
 const parseUserRoles = (roles: string | string[]) => {
   if (typeof roles === 'string') {
     return roles.split(',');

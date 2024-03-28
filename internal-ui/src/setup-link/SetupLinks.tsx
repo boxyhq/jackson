@@ -84,11 +84,11 @@ export const SetupLinks = ({
   const noMoreResults = links.length === 0 && paginate.offset > 0;
 
   let cols = [
-    t('bui-sl-tenant'),
-    t('bui-sl-product'),
+    t('bui-shared-tenant'),
+    t('bui-shared-product'),
     t('bui-sl-validity'),
-    t('bui-sl-status'),
-    t('bui-sl-actions'),
+    t('bui-shared-status'),
+    t('bui-shared-actions'),
   ];
 
   // Exclude fields
@@ -118,7 +118,7 @@ export const SetupLinks = ({
         wrap: false,
         element:
           new Date(setupLink.validTill) > new Date() ? (
-            <Badge color='primary'>{t('bui-sl-active')}</Badge>
+            <Badge color='primary'>{t('bui-shared-active')}</Badge>
           ) : (
             <Badge color='warning'>{t('bui-sl-expired')}</Badge>
           ),
@@ -126,7 +126,7 @@ export const SetupLinks = ({
       {
         actions: [
           {
-            text: t('bui-sl-copy'),
+            text: t('bui-shared-copy'),
             onClick: () => {
               copyToClipboard(setupLink.url);
               onCopy(setupLink);
@@ -134,7 +134,7 @@ export const SetupLinks = ({
             icon: <ClipboardDocumentIcon className='h-5 w-5' />,
           },
           {
-            text: t('bui-sl-view'),
+            text: t('bui-shared-view'),
             onClick: () => {
               setSetupLink(setupLink);
               setShowSetupLink(true);
@@ -151,7 +151,7 @@ export const SetupLinks = ({
           },
           {
             destructive: true,
-            text: t('bui-sl-delete'),
+            text: t('bui-shared-delete'),
             onClick: () => {
               setSetupLink(setupLink);
               setDelModal(true);

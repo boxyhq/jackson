@@ -66,19 +66,19 @@ export const DirectoryUsers = ({
     },
     {
       key: 'email',
-      label: t('bui-dsync-email'),
+      label: t('bui-shared-email'),
       wrap: true,
       dataIndex: 'email',
     },
     {
       key: 'status',
-      label: t('bui-dsync-status'),
+      label: t('bui-shared-status'),
       wrap: true,
       dataIndex: 'active',
     },
     {
       key: 'actions',
-      label: t('bui-dsync-actions'),
+      label: t('bui-shared-actions'),
       wrap: true,
       dataIndex: null,
     },
@@ -96,7 +96,7 @@ export const DirectoryUsers = ({
           return {
             actions: [
               {
-                text: t('bui-dsync-view'),
+                text: t('bui-shared-view'),
                 onClick: () => onView?.(user),
                 icon: <EyeIcon className='w-5' />,
               },
@@ -107,7 +107,7 @@ export const DirectoryUsers = ({
         if (dataIndex === 'active') {
           return {
             badge: {
-              text: user[dataIndex] ? t('bui-dsync-active') : t('bui-dsync-suspended'),
+              text: user[dataIndex] ? t('bui-shared-active') : t('bui-dsync-suspended'),
               color: user[dataIndex] ? 'success' : 'warning',
             },
           };

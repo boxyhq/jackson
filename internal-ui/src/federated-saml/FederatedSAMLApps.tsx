@@ -132,7 +132,7 @@ export const FederatedSAMLApps = ({
               {t('bui-fs-oidc-config')}
             </LinkOutline>
             <LinkOutline href={actions.samlConfiguration} target='_blank' className='btn-md'>
-              {t('bui-fs-saml-config')}
+              {t('bui-shared-saml-configuration')}
             </LinkOutline>
             <ButtonPrimary onClick={() => router?.push(actions.newApp)} className='btn-md'>
               {t('bui-fs-new-app')}

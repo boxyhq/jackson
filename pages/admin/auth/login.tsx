@@ -7,8 +7,7 @@ import { useSession, getCsrfToken, signIn, SessionProvider } from 'next-auth/rea
 import { useTranslation, Trans } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { errorToast, successToast } from '@components/Toaster';
-import { ButtonOutline } from '@components/ButtonOutline';
-import Loading from '@components/Loading';
+import { ButtonOutline, Loading } from '@boxyhq/internal-ui';
 import { Login as SSOLogin } from '@boxyhq/react-ui/sso';
 import { adminPortalSSODefaults } from '@lib/env';
 
@@ -125,11 +124,11 @@ const Login = ({
                 <div className='mt-6'>
                   <div className='flex flex-col gap-3'>
                     <label className='block text-sm font-medium' htmlFor='email'>
-                      {t('email')}
+                      {t('bui-shared-email')}
                       <label>
                         <input
                           type='email'
-                          placeholder={t('email')}
+                          placeholder={t('bui-shared-email')}
                           className='input-bordered input mt-2 w-full rounded-md'
                           required
                           onChange={(e) => {

@@ -216,7 +216,7 @@ const saml = {
       name,
       label,
       description,
-      forceAuthn = false,
+      forceAuthn,
       metadataUrl,
       ...clientInfo
     } = body;
@@ -302,7 +302,7 @@ const saml = {
       metadataUrl: newMetadata ? newMetadataUrl : _savedConnection.metadataUrl,
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
-      forceAuthn,
+      forceAuthn: typeof forceAuthn === 'boolean' ? forceAuthn : _savedConnection.forceAuthn,
     };
 
     if ('sortOrder' in body) {

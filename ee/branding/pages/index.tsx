@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
-import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonPrimary } from '@boxyhq/internal-ui';
 import { errorToast, successToast } from '@components/Toaster';
 import type { ApiResponse } from 'types';
 import type { AdminPortalBranding } from '@boxyhq/saml-jackson';
@@ -86,7 +86,7 @@ const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
           <div className='flex flex-col space-y-2'>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>{t('branding_logo_url_label')}</span>
+                <span className='label-text'>{t('bui-shared-logo-url')}</span>
               </label>
               <input
                 type='url'
@@ -97,12 +97,12 @@ const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 placeholder='https://company.com/logo.png'
               />
               <label className='label'>
-                <span className='label-text-alt'>{t('branding_logo_url_alt')}</span>
+                <span className='label-text-alt'>{t('bui-shared-logo-url-desc')}</span>
               </label>
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>{t('branding_favicon_url_label')}</span>
+                <span className='label-text'>{t('bui-shared-favicon-url')}</span>
               </label>
               <input
                 type='url'
@@ -113,7 +113,7 @@ const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
                 placeholder='https://company.com/favicon.ico'
               />
               <label className='label'>
-                <span className='label-text-alt'>{t('branding_favicon_url_alt')}</span>
+                <span className='label-text-alt'>{t('bui-shared-favicon-url-desc')}</span>
               </label>
             </div>
             <div className='form-control w-full md:w-1/2'>
@@ -134,15 +134,15 @@ const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
             </div>
             <div className='form-control'>
               <label className='label'>
-                <span className='label-text'>{t('branding_primary_color_label')}</span>
+                <span className='label-text'>{t('bui-shared-primary-color')}</span>
               </label>
               <input type='color' id='primaryColor' onChange={onChange} value={branding.primaryColor || ''} />
               <label className='label'>
-                <span className='label-text-alt'>{t('branding_primary_color_alt')}</span>
+                <span className='label-text-alt'>{t('bui-shared-primary-color-desc')}</span>
               </label>
             </div>
             <div className='mt-5'>
-              <ButtonPrimary loading={loading}>{t('save_changes')}</ButtonPrimary>
+              <ButtonPrimary loading={loading}>{t('bui-shared-save-changes')}</ButtonPrimary>
             </div>
           </div>
         </form>

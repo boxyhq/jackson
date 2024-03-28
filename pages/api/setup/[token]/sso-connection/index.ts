@@ -45,6 +45,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
       clientID: connection.clientID,
       name: connection.name,
       deactivated: connection.deactivated,
+      ...('forceAuthn' in connection ? { forceAuthn: connection.forceAuthn } : undefined),
       ...('idpMetadata' in connection
         ? {
             idpMetadata: {
@@ -106,9 +107,11 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     clientID,
     metadataUrl,
     encodedRawMetadata,
+    forceAuthn,
     oidcClientId,
     oidcClientSecret,
     oidcDiscoveryUrl,
+    oidcMetadata,
   } = req.body;
 
   const connections = await connectionAPIController.getConnections({
@@ -128,12 +131,13 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     clientID,
     clientSecret,
     ...('deactivated' in req.body ? { deactivated } : undefined),
-    ...(isSAML ? { metadataUrl, encodedRawMetadata } : undefined),
+    ...(isSAML ? { metadataUrl, encodedRawMetadata, forceAuthn } : undefined),
     ...(isOIDC
       ? {
           oidcClientId,
           oidcClientSecret,
           oidcDiscoveryUrl,
+          oidcMetadata,
         }
       : undefined),
   };

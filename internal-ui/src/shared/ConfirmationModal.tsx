@@ -25,7 +25,7 @@ export const ConfirmationModal = ({
 }) => {
   const { t } = useTranslation('common');
 
-  const buttonText = actionButtonText || t('delete');
+  const buttonText = actionButtonText || t('bui-shared-delete');
 
   return (
     <Modal visible={visible} title={title} description={description}>

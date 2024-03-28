@@ -5,8 +5,7 @@ import { useRouter } from 'next/router';
 import { fetcher } from '@lib/ui/utils';
 import EditConnection from '@components/connection/EditConnection';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import type { ApiError, ApiSuccess } from 'types';
-import Loading from '@components/Loading';
+import { Loading } from '@boxyhq/internal-ui';
 import { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import { errorToast } from '@components/Toaster';
 
@@ -15,12 +14,13 @@ const ConnectionEditPage: NextPage = () => {
 
   const { id } = router.query as { id: string };
 
-  const { data, error, isLoading, isValidating } = useSWR<
-    ApiSuccess<SAMLSSORecord | OIDCSSORecord>,
-    ApiError
-  >(id ? `/api/admin/connections/${id}` : null, fetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data, error, isLoading, isValidating } = useSWR<SAMLSSORecord | OIDCSSORecord>(
+    id ? `/api/admin/connections/${id}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
   if (isLoading || isValidating) {
     return <Loading />;
@@ -31,11 +31,11 @@ const ConnectionEditPage: NextPage = () => {
     return null;
   }
 
-  if (!data?.data) {
+  if (!data) {
     return null;
   }
 
-  return <EditConnection connection={data?.data} />;
+  return <EditConnection connection={data[0]} />;
 };
 
 export async function getServerSideProps({ locale }: GetServerSidePropsContext) {

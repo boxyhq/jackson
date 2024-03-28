@@ -100,3 +100,10 @@ export const parsePaginateApiParams = (params: NextApiRequest['query']): Paginat
     pageToken,
   };
 };
+
+export type AdminPortalSSODefaults = {
+  tenant: string;
+  product: string;
+  redirectUrl: string;
+  defaultRedirectUrl: string;
+};

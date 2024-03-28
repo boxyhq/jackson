@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 
 import { CreateSAMLConnection as CreateSAML, CreateOIDCConnection as CreateOIDC } from '@boxyhq/react-ui/sso';
-import styles from 'styles/sdk-override.module.css';
 import { errorToast, successToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
+import { BOXYHQ_UI_CSS } from '@components/styles';
 
 interface CreateSSOConnectionProps {
   setupLinkToken: string;
@@ -30,19 +30,13 @@ const CreateSSOConnection = ({ setupLinkToken, idpType }: CreateSSOConnectionPro
     post: `/api/setup/${setupLinkToken}/sso-connection`,
   };
 
-  const _CSS = {
-    input: `${styles['sdk-input']} input input-bordered`,
-    button: { ctoa: 'btn btn-primary' },
-    textarea: styles['sdk-input'],
-  };
-
   return idpType === 'saml' ? (
     <CreateSAML
       variant='basic'
       urls={urls}
       successCallback={onSuccess}
       errorCallback={onError}
-      classNames={_CSS}
+      classNames={BOXYHQ_UI_CSS}
       displayHeader={false}
     />
   ) : (
@@ -51,7 +45,7 @@ const CreateSSOConnection = ({ setupLinkToken, idpType }: CreateSSOConnectionPro
       urls={urls}
       successCallback={onSuccess}
       errorCallback={onError}
-      classNames={_CSS}
+      classNames={BOXYHQ_UI_CSS}
       displayHeader={false}
     />
   );

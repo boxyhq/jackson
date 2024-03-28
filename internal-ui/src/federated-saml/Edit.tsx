@@ -1,11 +1,17 @@
+import { useState } from 'react';
 import { Button } from 'react-daisyui';
 import type { SAMLFederationApp } from '../types';
 import TagsInput from 'react-tagsinput';
 import { useTranslation } from 'next-i18next';
 import { useFormik } from 'formik';
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
+import EyeSlashIcon from '@heroicons/react/24/outline/EyeSlashIcon';
+
 import { Card } from '../shared';
 import { defaultHeaders } from '../utils';
 import { ItemList } from '../shared/ItemList';
+import { CopyToClipboardButton } from '../shared/InputWithCopyButton';
+import { IconButton } from '../shared/IconButton';
 
 type EditApp = Pick<SAMLFederationApp, 'name' | 'acsUrl' | 'tenants' | 'redirectUrl'>;
 
@@ -23,6 +29,7 @@ export const Edit = ({
   excludeFields?: 'product'[];
 }) => {
   const { t } = useTranslation('common');
+  const [isSecretShown, setisSecretShown] = useState(false);
 
   const connectionIsOIDC = app.type === 'oidc';
   const connectionIsSAML = !connectionIsOIDC;
@@ -79,9 +86,9 @@ export const Edit = ({
                   </div>
                   <input
                     type='text'
-                    className='input input-bordered w-full text-sm'
+                    className='input input-bordered w-full text-sm bg-gray-100'
                     value={app.tenant}
-                    disabled
+                    readOnly={true}
                   />
                 </label>
                 {!excludeFields?.includes('product') && (
@@ -91,9 +98,9 @@ export const Edit = ({
                     </div>
                     <input
                       type='text'
-                      className='input input-bordered w-full text-sm'
+                      className='input input-bordered w-full text-sm bg-gray-100'
                       value={app.product}
-                      disabled
+                      readOnly={true}
                     />
                   </label>
                 )}
@@ -101,12 +108,15 @@ export const Edit = ({
                   <label className='form-control w-full'>
                     <div className='label'>
                       <span className='label-text'>{t('bui-fs-client-id')}</span>
+                      <div className='flex'>
+                        <CopyToClipboardButton text={app.clientID!} />
+                      </div>
                     </div>
                     <input
                       type='text'
-                      className='input-bordered input'
+                      className='input-bordered input bg-gray-100'
                       defaultValue={app.clientID}
-                      disabled
+                      readOnly={true}
                     />
                   </label>
                 )}
@@ -114,12 +124,24 @@ export const Edit = ({
                   <label className='form-control w-full'>
                     <div className='label'>
                       <span className='label-text'>{t('bui-fs-client-secret')}</span>
+                      <div className='flex'>
+                        <IconButton
+                          tooltip={isSecretShown ? t('bui-shared-hide') : t('bui-shared-show')}
+                          Icon={isSecretShown ? EyeSlashIcon : EyeIcon}
+                          className='hover:text-primary mr-2'
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setisSecretShown(!isSecretShown);
+                          }}
+                        />
+                        <CopyToClipboardButton text={app.clientSecret!} />
+                      </div>
                     </div>
                     <input
-                      type='text'
-                      className='input-bordered input'
+                      type={isSecretShown ? 'text' : 'password'}
+                      className='input-bordered input bg-gray-100'
                       defaultValue={app.clientSecret}
-                      disabled
+                      readOnly={true}
                     />
                   </label>
                 )}
@@ -130,9 +152,9 @@ export const Edit = ({
                     </div>
                     <input
                       type='text'
-                      className='input input-bordered w-full text-sm'
+                      className='input input-bordered w-full text-sm bg-gray-100'
                       value={app.entityId}
-                      disabled
+                      readOnly={true}
                     />
                     <label className='label'>
                       <span className='label-text-alt'>{t('bui-fs-entity-id-edit-desc')}</span>
@@ -142,7 +164,7 @@ export const Edit = ({
                 {connectionIsSAML && (
                   <label className='form-control w-full'>
                     <div className='label'>
-                      <span className='label-text'>{t('bui-fs-acs-url')}</span>
+                      <span className='label-text'>{t('bui-shared-acs-url')}</span>
                     </div>
                     <input
                       type='url'
@@ -175,7 +197,7 @@ export const Edit = ({
                     onlyUnique={true}
                     inputProps={{
                       placeholder: t('bui-fs-enter-tenant'),
-                      autocomplete: 'off',
+                      autoComplete: 'off',
                     }}
                     focusedClassName='input-focused'
                     addOnBlur={true}

@@ -8,7 +8,8 @@ import type {
   PaginationParams,
 } from '../../typings';
 import { Base } from './Base';
-import { webhookEventTTL } from '../utils';
+import { webhookLogsTTL } from '../utils';
+import { indexNames } from './utils';
 
 type GetAllParams = PaginationParams & {
   directoryId?: string;
@@ -81,7 +82,7 @@ export class WebhookEventsLogger extends Base {
     };
 
     await this.eventStore().put(id, log, {
-      name: 'directoryId',
+      name: indexNames.directoryId,
       value: directory.id,
     });
 
@@ -130,7 +131,7 @@ export class WebhookEventsLogger extends Base {
 
     if (directoryId) {
       const index = {
-        name: 'directoryId',
+        name: indexNames.directoryId,
         value: directoryId,
       };
 
@@ -148,14 +149,16 @@ export class WebhookEventsLogger extends Base {
 
   // Delete all event logs for a directory
   async deleteAll(directoryId: string) {
-    const index = {
-      name: 'directoryId',
-      value: directoryId,
-    };
-
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const { data: events } = await this.eventStore().getByIndex(index, 0, this.bulkDeleteBatchSize);
+      const { data: events } = await this.eventStore().getByIndex(
+        {
+          name: indexNames.directoryId,
+          value: directoryId,
+        },
+        0,
+        this.bulkDeleteBatchSize
+      );
 
       if (!events || events.length === 0) {
         break;
@@ -167,6 +170,6 @@ export class WebhookEventsLogger extends Base {
 
   // Get the store for the events
   private eventStore() {
-    return this.store('logs', webhookEventTTL);
+    return this.store('logs', webhookLogsTTL);
   }
 }

@@ -24,13 +24,13 @@ test.describe('Admin Portal SSO - SAML', () => {
     // Find the new connection button and click on it
     await page.getByTestId('create-connection').click();
     // Fill the name for the connection
-    const nameInput = page.getByTestId('name');
+    const nameInput = page.getByLabel('Connection name (Optional)');
     await nameInput.fill(TEST_SAML_SSO_CONNECTION_NAME);
     // Enter the metadata url for mocksaml in the form
-    const metadataUrlInput = page.getByTestId('metadataUrl');
+    const metadataUrlInput = page.getByLabel('Metadata URL');
     await metadataUrlInput.fill(MOCKSAML_METADATA_URL);
     // submit the form
-    await page.getByTestId('submit-form-create-sso').click();
+    await page.getByRole('button', { name: /save/i }).click();
     // check if the added connection appears in the connection list
     await expect(page.getByText(TEST_SAML_SSO_CONNECTION_NAME)).toBeVisible();
   });
@@ -78,8 +78,8 @@ test.describe('Admin Portal SSO - SAML', () => {
     const editButton = page.getByText(TEST_SAML_SSO_CONNECTION_NAME).locator('..').getByLabel('Edit');
     await editButton.click();
     // click the delete and confirm deletion
-    await page.getByTestId('delete-connection').click();
-    await page.getByTestId('confirm-delete').click();
+    await page.getByRole('button', { name: 'Delete' }).click();
+    await page.getByRole('button', { name: 'Confirm' }).click();
     // check that the SSO connection is deleted from the connection list
     await expect(page.getByText(TEST_SAML_SSO_CONNECTION_NAME)).not.toBeVisible();
   });
@@ -94,40 +94,38 @@ test.describe('Admin Portal SSO - OIDC', () => {
         // Find the new connection button and click on it
         await page.getByTestId('create-connection').click();
         // Toggle connection type to OIDC
-        await page.getByTestId('sso-type-oidc').click();
+        await page.getByLabel('OIDC').check();
         // Fill the name for the connection
-        const nameInput = page.getByTestId('name');
+        const nameInput = page.getByLabel('Connection name (Optional)');
         await nameInput.fill(TEST_OIDC_SSO_CONNECTION_NAME);
         if (mode === 'discoveryUrl') {
           // Enter the OIDC discovery url for mocklab in the form
-          const discoveryUrlInput = page.getByTestId('oidcDiscoveryUrl');
+          const discoveryUrlInput = page.getByLabel('Well-known URL of OpenID Provider');
           await discoveryUrlInput.fill(MOCKLAB_DISCOVERY_ENDPOINT);
         } else {
-          // Activate the oidc discovery fallback fields
-          await page.getByTestId('oidcDiscoveryUrl-fallback-switch').click();
           // Enter the OIDC issuer value for mocklab in the form
-          const issuerInput = page.getByTestId('issuer');
+          const issuerInput = page.getByLabel('issuer');
           await issuerInput.fill(MOCKLAB_ISSUER);
           // Enter the OIDC authorization_endpoint value for mocklab in the form
-          const authzEndpointInput = page.getByTestId('authorization_endpoint');
+          const authzEndpointInput = page.getByLabel('Authorization Endpoint');
           await authzEndpointInput.fill(MOCKLAB_AUTHORIZATION_ENDPOINT);
           // Enter the OIDC token_endpoint value for mocklab in the form
-          const tokenEndpointInput = page.getByTestId('token_endpoint');
+          const tokenEndpointInput = page.getByLabel('Token endpoint');
           await tokenEndpointInput.fill(MOCKLAB_TOKEN_ENDPOINT);
           // Enter the OIDC userinfo_endpoint value for mocklab in the form
-          const userInfoEndpointInput = page.getByTestId('userinfo_endpoint');
+          const userInfoEndpointInput = page.getByLabel('UserInfo endpoint');
           await userInfoEndpointInput.fill(MOCKLAB_USERINFO_ENDPOINT);
           // Enter the OIDC jwks_uri value for mocklab in the form
-          const jwksUriInput = page.getByTestId('jwks_uri');
+          const jwksUriInput = page.getByLabel('JWKS URI');
           await jwksUriInput.fill(MOCKLAB_JWKS_URI);
         }
         // Enter the OIDC client credentials for mocklab in the form
-        const clientIdInput = page.getByTestId('oidcClientId');
+        const clientIdInput = page.getByLabel('Client ID');
         await clientIdInput.fill(MOCKLAB_CLIENT_ID);
-        const clientSecretInput = page.getByTestId('oidcClientSecret');
+        const clientSecretInput = page.getByLabel('Client Secret');
         await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
         // submit the form
-        await page.getByTestId('submit-form-create-sso').click();
+        await page.getByRole('button', { name: /save/i }).click();
         // check if the added connection appears in the connection list
         await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).toBeVisible();
       });
@@ -156,8 +154,8 @@ test.describe('Admin Portal SSO - OIDC', () => {
         const editButton = page.getByText(TEST_OIDC_SSO_CONNECTION_NAME).locator('..').getByLabel('Edit');
         await editButton.click();
         // click the delete and confirm deletion
-        await page.getByTestId('delete-connection').click();
-        await page.getByTestId('confirm-delete').click();
+        await page.getByRole('button', { name: 'Delete' }).click();
+        await page.getByRole('button', { name: 'Confirm' }).click();
         // check that the SSO connection is deleted from the connection list
         await expect(page.getByText(TEST_OIDC_SSO_CONNECTION_NAME)).not.toBeVisible();
       });

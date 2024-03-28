@@ -24,7 +24,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     throw new ApiError('Connection not found', 404);
   }
 
-  res.json({ data: connections[0] });
+  res.json(connections);
 };
 
 export default handler;

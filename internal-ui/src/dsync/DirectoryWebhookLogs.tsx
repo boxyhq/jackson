@@ -86,7 +86,7 @@ export const DirectoryWebhookLogs = ({
     },
     {
       key: 'actions',
-      label: t('bui-dsync-actions'),
+      label: t('bui-shared-actions'),
       wrap: true,
       dataIndex: null,
     },
@@ -104,7 +104,7 @@ export const DirectoryWebhookLogs = ({
           return {
             actions: [
               {
-                text: t('bui-dsync-view'),
+                text: t('bui-shared-view'),
                 onClick: () => onView?.(event),
                 icon: <EyeIcon className='w-5' />,
               },

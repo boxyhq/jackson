@@ -5,9 +5,8 @@ import { useRouter } from 'next/router';
 import { fetcher } from '@lib/ui/utils';
 import EditConnection from '@components/connection/EditConnection';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import Loading from '@components/Loading';
+import { Loading } from '@boxyhq/internal-ui';
 import { errorToast } from '@components/Toaster';
-import type { ApiError, ApiSuccess } from 'types';
 import type { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 
 const EditSSOConnection: NextPage = () => {
@@ -15,7 +14,7 @@ const EditSSOConnection: NextPage = () => {
 
   const { id } = router.query as { id: string };
 
-  const { data, error, isLoading } = useSWR<ApiSuccess<SAMLSSORecord | OIDCSSORecord>, ApiError>(
+  const { data, error, isLoading } = useSWR<SAMLSSORecord | OIDCSSORecord>(
     id ? `/api/admin/connections/${id}` : null,
     fetcher,
     {
@@ -32,11 +31,11 @@ const EditSSOConnection: NextPage = () => {
     return null;
   }
 
-  if (!data?.data) {
+  if (!data) {
     return null;
   }
 
-  return <EditConnection connection={data?.data} isSettingsView />;
+  return <EditConnection connection={data[0]} isSettingsView />;
 };
 
 export async function getServerSideProps({ locale }: GetServerSidePropsContext) {

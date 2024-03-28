@@ -1,4 +1,4 @@
-import { CopyToClipboardButton } from '@components/ClipboardButton';
+import { CopyToClipboardButton } from '@boxyhq/internal-ui';
 import { useTranslation } from 'next-i18next';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
 import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';

@@ -7,10 +7,6 @@ export function getErrorCookie() {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-export function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text);
-}
-
 export const fetcher = async (url: string, queryParams = '') => {
   const res = await fetch(`${url}${queryParams}`);
 
@@ -36,11 +32,3 @@ export const fetcher = async (url: string, queryParams = '') => {
 
   return resContent;
 };
-
-/** Check if object is empty ({}) https://stackoverflow.com/a/32108184 */
-export const isObjectEmpty = (obj) =>
-  // because Object.keys(new Date()).length === 0;
-  // we have to do some additional check
-  obj && // 👈 null and undefined check
-  Object.keys(obj).length === 0 &&
-  Object.getPrototypeOf(obj) === Object.prototype;

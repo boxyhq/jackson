@@ -60,7 +60,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         },
         {
           href: '/admin/sso-tracer',
-          text: t('sso_tracer'),
+          text: t('bui-tracer-title'),
           active: asPath.includes('/admin/sso-tracer'),
         },
       ],
