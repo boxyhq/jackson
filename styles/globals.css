@@ -52,8 +52,16 @@ a {
     @apply text-white;
   }
 
+  .btn-primary:focus-visible {
+    @apply outline-primary;
+  }
+
   .btn-error {
     @apply text-white;
+  }
+
+  .btn-error:focus-visible {
+    @apply outline-error;
   }
 
   .modal-box {

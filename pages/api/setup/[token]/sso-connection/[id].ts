@@ -39,15 +39,16 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const connection = connections[0];
 
-  res.json({
-    data: {
+  res.json([
+    {
       clientID: connection.clientID,
       clientSecret: connection.clientSecret,
       deactivated: connection.deactivated,
+      ...('forceAuthn' in connection ? { forceAuthn: connection.forceAuthn } : undefined),
       ...('idpMetadata' in connection ? { idpMetadata: {}, metadataUrl: connection.metadataUrl } : undefined),
       ...('oidcProvider' in connection ? { oidcProvider: connection.oidcProvider } : undefined),
     },
-  });
+  ]);
 };
 
 export default handler;

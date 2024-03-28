@@ -28,10 +28,11 @@ const ConnectionEditPage: NextPage = () => {
     errorToast(error.message);
     return null;
   }
+  if (!data) {
+    return null;
+  }
 
-  const connection = data.data;
-
-  return <EditConnection connection={connection} setupLinkToken={token} />;
+  return <EditConnection connection={data[0]} setupLinkToken={token} />;
 };
 
 export async function getServerSideProps({ locale }) {
