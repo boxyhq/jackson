@@ -2,7 +2,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { errorToast, successToast } from '@components/Toaster';
-import { LinkBack } from '@components/LinkBack';
+import { LinkBack } from '@boxyhq/internal-ui';
 import { CreateDirectory as CreateDSync } from '@boxyhq/react-ui/dsync';
 import { BOXYHQ_UI_CSS } from '@components/styles';
 

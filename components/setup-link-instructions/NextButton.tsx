@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { ButtonPrimary } from '@components/ButtonPrimary';
+import { ButtonPrimary } from '@boxyhq/internal-ui';
 
 const NextButton = () => {
   const router = useRouter();

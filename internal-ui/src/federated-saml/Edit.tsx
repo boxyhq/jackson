@@ -164,7 +164,7 @@ export const Edit = ({
                 {connectionIsSAML && (
                   <label className='form-control w-full'>
                     <div className='label'>
-                      <span className='label-text'>{t('bui-fs-acs-url')}</span>
+                      <span className='label-text'>{t('bui-shared-acs-url')}</span>
                     </div>
                     <input
                       type='url'

@@ -7,7 +7,7 @@ export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
   const { t } = useTranslation('common');
   const [view, setView] = useState<'idp-config' | 'auth' | 'identity-fed'>('idp-config');
 
-  const viewText = t('bui-wku-view');
+  const viewText = t('bui-shared-view');
   const downloadText = t('bui-wku-download');
   const baseUrl = jacksonUrl ?? '';
 
@@ -20,7 +20,7 @@ export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
       type: 'idp-config',
     },
     {
-      title: t('bui-wku-saml-configuration'),
+      title: t('bui-shared-saml-configuration'),
       description: t('bui-wku-sp-config-desc'),
       href: `${baseUrl}/.well-known/saml-configuration`,
       buttonText: viewText,
@@ -62,7 +62,7 @@ export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
       type: 'identity-fed',
     },
     {
-      title: t('bui-wku-oidc-federation'),
+      title: t('bui-shared-oidc-federation'),
       description: t('bui-wku-oidc-federation-desc'),
       href: `${baseUrl}/.well-known/openid-configuration`,
       buttonText: viewText,

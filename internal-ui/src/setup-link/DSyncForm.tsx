@@ -74,7 +74,7 @@ export const DSyncForm = ({
             <Card.Description>{t('bui-sl-dsync-desc')}</Card.Description>
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-sl-dsync-name')}</span>
+                <span className='label-text'>{t('bui-sl-name')}</span>
               </div>
               <input
                 type='text'
@@ -87,7 +87,7 @@ export const DSyncForm = ({
             </label>
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-sl-tenant')}</span>
+                <span className='label-text'>{t('bui-shared-tenant')}</span>
               </div>
               <input
                 type='text'
@@ -102,7 +102,7 @@ export const DSyncForm = ({
             {!excludeFields?.includes('product') && (
               <label className='form-control w-full'>
                 <div className='label'>
-                  <span className='label-text'>{t('bui-sl-product')}</span>
+                  <span className='label-text'>{t('bui-shared-product')}</span>
                 </div>
                 <input
                   type='text'
@@ -131,7 +131,7 @@ export const DSyncForm = ({
             </label>
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-sl-webhook-secret')}</span>
+                <span className='label-text'>{t('bui-shared-webhook-secret')}</span>
               </div>
               <input
                 type='password'
@@ -165,7 +165,7 @@ export const DSyncForm = ({
               className='btn btn-primary btn-md'
               loading={formik.isSubmitting}
               disabled={!formik.dirty || !formik.isValid}>
-              {t('bui-sl-create')}
+              {t('bui-sl-create-link')}
             </Button>
           </Card.Footer>
         </Card>

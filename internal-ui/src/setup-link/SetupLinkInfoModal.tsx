@@ -31,7 +31,7 @@ export const SetupLinkInfoModal = ({
       )}
       <div className='modal-action'>
         <Button color='secondary' variant='outline' type='button' size='md' onClick={() => onClose()}>
-          {t('close')}
+          {t('bui-shared-close')}
         </Button>
       </div>
     </Modal>

@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { Sidebar } from '@components/Sidebar';
 import { Navbar } from '@components/Navbar';
 import { useTranslation } from 'next-i18next';
-import Loading from '@components/Loading';
+import { Loading } from '@boxyhq/internal-ui';
 
 export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation('common');

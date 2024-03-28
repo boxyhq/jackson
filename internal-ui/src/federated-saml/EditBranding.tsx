@@ -55,7 +55,7 @@ export const EditBranding = ({
           <div className='flex flex-col'>
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-fs-logo-url')}</span>
+                <span className='label-text'>{t('bui-shared-logo-url')}</span>
               </div>
               <input
                 type='url'
@@ -66,12 +66,12 @@ export const EditBranding = ({
                 onChange={formik.handleChange}
               />
               <label className='label'>
-                <span className='label-text-alt'>{t('bui-fs-logo-url-desc')}</span>
+                <span className='label-text-alt'>{t('bui-shared-logo-url-desc')}</span>
               </label>
             </label>
             <label className='form-control w-full'>
               <div className='label'>
-                <span className='label-text'>{t('bui-fs-favicon-url')}</span>
+                <span className='label-text'>{t('bui-shared-favicon-url')}</span>
               </div>
               <input
                 type='url'
@@ -82,13 +82,13 @@ export const EditBranding = ({
                 onChange={formik.handleChange}
               />
               <label className='label'>
-                <span className='label-text-alt'>{t('bui-fs-favicon-url-desc')}</span>
+                <span className='label-text-alt'>{t('bui-shared-favicon-url-desc')}</span>
               </label>
             </label>
             <label className='form-control'>
               <div className='flex'>
                 <label className='label pr-3'>
-                  <span className='label-text'>{t('bui-fs-primary-color')}</span>
+                  <span className='label-text'>{t('bui-shared-primary-color')}</span>
                 </label>
               </div>
               <div className='flex gap-3 border-[1px] border-gray-200 rounded-md p-2 w-fit'>
@@ -101,7 +101,7 @@ export const EditBranding = ({
                 />
               </div>
               <label className='label'>
-                <span className='label-text-alt'>{t('bui-fs-primary-color-desc')}</span>
+                <span className='label-text-alt'>{t('bui-shared-primary-color-desc')}</span>
               </label>
             </label>
           </div>

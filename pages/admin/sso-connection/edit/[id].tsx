@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { fetcher } from '@lib/ui/utils';
 import EditConnection from '@components/connection/EditConnection';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import Loading from '@components/Loading';
+import { Loading } from '@boxyhq/internal-ui';
 import { OIDCSSORecord, SAMLSSORecord } from '@boxyhq/saml-jackson';
 import { errorToast } from '@components/Toaster';
 

@@ -75,6 +75,7 @@
     "classnames": "2.5.1",
     "cors": "2.8.5",
     "daisyui": "4.9.0",
+    "formik": "2.4.5",
     "i18next": "23.10.1",
     "medium-zoom": "1.1.0",
     "micromatch": "4.0.5",

@@ -3,8 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { retracedOptions } from '@lib/env';
-import Loading from '@components/Loading';
-import EmptyState from '@components/EmptyState';
+import { EmptyState, Loading } from '@boxyhq/internal-ui';
 
 export interface Props {
   host?: string;

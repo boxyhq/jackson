@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { errorToast } from '@components/Toaster';
 import { useTranslation } from 'next-i18next';
-import { LinkBack } from '@components/LinkBack';
+import { LinkBack } from '@boxyhq/internal-ui';
 import { CreateSSOConnection } from '@boxyhq/react-ui/sso';
 import { BOXYHQ_UI_CSS } from '@components/styles';
 import { AdminPortalSSODefaults } from '@lib/utils';

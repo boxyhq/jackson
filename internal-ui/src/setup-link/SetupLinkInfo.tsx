@@ -17,7 +17,7 @@ export const SetupLinkInfo = ({ setupLink, onClose }: { setupLink: SetupLink; on
           </div>
           <div>
             <Button size='sm' color='primary' onClick={onClose}>
-              {t('bui-sl-btn-close')}
+              {t('bui-shared-close')}
             </Button>
           </div>
         </Card.Body>

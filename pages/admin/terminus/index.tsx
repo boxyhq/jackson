@@ -4,7 +4,7 @@ import BlocklyComponent, { Block } from '@components/terminus/Blockly';
 
 import '@components/terminus/blocks/customblocks';
 import '@components/terminus/blocks/generator';
-import EmptyState from '@components/EmptyState';
+import { EmptyState } from '@boxyhq/internal-ui';
 import { terminusOptions } from '@lib/env';
 
 export interface Props {

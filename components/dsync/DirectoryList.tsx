@@ -1,9 +1,8 @@
 import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
 import { useTranslation } from 'next-i18next';
-import { LinkPrimary } from '@components/LinkPrimary';
 import { useRouter } from 'next/router';
 import { DirectoryList } from '@boxyhq/react-ui/dsync';
-import { pageLimit } from '@boxyhq/internal-ui';
+import { pageLimit, LinkPrimary } from '@boxyhq/internal-ui';
 
 const DSyncDirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => {
   const { t } = useTranslation('common');
@@ -24,7 +23,7 @@ const DSyncDirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => 
         <div className='flex gap-2'>
           {!setupLinkToken && (
             <LinkPrimary Icon={LinkIcon} href='/admin/directory-sync/setup-link/new'>
-              {t('new_setup_link')}
+              {t('bui-sl-new-link')}
             </LinkPrimary>
           )}
           <LinkPrimary href={createDirectoryUrl}>{t('new_directory')}</LinkPrimary>

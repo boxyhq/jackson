@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { ButtonOutline } from '@components/ButtonOutline';
+import { ButtonOutline } from '@boxyhq/internal-ui';
 
 const PreviousButton = () => {
   const router = useRouter();

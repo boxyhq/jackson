@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import { useTranslation, Trans } from 'next-i18next';
 import jackson from '@lib/jackson';
-import { InputWithCopyButton } from '@components/ClipboardButton';
+import { InputWithCopyButton } from '@boxyhq/internal-ui';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Toaster } from '@components/Toaster';
 
@@ -46,7 +46,7 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = (
             <div className='form-control w-full'>
               <div className='flex flex-col'>
                 <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
-                  {t('response')}
+                  {t('bui-tracer-response')}
                 </label>
                 <p className='text-sm'>{config.response}</p>
               </div>
@@ -82,7 +82,7 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = (
                           href='/.well-known/saml.cer'
                           className='underline underline-offset-4'
                           target='_blank'>
-                          {t('download')}
+                          {t('bui-wku-download')}
                         </Link>
                       ),
                     }}

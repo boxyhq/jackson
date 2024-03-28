@@ -1,4 +1,4 @@
-import Loading from '@components/Loading';
+import { Loading } from '@boxyhq/internal-ui';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
