@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { LinkBack } from '@components/LinkBack';
-import { ButtonPrimary } from '@components/ButtonPrimary';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
 import { configMap } from '@lib/sinkConfigMap';
+import { ButtonPrimary, LinkBack } from '@boxyhq/internal-ui';
 
 const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
@@ -86,7 +85,7 @@ const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => 
             </div>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
-                <span className='label-text'>{t('name')}</span>
+                <span className='label-text'>{t('bui-shared-name')}</span>
               </label>
               <input
                 type='text'
@@ -95,7 +94,7 @@ const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => 
                 value={name}
                 required={false}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={t('name')}
+                placeholder={t('bui-shared-name')}
               />
             </div>
             {type && (

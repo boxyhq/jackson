@@ -4,15 +4,11 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import type { SecurityLogsConfig } from '@boxyhq/saml-jackson';
 import { fetcher } from '@lib/ui/utils';
-import Loading from '@components/Loading';
 import { errorToast, successToast } from '@components/Toaster';
-import ConfirmationModal from '@components/ConfirmationModal';
 import type { ApiError, ApiResponse, ApiSuccess } from 'types';
-import { LinkBack } from '@components/LinkBack';
-import { ButtonPrimary } from '@components/ButtonPrimary';
-import { ButtonDanger } from '@components/ButtonDanger';
 import { SinkConfigMapField, getFieldsFromSinkType } from '@lib/sinkConfigMap';
 import LicenseRequired from '@components/LicenseRequired';
+import { ButtonDanger, ButtonPrimary, ConfirmationModal, LinkBack, Loading } from '@boxyhq/internal-ui';
 
 const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const { t } = useTranslation('common');
@@ -117,7 +113,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
             })}
             <div>
               <ButtonPrimary type='submit' loading={loading}>
-                {t('save_changes')}
+                {t('bui-shared-save-changes')}
               </ButtonPrimary>
             </div>
           </div>
@@ -163,7 +159,7 @@ export const DeleteApp = ({ id }: { id }) => {
           onClick={() => {
             setDelModalVisible(true);
           }}>
-          {t('delete')}
+          {t('bui-shared-delete')}
         </ButtonDanger>
       </section>
       <ConfirmationModal

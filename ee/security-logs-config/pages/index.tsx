@@ -4,10 +4,7 @@ import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
 import type { ApiError, ApiSuccess } from 'types';
 import { fetcher } from '@lib/ui/utils';
-import Loading from '@components/Loading';
-import EmptyState from '@components/EmptyState';
-import { LinkPrimary } from '@components/LinkPrimary';
-import { pageLimit, Pagination, Table } from '@boxyhq/internal-ui';
+import { EmptyState, LinkPrimary, Loading, pageLimit, Pagination, Table } from '@boxyhq/internal-ui';
 import usePaginate from '@lib/ui/hooks/usePaginate';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
@@ -95,7 +92,7 @@ const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
           return {
             actions: [
               {
-                text: t('bui-dsync-view'),
+                text: t('bui-shared-edit'),
                 onClick: () => router.push(`/admin/settings/security-logs/${config.id}/edit`),
                 icon: <PencilIcon className='w-5' />,
               },
@@ -128,7 +125,7 @@ const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
       </div>
       {noConfigs ? (
         <>
-          <EmptyState title={t('no_security_logs_config')} href='/admin/settings/security-logs/new' />
+          <EmptyState title={t('no_security_logs_config')} />
         </>
       ) : (
         <>
