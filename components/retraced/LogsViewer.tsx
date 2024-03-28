@@ -4,8 +4,7 @@ import { useTranslation } from 'next-i18next';
 
 import type { ApiError, ApiSuccess } from 'types';
 import type { Project } from 'types/retraced';
-import ErrorMessage from '@components/Error';
-import { Loading } from '@boxyhq/internal-ui';
+import { Loading, Error } from '@boxyhq/internal-ui';
 import { fetcher } from '@lib/ui/utils';
 
 const LogsViewer = (props: { project: Project; environmentId: string; groupId: string; host: string }) => {
@@ -28,7 +27,7 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
   }
 
   if (error) {
-    return <ErrorMessage />;
+    return <Error message={t('error_loading_page')} />;
   }
 
   const viewerToken = data?.data?.viewerToken;

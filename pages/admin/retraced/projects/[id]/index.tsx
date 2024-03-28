@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ProjectDetails from '@components/retraced/ProjectDetails';
 import { useProject } from '@lib/ui/retraced';
-import ErrorMessage from '@components/Error';
-import { LinkBack, Loading } from '@boxyhq/internal-ui';
+import { LinkBack, Loading, Error } from '@boxyhq/internal-ui';
 import { retracedOptions } from '@lib/env';
+import { useTranslation } from 'next-i18next';
 
 export interface Props {
   host?: string;
@@ -13,6 +13,7 @@ export interface Props {
 
 const ProjectInfo: NextPage<Props> = ({ host }: Props) => {
   const router = useRouter();
+  const { t } = useTranslation('common');
 
   const { id: projectId } = router.query;
 
@@ -23,7 +24,7 @@ const ProjectInfo: NextPage<Props> = ({ host }: Props) => {
   }
 
   if (isError) {
-    return <ErrorMessage />;
+    return <Error message={t('error_loading_page')} />;
   }
 
   return (

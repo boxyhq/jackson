@@ -4,8 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useProject, useGroups } from '@lib/ui/retraced';
-import ErrorMessage from '@components/Error';
-import { LinkBack, Loading } from '@boxyhq/internal-ui';
+import { LinkBack, Loading, Error } from '@boxyhq/internal-ui';
 import { Select } from 'react-daisyui';
 import { retracedOptions } from '@lib/env';
 import { useTranslation } from 'next-i18next';
@@ -49,7 +48,7 @@ const Events: NextPage<Props> = ({ host }: Props) => {
   }
 
   if (isError) {
-    return <ErrorMessage />;
+    return <Error message={t('error_loading_page')} />;
   }
 
   const displayLogsViewer = project && environment && group;
