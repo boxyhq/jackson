@@ -40,7 +40,7 @@
     "vite": "5.2.6"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.13.0"
+    "@rollup/rollup-linux-x64-gnu": "4.13.1"
   },
   "peerDependencies": {
     "@heroicons/react": ">=2.1.1",
