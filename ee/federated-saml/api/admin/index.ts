@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 import { defaultHandler } from '@lib/api';
 import { parsePaginateApiParams } from '@lib/utils';
 
@@ -16,6 +17,15 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
 
   const app = await samlFederatedController.app.create(req.body);
+
+  retraced.reportAdminPortalEvent({
+    action: 'federation.app.create',
+    crud: 'c',
+    req,
+    target: {
+      id: app.id,
+    },
+  });
 
   res.status(201).json({ data: app });
 };

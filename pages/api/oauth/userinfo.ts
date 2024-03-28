@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { extractAuthToken } from '@lib/auth';
+import retraced from '@ee/retraced';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -26,6 +27,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const profile = await oauthController.userInfo(token);
+
+    retraced.reportEvent({
+      action: 'sso.user.login',
+      crud: 'c',
+      actor: {
+        id: profile.email,
+        name: `${profile.firstName} ${profile.lastName}`,
+        fields: {
+          tenant: profile.requested.tenant,
+        },
+      },
+      productId: profile.requested.product,
+      req,
+    });
 
     res.json(profile);
   } catch (err: any) {

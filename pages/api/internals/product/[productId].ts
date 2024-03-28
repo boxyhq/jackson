@@ -1,1 +1,1 @@
-export { default } from 'ee/product/api/[productId]';
+export { default } from '@ee/product/api/[productId]';
