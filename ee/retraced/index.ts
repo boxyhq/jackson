@@ -66,7 +66,9 @@ type AuditEventType =
   | 'team.delete'
   | 'audit_log.splunk_connection.create'
   | 'audit_log.splunk_connection.delete'
-  | 'audit_log.splunk_connection.update';
+  | 'audit_log.splunk_connection.update'
+  | 'api_key.create'
+  | 'api_key.delete';
 
 interface ReportAdminEventParams {
   action: AuditEventType;

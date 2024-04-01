@@ -24,6 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 // Get Security Logs config by id
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { action, crud, actor, sourceIp, group, target, productId } = req.body;
+
   await retraced.reportEvent({
     action: action,
     crud: crud,

@@ -5,7 +5,7 @@
 VERSION=0.0.0
 
 # Unpublish the current version
-npm unpublish --registry http://localhost:4873/ @boxyhq/security-sinks@$VERSION
+npm unpublish --registry http://localhost:4873/ @boxyhq/security-sinks@$VERSION --force
 
 # Build the package
 rm -rf dist
