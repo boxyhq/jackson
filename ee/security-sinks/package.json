@@ -11,8 +11,8 @@
     "type": "git",
     "url": "git+https://github.com/boxyhq/jackson.git"
   },
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "typings": "src/index.ts",
   "files": [
     "dist",
     "ENTERPRISE.md",
