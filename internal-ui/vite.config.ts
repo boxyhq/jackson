@@ -24,6 +24,7 @@ export default defineConfig({
         'formik',
         'react-daisyui',
         'react-tagsinput',
+        '@boxyhq/react-ui',
       ],
     },
   },
