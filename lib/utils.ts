@@ -104,6 +104,6 @@ export const parsePaginateApiParams = (params: NextApiRequest['query']): Paginat
 export type AdminPortalSSODefaults = {
   tenant: string;
   product: string;
-  redirectUrl: [string];
+  redirectUrl: string;
   defaultRedirectUrl: string;
 };
