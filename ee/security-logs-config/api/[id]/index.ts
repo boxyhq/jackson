@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import retraced from '@ee/retraced';
+import { ApiError } from '@lib/error';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -34,6 +35,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query as { id: string };
 
   const config = await securityLogsConfigController.get(id);
+
+  if (!config) {
+    throw new ApiError(`Security Logs Config with id ${id} not found`, 404);
+  }
 
   return res.status(200).json({
     data: {

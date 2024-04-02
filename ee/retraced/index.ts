@@ -8,6 +8,7 @@ import jackson from '@lib/jackson';
 import { auditLogEnabledGroup, retracedOptions } from '@lib/env';
 import { sessionName } from '@lib/constants';
 import { sendSecurityLogs } from '@ee/security-logs-config';
+import { extractAuthToken, validateApiKey } from '@lib/auth';
 
 type AuditEventType =
   | 'sso.user.login'
@@ -228,19 +229,27 @@ const getAdminUser = async (req: NextApiRequest | undefined) => {
     throw new Error(`NextApiRequest is required to get actor info for Retraced event.`);
   }
 
-  const user = await getNextAuthToken({
-    req,
-    cookieName: sessionName,
-  });
+  // API keys used for admin portal routes
+  if (validateApiKey(extractAuthToken(req))) {
+    return {
+      id: 'API',
+      name: 'API',
+    };
+  } else {
+    const user = await getNextAuthToken({
+      req,
+      cookieName: sessionName,
+    });
 
-  if (!user || !user.email || !user.name) {
-    throw new Error(`Can't find actor info from the NextAuth token.`);
+    if (!user || !user.email || !user.name) {
+      throw new Error(`Can't find actor info from the NextAuth token.`);
+    }
+
+    return {
+      id: user.email,
+      name: user.name,
+    };
   }
-
-  return {
-    id: user.email,
-    name: user.name,
-  };
 };
 
 // Find Ip from request
