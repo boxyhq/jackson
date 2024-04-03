@@ -27,7 +27,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "11.1.6",
     "@types/node": "20.12.2",
-    "@types/react": "18.2.73",
+    "@types/react": "18.2.74",
     "@typescript-eslint/eslint-plugin": "7.5.0",
     "@typescript-eslint/parser": "7.5.0",
     "@vitejs/plugin-react": "4.2.1",
