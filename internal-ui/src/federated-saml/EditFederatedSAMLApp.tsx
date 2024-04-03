@@ -31,7 +31,7 @@ export const EditFederatedSAMLApp = ({
     if (error) {
       onError?.(error);
     }
-  });
+  }, [error, onError]);
 
   if (isLoading) {
     return <Loading />;
