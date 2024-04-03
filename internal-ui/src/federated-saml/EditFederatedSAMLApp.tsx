@@ -5,7 +5,7 @@ import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';
 import { DeleteCard, Loading, ConfirmationModal } from '../shared';
 import { useTranslation } from 'next-i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { defaultHeaders, fetcher } from '../utils';
 import { PageHeader } from '../shared';
 
@@ -27,12 +27,17 @@ export const EditFederatedSAMLApp = ({
 
   const { data, isLoading, error, mutate } = useSWR<{ data: SAMLFederationApp }>(urls.getApp, fetcher);
 
+  useEffect(() => {
+    if (error) {
+      onError?.(error);
+    }
+  }, [error, onError]);
+
   if (isLoading) {
     return <Loading />;
   }
 
   if (error) {
-    onError?.(error);
     return;
   }
 

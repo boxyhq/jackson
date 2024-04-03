@@ -185,7 +185,6 @@
   "bui-fs-idp-attribute": "IdP Attribute",
   "bui-fs-add-mapping": "Add Mapping",
   "bui-fs-add-another": "Add another",
-  "bui-fs-add": "Add",
   "bui-fs-no-apps": "No Identity Federation Apps found.",
   "bui-fs-no-apps-desc": "Create a new App to configure Identity Federation.",
   "bui-fs-entity-id": "Entity ID / Audience URI / Audience Restriction",
