@@ -9,7 +9,7 @@ import EyeSlashIcon from '@heroicons/react/24/outline/EyeSlashIcon';
 
 import { Card } from '../shared';
 import { defaultHeaders } from '../utils';
-import { ItemList } from '../shared/ItemList';
+import { ItemList } from '@boxyhq/react-ui/shared';
 import { CopyToClipboardButton } from '../shared/InputWithCopyButton';
 import { IconButton } from '../shared/IconButton';
 
@@ -179,12 +179,14 @@ export const Edit = ({
                 )}
                 {connectionIsOIDC && (
                   <label className='form-control w-full'>
-                    <div className='label'>
-                      <span className='label-text'>{t('bui-sl-allowed-redirect-urls-new')}</span>
-                    </div>
                     <ItemList
+                      classNames={{ label: 'label', input: 'input input-bordered input-sm w-full' }}
+                      label={t('bui-sl-allowed-redirect-urls-new')}
+                      inputType={'url'}
                       currentlist={formik.values.redirectUrl || ['']}
-                      onItemListChange={(newList) => formik.setFieldValue('redirectUrl', newList)}></ItemList>
+                      fieldName='redirectUrl'
+                      handleItemListUpdate={(fieldName, newList) => formik.setFieldValue(fieldName, newList)}
+                    />
                   </label>
                 )}
                 <label className='form-control w-full'>
