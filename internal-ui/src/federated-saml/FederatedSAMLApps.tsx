@@ -81,6 +81,12 @@ export const FederatedSAMLApps = ({
       wrap: true,
       dataIndex: 'product',
     },
+    {
+      key: 'type',
+      label: t('bui-shared-type'),
+      wrap: true,
+      dataIndex: 'type',
+    },
   ];
 
   if (excludeFields) {
@@ -96,7 +102,8 @@ export const FederatedSAMLApps = ({
         const dataIndex = column.dataIndex as keyof typeof app;
         return {
           wrap: column.wrap,
-          text: app[dataIndex] as string,
+          text:
+            column.key === 'type' ? (app[dataIndex] as string)?.toUpperCase() : (app[dataIndex] as string),
         };
       }),
     };
