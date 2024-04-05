@@ -100,10 +100,16 @@ export const FederatedSAMLApps = ({
       id: app.id,
       cells: columns.map((column) => {
         const dataIndex = column.dataIndex as keyof typeof app;
+        let columnText: string | undefined = app[dataIndex] as string;
+        if (column.key === 'type') {
+          if (!columnText) {
+            columnText = 'SAML';
+          }
+          columnText = columnText?.toUpperCase();
+        }
         return {
           wrap: column.wrap,
-          text:
-            column.key === 'type' ? (app[dataIndex] as string)?.toUpperCase() : (app[dataIndex] as string),
+          text: columnText,
         };
       }),
     };
