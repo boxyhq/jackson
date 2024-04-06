@@ -1,6 +1,7 @@
 require('reflect-metadata');
 import { DataSource, DatabaseType, DataSourceOptions } from 'typeorm';
 import * as mssql from './src/db/sql/mssql';
+import { DEFAULT_POSTGRES_SCHEMA } from './src/db/constants';
 
 const type =
   process.env.DB_ENGINE === 'planetscale'
@@ -45,7 +46,7 @@ const baseOpts = {
   logging: 'all',
   entities: [`src/db/${entitiesDir}/entity/**/*.ts`],
   migrations:
-    type === 'mssql'
+    type === 'mssql' || type === 'postgres'
       ? [`migration/${migrationsDir}/**/*.ts`]
       : [`migration/${migrationsDir}/**/*.ts`, `migration/sql/**/*.ts`],
 };
@@ -62,14 +63,18 @@ if (type === 'mssql') {
     ...baseOpts,
   });
 } else {
-  AppDataSource = new DataSource(<DataSourceOptions>{
+  const dataSourceOptions = {
     url:
       process.env.DB_URL ||
       process.env.DATABASE_URL ||
       'postgresql://postgres:postgres@localhost:5432/postgres',
     ssl,
     ...baseOpts,
-  });
+  };
+  if (type === 'postgres') {
+    dataSourceOptions['schema'] = process.env.POSTGRES_SCHEMA || DEFAULT_POSTGRES_SCHEMA;
+  }
+  AppDataSource = new DataSource(<DataSourceOptions>dataSourceOptions);
 }
 
 export default AppDataSource;
