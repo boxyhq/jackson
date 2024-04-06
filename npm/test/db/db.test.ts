@@ -9,6 +9,7 @@ const dbObjs: { [key: string]: DatabaseDriver } = {};
 const connectionStores: Storable[] = [];
 const ttlStores: Storable[] = [];
 const ttl = 2;
+const non_default_schema = 'non_default';
 
 const record1 = {
   id: '1',
@@ -131,6 +132,12 @@ const dbs = [
     encryptionKey,
   },
   {
+    ...postgresDbConfig,
+    postgres: {
+      schema: non_default_schema,
+    },
+  },
+  {
     ...mongoDbConfig,
   },
   {
@@ -188,7 +195,11 @@ tap.before(async () => {
   for (const idx in dbs) {
     const opts = dbs[idx];
     const db = await DB.new(opts, true);
-    dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
+    if (opts.type === 'postgres' && opts['schema'] === non_default_schema) {
+      dbObjs[opts['schema'] + opts.engine! + (opts.type ? opts.type : '')] = db;
+    } else {
+      dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
+    }
 
     const randomSession = Date.now();
     connectionStores.push(db.store('saml:config:' + randomSession + randomBytes(4).toString('hex')));
@@ -201,14 +212,31 @@ tap.teardown(async () => {
 });
 
 tap.test('dbs', async () => {
+  // We need this to ensure that the test runs atleast once.
+  // It is quite easy to skip the test by mistake in the future
+  // if one of the conditions change and it goes unnoticed.
+  let has_non_default_postgres_schema_test_ran = false;
   for (const idx in connectionStores) {
     const connectionStore = connectionStores[idx];
     const ttlStore = ttlStores[idx];
     const dbEngine = dbs[idx].engine!;
-    let dbType = dbEngine;
+    let dbType = dbEngine.toString();
     if (dbs[idx].type) {
       dbType += ': ' + dbs[idx].type;
     }
+
+    tap.test('Test non default postgres schema', (t) => {
+      if (dbType === 'sql: postgres' && dbs[idx].postgres?.schema === non_default_schema) {
+        t.same(
+          connectionStore['db']['db']['dataSource']['createQueryBuilder']()['connection']['options'][
+            'schema'
+          ],
+          non_default_schema
+        );
+      }
+      has_non_default_postgres_schema_test_ran = true;
+      t.end();
+    });
 
     tap.test('put(): ' + dbType, async () => {
       await connectionStore.put(
@@ -526,5 +554,10 @@ tap.test('dbs', async () => {
     for (const [, value] of Object.entries(dbObjs)) {
       await value.close();
     }
+  });
+
+  tap.test('Ensure that the test for non default postgres schema has ran atleast once', (t) => {
+    t.same(has_non_default_postgres_schema_test_ran, true);
+    t.end();
   });
 });

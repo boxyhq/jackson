@@ -6,8 +6,9 @@ import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records, SortOrder } 
 import { DataSource, DataSourceOptions, In, IsNull } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
+import { DEFAULT_POSTGRES_SCHEMA } from '../constants';
 
-class Sql implements DatabaseDriver {
+export class Sql implements DatabaseDriver {
   private options: DatabaseOption;
   private dataSource!: DataSource;
   private storeRepository;
@@ -26,6 +27,7 @@ class Sql implements DatabaseDriver {
 
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
     const sqlType = this.options.engine === 'planetscale' ? 'mysql' : this.options.type!;
+    const postgresSchema = this.options.postgres?.schema || DEFAULT_POSTGRES_SCHEMA;
     // Synchronize by default for non-planetscale engines only if migrations are not set to run
     let synchronize = !this.options.manualMigration;
     if (this.options.engine === 'planetscale') {
@@ -53,13 +55,29 @@ class Sql implements DatabaseDriver {
             ...baseOpts,
           });
         } else {
-          this.dataSource = new DataSource(<DataSourceOptions>{
+          const dataSourceOptions = {
             url: this.options.url,
             ssl: this.options.ssl,
             ...baseOpts,
-          });
+          };
+
+          if (sqlType === 'postgres') {
+            dataSourceOptions['synchronize'] = false;
+            dataSourceOptions['schema'] = postgresSchema;
+          }
+          this.dataSource = new DataSource(<DataSourceOptions>dataSourceOptions);
         }
+
         await this.dataSource.initialize();
+
+        if (sqlType === 'postgres' && synchronize) {
+          // We skip synchronization for postgres databases because TypeORM
+          // does not create schemas if they don't exist, we manually run
+          // synchronize here if it is set to true.
+          const queryRunner = this.dataSource.createQueryRunner();
+          await queryRunner.query(`CREATE SCHEMA IF NOT EXISTS ${postgresSchema}`);
+          this.dataSource.synchronize();
+        }
 
         break;
       } catch (err) {
