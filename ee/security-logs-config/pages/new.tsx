@@ -1,11 +1,8 @@
-import { useTranslation } from 'next-i18next';
 import { successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
 import { SecurityLogsConfigCreate } from 'internal-ui/src/security-logs-config';
 
 const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
-  const { t } = useTranslation('common');
-
   if (!hasValidLicense) {
     return <LicenseRequired />;
   }
