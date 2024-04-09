@@ -3,10 +3,10 @@ const path = require('path');
 const regExp = /\bt\('(.*?)'/gm;
 const altRegExp = /\bi18nKey='(.*?)'/gm;
 const exceptionList = [
-  'splunk_event_collector_url',
-  'splunk_hec_endpoint_placeholder',
-  'default_token',
-  'default_token_placeholder',
+  'bui-default-token',
+  'bui-default-token-placeholder',
+  'bui-splunk-collector-url',
+  'bui-splunk-hec-endpoint-placeholder',
 ];
 
 const allStrings = {};
