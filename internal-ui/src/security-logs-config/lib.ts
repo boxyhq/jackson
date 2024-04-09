@@ -19,17 +19,17 @@ export const configMap = {
     fields: [
       {
         index: 1,
-        label: 'splunk_event_collector_url',
+        label: 'bui-splunk-collector-url',
         name: 'endpoint',
         type: 'string',
-        placeholder: 'splunk_hec_endpoint_placeholder',
+        placeholder: 'bui-splunk-hec-endpoint-placeholder',
       },
       {
         index: 2,
-        label: 'default_token',
+        label: 'bui-default-token',
         name: 'default_token',
         type: 'string',
-        placeholder: 'default_token_placeholder',
+        placeholder: 'bui-default-token-placeholder',
       },
     ],
   },

@@ -5,6 +5,8 @@ export interface ApiError extends Error {
   status: number;
 }
 
+export type ApiResponse<T = any> = ApiSuccess<T> | { error: ApiError };
+
 enum DirectorySyncProviders {
   'azure-scim-v2' = 'Azure SCIM v2.0',
   'onelogin-scim-v2' = 'OneLogin SCIM v2.0',
