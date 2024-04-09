@@ -1,7 +1,7 @@
 import { errorToast, successToast } from '@components/Toaster';
 import { useRouter } from 'next/router';
 import LicenseRequired from '@components/LicenseRequired';
-import { SecurityLogsConfigEdit } from 'internal-ui/src/security-logs-config';
+import { SecurityLogsConfigEdit } from '@boxyhq/internal-ui';
 
 const UpdateConfig = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const router = useRouter();

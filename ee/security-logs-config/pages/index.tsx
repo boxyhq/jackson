@@ -1,5 +1,5 @@
 import LicenseRequired from '@components/LicenseRequired';
-import { SecurityLogsConfigs } from 'internal-ui/src/security-logs-config';
+import { SecurityLogsConfigs } from '@boxyhq/internal-ui';
 
 const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   if (!hasValidLicense) {

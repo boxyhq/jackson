@@ -1,6 +1,6 @@
 import { successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
-import { SecurityLogsConfigCreate } from 'internal-ui/src/security-logs-config';
+import { SecurityLogsConfigCreate } from '@boxyhq/internal-ui';
 
 const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   if (!hasValidLicense) {

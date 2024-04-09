@@ -5,3 +5,4 @@ export * from './dsync';
 export * from './provider';
 export * from './sso-tracer';
 export * from './setup-link';
+export * from './security-logs-config';
