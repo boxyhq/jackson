@@ -3,7 +3,11 @@ import type { Storable } from '../typings';
 import { eventLockTTL } from '../directory-sync/utils';
 
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
-const instanceKey = randomUUID();
+const g = global as any;
+if (!g._instanceKey) {
+  g._instanceKey = randomUUID();
+}
+const instanceKey = g._instanceKey;
 
 interface Lock {
   key: string;
