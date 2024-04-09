@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
-import { ButtonPrimary, LinkBack } from '@boxyhq/internal-ui';
 
 import { useRouter } from '../hooks';
 import { configMap } from './lib';
-import { Error } from '../shared';
+import { ButtonPrimary, Error, LinkBack } from '../shared';
 
 export const SecurityLogsConfigCreate = ({
   urls,

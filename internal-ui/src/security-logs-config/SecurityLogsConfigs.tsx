@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import type { SecurityLogsConfig } from '@boxyhq/saml-jackson';
 import useSWR from 'swr';
-import { EmptyState, LinkPrimary, Loading, pageLimit, Pagination, Table } from '@boxyhq/internal-ui';
+import { EmptyState, LinkPrimary, Loading, pageLimit, Pagination, Table } from '../shared';
 import { useTranslation } from 'next-i18next';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon';
