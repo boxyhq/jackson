@@ -11,7 +11,7 @@ const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
     createConfig: '/admin/settings/security-logs/new',
     editLink: (id) => `/admin/settings/security-logs/${id}`,
   };
-  return <SecurityLogsConfigs urls={urls} />;
+  return <SecurityLogsConfigs urls={urls} skipColumns={['endpoint']} />;
 };
 
 export default ConfigList;

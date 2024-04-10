@@ -58,20 +58,20 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { securityLogsConfigController } = await jackson();
 
-  const { offset, limit, pageToken, tenant } = req.query as {
-    offset: string;
-    limit: string;
+  const { pageOffset, pageLimit, pageToken, tenant } = req.query as {
+    pageOffset: string;
+    pageLimit: string;
     pageToken?: string;
     tenant: string;
   };
 
-  const pageOffset = parseInt(offset);
-  const pageLimit = parseInt(limit);
+  const offset = parseInt(pageOffset);
+  const limit = parseInt(pageLimit);
 
   const configs = await securityLogsConfigController.getAll(
     boxyhqHosted ? tenant : adminPortalSSODefaults.tenant,
-    pageOffset,
-    pageLimit,
+    offset,
+    limit,
     pageToken
   );
   if (configs.pageToken) {
