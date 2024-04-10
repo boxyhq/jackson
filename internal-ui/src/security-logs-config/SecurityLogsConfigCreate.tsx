@@ -41,7 +41,9 @@ export const SecurityLogsConfigCreate = ({
     const response = await rawResponse.json();
 
     if ('error' in response) {
-      return <Error message={response.error.message} />;
+      if (response?.error?.message) {
+        return <Error message={response.error.message} />;
+      }
     }
 
     if ('data' in response) {
