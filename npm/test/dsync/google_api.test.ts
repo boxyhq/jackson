@@ -143,6 +143,7 @@ const mockGroupsAPI = (groups: any[]) => {
       maxResults: 200,
       domain: 'boxyhq.com',
     })
+    // Gets invoked 2 times - 1 for syncGroups, 2nd time inside syncGroupMembers
     .times(2)
     .reply(200, { groups });
 };
@@ -192,50 +193,50 @@ tap.test('Sync 1', async (t) => {
   await directorySyncController.sync();
 
   nock.cleanAll();
-
-  t.strictSame(events.length, 7);
+  // 5k users, 2 groups, 3 group members
+  t.strictSame(events.length, 5005);
 
   t.strictSame(events[0].event, 'user.created');
   t.strictSame(events[0].data.id, fakeGoogleDirectory.users[0].id);
   t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
 
-  t.strictSame(events[1].event, 'user.created');
-  t.strictSame(events[1].data.id, fakeGoogleDirectory.users[1].id);
-  t.strictSame(events[1].data.raw, fakeGoogleDirectory.users[1]);
+  t.strictSame(events[4999].event, 'user.created');
+  t.strictSame(events[4999].data.id, fakeGoogleDirectory.users[4999].id);
+  t.strictSame(events[4999].data.raw, fakeGoogleDirectory.users[4999]);
 
-  t.strictSame(events[2].event, 'group.created');
-  t.strictSame(events[2].data.id, fakeGoogleDirectory.groups[0].id);
-  t.strictSame(events[2].data.raw, fakeGoogleDirectory.groups[0]);
+  t.strictSame(events[5000].event, 'group.created');
+  t.strictSame(events[5000].data.id, fakeGoogleDirectory.groups[0].id);
+  t.strictSame(events[5000].data.raw, fakeGoogleDirectory.groups[0]);
 
-  t.strictSame(events[3].event, 'group.created');
-  t.strictSame(events[3].data.id, fakeGoogleDirectory.groups[1].id);
-  t.strictSame(events[3].data.raw, fakeGoogleDirectory.groups[1]);
+  t.strictSame(events[5001].event, 'group.created');
+  t.strictSame(events[5001].data.id, fakeGoogleDirectory.groups[1].id);
+  t.strictSame(events[5001].data.raw, fakeGoogleDirectory.groups[1]);
 
-  t.strictSame(events[4].event, 'group.user_added');
-  t.strictSame(events[4].data.id, fakeGoogleDirectory.users[0].id);
-  t.strictSame(events[4].data.raw, fakeGoogleDirectory.users[0]);
+  t.strictSame(events[5002].event, 'group.user_added');
+  t.strictSame(events[5002].data.id, fakeGoogleDirectory.users[0].id);
+  t.strictSame(events[5002].data.raw, fakeGoogleDirectory.users[0]);
 
   // Check that the user was added to the group
-  if ('group' in events[4].data) {
-    t.strictSame(events[4].data.group.id, fakeGoogleDirectory.groups[0].id);
+  if ('group' in events[5002].data) {
+    t.strictSame(events[5002].data.group.id, fakeGoogleDirectory.groups[0].id);
   }
 
-  t.strictSame(events[5].event, 'group.user_added');
-  t.strictSame(events[5].data.id, fakeGoogleDirectory.users[1].id);
-  t.strictSame(events[5].data.raw, fakeGoogleDirectory.users[1]);
+  t.strictSame(events[5003].event, 'group.user_added');
+  t.strictSame(events[5003].data.id, fakeGoogleDirectory.users[1].id);
+  t.strictSame(events[5003].data.raw, fakeGoogleDirectory.users[1]);
 
   // Check that the user was added to the group
-  if ('group' in events[5].data) {
-    t.strictSame(events[5].data.group.id, fakeGoogleDirectory.groups[0].id);
+  if ('group' in events[5003].data) {
+    t.strictSame(events[5003].data.group.id, fakeGoogleDirectory.groups[0].id);
   }
 
-  t.strictSame(events[6].event, 'group.user_added');
-  t.strictSame(events[6].data.id, fakeGoogleDirectory.users[0].id);
-  t.strictSame(events[6].data.raw, fakeGoogleDirectory.users[0]);
+  t.strictSame(events[5004].event, 'group.user_added');
+  t.strictSame(events[5004].data.id, fakeGoogleDirectory.users[0].id);
+  t.strictSame(events[5004].data.raw, fakeGoogleDirectory.users[0]);
 
   // Check that the user was added to the group
-  if ('group' in events[6].data) {
-    t.strictSame(events[6].data.group.id, fakeGoogleDirectory.groups[1].id);
+  if ('group' in events[5004].data) {
+    t.strictSame(events[5004].data.group.id, fakeGoogleDirectory.groups[1].id);
   }
 
   t.end();
@@ -365,14 +366,14 @@ tap.test('Sync 4', async (t) => {
 tap.test('Sync 5', async (t) => {
   events = [];
 
-  // Remove elizasmith from the engineering group
+  // Remove elizasmith1 from the engineering group
   fakeGoogleDirectory.members.engineering.shift();
 
-  // Add elizasmith to the marketing group
+  // Add elizasmith1 to the marketing group
   fakeGoogleDirectory.members.marketing.push({
     kind: 'directory#member',
-    id: 'elizasmith',
-    email: 'eliza@example.com',
+    id: 'elizasmith1',
+    email: 'eliza1@example.com',
     role: 'MANAGER',
     type: 'USER',
   });
