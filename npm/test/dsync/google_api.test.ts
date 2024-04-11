@@ -17,6 +17,21 @@ const directoryPayload = {
   google_refresh_token: 'refresh_token',
 };
 
+type User = {
+  id: string;
+  primaryEmail: string;
+  name: {
+    givenName: string;
+    familyName: string;
+  };
+  suspended: boolean;
+  password: string;
+  hashFunction: string;
+  changePasswordAtNextLogin: boolean;
+  ipWhitelisted: boolean;
+  etag: string;
+};
+
 const fakeGoogleDirectory = {
   users: [
     {
