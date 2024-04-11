@@ -33,37 +33,7 @@ type User = {
 };
 
 const fakeGoogleDirectory = {
-  users: [
-    {
-      id: 'elizasmith',
-      primaryEmail: 'eliza@example.com',
-      name: {
-        givenName: 'Eliza',
-        familyName: 'Smith',
-      },
-      suspended: false,
-      password: 'password',
-      hashFunction: 'SHA-1',
-      changePasswordAtNextLogin: false,
-      ipWhitelisted: false,
-      etag: 'abcd1234',
-    },
-    {
-      id: 'johndoe',
-      primaryEmail: 'john@example.com',
-      name: {
-        givenName: 'John',
-        familyName: 'Doe',
-      },
-      suspended: false,
-      password: 'password',
-      hashFunction: 'SHA-1',
-      changePasswordAtNextLogin: false,
-      ipWhitelisted: false,
-      etag: 'efgh5678',
-    },
-  ],
-
+  users: [] as User[],
   groups: [
     {
       id: 'engineering',
@@ -90,20 +60,19 @@ const fakeGoogleDirectory = {
       nonEditableAliases: ['sales-group456@example.com'],
     },
   ],
-
   members: {
     engineering: [
       {
         kind: 'directory#member',
-        id: 'elizasmith',
-        email: 'eliza@example.com',
+        id: 'elizasmith1',
+        email: 'eliza1@example.com',
         role: 'MANAGER',
         type: 'USER',
       },
       {
         kind: 'directory#member',
-        id: 'johndoe',
-        email: 'johndoe@example.com',
+        id: 'elizasmith2',
+        email: 'elizasmith2@example.com',
         role: 'MANAGER',
         type: 'USER',
       },
@@ -111,8 +80,8 @@ const fakeGoogleDirectory = {
     sales: [
       {
         kind: 'directory#member',
-        id: 'elizasmith',
-        email: 'eliza@example.com',
+        id: 'elizasmith1',
+        email: 'eliza1@example.com',
         role: 'MANAGER',
         type: 'USER',
       },
@@ -128,6 +97,23 @@ const fakeGoogleDirectory = {
     ],
   },
 };
+
+for (let i = 1; i <= 5000; i++) {
+  fakeGoogleDirectory.users.push({
+    id: `elizasmith${i}`,
+    primaryEmail: `eliza${i}@example.com`,
+    name: {
+      givenName: `Eliza${i}`,
+      familyName: 'Smith',
+    },
+    suspended: false,
+    password: 'password',
+    hashFunction: 'SHA-1',
+    changePasswordAtNextLogin: false,
+    ipWhitelisted: false,
+    etag: 'abcd1234',
+  });
+}
 
 // Mock /admin/directory/v1/users
 const mockUsersAPI = (users: any[]) => {
