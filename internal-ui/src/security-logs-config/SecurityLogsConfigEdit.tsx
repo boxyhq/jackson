@@ -78,8 +78,10 @@ export const SecurityLogsConfigEdit = ({
     const response: ApiResponse<SecurityLogsConfig> = await rawResponse.json();
 
     if ('error' in response) {
-      onError(response.error.message);
-      return;
+      if (response?.error?.message) {
+        onError(response.error.message);
+        return;
+      }
     }
 
     if ('data' in response) {
