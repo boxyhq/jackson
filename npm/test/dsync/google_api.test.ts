@@ -115,15 +115,24 @@ for (let i = 1; i <= 5000; i++) {
   });
 }
 
+const pageSize = 200;
+const numOfPages = fakeGoogleDirectory.users.length / pageSize;
 // Mock /admin/directory/v1/users
-const mockUsersAPI = (users: any[]) => {
-  nock('https://admin.googleapis.com')
-    .get('/admin/directory/v1/users')
-    .query({
+const mockUsersAPI = async (users: any[]) => {
+  for (let i = 0; i < users.length / pageSize; i++) {
+    const query: any = {
       maxResults: 200,
       domain: 'boxyhq.com',
-    })
-    .reply(200, { users });
+    };
+    if (i !== 0) {
+      query.pageToken = `${i}`;
+    }
+    const _users = users.slice(i * pageSize, i * pageSize + pageSize);
+    nock('https://admin.googleapis.com')
+      .get('/admin/directory/v1/users')
+      .query(query)
+      .reply(200, { users: _users, nextPageToken: i === numOfPages - 1 ? undefined : `${i + 1}` });
+  }
 };
 
 // Mock /admin/directory/v1/groups
