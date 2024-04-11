@@ -21,10 +21,10 @@ export const SecurityLogsConfigs = ({
   onSuccess,
 }: {
   urls: {
-    getConfigs: string;
+    listConfigs: string;
     createConfig: string;
-    editLink: (id: string) => string;
-    deleteConfig?: (id: string) => string;
+    editById: (id: string) => string;
+    deleteById?: (id: string) => string;
   };
   onSuccess?: (id: string) => void;
   onError?: (message: string) => void;
@@ -47,7 +47,7 @@ export const SecurityLogsConfigs = ({
     params['pageToken'] = pageTokenMap[paginate.offset - pageLimit];
   }
 
-  const getConfigsUrl = addQueryParamsToPath(urls.getConfigs, params);
+  const getConfigsUrl = addQueryParamsToPath(urls.listConfigs, params);
 
   const { data, error, isLoading, mutate } = useSWR<ApiSuccess<SecurityLogsConfig[]>, ApiError>(
     getConfigsUrl,
@@ -56,7 +56,7 @@ export const SecurityLogsConfigs = ({
 
   // Delete Splunk Connection
   const deleteSplunkConnection = async () => {
-    const response = await fetch(urls.deleteConfig!(connection!), {
+    const response = await fetch(urls.deleteById!(connection!), {
       method: 'DELETE',
     });
     const data = await response.json();
@@ -138,11 +138,11 @@ export const SecurityLogsConfigs = ({
 
         if (dataIndex === null) {
           return {
-            actions: urls.deleteConfig
+            actions: urls.deleteById
               ? [
                   {
                     text: t('bui-shared-edit'),
-                    onClick: () => router?.replace(urls.editLink(config.id)),
+                    onClick: () => router?.replace(urls.editById(config.id)),
                     icon: <PencilIcon className='w-5' />,
                   },
                   {
@@ -158,7 +158,7 @@ export const SecurityLogsConfigs = ({
               : [
                   {
                     text: t('bui-shared-edit'),
-                    onClick: () => router?.replace(urls.editLink(config.id)),
+                    onClick: () => router?.replace(urls.editById(config.id)),
                     icon: <PencilIcon className='w-5' />,
                   },
                 ],

@@ -8,10 +8,10 @@ const ConfigList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   }
 
   const urls = {
-    getConfigs: '/api/admin/security-logs-config',
+    listConfigs: '/api/admin/security-logs-config',
     createConfig: '/admin/settings/security-logs/new',
-    editLink: (id) => `/admin/settings/security-logs/${id}`,
-    deleteConfig: (id: string) => `/api/admin/security-logs-config/${id}`,
+    editById: (id) => `/admin/settings/security-logs/${id}`,
+    deleteById: (id: string) => `/api/admin/security-logs-config/${id}`,
   };
   return (
     <SecurityLogsConfigs
