@@ -17,38 +17,23 @@ const directoryPayload = {
   google_refresh_token: 'refresh_token',
 };
 
-const fakeGoogleDirectory = {
-  users: [
-    {
-      id: 'elizasmith',
-      primaryEmail: 'eliza@example.com',
-      name: {
-        givenName: 'Eliza',
-        familyName: 'Smith',
-      },
-      suspended: false,
-      password: 'password',
-      hashFunction: 'SHA-1',
-      changePasswordAtNextLogin: false,
-      ipWhitelisted: false,
-      etag: 'abcd1234',
-    },
-    {
-      id: 'johndoe',
-      primaryEmail: 'john@example.com',
-      name: {
-        givenName: 'John',
-        familyName: 'Doe',
-      },
-      suspended: false,
-      password: 'password',
-      hashFunction: 'SHA-1',
-      changePasswordAtNextLogin: false,
-      ipWhitelisted: false,
-      etag: 'efgh5678',
-    },
-  ],
+type User = {
+  id: string;
+  primaryEmail: string;
+  name: {
+    givenName: string;
+    familyName: string;
+  };
+  suspended: boolean;
+  password: string;
+  hashFunction: string;
+  changePasswordAtNextLogin: boolean;
+  ipWhitelisted: boolean;
+  etag: string;
+};
 
+const fakeGoogleDirectory = {
+  users: [] as User[],
   groups: [
     {
       id: 'engineering',
@@ -75,20 +60,19 @@ const fakeGoogleDirectory = {
       nonEditableAliases: ['sales-group456@example.com'],
     },
   ],
-
   members: {
     engineering: [
       {
         kind: 'directory#member',
-        id: 'elizasmith',
-        email: 'eliza@example.com',
+        id: 'elizasmith1',
+        email: 'eliza1@example.com',
         role: 'MANAGER',
         type: 'USER',
       },
       {
         kind: 'directory#member',
-        id: 'johndoe',
-        email: 'johndoe@example.com',
+        id: 'elizasmith2',
+        email: 'elizasmith2@example.com',
         role: 'MANAGER',
         type: 'USER',
       },
@@ -96,8 +80,8 @@ const fakeGoogleDirectory = {
     sales: [
       {
         kind: 'directory#member',
-        id: 'elizasmith',
-        email: 'eliza@example.com',
+        id: 'elizasmith1',
+        email: 'eliza1@example.com',
         role: 'MANAGER',
         type: 'USER',
       },
@@ -114,15 +98,41 @@ const fakeGoogleDirectory = {
   },
 };
 
+for (let i = 1; i <= 5000; i++) {
+  fakeGoogleDirectory.users.push({
+    id: `elizasmith${i}`,
+    primaryEmail: `eliza${i}@example.com`,
+    name: {
+      givenName: `Eliza${i}`,
+      familyName: 'Smith',
+    },
+    suspended: false,
+    password: 'password',
+    hashFunction: 'SHA-1',
+    changePasswordAtNextLogin: false,
+    ipWhitelisted: false,
+    etag: 'abcd1234',
+  });
+}
+
+const pageSize = 200;
+const numOfPages = fakeGoogleDirectory.users.length / pageSize;
 // Mock /admin/directory/v1/users
-const mockUsersAPI = (users: any[]) => {
-  nock('https://admin.googleapis.com')
-    .get('/admin/directory/v1/users')
-    .query({
+const mockUsersAPI = async (users: any[]) => {
+  for (let i = 0; i < users.length / pageSize; i++) {
+    const query: any = {
       maxResults: 200,
       domain: 'boxyhq.com',
-    })
-    .reply(200, { users });
+    };
+    if (i !== 0) {
+      query.pageToken = `${i}`;
+    }
+    const _users = users.slice(i * pageSize, i * pageSize + pageSize);
+    nock('https://admin.googleapis.com')
+      .get('/admin/directory/v1/users')
+      .query(query)
+      .reply(200, { users: _users, nextPageToken: i === numOfPages - 1 ? undefined : `${i + 1}` });
+  }
 };
 
 // Mock /admin/directory/v1/groups
@@ -133,6 +143,7 @@ const mockGroupsAPI = (groups: any[]) => {
       maxResults: 200,
       domain: 'boxyhq.com',
     })
+    // Gets invoked 2 times - 1 for syncGroups, 2nd time inside syncGroupMembers
     .times(2)
     .reply(200, { groups });
 };
@@ -182,50 +193,50 @@ tap.test('Sync 1', async (t) => {
   await directorySyncController.sync();
 
   nock.cleanAll();
-
-  t.strictSame(events.length, 7);
+  // 5k users, 2 groups, 3 group members
+  t.strictSame(events.length, 5005);
 
   t.strictSame(events[0].event, 'user.created');
   t.strictSame(events[0].data.id, fakeGoogleDirectory.users[0].id);
   t.strictSame(events[0].data.raw, fakeGoogleDirectory.users[0]);
 
-  t.strictSame(events[1].event, 'user.created');
-  t.strictSame(events[1].data.id, fakeGoogleDirectory.users[1].id);
-  t.strictSame(events[1].data.raw, fakeGoogleDirectory.users[1]);
+  t.strictSame(events[4999].event, 'user.created');
+  t.strictSame(events[4999].data.id, fakeGoogleDirectory.users[4999].id);
+  t.strictSame(events[4999].data.raw, fakeGoogleDirectory.users[4999]);
 
-  t.strictSame(events[2].event, 'group.created');
-  t.strictSame(events[2].data.id, fakeGoogleDirectory.groups[0].id);
-  t.strictSame(events[2].data.raw, fakeGoogleDirectory.groups[0]);
+  t.strictSame(events[5000].event, 'group.created');
+  t.strictSame(events[5000].data.id, fakeGoogleDirectory.groups[0].id);
+  t.strictSame(events[5000].data.raw, fakeGoogleDirectory.groups[0]);
 
-  t.strictSame(events[3].event, 'group.created');
-  t.strictSame(events[3].data.id, fakeGoogleDirectory.groups[1].id);
-  t.strictSame(events[3].data.raw, fakeGoogleDirectory.groups[1]);
+  t.strictSame(events[5001].event, 'group.created');
+  t.strictSame(events[5001].data.id, fakeGoogleDirectory.groups[1].id);
+  t.strictSame(events[5001].data.raw, fakeGoogleDirectory.groups[1]);
 
-  t.strictSame(events[4].event, 'group.user_added');
-  t.strictSame(events[4].data.id, fakeGoogleDirectory.users[0].id);
-  t.strictSame(events[4].data.raw, fakeGoogleDirectory.users[0]);
+  t.strictSame(events[5002].event, 'group.user_added');
+  t.strictSame(events[5002].data.id, fakeGoogleDirectory.users[0].id);
+  t.strictSame(events[5002].data.raw, fakeGoogleDirectory.users[0]);
 
   // Check that the user was added to the group
-  if ('group' in events[4].data) {
-    t.strictSame(events[4].data.group.id, fakeGoogleDirectory.groups[0].id);
+  if ('group' in events[5002].data) {
+    t.strictSame(events[5002].data.group.id, fakeGoogleDirectory.groups[0].id);
   }
 
-  t.strictSame(events[5].event, 'group.user_added');
-  t.strictSame(events[5].data.id, fakeGoogleDirectory.users[1].id);
-  t.strictSame(events[5].data.raw, fakeGoogleDirectory.users[1]);
+  t.strictSame(events[5003].event, 'group.user_added');
+  t.strictSame(events[5003].data.id, fakeGoogleDirectory.users[1].id);
+  t.strictSame(events[5003].data.raw, fakeGoogleDirectory.users[1]);
 
   // Check that the user was added to the group
-  if ('group' in events[5].data) {
-    t.strictSame(events[5].data.group.id, fakeGoogleDirectory.groups[0].id);
+  if ('group' in events[5003].data) {
+    t.strictSame(events[5003].data.group.id, fakeGoogleDirectory.groups[0].id);
   }
 
-  t.strictSame(events[6].event, 'group.user_added');
-  t.strictSame(events[6].data.id, fakeGoogleDirectory.users[0].id);
-  t.strictSame(events[6].data.raw, fakeGoogleDirectory.users[0]);
+  t.strictSame(events[5004].event, 'group.user_added');
+  t.strictSame(events[5004].data.id, fakeGoogleDirectory.users[0].id);
+  t.strictSame(events[5004].data.raw, fakeGoogleDirectory.users[0]);
 
   // Check that the user was added to the group
-  if ('group' in events[6].data) {
-    t.strictSame(events[6].data.group.id, fakeGoogleDirectory.groups[1].id);
+  if ('group' in events[5004].data) {
+    t.strictSame(events[5004].data.group.id, fakeGoogleDirectory.groups[1].id);
   }
 
   t.end();
@@ -355,14 +366,14 @@ tap.test('Sync 4', async (t) => {
 tap.test('Sync 5', async (t) => {
   events = [];
 
-  // Remove elizasmith from the engineering group
+  // Remove elizasmith1 from the engineering group
   fakeGoogleDirectory.members.engineering.shift();
 
-  // Add elizasmith to the marketing group
+  // Add elizasmith1 to the marketing group
   fakeGoogleDirectory.members.marketing.push({
     kind: 'directory#member',
-    id: 'elizasmith',
-    email: 'eliza@example.com',
+    id: 'elizasmith1',
+    email: 'eliza1@example.com',
     role: 'MANAGER',
     type: 'USER',
   });
