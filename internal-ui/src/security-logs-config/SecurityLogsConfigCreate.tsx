@@ -8,12 +8,14 @@ import { ButtonPrimary, Error, LinkBack } from '../shared';
 export const SecurityLogsConfigCreate = ({
   urls,
   onSuccess,
+  onError,
 }: {
   urls: {
     createConfig: string;
     listConfigs: string;
   };
   onSuccess: (message: string) => void;
+  onError: (message: string) => void;
 }) => {
   const { t } = useTranslation('common');
   const { router } = useRouter();
@@ -42,7 +44,8 @@ export const SecurityLogsConfigCreate = ({
 
     if ('error' in response) {
       if (response?.error?.message) {
-        return <Error message={response.error.message} />;
+        onError(response.error.message);
+        return;
       }
     }
 

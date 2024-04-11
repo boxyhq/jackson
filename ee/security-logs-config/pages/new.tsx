@@ -1,4 +1,4 @@
-import { successToast } from '@components/Toaster';
+import { successToast, errorToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
 import { SecurityLogsConfigCreate } from '@boxyhq/internal-ui';
 
@@ -12,7 +12,7 @@ const NewConfiguration = ({ hasValidLicense }: { hasValidLicense: boolean }) => 
     listConfigs: '/admin/settings/security-logs',
   };
 
-  return <SecurityLogsConfigCreate urls={urls} onSuccess={successToast} />;
+  return <SecurityLogsConfigCreate urls={urls} onSuccess={successToast} onError={errorToast} />;
 };
 
 export default NewConfiguration;
