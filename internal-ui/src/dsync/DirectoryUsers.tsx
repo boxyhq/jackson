@@ -1,13 +1,14 @@
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
-import type { User } from '../types';
+import type { ApiSuccess, User } from '../types';
 import { addQueryParamsToPath, fetcher } from '../utils';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
 import { TableBodyType } from '../shared/Table';
 import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
 import { useRouter } from '../hooks';
+import { useEffect } from 'react';
 
 export const DirectoryUsers = ({
   urls,
@@ -18,7 +19,7 @@ export const DirectoryUsers = ({
 }) => {
   const { router } = useRouter();
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router!);
 
   const params = {
     pageOffset: paginate.offset,
@@ -26,14 +27,22 @@ export const DirectoryUsers = ({
   };
 
   // For DynamoDB
-  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
-    params['pageToken'] = pageTokenMap[paginate.offset - pageLimit];
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset]) {
+    params['pageToken'] = pageTokenMap[paginate.offset];
   }
 
   const getUrl = addQueryParamsToPath(urls.getUsers, params);
 
   const { directory, isLoadingDirectory, directoryError } = useDirectory(urls.getDirectory);
-  const { data, isLoading, error } = useSWR<{ data: User[] }>(getUrl, fetcher);
+  const { data, isLoading, error } = useSWR<ApiSuccess<User[]>>(getUrl, fetcher);
+
+  const nextPageToken = data?.pageToken;
+
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading || isLoadingDirectory) {
     return <Loading />;

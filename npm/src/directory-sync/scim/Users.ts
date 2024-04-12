@@ -1,4 +1,4 @@
-import type { User, DatabaseStore, PaginationParams, Response } from '../../typings';
+import type { User, DatabaseStore, PaginationParams, Response, Records } from '../../typings';
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
 import { keyFromParts } from '../../db/utils';
@@ -180,30 +180,29 @@ export class Users extends Base {
   public async getAll({
     pageOffset,
     pageLimit,
+    pageToken,
     directoryId,
   }: PaginationParams & {
     directoryId?: string;
   } = {}): Promise<Response<User[]>> {
     try {
-      let users: User[] = [];
-
+      let result: Records;
       // Filter by directoryId
       if (directoryId) {
-        users = (
-          await this.store('users').getByIndex(
-            {
-              name: indexNames.directoryId,
-              value: directoryId,
-            },
-            pageOffset,
-            pageLimit
-          )
-        ).data as User[];
+        result = await this.store('users').getByIndex(
+          {
+            name: indexNames.directoryId,
+            value: directoryId,
+          },
+          pageOffset,
+          pageLimit,
+          pageToken
+        );
       } else {
-        users = (await this.store('users').getAll(pageOffset, pageLimit)).data;
+        result = await this.store('users').getAll(pageOffset, pageLimit, pageToken);
       }
 
-      return { data: users, error: null };
+      return { data: result.data, error: null, pageToken: result.pageToken };
     } catch (err: any) {
       return apiError(err);
     }

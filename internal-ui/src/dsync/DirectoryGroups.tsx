@@ -1,13 +1,14 @@
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
-import type { Group } from '../types';
+import type { ApiSuccess, Group } from '../types';
 import { fetcher, addQueryParamsToPath } from '../utils';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
 import { TableBodyType } from '../shared/Table';
 import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
 import { useRouter } from '../hooks';
+import { useEffect } from 'react';
 
 export const DirectoryGroups = ({
   urls,
@@ -18,7 +19,7 @@ export const DirectoryGroups = ({
 }) => {
   const { router } = useRouter();
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router!);
 
   const params = {
     pageOffset: paginate.offset,
@@ -33,7 +34,15 @@ export const DirectoryGroups = ({
   const getUrl = addQueryParamsToPath(urls.getGroups, params);
 
   const { directory, isLoadingDirectory, directoryError } = useDirectory(urls.getDirectory);
-  const { data, isLoading, error } = useSWR<{ data: Group[] }>(getUrl, fetcher);
+  const { data, isLoading, error } = useSWR<ApiSuccess<Group[]>>(getUrl, fetcher);
+
+  const nextPageToken = data?.pageToken;
+
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading || isLoadingDirectory) {
     return <Loading />;
