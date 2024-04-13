@@ -27,8 +27,9 @@ export const DirectoryUsers = ({
   };
 
   // For DynamoDB
-  if (paginate.offset > 0 && pageTokenMap[paginate.offset]) {
-    params['pageToken'] = pageTokenMap[paginate.offset];
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
+  if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
+    params['pageToken'] = pageTokenMap[paginate.offset - pageLimit];
   }
 
   const getUrl = addQueryParamsToPath(urls.getUsers, params);
