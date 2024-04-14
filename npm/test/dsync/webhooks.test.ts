@@ -114,7 +114,7 @@ tap.test('Webhook Events /', async (t) => {
       // Create a user
       await directorySync.requests.handle(usersRequest.create(directory, users[0]));
 
-      const logs = await directorySync.webhookLogs.getAll();
+      const { data: logs } = await directorySync.webhookLogs.getAll();
 
       const log = await directorySync.webhookLogs.get(logs[0].id);
 
