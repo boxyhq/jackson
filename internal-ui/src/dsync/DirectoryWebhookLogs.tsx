@@ -1,8 +1,8 @@
 import useSWR from 'swr';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
-import type { WebhookEventLog } from '../types';
+import { ApiSuccess, type WebhookEventLog } from '../types';
 import { fetcher, addQueryParamsToPath } from '../utils';
 import { DirectoryTab } from '../dsync';
 import { usePaginate, useDirectory } from '../hooks';
@@ -32,7 +32,7 @@ export const DirectoryWebhookLogs = ({
   const { router } = useRouter();
   const { t } = useTranslation('common');
   const [delModalVisible, setDelModalVisible] = useState(false);
-  const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router!);
 
   const params = {
     pageOffset: paginate.offset,
@@ -40,6 +40,7 @@ export const DirectoryWebhookLogs = ({
   };
 
   // For DynamoDB
+  // Use the (next)pageToken mapped to the previous page offset to get the current page
   if (paginate.offset > 0 && pageTokenMap[paginate.offset - pageLimit]) {
     params['pageToken'] = pageTokenMap[paginate.offset - pageLimit];
   }
@@ -47,7 +48,15 @@ export const DirectoryWebhookLogs = ({
   const getUrl = addQueryParamsToPath(urls.getEvents, params);
 
   const { directory, isLoadingDirectory, directoryError } = useDirectory(urls.getDirectory);
-  const { data, isLoading, error } = useSWR<{ data: WebhookEventLog[] }>(getUrl, fetcher);
+  const { data, isLoading, error } = useSWR<ApiSuccess<WebhookEventLog[]>>(getUrl, fetcher);
+
+  const nextPageToken = data?.pageToken;
+
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading || isLoadingDirectory) {
     return <Loading />;

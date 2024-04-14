@@ -6,6 +6,7 @@ import type {
   WebhookEventLog,
   DirectorySyncEvent,
   PaginationParams,
+  Records,
 } from '../../typings';
 import { Base } from './Base';
 import { webhookLogsTTL } from '../utils';
@@ -125,9 +126,9 @@ export class WebhookEventsLogger extends Base {
    */
   // Get the event logs for a directory paginated
   public async getAll(params: GetAllParams = {}) {
-    const { pageOffset, pageLimit, directoryId } = params;
+    const { pageOffset, pageLimit, pageToken, directoryId } = params;
 
-    let eventLogs: WebhookEventLog[] = [];
+    let result: Records<WebhookEventLog>;
 
     if (directoryId) {
       const index = {
@@ -135,12 +136,12 @@ export class WebhookEventsLogger extends Base {
         value: directoryId,
       };
 
-      eventLogs = (await this.eventStore().getByIndex(index, pageOffset, pageLimit)).data;
+      result = await this.eventStore().getByIndex(index, pageOffset, pageLimit, pageToken);
     } else {
-      eventLogs = (await this.eventStore().getAll(pageOffset, pageLimit)).data;
+      result = await this.eventStore().getAll(pageOffset, pageLimit, pageToken);
     }
 
-    return eventLogs;
+    return { data: result.data, pageToken: result.pageToken };
   }
 
   public async delete(id: string) {
