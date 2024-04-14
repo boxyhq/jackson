@@ -164,10 +164,12 @@ export type UserPatchOperation = {
 export type GroupPatchOperation = {
   op: 'add' | 'remove' | 'replace';
   path?: 'members' | 'displayName';
-  value: {
-    value: string;
-    display?: string;
-  }[];
+  value:
+    | string
+    | {
+        value: string;
+        display?: string;
+      }[];
 };
 
 export type GroupMembership = {
