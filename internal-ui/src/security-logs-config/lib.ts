@@ -1,3 +1,5 @@
+export type SecurityLogsType = 'splunk_hec_logs';
+
 export type SinkConfigMapField = {
   index: number;
   label: string;
@@ -8,7 +10,7 @@ export type SinkConfigMapField = {
 
 export type SinkConfigMap = {
   [key: string]: {
-    type: string;
+    type: SecurityLogsType;
     fields: SinkConfigMapField[];
   };
 };

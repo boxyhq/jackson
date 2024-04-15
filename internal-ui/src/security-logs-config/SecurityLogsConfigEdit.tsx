@@ -70,6 +70,7 @@ export const SecurityLogsConfigEdit = ({
       },
       body: JSON.stringify({
         config,
+        type: data?.data?.type,
       }),
     });
 
