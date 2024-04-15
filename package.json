@@ -99,7 +99,7 @@
   "devDependencies": {
     "@playwright/test": "1.43.1",
     "@types/cors": "2.8.17",
-    "@types/micromatch": "4.0.6",
+    "@types/micromatch": "4.0.7",
     "@types/node": "20.11.30",
     "@types/react": "18.2.67",
     "@typescript-eslint/eslint-plugin": "7.3.1",
