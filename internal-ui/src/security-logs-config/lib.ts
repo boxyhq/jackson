@@ -15,7 +15,12 @@ export type SinkConfigMap = {
   };
 };
 
-export const configMap = {
+export const configMap: {
+  [key: string]: {
+    type: SecurityLogsType;
+    fields: SinkConfigMapField[];
+  };
+} = {
   Splunk: {
     type: 'splunk_hec_logs',
     fields: [
@@ -47,4 +52,8 @@ export const getFieldsFromSinkType = (type: string): SinkConfigMapField[] | unde
     return undefined;
   }
   return configMap[key].fields;
+};
+
+export const getSecurityLogsConfigTypes = (): string[] => {
+  return Object.keys(configMap).map((key) => configMap[key].type);
 };

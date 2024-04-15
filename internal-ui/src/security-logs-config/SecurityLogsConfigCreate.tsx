@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 
 import { useRouter } from '../hooks';
 import { configMap } from './lib';
-import { ButtonPrimary, Error, LinkBack } from '../shared';
+import { ButtonPrimary, LinkBack } from '../shared';
 
 export const SecurityLogsConfigCreate = ({
   urls,
