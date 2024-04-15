@@ -1,6 +1,13 @@
 import { randomUUID } from 'crypto';
 
-import type { Group, DatabaseStore, PaginationParams, Response, GroupMembership } from '../../typings';
+import type {
+  Group,
+  DatabaseStore,
+  PaginationParams,
+  Response,
+  GroupMembership,
+  Records,
+} from '../../typings';
 import * as dbutils from '../../db/utils';
 import { apiError, JacksonError } from '../../controller/error';
 import { Base } from './Base';
@@ -238,10 +245,10 @@ export class Groups extends Base {
       directoryId?: string;
     }
   ): Promise<Response<Group[]>> {
-    const { pageOffset, pageLimit, directoryId } = params;
+    const { pageOffset, pageLimit, pageToken, directoryId } = params;
 
     try {
-      let groups: Group[] = [];
+      let result: Records;
 
       // Filter by directoryId
       if (directoryId) {
@@ -250,12 +257,12 @@ export class Groups extends Base {
           value: directoryId,
         };
 
-        groups = (await this.store('groups').getByIndex(index, pageOffset, pageLimit)).data;
+        result = await this.store('groups').getByIndex(index, pageOffset, pageLimit, pageToken);
       } else {
-        groups = (await this.store('groups').getAll(pageOffset, pageLimit)).data;
+        result = await this.store('groups').getAll(pageOffset, pageLimit, pageToken);
       }
 
-      return { data: groups, error: null };
+      return { data: result.data, error: null, pageToken: result.pageToken };
     } catch (err: any) {
       return apiError(err);
     }

@@ -140,7 +140,7 @@ tap.test('Event batching', async (t) => {
   });
 
   t.test('Should log the webhook events if logging is enabled', async (t) => {
-    const logs = await directorySync.webhookLogs
+    const { data: logs } = await directorySync.webhookLogs
       .setTenantAndProduct(directory1Payload.tenant, directory1Payload.product)
       .getAll();
 
@@ -157,7 +157,7 @@ tap.test('Event batching', async (t) => {
   });
 
   t.test('Should not log the webhook events if logging is disabled', async (t) => {
-    const logs = await directorySync.webhookLogs
+    const { data: logs } = await directorySync.webhookLogs
       .setTenantAndProduct(directory2Payload.tenant, directory2Payload.product)
       .getAll();
 

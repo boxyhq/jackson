@@ -78,7 +78,7 @@ tap.test('Webhook Events /', async (t) => {
       // Create a user
       await directorySync.requests.handle(usersRequest.create(directory, users[0]));
 
-      const events = await directorySync.webhookLogs.getAll();
+      const { data: events } = await directorySync.webhookLogs.getAll();
 
       t.equal(events.length, 0);
 
@@ -100,7 +100,7 @@ tap.test('Webhook Events /', async (t) => {
       // Create a user
       await directorySync.requests.handle(usersRequest.create(directory, users[0]));
 
-      const events = await directorySync.webhookLogs.getAll();
+      const { data: events } = await directorySync.webhookLogs.getAll();
 
       t.equal(events.length, 0);
 
@@ -114,7 +114,7 @@ tap.test('Webhook Events /', async (t) => {
       // Create a user
       await directorySync.requests.handle(usersRequest.create(directory, users[0]));
 
-      const logs = await directorySync.webhookLogs.getAll();
+      const { data: logs } = await directorySync.webhookLogs.getAll();
 
       const log = await directorySync.webhookLogs.get(logs[0].id);
 
@@ -144,7 +144,7 @@ tap.test('Webhook Events /', async (t) => {
       mock.verify();
       mock.restore();
 
-      const logs = await directorySync.webhookLogs.getAll();
+      const { data: logs } = await directorySync.webhookLogs.getAll();
 
       t.ok(logs);
       t.equal(logs.length, 3);
@@ -193,7 +193,7 @@ tap.test('Webhook Events /', async (t) => {
       mock.verify();
       mock.restore();
 
-      const logs = await directorySync.webhookLogs.getAll();
+      const { data: logs } = await directorySync.webhookLogs.getAll();
 
       t.ok(logs);
       t.equal(logs.length, 3);
@@ -251,7 +251,7 @@ tap.test('Webhook Events /', async (t) => {
     mock.verify();
     mock.restore();
 
-    const logs = await directorySync.webhookLogs.getAll();
+    const { data: logs } = await directorySync.webhookLogs.getAll();
 
     t.ok(logs);
     t.equal(logs.length, 4);
