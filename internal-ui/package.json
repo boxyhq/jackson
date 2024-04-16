@@ -29,7 +29,7 @@
     "@types/node": "20.12.7",
     "@types/react": "18.2.78",
     "@typescript-eslint/eslint-plugin": "7.6.0",
-    "@typescript-eslint/parser": "7.6.0",
+    "@typescript-eslint/parser": "7.7.0",
     "@vitejs/plugin-react": "4.2.1",
     "eslint": "8.57.0",
     "eslint-plugin-react-hooks": "4.6.0",
