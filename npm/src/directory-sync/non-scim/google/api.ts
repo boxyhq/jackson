@@ -63,7 +63,7 @@ export class GoogleProvider implements IDirectoryProvider {
   async getUsers(directory: Directory, options: PaginationParams | null) {
     const query = {
       maxResults: 200,
-      domain: directory.google_domain,
+      customer: 'my_customer',
     };
 
     if (options?.pageToken) {
@@ -106,7 +106,7 @@ export class GoogleProvider implements IDirectoryProvider {
 
     const query = {
       maxResults: 200,
-      domain: directory.google_domain,
+      customer: 'my_customer',
     };
 
     if (options?.pageToken) {
@@ -146,7 +146,6 @@ export class GoogleProvider implements IDirectoryProvider {
     const query = {
       maxResults: 200,
       groupKey: group.id,
-      domain: directory.google_domain,
     };
 
     let nextPageToken: string | undefined | null = null;
