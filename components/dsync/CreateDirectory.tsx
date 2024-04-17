@@ -47,7 +47,7 @@ const CreateDirectory = ({
           excludeFields={
             setupLinkToken
               ? ['name', 'tenant', 'product', 'webhook_url', 'webhook_secret', 'log_webhook_events']
-              : undefined
+              : ['log_webhook_events']
           }
           urls={{
             post: setupLinkToken

@@ -21,7 +21,7 @@ const parseUserRoles = (roles: string | string[]) => {
 export const parseGroupOperation = (operation: GroupPatchOperation) => {
   const { op, path, value } = operation;
 
-  if (path === 'members') {
+  if (path === 'members' && typeof value == 'object') {
     if (op === 'add') {
       return {
         action: 'addGroupMember',
@@ -47,11 +47,18 @@ export const parseGroupOperation = (operation: GroupPatchOperation) => {
   }
 
   // Update group name
-  if (op === 'replace' && 'displayName' in value) {
-    return {
-      action: 'updateGroupName',
-      displayName: value.displayName,
-    };
+  if (op === 'replace') {
+    if (path == 'displayName' && typeof value == 'string') {
+      return {
+        action: 'updateGroupName',
+        displayName: value,
+      };
+    } else if (typeof value == 'object' && 'displayName' in value) {
+      return {
+        action: 'updateGroupName',
+        displayName: value.displayName,
+      };
+    }
   }
 
   return {

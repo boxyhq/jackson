@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
@@ -51,7 +51,7 @@ export const SetupLinks = ({
   const [showSetupLink, setShowSetupLink] = useState(false);
   const [showRegenModal, setShowRegenModal] = useState(false);
   const [setupLink, setSetupLink] = useState<SetupLink | null>(null);
-  const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router!);
 
   const params = {
     pageOffset: paginate.offset,
@@ -65,7 +65,18 @@ export const SetupLinks = ({
   }
 
   const getLinksUrl = addQueryParamsToPath(urls.getLinks, params);
-  const { data, isLoading, error, mutate } = useSWR<{ data: SetupLink[] }>(getLinksUrl, fetcher);
+  const { data, isLoading, error, mutate } = useSWR<{ data: SetupLink[]; pageToken?: string }>(
+    getLinksUrl,
+    fetcher
+  );
+
+  const nextPageToken = data?.pageToken;
+
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
     return <Loading />;
