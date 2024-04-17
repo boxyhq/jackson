@@ -122,7 +122,7 @@ const mockUsersAPI = async (users: any[]) => {
   for (let i = 0; i < users.length / pageSize; i++) {
     const query: any = {
       maxResults: 200,
-      domain: 'boxyhq.com',
+      customer: 'my_customer',
     };
     if (i !== 0) {
       query.pageToken = `${i}`;
@@ -141,7 +141,7 @@ const mockGroupsAPI = (groups: any[]) => {
     .get('/admin/directory/v1/groups')
     .query({
       maxResults: 200,
-      domain: 'boxyhq.com',
+      customer: 'my_customer',
     })
     // Gets invoked 2 times - 1 for syncGroups, 2nd time inside syncGroupMembers
     .times(2)
@@ -154,7 +154,6 @@ const mockGroupMembersAPI = (groupKey: string, members: any[]) => {
     .get(`/admin/directory/v1/groups/${groupKey}/members`)
     .query({
       maxResults: 200,
-      domain: 'boxyhq.com',
     })
     .reply(200, { members });
 };
