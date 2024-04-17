@@ -164,10 +164,12 @@ export type UserPatchOperation = {
 export type GroupPatchOperation = {
   op: 'add' | 'remove' | 'replace';
   path?: 'members' | 'displayName';
-  value: {
-    value: string;
-    display?: string;
-  }[];
+  value:
+    | string
+    | {
+        value: string;
+        display?: string;
+      }[];
 };
 
 export type GroupMembership = {
@@ -176,7 +178,7 @@ export type GroupMembership = {
   user_id: string;
 };
 
-export type Response<T> = { data: T; error: null } | { data: null; error: ApiError };
+export type Response<T> = { data: T; error: null; pageToken?: string } | { data: null; error: ApiError };
 
 export type EventCallback = (event: DirectorySyncEvent) => Promise<void>;
 

@@ -95,7 +95,7 @@ export class GoogleProvider implements IDirectoryProvider {
     return {
       data: users,
       metadata: {
-        nextPageToken: response.data.nextPageToken,
+        pageToken: response.data.nextPageToken ?? undefined,
         hasNextPage: !!response.data.nextPageToken,
       },
     };

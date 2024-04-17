@@ -3,6 +3,7 @@ import jackson from '@lib/jackson';
 import retraced from '@ee/retraced';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
+import { parsePaginateApiParams } from '@lib/utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await defaultHandler(req, res, {
@@ -15,7 +16,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
-  const { directoryId, offset, limit } = req.query as { directoryId: string; offset: string; limit: string };
+  const { directoryId } = req.query as { directoryId: string };
+
+  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
   const { data: directory, error } = await directorySyncController.directories.get(directoryId);
 
@@ -23,18 +26,20 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     throw new ApiError(error.message, error.code);
   }
 
-  const pageOffset = parseInt(offset);
-  const pageLimit = parseInt(limit);
-
-  const events = await directorySyncController.webhookLogs
+  const result = await directorySyncController.webhookLogs
     .setTenantAndProduct(directory.tenant, directory.product)
     .getAll({
       pageOffset,
       pageLimit,
+      pageToken,
       directoryId,
     });
 
-  res.json({ data: events });
+  if (result.pageToken) {
+    res.setHeader('jackson-pagetoken', result.pageToken);
+  }
+
+  res.json({ data: result.data });
 };
 
 // Delete all events

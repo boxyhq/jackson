@@ -17,6 +17,7 @@ import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate } from '../hooks';
 import { useRouter } from '../hooks';
+import { useEffect } from 'react';
 
 type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
 
@@ -35,7 +36,7 @@ export const FederatedSAMLApps = ({
 }) => {
   const { router } = useRouter();
   const { t } = useTranslation('common');
-  const { paginate, setPaginate, pageTokenMap } = usePaginate(router!);
+  const { paginate, setPaginate, pageTokenMap, setPageTokenMap } = usePaginate(router!);
 
   let getAppsUrl = `${urls.getApps}?pageOffset=${paginate.offset}&pageLimit=${pageLimit}`;
 
@@ -44,7 +45,18 @@ export const FederatedSAMLApps = ({
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[] }>(getAppsUrl, fetcher);
+  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[]; pageToken?: string }>(
+    getAppsUrl,
+    fetcher
+  );
+
+  const nextPageToken = data?.pageToken;
+
+  useEffect(() => {
+    if (nextPageToken) {
+      setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
+    }
+  }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {
     return <Loading />;
