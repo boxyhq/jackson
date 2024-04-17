@@ -146,7 +146,6 @@ export class GoogleProvider implements IDirectoryProvider {
     const query = {
       maxResults: 200,
       groupKey: group.id,
-      customer: 'my_customer',
     };
 
     let nextPageToken: string | undefined | null = null;
