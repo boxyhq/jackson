@@ -6,7 +6,7 @@ const TEST_SAML_SSO_CONNECTION_NAME = 'pw_sso_saml_1';
 const TEST_SAML_TENANT = 'acme.com';
 const TEST_SAML_PRODUCT = 'demo';
 
-test.describe.only('Enterprise SSO - Manage Connections', () => {
+test.describe('Enterprise SSO - Manage Connections', () => {
   test('Add SAML SSO Connection', async ({ page, baseURL }) => {
     await page.goto('/admin/sso-connection');
     // Find the new connection button and click on it
