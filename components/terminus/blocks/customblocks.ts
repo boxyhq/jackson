@@ -4,42 +4,43 @@ import Blockly from 'blockly/core';
 // TODO extract prefixes
 function getEncryption() {
   return [
-    ['AES_256', 'crypto.#EnAES_256'],
-    ['FPE_FF1', 'crypto.#EnFPE_FF1'],
-    ['FPE_FF3_1', 'crypto.#EnFPE_FF3_1'],
-    ['NoEncryption', 'crypto.#EnNoEncryption'],
-    // ['RSA_2048', 'crypto.#EnRSA_2048'],
-    // ['Blowfish_448', 'crypto.#EnBlowfish_448'],
-    // ['FPE', 'crypto.#EnFPE'],
-    // ['B64', 'crypto.#EnB64'],
+    ['AES_256', 'AES_256'],
+    ['FPE_FF1', 'FPE_FF1'],
+    ['FPE_FF3_1', 'FPE_FF3_1'],
+    ['NoEncryption', 'NoEncryption'],
+    // ['RSA_2048', 'RSA_2048'],
+    // ['Blowfish_448', 'Blowfish_448'],
+    // ['FPE', 'FPE'],
+    // ['B64', 'B64'],
   ];
 }
 function getMasks() {
   return [
-    ['Clear', 'masking.#MClear'],
-    ['Generic', 'masking.#MGeneric'],
-    ['Redact', 'masking.#MRedact'],
-    ['Password', 'masking.#MPassword'],
-    ['Name', 'masking.#MName'],
-    ['Address', 'masking.#MAddress'],
-    ['Email', 'masking.#MEmail'],
-    ['Mobile', 'masking.#MMobile'],
-    ['Telephone', 'masking.#MTelephone'],
-    ['ID', 'masking.#MID'],
-    ['CreditCard', 'masking.#MCreditCard'],
-    ['Struct', 'masking.#MStruct'],
-    ['URL', 'masking.#MURL'],
+    ['Clear', 'Clear'],
+    ['Generic', 'Generic'],
+    ['Redact', 'Redact'],
+    ['Password', 'Password'],
+    ['Name', 'Name'],
+    ['Address', 'Address'],
+    ['Email', 'Email'],
+    ['Mobile', 'Mobile'],
+    ['Telephone', 'Telephone'],
+    ['ID', 'ID'],
+    ['CreditCard', 'CreditCard'],
+    ['Struct', 'Struct'],
+    ['URL', 'URL'],
   ];
 }
 function getPredefinedDataTypes() {
   return [
-    ['Letters', 'defs.#Letters'],
-    ['LettersWithSpaces', 'defs.#LettersWithSpaces'],
-    ['Alphanumerical', 'defs.#Alphanumerical'],
-    ['AlphanumericalWithSpaces', 'defs.#AlphanumericalWithSpaces'],
-    ['AlphanumericalNotAccented', 'defs.#AlphanumericalNotAccented'],
-    ['AlphanumericalNotAccentedWithSpaces', 'defs.#AlphanumericalNotAccentedWithSpaces'],
-    ['SimpleDate (2006-11-24)', 'defs.#SimpleDateFormat'],
+    ['String', 'String'],
+    ['Letters', 'Letters'],
+    ['LettersWithSpaces', 'LettersWithSpaces'],
+    ['Alphanumerical', 'Alphanumerical'],
+    ['AlphanumericalWithSpaces', 'AlphanumericalWithSpaces'],
+    ['AlphanumericalNotAccented', 'AlphanumericalNotAccented'],
+    ['AlphanumericalNotAccentedWithSpaces', 'AlphanumericalNotAccentedWithSpaces'],
+    ['SimpleDate (2006-11-24)', 'Date'],
   ];
 }
 
@@ -131,32 +132,6 @@ Blockly.Blocks['data_object_field_type'] = {
   init: function () {
     this.jsonInit({
       type: 'data_object_field_type',
-      message0: 'type %1 %2',
-      args0: [
-        {
-          type: 'field_input',
-          name: 'object_type',
-          text: 'string',
-        },
-        {
-          type: 'input_value',
-          name: 'input',
-          check: ['Boolean', 'String'],
-        },
-      ],
-      output: null,
-      colour: 230,
-      tooltip: '',
-      helpUrl: '',
-    });
-    // this.setStyle('loop_blocks');
-  },
-};
-
-Blockly.Blocks['data_object_field_default_types'] = {
-  init: function () {
-    this.jsonInit({
-      type: 'data_object_field_default_types',
       message0: 'type %1 %2',
       args0: [
         {

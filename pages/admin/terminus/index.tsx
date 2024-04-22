@@ -27,7 +27,6 @@ const TerminusIndexPage: NextPage<Props> = ({ host }: Props) => {
       <Block type='data_object_wrapper_with_encryption' />
       <Block type='data_object_field_wrapper' />
       <Block type='data_object_field_type' />
-      <Block type='data_object_field_default_types' />
       <Block type='data_object_field_encryption' />
       <Block type='data_object_field_mask' />
     </BlocklyComponent>
