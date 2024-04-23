@@ -29,21 +29,23 @@ export const generateModel = (workspace, roles: string[]) => {
 };
 
 const generateStructure = (roles: string[]) => {
-  let model: any = {};
+  const model: any = {};
   for (const [key, value] of Object.entries(Object.fromEntries(ObjectMap))) {
     model.name = key;
     model.attributes = {};
     const valuesMap = Object.fromEntries(value as any);
 
     for (const [field, values] of Object.entries(valuesMap)) {
+      const rolesMap = {};
+      for (let i = 0; i < roles.length; i++) {
+        rolesMap[roles[i]] = values[i + 2];
+      }
+
       model.attributes[field] = {
         type: values[0],
         encryption: values[1],
         masking: {
-          roles: {
-            admin: values[2],
-            member: values[3],
-          },
+          roles: rolesMap,
         },
       };
       if (IGNORE_FIELDS.includes(field)) {
