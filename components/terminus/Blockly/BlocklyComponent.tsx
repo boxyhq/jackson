@@ -35,11 +35,11 @@ function BlocklyComponent(props) {
 
   const uploadModel = async () => {
     const domToPretty = modelToXML();
-    const cueModel = generateModel(primaryWorkspace.current, roles);
+    const model = generateModel(primaryWorkspace.current, roles);
 
     const body = {
-      cue_schema: cueModel,
-      blockly_schema: domToPretty,
+      model: model,
+      blockly_model: domToPretty,
     };
 
     const requestOptions = {

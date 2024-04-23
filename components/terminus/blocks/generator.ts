@@ -25,11 +25,9 @@ export const generateModel = (workspace, roles: string[]) => {
   javascriptGenerator.workspaceToCode(workspace);
   const ret = generateStructure(roles);
 
-  // add specific BoxyHQ imports
   return JSON.stringify(ret);
 };
 
-// Rudimentary way of generating a CUE file
 const generateStructure = (roles: string[]) => {
   let model: any = {};
   for (const [key, value] of Object.entries(Object.fromEntries(ObjectMap))) {

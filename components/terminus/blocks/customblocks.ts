@@ -1,7 +1,5 @@
 import Blockly from 'blockly/core';
 
-// TODO wire with CUE configuration files
-// TODO extract prefixes
 function getEncryption() {
   return [
     ['AES_256', 'AES_256'],
@@ -14,11 +12,12 @@ function getEncryption() {
     // ['B64', 'B64'],
   ];
 }
+
 function getMasks() {
   return [
     ['Clear', 'Clear'],
-    ['Generic', 'Generic'],
     ['Redact', 'Redact'],
+    ['Generic', 'Generic'],
     ['Password', 'Password'],
     ['Name', 'Name'],
     ['Address', 'Address'],
@@ -31,6 +30,7 @@ function getMasks() {
     ['URL', 'URL'],
   ];
 }
+
 function getPredefinedDataTypes() {
   return [
     ['String', 'String'],
@@ -142,7 +142,7 @@ Blockly.Blocks['data_object_field_type'] = {
         {
           type: 'input_value',
           name: 'input',
-          check: ['Boolean', 'String'],
+          check: 'String',
         },
       ],
       output: null,
@@ -168,7 +168,7 @@ Blockly.Blocks['data_object_field_encryption'] = {
         {
           type: 'input_value',
           name: 'input',
-          check: ['Boolean', 'String'],
+          check: 'String',
         },
       ],
       output: null,
@@ -179,6 +179,7 @@ Blockly.Blocks['data_object_field_encryption'] = {
     // this.setStyle('loop_blocks');
   },
 };
+
 Blockly.Blocks['data_object_field_mask'] = {
   init: function () {
     this.jsonInit({
@@ -198,7 +199,7 @@ Blockly.Blocks['data_object_field_mask'] = {
         {
           type: 'input_value',
           name: 'object_type',
-          check: ['Boolean', 'String'],
+          check: 'String',
         },
       ],
       output: null,
@@ -238,7 +239,7 @@ export const maskSetup = (roles: string[]) => {
           {
             type: 'input_value',
             name: 'object_type',
-            check: ['Boolean', 'String'],
+            check: 'String',
           },
         ],
         output: null,
