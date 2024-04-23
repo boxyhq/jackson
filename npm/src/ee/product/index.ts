@@ -46,4 +46,10 @@ export class ProductController {
 
     await this.productStore.put(params.id, toUpdate);
   }
+
+  public async delete(productId: string) {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    await this.productStore.delete(productId);
+  }
 }
