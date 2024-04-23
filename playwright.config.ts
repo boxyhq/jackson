@@ -21,6 +21,9 @@ const config: PlaywrightTestConfig = {
     port: 5225,
     timeout: 60 * 1000,
     reuseExistingServer: !process.env.CI,
+    env: {
+      DEBUG: 'pw:webserver',
+    },
   },
 
   use: {
