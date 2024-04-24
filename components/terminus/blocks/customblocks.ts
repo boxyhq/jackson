@@ -188,12 +188,12 @@ Blockly.Blocks['data_object_field_mask'] = {
       args0: [
         {
           type: 'field_dropdown',
-          name: 'object_type_ADMIN',
+          name: 'object_type_admin',
           options: getMasks(),
         },
         {
           type: 'field_dropdown',
-          name: 'object_type_MEMBER',
+          name: 'object_type_member',
           options: getMasks(),
         },
         {
