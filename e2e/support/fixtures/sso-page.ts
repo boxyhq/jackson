@@ -1,13 +1,19 @@
 import type { Page, Locator } from '@playwright/test';
 import { adminPortalSSODefaults } from '@lib/env';
 
-const TEST_SAML_TENANT = adminPortalSSODefaults.tenant;
-const TEST_SAML_PRODUCT = adminPortalSSODefaults.product;
+const ADMIN_PORTAL_TENANT = adminPortalSSODefaults.tenant;
+const ADMIN_PORTAL_PRODUCT = adminPortalSSODefaults.product;
 
 const MOCKSAML_ORIGIN = process.env.MOCKSAML_ORIGIN || 'https://mocksaml.com';
 const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
 
-export class SAMLPage {
+const MOCKLAB_ORIGIN = 'https://oauth.wiremockapi.cloud';
+const MOCKLAB_CLIENT_ID = 'mocklab_oauth2';
+const MOCKLAB_CLIENT_SECRET = 'mocklab_secret';
+const MOCKLAB_SIGNIN_BUTTON_NAME = 'Login';
+const MOCKLAB_DISCOVERY_ENDPOINT = 'https://oauth.wiremockapi.cloud/.well-known/openid-configuration';
+
+export class SSOPage {
   private readonly createConnection: Locator;
   private readonly nameInput: Locator;
   private readonly tenantInput: Locator;
@@ -15,6 +21,7 @@ export class SAMLPage {
   private readonly redirectURLSInput: Locator;
   private readonly defaultRedirectURLInput: Locator;
   private readonly metadataUrlInput: Locator;
+  private readonly oidcDiscoveryUrlInput: Locator;
   private readonly saveConnection: Locator;
   private readonly deleteButton: Locator;
   private readonly confirmButton: Locator;
@@ -32,6 +39,7 @@ export class SAMLPage {
       .locator(page.getByRole('textbox').first());
     this.defaultRedirectURLInput = this.page.getByLabel('Default redirect URL');
     this.metadataUrlInput = this.page.getByLabel('Metadata URL');
+    this.oidcDiscoveryUrlInput = this.page.getByLabel('Well-known URL of OpenID Provider');
     this.saveConnection = this.page.getByRole('button', { name: /save/i });
     this.deleteButton = this.page.getByRole('button', { name: 'Delete' });
     this.confirmButton = this.page.getByRole('button', { name: 'Confirm' });
@@ -44,24 +52,47 @@ export class SAMLPage {
     }
   }
 
-  async addSSOConnection(name: string, baseURL: string) {
+  async addSSOConnection({
+    name,
+    type = 'saml',
+    baseURL,
+  }: {
+    name: string;
+    type: 'saml' | 'oidc';
+    baseURL: string;
+  }) {
     const connectionIndex = this.connections.length + 1;
     const ssoName = `${name}-${connectionIndex}`;
     // Find the new connection button and click on it
     await this.createConnection.click();
+    if (type === 'oidc') {
+      // Toggle connection type to OIDC
+      await this.page.getByLabel('OIDC').check();
+    }
     // Fill the name for the connection
     await this.nameInput.fill(ssoName);
     // Fill the tenant for the connection
-    await this.tenantInput.fill(TEST_SAML_TENANT);
+    await this.tenantInput.fill(ADMIN_PORTAL_TENANT);
     // Fill the product for the connection
-    await this.productInput.fill(TEST_SAML_PRODUCT);
+    await this.productInput.fill(ADMIN_PORTAL_PRODUCT);
     // Fill the Allowed redirect URLs for the connection
 
     await this.redirectURLSInput.fill(baseURL!);
     // Fill the default redirect URLs for the connection
     await this.defaultRedirectURLInput.fill(`${baseURL}/admin/auth/idp-login`);
-    // Enter the metadata url for mocksaml in the form
-    await this.metadataUrlInput.fill(`${MOCKSAML_ORIGIN}/api/namespace/${ssoName}/saml/metadata`);
+    if (type === 'saml') {
+      // Enter the metadata url for mocksaml in the form
+      await this.metadataUrlInput.fill(`${MOCKSAML_ORIGIN}/api/namespace/${ssoName}/saml/metadata`);
+    }
+    if (type === 'oidc') {
+      // Enter the OIDC client credentials for mocklab in the form
+      const clientIdInput = this.page.getByLabel('Client ID');
+      await clientIdInput.fill(MOCKLAB_CLIENT_ID);
+      const clientSecretInput = this.page.getByLabel('Client Secret');
+      await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
+      // Enter the OIDC discovery url for mocklab in the form
+      await this.oidcDiscoveryUrlInput.fill(MOCKLAB_DISCOVERY_ENDPOINT);
+    }
     // submit the form
     await this.saveConnection.click();
     this.connections = [...this.connections, ssoName];
@@ -105,5 +136,12 @@ export class SAMLPage {
     await this.page.waitForURL((url) => url.origin === MOCKSAML_ORIGIN);
     await this.page.getByPlaceholder('jackson').fill('bob');
     await this.page.getByRole('button', { name: MOCKSAML_SIGNIN_BUTTON_NAME }).click();
+  }
+
+  async signInWithMockLab() {
+    // Perform sign in at mocklab
+    await this.page.waitForURL((url) => url.origin === MOCKLAB_ORIGIN);
+    await this.page.getByPlaceholder('yours@example.com').fill('bob@oidc.com');
+    await this.page.getByRole('button', { name: MOCKLAB_SIGNIN_BUTTON_NAME }).click();
   }
 }
