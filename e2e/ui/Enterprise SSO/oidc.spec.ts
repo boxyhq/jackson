@@ -9,9 +9,9 @@ type MyFixtures = {
 export const test = baseTest.extend<MyFixtures>({
   ssoPage: async ({ page, baseURL }, use, testInfo) => {
     const ssoPage = new SSOPage(page);
-    const ssoName = `saml-${testInfo.workerIndex}`;
+    const ssoName = `oidc-${testInfo.workerIndex}`;
     await ssoPage.goto();
-    await ssoPage.addSSOConnection({ name: ssoName, type: 'saml', baseURL: baseURL! });
+    await ssoPage.addSSOConnection({ name: ssoName, type: 'oidc', baseURL: baseURL! });
     await use(ssoPage);
     await ssoPage.deleteAllSSOConnections();
   },
@@ -21,35 +21,35 @@ export const test = baseTest.extend<MyFixtures>({
   },
 });
 
-test('OAuth2 wrapper + SAML provider', async ({ ssoPage, portal, page, baseURL }, testInfo) => {
+test('OAuth2 wrapper + OIDC provider', async ({ ssoPage, portal, page, baseURL }, testInfo) => {
   // check if the first added connection appears in the connection list
-  await expect(page.getByText(`saml-${testInfo.workerIndex}-1`)).toBeVisible();
+  await expect(page.getByText(`oidc-${testInfo.workerIndex}-1`)).toBeVisible();
   // Logout of magic link login
   await ssoPage.logout();
   await ssoPage.signInWithSSO();
-  // Login using MockSAML
-  await ssoPage.signInWithMockSAML();
+  // Login using MockLab
+  await ssoPage.signInWithMockLab();
   // Wait for browser to redirect back to admin portal
   await page.waitForURL((url) => url.origin === baseURL);
   // Assert logged in state
   await portal.isLoggedIn();
 });
 
-test('OAuth2 wrapper + 2 SAML providers', async ({ ssoPage, portal, page, baseURL }, testInfo) => {
-  const ssoName = `saml-${testInfo.workerIndex}`;
+test('OAuth2 wrapper + 2 OIDC providers', async ({ ssoPage, portal, page, baseURL }, testInfo) => {
+  const ssoName = `oidc-${testInfo.workerIndex}`;
   // check if the first added connection appears in the connection list
   await expect(page.getByText(`${ssoName}-1`)).toBeVisible();
-  // Add second SAML connection
-  await ssoPage.addSSOConnection({ name: ssoName, type: 'saml', baseURL: baseURL! });
+  // Add second OIDC connection
+  await ssoPage.addSSOConnection({ name: ssoName, type: 'oidc', baseURL: baseURL! });
   // check if the second added connection appears in the connection list
   await expect(page.getByText(`${ssoName}-2`)).toBeVisible();
   // Logout of magic link login
   await ssoPage.logout();
-  // Login using MockSAML
+  // Login using MockLab
   await ssoPage.signInWithSSO();
   // Select IdP from selection screen
   await ssoPage.selectIdP(`${ssoName}-2`);
-  await ssoPage.signInWithMockSAML();
+  await ssoPage.signInWithMockLab();
   // Wait for browser to redirect back to admin portal
   await page.waitForURL((url) => url.origin === baseURL);
   // Assert logged in state
