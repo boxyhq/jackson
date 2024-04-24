@@ -75,7 +75,7 @@ test.describe('Admin Portal SSO - SAML', () => {
   test('delete the SAML SSO connection', async ({ page }) => {
     await page.goto('/admin/settings');
     // select the row of the connection list table, then locate the edit button
-    const editButton = page.getByText(TEST_SAML_SSO_CONNECTION_NAME).locator('..').getByLabel('Edit');
+    const editButton = page.getByText(TEST_SAML_SSO_CONNECTION_NAME).locator('xpath=..').getByLabel('Edit');
     await editButton.click();
     // click the delete and confirm deletion
     await page.getByRole('button', { name: 'Delete' }).click();
