@@ -18,8 +18,10 @@ export class SAMLPage {
   private readonly saveConnection: Locator;
   private readonly deleteButton: Locator;
   private readonly confirmButton: Locator;
+  private connections: string[];
 
   constructor(public readonly page: Page) {
+    this.connections = [];
     this.createConnection = this.page.getByTestId('create-connection');
     this.nameInput = this.page.getByLabel('Connection name (Optional)');
     this.tenantInput = this.page.getByLabel('Tenant');
@@ -36,14 +38,19 @@ export class SAMLPage {
   }
 
   async goto() {
-    await this.page.goto('/admin/sso-connection');
+    const url = new URL(this.page.url());
+    if (url.pathname !== '/admin/sso-connection') {
+      await this.page.goto('/admin/sso-connection');
+    }
   }
 
   async addSSOConnection(name: string, baseURL: string) {
+    const connectionIndex = this.connections.length + 1;
+    const ssoName = `${name}-${connectionIndex}`;
     // Find the new connection button and click on it
     await this.createConnection.click();
     // Fill the name for the connection
-    await this.nameInput.fill(name);
+    await this.nameInput.fill(ssoName);
     // Fill the tenant for the connection
     await this.tenantInput.fill(TEST_SAML_TENANT);
     // Fill the product for the connection
@@ -54,15 +61,15 @@ export class SAMLPage {
     // Fill the default redirect URLs for the connection
     await this.defaultRedirectURLInput.fill(`${baseURL}/admin/auth/idp-login`);
     // Enter the metadata url for mocksaml in the form
-    console.log(`${MOCKSAML_ORIGIN}/api/namespace/${name}/saml/metadata`);
-    await this.metadataUrlInput.fill(`${MOCKSAML_ORIGIN}/api/namespace/${name}/saml/metadata`);
+    await this.metadataUrlInput.fill(`${MOCKSAML_ORIGIN}/api/namespace/${ssoName}/saml/metadata`);
     // submit the form
     await this.saveConnection.click();
+    this.connections = [...this.connections, ssoName];
   }
 
   async deleteSSOConnection(name: string) {
     await this.goto();
-    const editButton = this.page.getByText(name, { exact: true }).locator('xpath=..').getByLabel('Edit');
+    const editButton = this.page.getByText(name).locator('xpath=..').getByLabel('Edit');
     await editButton.click();
     // click the delete and confirm deletion
     await this.deleteButton.click();
@@ -70,16 +77,9 @@ export class SAMLPage {
   }
 
   async deleteAllSSOConnections() {
-    await this.goto();
-    console.log(this.page.url());
-    const rowLocator = this.page.locator('tr').first();
-
-    while ((await rowLocator.count()) > 0) {
-      console.log(`here in loop`);
-      await rowLocator.first().getByLabel('Edit').click();
-      // click the delete and confirm deletion
-      await this.deleteButton.click();
-      await this.confirmButton.click();
+    let _connection;
+    while ((_connection = this.connections.shift())) {
+      await this.deleteSSOConnection(_connection);
     }
   }
 
