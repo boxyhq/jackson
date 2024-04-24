@@ -22,6 +22,8 @@ export class SSOPage {
   private readonly defaultRedirectURLInput: Locator;
   private readonly metadataUrlInput: Locator;
   private readonly oidcDiscoveryUrlInput: Locator;
+  private readonly oidcClientIdInput: Locator;
+  private readonly oidcClientSecretInput: Locator;
   private readonly saveConnection: Locator;
   private readonly deleteButton: Locator;
   private readonly confirmButton: Locator;
@@ -40,6 +42,8 @@ export class SSOPage {
     this.defaultRedirectURLInput = this.page.getByLabel('Default redirect URL');
     this.metadataUrlInput = this.page.getByLabel('Metadata URL');
     this.oidcDiscoveryUrlInput = this.page.getByLabel('Well-known URL of OpenID Provider');
+    this.oidcClientIdInput = this.page.getByLabel('Client ID');
+    this.oidcClientSecretInput = this.page.getByLabel('Client Secret');
     this.saveConnection = this.page.getByRole('button', { name: /save/i });
     this.deleteButton = this.page.getByRole('button', { name: 'Delete' });
     this.confirmButton = this.page.getByRole('button', { name: 'Confirm' });
@@ -86,10 +90,8 @@ export class SSOPage {
     }
     if (type === 'oidc') {
       // Enter the OIDC client credentials for mocklab in the form
-      const clientIdInput = this.page.getByLabel('Client ID');
-      await clientIdInput.fill(MOCKLAB_CLIENT_ID);
-      const clientSecretInput = this.page.getByLabel('Client Secret');
-      await clientSecretInput.fill(MOCKLAB_CLIENT_SECRET);
+      await this.oidcClientIdInput.fill(`${MOCKLAB_CLIENT_ID}-${connectionIndex}`);
+      await this.oidcClientSecretInput.fill(`${MOCKLAB_CLIENT_SECRET}-${connectionIndex}`);
       // Enter the OIDC discovery url for mocklab in the form
       await this.oidcDiscoveryUrlInput.fill(MOCKLAB_DISCOVERY_ENDPOINT);
     }
