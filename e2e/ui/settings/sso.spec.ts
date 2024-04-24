@@ -138,7 +138,7 @@ test.describe('Admin Portal SSO - OIDC', () => {
         await page.getByTestId('logout').click();
         // Click on login with sso button
         await page.getByTestId('sso-login-button').click();
-        // Perform sign in at mocksaml
+        // Perform sign in at mocklab
         await page.waitForURL((url) => url.origin === MOCKLAB_ORIGIN);
         await page.getByPlaceholder('yours@example.com').fill('bob@oidc.com');
         await page.getByRole('button', { name: MOCKLAB_SIGNIN_BUTTON_NAME }).click();
