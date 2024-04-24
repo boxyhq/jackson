@@ -62,11 +62,23 @@ export class SAMLPage {
 
   async deleteSSOConnection(name: string) {
     await this.goto();
-    const editButton = this.page.getByText(name, { exact: true }).locator('..').getByLabel('Edit');
+    const editButton = this.page.getByText(name, { exact: true }).locator('xpath=..').getByLabel('Edit');
     await editButton.click();
     // click the delete and confirm deletion
     await this.deleteButton.click();
     await this.confirmButton.click();
+  }
+
+  async deleteAllSSOConnections() {
+    const rowLocator = this.page.locator('tr');
+    console.log(rowLocator);
+    while ((await rowLocator.count()) > 0) {
+      console.log(`here in loop`);
+      await rowLocator.first().getByLabel('Edit').click();
+      // click the delete and confirm deletion
+      await this.deleteButton.click();
+      await this.confirmButton.click();
+    }
   }
 
   async logout() {
@@ -76,8 +88,17 @@ export class SAMLPage {
     await this.page.getByTestId('logout').click();
   }
 
-  async signInWithMockSAML() {
+  async signInWithSSO() {
     await this.page.getByTestId('sso-login-button').click();
+  }
+
+  async selectIdP(name: string) {
+    const idpSelectionTitle = 'Select an Identity Provider to continue';
+    await this.page.getByText(idpSelectionTitle).waitFor();
+    await this.page.getByRole('button', { name }).click();
+  }
+
+  async signInWithMockSAML() {
     // Perform sign in at mocksaml
     await this.page.waitForURL((url) => url.origin === MOCKSAML_ORIGIN);
     await this.page.getByPlaceholder('jackson').fill('bob');
