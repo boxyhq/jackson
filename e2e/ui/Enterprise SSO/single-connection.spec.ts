@@ -1,6 +1,5 @@
-import { test as baseTest } from '@playwright/test';
+import { test as baseTest, expect } from '@playwright/test';
 import { SAMLPage } from 'e2e/support/fixtures/saml-page';
-import { getSession } from 'next-auth/react';
 
 type MyFixtures = {
   samlPage: SAMLPage;
@@ -12,16 +11,37 @@ export const test = baseTest.extend<MyFixtures>({
     await samlPage.goto();
     await samlPage.addSSOConnection(ssoName, baseURL!);
     await use(samlPage);
-    await samlPage.deleteSSOConnection(ssoName);
+    await samlPage.deleteAllSSOConnections();
   },
 });
 
-test.only('OAuth2 wrapper + SAML provider', async ({ samlPage, page, baseURL }) => {
+test.only('OAuth2 wrapper + SAML provider', async ({ samlPage, page, baseURL }, testInfo) => {
+  // check if the added connection appears in the connection list
+  await expect(page.getByText(`single-connection-saml-${testInfo.workerIndex}`)).toBeVisible();
+  // Logout of magic link login
   await samlPage.logout();
+  await samlPage.signInWithSSO();
   // Login using MockSAML
   await samlPage.signInWithMockSAML();
   // Wait for browser to redirect back to admin portal
   await page.waitForURL((url) => url.origin === baseURL);
-  const session = await getSession();
-  console.log(session?.user?.email);
+});
+
+test('OAuth2 wrapper + 2 SAML providers', async ({ samlPage, page, baseURL }, testInfo) => {
+  // check if the added connection appears in the connection list
+  await expect(page.getByText(`single-connection-saml-${testInfo.workerIndex}`)).toBeVisible();
+  // Add second SAML connection
+  const ssoName = `single-connection-saml-${testInfo.workerIndex}-2`;
+  await samlPage.addSSOConnection(ssoName, baseURL!);
+  // check if the added connection appears in the connection list
+  await expect(page.getByText(ssoName)).toBeVisible();
+  // Logout of magic link login
+  await samlPage.logout();
+  // Login using MockSAML
+  await samlPage.signInWithSSO();
+  // Select IdP from selection screen
+  await samlPage.selectIdP(ssoName);
+  await samlPage.signInWithMockSAML();
+  // Wait for browser to redirect back to admin portal
+  await page.waitForURL((url) => url.origin === baseURL);
 });

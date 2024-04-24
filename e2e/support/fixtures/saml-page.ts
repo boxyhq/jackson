@@ -70,8 +70,10 @@ export class SAMLPage {
   }
 
   async deleteAllSSOConnections() {
-    const rowLocator = this.page.locator('tr');
-    console.log(rowLocator);
+    await this.goto();
+    console.log(this.page.url());
+    const rowLocator = this.page.locator('tr').first();
+
     while ((await rowLocator.count()) > 0) {
       console.log(`here in loop`);
       await rowLocator.first().getByLabel('Edit').click();
