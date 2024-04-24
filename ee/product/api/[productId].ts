@@ -8,8 +8,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       case 'GET':
         await handleGET(req, res);
         break;
+      case 'DELETE':
+        await handleDELETE(req, res);
+        break;
       default:
-        res.setHeader('Allow', 'GET');
+        res.setHeader('Allow', 'GET,DELETE');
         res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
     }
   } catch (error: any) {
@@ -27,6 +30,17 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const product = await productController.get(productId);
 
   res.json({ data: product });
+};
+
+// delete product configuration
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { productController } = await jackson();
+
+  const { productId } = req.query as { productId: string };
+
+  await productController.delete(productId);
+
+  res.status(204).end();
 };
 
 export default handler;
