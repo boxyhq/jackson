@@ -15,7 +15,7 @@ export const test = baseTest.extend<MyFixtures>({
   },
 });
 
-test.only('OAuth2 wrapper + SAML provider', async ({ samlPage, page, baseURL }, testInfo) => {
+test('OAuth2 wrapper + SAML provider', async ({ samlPage, page, baseURL }, testInfo) => {
   // check if the added connection appears in the connection list
   await expect(page.getByText(`single-connection-saml-${testInfo.workerIndex}`)).toBeVisible();
   // Logout of magic link login
