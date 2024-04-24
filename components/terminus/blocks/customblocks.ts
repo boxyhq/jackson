@@ -184,7 +184,7 @@ Blockly.Blocks['data_object_field_mask'] = {
   init: function () {
     this.jsonInit({
       type: 'data_object_field_mask',
-      message0: 'mask (Admin:%1) (Member:%2) %3',
+      message0: 'mask (admin:%1) (member:%2) %3',
       args0: [
         {
           type: 'field_dropdown',
@@ -210,16 +210,11 @@ Blockly.Blocks['data_object_field_mask'] = {
   },
 };
 
-const capitalize = (s: string) => {
-  if (typeof s !== 'string') return '';
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-};
-
 export const maskSetup = (roles: string[]) => {
   let maskMessage = 'mask (';
   const args: any[] = [];
   for (let i = 0; i < roles.length; i++) {
-    maskMessage += `${capitalize(roles[i])}:%${i + 1}`;
+    maskMessage += `${roles[i]}:%${i + 1}`;
     if (i < roles.length - 1) {
       maskMessage += ') (';
     }
