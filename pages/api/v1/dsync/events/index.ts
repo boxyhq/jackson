@@ -55,7 +55,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     directoryId: searchParams.directoryId,
   });
 
-  return res.json({ data: events });
+  return res.json(events);
 };
 
 // Delete webhook events for a directory
