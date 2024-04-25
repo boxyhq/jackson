@@ -149,7 +149,7 @@ tap.test('Federated SAML App', async () => {
 
     t.ok(response);
     t.match(response.entityId, jacksonOptions.samlAudience);
-    t.match(response.ssoUrl, `${jacksonOptions.externalUrl}/api/identity-federation/sso`);
+    t.match(response.ssoUrl, `${jacksonOptions.externalUrl}/api/federated-saml/sso`);
     t.match(response.x509cert, certs.publicKey);
   });
 
