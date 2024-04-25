@@ -224,6 +224,13 @@ class SSOTracer {
       await this.tracerStore.deleteMany((res.data || []).map((t) => t.traceId));
     } while (pageToken);
   }
+
+  public async countByProduct(product: string) {
+    return await this.tracerStore.getCount({
+      name: IndexNames.Product,
+      value: product,
+    });
+  }
 }
 
 export default SSOTracer;

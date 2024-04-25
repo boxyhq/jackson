@@ -69,4 +69,8 @@ export class AdminController implements IAdminController {
   public async deleteTracesByProduct(product: string) {
     return await this.ssoTracer.deleteTracesByProduct(product);
   }
+
+  public async countByProduct(product: string) {
+    return await this.ssoTracer.countByProduct(product);
+  }
 }
