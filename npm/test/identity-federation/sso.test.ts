@@ -11,18 +11,18 @@ const deflateRawAsync = promisify(deflateRaw);
 import { jacksonOptions } from '../utils';
 import { tenant, product, serviceProvider } from './constants';
 import type {
-  ISAMLFederationController,
+  IIdentityFederationController,
   IConnectionAPIController,
   IOAuthController,
-  SAMLFederationApp,
+  IdentityFederationApp,
   SAMLSSORecord,
 } from '../../src';
 
 let oauthController: IOAuthController;
-let samlFederatedController: ISAMLFederationController;
+let samlFederatedController: IIdentityFederationController;
 let connectionAPIController: IConnectionAPIController;
 
-let app: SAMLFederationApp;
+let app: IdentityFederationApp;
 let connection: SAMLSSORecord;
 
 tap.before(async () => {

@@ -13,7 +13,7 @@ import { SPSSOConfig } from './controller/sp-config';
 import { SetupLinkController } from './controller/setup-link';
 import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
-import initFederatedSAML, { type ISAMLFederationController } from './ee/identity-federation';
+import initFederatedSAML, { type IIdentityFederationController } from './ee/identity-federation';
 import checkLicense from './ee/common/checkLicense';
 import { BrandingController } from './ee/branding';
 import SSOTracer from './sso-traces';
@@ -71,7 +71,7 @@ export const controllers = async (
   directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSSOConfig;
-  samlFederatedController: ISAMLFederationController;
+  samlFederatedController: IIdentityFederationController;
   brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
   productController: ProductController;

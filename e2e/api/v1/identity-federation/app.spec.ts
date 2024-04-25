@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import { IdentityFederationApp } from '@boxyhq/saml-jackson';
 
 test.use({
   extraHTTPHeaders: {
@@ -17,7 +17,7 @@ const expectedApp = {
   acsUrl: 'https://boxyhq.com/acs',
 };
 
-let app = {} as SAMLFederationApp;
+let app = {} as IdentityFederationApp;
 
 test.beforeAll(async ({ request }) => {
   const response = await request.post('/api/v1/identity-federation', {

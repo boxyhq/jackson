@@ -4,7 +4,7 @@ import saml from '@boxyhq/saml20';
 import type {
   Storable,
   JacksonOption,
-  SAMLFederationApp,
+  IdentityFederationApp,
   Records,
   GetByProductParams,
   AppRequestParams,
@@ -16,7 +16,7 @@ import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
 type NewAppParams = Pick<
-  SAMLFederationApp,
+  IdentityFederationApp,
   'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings' | 'type' | 'redirectUrl'
 > & {
   logoUrl?: string;
@@ -31,7 +31,7 @@ export class App {
   /**
    * @swagger
    * definitions:
-   *   SAMLFederationApp:
+   *   IdentityFederationApp:
    *      type: object
    *      properties:
    *        id:
@@ -146,7 +146,7 @@ export class App {
    *        schema:
    *          type: array
    *          items:
-   *            $ref:  '#/definitions/SAMLFederationApp'
+   *            $ref:  '#/definitions/IdentityFederationApp'
    */
   public async create({
     name,
@@ -200,7 +200,7 @@ export class App {
       value: entityId,
     });
 
-    const apps: SAMLFederationApp[] = result.data;
+    const apps: IdentityFederationApp[] = result.data;
 
     if (apps && apps.length > 0) {
       throw new JacksonError(
@@ -218,7 +218,7 @@ export class App {
       _tenants.push(tenant);
     }
 
-    const app: SAMLFederationApp = {
+    const app: IdentityFederationApp = {
       id,
       type,
       redirectUrl,
@@ -287,7 +287,7 @@ export class App {
    *       '200':
    *         description: Success
    *         schema:
-   *           $ref: '#/definitions/SAMLFederationApp'
+   *           $ref: '#/definitions/IdentityFederationApp'
    */
   public async get(params: AppRequestParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
@@ -299,7 +299,7 @@ export class App {
         throw new JacksonError('Identity Federation app not found', 404);
       }
 
-      return app as SAMLFederationApp;
+      return app as IdentityFederationApp;
     }
 
     if ('tenant' in params && 'product' in params) {
@@ -309,7 +309,7 @@ export class App {
         throw new JacksonError('Identity Federation app not found', 404);
       }
 
-      return app as SAMLFederationApp;
+      return app as IdentityFederationApp;
     }
 
     throw new JacksonError('Provide either the `id` or `tenant` and `product` to get the app', 400);
@@ -344,7 +344,7 @@ export class App {
    *                   data:
    *                     type: array
    *                     items:
-   *                       $ref: '#/definitions/SAMLFederationApp'
+   *                       $ref: '#/definitions/IdentityFederationApp'
    *                   pageToken:
    *                     type: string
    *                     description: token for pagination
@@ -377,7 +377,7 @@ export class App {
       throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
     }
 
-    const apps: SAMLFederationApp[] = (
+    const apps: IdentityFederationApp[] = (
       await this.store.getByIndex({
         name: IndexNames.EntityID,
         value: entityId,
@@ -458,9 +458,9 @@ export class App {
    *       '200':
    *         description: Success
    *         schema:
-   *           $ref: '#/definitions/SAMLFederationApp'
+   *           $ref: '#/definitions/IdentityFederationApp'
    */
-  public async update(params: Partial<SAMLFederationApp>) {
+  public async update(params: Partial<IdentityFederationApp>) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const { id, tenant, product, type } = params;
@@ -469,7 +469,7 @@ export class App {
       throw new JacksonError('Provide either the `id` or `tenant` and `product` to update the app', 400);
     }
 
-    let app: null | SAMLFederationApp = null;
+    let app: null | IdentityFederationApp = null;
 
     if (id) {
       app = await this.get({ id });
@@ -481,7 +481,7 @@ export class App {
       throw new JacksonError('Identity Federation app not found', 404);
     }
 
-    const toUpdate: Partial<SAMLFederationApp> = {};
+    const toUpdate: Partial<IdentityFederationApp> = {};
 
     // Support partial updates
 
@@ -555,7 +555,11 @@ export class App {
   }) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const apps = (await this.store.getAll(pageOffset, pageLimit, pageToken)) as Records<SAMLFederationApp>;
+    const apps = (await this.store.getAll(
+      pageOffset,
+      pageLimit,
+      pageToken
+    )) as Records<IdentityFederationApp>;
 
     return apps;
   }
@@ -589,7 +593,7 @@ export class App {
    *       '200':
    *         description: Success
    *         schema:
-   *           $ref: '#/definitions/SAMLFederationApp'
+   *           $ref: '#/definitions/IdentityFederationApp'
    */
   public async delete(params: AppRequestParams): Promise<void> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);

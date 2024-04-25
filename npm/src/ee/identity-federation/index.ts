@@ -4,7 +4,7 @@ import type { JacksonOption, SSOTracerInstance } from '../../typings';
 import { SSOHandler } from '../../controller/sso-handler';
 
 // This is the main entry point for the Identity Federation module
-const SAMLFederation = async ({
+const IdentityFederation = async ({
   db,
   opts,
   ssoTracer,
@@ -34,7 +34,7 @@ const SAMLFederation = async ({
   return response;
 };
 
-export default SAMLFederation;
+export default IdentityFederation;
 
 export * from './types';
 

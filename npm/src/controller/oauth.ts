@@ -21,7 +21,7 @@ import type {
   SSOTracerInstance,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
-  SAMLFederationApp,
+  IdentityFederationApp,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -96,7 +96,7 @@ export class OAuthController implements IOAuthController {
     let requestedOIDCFlow: boolean | undefined;
     let isOIDCFederated: boolean | undefined;
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
-    let fedApp: SAMLFederationApp | undefined;
+    let fedApp: IdentityFederationApp | undefined;
 
     try {
       const tenant = 'tenant' in body ? body.tenant : undefined;

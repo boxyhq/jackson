@@ -1,13 +1,13 @@
-import SAMLFederation from '.';
+import IdentityFederation from '.';
 
-export type ISAMLFederationController = Awaited<ReturnType<typeof SAMLFederation>>;
+export type IIdentityFederationController = Awaited<ReturnType<typeof IdentityFederation>>;
 
 export type AttributeMapping = {
   key: string;
   value: string;
 };
 
-export type SAMLFederationApp = {
+export type IdentityFederationApp = {
   id: string;
   type?: string;
   clientID?: string;
@@ -25,7 +25,7 @@ export type SAMLFederationApp = {
   mappings?: AttributeMapping[] | null;
 };
 
-export type SAMLFederationAppWithMetadata = SAMLFederationApp & {
+export type IdentityFederationAppWithMetadata = IdentityFederationApp & {
   metadata: {
     entityId: string;
     ssoUrl: string;

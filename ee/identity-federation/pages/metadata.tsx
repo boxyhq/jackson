@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import type { SAMLFederationAppWithMetadata } from '@boxyhq/saml-jackson';
+import type { IdentityFederationAppWithMetadata } from '@boxyhq/saml-jackson';
 import { Toaster } from '@components/Toaster';
 import { InputWithCopyButton, CopyToClipboardButton, LinkOutline } from '@boxyhq/internal-ui';
 import LicenseRequired from '@components/LicenseRequired';
 
 type MetadataProps = {
-  metadata: Pick<SAMLFederationAppWithMetadata, 'metadata'>['metadata'];
+  metadata: Pick<IdentityFederationAppWithMetadata, 'metadata'>['metadata'];
   hasValidLicense: boolean;
 };
 

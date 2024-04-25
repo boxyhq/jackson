@@ -1,11 +1,11 @@
 import tap from 'tap';
 
-import { ISAMLFederationController } from '../../src';
+import { IIdentityFederationController } from '../../src';
 import { jacksonOptions } from '../utils';
 import { tenant, product, serviceProvider, appId } from './constants';
 import { getDefaultCertificate } from '../../src/saml/x509';
 
-let samlFederatedController: ISAMLFederationController;
+let samlFederatedController: IIdentityFederationController;
 
 tap.before(async () => {
   const jackson = await (await import('../../src/index')).default(jacksonOptions);

@@ -6,7 +6,7 @@ import { SSOHandler } from '../../controller/sso-handler';
 import type {
   JacksonOption,
   OIDCSSORecord,
-  SAMLFederationApp,
+  IdentityFederationApp,
   SAMLSSORecord,
   SSOTracerInstance,
 } from '../../typings';
@@ -56,7 +56,7 @@ export class SSO {
 
     const isPostBinding = samlBinding === 'HTTP-POST';
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
-    let app: SAMLFederationApp | undefined;
+    let app: IdentityFederationApp | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
 
     try {
