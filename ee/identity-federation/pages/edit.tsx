@@ -18,19 +18,19 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
 
   return (
     <div className='space-y-4'>
-      <LinkBack href='/admin/federated-saml' />
+      <LinkBack href='/admin/identity-federation' />
       <EditFederatedSAMLApp
         urls={{
-          getApp: `/api/admin/federated-saml/${id}`,
-          updateApp: `/api/admin/federated-saml/${id}`,
-          deleteApp: `/api/admin/federated-saml/${id}`,
+          getApp: `/api/admin/identity-federation/${id}`,
+          updateApp: `/api/admin/identity-federation/${id}`,
+          deleteApp: `/api/admin/identity-federation/${id}`,
         }}
         onUpdate={() => {
           successToast(t('saml_federation_update_success'));
         }}
         onDelete={() => {
           successToast(t('saml_federation_delete_success'));
-          router.push('/admin/federated-saml');
+          router.push('/admin/identity-federation');
         }}
         onError={(error) => {
           errorToast(error.message);

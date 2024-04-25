@@ -10,7 +10,7 @@ const unAuthenticatedApiRoutes = [
   '/api/health',
   '/api/hello',
   '/api/auth/**',
-  '/api/federated-saml/**',
+  '/api/identity-federation/**',
   '/api/logout/**',
   '/api/oauth/**',
   '/api/scim/v2.0/**',

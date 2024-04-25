@@ -45,7 +45,7 @@ import { getDefaultCertificate } from '../saml/x509';
 import { SSOHandler } from './sso-handler';
 import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
-import { App } from '../ee/federated-saml/app';
+import { App } from '../ee/identity-federation/app';
 
 const deflateRawAsync = promisify(deflateRaw);
 

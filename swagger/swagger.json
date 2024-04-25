@@ -1354,7 +1354,7 @@
         }
       }
     },
-    "/api/v1/federated-saml": {
+    "/api/v1/identity-federation": {
       "post": {
         "summary": "Create an Identity Federation app",
         "parameters": [
@@ -1639,7 +1639,7 @@
         }
       }
     },
-    "/api/v1/federated-saml/product": {
+    "/api/v1/identity-federation/product": {
       "get": {
         "summary": "Get Identity Federation apps by product",
         "parameters": [

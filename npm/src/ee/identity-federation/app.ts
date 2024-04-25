@@ -70,7 +70,7 @@ export class App {
 
   /**
    * @swagger
-   * /api/v1/federated-saml:
+   * /api/v1/identity-federation:
    *   post:
    *     summary: Create an Identity Federation app
    *     parameters:
@@ -260,7 +260,7 @@ export class App {
 
   /**
    * @swagger
-   * /api/v1/federated-saml:
+   * /api/v1/identity-federation:
    *   get:
    *     summary: Get an Identity Federation app
    *     parameters:
@@ -317,7 +317,7 @@ export class App {
 
   /**
    * @swagger
-   * /api/v1/federated-saml/product:
+   * /api/v1/identity-federation/product:
    *   get:
    *     summary: Get Identity Federation apps by product
    *     parameters:
@@ -393,7 +393,7 @@ export class App {
 
   /**
    * @swagger
-   * /api/v1/federated-saml:
+   * /api/v1/identity-federation:
    *   patch:
    *     summary: Update an Identity Federation app
    *     parameters:
@@ -562,7 +562,7 @@ export class App {
 
   /**
    * @swagger
-   * /api/v1/federated-saml:
+   * /api/v1/identity-federation:
    *   delete:
    *     summary: Delete an Identity Federation app
    *     parameters:
@@ -612,7 +612,7 @@ export class App {
 
     const { publicKey } = await getDefaultCertificate();
 
-    const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
+    const ssoUrl = `${this.opts.externalUrl}/api/identity-federation/sso`;
     const entityId = `${this.opts.samlAudience}`;
 
     const xml = saml.createIdPMetadataXML({

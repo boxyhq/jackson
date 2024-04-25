@@ -13,7 +13,7 @@ import { SPSSOConfig } from './controller/sp-config';
 import { SetupLinkController } from './controller/setup-link';
 import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
-import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
+import initFederatedSAML, { type ISAMLFederationController } from './ee/identity-federation';
 import checkLicense from './ee/common/checkLicense';
 import { BrandingController } from './ee/branding';
 import SSOTracer from './sso-tracer';
@@ -194,7 +194,7 @@ export const controllers = async (
 export default controllers;
 
 export * from './typings';
-export * from './ee/federated-saml/types';
+export * from './ee/identity-federation/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
 export type ISetupLinkController = InstanceType<typeof SetupLinkController>;
 export type IBrandingController = InstanceType<typeof BrandingController>;

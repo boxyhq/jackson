@@ -1,1 +1,1 @@
-export { default } from 'ee/federated-saml/api/sso';
+export { default } from '@ee/identity-federation/api/sso';

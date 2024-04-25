@@ -9,10 +9,10 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
 
   return (
     <FederatedSAMLApps
-      urls={{ getApps: '/api/admin/federated-saml' }}
-      onEdit={(app) => router.push(`/admin/federated-saml/${app.id}/edit`)}
+      urls={{ getApps: '/api/admin/identity-federation' }}
+      onEdit={(app) => router.push(`/admin/identity-federation/${app.id}/edit`)}
       actions={{
-        newApp: '/admin/federated-saml/new',
+        newApp: '/admin/identity-federation/new',
         samlConfiguration: '/.well-known/idp-configuration',
         oidcConfiguration: '/.well-known/openid-configuration',
       }}

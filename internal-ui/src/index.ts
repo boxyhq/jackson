@@ -1,5 +1,5 @@
 export * from './well-known';
-export * from './federated-saml';
+export * from './identity-federation';
 export * from './shared';
 export * from './dsync';
 export * from './provider';

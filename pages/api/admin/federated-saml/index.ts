@@ -1,1 +1,1 @@
-export { default } from 'ee/federated-saml/api/admin/index';
+export { default } from '@ee/identity-federation/api/admin/index';

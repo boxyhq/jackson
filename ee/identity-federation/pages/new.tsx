@@ -16,12 +16,12 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
 
   return (
     <div className='space-y-4'>
-      <LinkBack href='/admin/federated-saml' />
+      <LinkBack href='/admin/identity-federation' />
       <NewFederatedSAMLApp
-        urls={{ createApp: '/api/admin/federated-saml' }}
+        urls={{ createApp: '/api/admin/identity-federation' }}
         onSuccess={(data) => {
           successToast(t('saml_federation_new_success'));
-          router.replace(`/admin/federated-saml/${data.id}/edit`);
+          router.replace(`/admin/identity-federation/${data.id}/edit`);
         }}
         onError={(error) => {
           errorToast(error.message);

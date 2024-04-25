@@ -20,7 +20,7 @@ const expectedApp = {
 let app = {} as SAMLFederationApp;
 
 test.beforeAll(async ({ request }) => {
-  const response = await request.post('/api/v1/federated-saml', {
+  const response = await request.post('/api/v1/identity-federation', {
     data: {
       ...expectedApp,
     },
@@ -32,9 +32,9 @@ test.beforeAll(async ({ request }) => {
   expect(response.status()).toBe(201);
 });
 
-test.describe('GET /api/v1/federated-saml', () => {
+test.describe('GET /api/v1/identity-federation', () => {
   test('Fetch app by id', async ({ request }) => {
-    const response = await request.get(`/api/v1/federated-saml?id=${app?.id}`);
+    const response = await request.get(`/api/v1/identity-federation?id=${app?.id}`);
 
     const { data } = await response.json();
 
@@ -45,7 +45,7 @@ test.describe('GET /api/v1/federated-saml', () => {
 
   test('Fetch app by tenant and product', async ({ request }) => {
     const response = await request.get(
-      `/api/v1/federated-saml?tenant=${app?.tenant}&product=${app?.product}`
+      `/api/v1/identity-federation?tenant=${app?.tenant}&product=${app?.product}`
     );
 
     const { data } = await response.json();
@@ -56,7 +56,7 @@ test.describe('GET /api/v1/federated-saml', () => {
   });
 
   test('Fetch app by product', async ({ request }) => {
-    const response = await request.get(`/api/v1/federated-saml/product?product=${app?.product}`);
+    const response = await request.get(`/api/v1/identity-federation/product?product=${app?.product}`);
 
     const { data } = await response.json();
 
@@ -66,9 +66,9 @@ test.describe('GET /api/v1/federated-saml', () => {
   });
 });
 
-test.describe('PATCH /api/v1/federated-saml', () => {
+test.describe('PATCH /api/v1/identity-federation', () => {
   test('Update app by id', async ({ request }) => {
-    const response = await request.patch(`/api/v1/federated-saml`, {
+    const response = await request.patch(`/api/v1/identity-federation`, {
       data: {
         id: app?.id,
         name: 'Updated App',
@@ -86,7 +86,7 @@ test.describe('PATCH /api/v1/federated-saml', () => {
   });
 
   test('Update app by tenant and product', async ({ request }) => {
-    const response = await request.patch(`/api/v1/federated-saml`, {
+    const response = await request.patch(`/api/v1/identity-federation`, {
       data: {
         id: app?.id,
         name: 'Updated App 2',
@@ -104,9 +104,9 @@ test.describe('PATCH /api/v1/federated-saml', () => {
   });
 });
 
-test.describe('DELETE /api/v1/federated-saml', () => {
+test.describe('DELETE /api/v1/identity-federation', () => {
   test('Delete app by id', async ({ request }) => {
-    const response = await request.delete(`/api/v1/federated-saml?id=${app?.id}`);
+    const response = await request.delete(`/api/v1/identity-federation?id=${app?.id}`);
 
     const { data } = await response.json();
 
@@ -115,7 +115,7 @@ test.describe('DELETE /api/v1/federated-saml', () => {
     expect(data).toMatchObject({});
 
     // Confirm app is deleted
-    const response2 = await request.get(`/api/v1/federated-saml?id=${app?.id}`);
+    const response2 = await request.get(`/api/v1/identity-federation?id=${app?.id}`);
 
     expect(response2.ok()).toBe(false);
     expect(response2.status()).toBe(404);

@@ -2,7 +2,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import jackson from '@lib/jackson';
 
-export { default } from 'ee/federated-saml/pages/index';
+export { default } from '@ee/identity-federation/pages/index';
 
 export async function getServerSideProps({ locale }) {
   const { checkLicense } = await jackson();
