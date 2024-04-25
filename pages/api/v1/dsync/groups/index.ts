@@ -41,16 +41,16 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     product = directory.product;
   }
 
-  const { data, error } = await directorySyncController.groups.setTenantAndProduct(tenant, product).getAll({
+  const groups = await directorySyncController.groups.setTenantAndProduct(tenant, product).getAll({
     pageOffset,
     pageLimit,
     pageToken,
     directoryId: searchParams.directoryId,
   });
 
-  if (error) {
-    return res.status(error.code).json({ error });
+  if (groups.error) {
+    return res.status(groups.error.code).json({ error: groups.error });
   }
 
-  return res.status(200).json({ data });
+  return res.status(200).json(groups);
 };
