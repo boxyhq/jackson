@@ -65,4 +65,8 @@ export class AdminController implements IAdminController {
   ) {
     return await this.ssoTracer.getTracesByProduct({ product, pageOffset, pageLimit, pageToken });
   }
+
+  public async deleteTracesByProduct(product: string) {
+    return await this.ssoTracer.deleteTracesByProduct(product);
+  }
 }

@@ -206,6 +206,24 @@ class SSOTracer {
 
     return traces;
   }
+
+  public async deleteTracesByProduct(product: string) {
+    let pageToken;
+    do {
+      const res = await this.getTracesByProduct({
+        product,
+        pageOffset: 0,
+        pageLimit: 50,
+      });
+      if (!res.data || !res.data.length) {
+        break;
+      }
+      pageToken = res.pageToken;
+      // deleting traces in batches of 50
+      // deleting in the loop right away as we get the traces
+      await this.tracerStore.deleteMany((res.data || []).map((t) => t.traceId));
+    } while (pageToken);
+  }
 }
 
 export default SSOTracer;
