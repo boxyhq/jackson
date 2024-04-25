@@ -40,7 +40,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       href: '/admin/sso-connection',
       text: t('enterprise_sso'),
       icon: SSOLogo,
-      active: asPath.includes('/admin/sso-connection') || asPath.includes('/admin/identity-federation'),
+      active: asPath.includes('/admin/sso-connection'),
       items: [
         {
           href: '/admin/sso-connection',
@@ -54,14 +54,22 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           active: asPath.includes('/admin/sso-connection/setup-link'),
         },
         {
-          href: '/admin/identity-federation',
-          text: t('identity_federation'),
-          active: asPath.includes('/admin/identity-federation'),
-        },
-        {
           href: '/admin/sso-tracer',
           text: t('bui-tracer-title'),
           active: asPath.includes('/admin/sso-tracer'),
+        },
+      ],
+    },
+    {
+      href: '/admin/identity-federation',
+      text: t('identity_federation'),
+      icon: SSOLogo,
+      active: asPath.includes('/admin/identity-federation'),
+      items: [
+        {
+          href: '/admin/identity-federation',
+          text: t('apps'),
+          active: asPath.includes('/admin/identity-federation'),
         },
       ],
     },
