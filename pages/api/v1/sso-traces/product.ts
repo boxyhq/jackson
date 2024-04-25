@@ -11,6 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'DELETE':
         await handleDelete(req, res);
       default:
+        break;
         res.setHeader('Allow', 'GET,DELETE');
         res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
     }
