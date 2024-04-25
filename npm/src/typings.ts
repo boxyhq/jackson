@@ -212,6 +212,7 @@ export interface IAdminController {
   getAllSSOTraces(pageOffset: number, pageLimit: number, pageToken?: string);
   getSSOTraceById(traceId: string);
   getTracesByProduct(product: string, pageOffset: number, pageLimit: number, pageToken?: string);
+  deleteTracesByProduct(product: string);
 }
 
 export interface IHealthCheckController {
