@@ -10,8 +10,8 @@ const SSOTraceInspector: NextPage = () => {
 
   return (
     <div className='space-y-4'>
-      <LinkBack href='/admin/sso-tracer' />
-      <SSOTracerInfo urls={{ getTracer: `/api/admin/sso-tracer/${traceId}` }} />
+      <LinkBack href='/admin/sso-traces' />
+      <SSOTracerInfo urls={{ getTracer: `/api/admin/sso-traces/${traceId}` }} />
     </div>
   );
 };

@@ -225,7 +225,7 @@
   "bui-dsync-authorization-google": "Authorize Google Workspace",
   "bui-dsync-authorization-google-desc": "You should authorize Google Workspace to sync your directory. Click the button below start the authorization process. Make sure you have the necessary permissions to authorize Google Workspace.",
   "bui-dsync-google-domain": "Google Domain",
-  "bui-tracer-title": "SSO Tracer",
+  "bui-tracer-title": "SSO Traces",
   "bui-tracer-id": "Trace ID",
   "bui-tracer-description": "Description",
   "bui-tracer-assertion-type": "Assertion Type",

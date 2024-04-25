@@ -8,8 +8,8 @@ const SSOTraceViewer: NextPage = () => {
 
   return (
     <SSOTracers
-      urls={{ getTracers: '/api/admin/sso-tracer' }}
-      onView={(trace) => router.push(`/admin/sso-tracer/${trace.traceId}/inspect`)}
+      urls={{ getTracers: '/api/admin/sso-traces' }}
+      onView={(trace) => router.push(`/admin/sso-traces/${trace.traceId}/inspect`)}
     />
   );
 };

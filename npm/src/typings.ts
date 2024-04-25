@@ -2,7 +2,7 @@ import type { JWK } from 'jose';
 import type { CallbackParamsType, IssuerMetadata } from 'openid-client';
 
 export * from './ee/identity-federation/types';
-export * from './sso-tracer/types';
+export * from './sso-traces/types';
 export * from './directory-sync/types';
 export * from './event/types';
 

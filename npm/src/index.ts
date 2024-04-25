@@ -16,7 +16,7 @@ import * as x509 from './saml/x509';
 import initFederatedSAML, { type ISAMLFederationController } from './ee/identity-federation';
 import checkLicense from './ee/common/checkLicense';
 import { BrandingController } from './ee/branding';
-import SSOTracer from './sso-tracer';
+import SSOTracer from './sso-traces';
 import EventController from './event';
 import { ProductController } from './ee/product';
 import { OryController } from './ee/ory/ory';

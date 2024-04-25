@@ -1,5 +1,5 @@
 import tap from 'tap';
-import SSOTracer from '../../src/sso-tracer';
+import SSOTracer from '../../src/sso-traces';
 import { jacksonOptions } from '../utils';
 import DB from '../../src/db/db';
 
