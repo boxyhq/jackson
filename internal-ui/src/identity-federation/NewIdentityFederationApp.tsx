@@ -2,19 +2,19 @@ import { useFormik } from 'formik';
 import TagsInput from 'react-tagsinput';
 import { Card, Button } from 'react-daisyui';
 import { useTranslation } from 'next-i18next';
-import type { SAMLFederationApp } from '../types';
+import type { IdentityFederationApp } from '../types';
 import QuestionMarkCircleIcon from '@heroicons/react/24/outline/QuestionMarkCircleIcon';
 import { defaultHeaders } from '../utils';
 import { AttributesMapping } from './AttributesMapping';
 import { PageHeader } from '../shared';
 import { ItemList } from '@boxyhq/react-ui/shared';
 
-type NewSAMLFederationApp = Pick<
-  SAMLFederationApp,
+type NewIdentityFederationApp = Pick<
+  IdentityFederationApp,
   'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings' | 'type' | 'redirectUrl'
 >;
 
-export const NewFederatedSAMLApp = ({
+export const NewIdentityFederationApp = ({
   samlAudience = 'https://saml.boxyhq.com',
   urls,
   onSuccess,
@@ -24,14 +24,14 @@ export const NewFederatedSAMLApp = ({
 }: {
   samlAudience?: string;
   urls: { createApp: string };
-  onSuccess?: (data: SAMLFederationApp) => void;
+  onSuccess?: (data: IdentityFederationApp) => void;
   onError?: (error: Error) => void;
   onEntityIdGenerated?: (entityId: string) => void;
   excludeFields?: 'product'[];
 }) => {
   const { t } = useTranslation('common');
 
-  const initialValues: NewSAMLFederationApp = {
+  const initialValues: NewIdentityFederationApp = {
     type: 'saml',
     name: '',
     tenant: '',
@@ -44,11 +44,11 @@ export const NewFederatedSAMLApp = ({
 
   if (excludeFields) {
     excludeFields.forEach((key) => {
-      delete initialValues[key as keyof NewSAMLFederationApp];
+      delete initialValues[key as keyof NewIdentityFederationApp];
     });
   }
 
-  const formik = useFormik<NewSAMLFederationApp>({
+  const formik = useFormik<NewIdentityFederationApp>({
     initialValues: initialValues,
     onSubmit: async (values) => {
       const rawResponse = await fetch(urls.createApp, {

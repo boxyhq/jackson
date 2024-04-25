@@ -11,7 +11,7 @@ import {
   ButtonPrimary,
 } from '../shared';
 import { useTranslation } from 'next-i18next';
-import type { SAMLFederationApp } from '../types';
+import type { IdentityFederationApp } from '../types';
 import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
@@ -19,9 +19,9 @@ import { usePaginate } from '../hooks';
 import { useRouter } from '../hooks';
 import { useEffect } from 'react';
 
-type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
+type ExcludeFields = keyof Pick<IdentityFederationApp, 'product'>;
 
-export const FederatedSAMLApps = ({
+export const IdentityFederationApps = ({
   urls,
   excludeFields,
   onEdit,
@@ -30,9 +30,9 @@ export const FederatedSAMLApps = ({
 }: {
   urls: { getApps: string };
   excludeFields?: ExcludeFields[];
-  onEdit?: (app: SAMLFederationApp) => void;
+  onEdit?: (app: IdentityFederationApp) => void;
   actions: { newApp: string; samlConfiguration: string; oidcConfiguration: string };
-  actionCols?: { text: string; onClick: (app: SAMLFederationApp) => void; icon: JSX.Element }[];
+  actionCols?: { text: string; onClick: (app: IdentityFederationApp) => void; icon: JSX.Element }[];
 }) => {
   const { router } = useRouter();
   const { t } = useTranslation('common');
@@ -45,7 +45,7 @@ export const FederatedSAMLApps = ({
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, isLoading, error } = useSWR<{ data: SAMLFederationApp[]; pageToken?: string }>(
+  const { data, isLoading, error } = useSWR<{ data: IdentityFederationApp[]; pageToken?: string }>(
     getAppsUrl,
     fetcher
   );

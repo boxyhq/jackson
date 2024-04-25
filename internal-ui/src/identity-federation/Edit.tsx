@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from 'react-daisyui';
-import type { SAMLFederationApp } from '../types';
+import type { IdentityFederationApp } from '../types';
 import TagsInput from 'react-tagsinput';
 import { useTranslation } from 'next-i18next';
 import { useFormik } from 'formik';
@@ -13,7 +13,7 @@ import { ItemList } from '@boxyhq/react-ui/shared';
 import { CopyToClipboardButton } from '../shared/InputWithCopyButton';
 import { IconButton } from '../shared/IconButton';
 
-type EditApp = Pick<SAMLFederationApp, 'name' | 'acsUrl' | 'tenants' | 'redirectUrl'>;
+type EditApp = Pick<IdentityFederationApp, 'name' | 'acsUrl' | 'tenants' | 'redirectUrl'>;
 
 export const Edit = ({
   app,
@@ -22,9 +22,9 @@ export const Edit = ({
   onUpdate,
   excludeFields,
 }: {
-  app: SAMLFederationApp;
+  app: IdentityFederationApp;
   urls: { patch: string };
-  onUpdate?: (data: SAMLFederationApp) => void;
+  onUpdate?: (data: IdentityFederationApp) => void;
   onError?: (error: Error) => void;
   excludeFields?: 'product'[];
 }) => {

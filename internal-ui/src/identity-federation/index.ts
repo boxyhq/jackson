@@ -1,3 +1,3 @@
-export { NewFederatedSAMLApp } from './NewFederatedSAMLApp';
-export { EditFederatedSAMLApp } from './EditFederatedSAMLApp';
-export { FederatedSAMLApps } from './FederatedSAMLApps';
+export { NewIdentityFederationApp as NewFederatedSAMLApp } from './NewIdentityFederationApp';
+export { EditIdentityFederationApp as EditFederatedSAMLApp } from './EditIdentityFederationApp';
+export { IdentityFederationApps as FederatedSAMLApps } from './IdentityFederationApps';

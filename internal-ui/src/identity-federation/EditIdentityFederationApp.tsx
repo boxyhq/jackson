@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import type { SAMLFederationApp } from '../types';
+import type { IdentityFederationApp } from '../types';
 import { EditBranding } from './EditBranding';
 import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';
@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { defaultHeaders, fetcher } from '../utils';
 import { PageHeader } from '../shared';
 
-export const EditFederatedSAMLApp = ({
+export const EditIdentityFederationApp = ({
   urls,
   onError,
   onUpdate,
@@ -17,7 +17,7 @@ export const EditFederatedSAMLApp = ({
   excludeFields,
 }: {
   urls: { getApp: string; updateApp: string; deleteApp: string };
-  onUpdate?: (data: SAMLFederationApp) => void;
+  onUpdate?: (data: IdentityFederationApp) => void;
   onError?: (error: Error) => void;
   onDelete?: () => void;
   excludeFields?: 'product'[];
@@ -25,7 +25,7 @@ export const EditFederatedSAMLApp = ({
   const { t } = useTranslation('common');
   const [delModalVisible, setDelModalVisible] = useState(false);
 
-  const { data, isLoading, error, mutate } = useSWR<{ data: SAMLFederationApp }>(urls.getApp, fetcher);
+  const { data, isLoading, error, mutate } = useSWR<{ data: IdentityFederationApp }>(urls.getApp, fetcher);
 
   useEffect(() => {
     if (error) {

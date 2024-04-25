@@ -1,11 +1,11 @@
 import { Button } from 'react-daisyui';
 import { useTranslation } from 'next-i18next';
-import type { SAMLFederationApp } from '../types';
+import type { IdentityFederationApp } from '../types';
 import { useFormik } from 'formik';
 import { defaultHeaders } from '../utils';
 import { Card } from '../shared';
 
-type Branding = Pick<SAMLFederationApp, 'logoUrl' | 'faviconUrl' | 'primaryColor'>;
+type Branding = Pick<IdentityFederationApp, 'logoUrl' | 'faviconUrl' | 'primaryColor'>;
 
 export const EditBranding = ({
   app,
@@ -13,9 +13,9 @@ export const EditBranding = ({
   onUpdate,
   onError,
 }: {
-  app: SAMLFederationApp;
+  app: IdentityFederationApp;
   urls: { patch: string };
-  onUpdate?: (data: SAMLFederationApp) => void;
+  onUpdate?: (data: IdentityFederationApp) => void;
   onError?: (error: Error) => void;
 }) => {
   const { t } = useTranslation('common');

@@ -90,7 +90,7 @@ export type AttributeMapping = {
   value: string;
 };
 
-export type SAMLFederationApp = {
+export type IdentityFederationApp = {
   id: string;
   type?: string;
   clientID?: string;

@@ -1,12 +1,12 @@
 import { Button } from 'react-daisyui';
 import { useTranslation } from 'next-i18next';
-import type { SAMLFederationApp } from '../types';
+import type { IdentityFederationApp } from '../types';
 import { useFormik } from 'formik';
 import { defaultHeaders } from '../utils';
 import { Card } from '../shared';
 import { AttributesMapping } from './AttributesMapping';
 
-type Mappings = Pick<SAMLFederationApp, 'mappings'>;
+type Mappings = Pick<IdentityFederationApp, 'mappings'>;
 
 export const EditAttributesMapping = ({
   app,
@@ -14,9 +14,9 @@ export const EditAttributesMapping = ({
   onUpdate,
   onError,
 }: {
-  app: SAMLFederationApp;
+  app: IdentityFederationApp;
   urls: { patch: string };
-  onUpdate?: (data: SAMLFederationApp) => void;
+  onUpdate?: (data: IdentityFederationApp) => void;
   onError?: (error: Error) => void;
 }) => {
   const { t } = useTranslation('common');
