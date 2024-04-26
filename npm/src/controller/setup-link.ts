@@ -522,4 +522,11 @@ export class SetupLinkController {
 
     return setupLink;
   }
+
+  public async getCountByProductService(product: string, service: SetupLinkService) {
+    return await this.setupLinkStore.getCount({
+      name: IndexNames.ProductService,
+      value: dbutils.keyFromParts(product, service),
+    });
+  }
 }
