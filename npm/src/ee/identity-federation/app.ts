@@ -616,7 +616,7 @@ export class App {
 
     const { publicKey } = await getDefaultCertificate();
 
-    const ssoUrl = `${this.opts.externalUrl}/api/federated-saml/sso`;
+    const ssoUrl = `${this.opts.externalUrl}/api/identity-federation/sso`;
     const entityId = `${this.opts.samlAudience}`;
 
     const xml = saml.createIdPMetadataXML({
