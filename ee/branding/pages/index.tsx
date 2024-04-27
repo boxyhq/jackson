@@ -136,7 +136,12 @@ const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
               <label className='label'>
                 <span className='label-text'>{t('bui-shared-primary-color')}</span>
               </label>
-              <input type='color' id='primaryColor' onChange={onChange} value={branding.primaryColor || ''} />
+              <input
+                type='color'
+                id='primaryColor'
+                onChange={onChange}
+                value={branding.primaryColor || '#25c2a0'}
+              />
               <label className='label'>
                 <span className='label-text-alt'>{t('bui-shared-primary-color-desc')}</span>
               </label>
