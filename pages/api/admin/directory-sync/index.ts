@@ -4,6 +4,7 @@ import jackson from '@lib/jackson';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
 import { parsePaginateApiParams } from '@lib/utils';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await defaultHandler(req, res, {
@@ -16,6 +17,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
 
   const { name, tenant, product, type, webhook_url, webhook_secret, google_domain } = req.body;
+
+  await validateDevelopmentModeLimits(product, 'dsync');
 
   const { data, error } = await directorySyncController.directories.create({
     name,
