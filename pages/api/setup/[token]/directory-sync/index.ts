@@ -34,7 +34,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
 
   const { type, google_domain } = req.body;
 
-  await validateDevelopmentModeLimits(setupLink.product, 'dsync', 'Maximum number of connections reached');
+  await validateDevelopmentModeLimits(setupLink.product, 'dsync');
 
   const directory = {
     type,

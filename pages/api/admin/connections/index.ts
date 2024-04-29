@@ -5,6 +5,7 @@ import { oidcMetadataParse, parsePaginateApiParams, strategyChecker } from '@lib
 import { adminPortalSSODefaults } from '@lib/env';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await defaultHandler(req, res, {
@@ -54,6 +55,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
   const { isSAML, isOIDC } = strategyChecker(req);
+
+  await validateDevelopmentModeLimits(req.body.product, 'sso');
 
   if (!isSAML && !isOIDC) {
     throw new ApiError('Missing SSO connection params', 400);

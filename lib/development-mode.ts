@@ -1,18 +1,36 @@
 import jackson from './jackson';
 import { IndexNames } from 'npm/src/controller/utils';
 
+type ValidationModule = 'sso' | 'dsync' | 'samlFederation';
+
 export const validateDevelopmentModeLimits = async (
   productId: string,
-  type: 'sso' | 'dsync',
-  message: string
+  type: ValidationModule,
+  message: string = 'Maximum number of connections reached'
 ) => {
-  const { connectionAPIController, directorySyncController, productController } = await jackson();
   if (productId) {
+    const { productController, connectionAPIController, directorySyncController, samlFederatedController } =
+      await jackson();
+
+    const getController = async (type: ValidationModule) => {
+      switch (type) {
+        case 'sso':
+          return connectionAPIController;
+        case 'dsync':
+          return directorySyncController.directories;
+        case 'samlFederation':
+          return samlFederatedController.app;
+        default:
+          return {
+            getCount: () => null,
+          };
+      }
+    };
+
     const product = await productController.get(productId);
     if (product?.development) {
-      const count = await (
-        type === 'sso' ? connectionAPIController : directorySyncController.directories
-      ).getCount({
+      const controller = await getController(type);
+      const count = await controller.getCount({
         name: IndexNames.Product,
         value: productId,
       });
