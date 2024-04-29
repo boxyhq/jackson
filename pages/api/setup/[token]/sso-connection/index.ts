@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import type { SetupLink } from '@boxyhq/saml-jackson';
+import { validateDevelopmentModeLimits } from '@lib/developmentMode';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
@@ -75,6 +76,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
     ...req.body,
     ...setupLink,
   };
+
+  await validateDevelopmentModeLimits(body.product, 'sso', 'Maximum number of connections reached');
 
   const { isSAML, isOIDC } = strategyChecker(req);
 
