@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { SetupLink } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
@@ -32,6 +33,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: 
   const { directorySyncController } = await jackson();
 
   const { type, google_domain } = req.body;
+
+  await validateDevelopmentModeLimits(setupLink.product, 'dsync');
 
   const directory = {
     type,

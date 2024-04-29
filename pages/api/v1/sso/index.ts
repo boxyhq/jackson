@@ -2,29 +2,16 @@ import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { DelConnectionsQuery } from '@boxyhq/saml-jackson';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
+import { defaultHandler } from '@lib/api';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  try {
-    switch (method) {
-      case 'GET':
-        return await handleGET(req, res);
-      case 'POST':
-        return await handlePOST(req, res);
-      case 'PATCH':
-        return await handlePATCH(req, res);
-      case 'DELETE':
-        return await handleDELETE(req, res);
-      default:
-        res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+    PATCH: handlePATCH,
+    DELETE: handleDELETE,
+  });
 }
 
 // Get all connections
@@ -51,6 +38,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!isSAML && !isOIDC) {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
+
+  await validateDevelopmentModeLimits(req.body.product, 'sso');
 
   // Create SAML connection
   if (isSAML) {
