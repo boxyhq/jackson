@@ -1,18 +1,18 @@
 import jackson from './jackson';
 import { IndexNames } from 'npm/src/controller/utils';
 
-type ValidationModule = 'sso' | 'dsync' | 'samlFederation';
+type Module = 'sso' | 'dsync' | 'samlFederation';
 
 export const validateDevelopmentModeLimits = async (
   productId: string,
-  type: ValidationModule,
+  type: Module,
   message: string = 'Maximum number of connections reached'
 ) => {
   if (productId) {
     const { productController, connectionAPIController, directorySyncController, samlFederatedController } =
       await jackson();
 
-    const getController = async (type: ValidationModule) => {
+    const getController = async (type: Module) => {
       switch (type) {
         case 'sso':
           return connectionAPIController;
