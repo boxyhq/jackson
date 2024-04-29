@@ -622,4 +622,5 @@ export interface ProductConfig {
   faviconUrl: string | null;
   companyName: string | null;
   ory: OryConfig | null;
+  development?: boolean;
 }

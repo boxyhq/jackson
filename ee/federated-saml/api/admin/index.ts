@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { defaultHandler } from '@lib/api';
 import { parsePaginateApiParams } from '@lib/utils';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await defaultHandler(req, res, {
@@ -14,6 +15,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 // Create new Identity Federation app
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
+
+  await validateDevelopmentModeLimits(
+    req.body.product,
+    'samlFederation',
+    'Maximum number of federation apps reached'
+  );
 
   const app = await samlFederatedController.app.create(req.body);
 

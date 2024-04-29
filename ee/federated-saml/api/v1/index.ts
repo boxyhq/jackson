@@ -2,35 +2,27 @@ import { AppRequestParams } from '@boxyhq/saml-jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
+import { defaultHandler } from '@lib/api';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    switch (req.method) {
-      case 'POST':
-        await handlePOST(req, res);
-        break;
-      case 'GET':
-        await handleGET(req, res);
-        break;
-      case 'PATCH':
-        await handlePATCH(req, res);
-        break;
-      case 'DELETE':
-        await handleDELETE(req, res);
-        break;
-      default:
-        res.setHeader('Allow', 'POST, GET, PATCH, DELETE');
-        res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-    res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    POST: handlePOST,
+    GET: handleGET,
+    PATCH: handlePATCH,
+    DELETE: handleDELETE,
+  });
 }
 
 // Create a SAML federated app
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { samlFederatedController } = await jackson();
+
+  await validateDevelopmentModeLimits(
+    req.body.product,
+    'samlFederation',
+    'Maximum number of federation apps reached'
+  );
 
   const app = await samlFederatedController.app.create(req.body);
 
