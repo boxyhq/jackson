@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { SetupLink } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
-import { validateDevelopmentModeLimits } from '@lib/developmentMode';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
