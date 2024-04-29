@@ -1,15 +1,21 @@
+import { defaultHandler } from '@lib/api';
 import jackson from '@lib/jackson';
 import { parsePaginateApiParams } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    DELETE: handleDELETE,
+  });
+
   try {
     switch (req.method) {
       case 'GET':
         await handleGET(req, res);
         break;
       case 'DELETE':
-        await handleDelete(req, res);
+        await handleDELETE(req, res);
         break;
       default:
         res.setHeader('Allow', 'GET,DELETE');
@@ -36,7 +42,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   res.json(traces);
 };
 
-const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController } = await jackson();
 
   const { product } = req.query as {
