@@ -1,39 +1,23 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, strategyChecker } from '@lib/utils';
-import type { SetupLink } from '@boxyhq/saml-jackson';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
+import { defaultHandler } from '@lib/api';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { setupLinkController } = await jackson();
-
-  const { method } = req;
-  const { token } = req.query as { token: string };
-
-  try {
-    const setupLink = await setupLinkController.getByToken(token);
-
-    switch (method) {
-      case 'GET':
-        return await handleGET(req, res, setupLink);
-      case 'POST':
-        return await handlePOST(req, res, setupLink);
-      case 'PATCH':
-        return await handlePATCH(req, res);
-      case 'DELETE':
-        return await handleDELETE(req, res);
-      default:
-        res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+    PATCH: handlePATCH,
+    DELETE: handleDELETE,
+  });
 };
 
-const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
-  const { connectionAPIController } = await jackson();
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { token } = req.query as { token: string };
+  const { connectionAPIController, setupLinkController } = await jackson();
+
+  const setupLink = await setupLinkController.getByToken(token);
 
   const connections = await connectionAPIController.getConnections({
     tenant: setupLink.tenant,
@@ -68,13 +52,18 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: S
   res.json(_connections);
 };
 
-const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
-  const { connectionAPIController } = await jackson();
+const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { token } = req.query as { token: string };
+  const { connectionAPIController, setupLinkController } = await jackson();
+
+  const setupLink = await setupLinkController.getByToken(token);
 
   const body = {
     ...req.body,
     ...setupLink,
   };
+
+  await validateDevelopmentModeLimits(body.product, 'sso');
 
   const { isSAML, isOIDC } = strategyChecker(req);
 
