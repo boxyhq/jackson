@@ -1,18 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { validateDevelopmentModeLimits } from '@lib/development-mode';
+import { defaultHandler } from '@lib/api';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    case 'POST':
-      return await handlePOST(req, res);
-    default:
-      res.setHeader('Allow', 'GET, POST');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+  });
 }
 
 // Get the configuration
@@ -40,6 +35,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 // Create a new configuration
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directorySyncController } = await jackson();
+
+  await validateDevelopmentModeLimits(req.body.product, 'dsync');
 
   const { data, error } = await directorySyncController.directories.create(req.body);
 

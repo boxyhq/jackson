@@ -212,6 +212,7 @@ export interface IAdminController {
   getAllSSOTraces(pageOffset: number, pageLimit: number, pageToken?: string);
   getSSOTraceById(traceId: string);
   getTracesByProduct(product: string, pageOffset: number, pageLimit: number, pageToken?: string);
+  deleteTracesByProduct(product: string);
 }
 
 export interface IHealthCheckController {
@@ -621,4 +622,5 @@ export interface ProductConfig {
   faviconUrl: string | null;
   companyName: string | null;
   ory: OryConfig | null;
+  development?: boolean;
 }

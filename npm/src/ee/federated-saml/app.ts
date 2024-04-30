@@ -8,6 +8,7 @@ import type {
   Records,
   GetByProductParams,
   AppRequestParams,
+  Index,
 } from '../../typings';
 import { fedAppID, clientIDFederatedPrefix } from '../../controller/utils';
 import { JacksonError } from '../../controller/error';
@@ -628,5 +629,9 @@ export class App {
       ssoUrl,
       x509cert: publicKey,
     };
+  }
+
+  public async getCount(idx?: Index) {
+    return await this.store.getCount(idx);
   }
 }
