@@ -100,10 +100,20 @@ export class SSOPage {
     this.connections = [...this.connections, ssoName];
   }
 
-  async deleteSSOConnection(name: string) {
+  async gotoEditView(name: string) {
     await this.goto();
     const editButton = this.page.getByText(name).locator('xpath=..').getByLabel('Edit');
     await editButton.click();
+  }
+
+  async updateSSOConnection({ name, url }: { name: string; url: string }) {
+    await this.gotoEditView(name);
+    await this.redirectURLSInput.fill(url);
+    await this.saveConnection.click();
+  }
+
+  async deleteSSOConnection(name: string) {
+    await this.gotoEditView(name);
     // click the delete and confirm deletion
     await this.deleteButton.click();
     await this.confirmButton.click();
